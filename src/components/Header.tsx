@@ -37,13 +37,17 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="gap-2">
-            <LogIn className="h-4 w-4" />
-            تسجيل الدخول
+          <Button variant="ghost" size="sm" className="gap-2" asChild>
+            <a href="/auth">
+              <LogIn className="h-4 w-4" />
+              تسجيل الدخول
+            </a>
           </Button>
-          <Button size="sm" className="gap-2 hero-gradient border-0">
-            <User className="h-4 w-4" />
-            إنشاء حساب
+          <Button size="sm" className="gap-2 hero-gradient border-0" asChild>
+            <a href="/auth">
+              <User className="h-4 w-4" />
+              إنشاء حساب
+            </a>
           </Button>
         </div>
       </div>
