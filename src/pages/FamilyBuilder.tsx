@@ -522,54 +522,132 @@ const FamilyBuilder = () => {
         <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
           {/* Welcome Screen for New Tree */}
           {currentMode === 'welcome' && isNewTree && !isEditMode && (
-            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-200">
-                  مرحباً بك في إنشاء شجرة عائلة جديدة! 🌳
-                </CardTitle>
-                <CardDescription>
-                  ابدأ بإدخال معلومات عائلتك الأساسية
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="familyName" className="flex items-center gap-2">
-                      <Crown className="h-4 w-4 text-emerald-600" />
-                      اسم العائلة
-                    </Label>
-                    <Input 
-                      id="familyName" 
-                      placeholder="عائلة الأحمد"
-                      value={familyInfo.familyName}
-                      onChange={(e) => setFamilyInfo({...familyInfo, familyName: e.target.value})}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="familyDescription" className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-emerald-600" />
-                      وصف العائلة
-                    </Label>
-                    <Textarea 
-                      id="familyDescription" 
-                      placeholder="نبذة مختصرة عن العائلة وتاريخها..."
-                      className="min-h-[100px]"
-                      value={familyInfo.familyDescription}
-                      onChange={(e) => setFamilyInfo({...familyInfo, familyDescription: e.target.value})}
-                    />
+            <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/90 to-cyan-50/90 dark:from-emerald-950/90 dark:via-teal-950/90 dark:to-cyan-950/90 backdrop-blur-xl border-2 border-gradient-to-r from-emerald-200/50 to-teal-200/50 h-full shadow-2xl">
+              {/* Animated background patterns */}
+              <div className="absolute inset-0 opacity-30">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-2xl animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-1/3 left-1/4 w-20 h-20 bg-gradient-to-r from-cyan-400/15 to-emerald-400/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+              </div>
+
+              {/* Floating geometric shapes */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-8 right-16 w-4 h-4 bg-emerald-400/30 rounded-full animate-bounce"></div>
+                <div className="absolute top-12 right-32 w-3 h-3 bg-teal-400/40 rotate-45 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute top-16 left-20 w-2 h-6 bg-cyan-400/35 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute bottom-20 right-20 w-5 h-2 bg-emerald-500/25 rounded-full animate-pulse" style={{animationDelay: '2.5s'}}></div>
+                <div className="absolute bottom-32 left-16 w-3 h-3 bg-teal-500/30 rounded-full animate-bounce" style={{animationDelay: '3s'}}></div>
+              </div>
+
+              {/* Decorative tree illustration */}
+              <div className="absolute top-4 left-4 opacity-10 dark:opacity-5">
+                <svg width="120" height="120" viewBox="0 0 120 120" className="text-emerald-600">
+                  <path d="M60 20 L40 50 L80 50 Z" fill="currentColor" opacity="0.3"/>
+                  <path d="M60 30 L35 60 L85 60 Z" fill="currentColor" opacity="0.4"/>
+                  <path d="M60 40 L30 70 L90 70 Z" fill="currentColor" opacity="0.5"/>
+                  <rect x="55" y="70" width="10" height="25" fill="currentColor" opacity="0.6"/>
+                </svg>
+              </div>
+
+              <CardHeader className="relative z-10 text-center pb-8">
+                {/* Animated icon */}
+                <div className="mx-auto w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl flex items-center justify-center shadow-xl mb-6 transform hover:scale-110 transition-all duration-500 animate-pulse">
+                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                    <TreePine className="h-10 w-10 text-white animate-bounce" style={{animationDuration: '2s'}} />
                   </div>
                 </div>
                 
-                <Button 
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center"
-                  onClick={handleStartNewTree}
-                  disabled={!familyInfo.familyName}
-                >
-                  بدء إنشاء شجرة العائلة
-                  <TreePine className="mr-2 h-4 w-4" />
-                </Button>
+                {/* Enhanced title with gradient text */}
+                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 bg-clip-text text-transparent mb-4 leading-tight">
+                  مرحباً بك في إنشاء شجرة عائلة جديدة! 
+                  <span className="inline-block animate-bounce ml-2">🌳</span>
+                </CardTitle>
+                
+                {/* Decorative divider */}
+                <div className="flex justify-center mb-4">
+                  <div className="w-32 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full shadow-lg"></div>
+                </div>
+                
+                {/* Enhanced description */}
+                <CardDescription className="text-lg text-emerald-700 dark:text-emerald-300 font-medium">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="text-2xl animate-pulse">✨</span>
+                    ابدأ بإدخال معلومات عائلتك الأساسية
+                    <span className="text-2xl animate-pulse" style={{animationDelay: '0.5s'}}>🏡</span>
+                  </span>
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="space-y-8 px-8 pb-8 relative z-10">
+                <div className="space-y-6">
+                  {/* Family name input with enhanced styling */}
+                  <div className="space-y-3">
+                    <Label htmlFor="familyName" className="flex items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                      <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                        <Crown className="h-5 w-5 text-white" />
+                      </div>
+                      اسم العائلة
+                    </Label>
+                    <div className="relative">
+                      <Input 
+                        id="familyName" 
+                        placeholder="عائلة الأحمد"
+                        value={familyInfo.familyName}
+                        onChange={(e) => setFamilyInfo({...familyInfo, familyName: e.target.value})}
+                        className="h-14 text-lg border-2 border-emerald-200/50 focus:border-emerald-400 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-xl"
+                      />
+                      <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-md pointer-events-none"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Family description with enhanced styling */}
+                  <div className="space-y-3">
+                    <Label htmlFor="familyDescription" className="flex items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                      <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-white" />
+                      </div>
+                      وصف العائلة
+                    </Label>
+                    <div className="relative">
+                      <Textarea 
+                        id="familyDescription" 
+                        placeholder="نبذة مختصرة عن العائلة وتاريخها..."
+                        className="min-h-[120px] text-lg border-2 border-emerald-200/50 focus:border-emerald-400 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-xl resize-none"
+                        value={familyInfo.familyDescription}
+                        onChange={(e) => setFamilyInfo({...familyInfo, familyDescription: e.target.value})}
+                      />
+                      <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-r from-teal-500/5 to-cyan-500/5 rounded-md pointer-events-none"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Enhanced start button */}
+                <div className="pt-6">
+                  <Button 
+                    className="w-full h-16 text-xl font-bold bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 border-0 text-white shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    onClick={handleStartNewTree}
+                    disabled={!familyInfo.familyName}
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="animate-pulse">🚀</span>
+                      <span>بدء إنشاء شجرة العائلة</span>
+                      <TreePine className="h-6 w-6 animate-bounce" />
+                    </div>
+                  </Button>
+                </div>
+
+                {/* Progress indicator */}
+                <div className="flex justify-center pt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <div className="w-3 h-3 bg-emerald-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-3 h-3 bg-emerald-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                  </div>
+                </div>
               </CardContent>
+              
+              {/* Bottom decorative border */}
+              <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-60"></div>
             </Card>
           )}
 
