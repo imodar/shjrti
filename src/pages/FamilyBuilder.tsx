@@ -436,24 +436,56 @@ const FamilyBuilder = () => {
 
       {/* Tree Information Section */}
       {!isNewTree && familyInfo.familyName && (
-        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border-b">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <h2 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200">
-                  {familyInfo.familyName}
-                </h2>
+        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600/20 via-teal-500/20 to-blue-600/20 dark:from-emerald-800/30 dark:via-teal-700/30 dark:to-blue-800/30 backdrop-blur-xl border-b border-emerald-200/50 dark:border-emerald-700/50">
+          {/* Animated background particles */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-4 -left-4 w-24 h-24 bg-emerald-400/20 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-8 right-12 w-16 h-16 bg-teal-400/20 rounded-full blur-lg animate-bounce"></div>
+            <div className="absolute bottom-4 left-1/3 w-20 h-20 bg-blue-400/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          </div>
+          
+          <div className="container mx-auto px-6 py-6 relative z-10">
+            <div className="flex items-center gap-6">
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100 tracking-wide">
+                    {familyInfo.familyName}
+                  </h2>
+                </div>
                 {familyInfo.familyDescription && (
-                  <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1">
+                  <p className="text-emerald-700 dark:text-emerald-300 font-medium text-base leading-relaxed pl-15">
                     {familyInfo.familyDescription}
                   </p>
                 )}
               </div>
-              <div className="text-sm text-muted-foreground">
-                {familyMembers.length} عضو
+              
+              <div className="flex flex-col items-end gap-2">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border border-emerald-200/50 dark:border-emerald-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01 1l-2.99 4v7h8zm-11.5-4.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm0-2.5c-.28 0-.5.22-.5.5s.22.5.5.5.5-.22.5-.5-.22-.5-.5-.5z"/>
+                      </svg>
+                    </div>
+                    <span className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
+                      {familyMembers.length}
+                    </span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                      عضو
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          
+          {/* Bottom glow effect */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 opacity-60"></div>
         </div>
       )}
 
