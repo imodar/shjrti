@@ -523,34 +523,133 @@ export default function Payments() {
                   اختر الخطة التي تناسب احتياجاتك لحفظ تاريخ عائلتك
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {plans.map(plan => <Card key={plan.id} className={`relative transition-all hover:shadow-lg flex flex-col h-full ${currentPlan === plan.id ? 'ring-2 ring-emerald-500' : ''} ${plan.popular ? 'border-emerald-300' : ''}`}>
-                      {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <Badge className="bg-emerald-600 text-white">الأكثر شعبية</Badge>
-                        </div>}
-                      <CardHeader className="text-center flex-shrink-0">
-                        <div className={`w-12 h-12 ${plan.color} rounded-full flex items-center justify-center mx-auto mb-3`}>
-                          <plan.icon className="h-6 w-6 text-white" />
+              <CardContent className="relative overflow-hidden">
+                {/* Animated background elements */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-2xl animate-pulse"></div>
+                  <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                  {plans.map((plan, index) => 
+                    <Card 
+                      key={plan.id} 
+                      className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:scale-105 flex flex-col h-full transform hover:-translate-y-2 ${
+                        currentPlan === plan.id 
+                          ? 'ring-4 ring-emerald-500/50 shadow-2xl bg-gradient-to-br from-emerald-50/90 to-white dark:from-emerald-950/50 dark:to-gray-900' 
+                          : 'bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-900/90 dark:to-gray-800/90 hover:bg-gradient-to-br hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-950/30 dark:hover:to-teal-950/30'
+                      } ${
+                        plan.popular 
+                          ? 'border-2 border-emerald-400 shadow-lg shadow-emerald-500/25' 
+                          : 'border border-gray-200 dark:border-gray-700'
+                      }`}
+                      style={{animationDelay: `${index * 0.1}s`}}
+                    >
+                      {/* Floating decorative elements */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                        <div className="absolute top-4 right-4 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce"></div>
+                        <div className="absolute top-8 right-8 w-1 h-4 bg-teal-400/30 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        <div className="absolute bottom-8 left-4 w-3 h-3 bg-cyan-400/40 rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
+                      </div>
+
+                      {/* Popular badge with enhanced styling */}
+                      {plan.popular && (
+                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur-sm animate-pulse"></div>
+                            <Badge className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1 text-sm font-bold shadow-lg animate-bounce">
+                              <Star className="h-3 w-3 mr-1 animate-spin" style={{animationDuration: '3s'}} />
+                              الأكثر شعبية
+                            </Badge>
+                          </div>
                         </div>
-                        <CardTitle className="text-xl">{plan.name}</CardTitle>
-                        <div className="mt-4">
-                          <span className="text-3xl font-bold">{plan.price}</span>
-                          <span className="text-muted-foreground"> ريال/{plan.period}</span>
+                      )}
+                      
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                      
+                      <CardHeader className="text-center flex-shrink-0 relative z-10 pb-6">
+                        {/* Enhanced icon with multiple layers */}
+                        <div className="relative mx-auto mb-4">
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse"></div>
+                          <div className={`relative w-16 h-16 ${plan.color} rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500`}>
+                            <div className="absolute inset-2 bg-white/20 rounded-xl"></div>
+                            <plan.icon className="relative h-8 w-8 text-white z-10" />
+                          </div>
+                        </div>
+                        
+                        {/* Enhanced title */}
+                        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent group-hover:from-emerald-700 group-hover:to-teal-600 transition-all duration-500">
+                          {plan.name}
+                        </CardTitle>
+                        
+                        {/* Enhanced pricing */}
+                        <div className="mt-6 relative">
+                          <div className="flex items-center justify-center gap-1">
+                            <span className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                              {plan.price}
+                            </span>
+                            <div className="text-right">
+                              <span className="text-sm text-muted-foreground block">ريال</span>
+                              <span className="text-xs text-muted-foreground">{plan.period}</span>
+                            </div>
+                          </div>
+                          {plan.id === 'premium' && (
+                            <div className="absolute -top-2 -right-2">
+                              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
+                            </div>
+                          )}
                         </div>
                       </CardHeader>
-                      <CardContent className="flex flex-col flex-grow">
-                        <ul className="space-y-2 mb-6 flex-grow">
-                          {plan.features.map((feature, index) => <li key={index} className="flex items-center gap-2 text-sm">
-                              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                              {feature}
-                            </li>)}
+                      
+                      <CardContent className="flex flex-col flex-grow relative z-10 px-6">
+                        {/* Enhanced features list */}
+                        <ul className="space-y-3 mb-8 flex-grow">
+                          {plan.features.map((feature, featureIndex) => (
+                            <li 
+                              key={featureIndex} 
+                              className="flex items-start gap-3 text-sm group-hover:translate-x-1 transition-transform duration-300"
+                              style={{transitionDelay: `${featureIndex * 0.05}s`}}
+                            >
+                              <div className="flex-shrink-0 mt-1">
+                                <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-sm">
+                                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                                </div>
+                              </div>
+                              <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{feature}</span>
+                            </li>
+                          ))}
                         </ul>
-                        <Button className={`w-full mt-auto ${currentPlan === plan.id ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'}`} disabled={currentPlan === plan.id}>
-                          {currentPlan === plan.id ? 'الخطة الحالية' : 'اختيار الخطة'}
+                        
+                        {/* Enhanced button */}
+                        <Button 
+                          className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 transform group-hover:scale-105 ${
+                            currentPlan === plan.id 
+                              ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed text-white shadow-lg' 
+                              : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl hover:shadow-2xl'
+                          }`} 
+                          disabled={currentPlan === plan.id}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            {currentPlan === plan.id ? (
+                              <>
+                                <div className="w-2 h-2 bg-white/60 rounded-full"></div>
+                                <span>الخطة الحالية</span>
+                              </>
+                            ) : (
+                              <>
+                                <Zap className="h-5 w-5 animate-pulse" />
+                                <span>اختيار الخطة</span>
+                              </>
+                            )}
+                          </div>
                         </Button>
                       </CardContent>
-                    </Card>)}
+                      
+                      {/* Bottom glow effect */}
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </Card>
+                  )}
                 </div>
               </CardContent>
             </Card>
