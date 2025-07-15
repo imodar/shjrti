@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, TreePine, Plus, Edit, Trash2, TrendingUp, Calendar, Heart, Award, Target, Sparkles, User, CreditCard, FileText, LogOut, Settings } from "lucide-react";
+import { Users, TreePine, Plus, Edit, Trash2, TrendingUp, Calendar, Heart, Award, Target, Sparkles, User, CreditCard, FileText, LogOut, Settings, Share2, Copy, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import dashboardStatsImage from "@/assets/dashboard-stats.jpg";
@@ -35,6 +35,9 @@ export default function Dashboard() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [treeToShare, setTreeToShare] = useState<number | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
   const handleDeleteTree = (id: number) => {
     setTreeToDelete(id);
     setDeleteDialogOpen(true);
@@ -51,6 +54,25 @@ export default function Dashboard() {
     setDeleteDialogOpen(false);
     setTreeToDelete(null);
     setDeleteConfirmText("");
+  };
+
+  const handleShareTree = (id: number) => {
+    setTreeToShare(id);
+    setShareDialogOpen(true);
+    setLinkCopied(false);
+  };
+
+  const copyShareLink = () => {
+    const shareLink = `${window.location.origin}/tree/${treeToShare}?public=true`;
+    navigator.clipboard.writeText(shareLink);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  const closeShareDialog = () => {
+    setShareDialogOpen(false);
+    setTreeToShare(null);
+    setLinkCopied(false);
   };
   return <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950" dir="rtl">
       {/* Header */}
@@ -247,6 +269,9 @@ export default function Dashboard() {
                     {tree.name}
                   </CardTitle>
                   <div className="flex gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => handleShareTree(tree.id)} className="text-emerald-600 hover:text-emerald-700">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
                     <Button size="sm" variant="ghost">
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -374,6 +399,57 @@ export default function Dashboard() {
             </Button>
             <Button variant="destructive" onClick={confirmDeleteTree} disabled={deleteConfirmText !== "DELETE"}>
               حذف الشجرة نهائياً
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="sm:max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-emerald-600 text-center">مشاركة شجرة العائلة</DialogTitle>
+            <DialogDescription className="text-right">
+              شارك شجرة العائلة مع الآخرين بدون الحاجة لتسجيل الدخول
+              {treeToShare && (
+                <span className="block mt-2 font-medium">
+                  شجرة: {trees.find(t => t.id === treeToShare)?.name}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-right block">رابط المشاركة العام:</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={`${window.location.origin}/tree/${treeToShare}?public=true`}
+                  readOnly
+                  className="text-left"
+                  dir="ltr"
+                />
+                <Button
+                  onClick={copyShareLink}
+                  variant="outline"
+                  size="icon"
+                  className={linkCopied ? "text-green-600" : ""}
+                >
+                  {linkCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+              {linkCopied && (
+                <p className="text-xs text-green-600 text-right">تم نسخ الرابط بنجاح!</p>
+              )}
+            </div>
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg">
+              <p className="text-xs text-emerald-700 dark:text-emerald-300 text-right">
+                💡 سيتمكن أي شخص لديه هذا الرابط من عرض شجرة العائلة بدون تسجيل الدخول
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={closeShareDialog} className="w-full">
+              إغلاق
             </Button>
           </DialogFooter>
         </DialogContent>
