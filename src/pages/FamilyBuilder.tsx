@@ -1079,7 +1079,7 @@ const FamilyBuilder = () => {
                 onClick={handleContinueAdding}
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700"
               >
-                إضافة المزيد
+                إضافة
               </Button>
             </div>
           </DialogContent>
