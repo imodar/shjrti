@@ -495,10 +495,12 @@ const FamilyBuilder = () => {
               <div className="space-y-4">
                 {familyMembers.map((member, index) => (
                   <div key={member.id} className="relative flex items-center gap-4 p-4 border rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">
-                    {/* Deceased overlay */}
+                    {/* Deceased mourning ribbon */}
                     {!member.isAlive && (
-                      <div className="absolute top-0 right-0 w-full h-full rounded-lg overflow-hidden pointer-events-none">
-                        <div className="absolute top-0 right-0 w-16 h-16 bg-black/80 transform rotate-45 origin-top-right translate-x-8 -translate-y-8"></div>
+                      <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
+                        <div className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none">
+                          <div className="absolute top-0 right-0 w-full h-1 bg-black transform rotate-45 origin-top-right translate-y-8"></div>
+                        </div>
                       </div>
                     )}
                     
