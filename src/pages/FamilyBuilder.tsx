@@ -1025,29 +1025,59 @@ const FamilyBuilder = () => {
                                        <Trash2 className="h-4 w-4 text-red-500" />
                                      </Button>
                                    </AlertDialogTrigger>
-                                   <AlertDialogContent dir="rtl" className="text-right">
-                                     <AlertDialogHeader className="text-right">
-                                       <AlertDialogTitle className="text-right">تأكيد الحذف</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-right">
-                                          هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
-                                          <br />
-                                          <br />
-                                          <span className="font-semibold text-orange-600">ملاحظة:</span> إذا كان لديه أطفال تحته، فسيتم حذفه مع جميع أطفاله.
-                                          <br />
-                                          <br />
-                                          هذا الإجراء لا يمكن التراجع عنه.
+                                    <AlertDialogContent dir="rtl" className="text-right bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 border-red-200 dark:border-red-800">
+                                      <AlertDialogHeader className="text-right">
+                                        <div className="flex items-center justify-center mb-4">
+                                          <div className="rounded-full bg-red-100 dark:bg-red-900/30 p-3">
+                                            <Trash2 className="h-8 w-8 text-red-600 dark:text-red-400" />
+                                          </div>
+                                        </div>
+                                        <AlertDialogTitle className="text-right text-xl font-bold text-red-800 dark:text-red-200 text-center">
+                                          ⚠️ تأكيد الحذف
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription className="text-right bg-white/60 dark:bg-gray-800/60 rounded-lg p-4 mt-4 border border-red-200 dark:border-red-700">
+                                          <div className="space-y-3">
+                                            <p className="text-gray-800 dark:text-gray-200 font-medium">
+                                              هل أنت متأكد من حذف <span className="font-bold text-red-600 dark:text-red-400">"{member.name}"</span> من شجرة العائلة؟
+                                            </p>
+                                            
+                                            <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-lg p-3">
+                                              <div className="flex items-start gap-2">
+                                                <span className="text-orange-600 dark:text-orange-400 text-lg">⚡</span>
+                                                <div>
+                                                  <p className="font-semibold text-orange-800 dark:text-orange-300">ملاحظة مهمة:</p>
+                                                  <p className="text-orange-700 dark:text-orange-400 text-sm">
+                                                    إذا كان لديه أطفال تحته، فسيتم حذفه مع جميع أطفاله.
+                                                  </p>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            
+                                            <div className="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-3">
+                                              <div className="flex items-center gap-2">
+                                                <span className="text-red-600 dark:text-red-400 text-lg">🚫</span>
+                                                <p className="text-red-800 dark:text-red-300 font-medium text-sm">
+                                                  هذا الإجراء لا يمكن التراجع عنه نهائياً!
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </div>
                                         </AlertDialogDescription>
-                                     </AlertDialogHeader>
-                                     <AlertDialogFooter className="flex gap-2 flex-row-reverse">
-                                       <AlertDialogAction
-                                         onClick={() => handleDeleteMember(member.id)}
-                                         className="bg-red-600 hover:bg-red-700"
-                                       >
-                                         حذف
-                                       </AlertDialogAction>
-                                       <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                                     </AlertDialogFooter>
-                                   </AlertDialogContent>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter className="flex gap-3 flex-row-reverse mt-6">
+                                        <AlertDialogAction
+                                          onClick={() => handleDeleteMember(member.id)}
+                                          className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                                        >
+                                          <Trash2 className="h-4 w-4 ml-2" />
+                                          حذف نهائي
+                                        </AlertDialogAction>
+                                        <AlertDialogCancel className="bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-800 font-medium px-6 py-2 rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-200">
+                                          <X className="h-4 w-4 ml-2" />
+                                          إلغاء
+                                        </AlertDialogCancel>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
                                  </AlertDialog>
                                </div>
                              </div>
