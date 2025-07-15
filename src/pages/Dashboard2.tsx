@@ -300,27 +300,53 @@ const Dashboard2 = () => {
                     align="end" 
                     forceMount
                   >
-                    <DropdownMenuLabel className="font-normal p-4 border-b border-emerald-200/30 dark:border-emerald-700/30">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Bell className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                          <span className="text-lg font-bold text-emerald-800 dark:text-emerald-200">الإشعارات</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {unreadCount > 0 && (
-                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
-                              {unreadCount} جديد
-                            </Badge>
-                          )}
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={markAllAsRead}
-                            disabled={unreadCount === 0}
-                            className="text-xs text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200"
-                          >
-                            تحديد الكل مقروء
-                          </Button>
+                    <DropdownMenuLabel className="font-normal p-0 border-b border-emerald-200/30 dark:border-emerald-700/30 relative overflow-hidden">
+                      {/* Animated background gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950 dark:to-cyan-950 opacity-50"></div>
+                      
+                      {/* Floating decorative elements */}
+                      <div className="absolute top-0 left-0 w-20 h-20 bg-emerald-100 dark:bg-emerald-900 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                      <div className="absolute bottom-0 right-0 w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full blur-lg opacity-20 animate-pulse delay-700"></div>
+                      
+                      <div className="relative z-10 p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-emerald-500 rounded-full blur-sm opacity-30 animate-pulse"></div>
+                              <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300">
+                                <Bell className="h-5 w-5 text-white" />
+                              </div>
+                              {unreadCount > 0 && (
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-bounce"></div>
+                              )}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 dark:from-emerald-300 dark:to-teal-400 bg-clip-text text-transparent">
+                                الإشعارات
+                              </span>
+                              <span className="text-xs text-emerald-600/70 dark:text-emerald-400/70 font-medium">
+                                {unreadCount > 0 ? `${unreadCount} إشعار جديد` : 'لا توجد إشعارات جديدة'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            {unreadCount > 0 && (
+                              <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-pulse">
+                                <span className="font-bold">{unreadCount}</span>
+                                <span className="mr-1">جديد</span>
+                              </Badge>
+                            )}
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={markAllAsRead}
+                              disabled={unreadCount === 0}
+                              className="text-xs bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 text-emerald-700 dark:text-emerald-300 hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900 dark:hover:to-teal-900 border border-emerald-200/50 dark:border-emerald-700/50 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <span className="font-medium">تحديد الكل مقروء</span>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </DropdownMenuLabel>
