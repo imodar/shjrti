@@ -6,8 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Users, TreePine, Settings, Share, Plus, Edit, Trash2, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Users, TreePine, Settings, Share, Plus, Edit, Trash2, ArrowRight, ArrowLeft, Check, TrendingUp, Calendar, Heart, Award, Target, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import dashboardStatsImage from "@/assets/dashboard-stats.jpg";
+import familySuccessImage from "@/assets/family-success.jpg";
+import heritageTechImage from "@/assets/heritage-tech.jpg";
 
 // Mock data for family trees
 const mockTrees = [
@@ -120,12 +123,122 @@ export default function Dashboard() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Statistics Dashboard */}
+        <div className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* Total Trees */}
+            <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-0">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-emerald-100 text-sm font-medium">إجمالي الأشجار</p>
+                    <h3 className="text-3xl font-bold">{trees.length}</h3>
+                  </div>
+                  <TreePine className="h-8 w-8 text-emerald-200" />
+                </div>
+                <div className="flex items-center mt-4 text-emerald-100">
+                  <TrendingUp className="h-4 w-4 mr-1" />
+                  <span className="text-sm">نمو مستمر</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Total Members */}
+            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm font-medium">إجمالي الأفراد</p>
+                    <h3 className="text-3xl font-bold">
+                      {trees.reduce((total, tree) => total + tree.membersCount, 0)}
+                    </h3>
+                  </div>
+                  <Users className="h-8 w-8 text-blue-200" />
+                </div>
+                <div className="flex items-center mt-4 text-blue-100">
+                  <Heart className="h-4 w-4 mr-1" />
+                  <span className="text-sm">روابط عائلية قوية</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Generations */}
+            <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm font-medium">أكبر عدد أجيال</p>
+                    <h3 className="text-3xl font-bold">
+                      {trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}
+                    </h3>
+                  </div>
+                  <Award className="h-8 w-8 text-purple-200" />
+                </div>
+                <div className="flex items-center mt-4 text-purple-100">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span className="text-sm">تاريخ عريق</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Activity Score */}
+            <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-100 text-sm font-medium">نشاط التحديث</p>
+                    <h3 className="text-3xl font-bold">95%</h3>
+                  </div>
+                  <Target className="h-8 w-8 text-orange-200" />
+                </div>
+                <div className="flex items-center mt-4 text-orange-100">
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  <span className="text-sm">متميز جداً</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Motivational Banner */}
+          <Card className="mb-8 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 border-emerald-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <img 
+                    src={familySuccessImage} 
+                    alt="نجاح العائلة" 
+                    className="w-20 h-20 rounded-full object-cover border-4 border-emerald-200"
+                  />
+                  <div>
+                    <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
+                      🎉 أحسنت! تبني إرثاً عائلياً رائعاً
+                    </h3>
+                    <p className="text-emerald-600 dark:text-emerald-400">
+                      كل فرد تضيفه هو خطوة نحو حفظ تاريخ عائلتك للأجيال القادمة
+                    </p>
+                  </div>
+                </div>
+                <img 
+                  src={heritageTechImage} 
+                  alt="التراث والتكنولوجيا" 
+                  className="w-24 h-24 rounded-lg object-cover hidden md:block"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Create New Tree Section */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-emerald-800 dark:text-emerald-200">
-              أشجار العائلة ({trees.length})
-            </h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+                أشجار العائلة
+              </h2>
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+                {trees.length} شجرة
+              </Badge>
+            </div>
             <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
               <DialogTrigger asChild>
                 <Button className="bg-emerald-600 hover:bg-emerald-700">
@@ -293,7 +406,7 @@ export default function Dashboard() {
         {/* Family Trees Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trees.map((tree) => (
-            <Card key={tree.id} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 hover:shadow-lg transition-shadow">
+            <Card key={tree.id} className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-emerald-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 transform hover:-translate-y-1">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-emerald-800 dark:text-emerald-200">
@@ -318,28 +431,45 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">أفراد العائلة:</span>
-                    <span className="font-medium">{tree.membersCount}</span>
+                <div className="space-y-4">
+                  {/* Progress Bar */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>اكتمال الشجرة</span>
+                      <span>{Math.min(tree.membersCount * 10, 100)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min(tree.membersCount * 10, 100)}%` }}
+                      ></div>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">الأجيال:</span>
-                    <span className="font-medium">{tree.generations}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">آخر تحديث:</span>
-                    <span className="font-medium">{tree.lastUpdated}</span>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                      <div className="text-lg font-bold text-emerald-600">{tree.membersCount}</div>
+                      <div className="text-xs text-muted-foreground">أفراد</div>
+                    </div>
+                    <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="text-lg font-bold text-blue-600">{tree.generations}</div>
+                      <div className="text-xs text-muted-foreground">أجيال</div>
+                    </div>
                   </div>
                   
-                  <div className="flex gap-2 pt-3">
+                  <div className="text-center text-xs text-muted-foreground">
+                    آخر تحديث: {tree.lastUpdated}
+                  </div>
+                  
+                  <div className="flex gap-2 pt-4">
                     <Link to={`/family-builder?treeId=${tree.id}`} className="flex-1">
-                      <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700">
+                      <Button size="sm" className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 group-hover:shadow-lg transition-all">
                         <Users className="h-4 w-4 mr-1" />
                         إدارة الأفراد
                       </Button>
                     </Link>
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <Button size="sm" variant="outline" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                       <TreePine className="h-4 w-4 mr-1" />
                       عرض الشجرة
                     </Button>
@@ -352,21 +482,48 @@ export default function Dashboard() {
 
         {/* Empty State */}
         {trees.length === 0 && (
-          <div className="text-center py-12">
-            <TreePine className="h-16 w-16 text-emerald-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-emerald-800 dark:text-emerald-200 mb-2">
-              لا توجد أشجار عائلة بعد
+          <div className="text-center py-16">
+            <div className="relative mb-8">
+              <img 
+                src={dashboardStatsImage} 
+                alt="إحصائيات الشجرة" 
+                className="w-64 h-32 mx-auto rounded-xl object-cover shadow-lg"
+              />
+              <div className="absolute inset-0 bg-emerald-600/20 rounded-xl"></div>
+            </div>
+            <TreePine className="h-16 w-16 text-emerald-400 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 mb-3">
+              ابدأ رحلتك مع أشجار العائلة
             </h3>
-            <p className="text-muted-foreground mb-4">
-              ابدأ بإنشاء شجرة عائلتك الأولى لحفظ تاريخ وذكريات عائلتك
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              احفظ تاريخ عائلتك وذكرياتها الثمينة. ابدأ الآن وأنشئ إرثاً رقمياً للأجيال القادمة
             </p>
             <Button 
               onClick={() => setIsDialogOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-lg px-8 py-3 h-auto"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-5 w-5 mr-2" />
               إنشاء شجرة جديدة
             </Button>
+            
+            {/* Features highlights */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
+              <div className="text-center p-6 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
+                <Users className="h-12 w-12 text-emerald-600 mx-auto mb-3" />
+                <h4 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">إدارة سهلة</h4>
+                <p className="text-sm text-muted-foreground">إضافة وإدارة أفراد العائلة بطريقة بسيطة ومرنة</p>
+              </div>
+              <div className="text-center p-6 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
+                <TreePine className="h-12 w-12 text-emerald-600 mx-auto mb-3" />
+                <h4 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">تصور تفاعلي</h4>
+                <p className="text-sm text-muted-foreground">عرض شجرة العائلة بشكل بصري جميل وتفاعلي</p>
+              </div>
+              <div className="text-center p-6 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
+                <Heart className="h-12 w-12 text-emerald-600 mx-auto mb-3" />
+                <h4 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">حفظ الذكريات</h4>
+                <p className="text-sm text-muted-foreground">احتفظ بتاريخ وقصص عائلتك للأجيال القادمة</p>
+              </div>
+            </div>
           </div>
         )}
       </div>
