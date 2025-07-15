@@ -12,15 +12,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Mock data for existing family members
 const mockFamilyMembers = [
-  { id: 1, name: "أحمد محمد الأحمد", relation: "father", gender: "male", birthDate: "1950-03-15", profession: "مهندس", image: null },
-  { id: 2, name: "فاطمة سالم", relation: "mother", gender: "female", birthDate: "1955-08-20", profession: "معلمة", image: null },
-  { id: 3, name: "محمد أحمد", relation: "son", gender: "male", birthDate: "1975-12-10", profession: "طبيب", image: null },
-  { id: 4, name: "سارة علي", relation: "daughter", gender: "female", birthDate: "1978-05-22", profession: "محاسبة", image: null }
+  { id: 1, name: "أحمد محمد الأحمد", relation: "father", gender: "male", birthDate: "1950-03-15", isAlive: false, deathDate: "2020-12-01", image: null },
+  { id: 2, name: "فاطمة سالم", relation: "mother", gender: "female", birthDate: "1955-08-20", isAlive: true, deathDate: null, image: null },
+  { id: 3, name: "محمد أحمد", relation: "son", gender: "male", birthDate: "1975-12-10", isAlive: true, deathDate: null, image: null },
+  { id: 4, name: "سارة علي", relation: "daughter", gender: "female", birthDate: "1978-05-22", isAlive: true, deathDate: null, image: null }
 ];
 
 const relationshipOptions = [
@@ -47,8 +47,9 @@ const FamilyBuilder = () => {
     relatedPersonId: null as number | null,
     gender: "",
     birthDate: null as Date | null,
+    isAlive: true,
+    deathDate: null as Date | null,
     bio: "",
-    profession: "",
     image: null as File | null
   });
 
@@ -82,8 +83,10 @@ const FamilyBuilder = () => {
         gender: formData.gender,
         birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
         bio: formData.bio,
-        profession: formData.profession,
+        
         relatedPersonId: formData.relatedPersonId,
+        isAlive: formData.isAlive,
+        deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
         image: formData.image ? URL.createObjectURL(formData.image) : null
       };
       
@@ -96,8 +99,9 @@ const FamilyBuilder = () => {
                 relatedPersonId: null,
                 gender: "",
                 birthDate: null,
+                isAlive: true,
+                deathDate: null,
                 bio: "",
-                profession: "",
                 image: null
               });
       
@@ -212,15 +216,29 @@ const FamilyBuilder = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Basic Info */}
-              <div className="space-y-2">
-                <Label htmlFor="name">الاسم الكامل</Label>
-                <Input 
-                  id="name" 
-                  placeholder="أحمد محمد الأحمد"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                />
+              {/* Name and Gender on same line */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2 space-y-2">
+                  <Label htmlFor="name">الاسم الكامل</Label>
+                  <Input 
+                    id="name" 
+                    placeholder="أحمد محمد الأحمد"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>الجنس</Label>
+                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="الجنس" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">ذكر</SelectItem>
+                      <SelectItem value="female">أنثى</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Relationship and Related Person on same line */}
@@ -282,19 +300,8 @@ const FamilyBuilder = () => {
                 )}
               </div>
 
+              {/* Birth Date and Life Status */}
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>الجنس</Label>
-                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر الجنس" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">ذكر</SelectItem>
-                      <SelectItem value="female">أنثى</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="space-y-2">
                   <Label>تاريخ الميلاد</Label>
                   <Popover>
@@ -321,17 +328,51 @@ const FamilyBuilder = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
+                
+                <div className="space-y-2">
+                  <Label>حالة الشخص</Label>
+                  <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="حالة الشخص" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">على قيد الحياة</SelectItem>
+                      <SelectItem value="false">متوفى</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="profession">المهنة (اختياري)</Label>
-                <Input 
-                  id="profession" 
-                  placeholder="مهندس، طبيب، معلم..."
-                  value={formData.profession}
-                  onChange={(e) => setFormData({...formData, profession: e.target.value})}
-                />
-              </div>
+              {/* Death Date (if deceased) */}
+              {!formData.isAlive && (
+                <div className="space-y-2">
+                  <Label>تاريخ الوفاة (اختياري)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-right font-normal",
+                          !formData.deathDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="ml-2 h-4 w-4" />
+                        {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر تاريخ الوفاة"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={formData.deathDate}
+                        onSelect={(date) => setFormData({...formData, deathDate: date})}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              )}
+
 
               <div className="space-y-2">
                 <Label htmlFor="bio">نبذة شخصية (اختياري)</Label>
@@ -453,31 +494,55 @@ const FamilyBuilder = () => {
             <CardContent>
               <div className="space-y-4">
                 {familyMembers.map((member, index) => (
-                  <div key={member.id} className="flex items-center gap-4 p-4 border rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
+                  <div key={member.id} className="relative flex items-center gap-4 p-4 border rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">
+                    {/* Deceased overlay */}
+                    {!member.isAlive && (
+                      <div className="absolute inset-0 bg-black/10 rounded-lg pointer-events-none">
+                        <div className="absolute top-2 left-2 bottom-2 w-0.5 bg-black/80 transform rotate-45 origin-top-left"></div>
+                        <div className="absolute top-2 right-2 bottom-2 w-0.5 bg-black/80 transform -rotate-45 origin-top-right"></div>
+                      </div>
+                    )}
+                    
                     {/* Member Image/Icon */}
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 relative z-10">
                       {member.image ? (
                         <img 
                           src={member.image} 
                           alt={member.name}
-                          className="h-12 w-12 rounded-full object-cover border-2 border-emerald-200"
+                          className={cn(
+                            "h-16 w-16 rounded-full object-cover border-2 border-emerald-200",
+                            !member.isAlive && "grayscale"
+                          )}
                         />
                       ) : (
-                        <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center">
+                        <div className={cn(
+                          "h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center",
+                          !member.isAlive && "bg-gray-200 dark:bg-gray-700"
+                        )}>
                           {member.gender === 'female' ? (
-                            <UserRoundIcon className="h-8 w-8 text-pink-500" />
+                            <UserRoundIcon className="h-10 w-10 text-pink-500" />
                           ) : (
-                            <UserIcon className="h-8 w-8 text-blue-500" />
+                            <UserIcon className="h-10 w-10 text-blue-500" />
                           )}
                         </div>
                       )}
                     </div>
                     
                     {/* Member Info */}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-lg text-emerald-800 dark:text-emerald-200">
-                        {member.name}
-                      </h4>
+                    <div className="flex-1 min-w-0 relative z-10">
+                      <div className="flex items-center gap-2">
+                        <h4 className={cn(
+                          "font-medium text-lg text-emerald-800 dark:text-emerald-200",
+                          !member.isAlive && "text-gray-600 dark:text-gray-400"
+                        )}>
+                          {member.name}
+                        </h4>
+                        {!member.isAlive && (
+                          <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600">
+                            متوفى
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="secondary" className="text-xs">
                           {relationshipOptions.find(r => r.value === member.relation)?.label || member.relation}
@@ -490,21 +555,28 @@ const FamilyBuilder = () => {
                             • {member.birthDate}
                           </span>
                         )}
+                        {!member.isAlive && member.deathDate && (
+                          <span className="text-sm text-red-600">
+                            • وفاة: {member.deathDate}
+                          </span>
+                        )}
                       </div>
-                      {member.profession && (
-                        <p className="text-sm text-emerald-600 mt-1">
-                          {member.profession}
-                        </p>
-                      )}
                     </div>
                     
-                    {/* Tree Connection Lines */}
-                    <div className="text-emerald-400">
-                      {index === 0 ? (
-                        <TreePine className="h-5 w-5" />
-                      ) : (
-                        <div className="w-6 h-6 border-r-2 border-b-2 border-emerald-300 rounded-br-lg"></div>
-                      )}
+                    {/* Edit Button */}
+                    <div className="flex items-center gap-3 relative z-10">
+                      <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      
+                      {/* Tree Connection Lines */}
+                      <div className="text-emerald-400">
+                        {index === 0 ? (
+                          <TreePine className="h-5 w-5" />
+                        ) : (
+                          <div className="w-6 h-6 border-r-2 border-b-2 border-emerald-300 rounded-br-lg"></div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
