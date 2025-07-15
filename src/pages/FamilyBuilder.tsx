@@ -545,9 +545,6 @@ const FamilyBuilder = () => {
                         )}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="text-xs">
-                          {relationshipOptions.find(r => r.value === member.relation)?.label || member.relation}
-                        </Badge>
                         <span className="text-sm text-muted-foreground">
                           {member.gender === 'male' ? 'ذكر' : 'أنثى'}
                         </span>
