@@ -258,22 +258,22 @@ const Dashboard2 = () => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-emerald-200/50 dark:bg-emerald-700/50" />
-                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50">
-                      <User className="ml-3 h-4 w-4 text-emerald-600" />
+                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50 flex items-center justify-end">
                       <span className="text-emerald-800 dark:text-emerald-200">الملف الشخصي</span>
+                      <User className="ml-3 h-4 w-4 text-emerald-600" />
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50">
-                      <Settings className="ml-3 h-4 w-4 text-emerald-600" />
+                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50 flex items-center justify-end">
                       <span className="text-emerald-800 dark:text-emerald-200">الإعدادات</span>
+                      <Settings className="ml-3 h-4 w-4 text-emerald-600" />
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50">
-                      <Crown className="ml-3 h-4 w-4 text-yellow-500" />
+                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50 flex items-center justify-end">
                       <span className="text-emerald-800 dark:text-emerald-200">إدارة الاشتراك</span>
+                      <Crown className="ml-3 h-4 w-4 text-yellow-500" />
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-emerald-200/50 dark:bg-emerald-700/50" />
-                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/50">
-                      <LogOut className="ml-3 h-4 w-4 text-red-500" />
+                    <DropdownMenuItem className="p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/50 flex items-center justify-end">
                       <span className="text-red-600 dark:text-red-400">تسجيل الخروج</span>
+                      <LogOut className="ml-3 h-4 w-4 text-red-500" />
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
