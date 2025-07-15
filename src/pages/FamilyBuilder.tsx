@@ -340,7 +340,7 @@ const FamilyBuilder = () => {
                 <div className="space-y-2">
                   <Label className="text-right block">حالة الشخص</Label>
                   <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
-                    <SelectTrigger className="text-right">
+                    <SelectTrigger className="text-right [&>span]:text-right">
                       <SelectValue placeholder="حالة الشخص" className="text-right" />
                     </SelectTrigger>
                     <SelectContent className="text-right">
