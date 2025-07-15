@@ -588,9 +588,9 @@ const FamilyBuilder = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-right flex items-center justify-end gap-2">
-                      <Baby className="h-4 w-4 text-emerald-600" />
+                    <Label className="text-right flex items-center justify-end gap-2 w-full">
                       الجنس
+                      <Baby className="h-4 w-4 text-emerald-600" />
                     </Label>
                     <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
                       <SelectTrigger className="text-right">
