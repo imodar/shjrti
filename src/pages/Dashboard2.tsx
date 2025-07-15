@@ -238,24 +238,24 @@ const Dashboard2 = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="start" forceMount>
                     <DropdownMenuLabel className="font-normal p-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-12 h-12 ring-2 ring-emerald-500/50">
-                          <AvatarImage src="/placeholder.svg" />
-                          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
-                            أح
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-base font-semibold leading-none text-emerald-800 dark:text-emerald-200">أحمد محمد</p>
-                          <p className="text-sm leading-none text-emerald-600 dark:text-emerald-400">
-                            ahmed@example.com
-                          </p>
-                          <div className="flex items-center gap-1 mt-2">
-                            <Crown className="h-3 w-3 text-yellow-500" />
-                            <span className="text-xs text-yellow-600 dark:text-yellow-400">عضو مميز</span>
-                          </div>
-                        </div>
-                      </div>
+                       <div className="flex items-center gap-3">
+                         <div className="flex flex-col space-y-1 flex-1">
+                           <p className="text-base font-semibold leading-none text-emerald-800 dark:text-emerald-200">أحمد محمد</p>
+                           <p className="text-sm leading-none text-emerald-600 dark:text-emerald-400">
+                             ahmed@example.com
+                           </p>
+                           <div className="flex items-center gap-1 mt-2">
+                             <Crown className="h-3 w-3 text-yellow-500" />
+                             <span className="text-xs text-yellow-600 dark:text-yellow-400">عضو مميز</span>
+                           </div>
+                         </div>
+                         <Avatar className="w-12 h-12 ring-2 ring-emerald-500/50">
+                           <AvatarImage src="/placeholder.svg" />
+                           <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+                             أح
+                           </AvatarFallback>
+                         </Avatar>
+                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-emerald-200/50 dark:bg-emerald-700/50" />
                     <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50 flex items-center justify-end">
