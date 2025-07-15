@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Camera } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Camera, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Profile() {
@@ -205,22 +205,82 @@ export default function Profile() {
                 </div>
                 
                 {/* Account Settings */}
-                <div className="border-t pt-6">
-                  <h4 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-4">إعدادات الحساب</h4>
-                  <div className="space-y-4">
-                    <Link to="/change-password">
-                      <Button variant="outline" className="w-full justify-start">
-                        تغيير كلمة المرور
-                      </Button>
-                    </Link>
-                    <Link to="/payments">
-                      <Button variant="outline" className="w-full justify-start">
-                        إدارة طرق الدفع
-                      </Button>
-                    </Link>
-                    <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700">
-                      حذف الحساب
-                    </Button>
+                <div className="relative mt-8">
+                  {/* Decorative gradient border */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-200 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-800 rounded-xl p-[1px]">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl h-full w-full"></div>
+                  </div>
+                  
+                  <div className="relative bg-gradient-to-br from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl p-6 backdrop-blur-sm">
+                    {/* Icon and title with decorative elements */}
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg blur-sm opacity-30"></div>
+                        <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-lg">
+                          <Edit className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-xl bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent">
+                          إعدادات الحساب
+                        </h4>
+                        <p className="text-sm text-muted-foreground">إدارة حسابك وإعداداته المتقدمة</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Link to="/change-password" className="group">
+                        <div className="relative overflow-hidden rounded-xl border border-emerald-200/50 dark:border-emerald-800/50 bg-white/50 dark:bg-gray-800/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-200/50 dark:hover:shadow-emerald-800/30 hover:-translate-y-1">
+                          {/* Hover gradient effect */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/0 to-teal-100/0 group-hover:from-emerald-100/80 group-hover:to-teal-100/80 dark:group-hover:from-emerald-900/30 dark:group-hover:to-teal-900/30 transition-all duration-300"></div>
+                          <div className="relative flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 group-hover:scale-110 transition-transform duration-300">
+                              <Calendar className="h-4 w-4 text-white" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-gray-100">تغيير كلمة المرور</p>
+                              <p className="text-xs text-muted-foreground">تحديث كلمة المرور الخاصة بك</p>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                      
+                      <Link to="/payments" className="group">
+                        <div className="relative overflow-hidden rounded-xl border border-emerald-200/50 dark:border-emerald-800/50 bg-white/50 dark:bg-gray-800/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-200/50 dark:hover:shadow-emerald-800/30 hover:-translate-y-1">
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/0 to-teal-100/0 group-hover:from-emerald-100/80 group-hover:to-teal-100/80 dark:group-hover:from-emerald-900/30 dark:group-hover:to-teal-900/30 transition-all duration-300"></div>
+                          <div className="relative flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 group-hover:scale-110 transition-transform duration-300">
+                              <Mail className="h-4 w-4 text-white" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-gray-100">إدارة طرق الدفع</p>
+                              <p className="text-xs text-muted-foreground">إعداد وإدارة وسائل الدفع</p>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                    
+                    {/* Danger Zone */}
+                    <div className="mt-6 pt-6 border-t border-red-200/50 dark:border-red-800/50">
+                      <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 rounded-xl p-4 border border-red-200/50 dark:border-red-800/50">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="p-1.5 rounded-lg bg-gradient-to-br from-red-500 to-red-600">
+                            <X className="h-4 w-4 text-white" />
+                          </div>
+                          <h5 className="font-semibold text-red-700 dark:text-red-300">المنطقة الخطرة</h5>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300 transition-all duration-300"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Trash2 className="h-4 w-4" />
+                            <span>حذف الحساب نهائياً</span>
+                          </div>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
