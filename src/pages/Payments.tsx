@@ -158,7 +158,7 @@ export default function Payments() {
                           </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="credit-card" className="space-y-6">
+                        <TabsContent value="credit-card" className="space-y-8 p-6 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/20 dark:to-gray-900/50 rounded-xl border border-emerald-200 dark:border-emerald-800/30">
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="card-type">نوع البطاقة</Label>
