@@ -56,8 +56,10 @@ const FamilyBuilder = () => {
   const isNew = searchParams.get('new') === 'true';
   const [currentMode, setCurrentMode] = useState<'welcome' | 'add-member' | 'edit-member'>('welcome');
   const [familyMembers, setFamilyMembers] = useState(isNew ? [] : mockFamilyMembers);
+  const [draftMembers, setDraftMembers] = useState<any[]>([]);
   const [isNewTree, setIsNewTree] = useState(!treeId || isNew);
   const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [selectedDraft, setSelectedDraft] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddChildren, setShowAddChildren] = useState(false);
   const [formData, setFormData] = useState({
@@ -239,8 +241,90 @@ const FamilyBuilder = () => {
     }
   };
 
+  const handleSaveDraft = () => {
+    if (formData.name) {
+      if (selectedDraft) {
+        // Update existing draft
+        setDraftMembers(draftMembers.map(draft => 
+          draft.id === selectedDraft.id ? {
+            ...draft,
+            ...formData,
+            birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
+            deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
+            image: formData.image ? URL.createObjectURL(formData.image) : draft.image
+          } : draft
+        ));
+        setSelectedDraft(null);
+      } else {
+        // Add new draft
+        const newDraft = {
+          id: Date.now(),
+          ...formData,
+          birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
+          deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
+          image: formData.image ? URL.createObjectURL(formData.image) : null,
+          isDraft: true
+        };
+        setDraftMembers([...draftMembers, newDraft]);
+      }
+      
+      // Reset form and go back to default state
+      setFormData({
+        name: "",
+        relation: "",
+        relatedPersonId: null,
+        gender: "",
+        birthDate: null,
+        isAlive: true,
+        deathDate: null,
+        bio: "",
+        image: null
+      });
+      setCurrentMode(undefined);
+    }
+  };
+
+  const handleEditDraft = (draft: any) => {
+    setSelectedDraft(draft);
+    setCurrentMode('add-member');
+    setFormData({
+      name: draft.name,
+      relation: draft.relation,
+      relatedPersonId: draft.relatedPersonId,
+      gender: draft.gender,
+      birthDate: draft.birthDate ? new Date(draft.birthDate) : null,
+      isAlive: draft.isAlive,
+      deathDate: draft.deathDate ? new Date(draft.deathDate) : null,
+      bio: draft.bio || "",
+      image: null
+    });
+  };
+
+  const handleDeleteDraft = (draftId: number) => {
+    setDraftMembers(draftMembers.filter(draft => draft.id !== draftId));
+    if (selectedDraft?.id === draftId) {
+      setSelectedDraft(null);
+      setCurrentMode(undefined);
+      setFormData({
+        name: "",
+        relation: "",
+        relatedPersonId: null,
+        gender: "",
+        birthDate: null,
+        isAlive: true,
+        deathDate: null,
+        bio: "",
+        image: null
+      });
+    }
+  };
+
   const filteredMembers = familyMembers.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredDrafts = draftMembers.filter(draft =>
+    draft.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -620,7 +704,12 @@ const FamilyBuilder = () => {
                 {/* Action Buttons - Fixed at bottom */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-t p-4 z-20">
                   <div className="max-w-3xl mx-auto flex justify-between">
-                    <Button variant="outline" className="flex items-center">
+                    <Button 
+                      variant="outline" 
+                      className="flex items-center" 
+                      onClick={handleSaveDraft}
+                      disabled={!formData.name}
+                    >
                       حفظ المسودة
                       <Save className="mr-2 h-4 w-4" />
                     </Button>
@@ -646,13 +735,13 @@ const FamilyBuilder = () => {
         </div>
 
         {/* Right Column - Members List */}
-        {familyMembers.length > 0 && (
+        {(familyMembers.length > 0 || draftMembers.length > 0) && (
           <div className="w-96 flex-shrink-0">
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full flex flex-col">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-emerald-800 dark:text-emerald-200 text-lg">
-                    أفراد العائلة ({filteredMembers.length})
+                    أفراد العائلة ({filteredMembers.length + filteredDrafts.length})
                   </CardTitle>
                   <Button onClick={handleAddNewMember} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
                     <Plus className="h-4 w-4" />
@@ -680,139 +769,264 @@ const FamilyBuilder = () => {
                 </div>
               </CardHeader>
               <CardContent className="flex-1 overflow-auto p-0 space-y-3">
-                {filteredMembers.length === 0 ? (
+                {filteredMembers.length === 0 && filteredDrafts.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground px-6">
                     <Users className="mx-auto h-12 w-12 mb-4 opacity-50" />
                     <p>لا توجد نتائج للبحث عن "{searchTerm}"</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 px-4 pb-4">
-                    {filteredMembers.map((member) => (
-                      <div 
-                        key={member.id} 
-                        className={cn(
-                          "relative flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all duration-200",
-                          selectedMember?.id === member.id 
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 shadow-md" 
-                            : "bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 border-emerald-100"
-                        )}
-                        onClick={() => handleEditMember(member)}
-                      >
-                        {/* Deceased mourning ribbon */}
-                        {!member.isAlive && (
-                          <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
-                            <div className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none">
-                              <div className="absolute top-0 right-0 w-full h-1 bg-black transform rotate-45 origin-top-right translate-y-6"></div>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Member Image/Icon */}
-                        <div className="flex-shrink-0 relative z-10">
-                          {member.image ? (
-                            <img 
-                              src={member.image} 
-                              alt={member.name}
-                              className={cn(
-                                "h-12 w-12 rounded-full object-cover border-2 border-emerald-200",
-                                !member.isAlive && "grayscale"
-                              )}
-                            />
-                          ) : (
-                            <div className={cn(
-                              "h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center",
-                              !member.isAlive && "bg-gray-200 dark:bg-gray-700"
-                            )}>
-                              {member.gender === 'female' ? (
-                                <UserRoundIcon className="h-7 w-7 text-pink-500" />
-                              ) : (
-                                <UserIcon className="h-7 w-7 text-blue-500" />
-                              )}
-                            </div>
-                          )}
+                  <div className="space-y-4 px-4 pb-4">
+                    {/* Draft Members Section */}
+                    {filteredDrafts.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 px-2">
+                          <Save className="h-4 w-4 text-orange-500" />
+                          <h3 className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                            المسودات ({filteredDrafts.length})
+                          </h3>
                         </div>
-                        
-                        {/* Member Info */}
-                        <div className="flex-1 min-w-0 relative z-10">
-                          <div className="flex items-center gap-2">
-                            <h4 className={cn(
-                              "font-medium text-sm text-emerald-800 dark:text-emerald-200 truncate",
-                              !member.isAlive && "text-gray-600 dark:text-gray-400"
-                            )}>
-                              {member.name}
-                            </h4>
-                            {!member.isAlive && (
-                              <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600 px-1">
-                                متوفى
-                              </Badge>
+                        {filteredDrafts.map((draft) => (
+                          <div 
+                            key={`draft-${draft.id}`}
+                            className={cn(
+                              "relative flex items-center gap-3 p-3 border-2 border-dashed border-orange-200 rounded-lg cursor-pointer transition-all duration-200",
+                              selectedDraft?.id === draft.id 
+                                ? "bg-orange-50 dark:bg-orange-900/20 border-orange-300" 
+                                : "bg-orange-25 dark:bg-orange-900/10 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             )}
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <span className="text-xs text-muted-foreground">
-                              {member.gender === 'male' ? 'ذكر' : 'أنثى'}
-                            </span>
-                            {member.birthDate && (
-                              <span className="text-xs text-muted-foreground">
-                                • {new Date(member.birthDate).getFullYear()}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-2 flex-shrink-0 relative z-10">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-emerald-200"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditMember(member);
-                            }}
+                            onClick={() => handleEditDraft(draft)}
                           >
-                            <Edit className="h-4 w-4 text-emerald-600" />
-                          </Button>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
+                            {/* Draft Icon */}
+                            <div className="flex-shrink-0 relative z-10">
+                              {draft.image ? (
+                                <img 
+                                  src={draft.image} 
+                                  alt={draft.name}
+                                  className="h-12 w-12 rounded-full object-cover border-2 border-orange-200 opacity-75"
+                                />
+                              ) : (
+                                <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-800 flex items-center justify-center">
+                                  {draft.gender === 'female' ? (
+                                    <UserRoundIcon className="h-7 w-7 text-orange-500" />
+                                  ) : (
+                                    <UserIcon className="h-7 w-7 text-orange-500" />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Draft Info */}
+                            <div className="flex-1 min-w-0 relative z-10">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium text-sm text-orange-700 dark:text-orange-300 truncate">
+                                  {draft.name}
+                                </h4>
+                                <Badge variant="outline" className="text-xs bg-orange-100 text-orange-600 border-orange-300 px-1">
+                                  مسودة
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-1 mt-1">
+                                <span className="text-xs text-orange-600/70">
+                                  {draft.gender === 'male' ? 'ذكر' : 'أنثى'}
+                                </span>
+                                {draft.relation && (
+                                  <span className="text-xs text-orange-600/70">
+                                    • غير مكتمل
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Draft Action Buttons */}
+                            <div className="flex items-center gap-2 flex-shrink-0 relative z-10">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 hover:bg-red-200"
-                                onClick={(e) => e.stopPropagation()}
+                                className="h-8 w-8 p-0 hover:bg-orange-200"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditDraft(draft);
+                                }}
                               >
-                                <Trash2 className="h-4 w-4 text-red-500" />
+                                <Edit className="h-4 w-4 text-orange-600" />
                               </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent dir="rtl" className="text-right">
-                              <AlertDialogHeader className="text-right">
-                                <AlertDialogTitle className="text-right">تأكيد الحذف</AlertDialogTitle>
-                                <AlertDialogDescription className="text-right">
-                                  هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
-                                  <br />
-                                  هذا الإجراء لا يمكن التراجع عنه.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter className="flex gap-2 flex-row-reverse">
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteMember(member.id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  حذف
-                                </AlertDialogAction>
-                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
+                              
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 hover:bg-red-200"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent dir="rtl" className="text-right">
+                                  <AlertDialogHeader className="text-right">
+                                    <AlertDialogTitle className="text-right">حذف المسودة</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-right">
+                                      هل أنت متأكد من حذف مسودة "{draft.name}"؟
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter className="flex gap-2 flex-row-reverse">
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteDraft(draft.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      حذف
+                                    </AlertDialogAction>
+                                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                    )}
+
+                    {/* Completed Members Section */}
+                    {filteredMembers.length > 0 && (
+                      <div className="space-y-2">
+                        {filteredDrafts.length > 0 && (
+                          <div className="flex items-center gap-2 px-2">
+                            <Users className="h-4 w-4 text-emerald-500" />
+                            <h3 className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                              الأعضاء المكتملين ({filteredMembers.length})
+                            </h3>
+                          </div>
+                        )}
+                         <div className="space-y-2">
+                           {filteredMembers.map((member) => (
+                             <div 
+                               key={member.id} 
+                               className={cn(
+                                 "relative flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all duration-200",
+                                 selectedMember?.id === member.id 
+                                   ? "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 shadow-md" 
+                                   : "bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 border-emerald-100"
+                               )}
+                               onClick={() => handleEditMember(member)}
+                             >
+                               {/* Deceased mourning ribbon */}
+                               {!member.isAlive && (
+                                 <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
+                                   <div className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none">
+                                     <div className="absolute top-0 right-0 w-full h-1 bg-black transform rotate-45 origin-top-right translate-y-6"></div>
+                                   </div>
+                                 </div>
+                               )}
+                               
+                               {/* Member Image/Icon */}
+                               <div className="flex-shrink-0 relative z-10">
+                                 {member.image ? (
+                                   <img 
+                                     src={member.image} 
+                                     alt={member.name}
+                                     className={cn(
+                                       "h-12 w-12 rounded-full object-cover border-2 border-emerald-200",
+                                       !member.isAlive && "grayscale"
+                                     )}
+                                   />
+                                 ) : (
+                                   <div className={cn(
+                                     "h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center",
+                                     !member.isAlive && "bg-gray-200 dark:bg-gray-700"
+                                   )}>
+                                     {member.gender === 'female' ? (
+                                       <UserRoundIcon className="h-7 w-7 text-pink-500" />
+                                     ) : (
+                                       <UserIcon className="h-7 w-7 text-blue-500" />
+                                     )}
+                                   </div>
+                                 )}
+                               </div>
+                               
+                               {/* Member Info */}
+                               <div className="flex-1 min-w-0 relative z-10">
+                                 <div className="flex items-center gap-2">
+                                   <h4 className={cn(
+                                     "font-medium text-sm text-emerald-800 dark:text-emerald-200 truncate",
+                                     !member.isAlive && "text-gray-600 dark:text-gray-400"
+                                   )}>
+                                     {member.name}
+                                   </h4>
+                                   {!member.isAlive && (
+                                     <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600 px-1">
+                                       متوفى
+                                     </Badge>
+                                   )}
+                                 </div>
+                                 <div className="flex items-center gap-1 mt-1">
+                                   <span className="text-xs text-muted-foreground">
+                                     {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+                                   </span>
+                                   {member.birthDate && (
+                                     <span className="text-xs text-muted-foreground">
+                                       • {new Date(member.birthDate).getFullYear()}
+                                     </span>
+                                   )}
+                                 </div>
+                               </div>
+                               
+                               {/* Action Buttons */}
+                               <div className="flex items-center gap-2 flex-shrink-0 relative z-10">
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   className="h-8 w-8 p-0 hover:bg-emerald-200"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     handleEditMember(member);
+                                   }}
+                                 >
+                                   <Edit className="h-4 w-4 text-emerald-600" />
+                                 </Button>
+                                 
+                                 <AlertDialog>
+                                   <AlertDialogTrigger asChild>
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-8 w-8 p-0 hover:bg-red-200"
+                                       onClick={(e) => e.stopPropagation()}
+                                     >
+                                       <Trash2 className="h-4 w-4 text-red-500" />
+                                     </Button>
+                                   </AlertDialogTrigger>
+                                   <AlertDialogContent dir="rtl" className="text-right">
+                                     <AlertDialogHeader className="text-right">
+                                       <AlertDialogTitle className="text-right">تأكيد الحذف</AlertDialogTitle>
+                                       <AlertDialogDescription className="text-right">
+                                         هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
+                                         <br />
+                                         هذا الإجراء لا يمكن التراجع عنه.
+                                       </AlertDialogDescription>
+                                     </AlertDialogHeader>
+                                     <AlertDialogFooter className="flex gap-2 flex-row-reverse">
+                                       <AlertDialogAction
+                                         onClick={() => handleDeleteMember(member.id)}
+                                         className="bg-red-600 hover:bg-red-700"
+                                       >
+                                         حذف
+                                       </AlertDialogAction>
+                                       <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                     </AlertDialogFooter>
+                                   </AlertDialogContent>
+                                 </AlertDialog>
+                               </div>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 )}
+               </CardContent>
+             </Card>
+           </div>
+         )}
 
         {/* Add Children Dialog */}
         <Dialog open={showAddChildren} onOpenChange={setShowAddChildren}>
