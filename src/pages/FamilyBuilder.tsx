@@ -596,7 +596,7 @@ const FamilyBuilder = () => {
           )}
 
           {/* Default State - Add Member Prompt or Edit Mode Message */}
-          {!currentMode && !isNewTree && familyMembers.length > 0 && (
+          {!currentMode && !isNewTree && (familyMembers.length > 0 || isEditMode) && (
             <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 h-full flex items-center justify-center">
               <CardContent className="text-center space-y-6 py-16">
                 {isEditMode ? (
