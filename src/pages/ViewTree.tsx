@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Users, Bell, Settings, User, LogOut, ArrowLeft, Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Download, Share2, Users2 } from "lucide-react";
+import { Users, Bell, Settings, User, LogOut, ArrowLeft, Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Download, Share2, Users2, Printer, Palette, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
 
@@ -63,6 +63,10 @@ const ViewTree = () => {
   const [showDetails, setShowDetails] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -264,50 +268,139 @@ const ViewTree = () => {
                 إعدادات العرض
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="relative">
+              {/* Background gradient effects */}
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/30 via-teal-50/20 to-cyan-50/30 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/30 rounded-lg"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-200/20 to-transparent rounded-full blur-2xl"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-teal-200/20 to-transparent rounded-full blur-xl"></div>
+              
+              <div className="relative z-10">
+                {/* Main Controls Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                {/* Zoom Control */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-800 dark:text-gray-200">
-                    مستوى التكبير: {zoomLevel[0]}%
-                  </h4>
-                  <div className="space-y-2">
-                    <Slider
-                      value={zoomLevel}
-                      onValueChange={setZoomLevel}
-                      max={200}
-                      min={50}
-                      step={10}
-                      className="w-full"
-                    />
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setZoomLevel([Math.max(50, zoomLevel[0] - 10)])}>
-                        <ZoomOut className="h-3 w-3" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setZoomLevel([100])}>
-                        <RotateCcw className="h-3 w-3" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setZoomLevel([Math.min(200, zoomLevel[0] + 10)])}>
-                        <ZoomIn className="h-3 w-3" />
+                  {/* Zoom Control Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                        <ZoomIn className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-800 dark:text-gray-200 text-lg">
+                          التكبير والتصغير
+                        </h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          مستوى التكبير: {zoomLevel[0]}%
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-blue-200/30 dark:border-blue-700/30 shadow-lg">
+                      <Slider
+                        value={zoomLevel}
+                        onValueChange={setZoomLevel}
+                        max={200}
+                        min={50}
+                        step={10}
+                        className="w-full mb-4"
+                      />
+                      <div className="flex gap-2 justify-center">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setZoomLevel([Math.max(50, zoomLevel[0] - 10)])}
+                          className="bg-white/80 hover:bg-white border-blue-200 hover:border-blue-300 transition-all duration-300"
+                        >
+                          <ZoomOut className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setZoomLevel([100])}
+                          className="bg-white/80 hover:bg-white border-blue-200 hover:border-blue-300 transition-all duration-300"
+                        >
+                          <RotateCcw className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setZoomLevel([Math.min(200, zoomLevel[0] + 10)])}
+                          className="bg-white/80 hover:bg-white border-blue-200 hover:border-blue-300 transition-all duration-300"
+                        >
+                          <ZoomIn className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Display Options Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
+                        <Palette className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-800 dark:text-gray-200 text-lg">
+                          خيارات العرض
+                        </h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          تخصيص طريقة العرض
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-purple-200/30 dark:border-purple-700/30 shadow-lg space-y-3">
+                      <Button
+                        variant={showDetails ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setShowDetails(!showDetails)}
+                        className={`w-full transition-all duration-300 ${
+                          showDetails 
+                            ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg' 
+                            : 'bg-white/80 hover:bg-white border-purple-200 hover:border-purple-300'
+                        }`}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        {showDetails ? 'إخفاء التفاصيل' : 'إظهار التفاصيل'}
                       </Button>
                     </div>
                   </div>
-                </div>
 
-                {/* Display Options */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-800 dark:text-gray-200">خيارات العرض</h4>
-                  <div className="space-y-2">
-                    <Button
-                      variant={showDetails ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setShowDetails(!showDetails)}
-                      className="w-full"
-                    >
-                      {showDetails ? 'إخفاء التفاصيل' : 'إظهار التفاصيل'}
-                    </Button>
+                  {/* Action Buttons Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+                        <Sparkles className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-800 dark:text-gray-200 text-lg">
+                          الإجراءات
+                        </h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          مشاركة وطباعة
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-emerald-200/30 dark:border-emerald-700/30 shadow-lg space-y-3">
+                      <Button
+                        onClick={handleShare}
+                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                      >
+                        <Share2 className="h-4 w-4 mr-2" />
+                        مشاركة الشجرة
+                      </Button>
+                      
+                      <Button
+                        onClick={handlePrint}
+                        variant="outline"
+                        className="w-full bg-white/80 hover:bg-white border-emerald-200 hover:border-emerald-300 text-emerald-700 hover:text-emerald-800 transition-all duration-300 transform hover:scale-[1.02]"
+                      >
+                        <Printer className="h-4 w-4 mr-2" />
+                        طباعة الشجرة
+                      </Button>
+                    </div>
                   </div>
+
                 </div>
               </div>
             </CardContent>
