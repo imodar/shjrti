@@ -519,7 +519,7 @@ const FamilyBuilder = () => {
         {/* Left Column - Form */}
         <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
           {/* Welcome Screen for New Tree */}
-          {currentMode === 'welcome' && isNewTree && (
+          {currentMode === 'welcome' && isNewTree && !isEditMode && (
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-200">
