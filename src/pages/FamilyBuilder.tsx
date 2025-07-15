@@ -53,9 +53,10 @@ const getRelationshipOptions = (gender: string) => {
 const FamilyBuilder = () => {
   const [searchParams] = useSearchParams();
   const treeId = searchParams.get('treeId');
+  const isNew = searchParams.get('new') === 'true';
   const [currentMode, setCurrentMode] = useState<'welcome' | 'add-member' | 'edit-member'>('welcome');
-  const [familyMembers, setFamilyMembers] = useState(mockFamilyMembers);
-  const [isNewTree, setIsNewTree] = useState(!treeId);
+  const [familyMembers, setFamilyMembers] = useState(isNew ? [] : mockFamilyMembers);
+  const [isNewTree, setIsNewTree] = useState(!treeId || isNew);
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddChildren, setShowAddChildren] = useState(false);
@@ -249,6 +250,29 @@ const FamilyBuilder = () => {
           </div>
         </div>
       </div>
+
+      {/* Tree Information Section */}
+      {!isNewTree && familyInfo.familyName && (
+        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border-b">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                  {familyInfo.familyName}
+                </h2>
+                {familyInfo.familyDescription && (
+                  <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1">
+                    {familyInfo.familyDescription}
+                  </p>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {familyMembers.length} عضو
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex h-[calc(100vh-120px)] gap-6 px-4 py-6 max-w-7xl mx-auto">
         {/* Left Column - Form */}
