@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Home2 from "./pages/Home2";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Dashboard2 from "./pages/Dashboard2";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/home2" element={<Home2 />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard2" element={<Dashboard2 />} />
           <Route path="/family-builder" element={<FamilyBuilder />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/payments" element={<Payments />} />
