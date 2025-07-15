@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Users, TreePine, Plus, Edit, Trash2, TrendingUp, Calendar, Heart, Award, Target, Sparkles, User, CreditCard, FileText, LogOut, Settings } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
@@ -33,9 +36,28 @@ const mockTrees = [
 
 export default function Dashboard() {
   const [trees, setTrees] = useState(mockTrees);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const handleDeleteTree = (id: number) => {
-    setTrees(trees.filter(tree => tree.id !== id));
+    setTreeToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteTree = () => {
+    if (treeToDelete && deleteConfirmText === "DELETE") {
+      setTrees(trees.filter(tree => tree.id !== treeToDelete));
+      setDeleteDialogOpen(false);
+      setTreeToDelete(null);
+      setDeleteConfirmText("");
+    }
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setTreeToDelete(null);
+    setDeleteConfirmText("");
   };
 
   return (
@@ -356,6 +378,49 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">تأكيد حذف الشجرة</DialogTitle>
+            <DialogDescription className="text-right">
+              هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الشجرة وجميع بياناتها نهائياً.
+              {treeToDelete && (
+                <span className="block mt-2 font-medium">
+                  شجرة: {trees.find(t => t.id === treeToDelete)?.name}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="delete-confirm" className="text-right block">
+                للتأكيد، اكتب <span className="font-bold text-red-600">DELETE</span> في المربع أدناه:
+              </Label>
+              <Input
+                id="delete-confirm"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="اكتب DELETE هنا"
+                className="text-center"
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={closeDeleteDialog}>
+              إلغاء
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={confirmDeleteTree}
+              disabled={deleteConfirmText !== "DELETE"}
+            >
+              حذف الشجرة نهائياً
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
