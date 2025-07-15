@@ -66,6 +66,7 @@ const FamilyBuilder = () => {
   const [searchParams] = useSearchParams();
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
+  const isEditMode = searchParams.get('edit') === 'true';
   const [currentMode, setCurrentMode] = useState<'welcome' | 'add-member' | 'edit-member'>('welcome');
   const [familyMembers, setFamilyMembers] = useState(isNew ? [] : mockFamilyMembers);
   const [draftMembers, setDraftMembers] = useState<any[]>([]);
@@ -591,26 +592,40 @@ const FamilyBuilder = () => {
             </Card>
           )}
 
-          {/* Default State - Add Member Prompt */}
+          {/* Default State - Add Member Prompt or Edit Mode Message */}
           {!currentMode && !isNewTree && familyMembers.length > 0 && (
             <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 h-full flex items-center justify-center">
               <CardContent className="text-center space-y-6 py-16">
-                <div className="space-y-4">
-                  <Users className="mx-auto h-20 w-20 text-emerald-500" />
-                  <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
-                    انقر هنا لإضافة عضو جديد
-                  </h2>
-                  <p className="text-emerald-600 dark:text-emerald-400 max-w-md mx-auto">
-                    اختر عضواً من القائمة لتعديل بياناته، أو أضف عضواً جديداً لشجرة العائلة
-                  </p>
-                </div>
-                <Button 
-                  onClick={handleAddNewMember}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-lg px-6 py-3 h-auto"
-                >
-                  <Plus className="ml-2 h-5 w-5" />
-                  إضافة عضو جديد
-                </Button>
+                {isEditMode ? (
+                  <div className="space-y-4">
+                    <Edit className="mx-auto h-20 w-20 text-emerald-500" />
+                    <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+                      الرجاء اختيار احد افراد الأسرة لتعديل بياناته
+                    </h2>
+                    <p className="text-emerald-600 dark:text-emerald-400 max-w-md mx-auto">
+                      انقر على أي عضو من القائمة الجانبية لبدء تعديل بياناته
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      <Users className="mx-auto h-20 w-20 text-emerald-500" />
+                      <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+                        انقر هنا لإضافة عضو جديد
+                      </h2>
+                      <p className="text-emerald-600 dark:text-emerald-400 max-w-md mx-auto">
+                        اختر عضواً من القائمة لتعديل بياناته، أو أضف عضواً جديداً لشجرة العائلة
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={handleAddNewMember}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-lg px-6 py-3 h-auto"
+                    >
+                      <Plus className="ml-2 h-5 w-5" />
+                      إضافة عضو جديد
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           )}
