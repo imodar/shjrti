@@ -13,7 +13,10 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Footer from "@/components/Footer";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 export default function Payments() {
+  const { toast } = useToast();
   const [paymentMethods, setPaymentMethods] = useState([{
     id: 1,
     type: "visa",
@@ -35,6 +38,8 @@ export default function Payments() {
   const [currentPlan, setCurrentPlan] = useState("premium");
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
   const plans = [{
     id: "free",
     name: "مجانية",
@@ -76,12 +81,48 @@ export default function Payments() {
   };
 
   const confirmPlanChange = () => {
-    if (selectedPlan) {
+    if (!selectedPlan) return;
+    
+    // If it's a downgrade, just change the plan
+    if (isDowngrade) {
       setCurrentPlan(selectedPlan);
       setShowPlanModal(false);
       setSelectedPlan(null);
-      // Here you would integrate with Stripe
+      return;
     }
+    
+    // For upgrades, check if user has payment methods
+    if (paymentMethods.length > 0) {
+      // Show payment method selection modal
+      setShowPlanModal(false);
+      setShowPaymentModal(true);
+    } else {
+      // No payment methods, proceed with payment and show success message
+      processPayment();
+    }
+  };
+
+  const processPayment = () => {
+    // Simulate payment processing
+    setTimeout(() => {
+      setCurrentPlan(selectedPlan!);
+      setShowPlanModal(false);
+      setShowPaymentModal(false);
+      setSelectedPlan(null);
+      setSelectedPaymentMethod(null);
+      
+      // Show success toast
+      toast({
+        title: "🎉 مبروك! تمت عملية الترقية",
+        description: `تم ترقية اشتراكك إلى ${selectedPlanData?.name} بنجاح. استمتع بالميزات الجديدة!`,
+        duration: 5000,
+      });
+    }, 1500);
+  };
+
+  const handlePaymentMethodSelect = (methodId: number) => {
+    setSelectedPaymentMethod(methodId);
+    processPayment();
   };
 
   const isDowngrade = selectedPlan ? getPlanIndex(selectedPlan) < getPlanIndex(currentPlan) : false;
@@ -696,6 +737,79 @@ export default function Payments() {
           </div>
         </div>
 
+        {/* Payment Method Selection Modal */}
+        <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
+            <DialogHeader className="text-center space-y-4">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl">
+                <CreditCard className="h-8 w-8 text-white" />
+              </div>
+              
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
+                اختر طريقة الدفع
+              </DialogTitle>
+              
+              <DialogDescription className="text-center text-lg">
+                اختر طريقة الدفع لترقية اشتراكك إلى خطة {selectedPlanData?.name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-6">
+              {paymentMethods.map((method) => (
+                <div 
+                  key={method.id}
+                  onClick={() => handlePaymentMethodSelect(method.id)}
+                  className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 hover:border-emerald-300 hover:shadow-lg ${
+                    selectedPaymentMethod === method.id 
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' 
+                      : 'border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    {method.type === "paypal" ? (
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white text-lg flex items-center justify-center font-bold shadow-lg">
+                        P
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
+                        <CreditCard className="h-6 w-6 text-emerald-600 dark:text-emerald-300" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      {method.type === "paypal" ? (
+                        <>
+                          <p className="font-semibold text-lg">PayPal</p>
+                          <p className="text-sm text-muted-foreground">{method.email}</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-semibold text-lg">•••• •••• •••• {method.last4}</p>
+                          <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
+                        </>
+                      )}
+                    </div>
+                    {method.isDefault && (
+                      <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
+                        افتراضي
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowPaymentModal(false)}
+                className="flex-1 h-12"
+              >
+                إلغاء
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Plan Change Confirmation Modal */}
         <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
           <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
@@ -790,6 +904,7 @@ export default function Payments() {
       </div>
       
       <Footer />
+      <Toaster />
       </div>
     </div>
   );
