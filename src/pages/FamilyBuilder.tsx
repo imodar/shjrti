@@ -23,17 +23,31 @@ const mockFamilyMembers = [
   { id: 4, name: "سارة علي", relation: "daughter", gender: "female", birthDate: "1978-05-22", isAlive: true, deathDate: null, image: null }
 ];
 
-const relationshipOptions = [
-  { value: "founder", label: "الفرد الذي ستبدأ منه العائلة" },
-  { value: "father", label: "أب" },
-  { value: "mother", label: "أم" },
-  { value: "husband", label: "زوج" },
-  { value: "wife", label: "زوجة" },
-  { value: "brother", label: "أخ" },
-  { value: "sister", label: "أخت" },
-  { value: "son", label: "ابن" },
-  { value: "daughter", label: "ابنة" }
-];
+const getRelationshipOptions = (gender: string) => {
+  const commonOptions = [
+    { value: "founder", label: "الفرد الذي ستبدأ منه العائلة" }
+  ];
+  
+  if (gender === "male") {
+    return [
+      ...commonOptions,
+      { value: "father", label: "أب" },
+      { value: "husband", label: "زوج" },
+      { value: "brother", label: "أخ" },
+      { value: "son", label: "ابن" }
+    ];
+  } else if (gender === "female") {
+    return [
+      ...commonOptions,
+      { value: "mother", label: "أم" },
+      { value: "wife", label: "زوجة" },
+      { value: "sister", label: "أخت" },
+      { value: "daughter", label: "ابنة" }
+    ];
+  }
+  
+  return commonOptions;
+};
 
 const FamilyBuilder = () => {
   const [searchParams] = useSearchParams();
@@ -223,7 +237,7 @@ const FamilyBuilder = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>الجنس</Label>
-                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
                     <SelectTrigger>
                       <SelectValue placeholder="الجنس" />
                     </SelectTrigger>
@@ -244,7 +258,7 @@ const FamilyBuilder = () => {
                       <SelectValue placeholder="اختر صلة القرابة" />
                     </SelectTrigger>
                     <SelectContent>
-                      {relationshipOptions.map((relation) => (
+                      {getRelationshipOptions(formData.gender).map((relation) => (
                         <SelectItem key={relation.value} value={relation.value}>
                           {relation.label}
                         </SelectItem>
