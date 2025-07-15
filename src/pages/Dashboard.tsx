@@ -55,20 +55,17 @@ export default function Dashboard() {
     setTreeToDelete(null);
     setDeleteConfirmText("");
   };
-
   const handleShareTree = (id: number) => {
     setTreeToShare(id);
     setShareDialogOpen(true);
     setLinkCopied(false);
   };
-
   const copyShareLink = () => {
     const shareLink = `${window.location.origin}/tree/${treeToShare}?public=true`;
     navigator.clipboard.writeText(shareLink);
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);
   };
-
   const closeShareDialog = () => {
     setShareDialogOpen(false);
     setTreeToShare(null);
@@ -408,38 +405,24 @@ export default function Dashboard() {
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="text-emerald-600 text-center">مشاركة شجرة العائلة</DialogTitle>
+            <DialogTitle className="text-emerald-600 text-center py-[20px]">مشاركة شجرة العائلة</DialogTitle>
             <DialogDescription className="text-right">
               شارك شجرة العائلة مع الآخرين بدون الحاجة لتسجيل الدخول
-              {treeToShare && (
-                <span className="block mt-2 font-medium">
+              {treeToShare && <span className="block mt-2 font-medium">
                   شجرة: {trees.find(t => t.id === treeToShare)?.name}
-                </span>
-              )}
+                </span>}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label className="text-right block">رابط المشاركة العام:</Label>
               <div className="flex gap-2">
-                <Input
-                  value={`${window.location.origin}/tree/${treeToShare}?public=true`}
-                  readOnly
-                  className="text-left"
-                  dir="ltr"
-                />
-                <Button
-                  onClick={copyShareLink}
-                  variant="outline"
-                  size="icon"
-                  className={linkCopied ? "text-green-600" : ""}
-                >
+                <Input value={`${window.location.origin}/tree/${treeToShare}?public=true`} readOnly className="text-left" dir="ltr" />
+                <Button onClick={copyShareLink} variant="outline" size="icon" className={linkCopied ? "text-green-600" : ""}>
                   {linkCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
-              {linkCopied && (
-                <p className="text-xs text-green-600 text-right">تم نسخ الرابط بنجاح!</p>
-              )}
+              {linkCopied && <p className="text-xs text-green-600 text-right">تم نسخ الرابط بنجاح!</p>}
             </div>
             <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg">
               <p className="text-xs text-emerald-700 dark:text-emerald-300 text-right">
