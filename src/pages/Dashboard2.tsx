@@ -149,8 +149,8 @@ const Dashboard2 = () => {
   return <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
         animationDelay: '2s'
       }}></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl animate-pulse" style={{
@@ -163,9 +163,9 @@ const Dashboard2 = () => {
         <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-gradient-to-r from-emerald-200/30 to-cyan-200/30 sticky top-0 z-50">
           {/* Floating geometric shapes */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-2 right-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
-            <div className="absolute top-6 right-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-4 right-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute top-2 left-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
+            <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
           </div>
 
           <div className="container mx-auto px-6 py-6">
@@ -209,7 +209,7 @@ const Dashboard2 = () => {
                 <div className="relative">
                   <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
                     <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs flex items-center justify-center text-white font-bold shadow-lg animate-bounce">
+                    <span className="absolute -top-1 -left-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs flex items-center justify-center text-white font-bold shadow-lg animate-bounce">
                       3
                     </span>
                   </Button>
@@ -227,16 +227,16 @@ const Dashboard2 = () => {
                               أح
                             </AvatarFallback>
                           </Avatar>
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                          <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
-                        <div className="hidden lg:block text-right">
+                        <div className="hidden lg:block text-left">
                           <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">أحمد محمد</p>
                           <p className="text-xs text-emerald-600 dark:text-emerald-400">الباقة المميزة</p>
                         </div>
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="end" forceMount>
+                  <DropdownMenuContent className="w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="start" forceMount>
                     <DropdownMenuLabel className="font-normal p-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="w-12 h-12 ring-2 ring-emerald-500/50">
@@ -259,20 +259,20 @@ const Dashboard2 = () => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-emerald-200/50 dark:bg-emerald-700/50" />
                     <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50">
-                      <User className="mr-3 h-4 w-4 text-emerald-600" />
+                      <User className="ml-3 h-4 w-4 text-emerald-600" />
                       <span className="text-emerald-800 dark:text-emerald-200">الملف الشخصي</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50">
-                      <Settings className="mr-3 h-4 w-4 text-emerald-600" />
+                      <Settings className="ml-3 h-4 w-4 text-emerald-600" />
                       <span className="text-emerald-800 dark:text-emerald-200">الإعدادات</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="p-3 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/50">
-                      <Crown className="mr-3 h-4 w-4 text-yellow-500" />
+                      <Crown className="ml-3 h-4 w-4 text-yellow-500" />
                       <span className="text-emerald-800 dark:text-emerald-200">إدارة الاشتراك</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-emerald-200/50 dark:bg-emerald-700/50" />
                     <DropdownMenuItem className="p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/50">
-                      <LogOut className="mr-3 h-4 w-4 text-red-500" />
+                      <LogOut className="ml-3 h-4 w-4 text-red-500" />
                       <span className="text-red-600 dark:text-red-400">تسجيل الخروج</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -406,7 +406,7 @@ const Dashboard2 = () => {
                     </div>
                   </div>
                   <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowUpgradeDialog(true)}>
-                    <Crown className="ml-2 h-4 w-4" />
+                    <Crown className="mr-2 h-4 w-4" />
                     ترقية الباقة
                   </Button>
                 </div>
@@ -421,7 +421,7 @@ const Dashboard2 = () => {
                 <p className="text-muted-foreground">أدر وتابع جميع أشجار عائلتك</p>
               </div>
               <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" size="lg">
-                <Plus className="ml-2 h-5 w-5" />
+                <Plus className="mr-2 h-5 w-5" />
                 إنشاء شجرة جديدة
               </Button>
             </div>
@@ -436,7 +436,7 @@ const Dashboard2 = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                       
                       {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-4 left-4">
                         <Badge variant={tree.isPublic ? "default" : "secondary"} className="shadow-lg">
                           {tree.isPublic ? "عام" : "خاص"}
                         </Badge>
@@ -466,19 +466,19 @@ const Dashboard2 = () => {
                           </div>
                         </div>
 
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="flex-1 group-hover:border-primary/50 transition-colors">
-                            <Share2 className="ml-1 h-4 w-4" />
-                            مشاركة
-                          </Button>
-                          <Button variant="outline" size="sm" className="flex-1 group-hover:border-primary/50 transition-colors">
-                            <Edit className="ml-1 h-4 w-4" />
-                            تحرير
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="group-hover:border-destructive/50 group-hover:text-destructive transition-colors">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                         <div className="flex gap-2">
+                           <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="flex-1 group-hover:border-primary/50 transition-colors">
+                             <Share2 className="mr-1 h-4 w-4" />
+                             مشاركة
+                           </Button>
+                           <Button variant="outline" size="sm" className="flex-1 group-hover:border-primary/50 transition-colors">
+                             <Edit className="mr-1 h-4 w-4" />
+                             تحرير
+                           </Button>
+                           <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="group-hover:border-destructive/50 group-hover:text-destructive transition-colors">
+                             <Trash2 className="h-4 w-4" />
+                           </Button>
+                         </div>
                       </div>
                     </CardContent>
                   </Card>)}
@@ -492,7 +492,7 @@ const Dashboard2 = () => {
                     ابدأ رحلتك في بناء تاريخ عائلتك عبر إنشاء أول شجرة عائلية
                   </p>
                   <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg" size="lg">
-                    <Plus className="ml-2 h-5 w-5" />
+                    <Plus className="mr-2 h-5 w-5" />
                     إنشاء أول شجرة
                   </Button>
                 </CardContent>
@@ -553,7 +553,7 @@ const Dashboard2 = () => {
               إلغاء
             </Button>
             <Button className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
-              <Crown className="ml-2 h-4 w-4" />
+              <Crown className="mr-2 h-4 w-4" />
               ترقية الآن
             </Button>
           </DialogFooter>
