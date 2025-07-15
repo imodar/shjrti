@@ -677,39 +677,128 @@ const FamilyBuilder = () => {
 
           {/* Default State - Add Member Prompt or Edit Mode Message */}
           {!currentMode && !isNewTree && (familyMembers.length > 0 || isEditMode) && (
-            <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 h-full flex items-center justify-center">
-              <CardContent className="text-center space-y-6 py-16">
+            <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/90 to-cyan-50/90 dark:from-emerald-950/90 dark:via-teal-950/90 dark:to-cyan-950/90 backdrop-blur-xl border-2 border-gradient-to-r from-emerald-200/50 to-teal-200/50 h-full flex items-center justify-center shadow-2xl">
+              {/* Animated background patterns */}
+              <div className="absolute inset-0 opacity-30">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-2xl animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-1/3 left-1/4 w-20 h-20 bg-gradient-to-r from-cyan-400/15 to-emerald-400/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+              </div>
+
+              {/* Floating geometric shapes */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-8 right-16 w-4 h-4 bg-emerald-400/30 rounded-full animate-bounce"></div>
+                <div className="absolute top-12 right-32 w-3 h-3 bg-teal-400/40 rotate-45 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute top-16 left-20 w-2 h-6 bg-cyan-400/35 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute bottom-20 right-20 w-5 h-2 bg-emerald-500/25 rounded-full animate-pulse" style={{animationDelay: '2.5s'}}></div>
+                <div className="absolute bottom-32 left-16 w-3 h-3 bg-teal-500/30 rounded-full animate-bounce" style={{animationDelay: '3s'}}></div>
+              </div>
+
+              {/* Decorative edit illustration */}
+              <div className="absolute top-4 left-4 opacity-10 dark:opacity-5">
+                <svg width="120" height="120" viewBox="0 0 120 120" className="text-emerald-600">
+                  <path d="M20 80 L30 70 L50 90 L20 100 Z" fill="currentColor" opacity="0.4"/>
+                  <path d="M30 70 L80 20 L90 30 L40 80 Z" fill="currentColor" opacity="0.5"/>
+                  <circle cx="85" cy="25" r="8" fill="currentColor" opacity="0.3"/>
+                </svg>
+              </div>
+
+              <CardContent className="text-center space-y-8 py-16 relative z-10">
                 {isEditMode ? (
-                  <div className="space-y-4">
-                    <Edit className="mx-auto h-20 w-20 text-emerald-500" />
-                    <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+                  <div className="space-y-6">
+                    {/* Animated edit icon */}
+                    <div className="mx-auto w-24 h-24 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl flex items-center justify-center shadow-xl transform hover:scale-110 transition-all duration-500 animate-pulse">
+                      <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <Edit className="h-12 w-12 text-white animate-bounce" style={{animationDuration: '2s'}} />
+                      </div>
+                    </div>
+                    
+                    {/* Enhanced title with gradient text */}
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 bg-clip-text text-transparent leading-tight">
                       الرجاء اختيار احد افراد الأسرة لتعديل بياناته
+                      <span className="inline-block animate-bounce ml-2">✏️</span>
                     </h2>
-                    <p className="text-emerald-600 dark:text-emerald-400 max-w-md mx-auto">
-                      انقر على أي عضو من القائمة الجانبية لبدء تعديل بياناته
+                    
+                    {/* Decorative divider */}
+                    <div className="flex justify-center">
+                      <div className="w-32 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full shadow-lg"></div>
+                    </div>
+                    
+                    {/* Enhanced description */}
+                    <p className="text-lg text-emerald-700 dark:text-emerald-300 font-medium max-w-md mx-auto">
+                      <span className="inline-flex items-center gap-2 flex-wrap justify-center">
+                        <span className="text-2xl animate-pulse">👈</span>
+                        انقر على أي عضو من القائمة الجانبية لبدء تعديل بياناته
+                        <span className="text-2xl animate-pulse" style={{animationDelay: '0.5s'}}>👥</span>
+                      </span>
                     </p>
+
+                    {/* Progress indicator */}
+                    <div className="flex justify-center pt-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-emerald-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-3 h-3 bg-emerald-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-4">
-                      <Users className="mx-auto h-20 w-20 text-emerald-500" />
-                      <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+                    <div className="space-y-6">
+                      {/* Animated users icon */}
+                      <div className="mx-auto w-24 h-24 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl flex items-center justify-center shadow-xl transform hover:scale-110 transition-all duration-500 animate-pulse">
+                        <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                          <Users className="h-12 w-12 text-white animate-bounce" style={{animationDuration: '2s'}} />
+                        </div>
+                      </div>
+                      
+                      {/* Enhanced title with gradient text */}
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 bg-clip-text text-transparent leading-tight">
                         انقر هنا لإضافة عضو جديد
+                        <span className="inline-block animate-bounce ml-2">➕</span>
                       </h2>
-                      <p className="text-emerald-600 dark:text-emerald-400 max-w-md mx-auto">
-                        اختر عضواً من القائمة لتعديل بياناته، أو أضف عضواً جديداً لشجرة العائلة
+                      
+                      {/* Decorative divider */}
+                      <div className="flex justify-center">
+                        <div className="w-32 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full shadow-lg"></div>
+                      </div>
+                      
+                      {/* Enhanced description */}
+                      <p className="text-lg text-emerald-700 dark:text-emerald-300 font-medium max-w-md mx-auto">
+                        <span className="inline-flex items-center gap-2 flex-wrap justify-center">
+                          <span className="text-2xl animate-pulse">✨</span>
+                          اختر عضواً من القائمة لتعديل بياناته، أو أضف عضواً جديداً لشجرة العائلة
+                          <span className="text-2xl animate-pulse" style={{animationDelay: '0.5s'}}>🏡</span>
+                        </span>
                       </p>
                     </div>
+                    
+                    {/* Enhanced add button */}
                     <Button 
                       onClick={handleAddNewMember}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-lg px-6 py-3 h-auto"
+                      className="h-16 text-xl font-bold bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 border-0 text-white shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 px-8"
                     >
-                      <Plus className="ml-2 h-5 w-5" />
-                      إضافة عضو جديد
+                      <div className="flex items-center justify-center gap-3">
+                        <span className="animate-pulse">🚀</span>
+                        <Plus className="h-6 w-6 animate-bounce" />
+                        <span>إضافة عضو جديد</span>
+                      </div>
                     </Button>
+
+                    {/* Progress indicator */}
+                    <div className="flex justify-center pt-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-emerald-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-3 h-3 bg-emerald-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                    </div>
                   </>
                 )}
               </CardContent>
+              
+              {/* Bottom decorative border */}
+              <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-60"></div>
             </Card>
           )}
 
