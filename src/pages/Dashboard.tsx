@@ -13,38 +13,32 @@ import familySuccessImage from "@/assets/family-success.jpg";
 import heritageTechImage from "@/assets/heritage-tech.jpg";
 
 // Mock data for family trees
-const mockTrees = [
-  {
-    id: 1,
-    name: "عائلة الأحمد",
-    description: "شجرة عائلة الأحمد الكريمة",
-    membersCount: 12,
-    generations: 4,
-    createdDate: "2024-01-15",
-    lastUpdated: "2024-07-10"
-  },
-  {
-    id: 2,
-    name: "عائلة السعد",
-    description: "تاريخ وأصول عائلة السعد",
-    membersCount: 8,
-    generations: 3,
-    createdDate: "2024-03-20",
-    lastUpdated: "2024-06-25"
-  }
-];
-
+const mockTrees = [{
+  id: 1,
+  name: "عائلة الأحمد",
+  description: "شجرة عائلة الأحمد الكريمة",
+  membersCount: 12,
+  generations: 4,
+  createdDate: "2024-01-15",
+  lastUpdated: "2024-07-10"
+}, {
+  id: 2,
+  name: "عائلة السعد",
+  description: "تاريخ وأصول عائلة السعد",
+  membersCount: 8,
+  generations: 3,
+  createdDate: "2024-03-20",
+  lastUpdated: "2024-06-25"
+}];
 export default function Dashboard() {
   const [trees, setTrees] = useState(mockTrees);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
-
   const handleDeleteTree = (id: number) => {
     setTreeToDelete(id);
     setDeleteDialogOpen(true);
   };
-
   const confirmDeleteTree = () => {
     if (treeToDelete && deleteConfirmText === "DELETE") {
       setTrees(trees.filter(tree => tree.id !== treeToDelete));
@@ -53,15 +47,12 @@ export default function Dashboard() {
       setDeleteConfirmText("");
     }
   };
-
   const closeDeleteDialog = () => {
     setDeleteDialogOpen(false);
     setTreeToDelete(null);
     setDeleteConfirmText("");
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950" dir="rtl">
+  return <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950" dir="rtl">
       {/* Header */}
       <div className="border-b bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
@@ -211,11 +202,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6">
-                  <img 
-                    src={familySuccessImage} 
-                    alt="نجاح العائلة" 
-                    className="w-20 h-20 rounded-full object-cover border-4 border-emerald-200"
-                  />
+                  <img src={familySuccessImage} alt="نجاح العائلة" className="w-20 h-20 rounded-full object-cover border-4 border-emerald-200" />
                   <div>
                     <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
                       🎉 أحسنت! تبني إرثاً عائلياً رائعاً
@@ -225,11 +212,7 @@ export default function Dashboard() {
                     </p>
                   </div>
                 </div>
-                <img 
-                  src={heritageTechImage} 
-                  alt="التراث والتكنولوجيا" 
-                  className="w-24 h-24 rounded-lg object-cover hidden md:block"
-                />
+                <img src={heritageTechImage} alt="التراث والتكنولوجيا" className="w-24 h-24 rounded-lg object-cover hidden md:block" />
               </div>
             </CardContent>
           </Card>
@@ -257,8 +240,7 @@ export default function Dashboard() {
 
         {/* Family Trees Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trees.map((tree) => (
-            <Card key={tree.id} className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-emerald-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 transform hover:-translate-y-1">
+          {trees.map(tree => <Card key={tree.id} className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-emerald-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 transform hover:-translate-y-1">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-emerald-800 dark:text-emerald-200">
@@ -268,12 +250,7 @@ export default function Dashboard() {
                     <Button size="sm" variant="ghost">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => handleDeleteTree(tree.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => handleDeleteTree(tree.id)} className="text-red-600 hover:text-red-700">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -291,10 +268,9 @@ export default function Dashboard() {
                       <span>{Math.min(tree.membersCount * 10, 100)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min(tree.membersCount * 10, 100)}%` }}
-                      ></div>
+                      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500" style={{
+                    width: `${Math.min(tree.membersCount * 10, 100)}%`
+                  }}></div>
                     </div>
                   </div>
 
@@ -328,19 +304,13 @@ export default function Dashboard() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         {/* Empty State */}
-        {trees.length === 0 && (
-          <div className="text-center py-16">
+        {trees.length === 0 && <div className="text-center py-16">
             <div className="relative mb-8">
-              <img 
-                src={dashboardStatsImage} 
-                alt="إحصائيات الشجرة" 
-                className="w-64 h-32 mx-auto rounded-xl object-cover shadow-lg"
-              />
+              <img src={dashboardStatsImage} alt="إحصائيات الشجرة" className="w-64 h-32 mx-auto rounded-xl object-cover shadow-lg" />
               <div className="absolute inset-0 bg-emerald-600/20 rounded-xl"></div>
             </div>
             <TreePine className="h-16 w-16 text-emerald-400 mx-auto mb-4" />
@@ -375,22 +345,19 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">احتفظ بتاريخ وقصص عائلتك للأجيال القادمة</p>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="text-red-600">تأكيد حذف الشجرة</DialogTitle>
+            <DialogTitle className="text-red-600 text-center">تأكيد حذف الشجرة</DialogTitle>
             <DialogDescription className="text-right">
               هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الشجرة وجميع بياناتها نهائياً.
-              {treeToDelete && (
-                <span className="block mt-2 font-medium">
+              {treeToDelete && <span className="block mt-2 font-medium">
                   شجرة: {trees.find(t => t.id === treeToDelete)?.name}
-                </span>
-              )}
+                </span>}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -398,29 +365,18 @@ export default function Dashboard() {
               <Label htmlFor="delete-confirm" className="text-right block">
                 للتأكيد، اكتب <span className="font-bold text-red-600">DELETE</span> في المربع أدناه:
               </Label>
-              <Input
-                id="delete-confirm"
-                value={deleteConfirmText}
-                onChange={(e) => setDeleteConfirmText(e.target.value)}
-                placeholder="اكتب DELETE هنا"
-                className="text-center"
-              />
+              <Input id="delete-confirm" value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder="اكتب DELETE هنا" className="text-center" />
             </div>
           </div>
           <DialogFooter className="flex gap-2">
             <Button variant="outline" onClick={closeDeleteDialog}>
               إلغاء
             </Button>
-            <Button 
-              variant="destructive" 
-              onClick={confirmDeleteTree}
-              disabled={deleteConfirmText !== "DELETE"}
-            >
+            <Button variant="destructive" onClick={confirmDeleteTree} disabled={deleteConfirmText !== "DELETE"}>
               حذف الشجرة نهائياً
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 }
