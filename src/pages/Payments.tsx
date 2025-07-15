@@ -40,7 +40,7 @@ export default function Payments() {
     color: "bg-gray-500"
   }, {
     id: "premium",
-    name: "بريميوم",
+    name: "احترافية",
     price: "29",
     period: "شهرياً",
     features: ["أشجار عائلة غير محدودة", "أفراد غير محدودين", "التصدير المتقدم", "رفع الصور والمستندات", "الدعم المباشر"],
