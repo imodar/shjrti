@@ -487,13 +487,43 @@ const FamilyBuilder = () => {
         {familyMembers.length > 0 && (
           <Card className="mt-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200">
             <CardHeader>
-              <CardTitle className="text-emerald-800 dark:text-emerald-200">
-                أفراد العائلة ({familyMembers.length})
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-emerald-800 dark:text-emerald-200">
+                  أفراد العائلة ({filteredMembers.length} من {familyMembers.length})
+                </CardTitle>
+                <div className="flex items-center gap-4">
+                  {/* Search */}
+                  <div className="relative min-w-64">
+                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      placeholder="البحث في أفراد العائلة..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pr-10"
+                    />
+                    {searchTerm && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute left-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                        onClick={() => setSearchTerm("")}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {familyMembers.map((member, index) => (
+              {filteredMembers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Users className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                  <p>لا توجد نتائج للبحث عن "{searchTerm}"</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredMembers.map((member, index) => (
                   <div key={member.id} className="relative flex items-center gap-4 p-4 border rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">
                     {/* Deceased mourning ribbon */}
                     {!member.isAlive && (
@@ -572,9 +602,10 @@ const FamilyBuilder = () => {
                         <TreePine className="h-5 w-5" />
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
