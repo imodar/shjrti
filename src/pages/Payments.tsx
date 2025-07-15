@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 export default function Payments() {
   const [paymentMethods, setPaymentMethods] = useState([{
@@ -131,36 +134,170 @@ export default function Payments() {
                         إضافة
                       </Button>
                     </DialogTrigger>
-                    <DialogContent dir="rtl">
+                    <DialogContent className="sm:max-w-[600px] z-50 bg-white dark:bg-gray-900" dir="rtl">
                       <DialogHeader>
-                        <DialogTitle>إضافة طريقة دفع جديدة</DialogTitle>
-                        <DialogDescription>
-                          أضف بطاقة ائتمانية أو طريقة دفع جديدة
+                        <DialogTitle className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">إضافة طريقة دفع جديدة</DialogTitle>
+                        <DialogDescription className="text-lg">
+                          اختر طريقة الدفع المناسبة لك وأضف تفاصيلها
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="card-number">رقم البطاقة</Label>
-                          <Input id="card-number" placeholder="1234 5678 9012 3456" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="expiry">تاريخ الانتهاء</Label>
-                            <Input id="expiry" placeholder="MM/YY" />
+                      
+                      <Tabs defaultValue="credit-card" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 mb-6">
+                          <TabsTrigger value="credit-card" className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            بطاقة ائتمانية
+                          </TabsTrigger>
+                          <TabsTrigger value="paypal" className="flex items-center gap-2">
+                            <Wallet className="h-4 w-4" />
+                            PayPal
+                          </TabsTrigger>
+                          <TabsTrigger value="bank" className="flex items-center gap-2">
+                            <Shield className="h-4 w-4" />
+                            تحويل بنكي
+                          </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="credit-card" className="space-y-6">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="card-type">نوع البطاقة</Label>
+                              <Select>
+                                <SelectTrigger className="bg-white dark:bg-gray-800">
+                                  <SelectValue placeholder="اختر نوع البطاقة" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white dark:bg-gray-800 z-50">
+                                  <SelectItem value="visa">Visa</SelectItem>
+                                  <SelectItem value="mastercard">Mastercard</SelectItem>
+                                  <SelectItem value="amex">American Express</SelectItem>
+                                  <SelectItem value="discover">Discover</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="card-number">رقم البطاقة</Label>
+                              <Input id="card-number" placeholder="1234 5678 9012 3456" className="bg-white dark:bg-gray-800" />
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="cvc">CVC</Label>
-                            <Input id="cvc" placeholder="123" />
+                          
+                          <div className="grid grid-cols-3 gap-4">
+                            <div>
+                              <Label htmlFor="expiry-month">الشهر</Label>
+                              <Select>
+                                <SelectTrigger className="bg-white dark:bg-gray-800">
+                                  <SelectValue placeholder="MM" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white dark:bg-gray-800 z-50">
+                                  {Array.from({ length: 12 }, (_, i) => (
+                                    <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                      {String(i + 1).padStart(2, '0')}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="expiry-year">السنة</Label>
+                              <Select>
+                                <SelectTrigger className="bg-white dark:bg-gray-800">
+                                  <SelectValue placeholder="YYYY" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white dark:bg-gray-800 z-50">
+                                  {Array.from({ length: 10 }, (_, i) => (
+                                    <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
+                                      {new Date().getFullYear() + i}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="cvc">CVC</Label>
+                              <Input id="cvc" placeholder="123" maxLength={4} className="bg-white dark:bg-gray-800" />
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="name">اسم حامل البطاقة</Label>
-                          <Input id="name" placeholder="الاسم كما يظهر على البطاقة" />
-                        </div>
-                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
-                          إضافة البطاقة
-                        </Button>
-                      </div>
+                          
+                          <div>
+                            <Label htmlFor="cardholder-name">اسم حامل البطاقة</Label>
+                            <Input id="cardholder-name" placeholder="الاسم كما يظهر على البطاقة" className="bg-white dark:bg-gray-800" />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 space-x-reverse">
+                            <Checkbox id="make-default-card" />
+                            <Label htmlFor="make-default-card" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              جعل هذه البطاقة الافتراضية
+                            </Label>
+                          </div>
+                          
+                          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                            <CreditCard className="h-4 w-4 ml-2" />
+                            إضافة البطاقة
+                          </Button>
+                        </TabsContent>
+
+                        <TabsContent value="paypal" className="space-y-6">
+                          <div className="text-center py-8">
+                            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Wallet className="h-10 w-10 text-blue-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold mb-4">ربط حساب PayPal</h3>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="paypal-email">البريد الإلكتروني لـ PayPal</Label>
+                            <Input id="paypal-email" type="email" placeholder="example@paypal.com" className="bg-white dark:bg-gray-800" />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 space-x-reverse">
+                            <Checkbox id="make-default-paypal" />
+                            <Label htmlFor="make-default-paypal" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              جعل PayPal طريقة الدفع الافتراضية
+                            </Label>
+                          </div>
+                          
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                            <Wallet className="h-4 w-4 ml-2" />
+                            ربط حساب PayPal
+                          </Button>
+                        </TabsContent>
+
+                        <TabsContent value="bank" className="space-y-6">
+                          <div className="text-center py-8">
+                            <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Shield className="h-10 w-10 text-emerald-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold mb-4">معلومات التحويل البنكي</h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="bank-name">اسم البنك</Label>
+                              <Input id="bank-name" placeholder="البنك الأهلي السعودي" className="bg-white dark:bg-gray-800" />
+                            </div>
+                            <div>
+                              <Label htmlFor="account-holder">اسم صاحب الحساب</Label>
+                              <Input id="account-holder" placeholder="أحمد محمد" className="bg-white dark:bg-gray-800" />
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="account-number">رقم الحساب / IBAN</Label>
+                            <Input id="account-number" placeholder="SA03 8000 0000 6080 1016 7519" className="bg-white dark:bg-gray-800" />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 space-x-reverse">
+                            <Checkbox id="make-default-bank" />
+                            <Label htmlFor="make-default-bank" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              جعل هذا الحساب البنكي الافتراضي
+                            </Label>
+                          </div>
+                          
+                          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                            <Shield className="h-4 w-4 ml-2" />
+                            إضافة الحساب البنكي
+                          </Button>
+                        </TabsContent>
+                      </Tabs>
                     </DialogContent>
                   </Dialog>
                 </div>
