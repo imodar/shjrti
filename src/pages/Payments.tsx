@@ -302,23 +302,28 @@ export default function Payments() {
                   </Dialog>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="p-6">
                 {paymentMethods.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CreditCard className="h-8 w-8 text-emerald-600" />
+                  <div className="text-center py-12">
+                    <div className="relative">
+                      <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <CreditCard className="h-12 w-12 text-emerald-600" />
+                        <div className="absolute -top-1 -right-1 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                          <Plus className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">
+                    <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-3">
                       لا توجد طرق دفع محفوظة
                     </h3>
-                    <p className="text-muted-foreground mb-4">
-                      أضف طريقة دفع جديدة لإدارة اشتراكاتك بسهولة
+                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
+                      أضف طريقة دفع جديدة لإدارة اشتراكاتك بسهولة واستمتع بتجربة دفع سلسة وآمنة
                     </p>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button className="bg-emerald-600 hover:bg-emerald-700">
-                          <Plus className="h-4 w-4 mr-2" />
-                          إضافة طريقة دفع
+                        <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                          <Plus className="h-5 w-5 mr-2" />
+                          إضافة طريقة دفع جديدة
                         </Button>
                       </DialogTrigger>
                       <DialogContent dir="rtl">
@@ -355,38 +360,62 @@ export default function Payments() {
                     </Dialog>
                   </div>
                 ) : (
-                  paymentMethods.map(method => <div key={method.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      {method.type === "paypal" ? (
-                        <div className="w-5 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">P</div>
-                      ) : (
-                        <CreditCard className="h-5 w-5 text-muted-foreground" />
-                      )}
-                      <div>
-                        {method.type === "paypal" ? (
-                          <>
-                            <p className="font-medium">PayPal</p>
-                            <p className="text-sm text-muted-foreground">{method.email}</p>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-medium">**** **** **** {method.last4}</p>
-                            <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
-                          </>
-                        )}
+                  <div className="grid gap-4">
+                    {paymentMethods.map(method => (
+                      <div key={method.id} className="group relative p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-850">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            {method.type === "paypal" ? (
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white text-lg flex items-center justify-center font-bold shadow-lg">
+                                P
+                              </div>
+                            ) : (
+                              <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
+                                <CreditCard className="h-6 w-6 text-emerald-600 dark:text-emerald-300" />
+                              </div>
+                            )}
+                            <div>
+                              {method.type === "paypal" ? (
+                                <>
+                                  <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">PayPal</p>
+                                  <p className="text-sm text-muted-foreground">{method.email}</p>
+                                </>
+                              ) : (
+                                <>
+                                  <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                    •••• •••• •••• {method.last4}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            {method.isDefault && (
+                              <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full shadow-sm">
+                                <Star className="h-3 w-3 mr-1 fill-current" />
+                                افتراضي
+                              </Badge>
+                            )}
+                            
+                            {!(currentPlan !== "free" && paymentMethods.length === 1) && (
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={() => handleDeletePaymentMethod(method.id)} 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl pointer-events-none" />
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {method.isDefault && <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-                          افتراضي
-                        </Badge>}
-                      {!(currentPlan !== "free" && paymentMethods.length === 1) && (
-                        <Button size="sm" variant="ghost" onClick={() => handleDeletePaymentMethod(method.id)} className="text-red-600 hover:text-red-700">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>)
+                    ))}
+                  </div>
                 )}
               </CardContent>
             </Card>
