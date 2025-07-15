@@ -70,7 +70,7 @@ const FamilyBuilder = () => {
   const [currentMode, setCurrentMode] = useState<'welcome' | 'add-member' | 'edit-member'>('welcome');
   const [familyMembers, setFamilyMembers] = useState(isNew ? [] : mockFamilyMembers);
   const [draftMembers, setDraftMembers] = useState<any[]>([]);
-  const [isNewTree, setIsNewTree] = useState(!treeId || (isNew && !isEditMode));
+  const [isNewTree, setIsNewTree] = useState(isEditMode ? false : (!treeId || isNew));
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [selectedDraft, setSelectedDraft] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
