@@ -164,8 +164,12 @@ const Dashboard2 = () => {
           {/* Floating geometric shapes */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-2 left-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
-            <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{
+            animationDelay: '1s'
+          }}></div>
+            <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{
+            animationDelay: '2s'
+          }}></div>
           </div>
 
           <div className="container mx-auto px-6 py-6">
@@ -595,9 +599,15 @@ const Dashboard2 = () => {
           {/* Animated Background Elements */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-xl animate-pulse"></div>
-            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-teal-400/15 to-cyan-400/15 rounded-full blur-lg animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-1/2 right-2 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-            <div className="absolute top-1/4 left-2 w-1.5 h-1.5 bg-teal-400/40 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
+            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-teal-400/15 to-cyan-400/15 rounded-full blur-lg animate-pulse" style={{
+            animationDelay: '1s'
+          }}></div>
+            <div className="absolute top-1/2 right-2 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce" style={{
+            animationDelay: '0.5s'
+          }}></div>
+            <div className="absolute top-1/4 left-2 w-1.5 h-1.5 bg-teal-400/40 rounded-full animate-bounce" style={{
+            animationDelay: '1.5s'
+          }}></div>
           </div>
           
           <div className="relative z-10">
@@ -605,10 +615,10 @@ const Dashboard2 = () => {
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-105 transition-transform">
                 <Share2 className="h-8 w-8 text-white animate-pulse" />
               </div>
-              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent text-right">
                 مشاركة الشجرة
               </DialogTitle>
-              <DialogDescription className="text-muted-foreground mt-2 leading-relaxed">
+              <DialogDescription className="text-muted-foreground mt-2 leading-relaxed text-right">
                 شارك شجرة العائلة مع أحبائك واجعلهم جزءاً من التاريخ العائلي
               </DialogDescription>
             </DialogHeader>
@@ -621,32 +631,19 @@ const Dashboard2 = () => {
                 </label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
-                    <Input 
-                      value={treeToShare ? `${window.location.origin}/tree/${treeToShare}` : ""} 
-                      readOnly 
-                      className="pr-10 bg-white/70 dark:bg-gray-800/70 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-400 focus:ring-emerald-400/20" 
-                    />
+                    <Input value={treeToShare ? `${window.location.origin}/tree/${treeToShare}` : ""} readOnly className="pr-10 bg-white/70 dark:bg-gray-800/70 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-400 focus:ring-emerald-400/20" />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
-                  <Button 
-                    size="sm" 
-                    onClick={copyShareLink}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  >
-                    {linkCopied ? (
-                      <CheckCircle className="h-4 w-4 text-white animate-bounce" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
+                  <Button size="sm" onClick={copyShareLink} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    {linkCopied ? <CheckCircle className="h-4 w-4 text-white animate-bounce" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
               
               {/* Success Message */}
-              {linkCopied && (
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 border border-green-200/50 dark:border-green-700/50 rounded-xl p-4 animate-fade-in">
+              {linkCopied && <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 border border-green-200/50 dark:border-green-700/50 rounded-xl p-4 animate-fade-in">
                   <div className="flex items-center gap-3 justify-center">
                     <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
                       <CheckCircle className="h-4 w-4 text-white" />
@@ -655,8 +652,7 @@ const Dashboard2 = () => {
                       تم نسخ الرابط بنجاح! 🎉
                     </p>
                   </div>
-                </div>
-              )}
+                </div>}
 
               {/* Quick Share Options */}
               <div className="bg-gradient-to-r from-gray-50/50 to-slate-50/50 dark:from-gray-950/30 dark:to-slate-950/30 rounded-xl p-4 border border-gray-200/30 dark:border-gray-700/30">
@@ -678,11 +674,7 @@ const Dashboard2 = () => {
             </div>
             
             <DialogFooter className="pt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowShareDialog(false)}
-                className="w-full bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800 hover:from-gray-100 hover:to-slate-100 dark:hover:from-gray-700 dark:hover:to-slate-700 border-gray-300 dark:border-gray-600 transition-all duration-300"
-              >
+              <Button variant="outline" onClick={() => setShowShareDialog(false)} className="w-full bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800 hover:from-gray-100 hover:to-slate-100 dark:hover:from-gray-700 dark:hover:to-slate-700 border-gray-300 dark:border-gray-600 transition-all duration-300">
                 إغلاق
               </Button>
             </DialogFooter>
