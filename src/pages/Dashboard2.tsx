@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -108,6 +109,7 @@ const Dashboard2 = () => {
   const {
     toast
   } = useToast();
+  const navigate = useNavigate();
 
   // Plan-based features
   const canCreateNewTree = currentPlan.treesUsed < currentPlan.treesLimit;
@@ -686,10 +688,10 @@ const Dashboard2 = () => {
                              <Share2 className="mr-1 h-4 w-4" />
                              مشاركة
                            </Button>
-                           <Button variant="outline" size="sm" className="flex-1 group-hover:border-primary/50 transition-colors">
-                             <Edit className="mr-1 h-4 w-4" />
-                             تحرير
-                           </Button>
+                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder')} className="flex-1 group-hover:border-primary/50 transition-colors">
+                              <Edit className="mr-1 h-4 w-4" />
+                              تحرير
+                            </Button>
                            <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="group-hover:border-destructive/50 group-hover:text-destructive transition-colors">
                              <Trash2 className="h-4 w-4" />
                            </Button>
