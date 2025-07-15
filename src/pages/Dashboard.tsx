@@ -352,7 +352,7 @@ export default function Dashboard() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="text-red-600 text-center">تأكيد حذف الشجرة</DialogTitle>
+            <DialogTitle className="text-red-600 text-center px-px py-[24px]">تأكيد حذف الشجرة</DialogTitle>
             <DialogDescription className="text-right">
               هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الشجرة وجميع بياناتها نهائياً.
               {treeToDelete && <span className="block mt-2 font-medium">
