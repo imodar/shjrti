@@ -27,7 +27,7 @@ const Auth = () => {
     // Simulate registration
     setTimeout(() => {
       setIsLoading(false);
-      window.location.href = "/dashboard";
+      window.location.href = "/plan-selection";
     }, 2000);
   };
 

@@ -11,6 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
+import PlanSelection from "./pages/PlanSelection";
+import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/family-builder" element={<FamilyBuilder />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/payments" element={<Payments />} />
+          <Route path="/plan-selection" element={<PlanSelection />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/terms" element={<Terms />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
