@@ -30,6 +30,9 @@ const Header = () => {
           <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
             الأسعار
           </a>
+          <a href="/home2" className="text-sm font-medium hover:text-primary transition-colors bg-emerald-100 dark:bg-emerald-900 px-3 py-1 rounded-full">
+            الصفحة الجديدة ✨
+          </a>
           <a href="#contact" className="text-sm font-medium hover:text-primary transition-colors">
             تواصل معنا
           </a>
