@@ -32,7 +32,7 @@ export default function Payments() {
   const [currentPlan, setCurrentPlan] = useState("premium");
   const plans = [{
     id: "free",
-    name: "مجاني",
+    name: "أساسية",
     price: "0",
     period: "شهرياً",
     features: ["إنشاء شجرة عائلة واحدة", "حتى 50 فرد", "التصدير الأساسي", "دعم المجتمع"],
