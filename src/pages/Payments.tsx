@@ -20,8 +20,13 @@ export default function Payments() {
     last4: "5555",
     expiry: "08/25",
     isDefault: false
+  }, {
+    id: 3,
+    type: "paypal",
+    email: "user@example.com",
+    isDefault: false
   }]);
-  const [currentPlan, setCurrentPlan] = useState("free");
+  const [currentPlan, setCurrentPlan] = useState("premium");
   const plans = [{
     id: "free",
     name: "مجاني",
@@ -161,23 +166,91 @@ export default function Payments() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                {paymentMethods.map(method => <div key={method.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {paymentMethods.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CreditCard className="h-8 w-8 text-emerald-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200 mb-2">
+                      لا توجد طرق دفع محفوظة
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      أضف طريقة دفع جديدة لإدارة اشتراكاتك بسهولة
+                    </p>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="bg-emerald-600 hover:bg-emerald-700">
+                          <Plus className="h-4 w-4 mr-2" />
+                          إضافة طريقة دفع
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent dir="rtl">
+                        <DialogHeader>
+                          <DialogTitle>إضافة طريقة دفع جديدة</DialogTitle>
+                          <DialogDescription>
+                            أضف بطاقة ائتمانية أو طريقة دفع جديدة
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="card-number">رقم البطاقة</Label>
+                            <Input id="card-number" placeholder="1234 5678 9012 3456" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="expiry">تاريخ الانتهاء</Label>
+                              <Input id="expiry" placeholder="MM/YY" />
+                            </div>
+                            <div>
+                              <Label htmlFor="cvc">CVC</Label>
+                              <Input id="cvc" placeholder="123" />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="name">اسم حامل البطاقة</Label>
+                            <Input id="name" placeholder="الاسم كما يظهر على البطاقة" />
+                          </div>
+                          <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                            إضافة البطاقة
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                ) : (
+                  paymentMethods.map(method => <div key={method.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
-                      <CreditCard className="h-5 w-5 text-muted-foreground" />
+                      {method.type === "paypal" ? (
+                        <div className="w-5 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">P</div>
+                      ) : (
+                        <CreditCard className="h-5 w-5 text-muted-foreground" />
+                      )}
                       <div>
-                        <p className="font-medium">**** **** **** {method.last4}</p>
-                        <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
+                        {method.type === "paypal" ? (
+                          <>
+                            <p className="font-medium">PayPal</p>
+                            <p className="text-sm text-muted-foreground">{method.email}</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-medium">**** **** **** {method.last4}</p>
+                            <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {method.isDefault && <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
                           افتراضي
                         </Badge>}
-                      <Button size="sm" variant="ghost" onClick={() => handleDeletePaymentMethod(method.id)} className="text-red-600 hover:text-red-700">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {!(currentPlan !== "free" && paymentMethods.length === 1) && (
+                        <Button size="sm" variant="ghost" onClick={() => handleDeletePaymentMethod(method.id)} className="text-red-600 hover:text-red-700">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
-                  </div>)}
+                  </div>)
+                )}
               </CardContent>
             </Card>
           </div>
