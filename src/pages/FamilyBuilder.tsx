@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft } from "lucide-react";
@@ -33,7 +34,10 @@ const relationshipOptions = [
   { value: "daughter", label: "الابنة" },
   { value: "uncle", label: "العم" },
   { value: "aunt", label: "العمة" },
-  { value: "cousin", label: "ابن العم/الخال" }
+  { value: "cousin", label: "ابن العم/الخال" },
+  { value: "spouse", label: "الزوج/الزوجة" },
+  { value: "grandson", label: "الحفيد" },
+  { value: "granddaughter", label: "الحفيدة" }
 ];
 
 const FamilyBuilder = () => {
@@ -48,7 +52,7 @@ const FamilyBuilder = () => {
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
-    parentId: null as number | null,
+    relatedPersonId: null as number | null,
     gender: "",
     birthDate: null as Date | null,
     bio: "",
@@ -78,7 +82,7 @@ const FamilyBuilder = () => {
         birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
         bio: formData.bio,
         profession: formData.profession,
-        parentId: formData.parentId
+        relatedPersonId: formData.relatedPersonId
       };
       
       setFamilyMembers([...familyMembers, newMember]);
@@ -87,7 +91,7 @@ const FamilyBuilder = () => {
       setFormData({
         name: "",
         relation: "",
-        parentId: null,
+        relatedPersonId: null,
         gender: "",
         birthDate: null,
         bio: "",
@@ -215,22 +219,55 @@ const FamilyBuilder = () => {
                 </div>
               </div>
 
-              {/* Parent Selection (if applicable) */}
-              {!isNewTree && familyMembers.length > 0 && ['son', 'daughter'].includes(formData.relation) && (
+              {/* Related Person Selection */}
+              {!isNewTree && familyMembers.length > 0 && formData.relation && (
                 <div className="space-y-2">
-                  <Label>اختر الوالد/الوالدة</Label>
-                  <Select value={formData.parentId?.toString() || ""} onValueChange={(value) => setFormData({...formData, parentId: parseInt(value)})}>
+                  <Label>اختر الشخص المرتبط بهذه القرابة</Label>
+                  <div className="relative">
+                    <Input
+                      placeholder="ابحث عن شخص في العائلة..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="mb-2"
+                    />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <Select 
+                    value={formData.relatedPersonId?.toString() || ""} 
+                    onValueChange={(value) => setFormData({...formData, relatedPersonId: parseInt(value)})}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="اختر من القائمة" />
+                      <SelectValue placeholder="اختر الشخص المرتبط" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {familyMembers.filter(m => ['father', 'mother'].includes(m.relation)).map((member) => (
+                    <SelectContent className="max-h-60">
+                      {filteredMembers.map((member) => (
                         <SelectItem key={member.id} value={member.id.toString()}>
-                          {member.name} ({relationshipOptions.find(r => r.value === member.relation)?.label})
+                          <div className="flex items-center justify-between w-full">
+                            <span>{member.name}</span>
+                            <Badge variant="outline" className="mr-2 text-xs">
+                              {relationshipOptions.find(r => r.value === member.relation)?.label}
+                            </Badge>
+                          </div>
                         </SelectItem>
                       ))}
+                      {filteredMembers.length === 0 && (
+                        <div className="p-2 text-center text-muted-foreground text-sm">
+                          لا توجد نتائج للبحث
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {formData.relation === 'son' && 'مثال: اختر الوالد لهذا الابن'}
+                    {formData.relation === 'daughter' && 'مثال: اختر الوالد لهذه الابنة'}
+                    {formData.relation === 'father' && 'مثال: اختر أحد أطفاله الموجودين في الشجرة'}
+                    {formData.relation === 'mother' && 'مثال: اختر أحد أطفالها الموجودين في الشجرة'}
+                    {formData.relation === 'brother' && 'مثال: اختر أخ أو أخت له/لها'}
+                    {formData.relation === 'sister' && 'مثال: اختر أخ أو أخت له/لها'}
+                    {formData.relation === 'spouse' && 'اختر الزوج/الزوجة'}
+                    {formData.relation === 'uncle' && 'اختر أبن أخيه/أختها (ابن العم)'}
+                    {formData.relation === 'cousin' && 'اختر العم أو الخال'}
+                  </p>
                 </div>
               )}
 
