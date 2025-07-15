@@ -24,8 +24,11 @@ const mockFamilyMembers = [
 ];
 
 const relationshipOptions = [
+  { value: "founder", label: "الفرد الذي ستبدأ منه العائلة" },
   { value: "father", label: "أب" },
   { value: "mother", label: "أم" },
+  { value: "husband", label: "زوج" },
+  { value: "wife", label: "زوجة" },
   { value: "brother", label: "أخ" },
   { value: "sister", label: "أخت" },
   { value: "son", label: "ابن" },
@@ -186,7 +189,7 @@ const FamilyBuilder = () => {
               <Button 
                 className="w-full bg-emerald-600 hover:bg-emerald-700"
                 onClick={handleStartNewTree}
-                disabled={!familyInfo.familyName || !familyInfo.founderName}
+                disabled={!familyInfo.familyName}
               >
                 <TreePine className="ml-2 h-4 w-4" />
                 بدء إنشاء شجرة العائلة
