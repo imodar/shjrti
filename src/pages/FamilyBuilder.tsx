@@ -1062,7 +1062,7 @@ const FamilyBuilder = () => {
         <Dialog open={showAddChildren} onOpenChange={setShowAddChildren}>
           <DialogContent className="sm:max-w-md" dir="rtl">
             <DialogHeader>
-              <DialogTitle>تمت الإضافة بنجاح! ✅</DialogTitle>
+              <DialogTitle className="text-right">تمت الإضافة بنجاح! ✅</DialogTitle>
               <DialogDescription>
                 هل تريد إضافة أولاد أو أقارب لهذا الشخص؟
               </DialogDescription>
