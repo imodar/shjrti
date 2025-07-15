@@ -142,20 +142,30 @@ const Payment = () => {
                   <span>معلوماتك محمية ومشفرة بالكامل</span>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full hero-gradient border-0 py-3 text-lg"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    "جاري معالجة الدفع..."
-                  ) : (
-                    <>
-                      دفع {selectedPlan.price} ريال
-                      <ArrowRight className="mr-2 h-5 w-5" />
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => navigate("/plan-selection")}
+                  >
+                    العودة للخطط
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 hero-gradient border-0 py-3 text-lg"
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? (
+                      "جاري معالجة الدفع..."
+                    ) : (
+                      <>
+                        دفع {selectedPlan.price} ريال
+                        <ArrowRight className="mr-2 h-5 w-5" />
+                      </>
+                    )}
+                  </Button>
+                </div>
               </form>
             </CardContent>
           </Card>
