@@ -1097,28 +1097,71 @@ const FamilyBuilder = () => {
 
         {/* Add Children Dialog */}
         <Dialog open={showAddChildren} onOpenChange={setShowAddChildren}>
-          <DialogContent className="sm:max-w-md" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-right">تمت الإضافة بنجاح! ✅</DialogTitle>
-              <DialogDescription className="text-right">
-                هل تريد إضافة أولاد أو أقارب لهذا الشخص؟
+          <DialogContent className="sm:max-w-lg overflow-hidden border-0 bg-gradient-to-br from-emerald-50/90 via-teal-50/90 to-cyan-50/90 backdrop-blur-xl shadow-2xl" dir="rtl">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute -top-10 -right-10 w-20 h-20 bg-emerald-200/20 rounded-full animate-pulse"></div>
+              <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-teal-200/20 rounded-full animate-pulse delay-1000"></div>
+              <div className="absolute top-1/2 left-1/4 w-3 h-3 bg-emerald-400/30 rounded-full animate-bounce delay-500"></div>
+              <div className="absolute top-1/4 right-1/3 w-2 h-2 bg-teal-400/40 rounded-full animate-bounce delay-700"></div>
+              <div className="absolute bottom-1/3 right-1/4 w-4 h-4 bg-cyan-300/20 rounded-full animate-pulse delay-300"></div>
+            </div>
+
+            <DialogHeader className="relative z-10 text-center space-y-4 pb-2">
+              {/* Success Icon with Animation */}
+              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                  <span className="text-2xl animate-bounce">✅</span>
+                </div>
+              </div>
+              
+              {/* Enhanced Title */}
+              <DialogTitle className="text-right text-2xl font-bold bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 bg-clip-text text-transparent leading-tight">
+                تمت الإضافة بنجاح!
+              </DialogTitle>
+              
+              {/* Decorative Line */}
+              <div className="flex justify-center">
+                <div className="w-24 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full shadow-sm"></div>
+              </div>
+              
+              {/* Enhanced Description */}
+              <DialogDescription className="text-right text-lg text-slate-600 font-medium leading-relaxed px-2">
+                <span className="inline-flex items-center gap-2">
+                  <span className="text-emerald-600">🌟</span>
+                  هل تريد إضافة أولاد أو أقارب لهذا الشخص؟
+                  <span className="text-teal-600">👨‍👩‍👧‍👦</span>
+                </span>
               </DialogDescription>
             </DialogHeader>
-            <div className="flex gap-3 pt-4">
+            
+            {/* Action Buttons with Enhanced Design */}
+            <div className="flex gap-4 pt-6 relative z-10">
               <Button 
                 variant="outline" 
                 onClick={() => setShowAddChildren(false)}
-                className="flex-1"
+                className="flex-1 h-12 border-2 border-slate-200/80 bg-white/80 hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 text-slate-700 font-semibold shadow-md hover:shadow-lg transform hover:scale-105"
               >
-                تخطي
+                <span className="flex items-center gap-2">
+                  <span>⏭️</span>
+                  تخطي
+                </span>
               </Button>
+              
               <Button 
                 onClick={handleContinueAdding}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                className="flex-1 h-12 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 border-0 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
-                إضافة
+                <span className="flex items-center gap-2">
+                  <span className="animate-pulse">✨</span>
+                  إضافة
+                  <span>➕</span>
+                </span>
               </Button>
             </div>
+            
+            {/* Subtle Bottom Decoration */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-60"></div>
           </DialogContent>
         </Dialog>
       </div>
