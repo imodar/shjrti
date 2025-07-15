@@ -28,10 +28,18 @@ const mockFamilyMembers = [
   { id: 4, name: "سارة علي", relation: "daughter", gender: "female", birthDate: "1978-05-22", isAlive: true, deathDate: null, image: null }
 ];
 
-const getRelationshipOptions = (gender: string) => {
-  const commonOptions = [
+const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
+  const founderOption = [
     { value: "founder", label: "الفرد الذي ستبدأ منه العائلة" }
   ];
+  
+  // If this is the first member being added to the family tree, only show founder option
+  if (familyMembers.length === 0) {
+    return founderOption;
+  }
+  
+  // For subsequent members, show all relationship options
+  const commonOptions = [...founderOption];
   
   if (gender === "male") {
     return [
@@ -662,7 +670,7 @@ const FamilyBuilder = () => {
                         <SelectValue placeholder="اختر صلة القرابة" className="text-right" />
                       </SelectTrigger>
                       <SelectContent className="text-right">
-                        {getRelationshipOptions(formData.gender).map((relation) => (
+                        {getRelationshipOptions(formData.gender, familyMembers).map((relation) => (
                           <SelectItem key={relation.value} value={relation.value} className="text-right justify-end">
                             {relation.label}
                           </SelectItem>
