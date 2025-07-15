@@ -1028,11 +1028,15 @@ const FamilyBuilder = () => {
                                    <AlertDialogContent dir="rtl" className="text-right">
                                      <AlertDialogHeader className="text-right">
                                        <AlertDialogTitle className="text-right">تأكيد الحذف</AlertDialogTitle>
-                                       <AlertDialogDescription className="text-right">
-                                         هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
-                                         <br />
-                                         هذا الإجراء لا يمكن التراجع عنه.
-                                       </AlertDialogDescription>
+                                        <AlertDialogDescription className="text-right">
+                                          هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
+                                          <br />
+                                          <br />
+                                          <span className="font-semibold text-orange-600">ملاحظة:</span> إذا كان لديه أطفال تحته، فسيتم حذفه مع جميع أطفاله.
+                                          <br />
+                                          <br />
+                                          هذا الإجراء لا يمكن التراجع عنه.
+                                        </AlertDialogDescription>
                                      </AlertDialogHeader>
                                      <AlertDialogFooter className="flex gap-2 flex-row-reverse">
                                        <AlertDialogAction
