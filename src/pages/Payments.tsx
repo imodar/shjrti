@@ -17,24 +17,27 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 export default function Payments() {
   const { toast } = useToast();
-  const [paymentMethods, setPaymentMethods] = useState([{
-    id: 1,
-    type: "visa",
-    last4: "4242",
-    expiry: "12/26",
-    isDefault: true
-  }, {
-    id: 2,
-    type: "mastercard",
-    last4: "5555",
-    expiry: "08/25",
-    isDefault: false
-  }, {
-    id: 3,
-    type: "paypal",
-    email: "user@example.com",
-    isDefault: false
-  }]);
+  const [paymentMethods, setPaymentMethods] = useState([
+    // Comment out all payment methods to test the case where user has no payment methods
+    // {
+    //   id: 1,
+    //   type: "visa",
+    //   last4: "4242",
+    //   expiry: "12/26",
+    //   isDefault: true
+    // }, {
+    //   id: 2,
+    //   type: "mastercard",
+    //   last4: "5555",
+    //   expiry: "08/25",
+    //   isDefault: false
+    // }, {
+    //   id: 3,
+    //   type: "paypal",
+    //   email: "user@example.com",
+    //   isDefault: false
+    // }
+  ]);
   const [currentPlan, setCurrentPlan] = useState("premium");
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
