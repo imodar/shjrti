@@ -163,12 +163,15 @@ const FamilyBuilder = () => {
   };
 
   useEffect(() => {
-    if (isNewTree) {
+    if (isEditMode) {
+      // If in edit mode, never show welcome screen
+      setIsNewTree(false);
+    } else if (isNew) {
       setCurrentMode('welcome');
     } else if (familyMembers.length === 0) {
       setCurrentMode(undefined);
     }
-  }, [isNewTree]);
+  }, [isEditMode, isNew]);
 
   const handleStartNewTree = () => {
     setCurrentMode('add-member');
