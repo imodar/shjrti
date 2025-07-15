@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Mock data for existing family members
@@ -196,6 +197,26 @@ const FamilyBuilder = () => {
   const handleContinueAdding = () => {
     setShowAddChildren(false);
     setCurrentMode('add-member');
+  };
+
+  const handleDeleteMember = (memberId: number) => {
+    setFamilyMembers(familyMembers.filter(member => member.id !== memberId));
+    // If we're currently editing the deleted member, reset the form
+    if (selectedMember?.id === memberId) {
+      setSelectedMember(null);
+      setCurrentMode(familyMembers.length === 1 ? 'add-member' : undefined);
+      setFormData({
+        name: "",
+        relation: "",
+        relatedPersonId: null,
+        gender: "",
+        birthDate: null,
+        isAlive: true,
+        deathDate: null,
+        bio: "",
+        image: null
+      });
+    }
   };
 
   const filteredMembers = familyMembers.filter(member =>
@@ -695,9 +716,51 @@ const FamilyBuilder = () => {
                           </div>
                         </div>
                         
-                        {/* Edit Button */}
-                        <div className="flex-shrink-0 relative z-10">
-                          <Edit className="h-4 w-4 text-emerald-600" />
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 flex-shrink-0 relative z-10">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:bg-emerald-200"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditMember(member);
+                            }}
+                          >
+                            <Edit className="h-4 w-4 text-emerald-600" />
+                          </Button>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-red-200"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent dir="rtl">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
+                                  <br />
+                                  هذا الإجراء لا يمكن التراجع عنه.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter className="flex gap-2">
+                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteMember(member.id)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  حذف
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                     ))}
