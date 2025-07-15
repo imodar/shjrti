@@ -695,7 +695,7 @@ const Dashboard2 = () => {
                           </Button>
                           
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder')} className="flex-1 border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300">
+                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder?edit=true')} className="flex-1 border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300">
                               <Edit className="mr-1 h-4 w-4" />
                               تحرير
                             </Button>
