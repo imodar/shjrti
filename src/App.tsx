@@ -12,6 +12,7 @@ import Dashboard2 from "./pages/Dashboard2";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
+import Payments2 from "./pages/Payments2";
 import PlanSelection from "./pages/PlanSelection";
 import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/family-builder" element={<FamilyBuilder />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/payments" element={<Payments />} />
+          <Route path="/payments2" element={<Payments2 />} />
           <Route path="/plan-selection" element={<PlanSelection />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/change-password" element={<ChangePassword />} />
