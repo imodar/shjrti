@@ -32,7 +32,7 @@ export default function Payments() {
   const [currentPlan, setCurrentPlan] = useState("premium");
   const plans = [{
     id: "free",
-    name: "أساسية",
+    name: "مجانية",
     price: "0",
     period: "شهرياً",
     features: ["إنشاء شجرة عائلة واحدة", "حتى 50 فرد", "التصدير الأساسي", "دعم المجتمع"],
@@ -40,7 +40,7 @@ export default function Payments() {
     color: "bg-gray-500"
   }, {
     id: "premium",
-    name: "احترافية",
+    name: "أساسية",
     price: "29",
     period: "شهرياً",
     features: ["أشجار عائلة غير محدودة", "أفراد غير محدودين", "التصدير المتقدم", "رفع الصور والمستندات", "الدعم المباشر"],
@@ -49,7 +49,7 @@ export default function Payments() {
     popular: true
   }, {
     id: "enterprise",
-    name: "المؤسسات",
+    name: "احترافية",
     price: "99",
     period: "شهرياً",
     features: ["جميع مميزات البريميوم", "التعاون الجماعي", "النسخ الاحتياطي التلقائي", "API للمطورين", "الدعم ذو الأولوية", "تخصيص العلامة التجارية"],
