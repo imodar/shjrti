@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2 } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Mock data for existing family members
@@ -394,7 +394,10 @@ const FamilyBuilder = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="familyName">اسم العائلة</Label>
+                    <Label htmlFor="familyName" className="flex items-center gap-2">
+                      <Crown className="h-4 w-4 text-emerald-600" />
+                      اسم العائلة
+                    </Label>
                     <Input 
                       id="familyName" 
                       placeholder="عائلة الأحمد"
@@ -404,7 +407,10 @@ const FamilyBuilder = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="familyDescription">وصف العائلة</Label>
+                    <Label htmlFor="familyDescription" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-emerald-600" />
+                      وصف العائلة
+                    </Label>
                     <Textarea 
                       id="familyDescription" 
                       placeholder="نبذة مختصرة عن العائلة وتاريخها..."
@@ -490,7 +496,10 @@ const FamilyBuilder = () => {
                 {/* Name and Gender on same line */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-2">
-                    <Label htmlFor="name">الاسم الكامل</Label>
+                    <Label htmlFor="name" className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-emerald-600" />
+                      الاسم الكامل
+                    </Label>
                     <Input 
                       id="name" 
                       placeholder="أحمد محمد الأحمد"
@@ -499,7 +508,10 @@ const FamilyBuilder = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-right block">الجنس</Label>
+                    <Label className="text-right flex items-center justify-end gap-2">
+                      <Baby className="h-4 w-4 text-emerald-600" />
+                      الجنس
+                    </Label>
                     <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
                       <SelectTrigger className="text-right">
                         <SelectValue placeholder="الجنس" className="text-right" />
@@ -515,7 +527,10 @@ const FamilyBuilder = () => {
                 {/* Relationship and Related Person on same line */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-right block">صلة القرابة</Label>
+                    <Label className="text-right flex items-center justify-end gap-2">
+                      <Heart className="h-4 w-4 text-emerald-600" />
+                      صلة القرابة
+                    </Label>
                     <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
                       <SelectTrigger className="text-right">
                         <SelectValue placeholder="اختر صلة القرابة" className="text-right" />
@@ -574,7 +589,10 @@ const FamilyBuilder = () => {
                 {/* Birth Date and Life Status */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>تاريخ الميلاد</Label>
+                    <Label className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4 text-emerald-600" />
+                      تاريخ الميلاد
+                    </Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -601,7 +619,10 @@ const FamilyBuilder = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-right block">حالة الشخص</Label>
+                    <Label className="text-right flex items-center justify-end gap-2">
+                      <Clock className="h-4 w-4 text-emerald-600" />
+                      حالة الشخص
+                    </Label>
                     <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
                       <SelectTrigger className="text-right [&>span]:text-right">
                         <SelectValue placeholder="حالة الشخص" className="text-right" />
@@ -617,7 +638,10 @@ const FamilyBuilder = () => {
                 {/* Death Date (if deceased) */}
                 {!formData.isAlive && (
                   <div className="space-y-2">
-                    <Label>تاريخ الوفاة (اختياري)</Label>
+                    <Label className="flex items-center gap-2">
+                      <Skull className="h-4 w-4 text-gray-600" />
+                      تاريخ الوفاة (اختياري)
+                    </Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -645,7 +669,10 @@ const FamilyBuilder = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio">نبذة شخصية (اختياري)</Label>
+                  <Label htmlFor="bio" className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-emerald-600" />
+                    نبذة شخصية (اختياري)
+                  </Label>
                   <Textarea 
                     id="bio" 
                     placeholder="اكتب نبذة قصيرة عن هذا الشخص..."
@@ -657,7 +684,10 @@ const FamilyBuilder = () => {
 
                 {/* Image Upload */}
                 <div className="space-y-2">
-                  <Label>صورة الشخص (اختياري)</Label>
+                  <Label className="flex items-center gap-2">
+                    <Camera className="h-4 w-4 text-emerald-600" />
+                    صورة الشخص (اختياري)
+                  </Label>
                   <div className="border-2 border-dashed border-emerald-200 rounded-lg p-6 text-center">
                     <input
                       type="file"
