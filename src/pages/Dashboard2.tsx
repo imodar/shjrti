@@ -59,6 +59,42 @@ const currentPlan = {
   membersLimit: 100,
   features: ["3 أشجار عائلية", "100 فرد", "مشاركة محدودة"]
 };
+// Mock notifications data
+const mockNotifications = [
+  {
+    id: 1,
+    title: "تم إضافة فرد جديد",
+    message: "تم إضافة محمد أحمد إلى شجرة عائلة أحمد",
+    time: "منذ 5 دقائق",
+    isRead: false,
+    type: "member"
+  },
+  {
+    id: 2,
+    title: "تحديث في الشجرة",
+    message: "تم تحديث معلومات فاطمة محمد في شجرة عائلة فاطمة",
+    time: "منذ ساعة",
+    isRead: false,
+    type: "update"
+  },
+  {
+    id: 3,
+    title: "مشاركة جديدة",
+    message: "شارك سعد الله شجرة العائلة معك",
+    time: "منذ يومين",
+    isRead: true,
+    type: "share"
+  },
+  {
+    id: 4,
+    title: "انتهاء الاشتراك قريباً",
+    message: "سينتهي اشتراكك خلال 7 أيام",
+    time: "منذ 3 أيام",
+    isRead: false,
+    type: "subscription"
+  }
+];
+
 const Dashboard2 = () => {
   const [trees, setTrees] = useState(mockTrees);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -68,6 +104,7 @@ const Dashboard2 = () => {
   const [treeToShare, setTreeToShare] = useState<number | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [notifications, setNotifications] = useState(mockNotifications);
   const {
     toast
   } = useToast();
@@ -76,6 +113,43 @@ const Dashboard2 = () => {
   const canCreateNewTree = currentPlan.treesUsed < currentPlan.treesLimit;
   const planProgress = currentPlan.treesUsed / currentPlan.treesLimit * 100;
   const membersProgress = currentPlan.membersUsed / currentPlan.membersLimit * 100;
+  
+  // Notification functions
+  const unreadNotifications = notifications.filter(n => !n.isRead);
+  const unreadCount = unreadNotifications.length;
+  
+  const markNotificationAsRead = (id: number) => {
+    setNotifications(notifications.map(n => 
+      n.id === id ? { ...n, isRead: true } : n
+    ));
+    toast({
+      title: "تم وضع علامة مقروء",
+      description: "تم تحديث حالة الإشعار"
+    });
+  };
+  
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+    toast({
+      title: "تم وضع علامة مقروء على الكل",
+      description: "تم تحديث جميع الإشعارات"
+    });
+  };
+  
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "member":
+        return <Users className="h-4 w-4 text-blue-500" />;
+      case "update":
+        return <Edit className="h-4 w-4 text-green-500" />;
+      case "share":
+        return <Share2 className="h-4 w-4 text-purple-500" />;
+      case "subscription":
+        return <Crown className="h-4 w-4 text-yellow-500" />;
+      default:
+        return <Bell className="h-4 w-4 text-gray-500" />;
+    }
+  };
   const handleCreateTree = () => {
     if (currentPlan.type === "free" && !canCreateNewTree) {
       setShowUpgradeDialog(true);
@@ -210,14 +284,125 @@ const Dashboard2 = () => {
                 </div>
 
                 {/* Notification Bell */}
-                <div className="relative">
-                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
-                    <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
-                    <span className="absolute -top-1 -left-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs flex items-center justify-center text-white font-bold shadow-lg animate-bounce">
-                      3
-                    </span>
-                  </Button>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
+                      <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -left-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs flex items-center justify-center text-white font-bold shadow-lg animate-bounce">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    className="w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl max-h-96 overflow-y-auto" 
+                    align="end" 
+                    forceMount
+                  >
+                    <DropdownMenuLabel className="font-normal p-4 border-b border-emerald-200/30 dark:border-emerald-700/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Bell className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                          <span className="text-lg font-bold text-emerald-800 dark:text-emerald-200">الإشعارات</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {unreadCount > 0 && (
+                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+                              {unreadCount} جديد
+                            </Badge>
+                          )}
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={markAllAsRead}
+                            disabled={unreadCount === 0}
+                            className="text-xs text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200"
+                          >
+                            تحديد الكل مقروء
+                          </Button>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                          <DropdownMenuItem 
+                            key={notification.id}
+                            className={`p-4 cursor-pointer border-b border-emerald-100/50 dark:border-emerald-800/50 last:border-b-0 ${
+                              !notification.isRead 
+                                ? 'bg-emerald-50/50 dark:bg-emerald-950/30 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/50' 
+                                : 'hover:bg-emerald-50/30 dark:hover:bg-emerald-950/20'
+                            }`}
+                            onClick={() => !notification.isRead && markNotificationAsRead(notification.id)}
+                          >
+                            <div className="flex items-start gap-3 w-full">
+                              <div className="flex-shrink-0 mt-1">
+                                {getNotificationIcon(notification.type)}
+                              </div>
+                              
+                              <div className="flex-1 min-w-0 text-right">
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-xs text-muted-foreground">{notification.time}</span>
+                                  <h4 className={`text-sm font-semibold ${
+                                    !notification.isRead 
+                                      ? 'text-emerald-800 dark:text-emerald-200' 
+                                      : 'text-muted-foreground'
+                                  }`}>
+                                    {notification.title}
+                                  </h4>
+                                </div>
+                                
+                                <p className={`text-sm leading-relaxed text-right ${
+                                  !notification.isRead 
+                                    ? 'text-emerald-700 dark:text-emerald-300' 
+                                    : 'text-muted-foreground'
+                                }`}>
+                                  {notification.message}
+                                </p>
+                                
+                                <div className="flex items-center justify-between mt-2">
+                                  {!notification.isRead && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        markNotificationAsRead(notification.id);
+                                      }}
+                                      className="text-xs text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 p-1 h-auto"
+                                    >
+                                      وضع علامة مقروء
+                                    </Button>
+                                  )}
+                                  
+                                  <div className="flex items-center gap-1">
+                                    {!notification.isRead && (
+                                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    )}
+                                    <span className={`text-xs ${
+                                      !notification.isRead 
+                                        ? 'text-emerald-600 dark:text-emerald-400 font-medium' 
+                                        : 'text-muted-foreground'
+                                    }`}>
+                                      {notification.isRead ? 'مقروء' : 'جديد'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </DropdownMenuItem>
+                        ))
+                      ) : (
+                        <div className="p-8 text-center">
+                          <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <p className="text-muted-foreground">لا توجد إشعارات</p>
+                        </div>
+                      )}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 
                 {/* User Profile */}
                 <DropdownMenu>
