@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Dashboard2 from "./pages/Dashboard2";
 import FamilyBuilder from "./pages/FamilyBuilder";
+import FamilyBuilder2 from "./pages/FamilyBuilder2";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
 import Payments2 from "./pages/Payments2";
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard2" element={<Dashboard2 />} />
           <Route path="/family-builder" element={<FamilyBuilder />} />
+          <Route path="/family-builder2" element={<FamilyBuilder2 />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/payments2" element={<Payments2 />} />
