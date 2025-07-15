@@ -41,6 +41,7 @@ export default function Payments() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
+  const [showCreditCardForm, setShowCreditCardForm] = useState(false);
   const plans = [{
     id: "free",
     name: "مجانية",
@@ -142,6 +143,40 @@ export default function Payments() {
     setSelectedPaymentMethod(newPaymentMethod.id);
     processPayment();
     setShowAddPaymentModal(false);
+  };
+
+  const handlePaymentMethodChoice = (type: 'credit-card' | 'paypal') => {
+    if (type === 'credit-card') {
+      setShowAddPaymentModal(false);
+      setShowCreditCardForm(true);
+    } else {
+      // PayPal - add directly and process payment
+      const newPaymentMethod = {
+        id: paymentMethods.length + 1,
+        type: "paypal",
+        email: "user@paypal.com",
+        isDefault: false
+      };
+      setPaymentMethods([...paymentMethods, newPaymentMethod]);
+      setSelectedPaymentMethod(newPaymentMethod.id);
+      processPayment();
+      setShowAddPaymentModal(false);
+    }
+  };
+
+  const handleCreditCardSubmit = () => {
+    // Add credit card (simulated)
+    const newPaymentMethod = {
+      id: paymentMethods.length + 1,
+      type: "visa",
+      last4: "1234",
+      expiry: "12/28",
+      isDefault: false
+    };
+    setPaymentMethods([...paymentMethods, newPaymentMethod]);
+    setSelectedPaymentMethod(newPaymentMethod.id);
+    processPayment();
+    setShowCreditCardForm(false);
   };
 
   const isDowngrade = selectedPlan ? getPlanIndex(selectedPlan) < getPlanIndex(currentPlan) : false;
@@ -773,15 +808,33 @@ export default function Payments() {
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-6 py-6">
-              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+            <div className="space-y-4 py-6">
+              <div 
+                onClick={() => handlePaymentMethodChoice('credit-card')}
+                className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-all duration-300"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                     <CreditCard className="h-6 w-6 text-white" />
                   </div>
                   <div>
                     <p className="font-semibold text-blue-800 dark:text-blue-200">بطاقة ائتمانية جديدة</p>
-                    <p className="text-sm text-blue-600 dark:text-blue-400">سيتم إضافة طريقة دفع آمنة</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400">أدخل تفاصيل بطاقتك الائتمانية</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                onClick={() => handlePaymentMethodChoice('paypal')}
+                className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-950/30 transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+                    <Wallet className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-emerald-800 dark:text-emerald-200">PayPal</p>
+                    <p className="text-sm text-emerald-600 dark:text-emerald-400">ادفع بأمان باستخدام PayPal</p>
                   </div>
                 </div>
               </div>
@@ -795,9 +848,85 @@ export default function Payments() {
               >
                 إلغاء
               </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Credit Card Form Modal */}
+        <Dialog open={showCreditCardForm} onOpenChange={setShowCreditCardForm}>
+          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
+            <DialogHeader className="text-center space-y-4">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
+                <CreditCard className="h-8 w-8 text-white" />
+              </div>
+              
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent">
+                إضافة بطاقة ائتمانية
+              </DialogTitle>
+              
+              <DialogDescription className="text-center text-lg">
+                أدخل تفاصيل بطاقتك الائتمانية لإتمام الترقية إلى خطة {selectedPlanData?.name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="card-number">رقم البطاقة</Label>
+                  <Input 
+                    id="card-number" 
+                    placeholder="1234 5678 9012 3456" 
+                    className="bg-white dark:bg-gray-800 text-right" 
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="card-name">اسم حامل البطاقة</Label>
+                  <Input 
+                    id="card-name" 
+                    placeholder="أحمد محمد" 
+                    className="bg-white dark:bg-gray-800 text-right" 
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="expiry">تاريخ الانتهاء</Label>
+                  <Input 
+                    id="expiry" 
+                    placeholder="MM/YY" 
+                    className="bg-white dark:bg-gray-800 text-center" 
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cvv">CVV</Label>
+                  <Input 
+                    id="cvv" 
+                    placeholder="123" 
+                    className="bg-white dark:bg-gray-800 text-center" 
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span>خطة {selectedPlanData?.name}</span>
+                  <span className="font-bold">{selectedPlanData?.price} ريال/شهرياً</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 pt-4">
               <Button 
-                onClick={handleAddPaymentAndPay}
-                className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+                variant="outline" 
+                onClick={() => setShowCreditCardForm(false)}
+                className="flex-1 h-12"
+              >
+                إلغاء
+              </Button>
+              <Button 
+                onClick={handleCreditCardSubmit}
+                className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
               >
                 إضافة والدفع
               </Button>
