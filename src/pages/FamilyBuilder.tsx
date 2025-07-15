@@ -492,7 +492,7 @@ const FamilyBuilder = () => {
                   {currentMode === 'edit-member' ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد وحدد صلة القرابة'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pb-20 pt-6">
+              <CardContent className="space-y-6 pb-32 pt-6">
                 {/* Name and Gender on same line */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-2">
@@ -731,8 +731,8 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="mt-6 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-t p-4 rounded-b-lg">
+                {/* Action Buttons - Fixed at bottom */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-t p-4">
                   <div className="max-w-3xl mx-auto flex justify-between">
                     <Button 
                       variant="outline" 
