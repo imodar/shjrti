@@ -252,14 +252,14 @@ const FamilyBuilder = () => {
               {/* Relationship and Related Person on same line */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>صلة القرابة</Label>
+                  <Label className="text-right block">صلة القرابة</Label>
                   <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
                     <SelectTrigger className="text-right">
-                      <SelectValue placeholder="اختر صلة القرابة" />
+                      <SelectValue placeholder="اختر صلة القرابة" className="text-right" />
                     </SelectTrigger>
                     <SelectContent className="text-right">
                       {getRelationshipOptions(formData.gender).map((relation) => (
-                        <SelectItem key={relation.value} value={relation.value} className="text-right">
+                        <SelectItem key={relation.value} value={relation.value} className="text-right justify-end">
                           {relation.label}
                         </SelectItem>
                       ))}
@@ -270,13 +270,13 @@ const FamilyBuilder = () => {
                 {/* Related Person Selection */}
                 {!isNewTree && familyMembers.length > 0 && formData.relation && formData.relation !== "founder" && (
                   <div className="space-y-2">
-                    <Label>اختر الشخص المرتبط بهذه القرابة</Label>
+                    <Label className="text-right block">اختر الشخص المرتبط بهذه القرابة</Label>
                     <Select 
                       value={formData.relatedPersonId?.toString() || ""} 
                       onValueChange={(value) => setFormData({...formData, relatedPersonId: parseInt(value)})}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="ابحث واختر الشخص المرتبط" />
+                        <SelectValue placeholder="ابحث واختر الشخص المرتبط" className="text-right" />
                       </SelectTrigger>
                       <SelectContent className="max-h-60 text-right">
                         <div className="p-2">
@@ -291,7 +291,7 @@ const FamilyBuilder = () => {
                             member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase())
                           )
                           .map((member) => (
-                          <SelectItem key={member.id} value={member.id.toString()} className="text-right">
+                          <SelectItem key={member.id} value={member.id.toString()} className="text-right justify-end">
                             <span>{member.name}</span>
                           </SelectItem>
                         ))}
@@ -338,14 +338,14 @@ const FamilyBuilder = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>حالة الشخص</Label>
+                  <Label className="text-right block">حالة الشخص</Label>
                   <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
                     <SelectTrigger className="text-right">
-                      <SelectValue placeholder="حالة الشخص" />
+                      <SelectValue placeholder="حالة الشخص" className="text-right" />
                     </SelectTrigger>
                     <SelectContent className="text-right">
-                      <SelectItem value="true" className="text-right">على قيد الحياة</SelectItem>
-                      <SelectItem value="false" className="text-right">متوفى</SelectItem>
+                      <SelectItem value="true" className="text-right justify-end">على قيد الحياة</SelectItem>
+                      <SelectItem value="false" className="text-right justify-end">متوفى</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
