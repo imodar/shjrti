@@ -167,7 +167,10 @@ export default function Payments() {
     }
   };
 
-  const handleCreditCardSubmit = () => {
+  const handleCreditCardSubmit = (e?: React.MouseEvent) => {
+    e?.preventDefault(); // Prevent any default behavior
+    e?.stopPropagation(); // Stop event propagation
+    
     // Add credit card (simulated)
     const newPaymentMethod = {
       id: paymentMethods.length + 1,
@@ -921,6 +924,7 @@ export default function Payments() {
             
             <div className="flex gap-3 pt-4">
               <Button 
+                type="button"
                 variant="outline" 
                 onClick={() => setShowCreditCardForm(false)}
                 className="flex-1 h-12"
@@ -928,6 +932,7 @@ export default function Payments() {
                 إلغاء
               </Button>
               <Button 
+                type="button"
                 onClick={handleCreditCardSubmit}
                 className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
               >
