@@ -213,16 +213,18 @@ const FamilyBuilder = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Basic Info */}
+              <div className="space-y-2">
+                <Label htmlFor="name">الاسم الكامل</Label>
+                <Input 
+                  id="name" 
+                  placeholder="أحمد محمد الأحمد"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+
+              {/* Relationship and Related Person on same line */}
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">الاسم الكامل</Label>
-                  <Input 
-                    id="name" 
-                    placeholder="أحمد محمد الأحمد"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
-                </div>
                 <div className="space-y-2">
                   <Label>صلة القرابة</Label>
                   <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
@@ -238,52 +240,47 @@ const FamilyBuilder = () => {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
 
-              {/* Related Person Selection */}
-              {!isNewTree && familyMembers.length > 0 && formData.relation && (
-                <div className="space-y-2">
-                  <Label>اختر الشخص المرتبط بهذه القرابة</Label>
-                  <Select 
-                    value={formData.relatedPersonId?.toString() || ""} 
-                    onValueChange={(value) => setFormData({...formData, relatedPersonId: parseInt(value)})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="ابحث واختر الشخص المرتبط" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      <div className="p-2">
-                        <Input
-                          placeholder="ابحث عن شخص..."
-                          value={relatedPersonSearch}
-                          onChange={(e) => setRelatedPersonSearch(e.target.value)}
-                        />
-                      </div>
-                      {familyMembers
-                        .filter(member => 
-                          member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase())
-                        )
-                        .map((member) => (
-                        <SelectItem key={member.id} value={member.id.toString()}>
-                          <div className="flex items-center justify-between w-full">
-                            <span>{member.name}</span>
-                            <Badge variant="outline" className="mr-2 text-xs">
-                              {relationshipOptions.find(r => r.value === member.relation)?.label}
-                            </Badge>
-                          </div>
-                        </SelectItem>
-                      ))}
-                      {familyMembers.filter(member => 
-                        member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase())
-                      ).length === 0 && (
-                        <div className="p-2 text-center text-muted-foreground text-sm">
-                          لا توجد نتائج للبحث
+                {/* Related Person Selection */}
+                {!isNewTree && familyMembers.length > 0 && formData.relation && (
+                  <div className="space-y-2">
+                    <Label>اختر الشخص المرتبط بهذه القرابة</Label>
+                    <Select 
+                      value={formData.relatedPersonId?.toString() || ""} 
+                      onValueChange={(value) => setFormData({...formData, relatedPersonId: parseInt(value)})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="ابحث واختر الشخص المرتبط" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        <div className="p-2">
+                          <Input
+                            placeholder="ابحث عن شخص..."
+                            value={relatedPersonSearch}
+                            onChange={(e) => setRelatedPersonSearch(e.target.value)}
+                          />
                         </div>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+                        {familyMembers
+                          .filter(member => 
+                            member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase())
+                          )
+                          .map((member) => (
+                          <SelectItem key={member.id} value={member.id.toString()}>
+                            <span>{member.name}</span>
+                          </SelectItem>
+                        ))}
+                        {familyMembers.filter(member => 
+                          member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase())
+                        ).length === 0 && (
+                          <div className="p-2 text-center text-muted-foreground text-sm">
+                            لا توجد نتائج للبحث
+                          </div>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
