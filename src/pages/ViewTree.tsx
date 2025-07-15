@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Users, Bell, Settings, User, LogOut, ArrowLeft, Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Download, Share2 } from "lucide-react";
+import { Users, Bell, Settings, User, LogOut, ArrowLeft, Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Download, Share2, Users2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
 
@@ -59,18 +59,10 @@ const mockTreeData = {
 };
 
 const ViewTree = () => {
-  const [visibleLevels, setVisibleLevels] = useState([4]); // Show all 4 levels by default
   const [zoomLevel, setZoomLevel] = useState([100]);
   const [showDetails, setShowDetails] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const toggleLevelVisibility = (level: number) => {
-    const newVisibleLevels = visibleLevels.includes(level) 
-      ? visibleLevels.filter(l => l !== level)
-      : [...visibleLevels, level].sort((a, b) => a - b);
-    setVisibleLevels(newVisibleLevels);
-  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -87,34 +79,34 @@ const ViewTree = () => {
     });
   };
 
-  const getMemberCard = (member: any) => (
+  const getMemberCard = (member: any, level: number) => (
     <div
       key={member.id}
       className={`relative group bg-gradient-to-br ${
         member.gender === 'male' 
           ? 'from-blue-50 via-blue-100 to-blue-200 dark:from-blue-950 dark:via-blue-900 dark:to-blue-800' 
           : 'from-pink-50 via-pink-100 to-pink-200 dark:from-pink-950 dark:via-pink-900 dark:to-pink-800'
-      } rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border ${
+      } rounded-xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border ${
         member.gender === 'male' ? 'border-blue-200 dark:border-blue-700' : 'border-pink-200 dark:border-pink-700'
-      }`}
+      } min-w-[200px] max-w-[250px]`}
       style={{ transform: `scale(${zoomLevel[0] / 100})` }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-center gap-2">
         <Avatar className="w-12 h-12 border-2 border-white shadow-md">
           <AvatarFallback className={`${
             member.gender === 'male' ? 'bg-blue-500 text-white' : 'bg-pink-500 text-white'
-          } font-bold`}>
+          } font-bold text-sm`}>
             {member.name.split(' ').map(n => n[0]).join('')}
           </AvatarFallback>
         </Avatar>
         
-        <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{member.name}</h4>
+        <div className="text-center">
+          <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight">{member.name}</h4>
           {showDetails && (
-            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-300">
+            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-300 mt-2">
               <p>مواليد: {member.birthYear}</p>
               {member.deathYear && <p>وفاة: {member.deathYear}</p>}
-              {member.spouse && <p>الزوج/ة: {member.spouse}</p>}
+              {member.spouse && <p className="truncate">الزوج/ة: {member.spouse}</p>}
             </div>
           )}
         </div>
@@ -123,6 +115,31 @@ const ViewTree = () => {
           {member.gender === 'male' ? 'ذكر' : 'أنثى'}
         </Badge>
       </div>
+    </div>
+  );
+
+  const renderTreeLevel = (level: number, members: any[]) => (
+    <div key={level} className="flex flex-col items-center">
+      {/* Level Title */}
+      <div className="mb-4">
+        <Badge variant="outline" className="px-4 py-2 text-sm font-semibold">
+          {mockTreeData.generations.find(g => g.level === level)?.title}
+        </Badge>
+      </div>
+      
+      {/* Members */}
+      <div className="flex flex-wrap justify-center gap-6 mb-8">
+        {members.map(member => getMemberCard(member, level))}
+      </div>
+      
+      {/* Connection Lines */}
+      {level < mockTreeData.generations.length && (
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-0.5 h-8 bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
+          <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-md"></div>
+          <div className="w-0.5 h-8 bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
+        </div>
+      )}
     </div>
   );
 
@@ -248,31 +265,7 @@ const ViewTree = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Level Visibility Controls */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-800 dark:text-gray-200">مستويات الشجرة</h4>
-                  <div className="space-y-2">
-                    {mockTreeData.generations.map((generation) => (
-                      <div key={generation.level} className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{generation.title}</span>
-                        <Button
-                          variant={visibleLevels.includes(generation.level) ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => toggleLevelVisibility(generation.level)}
-                          className="h-8 px-3"
-                        >
-                          {visibleLevels.includes(generation.level) ? (
-                            <Eye className="h-3 w-3 mr-1" />
-                          ) : (
-                            <EyeOff className="h-3 w-3 mr-1" />
-                          )}
-                          {visibleLevels.includes(generation.level) ? 'مرئي' : 'مخفي'}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 {/* Zoom Control */}
                 <div className="space-y-3">
@@ -320,46 +313,25 @@ const ViewTree = () => {
             </CardContent>
           </Card>
 
-          {/* Tree Display */}
-          <div className="space-y-8">
-            {mockTreeData.generations
-              .filter(generation => visibleLevels.includes(generation.level))
-              .map((generation) => (
-                <Card key={generation.level} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-emerald-200/30">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
-                      <Badge variant="outline" className="px-2 py-1">
-                        المستوى {generation.level}
-                      </Badge>
-                      {generation.title}
-                    </CardTitle>
-                    <CardDescription>
-                      {generation.members.length} أفراد في هذا المستوى
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {generation.members.map(getMemberCard)}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-
-          {/* Empty State */}
-          {visibleLevels.length === 0 && (
-            <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-emerald-200/30">
-              <CardContent className="text-center py-12">
-                <EyeOff className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                  لا توجد مستويات مرئية
-                </h3>
-                <p className="text-gray-500 dark:text-gray-500">
-                  يرجى تفعيل عرض مستوى واحد على الأقل من الأعلى
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          {/* Family Tree Display */}
+          <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-emerald-200/30 overflow-hidden">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-center gap-3">
+                <Users2 className="h-8 w-8" />
+                شجرة عائلة {mockTreeData.name}
+              </CardTitle>
+              <CardDescription className="text-lg">
+                {mockTreeData.generations.reduce((total, gen) => total + gen.members.length, 0)} فرد عبر {mockTreeData.generations.length} أجيال
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="flex flex-col items-center space-y-0">
+                {mockTreeData.generations.map((generation) =>
+                  renderTreeLevel(generation.level, generation.members)
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
