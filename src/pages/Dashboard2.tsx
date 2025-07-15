@@ -7,24 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { 
-  Plus, 
-  Users, 
-  Calendar, 
-  Share2, 
-  Edit, 
-  Trash2, 
-  Crown, 
-  TrendingUp, 
-  Eye,
-  Copy,
-  CheckCircle,
-  Sparkles,
-  BarChart3,
-  PieChart,
-  Gift,
-  Zap
-} from "lucide-react";
+import { Plus, Users, Calendar, Share2, Edit, Trash2, Crown, TrendingUp, Eye, Copy, CheckCircle, Sparkles, BarChart3, PieChart, Gift, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import dashboardHeroBanner from "@/assets/dashboard-hero-banner.jpg";
 import dashboardStats from "@/assets/dashboard-stats.jpg";
@@ -34,50 +17,46 @@ import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
 
 // Mock data
-const mockTrees = [
-  { 
-    id: 1, 
-    name: "عائلة أحمد", 
-    members: 25, 
-    generations: 4, 
-    lastUpdated: "منذ يومين",
-    image: familySuccess,
-    progress: 85,
-    isPublic: true
-  },
-  { 
-    id: 2, 
-    name: "عائلة فاطمة", 
-    members: 12, 
-    generations: 3, 
-    lastUpdated: "منذ أسبوع",
-    image: futureFamily,
-    progress: 60,
-    isPublic: false
-  },
-  { 
-    id: 3, 
-    name: "عائلة محمد", 
-    members: 35, 
-    generations: 5, 
-    lastUpdated: "منذ 3 أيام",
-    image: heritageTech,
-    progress: 92,
-    isPublic: true
-  },
-];
+const mockTrees = [{
+  id: 1,
+  name: "عائلة أحمد",
+  members: 25,
+  generations: 4,
+  lastUpdated: "منذ يومين",
+  image: familySuccess,
+  progress: 85,
+  isPublic: true
+}, {
+  id: 2,
+  name: "عائلة فاطمة",
+  members: 12,
+  generations: 3,
+  lastUpdated: "منذ أسبوع",
+  image: futureFamily,
+  progress: 60,
+  isPublic: false
+}, {
+  id: 3,
+  name: "عائلة محمد",
+  members: 35,
+  generations: 5,
+  lastUpdated: "منذ 3 أيام",
+  image: heritageTech,
+  progress: 92,
+  isPublic: true
+}];
 
 // Mock user plan data
 const currentPlan = {
   name: "مجانية",
-  type: "free", // free, basic, premium
+  type: "free",
+  // free, basic, premium
   treesUsed: 3,
   treesLimit: 3,
   membersUsed: 72,
   membersLimit: 100,
   features: ["3 أشجار عائلية", "100 فرد", "مشاركة محدودة"]
 };
-
 const Dashboard2 = () => {
   const [trees, setTrees] = useState(mockTrees);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -87,27 +66,26 @@ const Dashboard2 = () => {
   const [treeToShare, setTreeToShare] = useState<number | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
 
   // Plan-based features
   const canCreateNewTree = currentPlan.treesUsed < currentPlan.treesLimit;
-  const planProgress = (currentPlan.treesUsed / currentPlan.treesLimit) * 100;
-  const membersProgress = (currentPlan.membersUsed / currentPlan.membersLimit) * 100;
-
+  const planProgress = currentPlan.treesUsed / currentPlan.treesLimit * 100;
+  const membersProgress = currentPlan.membersUsed / currentPlan.membersLimit * 100;
   const handleCreateTree = () => {
     if (currentPlan.type === "free" && !canCreateNewTree) {
       setShowUpgradeDialog(true);
       return;
     }
-    
+
     // Handle tree creation logic here
     toast({
       title: "إنشاء شجرة جديدة",
-      description: "سيتم توجيهك لصفحة إنشاء الشجرة",
+      description: "سيتم توجيهك لصفحة إنشاء الشجرة"
     });
   };
-
   const handleDeleteTree = (id: number) => {
     const tree = trees.find(t => t.id === id);
     if (tree) {
@@ -115,7 +93,6 @@ const Dashboard2 = () => {
       setShowDeleteDialog(true);
     }
   };
-
   const confirmDeleteTree = () => {
     if (treeToDelete && deleteConfirmText.toLowerCase() === "حذف") {
       setTrees(trees.filter(tree => tree.id !== treeToDelete));
@@ -124,16 +101,14 @@ const Dashboard2 = () => {
       setDeleteConfirmText("");
       toast({
         title: "تم حذف الشجرة",
-        description: "تم حذف الشجرة بنجاح",
+        description: "تم حذف الشجرة بنجاح"
       });
     }
   };
-
   const handleShareTree = (id: number) => {
     setTreeToShare(id);
     setShowShareDialog(true);
   };
-
   const copyShareLink = () => {
     const tree = trees.find(t => t.id === treeToShare);
     if (tree) {
@@ -143,35 +118,42 @@ const Dashboard2 = () => {
       setTimeout(() => setLinkCopied(false), 3000);
       toast({
         title: "تم نسخ الرابط",
-        description: "تم نسخ رابط المشاركة إلى الحافظة",
+        description: "تم نسخ رابط المشاركة إلى الحافظة"
       });
     }
   };
-
   const getPlanColor = (type: string) => {
     switch (type) {
-      case "free": return "text-muted-foreground";
-      case "basic": return "text-accent-foreground";
-      case "premium": return "text-primary";
-      default: return "text-muted-foreground";
+      case "free":
+        return "text-muted-foreground";
+      case "basic":
+        return "text-accent-foreground";
+      case "premium":
+        return "text-primary";
+      default:
+        return "text-muted-foreground";
     }
   };
-
   const getPlanIcon = (type: string) => {
     switch (type) {
-      case "premium": return <Crown className="h-4 w-4" />;
-      case "basic": return <Sparkles className="h-4 w-4" />;
-      default: return <Gift className="h-4 w-4" />;
+      case "premium":
+        return <Crown className="h-4 w-4" />;
+      case "basic":
+        return <Sparkles className="h-4 w-4" />;
+      default:
+        return <Gift className="h-4 w-4" />;
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
+        animationDelay: '2s'
+      }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl animate-pulse" style={{
+        animationDelay: '4s'
+      }}></div>
       </div>
 
       <div className="relative z-10">
@@ -207,11 +189,7 @@ const Dashboard2 = () => {
           {/* Hero Section with Plan Info */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary/90 to-accent/90 text-primary-foreground shadow-2xl">
             <div className="absolute inset-0 bg-black/20"></div>
-            <img 
-              src={dashboardHeroBanner} 
-              alt="Dashboard Hero" 
-              className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
-            />
+            <img src={dashboardHeroBanner} alt="Dashboard Hero" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay" />
             
             <div className="relative z-10 p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-8 items-center">
@@ -309,8 +287,7 @@ const Dashboard2 = () => {
           </div>
 
           {/* Plan Upgrade Section (for free users) */}
-          {currentPlan.type === "free" && (
-            <Card className="relative overflow-hidden bg-gradient-to-r from-accent/10 via-primary/5 to-secondary/10 border-2 border-dashed border-primary/30">
+          {currentPlan.type === "free" && <Card className="relative overflow-hidden bg-gradient-to-r from-accent/10 via-primary/5 to-secondary/10 border-2 border-dashed border-primary/30">
               <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5"></div>
               <CardContent className="p-8 relative z-10">
                 <div className="flex items-center justify-between">
@@ -322,25 +299,19 @@ const Dashboard2 = () => {
                       <h3 className="text-2xl font-bold text-primary mb-2">ارتقِ بتجربتك</h3>
                       <p className="text-muted-foreground">احصل على ميزات متقدمة وأشجار عائلية غير محدودة</p>
                       <div className="flex gap-2 mt-2">
-                        {["أشجار غير محدودة", "تخزين متقدم", "مشاركة متطورة"].map((feature, index) => (
-                          <Badge key={index} variant="outline" className="text-xs border-primary/30">
+                        {["أشجار غير محدودة", "تخزين متقدم", "مشاركة متطورة"].map((feature, index) => <Badge key={index} variant="outline" className="text-xs border-primary/30">
                             {feature}
-                          </Badge>
-                        ))}
+                          </Badge>)}
                       </div>
                     </div>
                   </div>
-                  <Button 
-                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300"
-                    onClick={() => setShowUpgradeDialog(true)}
-                  >
+                  <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowUpgradeDialog(true)}>
                     <Crown className="ml-2 h-4 w-4" />
                     ترقية الباقة
                   </Button>
                 </div>
               </CardContent>
-            </Card>
-          )}
+            </Card>}
 
           {/* Trees Section */}
           <div className="space-y-6">
@@ -349,29 +320,19 @@ const Dashboard2 = () => {
                 <h2 className="text-3xl font-bold text-foreground">أشجار العائلة</h2>
                 <p className="text-muted-foreground">أدر وتابع جميع أشجار عائلتك</p>
               </div>
-              <Button 
-                onClick={handleCreateTree}
-                className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300"
-                size="lg"
-              >
+              <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" size="lg">
                 <Plus className="ml-2 h-5 w-5" />
                 إنشاء شجرة جديدة
               </Button>
             </div>
 
-            {trees.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {trees.map((tree) => (
-                  <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+            {trees.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {trees.map(tree => <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
                     {/* Tree Image */}
                     <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={tree.image} 
-                        alt={tree.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
+                      <img src={tree.image} alt={tree.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                       
                       {/* Status Badge */}
@@ -382,29 +343,7 @@ const Dashboard2 = () => {
                       </div>
 
                       {/* Progress Circle */}
-                      <div className="absolute bottom-4 left-4">
-                        <div className="relative w-12 h-12">
-                          <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              fill="none"
-                              stroke="rgba(255,255,255,0.3)"
-                              strokeWidth="2"
-                            />
-                            <path
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeDasharray={`${tree.progress}, 100`}
-                              className="transition-all duration-1000"
-                            />
-                          </svg>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">{tree.progress}%</span>
-                          </div>
-                        </div>
-                      </div>
+                      
                     </div>
 
                     <CardContent className="p-6 relative z-10">
@@ -428,39 +367,22 @@ const Dashboard2 = () => {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleShareTree(tree.id)}
-                            className="flex-1 group-hover:border-primary/50 transition-colors"
-                          >
+                          <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="flex-1 group-hover:border-primary/50 transition-colors">
                             <Share2 className="ml-1 h-4 w-4" />
                             مشاركة
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 group-hover:border-primary/50 transition-colors"
-                          >
+                          <Button variant="outline" size="sm" className="flex-1 group-hover:border-primary/50 transition-colors">
                             <Edit className="ml-1 h-4 w-4" />
                             تحرير
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteTree(tree.id)}
-                            className="group-hover:border-destructive/50 group-hover:text-destructive transition-colors"
-                          >
+                          <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="group-hover:border-destructive/50 group-hover:text-destructive transition-colors">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="relative overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 border-2 border-dashed border-muted-foreground/30">
+                  </Card>)}
+              </div> : <Card className="relative overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 border-2 border-dashed border-muted-foreground/30">
                 <CardContent className="p-12 text-center">
                   <div className="w-24 h-24 bg-gradient-to-br from-muted-foreground/20 to-muted-foreground/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Users className="h-12 w-12 text-muted-foreground" />
@@ -469,17 +391,12 @@ const Dashboard2 = () => {
                   <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                     ابدأ رحلتك في بناء تاريخ عائلتك عبر إنشاء أول شجرة عائلية
                   </p>
-                  <Button 
-                    onClick={handleCreateTree}
-                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg"
-                    size="lg"
-                  >
+                  <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg" size="lg">
                     <Plus className="ml-2 h-5 w-5" />
                     إنشاء أول شجرة
                   </Button>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
         </main>
       </div>
@@ -557,12 +474,7 @@ const Dashboard2 = () => {
                 <label className="block text-sm font-medium mb-2">
                   اكتب "حذف" للتأكيد:
                 </label>
-                <Input
-                  value={deleteConfirmText}
-                  onChange={(e) => setDeleteConfirmText(e.target.value)}
-                  placeholder="حذف"
-                  className="text-center"
-                />
+                <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder="حذف" className="text-center" />
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -570,11 +482,7 @@ const Dashboard2 = () => {
             <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
               إلغاء
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDeleteTree}
-              disabled={deleteConfirmText.toLowerCase() !== "حذف"}
-              className="bg-destructive hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={confirmDeleteTree} disabled={deleteConfirmText.toLowerCase() !== "حذف"} className="bg-destructive hover:bg-destructive/90">
               حذف نهائي
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -595,25 +503,15 @@ const Dashboard2 = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <Input
-                value={treeToShare ? `${window.location.origin}/tree/${treeToShare}` : ""}
-                readOnly
-                className="flex-1"
-              />
+              <Input value={treeToShare ? `${window.location.origin}/tree/${treeToShare}` : ""} readOnly className="flex-1" />
               <Button size="sm" onClick={copyShareLink}>
-                {linkCopied ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
+                {linkCopied ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
-            {linkCopied && (
-              <p className="text-sm text-green-600 flex items-center gap-1">
+            {linkCopied && <p className="text-sm text-green-600 flex items-center gap-1">
                 <CheckCircle className="h-4 w-4" />
                 تم نسخ الرابط بنجاح!
-              </p>
-            )}
+              </p>}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowShareDialog(false)}>
@@ -622,8 +520,6 @@ const Dashboard2 = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard2;
