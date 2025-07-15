@@ -521,56 +521,138 @@ const Home2 = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <TreePine className="h-8 w-8 text-emerald-400" />
-                <span className="text-xl font-bold">شجرة العائلة</span>
+      {/* Luxury Footer */}
+      <footer className="relative overflow-hidden">
+        {/* Luxury Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(16,185,129,0.15),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)]"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-10 right-20 w-24 h-24 bg-emerald-500/10 rounded-full animate-pulse blur-xl"></div>
+        <div className="absolute bottom-16 left-16 w-16 h-16 bg-amber-500/10 rounded-full animate-bounce blur-xl"></div>
+
+        <div className="relative z-10">
+          {/* Main Footer Content */}
+          <div className="container mx-auto px-4 py-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+              {/* Brand Section */}
+              <div className="md:col-span-1 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-50"></div>
+                    <TreePine className="relative h-10 w-10 text-emerald-400" />
+                  </div>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                    شجرة العائلة
+                  </span>
+                </div>
+                <p className="text-gray-300 text-lg leading-relaxed">
+                  نحفظ تراثك ونبني إرثك الرقمي للأجيال القادمة بأحدث التقنيات وأعلى معايير الجودة
+                </p>
+                <div className="flex items-center gap-3 text-emerald-400">
+                  <Crown className="h-5 w-5" />
+                  <span className="text-sm font-medium">الأفضل في المنطقة</span>
+                </div>
               </div>
-              <p className="text-gray-400">
-                نحفظ تراثك ونبني إرثك الرقمي للأجيال القادمة
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">روابط سريعة</h3>
-              <div className="space-y-2">
-                <Link to="/" className="block text-gray-400 hover:text-white transition-colors">الرئيسية الأولى</Link>
-                <Link to="/dashboard" className="block text-gray-400 hover:text-white transition-colors">لوحة التحكم</Link>
-                <Link to="/auth" className="block text-gray-400 hover:text-white transition-colors">تسجيل الدخول</Link>
+              
+              {/* Quick Links */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-white relative">
+                  روابط سريعة
+                  <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
+                </h3>
+                <div className="space-y-3">
+                  <Link to="/" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <span>الرئيسية الأولى</span>
+                  </Link>
+                  <Link to="/dashboard" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <span>لوحة التحكم</span>
+                  </Link>
+                  <Link to="/auth" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <span>تسجيل الدخول</span>
+                  </Link>
+                </div>
               </div>
-            </div>
-            
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">الدعم</h3>
-              <div className="space-y-2">
-                <Link to="/terms" className="block text-gray-400 hover:text-white transition-colors">الشروط والأحكام</Link>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">مركز المساعدة</a>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">تواصل معنا</a>
+              
+              {/* Support */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-white relative">
+                  الدعم والمساعدة
+                  <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
+                </h3>
+                <div className="space-y-3">
+                  <Link to="/terms" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <Shield className="h-4 w-4" />
+                    <span>الشروط والأحكام</span>
+                  </Link>
+                  <a href="#" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <Heart className="h-4 w-4" />
+                    <span>مركز المساعدة</span>
+                  </a>
+                  <a href="#" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <Users className="h-4 w-4" />
+                    <span>تواصل معنا</span>
+                  </a>
+                </div>
               </div>
-            </div>
-            
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">تابعنا</h3>
-              <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-colors">
-                  <Heart className="h-5 w-5" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-colors">
-                  <Users className="h-5 w-5" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-colors">
-                  <Star className="h-5 w-5" />
-                </a>
+              
+              {/* Social & Contact */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-white relative">
+                  تواصل معنا
+                  <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
+                </h3>
+                
+                {/* Social Links */}
+                <div className="flex gap-3">
+                  <a href="#" className="group relative w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg">
+                    <Heart className="h-5 w-5 text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                  </a>
+                  <a href="#" className="group relative w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg">
+                    <Users className="h-5 w-5 text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                  </a>
+                  <a href="#" className="group relative w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg">
+                    <Star className="h-5 w-5 text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                  </a>
+                </div>
+                
+                {/* Trust Badges */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-gray-300 text-sm">
+                    <Shield className="h-4 w-4 text-emerald-400" />
+                    <span>حماية البيانات معتمدة</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-300 text-sm">
+                    <Star className="h-4 w-4 text-amber-400" />
+                    <span>تقييم ٥ نجوم من العملاء</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.</p>
+          {/* Luxury Bottom Bar */}
+          <div className="border-t border-gradient-to-r from-transparent via-gray-700 to-transparent">
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4 text-gray-400">
+                  <p>&copy; ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.</p>
+                </div>
+                <div className="flex items-center gap-6 text-gray-400 text-sm">
+                  <span className="flex items-center gap-2">
+                    <Gem className="h-4 w-4 text-emerald-400" />
+                    صنع بحب في الشرق الأوسط
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
