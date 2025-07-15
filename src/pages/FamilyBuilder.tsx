@@ -741,23 +741,23 @@ const FamilyBuilder = () => {
                                 <Trash2 className="h-4 w-4 text-red-500" />
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent dir="rtl">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                                <AlertDialogDescription>
+                            <AlertDialogContent dir="rtl" className="text-right">
+                              <AlertDialogHeader className="text-right">
+                                <AlertDialogTitle className="text-right">تأكيد الحذف</AlertDialogTitle>
+                                <AlertDialogDescription className="text-right">
                                   هل أنت متأكد من حذف "{member.name}" من شجرة العائلة؟ 
                                   <br />
                                   هذا الإجراء لا يمكن التراجع عنه.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
-                              <AlertDialogFooter className="flex gap-2">
-                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                              <AlertDialogFooter className="flex gap-2 flex-row-reverse">
                                 <AlertDialogAction
                                   onClick={() => handleDeleteMember(member.id)}
                                   className="bg-red-600 hover:bg-red-700"
                                 >
                                   حذف
                                 </AlertDialogAction>
+                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
