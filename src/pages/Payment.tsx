@@ -99,15 +99,6 @@ const Payment = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePayment} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email">البريد الإلكتروني</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="example@domain.com"
-                    required
-                  />
-                </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="cardNumber">رقم البطاقة</Label>
