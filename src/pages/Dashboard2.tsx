@@ -16,6 +16,7 @@ import familySuccess from "@/assets/family-success.jpg";
 import futureFamily from "@/assets/future-family.jpg";
 import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
+import Footer from "@/components/Footer";
 
 // Mock data
 const mockTrees = [{
@@ -180,11 +181,11 @@ const Dashboard2 = () => {
                 
                 <div className="space-y-1">
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    العائلة الرقمية
+                    كينلاك - العائلة الرقمية
                   </h1>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <p className="text-muted-foreground font-medium">منصة إدارة الأنساب المتطورة</p>
+                    <p className="text-muted-foreground font-medium">منصة إدارة الأنساب</p>
                   </div>
                 </div>
               </div>
@@ -619,6 +620,8 @@ const Dashboard2 = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Footer />
     </div>;
 };
 export default Dashboard2;

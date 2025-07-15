@@ -1,132 +1,130 @@
-import { TreePine, Mail, Phone, MapPin, Facebook, Twitter, Instagram } from "lucide-react";
-import familyTreeLogo from "@/assets/family-tree-logo.png";
+import { Heart, Github, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
+    <footer className="relative mt-16 bg-gradient-to-r from-background via-accent/5 to-secondary/10 border-t border-border/50">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-bl from-secondary/10 to-primary/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img 
-                src={familyTreeLogo} 
-                alt="شجرتي" 
-                className="h-12 w-12 rounded-full"
-              />
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
+                <Heart className="h-5 w-5 text-white" />
+              </div>
               <div>
-                <h3 className="text-xl font-bold">شجرتي</h3>
-                <p className="text-sm opacity-80">اكتشف جذورك</p>
+                <h3 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  كينلاك
+                </h3>
+                <p className="text-xs text-muted-foreground">Kinlak</p>
               </div>
             </div>
-            <p className="text-sm opacity-90 leading-relaxed">
-              منصة عربية متخصصة في بناء أشجار العائلة وحفظ التاريخ العائلي 
-              للأجيال القادمة بطريقة سهلة وآمنة.
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              منصة رائدة في إدارة الأنساب والعائلات الرقمية، نساعدك في الحفاظ على تاريخ عائلتك وبناء جسور التواصل بين الأجيال.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <a 
                 href="#" 
-                className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-8 h-8 bg-primary/10 hover:bg-primary/20 rounded-lg flex items-center justify-center transition-colors group"
               >
-                <Facebook className="h-5 w-5" />
+                <Twitter className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
               </a>
               <a 
                 href="#" 
-                className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-8 h-8 bg-primary/10 hover:bg-primary/20 rounded-lg flex items-center justify-center transition-colors group"
               >
-                <Twitter className="h-5 w-5" />
+                <Linkedin className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
               </a>
               <a 
                 href="#" 
-                className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-8 h-8 bg-primary/10 hover:bg-primary/20 rounded-lg flex items-center justify-center transition-colors group"
               >
-                <Instagram className="h-5 w-5" />
+                <Github className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-semibold">روابط سريعة</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  الصفحة الرئيسية
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  المميزات
-                </a>
-              </li>
-              <li>
-                <a href="#how-it-works" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  كيف يعمل
-                </a>
-              </li>
-              <li>
-                <a href="#pricing" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  الأسعار
-                </a>
-              </li>
-            </ul>
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-foreground">روابط سريعة</h4>
+            <div className="space-y-2">
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                الرئيسية
+              </a>
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                إنشاء شجرة عائلية
+              </a>
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                استكشاف العائلات
+              </a>
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                الأسعار
+              </a>
+            </div>
           </div>
 
           {/* Support */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-semibold">الدعم</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  مركز المساعدة
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  الأسئلة الشائعة
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  سياسة الخصوصية
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                  شروط الاستخدام
-                </a>
-              </li>
-            </ul>
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-foreground">المساعدة</h4>
+            <div className="space-y-2">
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                مركز المساعدة
+              </a>
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                الأسئلة الشائعة
+              </a>
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                شروط الاستخدام
+              </a>
+              <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                سياسة الخصوصية
+              </a>
+            </div>
           </div>
 
           {/* Contact */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-semibold">تواصل معنا</h4>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 opacity-80" />
-                <span className="text-sm">info@shajarti.com</span>
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-foreground">تواصل معنا</h4>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-accent" />
+                </div>
+                <span className="text-muted-foreground">info@kinlak.com</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 opacity-80" />
-                <span className="text-sm">+966 123 456 789</span>
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-accent" />
+                </div>
+                <span className="text-muted-foreground" dir="ltr">+966 50 123 4567</span>
               </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="h-5 w-5 opacity-80" />
-                <span className="text-sm">الرياض، المملكة العربية السعودية</span>
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-accent" />
+                </div>
+                <span className="text-muted-foreground">الرياض، المملكة العربية السعودية</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm opacity-80">
-            © 2024 شجرتي. جميع الحقوق محفوظة.
-          </p>
-          <p className="text-sm opacity-80">
-            صُنع بـ ❤️ في المملكة العربية السعودية
-          </p>
+        <div className="mt-12 pt-8 border-t border-border/50">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>© 2024 كينلاك (Kinlak). جميع الحقوق محفوظة</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>صنع بـ</span>
+              <Heart className="h-4 w-4 text-red-500 animate-pulse" />
+              <span>في المملكة العربية السعودية</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
