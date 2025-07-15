@@ -566,30 +566,115 @@ const Dashboard2 = () => {
 
       {/* Delete Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-gradient-to-br from-card to-card/90 backdrop-blur-sm border-border/50">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-              <Trash2 className="h-5 w-5" />
-              حذف الشجرة
-            </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4">
-              <p>هل أنت متأكد من رغبتك في حذف هذه الشجرة؟ هذا الإجراء لا يمكن التراجع عنه.</p>
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  اكتب "حذف" للتأكيد:
-                </label>
-                <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder="حذف" className="text-center" />
+        <AlertDialogContent className="bg-gradient-to-br from-red-50/95 via-orange-50/95 to-yellow-50/95 dark:from-red-950/95 dark:via-red-900/95 dark:to-orange-950/95 backdrop-blur-xl border-2 border-red-200/50 dark:border-red-700/50 shadow-2xl overflow-hidden max-w-md">
+          {/* Animated Warning Background */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-tr from-orange-500/15 to-yellow-500/15 rounded-full blur-xl animate-pulse" style={{
+              animationDelay: '1s'
+            }}></div>
+            <div className="absolute top-1/2 right-4 w-3 h-3 bg-red-400/40 rounded-full animate-bounce" style={{
+              animationDelay: '0.5s'
+            }}></div>
+            <div className="absolute top-1/4 left-4 w-2 h-2 bg-orange-400/40 rounded-full animate-bounce" style={{
+              animationDelay: '1.5s'
+            }}></div>
+            
+            {/* Danger Lines */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent animate-pulse" style={{
+              animationDelay: '0.5s'
+            }}></div>
+          </div>
+          
+          <div className="relative z-10">
+            <AlertDialogHeader className="text-center pb-6">
+              {/* Animated Warning Icon */}
+              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-105 transition-transform relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-red-400 to-orange-400 rounded-2xl blur opacity-50 animate-pulse"></div>
+                <Trash2 className="h-10 w-10 text-white animate-pulse relative z-10" />
+                
+                {/* Warning Ring */}
+                <div className="absolute -inset-2 border-2 border-red-400/30 rounded-3xl animate-ping"></div>
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
-              إلغاء
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteTree} disabled={deleteConfirmText.toLowerCase() !== "حذف"} className="bg-destructive hover:bg-destructive/90">
-              حذف نهائي
-            </AlertDialogAction>
-          </AlertDialogFooter>
+              
+              <AlertDialogTitle className="text-2xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent text-right mb-2">
+                ⚠️ تحذير - حذف الشجرة
+              </AlertDialogTitle>
+              
+              <AlertDialogDescription className="space-y-6 text-right">
+                {/* Warning Message */}
+                <div className="bg-gradient-to-r from-red-100/80 to-orange-100/80 dark:from-red-950/50 dark:to-orange-950/50 rounded-xl p-4 border border-red-200/50 dark:border-red-700/50">
+                  <p className="text-red-700 dark:text-red-300 font-medium leading-relaxed">
+                    هل أنت متأكد من رغبتك في حذف هذه الشجرة؟ 
+                    <br />
+                    <span className="text-orange-600 dark:text-orange-400 font-bold">
+                      هذا الإجراء لا يمكن التراجع عنه نهائياً! 🚨
+                    </span>
+                  </p>
+                </div>
+                
+                {/* Confirmation Input */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-bold text-red-700 dark:text-red-300 text-right">
+                    اكتب "حذف" للتأكيد النهائي:
+                  </label>
+                  <div className="relative">
+                    <Input 
+                      value={deleteConfirmText} 
+                      onChange={e => setDeleteConfirmText(e.target.value)} 
+                      placeholder="حذف" 
+                      className="text-center text-lg font-bold bg-white/80 dark:bg-gray-800/80 border-2 border-red-300/50 dark:border-red-600/50 focus:border-red-500 focus:ring-red-500/20 shadow-inner"
+                    />
+                    {deleteConfirmText.toLowerCase() === "حذف" && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center animate-bounce">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Risk Indicators */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-red-100/50 dark:bg-red-950/30 rounded-lg p-2 text-center border border-red-200/30 dark:border-red-700/30">
+                    <div className="text-red-600 dark:text-red-400 text-xs font-medium">خطر عالي</div>
+                  </div>
+                  <div className="bg-orange-100/50 dark:bg-orange-950/30 rounded-lg p-2 text-center border border-orange-200/30 dark:border-orange-700/30">
+                    <div className="text-orange-600 dark:text-orange-400 text-xs font-medium">لا يمكن التراجع</div>
+                  </div>
+                  <div className="bg-yellow-100/50 dark:bg-yellow-950/30 rounded-lg p-2 text-center border border-yellow-200/30 dark:border-yellow-700/30">
+                    <div className="text-yellow-600 dark:text-yellow-400 text-xs font-medium">فقدان دائم</div>
+                  </div>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            
+            <AlertDialogFooter className="flex gap-3 pt-6">
+              <AlertDialogCancel 
+                onClick={() => setShowDeleteDialog(false)}
+                className="flex-1 bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700 dark:hover:to-slate-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium shadow-lg transition-all duration-300"
+              >
+                إلغاء الأمر
+              </AlertDialogCancel>
+              
+              <AlertDialogAction 
+                onClick={confirmDeleteTree} 
+                disabled={deleteConfirmText.toLowerCase() !== "حذف"}
+                className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 text-white font-bold shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
+              >
+                {deleteConfirmText.toLowerCase() === "حذف" ? (
+                  <span className="flex items-center gap-2">
+                    <Trash2 className="h-4 w-4 animate-pulse" />
+                    حذف نهائي
+                  </span>
+                ) : (
+                  <span className="opacity-50">حذف نهائي</span>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
