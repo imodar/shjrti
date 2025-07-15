@@ -40,6 +40,7 @@ export default function Payments() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
+  const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const plans = [{
     id: "free",
     name: "مجانية",
@@ -97,8 +98,9 @@ export default function Payments() {
       setShowPlanModal(false);
       setShowPaymentModal(true);
     } else {
-      // No payment methods, proceed with payment and show success message
-      processPayment();
+      // No payment methods, show add payment method modal
+      setShowPlanModal(false);
+      setShowAddPaymentModal(true);
     }
   };
 
@@ -123,6 +125,23 @@ export default function Payments() {
   const handlePaymentMethodSelect = (methodId: number) => {
     setSelectedPaymentMethod(methodId);
     processPayment();
+  };
+
+  const handleAddPaymentAndPay = () => {
+    // Add a new payment method (simulated)
+    const newPaymentMethod = {
+      id: paymentMethods.length + 1,
+      type: "visa",
+      last4: "1234",
+      expiry: "12/28",
+      isDefault: false
+    };
+    setPaymentMethods([...paymentMethods, newPaymentMethod]);
+    
+    // Process payment with the new method
+    setSelectedPaymentMethod(newPaymentMethod.id);
+    processPayment();
+    setShowAddPaymentModal(false);
   };
 
   const isDowngrade = selectedPlan ? getPlanIndex(selectedPlan) < getPlanIndex(currentPlan) : false;
@@ -736,6 +755,55 @@ export default function Payments() {
             </Card>
           </div>
         </div>
+
+        {/* Add Payment Method Modal for Upgrade */}
+        <Dialog open={showAddPaymentModal} onOpenChange={setShowAddPaymentModal}>
+          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
+            <DialogHeader className="text-center space-y-4">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl">
+                <CreditCard className="h-8 w-8 text-white" />
+              </div>
+              
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
+                إضافة طريقة دفع للترقية
+              </DialogTitle>
+              
+              <DialogDescription className="text-center text-lg">
+                تحتاج إلى إضافة طريقة دفع لترقية اشتراكك إلى خطة {selectedPlanData?.name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6 py-6">
+              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <CreditCard className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-blue-800 dark:text-blue-200">بطاقة ائتمانية جديدة</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400">سيتم إضافة طريقة دفع آمنة</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAddPaymentModal(false)}
+                className="flex-1 h-12"
+              >
+                إلغاء
+              </Button>
+              <Button 
+                onClick={handleAddPaymentAndPay}
+                className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+              >
+                إضافة والدفع
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Payment Method Selection Modal */}
         <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
