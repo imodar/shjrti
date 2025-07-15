@@ -236,14 +236,14 @@ const FamilyBuilder = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>الجنس</Label>
+                  <Label className="text-right block">الجنس</Label>
                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
                     <SelectTrigger className="text-right">
-                      <SelectValue placeholder="الجنس" />
+                      <SelectValue placeholder="الجنس" className="text-right" />
                     </SelectTrigger>
                     <SelectContent className="text-right">
-                      <SelectItem value="male" className="text-right">ذكر</SelectItem>
-                      <SelectItem value="female" className="text-right">أنثى</SelectItem>
+                      <SelectItem value="male" className="text-right justify-end">ذكر</SelectItem>
+                      <SelectItem value="female" className="text-right justify-end">أنثى</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
