@@ -1124,7 +1124,6 @@ const FamilyBuilder = () => {
       </div>
       
       <Footer />
-      </div>
     </div>
   );
 };
