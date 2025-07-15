@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Camera, Trash2 } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Profile() {
@@ -270,15 +271,114 @@ export default function Profile() {
                           </div>
                           <h5 className="font-semibold text-red-700 dark:text-red-300">المنطقة الخطرة</h5>
                         </div>
-                        <Button 
-                          variant="outline" 
-                          className="w-full justify-start border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300 transition-all duration-300"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Trash2 className="h-4 w-4" />
-                            <span>حذف الحساب نهائياً</span>
-                          </div>
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              className="w-full justify-start border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300 transition-all duration-300"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Trash2 className="h-4 w-4" />
+                                <span>حذف الحساب نهائياً</span>
+                              </div>
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl" dir="rtl">
+                            {/* Gradient Background */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-red-50/90 via-pink-50/90 to-orange-50/90 dark:from-red-950/30 dark:via-pink-950/30 dark:to-orange-950/30 rounded-lg"></div>
+                            
+                            <div className="relative">
+                              <DialogHeader className="text-center pb-6">
+                                {/* Sad emoji with animation */}
+                                <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-900/50 dark:to-pink-900/50 rounded-full flex items-center justify-center">
+                                  <div className="text-4xl animate-pulse">😢</div>
+                                </div>
+                                
+                                <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 dark:from-red-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
+                                  آسفون لرؤيتك تغادر...
+                                </DialogTitle>
+                                <DialogDescription className="text-lg text-gray-600 dark:text-gray-300">
+                                  نحن نفهم أن الأمور قد تتغير، لكننا سنفتقدك حقاً
+                                </DialogDescription>
+                              </DialogHeader>
+
+                              {/* Warning Section */}
+                              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 mb-6">
+                                <div className="flex items-start gap-4">
+                                  <div className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg">
+                                    <AlertTriangle className="h-6 w-6 text-white" />
+                                  </div>
+                                  <div>
+                                    <h3 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2 text-lg">
+                                      تحذير: هذا الإجراء لا يمكن التراجع عنه!
+                                    </h3>
+                                    <ul className="text-sm text-yellow-700 dark:text-yellow-400 space-y-2">
+                                      <li className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                                        سيتم حذف جميع أشجار العائلة الخاصة بك نهائياً
+                                      </li>
+                                      <li className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                                        ستفقد جميع البيانات والصور المحفوظة
+                                      </li>
+                                      <li className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                                        لن تتمكن من استرداد حسابك بعد الحذف
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Memories Section */}
+                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-6">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                  <h3 className="font-semibold text-blue-800 dark:text-blue-300">ذكرياتك معنا</h3>
+                                </div>
+                                <div className="grid grid-cols-3 gap-4 text-center">
+                                  <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</div>
+                                    <div className="text-xs text-muted-foreground">أشجار منشأة</div>
+                                  </div>
+                                  <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">20</div>
+                                    <div className="text-xs text-muted-foreground">فرد مضاف</div>
+                                  </div>
+                                  <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">15</div>
+                                    <div className="text-xs text-muted-foreground">يوم معنا</div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Confirmation Input */}
+                              <div className="mb-6">
+                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                                  للتأكيد، اكتب <span className="font-bold text-red-600 dark:text-red-400">"احذف حسابي"</span> في المربع أدناه:
+                                </Label>
+                                <Input 
+                                  placeholder="احذف حسابي"
+                                  className="text-center font-medium"
+                                />
+                              </div>
+
+                              <DialogFooter className="gap-3">
+                                <DialogTrigger asChild>
+                                  <Button variant="outline" className="flex-1">
+                                    إلغاء الأمر
+                                  </Button>
+                                </DialogTrigger>
+                                <Button 
+                                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  حذف الحساب نهائياً
+                                </Button>
+                              </DialogFooter>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
                   </div>
