@@ -90,7 +90,7 @@ const PlanSelection = () => {
           {plans.map((plan) => (
             <Card 
               key={plan.id} 
-              className={`relative transition-all hover:shadow-2xl hover:scale-105 bg-white/95 backdrop-blur-sm ${
+              className={`relative transition-all hover:shadow-2xl hover:scale-105 bg-white/95 backdrop-blur-sm flex flex-col h-full ${
                 selectedPlan === plan.id ? 'ring-4 ring-white scale-105' : ''
               } ${plan.popular ? 'border-emerald-300 shadow-2xl' : ''}`}
             >
@@ -111,8 +111,8 @@ const PlanSelection = () => {
                 </div>
               </CardHeader>
               
-              <CardContent className="px-6 pb-8">
-                <ul className="space-y-3 mb-8">
+              <CardContent className="px-6 pb-8 flex flex-col flex-grow">
+                <ul className="space-y-3 mb-8 flex-grow">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-center gap-3 text-sm">
                       <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0"></div>
@@ -122,7 +122,7 @@ const PlanSelection = () => {
                 </ul>
                 
                 <Button 
-                  className={`w-full py-3 text-lg font-medium transition-all ${
+                  className={`w-full py-3 text-lg font-medium transition-all mt-auto ${
                     plan.popular 
                       ? 'hero-gradient border-0 text-white hover:shadow-lg' 
                       : 'bg-primary hover:bg-primary/90'
