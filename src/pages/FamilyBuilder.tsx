@@ -569,11 +569,7 @@ const FamilyBuilder = () => {
                       
                       {/* Tree Connection Lines */}
                       <div className="text-emerald-400">
-                        {index === 0 ? (
-                          <TreePine className="h-5 w-5" />
-                        ) : (
-                          <div className="w-6 h-6 border-r-2 border-b-2 border-emerald-300 rounded-br-lg"></div>
-                        )}
+                        <TreePine className="h-5 w-5" />
                       </div>
                     </div>
                   </div>
