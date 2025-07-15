@@ -86,7 +86,7 @@ const FamilyBuilder = () => {
     if (isNewTree) {
       setCurrentMode('welcome');
     } else if (familyMembers.length === 0) {
-      setCurrentMode('add-member');
+      setCurrentMode(undefined);
     }
   }, [isNewTree]);
 
