@@ -154,9 +154,9 @@ const FamilyBuilder = () => {
               </div>
             </div>
             <Link to="/dashboard">
-              <Button variant="outline">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+              <Button variant="outline" className="flex items-center">
                 العودة للوحة التحكم
+                <ArrowLeft className="h-4 w-4 ml-2" />
               </Button>
             </Link>
           </div>
@@ -201,12 +201,12 @@ const FamilyBuilder = () => {
               </div>
               
               <Button 
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center"
                 onClick={handleStartNewTree}
                 disabled={!familyInfo.familyName}
               >
-                <TreePine className="ml-2 h-4 w-4" />
                 بدء إنشاء شجرة العائلة
+                <TreePine className="mr-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
@@ -317,12 +317,12 @@ const FamilyBuilder = () => {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-right font-normal",
+                          "w-full justify-end text-right font-normal flex-row-reverse",
                           !formData.birthDate && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="ml-2 h-4 w-4" />
                         {formData.birthDate ? format(formData.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -360,12 +360,12 @@ const FamilyBuilder = () => {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-right font-normal",
+                          "w-full justify-end text-right font-normal flex-row-reverse",
                           !formData.deathDate && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="ml-2 h-4 w-4" />
                         {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر تاريخ الوفاة"}
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -441,9 +441,9 @@ const FamilyBuilder = () => {
 
               {/* Action Buttons */}
               <div className="flex justify-between pt-6 border-t">
-                <Button variant="outline">
-                  <Save className="ml-2 h-4 w-4" />
+                <Button variant="outline" className="flex items-center">
                   حفظ المسودة
+                  <Save className="mr-2 h-4 w-4" />
                 </Button>
                 
                 <div className="flex gap-3">
@@ -452,11 +452,11 @@ const FamilyBuilder = () => {
                   </Button>
                   <Button 
                     onClick={handleAddMember}
-                    className="bg-emerald-600 hover:bg-emerald-700"
+                    className="bg-emerald-600 hover:bg-emerald-700 flex items-center"
                     disabled={!formData.name || !formData.relation}
                   >
                     إضافة الفرد
-                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -510,14 +510,14 @@ const FamilyBuilder = () => {
                       className="pr-10"
                     />
                     {searchTerm && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="absolute left-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                        onClick={() => setSearchTerm("")}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute left-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                      onClick={() => setSearchTerm("")}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
                     )}
                   </div>
                 </div>
