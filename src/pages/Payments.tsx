@@ -525,11 +525,11 @@ export default function Payments() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {plans.map(plan => <Card key={plan.id} className={`relative transition-all hover:shadow-lg ${currentPlan === plan.id ? 'ring-2 ring-emerald-500' : ''} ${plan.popular ? 'border-emerald-300' : ''}`}>
+                  {plans.map(plan => <Card key={plan.id} className={`relative transition-all hover:shadow-lg flex flex-col h-full ${currentPlan === plan.id ? 'ring-2 ring-emerald-500' : ''} ${plan.popular ? 'border-emerald-300' : ''}`}>
                       {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                           <Badge className="bg-emerald-600 text-white">الأكثر شعبية</Badge>
                         </div>}
-                      <CardHeader className="text-center">
+                      <CardHeader className="text-center flex-shrink-0">
                         <div className={`w-12 h-12 ${plan.color} rounded-full flex items-center justify-center mx-auto mb-3`}>
                           <plan.icon className="h-6 w-6 text-white" />
                         </div>
@@ -539,14 +539,14 @@ export default function Payments() {
                           <span className="text-muted-foreground"> ريال/{plan.period}</span>
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2 mb-6">
+                      <CardContent className="flex flex-col flex-grow">
+                        <ul className="space-y-2 mb-6 flex-grow">
                           {plan.features.map((feature, index) => <li key={index} className="flex items-center gap-2 text-sm">
                               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
                               {feature}
                             </li>)}
                         </ul>
-                        <Button className={`w-full ${currentPlan === plan.id ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'}`} disabled={currentPlan === plan.id}>
+                        <Button className={`w-full mt-auto ${currentPlan === plan.id ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'}`} disabled={currentPlan === plan.id}>
                           {currentPlan === plan.id ? 'الخطة الحالية' : 'اختيار الخطة'}
                         </Button>
                       </CardContent>
