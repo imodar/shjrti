@@ -165,7 +165,7 @@ const FamilyBuilder = () => {
 
   const handleCancelEdit = () => {
     setSelectedMember(null);
-    setCurrentMode(familyMembers.length === 0 ? 'add-member' : undefined);
+    setCurrentMode(undefined);
     setFormData({
       name: "",
       relation: "",
