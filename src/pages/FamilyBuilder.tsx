@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import Cropper from 'react-easy-crop';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,8 +75,16 @@ const FamilyBuilder = () => {
     isAlive: true,
     deathDate: null as Date | null,
     bio: "",
-    image: null as File | null
+    image: null as File | null,
+    croppedImage: null as string | null
   });
+
+  // Image cropping states
+  const [showCropDialog, setShowCropDialog] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const [familyInfo, setFamilyInfo] = useState({
     familyName: "",
@@ -84,6 +93,65 @@ const FamilyBuilder = () => {
   });
 
   const [relatedPersonSearch, setRelatedPersonSearch] = useState("");
+
+  // Image crop utility functions
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', error => reject(error));
+      image.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('No 2d context');
+    }
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return canvas.toDataURL('image/jpeg');
+  };
+
+  const handleCropSave = async () => {
+    if (!imageToCrop || !croppedAreaPixels) return;
+    
+    try {
+      const croppedImage = await getCroppedImg(imageToCrop, croppedAreaPixels);
+      setFormData({ ...formData, croppedImage });
+      setShowCropDialog(false);
+      setImageToCrop(null);
+    } catch (error) {
+      console.error('Error cropping image:', error);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropDialog(false);
+    setImageToCrop(null);
+    setFormData({ ...formData, image: null });
+  };
 
   useEffect(() => {
     if (isNewTree) {
@@ -147,7 +215,8 @@ const FamilyBuilder = () => {
         isAlive: true,
         deathDate: null,
         bio: "",
-        image: null
+        image: null,
+        croppedImage: null
       });
     }
   };
@@ -164,7 +233,8 @@ const FamilyBuilder = () => {
       isAlive: member.isAlive,
       deathDate: member.deathDate ? new Date(member.deathDate) : null,
       bio: member.bio || "",
-      image: null
+      image: null,
+      croppedImage: null
     });
   };
 
@@ -180,7 +250,8 @@ const FamilyBuilder = () => {
       isAlive: true,
       deathDate: null,
       bio: "",
-      image: null
+      image: null,
+      croppedImage: null
     });
   };
 
@@ -196,7 +267,8 @@ const FamilyBuilder = () => {
       isAlive: true,
       deathDate: null,
       bio: "",
-      image: null
+      image: null,
+      croppedImage: null
     });
   };
 
@@ -222,7 +294,8 @@ const FamilyBuilder = () => {
         isAlive: true,
         deathDate: null,
         bio: "",
-        image: null
+        image: null,
+        croppedImage: null
       });
     }
     
@@ -239,7 +312,8 @@ const FamilyBuilder = () => {
         isAlive: true,
         deathDate: null,
         bio: "",
-        image: null
+        image: null,
+        croppedImage: null
       });
     }
   };
@@ -281,7 +355,8 @@ const FamilyBuilder = () => {
         isAlive: true,
         deathDate: null,
         bio: "",
-        image: null
+        image: null,
+        croppedImage: null
       });
       setCurrentMode(undefined);
     }
@@ -299,7 +374,8 @@ const FamilyBuilder = () => {
       isAlive: draft.isAlive,
       deathDate: draft.deathDate ? new Date(draft.deathDate) : null,
       bio: draft.bio || "",
-      image: null
+      image: null,
+      croppedImage: null
     });
   };
 
@@ -317,7 +393,8 @@ const FamilyBuilder = () => {
         isAlive: true,
         deathDate: null,
         bio: "",
-        image: null
+        image: null,
+        croppedImage: null
       });
     }
   };
@@ -699,11 +776,36 @@ const FamilyBuilder = () => {
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) setFormData({...formData, image: file});
+                        if (file) {
+                          const imageUrl = URL.createObjectURL(file);
+                          setFormData({...formData, image: file});
+                          setImageToCrop(imageUrl);
+                          setShowCropDialog(true);
+                        }
                       }}
                     />
                     <label htmlFor="image-upload" className="cursor-pointer">
-                      {formData.image ? (
+                      {formData.croppedImage ? (
+                        <div className="space-y-2">
+                          <img 
+                            src={formData.croppedImage} 
+                            alt="Preview" 
+                            className="mx-auto h-24 w-24 rounded-full object-cover"
+                          />
+                          <p className="text-sm text-emerald-600">صورة محصولة جاهزة</p>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setFormData({...formData, image: null, croppedImage: null});
+                            }}
+                          >
+                            إزالة الصورة
+                          </Button>
+                        </div>
+                      ) : formData.image ? (
                         <div className="space-y-2">
                           <img 
                             src={URL.createObjectURL(formData.image)} 
@@ -711,17 +813,32 @@ const FamilyBuilder = () => {
                             className="mx-auto h-24 w-24 rounded-full object-cover"
                           />
                           <p className="text-sm text-emerald-600">{formData.image.name}</p>
-                          <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setFormData({...formData, image: null});
-                            }}
-                          >
-                            إزالة الصورة
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const imageUrl = URL.createObjectURL(formData.image!);
+                                setImageToCrop(imageUrl);
+                                setShowCropDialog(true);
+                              }}
+                            >
+                              قص الصورة
+                            </Button>
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setFormData({...formData, image: null, croppedImage: null});
+                              }}
+                            >
+                              إزالة الصورة
+                            </Button>
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-2">
@@ -1162,6 +1279,71 @@ const FamilyBuilder = () => {
             
             {/* Subtle Bottom Decoration */}
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-60"></div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Image Crop Dialog */}
+        <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="text-right">قص الصورة</DialogTitle>
+              <DialogDescription className="text-right">
+                اختر الجزء الذي تريد استخدامه من الصورة
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="relative w-full h-96 bg-gray-100 rounded-lg overflow-hidden">
+              {imageToCrop && (
+                <Cropper
+                  image={imageToCrop}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1} // Square crop for profile pictures
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                  showGrid={true}
+                  style={{
+                    containerStyle: {
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: '#f3f4f6'
+                    }
+                  }}
+                />
+              )}
+            </div>
+            
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium">التكبير:</label>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="flex-1"
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={handleCropCancel}
+                  className="flex-1"
+                >
+                  إلغاء
+                </Button>
+                <Button 
+                  onClick={handleCropSave}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                >
+                  حفظ الصورة المقصوصة
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
