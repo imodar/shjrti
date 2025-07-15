@@ -497,9 +497,8 @@ const FamilyBuilder = () => {
                   <div key={member.id} className="relative flex items-center gap-4 p-4 border rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">
                     {/* Deceased overlay */}
                     {!member.isAlive && (
-                      <div className="absolute inset-0 bg-black/10 rounded-lg pointer-events-none">
-                        <div className="absolute top-2 left-2 bottom-2 w-0.5 bg-black/80 transform rotate-45 origin-top-left"></div>
-                        <div className="absolute top-2 right-2 bottom-2 w-0.5 bg-black/80 transform -rotate-45 origin-top-right"></div>
+                      <div className="absolute top-0 right-0 w-full h-full rounded-lg overflow-hidden pointer-events-none">
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-black/80 transform rotate-45 origin-top-right translate-x-8 -translate-y-8"></div>
                       </div>
                     )}
                     
