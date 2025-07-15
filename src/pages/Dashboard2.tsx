@@ -667,7 +667,7 @@ const Dashboard2 = () => {
                             <div className="absolute top-2 right-2 w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                               <Users className="h-4 w-4 text-primary" />
                             </div>
-                            <div className="mt-4">
+                            <div className="mt-8">
                               <div className="text-2xl font-bold text-primary">{tree.members}</div>
                               <div className="text-xs text-muted-foreground">فرد</div>
                             </div>
@@ -677,7 +677,7 @@ const Dashboard2 = () => {
                             <div className="absolute top-2 right-2 w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
                               <Calendar className="h-4 w-4 text-accent" />
                             </div>
-                            <div className="mt-4">
+                            <div className="mt-8">
                               <div className="text-2xl font-bold text-accent">{tree.generations}</div>
                               <div className="text-xs text-muted-foreground">أجيال</div>
                             </div>
