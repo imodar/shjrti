@@ -260,7 +260,7 @@ const Dashboard2 = () => {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <CardContent className="p-6 relative z-10">
@@ -306,20 +306,6 @@ const Dashboard2 = () => {
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <CardContent className="p-6 relative z-10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-muted-foreground text-sm font-medium">معدل الإكمال</p>
-                    <p className="text-3xl font-bold text-primary">{Math.round(trees.reduce((acc, tree) => acc + tree.progress, 0) / trees.length)}%</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
-                    <CheckCircle className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Plan Upgrade Section (for free users) */}
