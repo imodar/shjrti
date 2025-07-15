@@ -731,8 +731,8 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons - Fixed at bottom */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-t p-4">
+                {/* Action Buttons */}
+                <div className="mt-6 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-t p-4 rounded-b-lg">
                   <div className="max-w-3xl mx-auto flex justify-between">
                     <Button 
                       variant="outline" 
