@@ -33,6 +33,8 @@ export default function Payments() {
     isDefault: false
   }]);
   const [currentPlan, setCurrentPlan] = useState("premium");
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const plans = [{
     id: "free",
     name: "مجانية",
@@ -62,6 +64,29 @@ export default function Payments() {
   const handleDeletePaymentMethod = (id: number) => {
     setPaymentMethods(paymentMethods.filter(method => method.id !== id));
   };
+
+  const getPlanIndex = (planId: string) => {
+    return plans.findIndex(p => p.id === planId);
+  };
+
+  const handlePlanSelect = (planId: string) => {
+    if (planId === currentPlan) return;
+    setSelectedPlan(planId);
+    setShowPlanModal(true);
+  };
+
+  const confirmPlanChange = () => {
+    if (selectedPlan) {
+      setCurrentPlan(selectedPlan);
+      setShowPlanModal(false);
+      setSelectedPlan(null);
+      // Here you would integrate with Stripe
+    }
+  };
+
+  const isDowngrade = selectedPlan ? getPlanIndex(selectedPlan) < getPlanIndex(currentPlan) : false;
+  const selectedPlanData = plans.find(p => p.id === selectedPlan);
+  const currentPlanData = plans.find(p => p.id === currentPlan);
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
       {/* Animated Background Elements */}
@@ -623,6 +648,7 @@ export default function Payments() {
                         
                         {/* Enhanced button */}
                         <Button 
+                          onClick={() => handlePlanSelect(plan.id)}
                           className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 transform group-hover:scale-105 ${
                             currentPlan === plan.id 
                               ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed text-white shadow-lg' 
@@ -669,6 +695,98 @@ export default function Payments() {
             </Card>
           </div>
         </div>
+
+        {/* Plan Change Confirmation Modal */}
+        <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
+          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
+            {/* Animated background */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-xl animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-16 h-16 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            </div>
+
+            <DialogHeader className="relative z-10 text-center space-y-4">
+              {/* Icon */}
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl">
+                {isDowngrade ? (
+                  <Shield className="h-8 w-8 text-white" />
+                ) : (
+                  <Crown className="h-8 w-8 text-white" />
+                )}
+              </div>
+              
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
+                {isDowngrade ? 'تأكيد تغيير الخطة' : 'ترقية الخطة'}
+              </DialogTitle>
+              
+              <DialogDescription className="text-center text-lg">
+                {isDowngrade ? (
+                  <div className="space-y-3">
+                    <p className="text-orange-600 dark:text-orange-400 font-medium">
+                      ⚠️ تحذير: ستفقد بعض الميزات عند التراجع إلى خطة {selectedPlanData?.name}
+                    </p>
+                    <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                      <p className="text-sm text-orange-700 dark:text-orange-300 font-medium mb-2">
+                        الميزات التي ستفقدها:
+                      </p>
+                      <ul className="text-sm text-orange-600 dark:text-orange-400 space-y-1">
+                        {currentPlanData?.features
+                          .filter(feature => !selectedPlanData?.features.includes(feature))
+                          .map((feature, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                              {feature}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-emerald-600 dark:text-emerald-400 font-medium">
+                      🎉 رائع! ستحصل على ميزات متقدمة مع خطة {selectedPlanData?.name}
+                    </p>
+                    <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                      <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium mb-2">
+                        الميزات الجديدة التي ستحصل عليها:
+                      </p>
+                      <ul className="text-sm text-emerald-600 dark:text-emerald-400 space-y-1">
+                        {selectedPlanData?.features
+                          .filter(feature => !currentPlanData?.features.includes(feature))
+                          .map((feature, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                              {feature}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="flex gap-3 pt-6 relative z-10">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowPlanModal(false)}
+                className="flex-1 h-12 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300"
+              >
+                إلغاء
+              </Button>
+              <Button 
+                onClick={confirmPlanChange}
+                className={`flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 ${
+                  isDowngrade 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600' 
+                    : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700'
+                } text-white`}
+              >
+                {isDowngrade ? 'تأكيد التراجع' : 'ترقية الآن'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
       
       <Footer />
