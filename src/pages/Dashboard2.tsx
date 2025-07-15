@@ -591,33 +591,102 @@ const Dashboard2 = () => {
 
       {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-card to-card/90 backdrop-blur-sm border-border/50">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Share2 className="h-5 w-5 text-primary" />
-              مشاركة الشجرة
-            </DialogTitle>
-            <DialogDescription>
-              شارك شجرة العائلة مع الآخرين عبر الرابط أدناه
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <Input value={treeToShare ? `${window.location.origin}/tree/${treeToShare}` : ""} readOnly className="flex-1" />
-              <Button size="sm" onClick={copyShareLink}>
-                {linkCopied ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            {linkCopied && <p className="text-sm text-green-600 flex items-center gap-1">
-                <CheckCircle className="h-4 w-4" />
-                تم نسخ الرابط بنجاح!
-              </p>}
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-emerald-50/95 via-white/95 to-teal-50/95 dark:from-emerald-950/95 dark:via-gray-900/95 dark:to-teal-950/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-tr from-teal-400/15 to-cyan-400/15 rounded-full blur-lg animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-1/2 right-2 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute top-1/4 left-2 w-1.5 h-1.5 bg-teal-400/40 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowShareDialog(false)}>
-              إغلاق
-            </Button>
-          </DialogFooter>
+          
+          <div className="relative z-10">
+            <DialogHeader className="text-center pb-6">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-105 transition-transform">
+                <Share2 className="h-8 w-8 text-white animate-pulse" />
+              </div>
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                مشاركة الشجرة
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground mt-2 leading-relaxed">
+                شارك شجرة العائلة مع أحبائك واجعلهم جزءاً من التاريخ العائلي
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Share Link Section */}
+              <div className="bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-xl p-4 border border-emerald-200/30 dark:border-emerald-700/30">
+                <label className="text-sm font-medium text-emerald-700 dark:text-emerald-300 mb-2 block">
+                  رابط المشاركة
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Input 
+                      value={treeToShare ? `${window.location.origin}/tree/${treeToShare}` : ""} 
+                      readOnly 
+                      className="pr-10 bg-white/70 dark:bg-gray-800/70 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-400 focus:ring-emerald-400/20" 
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    onClick={copyShareLink}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    {linkCopied ? (
+                      <CheckCircle className="h-4 w-4 text-white animate-bounce" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Success Message */}
+              {linkCopied && (
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 border border-green-200/50 dark:border-green-700/50 rounded-xl p-4 animate-fade-in">
+                  <div className="flex items-center gap-3 justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-4 w-4 text-white" />
+                    </div>
+                    <p className="text-green-700 dark:text-green-300 font-medium">
+                      تم نسخ الرابط بنجاح! 🎉
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Quick Share Options */}
+              <div className="bg-gradient-to-r from-gray-50/50 to-slate-50/50 dark:from-gray-950/30 dark:to-slate-950/30 rounded-xl p-4 border border-gray-200/30 dark:border-gray-700/30">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
+                  مشاركة سريعة
+                </p>
+                <div className="flex justify-center gap-3">
+                  <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-950/50 dark:hover:bg-blue-950/70 dark:border-blue-700 dark:text-blue-300">
+                    واتساب
+                  </Button>
+                  <Button variant="outline" size="sm" className="bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-950/50 dark:hover:bg-purple-950/70 dark:border-purple-700 dark:text-purple-300">
+                    تليجرام
+                  </Button>
+                  <Button variant="outline" size="sm" className="bg-orange-50 hover:bg-orange-100 border-orange-200 text-orange-700 dark:bg-orange-950/50 dark:hover:bg-orange-950/70 dark:border-orange-700 dark:text-orange-300">
+                    إيميل
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <DialogFooter className="pt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowShareDialog(false)}
+                className="w-full bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800 hover:from-gray-100 hover:to-slate-100 dark:hover:from-gray-700 dark:hover:to-slate-700 border-gray-300 dark:border-gray-600 transition-all duration-300"
+              >
+                إغلاق
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
