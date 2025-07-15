@@ -13,7 +13,7 @@ const PlanSelection = () => {
   const plans = [
     {
       id: "free",
-      name: "مجاني",
+      name: "مجانية",
       price: "0",
       period: "شهرياً",
       features: [
@@ -27,7 +27,7 @@ const PlanSelection = () => {
     },
     {
       id: "premium",
-      name: "بريميوم",
+      name: "أساسية",
       price: "29",
       period: "شهرياً",
       features: [
@@ -43,7 +43,7 @@ const PlanSelection = () => {
     },
     {
       id: "enterprise",
-      name: "المؤسسات",
+      name: "احترافية",
       price: "99",
       period: "شهرياً",
       features: [
