@@ -254,7 +254,7 @@ const FamilyBuilder = () => {
                 </div>
 
                 {/* Related Person Selection */}
-                {!isNewTree && familyMembers.length > 0 && formData.relation && (
+                {!isNewTree && familyMembers.length > 0 && formData.relation && formData.relation !== "founder" && (
                   <div className="space-y-2">
                     <Label>اختر الشخص المرتبط بهذه القرابة</Label>
                     <Select 
