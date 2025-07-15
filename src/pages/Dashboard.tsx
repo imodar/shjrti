@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Users, TreePine, Settings, Share, Plus, Edit, Trash2, ArrowRight, ArrowLeft, Check, TrendingUp, Calendar, Heart, Award, Target, Sparkles } from "lucide-react";
+import { Users, TreePine, Settings, Share, Plus, Edit, Trash2, ArrowRight, ArrowLeft, Check, TrendingUp, Calendar, Heart, Award, Target, Sparkles, User, CreditCard, FileText, LogOut } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import dashboardStatsImage from "@/assets/dashboard-stats.jpg";
 import familySuccessImage from "@/assets/family-success.jpg";
@@ -113,11 +114,54 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-            <Link to="/">
-              <Button variant="outline">
-                العودة للرئيسية
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link to="/">
+                <Button variant="outline">
+                  العودة للرئيسية
+                </Button>
+              </Link>
+              
+              {/* User Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="rounded-full">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="w-full flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      الملف الشخصي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/payments" className="w-full flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      طرق الدفع والاشتراكات
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/change-password" className="w-full flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      تغيير كلمة المرور
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/terms" className="w-full flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      الشروط والأحكام
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    تسجيل الخروج
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
