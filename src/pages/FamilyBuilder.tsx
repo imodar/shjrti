@@ -470,7 +470,7 @@ const FamilyBuilder = () => {
                     </svg>
                   </div>
                   <h2 className="text-xl font-bold text-emerald-900 dark:text-emerald-100">
-                    {familyInfo.familyName}
+                    عائلة {familyInfo.familyName}
                   </h2>
                 </div>
                 {familyInfo.familyDescription && (
