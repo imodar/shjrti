@@ -238,12 +238,12 @@ const FamilyBuilder = () => {
                 <div className="space-y-2">
                   <Label>الجنس</Label>
                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-right">
                       <SelectValue placeholder="الجنس" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">ذكر</SelectItem>
-                      <SelectItem value="female">أنثى</SelectItem>
+                    <SelectContent className="text-right">
+                      <SelectItem value="male" className="text-right">ذكر</SelectItem>
+                      <SelectItem value="female" className="text-right">أنثى</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -254,12 +254,12 @@ const FamilyBuilder = () => {
                 <div className="space-y-2">
                   <Label>صلة القرابة</Label>
                   <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-right">
                       <SelectValue placeholder="اختر صلة القرابة" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="text-right">
                       {getRelationshipOptions(formData.gender).map((relation) => (
-                        <SelectItem key={relation.value} value={relation.value}>
+                        <SelectItem key={relation.value} value={relation.value} className="text-right">
                           {relation.label}
                         </SelectItem>
                       ))}
@@ -275,10 +275,10 @@ const FamilyBuilder = () => {
                       value={formData.relatedPersonId?.toString() || ""} 
                       onValueChange={(value) => setFormData({...formData, relatedPersonId: parseInt(value)})}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-right">
                         <SelectValue placeholder="ابحث واختر الشخص المرتبط" />
                       </SelectTrigger>
-                      <SelectContent className="max-h-60">
+                      <SelectContent className="max-h-60 text-right">
                         <div className="p-2">
                           <Input
                             placeholder="ابحث عن شخص..."
@@ -291,7 +291,7 @@ const FamilyBuilder = () => {
                             member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase())
                           )
                           .map((member) => (
-                          <SelectItem key={member.id} value={member.id.toString()}>
+                          <SelectItem key={member.id} value={member.id.toString()} className="text-right">
                             <span>{member.name}</span>
                           </SelectItem>
                         ))}
@@ -340,12 +340,12 @@ const FamilyBuilder = () => {
                 <div className="space-y-2">
                   <Label>حالة الشخص</Label>
                   <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-right">
                       <SelectValue placeholder="حالة الشخص" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">على قيد الحياة</SelectItem>
-                      <SelectItem value="false">متوفى</SelectItem>
+                    <SelectContent className="text-right">
+                      <SelectItem value="true" className="text-right">على قيد الحياة</SelectItem>
+                      <SelectItem value="false" className="text-right">متوفى</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
