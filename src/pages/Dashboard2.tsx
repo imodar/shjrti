@@ -503,56 +503,6 @@ const Dashboard2 = () => {
         </header>
 
         <main className="container mx-auto px-6 py-8 space-y-8">
-          {/* Hero Section with Plan Info */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary/90 to-accent/90 text-primary-foreground shadow-2xl">
-            <div className="absolute inset-0 bg-black/20"></div>
-            <img src={dashboardHeroBanner} alt="Dashboard Hero" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay" />
-            
-            <div className="relative z-10 p-8 md:p-12">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    {getPlanIcon(currentPlan.type)}
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                      الباقة {currentPlan.name}
-                    </Badge>
-                  </div>
-                  <h2 className="text-4xl font-bold mb-4">مرحباً بعودتك!</h2>
-                  <p className="text-xl text-white/90 mb-6">
-                    استمر في بناء تاريخ عائلتك والحفاظ على الذكريات الثمينة
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BarChart3 className="h-5 w-5 text-white" />
-                        <span className="text-white/80 text-sm">الأشجار</span>
-                      </div>
-                      <div className="text-2xl font-bold text-white mb-1">
-                        {currentPlan.treesUsed}/{currentPlan.treesLimit}
-                      </div>
-                      <Progress value={planProgress} className="h-2 bg-white/20" />
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Users className="h-5 w-5 text-white" />
-                        <span className="text-white/80 text-sm">الأفراد</span>
-                      </div>
-                      <div className="text-2xl font-bold text-white mb-1">
-                        {currentPlan.membersUsed}/{currentPlan.membersLimit}
-                      </div>
-                      <Progress value={membersProgress} className="h-2 bg-white/20" />
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -644,58 +594,120 @@ const Dashboard2 = () => {
             </div>
 
             {trees.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {trees.map(tree => <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {trees.map(tree => <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-card via-accent/5 to-primary/5 backdrop-blur-sm border-2 border-gradient-to-r from-primary/20 to-accent/20 hover:border-primary/40 hover:shadow-2xl transition-all duration-700 hover:scale-105">
+                    {/* Animated background patterns */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/10 via-transparent to-accent/10"></div>
+                      <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+                      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                    </div>
                     
-                    {/* Tree Image */}
-                    <div className="relative h-48 overflow-hidden">
-                      <img src={tree.image} alt={tree.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                      
-                      {/* Status Badge */}
-                      <div className="absolute top-4 left-4">
-                        <Badge variant={tree.isPublic ? "default" : "secondary"} className="shadow-lg">
-                          {tree.isPublic ? "عام" : "خاص"}
-                        </Badge>
-                      </div>
-
-                      {/* Progress Circle */}
-                      
+                    {/* Floating geometric shapes */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                      <div className="absolute top-4 right-6 w-3 h-3 bg-primary/40 rounded-full animate-bounce"></div>
+                      <div className="absolute top-8 right-12 w-2 h-2 bg-accent/40 rotate-45 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                      <div className="absolute bottom-6 left-8 w-4 h-4 bg-secondary/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
                     </div>
 
-                    <CardContent className="p-6 relative z-10">
-                      <div className="space-y-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                            {tree.name}
-                          </h3>
-                          <p className="text-muted-foreground text-sm">{tree.lastUpdated}</p>
+                    <CardContent className="p-0 relative z-10">
+                      {/* Header with curved design */}
+                      <div className="relative p-6 bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="relative z-10">
+                          {/* Status and Progress */}
+                          <div className="flex items-center justify-between mb-4">
+                            <Badge variant={tree.isPublic ? "default" : "secondary"} className="shadow-md bg-gradient-to-r from-primary/80 to-accent/80 text-white border-0">
+                              {tree.isPublic ? "عام" : "خاص"}
+                            </Badge>
+                            <div className="relative w-12 h-12">
+                              <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                <path
+                                  className="text-primary/20"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  fill="none"
+                                  d="m18,2.0845
+                                    a 15.9155,15.9155 0 0,1 0,31.831
+                                    a 15.9155,15.9155 0 0,1 0,-31.831"
+                                />
+                                <path
+                                  className="text-primary"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  strokeDasharray={`${tree.progress}, 100`}
+                                  fill="none"
+                                  d="m18,2.0845
+                                    a 15.9155,15.9155 0 0,1 0,31.831
+                                    a 15.9155,15.9155 0 0,1 0,-31.831"
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-xs font-bold text-primary">{tree.progress}%</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Tree name and last updated */}
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent group-hover:from-primary group-hover:to-accent transition-all duration-500">
+                              {tree.name}
+                            </h3>
+                            <p className="text-muted-foreground text-sm flex items-center gap-2">
+                              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                              {tree.lastUpdated}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Stats section with creative layout */}
+                      <div className="p-6">
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/20 group-hover:border-primary/40 transition-colors duration-500">
+                            <div className="absolute top-2 right-2 w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                              <Users className="h-4 w-4 text-primary" />
+                            </div>
+                            <div className="mt-4">
+                              <div className="text-2xl font-bold text-primary">{tree.members}</div>
+                              <div className="text-xs text-muted-foreground">فرد</div>
+                            </div>
+                          </div>
+                          
+                          <div className="relative bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 border border-accent/20 group-hover:border-accent/40 transition-colors duration-500">
+                            <div className="absolute top-2 right-2 w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+                              <Calendar className="h-4 w-4 text-accent" />
+                            </div>
+                            <div className="mt-4">
+                              <div className="text-2xl font-bold text-accent">{tree.generations}</div>
+                              <div className="text-xs text-muted-foreground">أجيال</div>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-muted-foreground">{tree.members} فرد</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-accent" />
-                            <span className="text-sm text-muted-foreground">{tree.generations} أجيال</span>
-                          </div>
-                        </div>
-
-                         <div className="flex gap-2">
-                           <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="flex-1 group-hover:border-primary/50 transition-colors">
-                             <Share2 className="mr-1 h-4 w-4" />
-                             مشاركة
-                           </Button>
-                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder')} className="flex-1 group-hover:border-primary/50 transition-colors">
+                        {/* Action buttons */}
+                        <div className="space-y-3">
+                          <Button 
+                            onClick={() => navigate('/family-builder')} 
+                            className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            عرض الشجرة
+                          </Button>
+                          
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder')} className="flex-1 border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300">
                               <Edit className="mr-1 h-4 w-4" />
                               تحرير
                             </Button>
-                           <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="group-hover:border-destructive/50 group-hover:text-destructive transition-colors">
-                             <Trash2 className="h-4 w-4" />
-                           </Button>
-                         </div>
+                            <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="flex-1 border-accent/30 hover:border-accent/60 hover:bg-accent/10 transition-all duration-300">
+                              <Share2 className="mr-1 h-4 w-4" />
+                              مشاركة
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="border-destructive/30 hover:border-destructive hover:bg-destructive/10 hover:text-destructive transition-all duration-300">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>)}
