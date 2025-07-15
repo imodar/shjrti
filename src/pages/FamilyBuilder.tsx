@@ -492,7 +492,7 @@ const FamilyBuilder = () => {
                   {currentMode === 'edit-member' ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد وحدد صلة القرابة'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pb-20">
+              <CardContent className="space-y-6 pb-20 pt-6">
                 {/* Name and Gender on same line */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-2">
