@@ -201,11 +201,30 @@ const FamilyBuilder = () => {
   };
 
   const handleDeleteMember = (memberId: number) => {
-    setFamilyMembers(familyMembers.filter(member => member.id !== memberId));
+    const updatedMembers = familyMembers.filter(member => member.id !== memberId);
+    setFamilyMembers(updatedMembers);
+    
     // If we're currently editing the deleted member, reset the form
     if (selectedMember?.id === memberId) {
       setSelectedMember(null);
-      setCurrentMode(familyMembers.length === 1 ? 'add-member' : undefined);
+      setCurrentMode(updatedMembers.length === 0 ? undefined : undefined);
+      setFormData({
+        name: "",
+        relation: "",
+        relatedPersonId: null,
+        gender: "",
+        birthDate: null,
+        isAlive: true,
+        deathDate: null,
+        bio: "",
+        image: null
+      });
+    }
+    
+    // If this was the last member and we're in any editing mode, reset to default state
+    if (updatedMembers.length === 0 && currentMode) {
+      setCurrentMode(undefined);
+      setSelectedMember(null);
       setFormData({
         name: "",
         relation: "",
