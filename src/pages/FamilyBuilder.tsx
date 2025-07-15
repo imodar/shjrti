@@ -231,7 +231,7 @@ const FamilyBuilder = () => {
 
       <div className="flex h-[calc(100vh-120px)] gap-6 px-4 py-6 max-w-7xl mx-auto">
         {/* Left Column - Form */}
-        <div className="flex-1 max-w-3xl">
+        <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
           {/* Welcome Screen for New Tree */}
           {currentMode === 'welcome' && isNewTree && (
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full">
