@@ -181,15 +181,6 @@ const FamilyBuilder = () => {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="founderName">اسم الشخص الذي ستبدأ منه الشجرة</Label>
-                  <Input 
-                    id="founderName" 
-                    placeholder="أحمد محمد الأحمد (الجد أو الأب)"
-                    value={familyInfo.founderName}
-                    onChange={(e) => setFamilyInfo({...familyInfo, founderName: e.target.value})}
-                  />
-                </div>
               </div>
               
               <Button 
