@@ -687,7 +687,7 @@ const Dashboard2 = () => {
                         {/* Action buttons */}
                         <div className="space-y-3">
                           <Button 
-                            onClick={() => navigate('/family-builder')} 
+                            onClick={() => navigate('/view-tree')} 
                             className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                           >
                             <Eye className="mr-2 h-4 w-4" />
