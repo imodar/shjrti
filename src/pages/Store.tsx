@@ -755,7 +755,7 @@ export default function Store() {
                             key={size.id}
                             className={`group relative overflow-hidden rounded-xl transition-all duration-500 cursor-pointer ${
                               selectedSize === size.id
-                                ? 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-xl shadow-primary/25'
+                                ? 'ring-2 ring-accent ring-offset-2 ring-offset-background shadow-xl shadow-accent/25'
                                 : 'hover:shadow-lg hover:-translate-y-0.5'
                             }`}
                             onClick={() => setSelectedSize(size.id)}
@@ -763,15 +763,15 @@ export default function Store() {
                             {/* Background Gradient */}
                             <div className={`absolute inset-0 transition-all duration-500 ${
                               selectedSize === size.id
-                                ? 'bg-gradient-to-r from-primary/15 via-accent/8 to-primary/10'
-                                : 'bg-gradient-to-r from-card via-card/95 to-card/90 group-hover:from-primary/3 group-hover:to-accent/3'
+                                ? 'bg-gradient-to-r from-accent/15 via-orange-200/10 to-amber-100/15'
+                                : 'bg-gradient-to-r from-card via-card/95 to-card/90 group-hover:from-accent/5 group-hover:to-amber-50/10'
                             }`} />
                             
                             {/* Animated Border */}
                             <div className={`absolute inset-0 rounded-xl transition-all duration-500 ${
                               selectedSize === size.id
-                                ? 'border-2 border-primary'
-                                : 'border border-border group-hover:border-primary/30'
+                                ? 'border-2 border-accent'
+                                : 'border border-border group-hover:border-accent/40'
                             }`} />
                             
                             {/* Content */}
@@ -783,15 +783,15 @@ export default function Store() {
                                     value={size.id} 
                                     id={size.id}
                                     className={`transition-colors duration-300 ${
-                                      selectedSize === size.id ? 'border-primary text-primary' : 'border-muted-foreground'
+                                      selectedSize === size.id ? 'border-accent text-accent' : 'border-muted-foreground'
                                     }`}
                                   />
                                   
                                   <div className="flex items-center gap-2">
                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                                       selectedSize === size.id
-                                        ? 'bg-primary shadow-md'
-                                        : 'bg-muted group-hover:bg-primary/20'
+                                        ? 'bg-gradient-to-br from-accent to-amber-400 shadow-md'
+                                        : 'bg-muted group-hover:bg-accent/20'
                                     }`}>
                                       <Ruler className={`h-4 w-4 transition-colors duration-300 ${
                                         selectedSize === size.id ? 'text-white' : 'text-muted-foreground group-hover:text-primary'
@@ -799,7 +799,7 @@ export default function Store() {
                                     </div>
                                     
                                     <Label htmlFor={size.id} className={`font-semibold cursor-pointer transition-colors duration-300 ${
-                                      selectedSize === size.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
+                                      selectedSize === size.id ? 'text-accent' : 'text-foreground group-hover:text-accent'
                                     }`}>
                                       {size.name}
                                     </Label>
@@ -809,13 +809,13 @@ export default function Store() {
                                 {/* Right side - Price and Check */}
                                 <div className="flex items-center gap-3">
                                   <span className={`font-bold transition-colors duration-300 ${
-                                    selectedSize === size.id ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+                                    selectedSize === size.id ? 'text-amber-600' : 'text-muted-foreground group-hover:text-foreground'
                                   }`}>
                                     {size.price} ريال
                                   </span>
                                   
                                   {selectedSize === size.id && (
-                                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center animate-scale-in shadow-md">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-accent to-amber-500 rounded-full flex items-center justify-center animate-scale-in shadow-md">
                                       <Check className="h-4 w-4 text-white" />
                                     </div>
                                   )}
@@ -825,7 +825,7 @@ export default function Store() {
                             
                             {/* Glow Effect */}
                             {selectedSize === size.id && (
-                              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-accent to-primary rounded-xl opacity-20 blur-md animate-pulse" />
+                              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent via-amber-400 to-accent rounded-xl opacity-25 blur-md animate-pulse" />
                             )}
                             
                             {/* Hover Shimmer Effect */}
@@ -1035,17 +1035,17 @@ export default function Store() {
                     <span className="font-bold text-accent">{framePrice} ريال</span>
                   </div>
                   
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-secondary/5 to-primary/5 rounded-xl border border-secondary/20">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/8 to-amber-100/10 rounded-xl border border-accent/25">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center">
-                        <Ruler className="h-5 w-5 text-secondary" />
+                      <div className="w-10 h-10 bg-gradient-to-br from-accent/30 to-amber-300/20 rounded-lg flex items-center justify-center">
+                        <Ruler className="h-5 w-5 text-accent" />
                       </div>
                       <div>
                         <p className="font-semibold text-foreground">{sizeDisplayName}</p>
                         <p className="text-sm text-muted-foreground">حجم الطباعة</p>
                       </div>
                     </div>
-                    <span className="font-bold text-secondary">{sizePrice} ريال</span>
+                    <span className="font-bold text-amber-600">{sizePrice} ريال</span>
                   </div>
                 </div>
 
