@@ -100,34 +100,54 @@ const FamilyCreator = () => {
       <Header />
       
       <div className="pt-20 relative z-10">
-        {/* Steps Indicator */}
+        {/* Enhanced Steps Indicator */}
         <div className="max-w-4xl mx-auto px-4 pt-8 pb-6">
-          <div className="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+          <div className="relative flex items-center justify-center space-x-8 rtl:space-x-reverse">
+            {/* Connecting Line */}
+            <div className="absolute top-5 left-1/2 transform -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-emerald-200 via-emerald-300 to-emerald-200"></div>
+            
             {/* Step 1 */}
-            <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                currentStep >= 1 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'
+            <div className="relative flex flex-col items-center group">
+              <div className={`relative w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-500 ${
+                currentStep >= 1 
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 scale-110' 
+                  : 'bg-white border-4 border-gray-200 text-gray-400'
               }`}>
-                1
+                {currentStep >= 1 && (
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 animate-ping opacity-75"></div>
+                )}
+                <span className="relative z-10">1</span>
               </div>
-              <span className={`mr-3 text-base ${currentStep >= 1 ? 'text-emerald-600 font-medium' : 'text-gray-500'}`}>
+              <span className={`mt-3 text-base font-medium transition-all duration-300 ${
+                currentStep >= 1 ? 'text-emerald-700 font-bold' : 'text-gray-500'
+              }`}>
                 بيانات الشجرة
               </span>
+              <TreePine className={`mt-1 h-5 w-5 transition-all duration-300 ${
+                currentStep >= 1 ? 'text-emerald-500' : 'text-gray-300'
+              }`} />
             </div>
             
-            {/* Separator */}
-            <div className={`h-px w-20 ${currentStep >= 2 ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
-            
             {/* Step 2 */}
-            <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                currentStep >= 2 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'
+            <div className="relative flex flex-col items-center group">
+              <div className={`relative w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-500 ${
+                currentStep >= 2 
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 scale-110' 
+                  : 'bg-white border-4 border-gray-200 text-gray-400'
               }`}>
-                2
+                {currentStep >= 2 && (
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 animate-ping opacity-75"></div>
+                )}
+                <span className="relative z-10">2</span>
               </div>
-              <span className={`mr-3 text-base ${currentStep >= 2 ? 'text-emerald-600 font-medium' : 'text-gray-500'}`}>
+              <span className={`mt-3 text-base font-medium transition-all duration-300 ${
+                currentStep >= 2 ? 'text-emerald-700 font-bold' : 'text-gray-500'
+              }`}>
                 إضافة الفرد الأول
               </span>
+              <Users className={`mt-1 h-5 w-5 transition-all duration-300 ${
+                currentStep >= 2 ? 'text-emerald-500' : 'text-gray-300'
+              }`} />
             </div>
           </div>
         </div>
