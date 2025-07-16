@@ -515,6 +515,21 @@ const FamilyBuilder = () => {
 
               {/* Family Members Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Add New Member Card - يظهر أولاً (على اليسار في RTL) */}
+                <Card 
+                  className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl cursor-pointer group hover:from-primary/10 hover:to-accent/10 hover:border-primary/50 transition-all duration-300"
+                  onClick={handleAddNewMember}
+                >
+                  <CardContent className="p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Plus className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-primary text-lg mb-2">إضافة فرد جديد</h3>
+                    <p className="text-muted-foreground text-center text-sm">انقر هنا لإضافة عضو جديد إلى شجرة العائلة</p>
+                  </CardContent>
+                </Card>
+
+                {/* Family Members - باقي الأفراد */}
                 {filteredMembers.map((member) => (
                   <Card key={member.id} className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
@@ -606,20 +621,6 @@ const FamilyBuilder = () => {
                      </CardContent>
                   </Card>
                 ))}
-
-                {/* Add New Member Card */}
-                <Card 
-                  className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl cursor-pointer group hover:from-primary/10 hover:to-accent/10 hover:border-primary/50 transition-all duration-300"
-                  onClick={handleAddNewMember}
-                >
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <Plus className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="font-bold text-primary text-lg mb-2">إضافة فرد جديد</h3>
-                    <p className="text-muted-foreground text-center text-sm">انقر هنا لإضافة عضو جديد إلى شجرة العائلة</p>
-                  </CardContent>
-                </Card>
               </div>
             </TabsContent>
 
