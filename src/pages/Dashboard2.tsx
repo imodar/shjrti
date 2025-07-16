@@ -26,12 +26,12 @@ const mockTrees: any[] = [];
 const currentPlan = {
   name: "مجانية",
   type: "free",
-  // free, basic, premium
+  // free: 0/0, basic: 0/2, premium: 0/10
   treesUsed: 0,
-  treesLimit: 3,
+  treesLimit: 0, // Free plan has no trees allowed
   membersUsed: 0,
-  membersLimit: 100,
-  features: ["3 أشجار عائلية", "100 فرد", "مشاركة محدودة"]
+  membersLimit: 0, // Free plan has no members allowed
+  features: ["لا توجد أشجار مسموحة", "ترقية للحصول على الميزات"]
 };
 // Mock notifications data
 const mockNotifications = [
@@ -725,7 +725,10 @@ const Dashboard2 = () => {
                 <span className="text-sm font-medium">الاستخدام الحالي</span>
                 <span className="text-sm text-muted-foreground">{trees.length}/{currentPlan.treesLimit}</span>
               </div>
-              <Progress value={100} className="h-2" />
+              <Progress 
+                value={currentPlan.treesLimit > 0 ? (trees.length / currentPlan.treesLimit) * 100 : 0} 
+                className="h-2" 
+              />
             </div>
 
             <div className="space-y-2">
