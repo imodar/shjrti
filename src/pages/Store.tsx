@@ -74,302 +74,333 @@ export default function Store() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950" dir="rtl">
+    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
+      </div>
+      
       {/* Header */}
-      <div className="border-b bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
+      <header className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-xl border-b border-gradient-to-r from-primary/30 to-secondary/30 sticky top-0 z-50">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-2 left-10 w-6 h-6 bg-primary/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
+
+        <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ShoppingCart className="h-8 w-8 text-emerald-600" />
-              <div>
-                <h1 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                  <ShoppingCart className="h-7 w-7 text-primary-foreground" />
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                   متجر الطباعة
                 </h1>
-                <p className="text-emerald-600 dark:text-emerald-400">
-                  اطبع شجرة عائلتك بأجمل التصاميم
-                </p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  <p className="text-muted-foreground font-medium">اطبع شجرة عائلتك بأجمل التصاميم</p>
+                </div>
               </div>
             </div>
-            <Link to="/dashboard">
-              <Button variant="outline">
-                العودة للوحة التحكم
-              </Button>
-            </Link>
+            
+            <div className="flex items-center gap-4">
+              <Link to="/family-builder">
+                <Button
+                  variant="outline"
+                  className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6"
+                >
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                  العودة لمنشئ الشجرة
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Design Selection */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Design Templates */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5" />
-                  اختر تصميم الشجرة
-                </CardTitle>
-                <CardDescription>
-                  اختر من بين تصاميمنا المتنوعة لشجرة عائلتك
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup value={selectedDesign} onValueChange={setSelectedDesign}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {designTemplates.map((design) => (
-                      <div key={design.id} className="relative">
-                        <RadioGroupItem value={design.id} id={design.id} className="sr-only" />
-                        <label
-                          htmlFor={design.id}
-                          className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                            selectedDesign === design.id
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="text-4xl">{design.image}</div>
-                            {design.isPremium && (
-                              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                                <Crown className="h-3 w-3 mr-1" />
-                                مميز
-                              </Badge>
+      {/* Main Content */}
+      <div className="pt-8 relative z-10 min-h-screen">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Design Selection */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Design Templates */}
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <Palette className="h-5 w-5 text-primary" />
+                    اختر تصميم الشجرة
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    اختر من بين تصاميمنا المتنوعة لشجرة عائلتك
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RadioGroup value={selectedDesign} onValueChange={setSelectedDesign}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {designTemplates.map((design) => (
+                        <div key={design.id} className="relative">
+                          <RadioGroupItem value={design.id} id={design.id} className="sr-only" />
+                          <label
+                            htmlFor={design.id}
+                            className={`block p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                              selectedDesign === design.id
+                                ? 'border-primary bg-primary/10 shadow-lg'
+                                : 'border-border hover:border-primary/50 hover:shadow-md'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-4xl">{design.image}</div>
+                              {design.isPremium && (
+                                <Badge variant="secondary" className="bg-accent/20 text-accent-foreground border border-accent/30">
+                                  <Crown className="h-3 w-3 mr-1" />
+                                  مميز
+                                </Badge>
+                              )}
+                            </div>
+                            <h3 className="font-semibold text-foreground">{design.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {design.price === 0 ? 'مجاني' : `${design.price} ريال`}
+                            </p>
+                            {selectedDesign === design.id && (
+                              <Check className="absolute top-2 left-2 h-5 w-5 text-primary" />
                             )}
-                          </div>
-                          <h3 className="font-semibold">{design.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {design.price === 0 ? 'مجاني' : `${design.price} ريال`}
-                          </p>
-                          {selectedDesign === design.id && (
-                            <Check className="absolute top-2 left-2 h-5 w-5 text-emerald-600" />
-                          )}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </CardContent>
+              </Card>
 
-            {/* Frame Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Frame className="h-5 w-5" />
-                  اختر الإطار
-                </CardTitle>
-                <CardDescription>
-                  أضف لمسة جمالية لشجرة عائلتك
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup value={selectedFrame} onValueChange={setSelectedFrame}>
+              {/* Frame Selection */}
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <Frame className="h-5 w-5 text-primary" />
+                    اختر الإطار
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    أضف لمسة جمالية لشجرة عائلتك
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RadioGroup value={selectedFrame} onValueChange={setSelectedFrame}>
+                    <div className="space-y-3">
+                      {frameOptions.map((frame) => (
+                        <div key={frame.id} className="relative">
+                          <RadioGroupItem value={frame.id} id={frame.id} className="sr-only" />
+                          <label
+                            htmlFor={frame.id}
+                            className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                              selectedFrame === frame.id
+                                ? 'border-primary bg-primary/10 shadow-lg'
+                                : 'border-border hover:border-primary/50 hover:shadow-md'
+                            }`}
+                          >
+                            <div>
+                              <h3 className="font-semibold text-foreground">{frame.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {frame.price === 0 ? 'مجاني' : `${frame.price} ريال إضافي`}
+                              </p>
+                            </div>
+                            {selectedFrame === frame.id && (
+                              <Check className="h-5 w-5 text-primary" />
+                            )}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+
+              {/* Size Selection */}
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <Ruler className="h-5 w-5 text-primary" />
+                    اختر المقاس
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    حدد المقاس المناسب لمساحتك
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
+                    <div className="space-y-3">
+                      {sizeOptions.map((size) => (
+                        <div key={size.id} className="relative">
+                          <RadioGroupItem value={size.id} id={size.id} className="sr-only" />
+                          <label
+                            htmlFor={size.id}
+                            className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                              selectedSize === size.id
+                                ? 'border-primary bg-primary/10 shadow-lg'
+                                : 'border-border hover:border-primary/50 hover:shadow-md'
+                            }`}
+                          >
+                            <div>
+                              <h3 className="font-semibold text-foreground">{size.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {size.price} ريال
+                              </p>
+                            </div>
+                            {selectedSize === size.id && (
+                              <Check className="h-5 w-5 text-primary" />
+                            )}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+
+              {/* Shipping Information */}
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    معلومات الشحن
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    أدخل عنوان الشحن ورقم الجوال للتواصل
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="address" className="text-foreground">عنوان الشحن</Label>
+                    <Textarea
+                      id="address"
+                      placeholder="أدخل عنوان الشحن الكامل مع رقم المبنى والحي والمدينة"
+                      value={shippingAddress}
+                      onChange={(e) => setShippingAddress(e.target.value)}
+                      className="min-h-[100px] bg-background/50 border-border focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone" className="flex items-center gap-2 text-foreground">
+                      <Phone className="h-4 w-4" />
+                      رقم الجوال
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="05xxxxxxxx"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="bg-background/50 border-border focus:border-primary"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <Card className="sticky top-24 bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <Package className="h-5 w-5 text-primary" />
+                    ملخص الطلب
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Selected items summary */}
                   <div className="space-y-3">
-                    {frameOptions.map((frame) => (
-                      <div key={frame.id} className="relative">
-                        <RadioGroupItem value={frame.id} id={frame.id} className="sr-only" />
-                        <label
-                          htmlFor={frame.id}
-                          className={`flex items-center justify-between p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                            selectedFrame === frame.id
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          <div>
-                            <h3 className="font-semibold">{frame.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {frame.price === 0 ? 'مجاني' : `${frame.price} ريال إضافي`}
-                            </p>
-                          </div>
-                          {selectedFrame === frame.id && (
-                            <Check className="h-5 w-5 text-emerald-600" />
-                          )}
-                        </label>
-                      </div>
-                    ))}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">التصميم:</span>
+                      <span className="font-semibold text-foreground">
+                        {designTemplates.find(d => d.id === selectedDesign)?.name}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">الإطار:</span>
+                      <span className="font-semibold text-foreground">
+                        {frameOptions.find(f => f.id === selectedFrame)?.name}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">المقاس:</span>
+                      <span className="font-semibold text-foreground">
+                        {sizeOptions.find(s => s.id === selectedSize)?.name}
+                      </span>
+                    </div>
                   </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
 
-            {/* Size Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Ruler className="h-5 w-5" />
-                  اختر المقاس
-                </CardTitle>
-                <CardDescription>
-                  حدد المقاس المناسب لمساحتك
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
-                  <div className="space-y-3">
-                    {sizeOptions.map((size) => (
-                      <div key={size.id} className="relative">
-                        <RadioGroupItem value={size.id} id={size.id} className="sr-only" />
-                        <label
-                          htmlFor={size.id}
-                          className={`flex items-center justify-between p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                            selectedSize === size.id
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                              : 'border-gray-200 hover:border-emerald-300'
-                          }`}
-                        >
-                          <div>
-                            <h3 className="font-semibold">{size.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {size.price} ريال
-                            </p>
-                          </div>
-                          {selectedSize === size.id && (
-                            <Check className="h-5 w-5 text-emerald-600" />
-                          )}
-                        </label>
-                      </div>
-                    ))}
+                  <hr className="border-border" />
+
+                  {/* Price breakdown */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">سعر التصميم</span>
+                      <span className="text-foreground">{designPrice} ريال</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">سعر الإطار</span>
+                      <span className="text-foreground">{framePrice} ريال</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">سعر المقاس</span>
+                      <span className="text-foreground">{sizePrice} ريال</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">الشحن</span>
+                      <span className="text-primary font-medium">مجاني</span>
+                    </div>
                   </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
 
-            {/* Shipping Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  معلومات الشحن
-                </CardTitle>
-                <CardDescription>
-                  أدخل عنوان الشحن ورقم الجوال للتواصل
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="address">عنوان الشحن</Label>
-                  <Textarea
-                    id="address"
-                    placeholder="أدخل عنوان الشحن الكامل مع رقم المبنى والحي والمدينة"
-                    value={shippingAddress}
-                    onChange={(e) => setShippingAddress(e.target.value)}
-                    className="min-h-[100px]"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone" className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    رقم الجوال
-                  </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="05xxxxxxxx"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  <hr className="border-border" />
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  ملخص الطلب
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Selected items summary */}
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span>التصميم:</span>
-                    <span className="font-semibold">
-                      {designTemplates.find(d => d.id === selectedDesign)?.name}
-                    </span>
+                  <div className="flex justify-between text-lg font-bold">
+                    <span className="text-foreground">المجموع الكلي</span>
+                    <span className="text-primary">{totalPrice} ريال</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>الإطار:</span>
-                    <span className="font-semibold">
-                      {frameOptions.find(f => f.id === selectedFrame)?.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>المقاس:</span>
-                    <span className="font-semibold">
-                      {sizeOptions.find(s => s.id === selectedSize)?.name}
-                    </span>
-                  </div>
-                </div>
 
-                <hr />
+                  <Button 
+                    onClick={handleOrder}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl py-3"
+                    size="lg"
+                  >
+                    <CreditCard className="h-5 w-5 mr-2" />
+                    متابعة للدفع
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Button>
 
-                {/* Price breakdown */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>سعر التصميم</span>
-                    <span>{designPrice} ريال</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>سعر الإطار</span>
-                    <span>{framePrice} ريال</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>سعر المقاس</span>
-                    <span>{sizePrice} ريال</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>الشحن</span>
-                    <span className="text-emerald-600">مجاني</span>
-                  </div>
-                </div>
-
-                <hr />
-
-                <div className="flex justify-between text-lg font-bold">
-                  <span>المجموع الكلي</span>
-                  <span className="text-emerald-600">{totalPrice} ريال</span>
-                </div>
-
-                <Button 
-                  onClick={handleOrder}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700"
-                  size="lg"
-                >
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  متابعة للدفع
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-
-                <p className="text-xs text-muted-foreground text-center">
-                  سيتم طباعة وشحن الطلب خلال 3-5 أيام عمل
-                </p>
-              </CardContent>
-            </Card>
+                  <p className="text-xs text-muted-foreground text-center">
+                    سيتم طباعة وشحن الطلب خلال 3-5 أيام عمل
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Success Dialog */}
       <Dialog open={orderDialogOpen} onOpenChange={setOrderDialogOpen}>
-        <DialogContent className="sm:max-w-md" dir="rtl">
+        <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-xl border border-primary/20" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="text-emerald-600 text-center py-4 flex items-center justify-center gap-2">
+            <DialogTitle className="text-primary text-center py-4 flex items-center justify-center gap-2">
               <Check className="h-6 w-6" />
               تم إرسال الطلب بنجاح!
             </DialogTitle>
             <DialogDescription className="text-center space-y-4">
-              <div className="text-lg font-semibold">رقم الطلب: {orderNumber}</div>
-              <p>
+              <div className="text-lg font-semibold text-foreground">رقم الطلب: {orderNumber}</div>
+              <p className="text-muted-foreground">
                 شكراً لك على طلبك! سيتم التواصل معك خلال 24 ساعة لتأكيد التفاصيل وموعد الشحن.
               </p>
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg">
-                <p className="text-sm">
+              <div className="bg-primary/10 border border-primary/20 p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground">
                   سيتم إرسال رسالة تأكيد عبر الرقم: {phoneNumber}
                 </p>
               </div>
@@ -378,13 +409,13 @@ export default function Store() {
           <DialogFooter className="flex gap-2">
             <Button 
               onClick={() => setOrderDialogOpen(false)}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               ممتاز
             </Button>
-            <Link to="/dashboard" className="flex-1">
-              <Button variant="outline" className="w-full">
-                العودة للوحة التحكم
+            <Link to="/family-builder" className="flex-1">
+              <Button variant="outline" className="w-full border-primary/30 hover:bg-primary/10">
+                العودة لمنشئ الشجرة
               </Button>
             </Link>
           </DialogFooter>
