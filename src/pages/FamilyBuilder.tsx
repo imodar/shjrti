@@ -582,11 +582,11 @@ const FamilyBuilder = () => {
                 <div className="space-y-6">
                   {/* Family name input with enhanced styling */}
                   <div className="space-y-3">
-                    <Label htmlFor="familyName" className="text-right flex items-center justify-end gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
-                      اسم العائلة
+                    <Label htmlFor="familyName" className="flex flex-row-reverse items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
                       <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
                         <Crown className="h-5 w-5 text-white" />
                       </div>
+                      اسم العائلة
                     </Label>
                     <div className="relative">
                       <Input 
@@ -602,11 +602,11 @@ const FamilyBuilder = () => {
                   
                   {/* Family description with enhanced styling */}
                   <div className="space-y-3">
-                    <Label htmlFor="familyDescription" className="text-right flex items-center justify-end gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
-                      وصف العائلة
+                    <Label htmlFor="familyDescription" className="flex flex-row-reverse items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
                       <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center">
                         <FileText className="h-5 w-5 text-white" />
                       </div>
+                      وصف العائلة
                     </Label>
                     <div className="relative">
                       <Textarea 
@@ -817,9 +817,9 @@ const FamilyBuilder = () => {
                 {/* Name and Gender on same line */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-2">
-                    <Label htmlFor="name" className="text-right flex items-center justify-end gap-2">
-                      الاسم الكامل
+                    <Label htmlFor="name" className="flex flex-row-reverse items-center gap-2">
                       <User className="h-4 w-4 text-emerald-600" />
+                      الاسم الكامل
                     </Label>
                     <Input 
                       id="name" 
@@ -829,9 +829,9 @@ const FamilyBuilder = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-right flex items-center justify-end gap-2 w-full">
-                      الجنس
+                    <Label className="flex flex-row-reverse items-center gap-2 w-full">
                       <Baby className="h-4 w-4 text-emerald-600" />
+                      الجنس
                     </Label>
                     <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
                       <SelectTrigger className="text-right">
@@ -848,9 +848,9 @@ const FamilyBuilder = () => {
                 {/* Relationship and Related Person on same line */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-right flex items-center justify-end gap-2">
-                      صلة القرابة
+                    <Label className="flex flex-row-reverse items-center gap-2">
                       <Heart className="h-4 w-4 text-emerald-600" />
+                      صلة القرابة
                     </Label>
                     <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
                       <SelectTrigger className="text-right">
@@ -910,9 +910,9 @@ const FamilyBuilder = () => {
                 {/* Birth Date and Life Status */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-right flex items-center justify-end gap-2">
-                      تاريخ الميلاد
+                    <Label className="flex flex-row-reverse items-center gap-2">
                       <CalendarIcon className="h-4 w-4 text-emerald-600" />
+                      تاريخ الميلاد
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -940,9 +940,9 @@ const FamilyBuilder = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-right flex items-center justify-end gap-2">
-                      حالة الشخص
+                    <Label className="flex flex-row-reverse items-center gap-2">
                       <Clock className="h-4 w-4 text-emerald-600" />
+                      حالة الشخص
                     </Label>
                     <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
                       <SelectTrigger className="text-right [&>span]:text-right">
@@ -959,9 +959,9 @@ const FamilyBuilder = () => {
                 {/* Death Date (if deceased) */}
                 {!formData.isAlive && (
                   <div className="space-y-2">
-                    <Label className="text-right flex items-center justify-end gap-2">
-                      تاريخ الوفاة (اختياري)
+                    <Label className="flex flex-row-reverse items-center gap-2">
                       <Skull className="h-4 w-4 text-gray-600" />
+                      تاريخ الوفاة (اختياري)
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -990,9 +990,9 @@ const FamilyBuilder = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-right flex items-center justify-end gap-2">
-                    نبذة شخصية (اختياري)
+                  <Label htmlFor="bio" className="flex flex-row-reverse items-center gap-2">
                     <FileText className="h-4 w-4 text-emerald-600" />
+                    نبذة شخصية (اختياري)
                   </Label>
                   <Textarea 
                     id="bio" 
@@ -1005,9 +1005,9 @@ const FamilyBuilder = () => {
 
                 {/* Image Upload */}
                 <div className="space-y-2">
-                  <Label className="text-right flex items-center justify-end gap-2">
-                    صورة الشخص (اختياري)
+                  <Label className="flex flex-row-reverse items-center gap-2">
                     <Camera className="h-4 w-4 text-emerald-600" />
+                    صورة الشخص (اختياري)
                   </Label>
                   <div className="border-2 border-dashed border-emerald-200 rounded-lg p-6 text-center">
                     <input
