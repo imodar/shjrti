@@ -51,10 +51,20 @@ const sizeOptions = [
   { id: 'custom', name: 'مقاس مخصص', price: 75 },
 ];
 
+const customSizeOptions = [
+  { id: 'custom-small', name: '20×25 سم', price: 50 },
+  { id: 'custom-medium', name: '35×50 سم', price: 85 },
+  { id: 'custom-large', name: '50×70 سم', price: 120 },
+  { id: 'custom-xlarge', name: '70×100 سم', price: 180 },
+  { id: 'custom-poster', name: '100×150 سم', price: 250 },
+  { id: 'custom-banner', name: '150×200 سم', price: 350 },
+];
+
 export default function Store() {
   const [selectedDesign, setSelectedDesign] = useState('classic');
   const [selectedFrame, setSelectedFrame] = useState('none');
   const [selectedSize, setSelectedSize] = useState('A4');
+  const [selectedCustomSize, setSelectedCustomSize] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
@@ -81,7 +91,21 @@ export default function Store() {
   // Calculate total price
   const designPrice = designTemplates.find(d => d.id === selectedDesign)?.price || 0;
   const framePrice = frameOptions.find(f => f.id === selectedFrame)?.price || 0;
-  const sizePrice = sizeOptions.find(s => s.id === selectedSize)?.price || 0;
+  
+  // Handle custom size pricing and display
+  let sizePrice = 0;
+  let sizeDisplayName = '';
+  
+  if (selectedSize === 'custom' && selectedCustomSize) {
+    const customSize = customSizeOptions.find(s => s.id === selectedCustomSize);
+    sizePrice = customSize?.price || 0;
+    sizeDisplayName = customSize?.name || 'مقاس مخصص';
+  } else {
+    const standardSize = sizeOptions.find(s => s.id === selectedSize);
+    sizePrice = standardSize?.price || 0;
+    sizeDisplayName = standardSize?.name || '';
+  }
+  
   const totalPrice = designPrice + framePrice + sizePrice;
 
   const wizardSteps = [
@@ -378,7 +402,7 @@ export default function Store() {
                           <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/30 rounded-full shadow-lg backdrop-blur-sm">
                             <Ruler className="h-4 w-4 text-primary" />
                             <span className="font-semibold text-primary">
-                              {sizeOptions.find(s => s.id === selectedSize)?.name}
+                              {sizeDisplayName}
                             </span>
                           </div>
                         </div>
@@ -729,89 +753,169 @@ export default function Store() {
                         {sizeOptions.map((size) => (
                           <div
                             key={size.id}
-                            className={`group relative overflow-hidden rounded-2xl transition-all duration-500 cursor-pointer ${
+                            className={`group relative overflow-hidden rounded-xl transition-all duration-500 cursor-pointer ${
                               selectedSize === size.id
-                                ? 'ring-2 ring-secondary ring-offset-2 ring-offset-background shadow-2xl shadow-secondary/25'
-                                : 'hover:shadow-xl hover:-translate-y-1'
+                                ? 'ring-2 ring-secondary ring-offset-2 ring-offset-background shadow-xl shadow-secondary/20'
+                                : 'hover:shadow-lg hover:-translate-y-0.5'
                             }`}
                             onClick={() => setSelectedSize(size.id)}
                           >
                             {/* Background Gradient */}
                             <div className={`absolute inset-0 transition-all duration-500 ${
                               selectedSize === size.id
-                                ? 'bg-gradient-to-br from-secondary/20 via-primary/10 to-accent/15'
-                                : 'bg-gradient-to-br from-card via-card/95 to-card/90 group-hover:from-primary/5 group-hover:to-secondary/5'
+                                ? 'bg-gradient-to-r from-secondary/15 via-primary/8 to-accent/10'
+                                : 'bg-gradient-to-r from-card via-card/95 to-card/90 group-hover:from-primary/3 group-hover:to-secondary/3'
                             }`} />
                             
                             {/* Animated Border */}
-                            <div className={`absolute inset-0 rounded-2xl transition-all duration-500 ${
+                            <div className={`absolute inset-0 rounded-xl transition-all duration-500 ${
                               selectedSize === size.id
                                 ? 'border-2 border-secondary'
                                 : 'border border-border group-hover:border-primary/30'
                             }`} />
                             
                             {/* Content */}
-                            <div className="relative p-6 space-y-4">
-                              {/* Header with Radio and Check */}
+                            <div className="relative p-4">
                               <div className="flex items-center justify-between">
-                                <RadioGroupItem 
-                                  value={size.id} 
-                                  id={size.id}
-                                  className={`transition-colors duration-300 ${
-                                    selectedSize === size.id ? 'border-secondary text-secondary' : 'border-muted-foreground'
-                                  }`}
-                                />
-                                {selectedSize === size.id && (
-                                  <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center animate-scale-in shadow-lg">
-                                    <Check className="h-5 w-5 text-white" />
+                                {/* Left side - Radio and Info */}
+                                <div className="flex items-center gap-3">
+                                  <RadioGroupItem 
+                                    value={size.id} 
+                                    id={size.id}
+                                    className={`transition-colors duration-300 ${
+                                      selectedSize === size.id ? 'border-secondary text-secondary' : 'border-muted-foreground'
+                                    }`}
+                                  />
+                                  
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                                      selectedSize === size.id
+                                        ? 'bg-secondary shadow-md'
+                                        : 'bg-muted group-hover:bg-primary/20'
+                                    }`}>
+                                      <Ruler className={`h-4 w-4 transition-colors duration-300 ${
+                                        selectedSize === size.id ? 'text-white' : 'text-muted-foreground group-hover:text-primary'
+                                      }`} />
+                                    </div>
+                                    
+                                    <Label htmlFor={size.id} className={`font-semibold cursor-pointer transition-colors duration-300 ${
+                                      selectedSize === size.id ? 'text-secondary' : 'text-foreground group-hover:text-primary'
+                                    }`}>
+                                      {size.name}
+                                    </Label>
                                   </div>
-                                )}
-                              </div>
-                              
-                              {/* Size Icon */}
-                              <div className="flex justify-center">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                                  selectedSize === size.id
-                                    ? 'bg-secondary shadow-lg'
-                                    : 'bg-muted group-hover:bg-primary/20'
-                                }`}>
-                                  <Ruler className={`h-6 w-6 transition-colors duration-300 ${
-                                    selectedSize === size.id ? 'text-white' : 'text-muted-foreground group-hover:text-primary'
-                                  }`} />
                                 </div>
-                              </div>
-                              
-                              {/* Title */}
-                              <div className="text-center">
-                                <Label htmlFor={size.id} className={`text-lg font-bold cursor-pointer transition-colors duration-300 ${
-                                  selectedSize === size.id ? 'text-secondary' : 'text-foreground group-hover:text-primary'
-                                }`}>
-                                  {size.name}
-                                </Label>
-                              </div>
-                              
-                              {/* Price */}
-                              <div className="text-center">
-                                <span className={`text-2xl font-bold transition-colors duration-300 ${
-                                  selectedSize === size.id ? 'text-secondary' : 'text-muted-foreground group-hover:text-foreground'
-                                }`}>
-                                  {size.price} ريال
-                                </span>
+                                
+                                {/* Right side - Price and Check */}
+                                <div className="flex items-center gap-3">
+                                  <span className={`font-bold transition-colors duration-300 ${
+                                    selectedSize === size.id ? 'text-secondary' : 'text-muted-foreground group-hover:text-foreground'
+                                  }`}>
+                                    {size.price} ريال
+                                  </span>
+                                  
+                                  {selectedSize === size.id && (
+                                    <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center animate-scale-in shadow-md">
+                                      <Check className="h-4 w-4 text-white" />
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
                             
                             {/* Glow Effect */}
                             {selectedSize === size.id && (
-                              <div className="absolute -inset-1 bg-gradient-to-r from-secondary via-primary to-accent rounded-2xl opacity-20 blur-lg animate-pulse" />
+                              <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary via-primary to-accent rounded-xl opacity-15 blur-md animate-pulse" />
                             )}
                             
                             {/* Hover Shimmer Effect */}
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/3 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000" />
                             </div>
                           </div>
                         ))}
                       </RadioGroup>
+                      
+                      {/* Custom Size Options */}
+                      {selectedSize === 'custom' && (
+                        <div className="mt-6 space-y-4">
+                          <div className="text-center mb-4">
+                            <h4 className="text-lg font-semibold text-foreground mb-2">اختر المقاس المخصص</h4>
+                            <p className="text-sm text-muted-foreground">حدد الحجم المناسب من الخيارات المتاحة</p>
+                          </div>
+                          
+                          <RadioGroup 
+                            value={selectedCustomSize} 
+                            onValueChange={setSelectedCustomSize}
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                          >
+                            {customSizeOptions.map((customSize) => (
+                              <div
+                                key={customSize.id}
+                                className={`group relative overflow-hidden rounded-lg transition-all duration-300 cursor-pointer ${
+                                  selectedCustomSize === customSize.id
+                                    ? 'ring-2 ring-accent ring-offset-1 ring-offset-background shadow-lg shadow-accent/20'
+                                    : 'hover:shadow-md hover:-translate-y-0.5'
+                                }`}
+                                onClick={() => setSelectedCustomSize(customSize.id)}
+                              >
+                                {/* Background */}
+                                <div className={`absolute inset-0 transition-all duration-300 ${
+                                  selectedCustomSize === customSize.id
+                                    ? 'bg-gradient-to-r from-accent/10 via-primary/5 to-secondary/8'
+                                    : 'bg-gradient-to-r from-card to-card/95 group-hover:from-accent/3 group-hover:to-primary/3'
+                                }`} />
+                                
+                                {/* Border */}
+                                <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
+                                  selectedCustomSize === customSize.id
+                                    ? 'border-2 border-accent'
+                                    : 'border border-border group-hover:border-accent/30'
+                                }`} />
+                                
+                                {/* Content */}
+                                <div className="relative p-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <RadioGroupItem 
+                                        value={customSize.id} 
+                                        id={customSize.id}
+                                        className={`transition-colors duration-300 ${
+                                          selectedCustomSize === customSize.id ? 'border-accent text-accent' : 'border-muted-foreground'
+                                        }`}
+                                      />
+                                      <Label htmlFor={customSize.id} className={`font-medium cursor-pointer transition-colors duration-300 ${
+                                        selectedCustomSize === customSize.id ? 'text-accent' : 'text-foreground group-hover:text-accent'
+                                      }`}>
+                                        {customSize.name}
+                                      </Label>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-2">
+                                      <span className={`font-bold transition-colors duration-300 ${
+                                        selectedCustomSize === customSize.id ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground'
+                                      }`}>
+                                        {customSize.price} ريال
+                                      </span>
+                                      
+                                      {selectedCustomSize === customSize.id && (
+                                        <div className="w-5 h-5 bg-accent rounded-full flex items-center justify-center animate-scale-in">
+                                          <Check className="h-3 w-3 text-white" />
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Glow Effect */}
+                                {selectedCustomSize === customSize.id && (
+                                  <div className="absolute -inset-0.5 bg-gradient-to-r from-accent to-primary rounded-lg opacity-15 blur-sm" />
+                                )}
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -937,7 +1041,7 @@ export default function Store() {
                         <Ruler className="h-5 w-5 text-secondary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">{sizeOptions.find(s => s.id === selectedSize)?.name}</p>
+                        <p className="font-semibold text-foreground">{sizeDisplayName}</p>
                         <p className="text-sm text-muted-foreground">حجم الطباعة</p>
                       </div>
                     </div>
