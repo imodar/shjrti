@@ -131,10 +131,11 @@ const Dashboard2 = () => {
       return;
     }
 
-    // Handle tree creation logic here
+    // Navigate to family builder page
+    navigate("/family-builder");
     toast({
       title: "إنشاء شجرة جديدة",
-      description: "سيتم توجيهك لصفحة إنشاء الشجرة"
+      description: "تم توجيهك لصفحة إنشاء الشجرة"
     });
   };
   const handleDeleteTree = (id: number) => {
