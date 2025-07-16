@@ -582,11 +582,11 @@ const FamilyBuilder = () => {
                 <div className="space-y-6">
                   {/* Family name input with enhanced styling */}
                   <div className="space-y-3">
-                    <Label htmlFor="familyName" className="flex items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                    <Label htmlFor="familyName" className="text-right flex items-center justify-end gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                      اسم العائلة
                       <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
                         <Crown className="h-5 w-5 text-white" />
                       </div>
-                      اسم العائلة
                     </Label>
                     <div className="relative">
                       <Input 
@@ -602,11 +602,11 @@ const FamilyBuilder = () => {
                   
                   {/* Family description with enhanced styling */}
                   <div className="space-y-3">
-                    <Label htmlFor="familyDescription" className="flex items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                    <Label htmlFor="familyDescription" className="text-right flex items-center justify-end gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                      وصف العائلة
                       <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center">
                         <FileText className="h-5 w-5 text-white" />
                       </div>
-                      وصف العائلة
                     </Label>
                     <div className="relative">
                       <Textarea 
@@ -941,8 +941,8 @@ const FamilyBuilder = () => {
                   
                   <div className="space-y-2">
                     <Label className="text-right flex items-center justify-end gap-2">
-                      <Clock className="h-4 w-4 text-emerald-600" />
                       حالة الشخص
+                      <Clock className="h-4 w-4 text-emerald-600" />
                     </Label>
                     <Select value={formData.isAlive.toString()} onValueChange={(value) => setFormData({...formData, isAlive: value === 'true', deathDate: value === 'true' ? null : formData.deathDate})}>
                       <SelectTrigger className="text-right [&>span]:text-right">
