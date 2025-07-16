@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,11 @@ import {
   Palette,
   MapPin,
   Phone,
-  Crown
+  Crown,
+  ChevronRight,
+  ChevronLeft,
+  User,
+  Users
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -55,12 +59,36 @@ export default function Store() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   const [orderNumber] = useState(`ORD-${Date.now()}`);
+  const [currentStep, setCurrentStep] = useState(0);
+  
+  const shippingRef = useRef<HTMLDivElement>(null);
+
+  // Mock tree data - In real app, this would come from family tree state
+  const mockTreeData = {
+    rootPerson: { name: 'أحمد محمد', gender: 'male' },
+    spouse: { name: 'فاطمة علي', gender: 'female' },
+    children: [
+      { name: 'محمد أحمد', gender: 'male' },
+      { name: 'عائشة أحمد', gender: 'female' },
+      { name: 'علي أحمد', gender: 'male' }
+    ],
+    parents: [
+      { name: 'محمد حسن', gender: 'male' },
+      { name: 'زينب سالم', gender: 'female' }
+    ]
+  };
 
   // Calculate total price
   const designPrice = designTemplates.find(d => d.id === selectedDesign)?.price || 0;
   const framePrice = frameOptions.find(f => f.id === selectedFrame)?.price || 0;
   const sizePrice = sizeOptions.find(s => s.id === selectedSize)?.price || 0;
   const totalPrice = designPrice + framePrice + sizePrice;
+
+  const wizardSteps = [
+    { title: 'اختر التصميم', icon: Palette },
+    { title: 'اختر الإطار', icon: Frame },
+    { title: 'اختر المقاس', icon: Ruler }
+  ];
 
   const handleOrder = () => {
     if (!shippingAddress.trim() || !phoneNumber.trim()) {
@@ -71,6 +99,24 @@ export default function Store() {
     // In a real app, this would redirect to payment gateway
     // For now, we'll show success dialog
     setOrderDialogOpen(true);
+  };
+
+  const handleFinishConfiguration = () => {
+    shippingRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleNextStep = () => {
+    if (currentStep < wizardSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleFinishConfiguration();
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   return (
@@ -153,8 +199,8 @@ export default function Store() {
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             
-            {/* Live Preview Section */}
-            <div className="space-y-8">
+            {/* Live Preview Section - Sticky */}
+            <div className="lg:sticky lg:top-8 space-y-8">
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl blur-2xl opacity-30" />
                 <Card className="relative bg-gradient-to-br from-card via-card/90 to-accent/5 backdrop-blur-xl border-2 border-primary/20 shadow-2xl overflow-hidden rounded-3xl">
@@ -172,8 +218,8 @@ export default function Store() {
                   </CardHeader>
                   
                   <CardContent className="p-8">
-                    {/* Enhanced Preview Area */}
-                    <div className="relative bg-gradient-to-br from-background via-accent/2 to-secondary/2 rounded-2xl p-12 border-2 border-dashed border-primary/30 min-h-[450px] flex items-center justify-center group hover:shadow-2xl transition-all duration-500">
+                    {/* Enhanced Preview Area with Real Tree Data */}
+                    <div className="relative bg-gradient-to-br from-background via-accent/2 to-secondary/2 rounded-2xl p-8 border-2 border-dashed border-primary/30 min-h-[500px] flex items-center justify-center group hover:shadow-2xl transition-all duration-500">
                       
                       {/* Dynamic Frame Effect */}
                       <div 
@@ -190,17 +236,51 @@ export default function Store() {
                         }`}
                       />
                       
-                      {/* Enhanced Tree Preview */}
-                      <div className="relative z-10 flex flex-col items-center transform group-hover:scale-105 transition-transform duration-500">
+                      {/* Live Tree Preview with Real Data */}
+                      <div className="relative z-10 w-full max-w-md transform group-hover:scale-105 transition-transform duration-500">
                         
-                        {/* Tree Designs with Enhanced Visuals */}
+                        {/* Tree Structure Based on Design */}
                         {selectedDesign === 'classic' && (
                           <div className="text-center space-y-6">
-                            <div className="text-8xl animate-bounce drop-shadow-lg">🌳</div>
-                            <div className="grid grid-cols-3 gap-3">
-                              {['👨', '👩', '👶'].map((emoji, i) => (
-                                <div key={i} className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center text-lg shadow-lg border-2 border-primary/30 hover:scale-110 transition-transform">
-                                  {emoji}
+                            {/* Parents Generation */}
+                            <div className="flex justify-center gap-4 mb-4">
+                              {mockTreeData.parents.map((parent, i) => (
+                                <div key={i} className="flex flex-col items-center">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center shadow-lg border-2 border-primary/30 hover:scale-110 transition-transform">
+                                    {parent.gender === 'male' ? <User className="h-8 w-8 text-primary" /> : <User className="h-8 w-8 text-accent" />}
+                                  </div>
+                                  <span className="text-xs mt-2 font-medium text-muted-foreground">{parent.name}</span>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            {/* Tree Icon */}
+                            <div className="text-6xl animate-bounce drop-shadow-lg">🌳</div>
+                            
+                            {/* Current Generation */}
+                            <div className="flex justify-center gap-4">
+                              <div className="flex flex-col items-center">
+                                <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-xl border-3 border-primary hover:scale-110 transition-transform">
+                                  <User className="h-10 w-10 text-white" />
+                                </div>
+                                <span className="text-sm mt-2 font-bold text-primary">{mockTreeData.rootPerson.name}</span>
+                              </div>
+                              <div className="flex flex-col items-center">
+                                <div className="w-20 h-20 bg-gradient-to-br from-accent to-secondary rounded-full flex items-center justify-center shadow-xl border-3 border-accent hover:scale-110 transition-transform">
+                                  <User className="h-10 w-10 text-white" />
+                                </div>
+                                <span className="text-sm mt-2 font-bold text-accent">{mockTreeData.spouse.name}</span>
+                              </div>
+                            </div>
+                            
+                            {/* Children Generation */}
+                            <div className="flex justify-center gap-2 flex-wrap">
+                              {mockTreeData.children.map((child, i) => (
+                                <div key={i} className="flex flex-col items-center">
+                                  <div className="w-14 h-14 bg-gradient-to-br from-secondary/60 to-primary/60 rounded-full flex items-center justify-center shadow-lg border-2 border-secondary hover:scale-110 transition-transform">
+                                    <User className="h-6 w-6 text-white" />
+                                  </div>
+                                  <span className="text-xs mt-1 font-medium text-muted-foreground">{child.name}</span>
                                 </div>
                               ))}
                             </div>
@@ -209,35 +289,85 @@ export default function Store() {
                         
                         {selectedDesign === 'modern' && (
                           <div className="text-center space-y-6">
-                            <div className="text-8xl animate-pulse drop-shadow-lg">🌲</div>
-                            <div className="flex flex-col items-center space-y-3">
-                              <div className="flex space-x-3">
-                                <div className="w-14 h-14 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-2xl transform hover:rotate-6 transition-transform">A</div>
-                                <div className="w-14 h-14 bg-gradient-to-br from-accent via-secondary to-primary rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-2xl transform hover:-rotate-6 transition-transform">B</div>
+                            <div className="text-6xl animate-pulse drop-shadow-lg">🌲</div>
+                            <div className="flex flex-col items-center space-y-4">
+                              {/* Modern geometric layout */}
+                              <div className="flex justify-center gap-3">
+                                <div className="w-16 h-16 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex flex-col items-center justify-center text-white shadow-2xl transform hover:rotate-6 transition-transform">
+                                  <User className="h-6 w-6" />
+                                  <span className="text-xs mt-1">{mockTreeData.rootPerson.name.split(' ')[0]}</span>
+                                </div>
+                                <div className="w-16 h-16 bg-gradient-to-br from-accent via-secondary to-primary rounded-2xl flex flex-col items-center justify-center text-white shadow-2xl transform hover:-rotate-6 transition-transform">
+                                  <User className="h-6 w-6" />
+                                  <span className="text-xs mt-1">{mockTreeData.spouse.name.split(' ')[0]}</span>
+                                </div>
                               </div>
-                              <div className="w-14 h-14 bg-gradient-to-br from-secondary via-primary to-accent rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-2xl transform hover:rotate-3 transition-transform">C</div>
+                              <div className="flex gap-2">
+                                {mockTreeData.children.map((child, i) => (
+                                  <div key={i} className="w-12 h-12 bg-gradient-to-br from-secondary via-primary to-accent rounded-2xl flex items-center justify-center text-white text-xs font-bold shadow-2xl transform hover:rotate-3 transition-transform">
+                                    {child.name.charAt(0)}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         )}
                         
                         {selectedDesign === 'vintage' && (
                           <div className="text-center space-y-6 filter sepia-[0.3] contrast-125">
-                            <div className="text-8xl animate-pulse drop-shadow-lg">🍃</div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 border-4 border-amber-600 rounded-full flex items-center justify-center text-amber-800 text-2xl shadow-xl transform hover:scale-110 transition-transform">♂</div>
-                              <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 border-4 border-pink-600 rounded-full flex items-center justify-center text-pink-800 text-2xl shadow-xl transform hover:scale-110 transition-transform">♀</div>
+                            <div className="text-6xl animate-pulse drop-shadow-lg">🍃</div>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-18 h-18 bg-gradient-to-br from-amber-100 to-amber-200 border-4 border-amber-600 rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition-transform">
+                                    <span className="text-amber-800 text-2xl">♂</span>
+                                  </div>
+                                  <span className="text-xs mt-2 text-amber-800 font-semibold">{mockTreeData.rootPerson.name}</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <div className="w-18 h-18 bg-gradient-to-br from-pink-100 to-pink-200 border-4 border-pink-600 rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition-transform">
+                                    <span className="text-pink-800 text-2xl">♀</span>
+                                  </div>
+                                  <span className="text-xs mt-2 text-pink-800 font-semibold">{mockTreeData.spouse.name}</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-center gap-2">
+                                {mockTreeData.children.map((child, i) => (
+                                  <div key={i} className="flex flex-col items-center">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-600 rounded-full flex items-center justify-center shadow-lg">
+                                      <span className="text-green-800 text-sm">{child.gender === 'male' ? '♂' : '♀'}</span>
+                                    </div>
+                                    <span className="text-xs mt-1 text-green-800">{child.name.split(' ')[0]}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         )}
                         
                         {selectedDesign === 'elegant' && (
                           <div className="text-center space-y-6">
-                            <div className="text-8xl animate-pulse text-primary drop-shadow-lg">🌿</div>
+                            <div className="text-6xl animate-pulse text-primary drop-shadow-lg">🌿</div>
                             <div className="flex flex-col items-center space-y-4">
-                              <div className="w-20 h-6 bg-gradient-to-r from-primary via-accent via-secondary to-primary rounded-full shadow-xl"></div>
-                              <div className="flex space-x-4">
-                                <div className="w-6 h-20 bg-gradient-to-b from-primary via-accent to-secondary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
-                                <div className="w-6 h-20 bg-gradient-to-b from-accent via-secondary to-primary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
+                              {/* Elegant minimalist lines */}
+                              <div className="w-24 h-1 bg-gradient-to-r from-primary via-accent via-secondary to-primary rounded-full shadow-xl"></div>
+                              <div className="flex justify-center gap-6">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-2 h-24 bg-gradient-to-b from-primary via-accent to-secondary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
+                                  <span className="text-xs mt-2 font-medium">{mockTreeData.rootPerson.name}</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <div className="w-2 h-24 bg-gradient-to-b from-accent via-secondary to-primary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
+                                  <span className="text-xs mt-2 font-medium">{mockTreeData.spouse.name}</span>
+                                </div>
+                              </div>
+                              <div className="flex gap-3">
+                                {mockTreeData.children.map((child, i) => (
+                                  <div key={i} className="flex flex-col items-center">
+                                    <div className="w-1 h-16 bg-gradient-to-b from-secondary to-primary rounded-full shadow-lg"></div>
+                                    <span className="text-xs mt-1">{child.name.split(' ')[0]}</span>
+                                  </div>
+                                ))}
                               </div>
                             </div>
                           </div>
@@ -289,10 +419,47 @@ export default function Store() {
               </div>
             </div>
 
-            {/* Configuration Section */}
+            {/* Wizard Configuration Section */}
             <div className="space-y-8">
               
-              {/* Design Templates */}
+              {/* Wizard Steps Indicator */}
+              <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
+                <CardHeader>
+                  <CardTitle className="text-center text-xl font-bold">اختر التخصيص المطلوب</CardTitle>
+                  <div className="flex justify-center items-center gap-4 mt-4">
+                    {wizardSteps.map((step, index) => {
+                      const Icon = step.icon;
+                      return (
+                        <div key={index} className="flex items-center">
+                          <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 ${
+                            index === currentStep 
+                              ? 'bg-primary border-primary text-white shadow-lg scale-110' 
+                              : index < currentStep 
+                                ? 'bg-green-500 border-green-500 text-white' 
+                                : 'bg-background border-muted-foreground/30 text-muted-foreground'
+                          }`}>
+                            {index < currentStep ? (
+                              <Check className="h-5 w-5" />
+                            ) : (
+                              <Icon className="h-5 w-5" />
+                            )}
+                          </div>
+                          <span className={`mr-2 text-sm font-medium ${
+                            index === currentStep ? 'text-primary' : index < currentStep ? 'text-green-600' : 'text-muted-foreground'
+                          }`}>
+                            {step.title}
+                          </span>
+                          {index < wizardSteps.length - 1 && (
+                            <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Wizard Content */}
               <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
                 <CardHeader className="bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 border-b border-primary/10">
                   <div className="flex items-center gap-3">
