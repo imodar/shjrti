@@ -318,62 +318,104 @@ const FamilyBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950 dark:to-cyan-950">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
+        animationDelay: '2s'
+      }}></div>
+        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{
+        animationDelay: '1s'
+      }}></div>
+      </div>
       
-      <div className="pt-20">
-        {/* Header with navigation */}
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-emerald-800 dark:text-emerald-200">
-                إدارة أفراد العائلة
-              </h1>
-              <p className="text-emerald-600 dark:text-emerald-400">
-                أضف وعدل أفراد شجرة العائلة
-              </p>
-            </div>
-            <Button
-              onClick={handleBackToDashboard}
-              variant="outline"
-              className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-            >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              العودة للوحة التحكم
-            </Button>
-          </div>
+      {/* Header matching family-creator */}
+      <header className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-xl border-b border-gradient-to-r from-primary/30 to-secondary/30 sticky top-0 z-50">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-2 left-10 w-6 h-6 bg-primary/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{
+          animationDelay: '1s'
+        }}></div>
+          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{
+          animationDelay: '2s'
+        }}></div>
         </div>
 
-        <div className="flex h-[calc(100vh-200px)] gap-6 px-4 pb-6 max-w-7xl mx-auto">
-          {/* Left Column - Form */}
-          <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
-            {/* Add/Edit Member Form */}
-            {(currentMode === 'add-member' || currentMode === 'edit-member') && (
-              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full overflow-auto">
-                <CardHeader className="sticky top-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm z-10 border-b">
-                  <CardTitle className="text-emerald-800 dark:text-emerald-200">
-                    {currentMode === 'edit-member' ? `تعديل بيانات: ${selectedMember?.name}` : 'إضافة فرد جديد للعائلة'}
-                  </CardTitle>
-                  <CardDescription>
-                    {currentMode === 'edit-member' ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد وحدد صلة القرابة'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6 pb-32 pt-6">
-                  {/* Name and Gender */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="col-span-2 space-y-2">
-                      <Label htmlFor="name" className="text-right flex flex-row-reverse items-center gap-2">
-                        <User className="h-4 w-4 text-emerald-600" />
-                        الاسم الكامل
-                      </Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        placeholder="أدخل الاسم الكامل"
-                        className="text-right"
-                      />
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                  <Users className="h-7 w-7 text-primary-foreground" />
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                  إدارة أفراد العائلة
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  <p className="text-muted-foreground font-medium">أضف وعدل أفراد شجرة العائلة</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-6">
+              <Button
+                onClick={handleBackToDashboard}
+                variant="outline"
+                className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6"
+              >
+                <ArrowRight className="mr-2 h-4 w-4" />
+                العودة للوحة التحكم
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+        <div className="pt-16 relative z-10 min-h-screen">
+          <div className="flex h-[calc(100vh-200px)] gap-6 px-4 pb-6 max-w-7xl mx-auto">
+            {/* Left Column - Form */}
+            <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
+              {/* Add/Edit Member Form */}
+              {(currentMode === 'add-member' || currentMode === 'edit-member') && (
+                <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-2xl shadow-primary/10 rounded-3xl h-full overflow-auto">
+                  <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
+                  <CardHeader className="sticky top-2 bg-card/90 backdrop-blur-sm z-10 border-b border-primary/20 rounded-t-3xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
+                        <UserPlus className="h-6 w-6 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-foreground text-2xl">
+                          {currentMode === 'edit-member' ? `تعديل بيانات: ${selectedMember?.name}` : 'إضافة فرد جديد للعائلة'}
+                        </CardTitle>
+                        <CardDescription className="text-muted-foreground">
+                          {currentMode === 'edit-member' ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد وحدد صلة القرابة'}
+                        </CardDescription>
+                      </div>
                     </div>
+                  </CardHeader>
+                  <CardContent className="space-y-8 pb-32 pt-6">
+                    {/* Name and Gender */}
+                    <div className="grid grid-cols-3 gap-6">
+                      <div className="col-span-2 space-y-3">
+                        <Label htmlFor="name" className="text-sm font-medium text-card-foreground flex flex-row-reverse items-center gap-2">
+                          <User className="h-4 w-4 text-primary" />
+                          الاسم الكامل
+                        </Label>
+                        <Input
+                          id="name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          placeholder="أدخل الاسم الكامل"
+                          className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input text-right"
+                        />
+                      </div>
                     <div className="space-y-2">
                       <Label className="text-right flex flex-row-reverse items-center gap-2">
                         <Users className="h-4 w-4 text-emerald-600" />
