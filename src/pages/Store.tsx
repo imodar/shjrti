@@ -720,8 +720,8 @@ export default function Store() {
                       disabled={currentStep === 0}
                       className="flex items-center gap-2"
                     >
-                      السابق
                       <ChevronRight className="h-4 w-4" />
+                      السابق
                     </Button>
                     
                     <div className="text-center">
@@ -733,8 +733,8 @@ export default function Store() {
                       onClick={handleNextStep}
                       className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                     >
-                      <ChevronLeft className="h-4 w-4" />
                       {currentStep === wizardSteps.length - 1 ? 'إنهاء التخصيص' : 'التالي'}
+                      <ChevronLeft className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>
