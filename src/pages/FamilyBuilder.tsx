@@ -14,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -63,7 +63,8 @@ const FamilyBuilder = () => {
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
-  const [currentMode, setCurrentMode] = useState<'welcome' | 'add-member' | 'edit-member'>('welcome');
+  const [currentMode, setCurrentMode] = useState<'setup-tree' | 'add-first-member' | 'tree-view' | 'add-member' | 'edit-member'>(isNew ? 'setup-tree' : 'tree-view');
+  const [currentStep, setCurrentStep] = useState(isNew ? 1 : 3);
   const [familyMembers, setFamilyMembers] = useState(isNew ? [] : mockFamilyMembers);
   const [draftMembers, setDraftMembers] = useState<any[]>([]);
   const [isNewTree, setIsNewTree] = useState(isEditMode ? false : (!treeId || isNew));
@@ -160,19 +161,23 @@ const FamilyBuilder = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      // If in edit mode, set to undefined to show edit message
-      setCurrentMode(undefined);
+      // If in edit mode, set to tree view
+      setCurrentMode('tree-view');
       setIsNewTree(false);
+      setCurrentStep(3);
     } else if (isNew) {
-      setCurrentMode('welcome');
+      setCurrentMode('setup-tree');
       setIsNewTree(true);
+      setCurrentStep(1);
     } else if (familyMembers.length === 0) {
-      setCurrentMode(undefined);
+      setCurrentMode('tree-view');
+      setCurrentStep(3);
     }
   }, [isEditMode, isNew, familyMembers.length]);
 
   const handleStartNewTree = () => {
-    setCurrentMode('add-member');
+    setCurrentMode('add-first-member');
+    setCurrentStep(2);
     setIsNewTree(false);
   };
 
@@ -267,7 +272,13 @@ const FamilyBuilder = () => {
 
   const handleAddNewMember = () => {
     setSelectedMember(null);
-    setCurrentMode('add-member');
+    // If this is for the first member (no existing members), go to add-first-member mode
+    if (familyMembers.length === 0 && isNewTree) {
+      setCurrentMode('add-first-member');
+      setCurrentStep(2);
+    } else {
+      setCurrentMode('add-member');
+    }
     setFormData({
       name: "",
       relation: "",
@@ -513,11 +524,60 @@ const FamilyBuilder = () => {
         </div>
       )}
 
+      {/* Steps Indicator - Show only for new trees */}
+      {isNewTree && (
+        <div className="max-w-7xl mx-auto px-4 pt-4 pb-2">
+          <div className="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+            {/* Step 1 */}
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                currentStep >= 1 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
+                1
+              </div>
+              <span className={`mr-2 text-sm ${currentStep >= 1 ? 'text-emerald-600 font-medium' : 'text-gray-500'}`}>
+                إعداد الشجرة
+              </span>
+            </div>
+            
+            {/* Separator */}
+            <div className={`h-px w-16 ${currentStep >= 2 ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+            
+            {/* Step 2 */}
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                currentStep >= 2 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
+                2
+              </div>
+              <span className={`mr-2 text-sm ${currentStep >= 2 ? 'text-emerald-600 font-medium' : 'text-gray-500'}`}>
+                إضافة الفرد الأول
+              </span>
+            </div>
+            
+            {/* Separator */}
+            <div className={`h-px w-16 ${currentStep >= 3 ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+            
+            {/* Step 3 */}
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                currentStep >= 3 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
+                3
+              </div>
+              <span className={`mr-2 text-sm ${currentStep >= 3 ? 'text-emerald-600 font-medium' : 'text-gray-500'}`}>
+                بناء الشجرة
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex h-[calc(100vh-120px)] gap-6 px-4 py-6 max-w-7xl mx-auto">
         {/* Left Column - Form */}
-        <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
+        <div className={cn("flex-1", (familyMembers.length > 0 && currentMode === 'tree-view') ? "max-w-3xl" : "max-w-none")}>
           {/* Welcome Screen for New Tree */}
-          {currentMode === 'welcome' && isNewTree && !isEditMode && (
+          {currentMode === 'setup-tree' && isNewTree && !isEditMode && (
             <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/90 to-cyan-50/90 dark:from-emerald-950/90 dark:via-teal-950/90 dark:to-cyan-950/90 backdrop-blur-xl border-2 border-gradient-to-r from-emerald-200/50 to-teal-200/50 h-full shadow-2xl">
               {/* Animated background patterns */}
               <div className="absolute inset-0 opacity-30">
@@ -795,6 +855,133 @@ const FamilyBuilder = () => {
               
               {/* Bottom decorative border */}
               <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-60"></div>
+            </Card>
+          )}
+
+          {/* Add First Member Form */}
+          {currentMode === 'add-first-member' && (
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full overflow-auto">
+              <CardHeader className="sticky top-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm z-10 border-b">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-emerald-800 dark:text-emerald-200">
+                      إضافة الفرد الأول للعائلة
+                    </CardTitle>
+                    <CardDescription>
+                      أدخل معلومات الفرد الأول الذي ستبدأ منه شجرة العائلة
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCurrentMode('setup-tree');
+                      setCurrentStep(1);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    العودة للخطوة الأولى
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 pb-32 pt-6">
+                {/* سيتم نسخ نفس محتوى النموذج من الأسفل */}
+                {/* Name and Gender on same line */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="name" className="text-right flex flex-row-reverse items-center gap-2">
+                      <User className="h-4 w-4 text-emerald-600" />
+                      الاسم الكامل
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="أدخل الاسم الكامل"
+                      className="text-right"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
+                      <Users className="h-4 w-4 text-emerald-600" />
+                      الجنس
+                    </Label>
+                    <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
+                      <SelectTrigger className="text-right">
+                        <SelectValue placeholder="اختر الجنس" />
+                      </SelectTrigger>
+                      <SelectContent className="text-right">
+                        <SelectItem value="male" className="text-right justify-end">ذكر</SelectItem>
+                        <SelectItem value="female" className="text-right justify-end">أنثى</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Relationship - will show only "first person" option */}
+                {formData.gender && (
+                  <div className="space-y-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
+                      <Heart className="h-4 w-4 text-emerald-600" />
+                      صلة القرابة
+                    </Label>
+                    <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
+                      <SelectTrigger className="text-right">
+                        <SelectValue placeholder="اختر صلة القرابة" className="text-right" />
+                      </SelectTrigger>
+                      <SelectContent className="text-right">
+                        {getRelationshipOptions(formData.gender, familyMembers).map((relation) => (
+                          <SelectItem key={relation.value} value={relation.value} className="text-right justify-end">
+                            {relation.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-6">
+                  <Button
+                    onClick={() => {
+                      // Add the first member and move to tree view
+                      const newMember = {
+                        id: Date.now(),
+                        name: formData.name,
+                        relation: formData.relation,
+                        gender: formData.gender,
+                        birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
+                        isAlive: formData.isAlive,
+                        deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
+                        image: formData.croppedImage
+                      };
+                      setFamilyMembers([newMember]);
+                      setCurrentMode('tree-view');
+                      setCurrentStep(3);
+                      setIsNewTree(false);
+                      // Reset form
+                      setFormData({
+                        name: "",
+                        relation: "",
+                        relatedPersonId: null,
+                        gender: "",
+                        birthDate: null,
+                        isAlive: true,
+                        deathDate: null,
+                        bio: "",
+                        image: null,
+                        croppedImage: null
+                      });
+                    }}
+                    disabled={!formData.name || !formData.gender || !formData.relation}
+                    className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
+                  >
+                    <UserPlus className="ml-2 h-4 w-4" />
+                    إضافة الفرد الأول
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
           )}
 
@@ -1121,8 +1308,8 @@ const FamilyBuilder = () => {
           )}
         </div>
 
-        {/* Right Column - Members List */}
-        {(familyMembers.length > 0 || draftMembers.length > 0) && (
+        {/* Right Column - Members List - Only show in tree view */}
+        {currentMode === 'tree-view' && (familyMembers.length > 0 || draftMembers.length > 0) && (
           <div className="w-96 flex-shrink-0">
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full flex flex-col">
               <CardHeader className="pb-4">
