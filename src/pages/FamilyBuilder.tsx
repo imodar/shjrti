@@ -429,16 +429,16 @@ const FamilyBuilder = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             {/* Modern Tabs Navigation */}
             <div className="flex justify-center">
-              <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-2 shadow-lg">
-                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground">
+              <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-1 shadow-lg">
+                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md">
                   <Users className="mr-2 h-4 w-4" />
                   نظرة عامة
                 </TabsTrigger>
-                <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground">
+                <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md">
                   <TreePine className="mr-2 h-4 w-4" />
                   عرض الشجرة
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground">
+                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md">
                   <Star className="mr-2 h-4 w-4" />
                   الإحصائيات
                 </TabsTrigger>
