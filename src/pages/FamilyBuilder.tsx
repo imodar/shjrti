@@ -8,17 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Cropper from "react-easy-crop";
 
@@ -31,23 +31,21 @@ const mockFamilyMembers = [
 ];
 
 const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
-  // For subsequent members, show all relationship options except founder
   if (gender === "male") {
     return [
-      { value: "father", label: "أب" },
-      { value: "husband", label: "زوج" },
-      { value: "brother", label: "أخ" },
-      { value: "son", label: "ابن" }
+      { value: "father", label: "أب", icon: "👨‍🦳" },
+      { value: "husband", label: "زوج", icon: "👨" },
+      { value: "brother", label: "أخ", icon: "👨‍🦱" },
+      { value: "son", label: "ابن", icon: "👶" }
     ];
   } else if (gender === "female") {
     return [
-      { value: "mother", label: "أم" },
-      { value: "wife", label: "زوجة" },
-      { value: "sister", label: "أخت" },
-      { value: "daughter", label: "ابنة" }
+      { value: "mother", label: "أم", icon: "👩‍🦳" },
+      { value: "wife", label: "زوجة", icon: "👩" },
+      { value: "sister", label: "أخت", icon: "👩‍🦱" },
+      { value: "daughter", label: "ابنة", icon: "👶" }
     ];
   }
-  
   return [];
 };
 
@@ -59,13 +57,12 @@ const FamilyBuilder = () => {
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
   
-  const [currentMode, setCurrentMode] = useState<'tree-view' | 'add-member' | 'edit-member'>('tree-view');
+  const [activeTab, setActiveTab] = useState("overview");
   const [familyMembers, setFamilyMembers] = useState(() => {
-    // Try to load from localStorage first (from FamilyCreator)
     const newFamilyData = localStorage.getItem('newFamilyData');
     if (newFamilyData) {
       const parsed = JSON.parse(newFamilyData);
-      localStorage.removeItem('newFamilyData'); // Clean up
+      localStorage.removeItem('newFamilyData');
       return [{
         id: 1,
         name: parsed.firstMember.name,
@@ -82,12 +79,13 @@ const FamilyBuilder = () => {
   
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAddMember, setShowAddMember] = useState(false);
   const [showImageCrop, setShowImageCrop] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [relatedPersonSearch, setRelatedPersonSearch] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -107,12 +105,6 @@ const FamilyBuilder = () => {
     member.relation.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Filter family members for relationship selection
-  const filteredRelatedPersons = familyMembers.filter(member =>
-    member.name.toLowerCase().includes(relatedPersonSearch.toLowerCase()) ||
-    member.relation.toLowerCase().includes(relatedPersonSearch.toLowerCase())
-  );
-
   // Image handling functions
   const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -127,28 +119,6 @@ const FamilyBuilder = () => {
       reader.readAsDataURL(file);
     }
   }, [formData]);
-
-  const onDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith('image/')) {
-        setFormData({...formData, image: file});
-        
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-          setImageSrc(reader.result as string);
-          setShowImageCrop(true);
-        });
-        reader.readAsDataURL(file);
-      }
-    }
-  }, [formData]);
-
-  const onDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  }, []);
 
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -208,15 +178,25 @@ const FamilyBuilder = () => {
         setCrop({ x: 0, y: 0 });
         setZoom(1);
         setCroppedAreaPixels(null);
+        toast({
+          title: "تم حفظ الصورة",
+          description: "تم قص الصورة وحفظها بنجاح"
+        });
       } catch (e) {
         console.error(e);
+        toast({
+          title: "خطأ في معالجة الصورة",
+          description: "حدث خطأ أثناء قص الصورة",
+          variant: "destructive"
+        });
       }
     }
   };
 
   const handleAddNewMember = () => {
     setSelectedMember(null);
-    setCurrentMode('add-member');
+    setCurrentStep(1);
+    setShowAddMember(true);
     setFormData({
       name: "",
       relation: "",
@@ -233,7 +213,8 @@ const FamilyBuilder = () => {
 
   const handleEditMember = (member: any) => {
     setSelectedMember(member);
-    setCurrentMode('edit-member');
+    setCurrentStep(1);
+    setShowAddMember(true);
     setFormData({
       name: member.name,
       relation: member.relation,
@@ -272,7 +253,6 @@ const FamilyBuilder = () => {
     };
 
     if (selectedMember) {
-      // Edit existing member
       setFamilyMembers(familyMembers.map(member => 
         member.id === selectedMember.id ? memberData : member
       ));
@@ -281,7 +261,6 @@ const FamilyBuilder = () => {
         description: "تم تحديث بيانات العضو بنجاح"
       });
     } else {
-      // Add new member
       setFamilyMembers([...familyMembers, memberData]);
       toast({
         title: "تم الإضافة",
@@ -289,8 +268,9 @@ const FamilyBuilder = () => {
       });
     }
 
-    setCurrentMode('tree-view');
+    setShowAddMember(false);
     setSelectedMember(null);
+    setCurrentStep(1);
     setFormData({
       name: "",
       relation: "",
@@ -313,8 +293,41 @@ const FamilyBuilder = () => {
     });
   };
 
-  const handleBackToDashboard = () => {
-    navigate('/dashboard2');
+  const getRelationIcon = (relation: string) => {
+    const icons: { [key: string]: string } = {
+      father: "👨‍🦳", mother: "👩‍🦳", husband: "👨", wife: "👩",
+      brother: "👨‍🦱", sister: "👩‍🦱", son: "👶", daughter: "👶",
+      founder: "👑"
+    };
+    return icons[relation] || "👤";
+  };
+
+  const getGenderColor = (gender: string) => {
+    return gender === "male" ? "bg-blue-500/20 text-blue-700 border-blue-200" : "bg-pink-500/20 text-pink-700 border-pink-200";
+  };
+
+  const nextStep = () => {
+    if (currentStep === 1 && (!formData.name || !formData.gender)) {
+      toast({
+        title: "معلومات ناقصة",
+        description: "يرجى إدخال الاسم واختيار الجنس",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (currentStep === 2 && !formData.relation) {
+      toast({
+        title: "معلومات ناقصة", 
+        description: "يرجى اختيار صلة القرابة",
+        variant: "destructive"
+      });
+      return;
+    }
+    setCurrentStep(prev => Math.min(prev + 1, 3));
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
   return (
@@ -322,24 +335,16 @@ const FamilyBuilder = () => {
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
-        animationDelay: '2s'
-      }}></div>
-        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{
-        animationDelay: '1s'
-      }}></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
       </div>
       
-      {/* Header matching family-creator */}
+      {/* Header */}
       <header className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-xl border-b border-gradient-to-r from-primary/30 to-secondary/30 sticky top-0 z-50">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-2 left-10 w-6 h-6 bg-primary/20 rounded-full animate-pulse"></div>
-          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{
-          animationDelay: '1s'
-        }}></div>
-          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{
-          animationDelay: '2s'
-        }}></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
         </div>
 
         <div className="container mx-auto px-6 py-6">
@@ -363,9 +368,49 @@ const FamilyBuilder = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
+              {/* Notification Bell */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-primary/30">
+                    <Bell className="h-5 w-5 text-primary dark:text-primary" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-80 bg-popover backdrop-blur-xl border border-primary/50 shadow-2xl" align="end">
+                  <DropdownMenuLabel>الإشعارات</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>لا توجد إشعارات جديدة</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* User Profile */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-primary/30">
+                    <User className="h-5 w-5 text-primary dark:text-primary" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-popover backdrop-blur-xl border border-primary/50 shadow-2xl" align="end">
+                  <DropdownMenuLabel>حساب المستخدم</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/dashboard2")}>
+                    <User className="mr-2 h-4 w-4" />
+                    لوحة التحكم
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    الإعدادات
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    تسجيل الخروج
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button
-                onClick={handleBackToDashboard}
+                onClick={() => navigate("/dashboard2")}
                 variant="outline"
                 className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6"
               >
@@ -377,544 +422,594 @@ const FamilyBuilder = () => {
         </div>
       </header>
 
-        <div className="pt-16 relative z-10 min-h-screen">
-          <div className="flex h-[calc(100vh-200px)] gap-6 px-4 pb-6 max-w-7xl mx-auto">
-            {/* Left Column - Form */}
-            <div className={cn("flex-1", familyMembers.length > 0 ? "max-w-3xl" : "max-w-none")}>
-              {/* Add/Edit Member Form */}
-              {(currentMode === 'add-member' || currentMode === 'edit-member') && (
-                <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-2xl shadow-primary/10 rounded-3xl h-full overflow-auto">
-                  <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
-                  <CardHeader className="sticky top-2 bg-card/90 backdrop-blur-sm z-10 border-b border-primary/20 rounded-t-3xl">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-                        <UserPlus className="h-6 w-6 text-primary-foreground" />
-                      </div>
+      {/* Main Content */}
+      <div className="pt-8 relative z-10 min-h-screen">
+        <div className="max-w-7xl mx-auto px-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+            {/* Modern Tabs Navigation */}
+            <div className="flex justify-center">
+              <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-2 shadow-lg">
+                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground">
+                  <Users className="mr-2 h-4 w-4" />
+                  نظرة عامة
+                </TabsTrigger>
+                <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground">
+                  <TreePine className="mr-2 h-4 w-4" />
+                  عرض الشجرة
+                </TabsTrigger>
+                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground">
+                  <Star className="mr-2 h-4 w-4" />
+                  الإحصائيات
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Overview Tab */}
+            <TabsContent value="overview" className="space-y-8">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-foreground text-2xl">
-                          {currentMode === 'edit-member' ? `تعديل بيانات: ${selectedMember?.name}` : 'إضافة فرد جديد للعائلة'}
-                        </CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                          {currentMode === 'edit-member' ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد وحدد صلة القرابة'}
-                        </CardDescription>
+                        <p className="text-sm font-medium text-muted-foreground">إجمالي الأفراد</p>
+                        <p className="text-3xl font-bold text-primary">{familyMembers.length}</p>
+                      </div>
+                      <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Users className="h-6 w-6 text-primary" />
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-8 pb-32 pt-6">
-                    {/* Name and Gender */}
-                    <div className="grid grid-cols-3 gap-6">
-                      <div className="col-span-2 space-y-3">
-                        <Label htmlFor="name" className="text-sm font-medium text-card-foreground flex flex-row-reverse items-center gap-2">
-                          <User className="h-4 w-4 text-primary" />
-                          الاسم الكامل
-                        </Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          placeholder="أدخل الاسم الكامل"
-                          className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input text-right"
-                        />
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-accent/10 to-secondary/10 border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">الأجيال</p>
+                        <p className="text-3xl font-bold text-accent">3</p>
                       </div>
-                    <div className="space-y-2">
-                      <Label className="text-right flex flex-row-reverse items-center gap-2">
-                        <Users className="h-4 w-4 text-emerald-600" />
-                        الجنس
-                      </Label>
-                      <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
-                        <SelectTrigger className="text-right">
-                          <SelectValue placeholder="اختر الجنس" />
-                        </SelectTrigger>
-                        <SelectContent className="text-right">
-                          <SelectItem value="male" className="text-right justify-end">ذكر</SelectItem>
-                          <SelectItem value="female" className="text-right justify-end">أنثى</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Relationship and Related Person */}
-                  {formData.gender && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-right flex flex-row-reverse items-center gap-2">
-                          <Heart className="h-4 w-4 text-emerald-600" />
-                          صلة القرابة
-                        </Label>
-                        <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value, relatedPersonId: null})}>
-                          <SelectTrigger className="text-right">
-                            <SelectValue placeholder="اختر صلة القرابة" className="text-right" />
-                          </SelectTrigger>
-                          <SelectContent className="text-right">
-                            {getRelationshipOptions(formData.gender, familyMembers).map((relation) => (
-                              <SelectItem key={relation.value} value={relation.value} className="text-right justify-end">
-                                {relation.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <TreePine className="h-6 w-6 text-accent" />
                       </div>
-
-                      {/* Related Person Selection */}
-                      {formData.relation && familyMembers.length > 0 && (
-                        <div className="space-y-2">
-                          <Label className="text-right flex flex-row-reverse items-center gap-2">
-                            <Users className="h-4 w-4 text-emerald-600" />
-                            ذو صلة بـ
-                          </Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button variant="outline" className="w-full justify-between text-right">
-                                {formData.relatedPersonId ? 
-                                  familyMembers.find(m => m.id === formData.relatedPersonId)?.name || "اختر شخص"
-                                  : "اختر شخص"}
-                                <Search className="h-4 w-4" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-full p-0" align="start">
-                              <div className="p-2">
-                                <Input
-                                  placeholder="البحث عن شخص..."
-                                  value={relatedPersonSearch}
-                                  onChange={(e) => setRelatedPersonSearch(e.target.value)}
-                                  className="text-right mb-2"
-                                />
-                                <div className="max-h-32 overflow-auto">
-                                  {filteredRelatedPersons.map((person) => (
-                                    <div
-                                      key={person.id}
-                                      className="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded"
-                                      onClick={() => {
-                                        setFormData({...formData, relatedPersonId: person.id});
-                                        setRelatedPersonSearch("");
-                                      }}
-                                    >
-                                      <Avatar className="h-8 w-8 ml-2">
-                                        <AvatarImage src={person.image} />
-                                        <AvatarFallback className="text-xs">
-                                          {person.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <div className="text-right">
-                                        <p className="text-sm font-medium">{person.name}</p>
-                                        <p className="text-xs text-gray-500">
-                                          {person.relation === 'father' && 'أب'}
-                                          {person.relation === 'mother' && 'أم'}
-                                          {person.relation === 'son' && 'ابن'}
-                                          {person.relation === 'daughter' && 'ابنة'}
-                                          {person.relation === 'husband' && 'زوج'}
-                                          {person.relation === 'wife' && 'زوجة'}
-                                          {person.relation === 'brother' && 'أخ'}
-                                          {person.relation === 'sister' && 'أخت'}
-                                          {person.relation === 'founder' && 'المؤسس'}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                      )}
                     </div>
-                  )}
+                  </CardContent>
+                </Card>
 
-                  {/* Birth Date */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-right flex flex-row-reverse items-center gap-2">
-                        <Baby className="h-4 w-4 text-emerald-600" />
-                        تاريخ الميلاد
-                      </Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn("w-full justify-start text-right font-normal", !formData.birthDate && "text-muted-foreground")}
-                          >
-                            <CalendarIcon className="ml-2 h-4 w-4" />
-                            {formData.birthDate ? format(formData.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={formData.birthDate}
-                            onSelect={(date) => setFormData({...formData, birthDate: date})}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                <Card className="bg-gradient-to-br from-secondary/10 to-primary/10 border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">آخر تحديث</p>
+                        <p className="text-3xl font-bold text-secondary">اليوم</p>
+                      </div>
+                      <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Clock className="h-6 w-6 text-secondary" />
+                      </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-                    {/* Status */}
-                    <div className="space-y-2">
-                      <Label className="text-right flex flex-row-reverse items-center gap-2">
-                        <Heart className="h-4 w-4 text-emerald-600" />
-                        الحالة
-                      </Label>
-                      <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}>
-                        <SelectTrigger className="text-right">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="text-right">
-                          <SelectItem value="alive" className="text-right justify-end">على قيد الحياة</SelectItem>
-                          <SelectItem value="deceased" className="text-right justify-end">متوفى</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+              {/* Search and Add Section */}
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="البحث في أفراد العائلة..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pr-10 h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm"
+                  />
+                </div>
+                
+                <Button
+                  onClick={handleAddNewMember}
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12"
+                >
+                  <Plus className="mr-2 h-5 w-5" />
+                  إضافة فرد جديد
+                </Button>
+              </div>
 
-                  {/* Death Date if deceased */}
-                  {!formData.isAlive && (
-                    <div className="space-y-2">
-                      <Label className="text-right flex flex-row-reverse items-center gap-2">
-                        <Skull className="h-4 w-4 text-gray-600" />
-                        تاريخ الوفاة
-                      </Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn("w-full justify-start text-right font-normal", !formData.deathDate && "text-muted-foreground")}
-                          >
-                            <CalendarIcon className="ml-2 h-4 w-4" />
-                            {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={formData.deathDate}
-                            onSelect={(date) => setFormData({...formData, deathDate: date})}
-                            initialFocus
-                            className="pointer-events-auto"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  )}
-
-                  {/* Profile Image Upload */}
-                  <div className="space-y-2">
-                    <Label className="text-right flex flex-row-reverse items-center gap-2">
-                      <Camera className="h-4 w-4 text-emerald-600" />
-                      الصورة الشخصية (اختياري)
-                    </Label>
-                    <div 
-                      className="border-2 border-dashed border-emerald-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors cursor-pointer"
-                      onDrop={onDrop}
-                      onDragOver={onDragOver}
-                      onClick={() => document.getElementById('image-upload')?.click()}
-                    >
-                      {formData.croppedImage ? (
-                        <div className="flex flex-col items-center space-y-2">
-                          <Avatar className="h-20 w-20">
-                            <AvatarImage src={formData.croppedImage} />
-                            <AvatarFallback>صورة</AvatarFallback>
+              {/* Family Members Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredMembers.map((member) => (
+                  <Card key={member.id} className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-14 h-14 border-2 border-primary/20">
+                            <AvatarImage src={member.image || undefined} />
+                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-lg">
+                              {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                            </AvatarFallback>
                           </Avatar>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setFormData({...formData, croppedImage: null, image: null});
-                            }}
-                          >
-                            <X className="h-3 w-3 ml-1" />
-                            إزالة الصورة
-                          </Button>
+                          <div>
+                            <h3 className="font-bold text-foreground text-lg leading-tight">{member.name}</h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-2xl">{getRelationIcon(member.relation)}</span>
+                              <Badge className={cn("text-xs", getGenderColor(member.gender))}>
+                                {getRelationshipOptions(member.gender).find(r => r.value === member.relation)?.label || member.relation}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <UploadCloud className="h-12 w-12 text-emerald-400 mx-auto" />
-                          <p className="text-emerald-600">اسحب الصورة هنا أو انقر للاختيار</p>
-                          <p className="text-sm text-emerald-500">PNG, JPG حتى 10MB</p>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-primary/10">
+                              <div className="w-1 h-1 bg-current rounded-full"></div>
+                              <div className="w-1 h-1 bg-current rounded-full"></div>
+                              <div className="w-1 h-1 bg-current rounded-full"></div>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-popover backdrop-blur-xl border border-primary/20 shadow-xl">
+                            <DropdownMenuItem onClick={() => handleEditMember(member)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              تعديل
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteMember(member.id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              حذف
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        {member.birthDate && (
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-3 w-3" />
+                            <span>مولود: {format(new Date(member.birthDate), "PPP", { locale: ar })}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          {member.isAlive ? (
+                            <>
+                              <Heart className="h-3 w-3 text-green-500" />
+                              <span className="text-green-600">على قيد الحياة</span>
+                            </>
+                          ) : (
+                            <>
+                              <Skull className="h-3 w-3 text-gray-500" />
+                              <span className="text-gray-600">متوفى</span>
+                            </>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+
+                {/* Add New Member Card */}
+                <Card 
+                  className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl cursor-pointer group hover:from-primary/10 hover:to-accent/10 hover:border-primary/50 transition-all duration-300"
+                  onClick={handleAddNewMember}
+                >
+                  <CardContent className="p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Plus className="h-8 w-8 text-primary" />
                     </div>
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={onFileChange}
-                    />
-                  </div>
+                    <h3 className="font-bold text-primary text-lg mb-2">إضافة فرد جديد</h3>
+                    <p className="text-muted-foreground text-center text-sm">انقر هنا لإضافة عضو جديد إلى شجرة العائلة</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-                  {/* Biography */}
-                  <div className="space-y-2">
-                    <Label htmlFor="bio" className="text-right flex flex-row-reverse items-center gap-2">
-                      <FileText className="h-4 w-4 text-emerald-600" />
-                      نبذة عن الشخص (اختياري)
-                    </Label>
-                    <Textarea
-                      id="bio"
-                      value={formData.bio}
-                      onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                      placeholder="اكتب نبذة مختصرة عن الشخص..."
-                      className="text-right min-h-20"
-                    />
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-4 pt-6">
-                    <Button
-                      onClick={() => setCurrentMode('tree-view')}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      إلغاء
-                    </Button>
-                    <Button
-                      onClick={handleSaveMember}
-                      disabled={!formData.name || !formData.gender || !formData.relation}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                    >
-                      <Save className="ml-2 h-4 w-4" />
-                      {currentMode === 'edit-member' ? 'حفظ التعديلات' : 'إضافة العضو'}
-                    </Button>
+            {/* Tree View Tab */}
+            <TabsContent value="tree-view" className="space-y-8">
+              <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-3xl overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-primary/20">
+                  <CardTitle className="text-center text-2xl text-foreground">شجرة العائلة</CardTitle>
+                  <CardDescription className="text-center text-muted-foreground">عرض تفاعلي لشجرة العائلة</CardDescription>
+                </CardHeader>
+                <CardContent className="p-12">
+                  <div className="text-center">
+                    <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <TreePine className="h-16 w-16 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-4">عرض الشجرة قيد التطوير</h3>
+                    <p className="text-muted-foreground text-lg">سيتم إضافة عرض تفاعلي للشجرة قريباً</p>
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Statistics Tab */}
+            <TabsContent value="statistics" className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="h-5 w-5 text-primary" />
+                      إحصائيات الأجيال
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span>الجيل الأول</span>
+                        <Badge className="bg-primary/20 text-primary">2 أفراد</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>الجيل الثاني</span>
+                        <Badge className="bg-accent/20 text-accent">2 أفراد</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-primary" />
+                      توزيع الجنس
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span>الذكور</span>
+                        <Badge className="bg-blue-500/20 text-blue-700">
+                          {familyMembers.filter(m => m.gender === 'male').length}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>الإناث</span>
+                        <Badge className="bg-pink-500/20 text-pink-700">
+                          {familyMembers.filter(m => m.gender === 'female').length}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* Add/Edit Member Modal */}
+      <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
+          
+          <DialogHeader className="relative pt-4">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+                <UserPlus className="h-8 w-8 text-primary-foreground" />
+              </div>
+              <div>
+                <DialogTitle className="text-3xl font-bold text-foreground">
+                  {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-lg">
+                  {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
+                </DialogDescription>
+              </div>
+            </div>
+
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
+                    currentStep >= step 
+                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg" 
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    {step}
+                  </div>
+                  {step < 3 && (
+                    <div className={cn(
+                      "w-16 h-1 rounded-full mx-2 transition-all duration-300",
+                      currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
+                    )}></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </DialogHeader>
+
+          <div className="overflow-y-auto max-h-[60vh] px-6">
+            {/* Step 1: Basic Info */}
+            {currentStep === 1 && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <User className="h-4 w-4 text-primary" />
+                      الاسم الكامل
+                    </Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="أدخل الاسم الكامل"
+                      className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      الجنس
+                    </Label>
+                    <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value, relation: ""})}>
+                      <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input">
+                        <SelectValue placeholder="اختر الجنس" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                        <SelectItem value="male" className="text-lg py-4 rounded-lg">👨 ذكر</SelectItem>
+                        <SelectItem value="female" className="text-lg py-4 rounded-lg">👩 أنثى</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Profile Photo Section */}
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                    <Camera className="h-4 w-4 text-primary" />
+                    الصورة الشخصية (اختياري)
+                  </Label>
+                  
+                  <div className="flex items-center gap-6">
+                    <Avatar className="w-24 h-24 border-4 border-primary/20">
+                      <AvatarImage src={formData.croppedImage || undefined} />
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-2xl">
+                        {formData.name ? formData.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '👤'}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={onFileChange}
+                        className="hidden"
+                        id="photo-upload"
+                      />
+                      <label
+                        htmlFor="photo-upload"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl cursor-pointer hover:from-primary/20 hover:to-accent/20 transition-all"
+                      >
+                        <UploadCloud className="h-4 w-4" />
+                        اختر صورة
+                      </label>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        يفضل استخدام صور بجودة عالية ونسبة 1:1
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
-            {/* Tree View */}
-            {currentMode === 'tree-view' && (
-              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full flex flex-col">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-emerald-800 dark:text-emerald-200 text-2xl">
-                      شجرة العائلة
-                    </CardTitle>
-                    <Button onClick={handleAddNewMember} className="bg-emerald-600 hover:bg-emerald-700">
-                      <Plus className="mr-2 h-4 w-4" />
-                      إضافة عضو جديد
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto">
-                  {familyMembers.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {familyMembers.map((member) => (
-                        <Card key={member.id} className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-                          {!member.isAlive && (
-                            <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
-                              <div className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none">
-                                <div className="absolute top-0 right-0 w-full h-1 bg-black transform rotate-45 origin-top-right translate-y-8"></div>
-                              </div>
-                            </div>
+            {/* Step 2: Relationship */}
+            {currentStep === 2 && formData.gender && (
+              <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">تحديد صلة القرابة</h3>
+                  <p className="text-muted-foreground">اختر العلاقة التي تربط هذا الشخص بالعائلة</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {getRelationshipOptions(formData.gender).map((relation) => (
+                    <Card
+                      key={relation.value}
+                      className={cn(
+                        "cursor-pointer transition-all duration-300 border-2 rounded-xl overflow-hidden group",
+                        formData.relation === relation.value
+                          ? "border-primary bg-gradient-to-br from-primary/10 to-accent/10 shadow-lg"
+                          : "border-border hover:border-primary/50 hover:shadow-md"
+                      )}
+                      onClick={() => setFormData({...formData, relation: relation.value})}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <div className="text-4xl mb-3">{relation.icon}</div>
+                        <h4 className="font-bold text-lg text-foreground">{relation.label}</h4>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Additional Details */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      تاريخ الميلاد
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                            !formData.birthDate && "text-muted-foreground"
                           )}
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-4 rtl:space-x-reverse mb-3">
-                              <Avatar className="h-12 w-12">
-                                <AvatarImage src={member.image} />
-                                <AvatarFallback className="bg-emerald-100 text-emerald-600 font-bold">
-                                  {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1">
-                                <h3 className="font-semibold text-lg">{member.name}</h3>
-                                <p className="text-sm text-muted-foreground capitalize">
-                                  {member.relation === 'father' && 'أب'}
-                                  {member.relation === 'mother' && 'أم'}
-                                  {member.relation === 'son' && 'ابن'}
-                                  {member.relation === 'daughter' && 'ابنة'}
-                                  {member.relation === 'husband' && 'زوج'}
-                                  {member.relation === 'wife' && 'زوجة'}
-                                  {member.relation === 'brother' && 'أخ'}
-                                  {member.relation === 'sister' && 'أخت'}
-                                  {member.relation === 'founder' && 'المؤسس'}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            {member.birthDate && (
-                              <p className="text-sm text-muted-foreground mb-2">
-                                تاريخ الميلاد: {new Date(member.birthDate).toLocaleDateString('ar')}
-                              </p>
-                            )}
-                            
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => handleEditMember(member)}
-                                size="sm"
-                                variant="outline"
-                                className="flex-1"
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      هل أنت متأكد من حذف {member.name} من شجرة العائلة؟ هذا الإجراء لا يمكن التراجع عنه.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteMember(member.id)} className="bg-red-600 hover:bg-red-700">
-                                      حذف
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center">
-                      <TreePine className="h-24 w-24 text-emerald-300 mb-4" />
-                      <h3 className="text-xl font-semibold text-emerald-800 mb-2">
-                        لا توجد أفراد في العائلة بعد
-                      </h3>
-                      <p className="text-emerald-600 mb-6">
-                        ابدأ ببناء شجرة عائلتك عبر إضافة أول عضو
-                      </p>
-                      <Button onClick={handleAddNewMember} className="bg-emerald-600 hover:bg-emerald-700">
-                        <Plus className="mr-2 h-4 w-4" />
-                        إضافة أول عضو
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.birthDate ? format(formData.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                        <Calendar
+                          mode="single"
+                          selected={formData.birthDate}
+                          onSelect={(date) => setFormData({...formData, birthDate: date})}
+                          initialFocus
+                          disabled={(date) => date > new Date()}
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Heart className="h-4 w-4 text-primary" />
+                      الحالة
+                    </Label>
+                    <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}>
+                      <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                        <SelectItem value="alive" className="text-lg py-4 rounded-lg">💚 على قيد الحياة</SelectItem>
+                        <SelectItem value="deceased" className="text-lg py-4 rounded-lg">🕊️ متوفى</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {!formData.isAlive && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Skull className="h-4 w-4 text-primary" />
+                      تاريخ الوفاة
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                            !formData.deathDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                        <Calendar
+                          mode="single"
+                          selected={formData.deathDate}
+                          onSelect={(date) => setFormData({...formData, deathDate: date})}
+                          initialFocus
+                          disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    نبذة عن الشخص (اختياري)
+                  </Label>
+                  <Textarea
+                    value={formData.bio}
+                    onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                    placeholder="اكتب نبذة مختصرة عن هذا الشخص..."
+                    className="min-h-[100px] border-2 border-primary/20 focus:border-primary rounded-xl bg-input resize-none text-lg"
+                  />
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Right Column - Members List */}
-          {familyMembers.length > 0 && currentMode === 'tree-view' && (
-            <div className="w-96 flex-shrink-0">
-              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-emerald-200 h-full flex flex-col">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-emerald-800 dark:text-emerald-200 text-lg">
-                      أفراد العائلة ({filteredMembers.length})
-                    </CardTitle>
-                    <Button onClick={handleAddNewMember} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {/* Search */}
-                  <div className="relative">
-                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="البحث في أفراد العائلة..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="text-right pr-10"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto">
-                  <div className="space-y-3">
-                    {filteredMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        className="flex items-center space-x-3 rtl:space-x-reverse p-3 rounded-lg border border-emerald-100 hover:bg-emerald-50 cursor-pointer transition-colors"
-                        onClick={() => handleEditMember(member)}
-                      >
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={member.image} />
-                          <AvatarFallback className="bg-emerald-100 text-emerald-600 text-sm font-bold">
-                            {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {member.relation === 'father' && 'أب'}
-                            {member.relation === 'mother' && 'أم'}
-                            {member.relation === 'son' && 'ابن'}
-                            {member.relation === 'daughter' && 'ابنة'}
-                            {member.relation === 'husband' && 'زوج'}
-                            {member.relation === 'wife' && 'زوجة'}
-                            {member.relation === 'brother' && 'أخ'}
-                            {member.relation === 'sister' && 'أخت'}
-                            {member.relation === 'founder' && 'المؤسس'}
-                          </p>
-                        </div>
-                        {!member.isAlive && (
-                          <Badge variant="secondary" className="text-xs">
-                            متوفى
-                          </Badge>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <Footer />
-      
-      {/* Image Crop Modal */}
-      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-right">قص الصورة</DialogTitle>
-            <DialogDescription className="text-right">
-              اضبط حجم وموضع الصورة كما تريد
-            </DialogDescription>
-          </DialogHeader>
-          {imageSrc && (
-            <div className="space-y-4">
-              <div className="relative h-64 bg-gray-100 rounded-lg overflow-hidden">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-right">التكبير</Label>
-                <input
-                  type="range"
-                  value={zoom}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => setShowImageCrop(false)} 
-                  variant="outline"
-                  className="flex-1"
-                >
-                  إلغاء
+          <DialogFooter className="flex justify-between items-center pt-6 border-t border-primary/20">
+            <div className="flex gap-3">
+              {currentStep > 1 && (
+                <Button variant="outline" onClick={prevStep} className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  السابق
                 </Button>
-                <Button 
-                  onClick={handleCropSave}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                >
-                  <Crop className="ml-2 h-4 w-4" />
-                  حفظ
-                </Button>
-              </div>
+              )}
             </div>
-          )}
+
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowAddMember(false)} className="border-border hover:bg-muted rounded-xl">
+                إلغاء
+              </Button>
+              
+              {currentStep < 3 ? (
+                <Button onClick={nextStep} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
+                  التالي
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button onClick={handleSaveMember} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
+                  <Save className="mr-2 h-4 w-4" />
+                  {selectedMember ? 'حفظ التغييرات' : 'إضافة العضو'}
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image Crop Modal */}
+      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
+        <DialogContent className="sm:max-w-2xl bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-foreground">قص الصورة</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              اضبط الصورة كما تريد وانقر على حفظ
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="relative h-96 w-full rounded-xl overflow-hidden">
+            {imageSrc && (
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                cropShape="round"
+                showGrid={false}
+              />
+            )}
+          </div>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="zoom" className="text-sm font-medium">تكبير</Label>
+              <input
+                id="zoom"
+                type="range"
+                min="1"
+                max="3"
+                step="0.1"
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="flex gap-3">
+            <Button variant="outline" onClick={() => setShowImageCrop(false)} className="rounded-xl">
+              إلغاء
+            </Button>
+            <Button onClick={handleCropSave} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
+              <Save className="mr-2 h-4 w-4" />
+              حفظ الصورة
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Footer />
     </div>
   );
 };
