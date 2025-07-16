@@ -1304,7 +1304,7 @@ const FamilyBuilder = () => {
                                {!member.isAlive && (
                                  <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
                                    <div className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none">
-                                     <div className="absolute top-0 right-0 w-full h-1 bg-black transform rotate-45 origin-top-right translate-y-6"></div>
+                                     <div className="absolute top-0 right-0 w-full h-1 bg-black transform rotate-45 origin-top-right translate-y-8"></div>
                                    </div>
                                  </div>
                                )}
