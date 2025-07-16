@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
@@ -856,31 +857,57 @@ const FamilyBuilder = () => {
                       <Users className="h-4 w-4 text-primary" />
                       اختر الشخص المرتبط به
                     </Label>
-                    <Select 
-                      value={formData.relatedPersonId?.toString() || ""} 
-                      onValueChange={(value) => setFormData({...formData, relatedPersonId: value ? parseInt(value) : null})}
-                    >
-                      <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input">
-                        <SelectValue placeholder="اختر من قائمة أفراد العائلة" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl max-h-60">
-                        {familyMembers.map((member) => (
-                          <SelectItem 
-                            key={member.id} 
-                            value={member.id.toString()}
-                            className="text-lg py-4 rounded-lg flex items-center gap-2"
-                          >
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full h-12 justify-between text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                            !formData.relatedPersonId && "text-muted-foreground"
+                          )}
+                        >
+                          {formData.relatedPersonId ? (
                             <div className="flex items-center gap-3">
-                              <span className="text-2xl">{getRelationIcon(member.relation)}</span>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{member.name}</span>
-                                <span className="text-sm text-muted-foreground">{member.relation}</span>
+                              <span className="text-xl">{getRelationIcon(familyMembers.find(m => m.id === formData.relatedPersonId)?.relation || "")}</span>
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium">{familyMembers.find(m => m.id === formData.relatedPersonId)?.name}</span>
+                                <span className="text-xs text-muted-foreground">{familyMembers.find(m => m.id === formData.relatedPersonId)?.relation}</span>
                               </div>
                             </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                          ) : (
+                            "ابحث واختر من قائمة أفراد العائلة"
+                          )}
+                          <Search className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                        <Command>
+                          <CommandInput placeholder="ابحث عن فرد من العائلة..." className="h-12 text-lg" />
+                          <CommandEmpty>لم يتم العثور على أي شخص.</CommandEmpty>
+                          <CommandList className="max-h-60">
+                            <CommandGroup>
+                              {familyMembers.map((member) => (
+                                <CommandItem
+                                  key={member.id}
+                                  value={`${member.name} ${member.relation}`}
+                                  onSelect={() => setFormData({...formData, relatedPersonId: member.id})}
+                                  className="flex items-center gap-3 p-3 cursor-pointer"
+                                >
+                                  <span className="text-2xl">{getRelationIcon(member.relation)}</span>
+                                  <div className="flex flex-col flex-1">
+                                    <span className="font-medium">{member.name}</span>
+                                    <span className="text-sm text-muted-foreground">{member.relation}</span>
+                                  </div>
+                                  {formData.relatedPersonId === member.id && (
+                                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                  )}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <p className="text-sm text-muted-foreground">
                       اختر الشخص الذي يرتبط معه {formData.name} بعلاقة {getRelationshipOptions(formData.gender).find(r => r.value === formData.relation)?.label}
                     </p>
