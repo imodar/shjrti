@@ -578,12 +578,12 @@ const FamilyBuilder = () => {
 
                        {/* Compact Info Section */}
                        <div className="p-4 space-y-3">
-                         {/* Birth Date - Short Format */}
+                         {/* Birth Date - Simple Text Only */}
                          {member.birthDate && (
                            <div className="flex items-center gap-2 text-sm">
                              <Calendar className="h-4 w-4 text-primary" />
                              <span className="text-muted-foreground">مولود:</span>
-                             <span className="font-medium text-foreground">{format(new Date(member.birthDate), "dd/MM/yyyy")}</span>
+                             <span className="font-medium text-foreground">{new Date(member.birthDate).toLocaleDateString('ar-SA')}</span>
                            </div>
                          )}
 
