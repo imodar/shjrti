@@ -37,6 +37,17 @@ const currentPlan = {
 // Available plans data
 const availablePlans = [
   {
+    name: "مجانية",
+    type: "free",
+    price: "$0",
+    priceArabic: "مجاناً",
+    period: "",
+    treesLimit: 1,
+    membersLimit: 10,
+    features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"],
+    popular: false
+  },
+  {
     name: "أساسية",
     type: "basic",
     price: "$9.99",
@@ -810,9 +821,10 @@ const Dashboard2 = () => {
                       onClick={() => {
                         if (plan.type !== currentPlan.type) {
                           setShowUpgradeDialog(false);
+                          navigate("/payment", { state: { selectedPlan: plan } });
                           toast({
-                            title: "تم اختيار الباقة",
-                            description: `تم اختيار الباقة ${plan.name}`
+                            title: "التوجه للدفع",
+                            description: `سيتم توجيهك لصفحة الدفع للباقة ${plan.name}`
                           });
                         }
                       }}
