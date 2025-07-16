@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -429,19 +429,26 @@ const FamilyBuilder = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             {/* Modern Tabs Navigation */}
             <div className="flex justify-center">
-              <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-1 shadow-lg">
-                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
-                  <Users className="mr-2 h-4 w-4" />
-                  نظرة عامة
+              <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-1 shadow-lg flex-row-reverse">
+                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
+                  <Star className="mr-2 h-4 w-4" />
+                  الإحصائيات
                 </TabsTrigger>
                 <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
                   <TreePine className="mr-2 h-4 w-4" />
                   عرض الشجرة
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
-                  <Star className="mr-2 h-4 w-4" />
-                  الإحصائيات
+                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
+                  <Users className="mr-2 h-4 w-4" />
+                  نظرة عامة
                 </TabsTrigger>
+                <Button 
+                  onClick={() => navigate('/store')}
+                  className="rounded-xl px-6 py-3 transition-all duration-300 bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+                >
+                  <Store className="mr-2 h-4 w-4" />
+                  المتجر
+                </Button>
               </TabsList>
             </div>
 
