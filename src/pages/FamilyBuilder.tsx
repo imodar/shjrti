@@ -30,7 +30,7 @@ const mockFamilyMembers = [
 
 const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
   const founderOption = [
-    { value: "founder", label: "الفرد الذي ستبدأ منه العائلة" }
+    { value: "founder", label: "أول فرد الذي ستبدأ منه العائلة" }
   ];
   
   // If this is the first member being added to the family tree, only show founder option
@@ -38,12 +38,9 @@ const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
     return founderOption;
   }
   
-  // For subsequent members, show all relationship options
-  const commonOptions = [...founderOption];
-  
+  // For subsequent members, show all relationship options except founder
   if (gender === "male") {
     return [
-      ...commonOptions,
       { value: "father", label: "أب" },
       { value: "husband", label: "زوج" },
       { value: "brother", label: "أخ" },
@@ -51,7 +48,6 @@ const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
     ];
   } else if (gender === "female") {
     return [
-      ...commonOptions,
       { value: "mother", label: "أم" },
       { value: "wife", label: "زوجة" },
       { value: "sister", label: "أخت" },
@@ -59,7 +55,7 @@ const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
     ];
   }
   
-  return commonOptions;
+  return [];
 };
 
 const FamilyBuilder = () => {
