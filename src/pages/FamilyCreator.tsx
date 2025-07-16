@@ -188,27 +188,27 @@ const FamilyCreator = () => {
       }
     }
   };
-  return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 dark:from-slate-950 dark:via-indigo-950 dark:to-purple-950 relative overflow-hidden">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse" style={{
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
         animationDelay: '2s'
       }}></div>
-        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-cyan-400/15 to-teal-400/15 rounded-full blur-2xl animate-bounce" style={{
+        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{
         animationDelay: '1s'
       }}></div>
       </div>
       
       {/* Header matching Dashboard2 exactly */}
-      <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-gradient-to-r from-emerald-200/30 to-cyan-200/30 sticky top-0 z-50">
+      <header className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-xl border-b border-gradient-to-r from-primary/30 to-secondary/30 sticky top-0 z-50">
         {/* Floating geometric shapes */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-2 left-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
-          <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{
+          <div className="absolute top-2 left-10 w-6 h-6 bg-primary/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{
           animationDelay: '1s'
         }}></div>
-          <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{
+          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{
           animationDelay: '2s'
         }}></div>
         </div>
@@ -218,18 +218,18 @@ const FamilyCreator = () => {
             {/* Left side - Logo and Title */}
             <div className="flex items-center gap-6">
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
-                  <Users className="h-7 w-7 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                  <Users className="h-7 w-7 text-primary-foreground" />
                 </div>
               </div>
               
               <div className="space-y-1">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                   كينلاك - العائلة الرقمية
                 </h1>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                   <p className="text-muted-foreground font-medium">إنشاء شجرة عائلية جديدة</p>
                 </div>
               </div>
@@ -238,14 +238,14 @@ const FamilyCreator = () => {
             {/* Right side - Actions and Profile */}
             <div className="flex items-center gap-6">
               {/* Navigation Pills */}
-              <div className="hidden md:flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-full p-1 border border-emerald-200/50 dark:border-emerald-700/50">
-                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20" onClick={() => navigate("/dashboard2")}>
+              <div className="hidden md:flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-full p-1 border border-primary/50 dark:border-primary/50">
+                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-primary/20" onClick={() => navigate("/dashboard2")}>
                   الرئيسية
                 </Button>
-                <Button variant="ghost" size="sm" className="rounded-full px-4 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/30">
+                <Button variant="ghost" size="sm" className="rounded-full px-4 bg-primary/20 text-primary dark:text-primary hover:bg-primary/30">
                   إنشاء شجرة
                 </Button>
-                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20">
+                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-primary/20">
                   التقارير
                 </Button>
               </div>
@@ -253,11 +253,11 @@ const FamilyCreator = () => {
               {/* Notification Bell */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
-                    <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-primary/30">
+                    <Bell className="h-5 w-5 text-primary dark:text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="end" forceMount>
+                <DropdownMenuContent className="w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-primary/50 dark:border-primary/50 shadow-2xl" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">الإشعارات</p>
@@ -270,11 +270,11 @@ const FamilyCreator = () => {
               {/* User Profile */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
-                    <User className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-primary/30">
+                    <User className="h-5 w-5 text-primary dark:text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="end" forceMount>
+                <DropdownMenuContent className="w-56 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-primary/50 dark:border-primary/50 shadow-2xl" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">المستخدم</p>
@@ -308,16 +308,16 @@ const FamilyCreator = () => {
           <div className="text-center relative">
             {/* Animated Title */}
             <div className="relative inline-block mb-8">
-              <h2 className="text-6xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-4 tracking-tight">بناء شجرة العائلة</h2>
-              <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 blur-2xl rounded-full"></div>
+              <h2 className="text-6xl font-black bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-4 tracking-tight">بناء شجرة العائلة</h2>
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 blur-2xl rounded-full"></div>
             </div>
             
             {/* Modern Steps Indicator */}
             <div className="flex items-center justify-center gap-8 mb-12">
               <div className={`relative flex items-center gap-4 ${currentStep >= 1 ? 'opacity-100' : 'opacity-40'}`}>
-                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${currentStep >= 1 ? 'bg-gradient-to-br from-purple-500 to-pink-600 shadow-xl shadow-purple-500/30 scale-110' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                  <TreePine className="h-8 w-8 text-white" />
-                  {currentStep >= 1 && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-500 animate-ping opacity-20"></div>}
+                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${currentStep >= 1 ? 'bg-gradient-to-br from-primary to-accent shadow-xl shadow-primary/30 scale-110' : 'bg-muted dark:bg-muted'}`}>
+                  <TreePine className="h-8 w-8 text-primary-foreground" />
+                  {currentStep >= 1 && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary to-accent animate-ping opacity-20"></div>}
                 </div>
                 <div className="text-left">
                   <h3 className="font-bold text-lg">معلومات الشجرة</h3>
@@ -325,14 +325,14 @@ const FamilyCreator = () => {
                 </div>
               </div>
               
-              <div className="w-20 h-1 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full relative overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 transition-transform duration-1000 ${currentStep >= 2 ? 'translate-x-0' : '-translate-x-full'}`}></div>
+              <div className="w-20 h-1 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full relative overflow-hidden">
+                <div className={`absolute inset-0 bg-gradient-to-r from-primary to-accent transition-transform duration-1000 ${currentStep >= 2 ? 'translate-x-0' : '-translate-x-full'}`}></div>
               </div>
               
               <div className={`relative flex items-center gap-4 ${currentStep >= 2 ? 'opacity-100' : 'opacity-40'}`}>
-                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${currentStep >= 2 ? 'bg-gradient-to-br from-pink-500 to-rose-600 shadow-xl shadow-pink-500/30 scale-110' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                  <UserPlus className="h-8 w-8 text-white" />
-                  {currentStep >= 2 && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 animate-ping opacity-20"></div>}
+                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${currentStep >= 2 ? 'bg-gradient-to-br from-accent to-secondary shadow-xl shadow-accent/30 scale-110' : 'bg-muted dark:bg-muted'}`}>
+                  <UserPlus className="h-8 w-8 text-primary-foreground" />
+                  {currentStep >= 2 && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-accent to-secondary animate-ping opacity-20"></div>}
                 </div>
                 <div className="text-left">
                   <h3 className="font-bold text-lg">الفرد الأول</h3>
@@ -349,8 +349,8 @@ const FamilyCreator = () => {
           {currentStep === 1 && <div className="relative">
               {/* Background Art */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-2xl animate-pulse"></div>
-                <div className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-tr from-rose-400/15 to-purple-400/15 rounded-full blur-3xl animate-pulse" style={{
+                <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-2xl animate-pulse"></div>
+                <div className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-tr from-secondary/15 to-primary/15 rounded-full blur-3xl animate-pulse" style={{
               animationDelay: '2s'
             }}></div>
               </div>
@@ -358,40 +358,40 @@ const FamilyCreator = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Left Side - Form */}
                 <div className="relative">
-                  <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-2xl shadow-purple-500/10 rounded-3xl overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500"></div>
+                  <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-2xl shadow-primary/10 rounded-3xl overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary"></div>
                     
                     <CardContent className="p-10">
                       <div className="text-center mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                          <TreePine className="h-10 w-10 text-white" />
+                        <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                          <TreePine className="h-10 w-10 text-primary-foreground" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">إنشاء شجرة العائلة</h3>
-                        <p className="text-gray-600 dark:text-gray-300">ابدأ رحلتك في بناء تاريخ عائلتك</p>
+                        <h3 className="text-2xl font-bold text-foreground mb-2">إنشاء شجرة العائلة</h3>
+                        <p className="text-muted-foreground">ابدأ رحلتك في بناء تاريخ عائلتك</p>
                       </div>
 
                       <div className="space-y-6">
                         <div>
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             🌳 اسم العائلة
                           </Label>
                           <Input value={treeData.name} onChange={e => setTreeData({
                         ...treeData,
                         name: e.target.value
-                      })} placeholder="مثال: عائلة الأحمد" className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner focus:shadow-lg transition-all" />
+                      })} placeholder="مثال: عائلة الأحمد" className="h-14 text-lg border-0 bg-input rounded-xl shadow-inner focus:shadow-lg transition-all" />
                         </div>
 
                         <div>
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             📝 وصف العائلة (اختياري)
                           </Label>
                           <Textarea value={treeData.description} onChange={e => setTreeData({
                         ...treeData,
                         description: e.target.value
-                      })} placeholder="اكتب وصفاً موجزاً عن تاريخ العائلة..." className="min-h-[120px] border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner resize-none text-lg" />
+                      })} placeholder="اكتب وصفاً موجزاً عن تاريخ العائلة..." className="min-h-[120px] border-0 bg-input rounded-xl shadow-inner resize-none text-lg" />
                         </div>
 
-                        <Button onClick={handleNextStep} disabled={!treeData.name.trim()} className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
+                        <Button onClick={handleNextStep} disabled={!treeData.name.trim()} className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
                           🚀 المتابعة للخطوة التالية
                         </Button>
                       </div>
@@ -401,15 +401,15 @@ const FamilyCreator = () => {
 
                 {/* Right Side - Visual */}
                 <div className="relative">
-                  <div className="relative bg-gradient-to-br from-purple-100 via-pink-50 to-rose-100 dark:from-purple-900 dark:via-pink-900 dark:to-rose-900 rounded-3xl p-8 h-[500px] flex items-center justify-center overflow-hidden">
+                  <div className="relative bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 dark:from-primary/20 dark:via-accent/10 dark:to-secondary/20 rounded-3xl p-8 h-[500px] flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 opacity-40"></div>
                     
                     <div className="relative text-center">
-                      <div className="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
-                        <TreePine className="h-16 w-16 text-white" />
+                      <div className="w-32 h-32 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                        <TreePine className="h-16 w-16 text-primary-foreground" />
                       </div>
-                      <h4 className="text-2xl font-bold text-purple-800 dark:text-purple-200 mb-4">🌟 ابدأ رحلتك</h4>
-                      <p className="text-purple-600 dark:text-purple-300 text-lg leading-relaxed">
+                      <h4 className="text-2xl font-bold text-primary mb-4">🌟 ابدأ رحلتك</h4>
+                      <p className="text-muted-foreground text-lg leading-relaxed">
                         ستكون هذه بداية شجرة عائلتك الرقمية التي ستحفظ ذكريات أجيال عديدة
                       </p>
                     </div>
@@ -422,49 +422,49 @@ const FamilyCreator = () => {
           {currentStep === 2 && <div className="relative">
               {/* Background Art */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-10 right-10 w-40 h-40 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-2xl animate-pulse"></div>
-                <div className="absolute bottom-10 left-10 w-48 h-48 bg-gradient-to-tr from-pink-400/15 to-rose-400/15 rounded-full blur-3xl animate-pulse" style={{
+                <div className="absolute top-10 right-10 w-40 h-40 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-2xl animate-pulse"></div>
+                <div className="absolute bottom-10 left-10 w-48 h-48 bg-gradient-to-tr from-secondary/15 to-primary/15 rounded-full blur-3xl animate-pulse" style={{
               animationDelay: '1s'
             }}></div>
               </div>
 
-              <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-0 shadow-2xl shadow-indigo-500/10 rounded-3xl overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+              <Card className="bg-card/90 backdrop-blur-xl border-0 shadow-2xl shadow-primary/10 rounded-3xl overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary"></div>
                 
                 <CardContent className="p-12">
                   {/* Header */}
                   <div className="text-center mb-12">
-                    <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <UserPlus className="h-12 w-12 text-white" />
+                    <div className="w-24 h-24 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <UserPlus className="h-12 w-12 text-primary-foreground" />
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-800 dark:text-white mb-3">👑 إضافة الفرد الأول</h3>
-                    <p className="text-xl text-gray-600 dark:text-gray-300">الشخص الذي ستبدأ منه رحلة بناء شجرة العائلة</p>
+                    <h3 className="text-3xl font-bold text-foreground mb-3">👑 إضافة الفرد الأول</h3>
+                    <p className="text-xl text-muted-foreground">الشخص الذي ستبدأ منه رحلة بناء شجرة العائلة</p>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Profile Photo Section */}
                     <div className="lg:col-span-1">
                       <div className="text-center">
-                        <Label className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-6 block">📸 الصورة الشخصية</Label>
+                        <Label className="text-sm font-medium text-card-foreground mb-6 block">📸 الصورة الشخصية</Label>
                         
                         <div className="relative inline-block mb-6">
-                          <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
-                          <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 p-2 shadow-2xl">
-                            <Avatar className="w-full h-full border-4 border-white dark:border-gray-800">
+                          <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-secondary rounded-full blur-lg opacity-30 animate-pulse"></div>
+                          <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 p-2 shadow-2xl">
+                            <Avatar className="w-full h-full border-4 border-card dark:border-card">
                               <AvatarImage src={firstMember.croppedImage || undefined} className="object-cover" />
-                              <AvatarFallback className="bg-gradient-to-br from-indigo-200 to-purple-200 dark:from-indigo-800 dark:to-purple-800 text-indigo-700 dark:text-indigo-300 text-4xl font-bold">
+                              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 text-primary dark:text-primary text-4xl font-bold">
                                 {firstMember.name ? firstMember.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '👤'}
                               </AvatarFallback>
                             </Avatar>
                             
-                            <label htmlFor="image-upload" className="absolute bottom-4 right-4 w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 cursor-pointer">
+                            <label htmlFor="image-upload" className="absolute bottom-4 right-4 w-14 h-14 bg-gradient-to-br from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 cursor-pointer">
                               <Camera className="h-6 w-6" />
                             </label>
                           </div>
                         </div>
                         
                         <input id="image-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                        <p className="text-sm text-gray-500">انقر على الكاميرا لإضافة صورة</p>
+                        <p className="text-sm text-muted-foreground">انقر على الكاميرا لإضافة صورة</p>
                       </div>
                     </div>
 
@@ -473,28 +473,28 @@ const FamilyCreator = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name */}
                         <div className="md:col-span-2">
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             👤 الاسم الكامل
                           </Label>
                           <Input value={firstMember.name} onChange={e => setFirstMember({
                         ...firstMember,
                         name: e.target.value
-                      })} placeholder="أدخل الاسم الكامل" className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner focus:shadow-lg transition-all" />
+                      })} placeholder="أدخل الاسم الكامل" className="h-14 text-lg border-0 bg-input rounded-xl shadow-inner focus:shadow-lg transition-all" />
                         </div>
 
                         {/* Gender */}
                         <div>
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             🚻 الجنس
                           </Label>
                           <Select value={firstMember.gender} onValueChange={value => setFirstMember({
                         ...firstMember,
                         gender: value
                       })}>
-                            <SelectTrigger className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner">
+                            <SelectTrigger className="h-14 text-lg border-0 bg-input rounded-xl shadow-inner">
                               <SelectValue placeholder="اختر الجنس" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                            <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                               <SelectItem value="male" className="text-lg py-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30">
                                 👨 ذكر
                               </SelectItem>
@@ -507,19 +507,19 @@ const FamilyCreator = () => {
 
                         {/* Birth Date */}
                         <div>
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             🎂 تاريخ الميلاد
                           </Label>
                           <Popover>
                             <PopoverTrigger asChild>
-                              <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner hover:shadow-lg", !firstMember.birthDate && "text-muted-foreground")}>
+                              <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-input rounded-xl shadow-inner hover:shadow-lg", !firstMember.birthDate && "text-muted-foreground")}>
                                 <CalendarIcon className="ml-2 h-5 w-5" />
                                 {firstMember.birthDate ? format(firstMember.birthDate, "PPP", {
                               locale: ar
                             }) : "اختر التاريخ"}
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                            <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                               <Calendar mode="single" selected={firstMember.birthDate} onSelect={date => setFirstMember({
                             ...firstMember,
                             birthDate: date
@@ -530,17 +530,17 @@ const FamilyCreator = () => {
 
                         {/* Status */}
                         <div>
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             💗 الحالة
                           </Label>
                           <Select value={firstMember.isAlive ? "alive" : "deceased"} onValueChange={value => setFirstMember({
                         ...firstMember,
                         isAlive: value === "alive"
                       })}>
-                            <SelectTrigger className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner">
+                            <SelectTrigger className="h-14 text-lg border-0 bg-input rounded-xl shadow-inner">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                            <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                               <SelectItem value="alive" className="text-lg py-4 rounded-lg hover:bg-green-50 dark:hover:bg-green-950/30">
                                 💚 على قيد الحياة
                               </SelectItem>
@@ -553,19 +553,19 @@ const FamilyCreator = () => {
 
                         {/* Death Date */}
                         {!firstMember.isAlive && <div>
-                            <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                            <Label className="text-sm font-medium text-card-foreground mb-3 block">
                               🕊️ تاريخ الوفاة
                             </Label>
                             <Popover>
                               <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner", !firstMember.deathDate && "text-muted-foreground")}>
+                                <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-input rounded-xl shadow-inner", !firstMember.deathDate && "text-muted-foreground")}>
                                   <CalendarIcon className="ml-2 h-5 w-5" />
                                   {firstMember.deathDate ? format(firstMember.deathDate, "PPP", {
                               locale: ar
                             }) : "اختر التاريخ"}
                                 </Button>
                               </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                              <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                                 <Calendar mode="single" selected={firstMember.deathDate} onSelect={date => setFirstMember({
                             ...firstMember,
                             deathDate: date
@@ -576,23 +576,23 @@ const FamilyCreator = () => {
 
                         {/* Bio */}
                         <div className="md:col-span-2">
-                          <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
                             📝 نبذة عن الشخص (اختياري)
                           </Label>
                           <Textarea value={firstMember.bio} onChange={e => setFirstMember({
                         ...firstMember,
                         bio: e.target.value
-                      })} placeholder="اكتب نبذة مختصرة عن هذا الشخص..." className="min-h-[100px] border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner resize-none text-lg" />
+                      })} placeholder="اكتب نبذة مختصرة عن هذا الشخص..." className="min-h-[100px] border-0 bg-input rounded-xl shadow-inner resize-none text-lg" />
                         </div>
                       </div>
 
                       {/* Action Buttons */}
                       <div className="flex justify-between mt-12">
-                        <Button onClick={handlePrevStep} variant="outline" className="h-14 px-8 text-lg border-2 border-gray-200 hover:border-gray-300 rounded-xl transition-all">
+                        <Button onClick={handlePrevStep} variant="outline" className="h-14 px-8 text-lg border-2 border-border hover:border-border/80 rounded-xl transition-all">
                           ← العودة للخلف
                         </Button>
 
-                        <Button onClick={handleCreateFamily} disabled={!firstMember.name.trim() || !firstMember.gender} className="h-14 px-12 text-lg font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl disabled:opacity-50">
+                        <Button onClick={handleCreateFamily} disabled={!firstMember.name.trim() || !firstMember.gender} className="h-14 px-12 text-lg font-semibold bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl disabled:opacity-50">
                           🎉 إنشاء الشجرة
                         </Button>
                       </div>
@@ -606,24 +606,24 @@ const FamilyCreator = () => {
 
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200">
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
           <DialogHeader className="text-center space-y-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle className="h-8 w-8 text-primary-foreground" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-emerald-800 text-center">
+            <DialogTitle className="text-2xl font-bold text-primary text-center">
               تم إنشاء الشجرة بنجاح!
             </DialogTitle>
-            <DialogDescription className="text-center text-emerald-600">
+            <DialogDescription className="text-center text-muted-foreground">
               تم إنشاء شجرة العائلة وإضافة الفرد الأول بنجاح. هل تريد إضافة أفراد آخرين الآن؟
             </DialogDescription>
           </DialogHeader>
           
           <DialogFooter className="flex gap-3 mt-6">
-            <Button variant="outline" onClick={handleSkipTodashboard} className="flex-1 text-emerald-600 border-emerald-200 hover:bg-emerald-50">
+            <Button variant="outline" onClick={handleSkipTodashboard} className="flex-1 text-primary border-primary/20 hover:bg-primary/5">
               تخطي الآن
             </Button>
-            <Button onClick={handleAddMoreMembers} className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
+            <Button onClick={handleAddMoreMembers} className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
               <Plus className="mr-2 h-4 w-4" />
               إضافة أفراد آخرين
             </Button>
@@ -659,7 +659,7 @@ const FamilyCreator = () => {
           }}>
               إلغاء
             </Button>
-            <Button onClick={handleCropSave} className="bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={handleCropSave} className="bg-primary hover:bg-primary/90">
               حفظ الصورة
             </Button>
           </DialogFooter>
