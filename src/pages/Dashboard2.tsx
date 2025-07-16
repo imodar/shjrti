@@ -752,7 +752,7 @@ const Dashboard2 = () => {
 
       {/* Upgrade Modal */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <DialogContent className="sm:max-w-4xl bg-gradient-to-br from-card to-card/90 backdrop-blur-sm border-border/50 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl bg-gradient-to-br from-card to-card/90 backdrop-blur-sm border-border/50 max-h-[90vh] overflow-y-auto">
           <DialogHeader className="text-center space-y-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto shadow-lg">
               <Crown className="h-8 w-8 text-primary-foreground" />
@@ -779,7 +779,7 @@ const Dashboard2 = () => {
             </div>
 
             {/* Plans Grid */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {availablePlans.map((plan, index) => (
                 <Card key={plan.type} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
                   {plan.popular && (
