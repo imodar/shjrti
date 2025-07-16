@@ -126,7 +126,8 @@ const Dashboard2 = () => {
     }
   };
   const handleCreateTree = () => {
-    if (currentPlan.type === "free" && trees.length >= currentPlan.treesLimit) {
+    // Check if user has reached the tree limit for their plan
+    if (trees.length >= currentPlan.treesLimit) {
       setShowUpgradeDialog(true);
       return;
     }
