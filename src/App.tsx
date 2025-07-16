@@ -9,6 +9,7 @@ import Home2 from "./pages/Home2";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Dashboard2 from "./pages/Dashboard2";
+import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilder2 from "./pages/FamilyBuilder2";
 import Profile from "./pages/Profile";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard2" element={<Dashboard2 />} />
+          <Route path="/family-creator" element={<FamilyCreator />} />
           <Route path="/family-builder" element={<FamilyBuilder />} />
           <Route path="/family-builder2" element={<FamilyBuilder2 />} />
           <Route path="/profile" element={<Profile />} />

@@ -177,8 +177,8 @@ const Dashboard2 = () => {
       return;
     }
 
-    // Navigate to family builder page
-    navigate("/family-builder");
+    // Navigate to family creator page
+    navigate("/family-creator");
     toast({
       title: "إنشاء شجرة جديدة",
       description: "تم توجيهك لصفحة إنشاء الشجرة"
