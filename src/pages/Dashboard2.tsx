@@ -68,17 +68,6 @@ const availablePlans = [
     membersLimit: 200,
     features: ["10 أشجار عائلية", "200 فرد", "مشاركة متقدمة", "تصدير البيانات", "دعم مباشر"],
     popular: true
-  },
-  {
-    name: "مؤسسية",
-    type: "enterprise",
-    price: "$49.99", 
-    priceArabic: "٤٩.٩٩ دولار",
-    period: "/شهر",
-    treesLimit: -1, // Unlimited
-    membersLimit: -1, // Unlimited
-    features: ["أشجار غير محدودة", "أفراد غير محدودين", "مميزات متقدمة", "دعم أولوية", "تدريب مخصص"],
-    popular: false
   }
 ];
 // Mock notifications data
@@ -176,7 +165,15 @@ const Dashboard2 = () => {
   const handleCreateTree = () => {
     // Check if user has reached the tree limit for their plan
     if (trees.length >= currentPlan.treesLimit) {
-      setShowUpgradeDialog(true);
+      // Navigate directly to payment page with the next available plan
+      const nextPlan = currentPlan.type === "free" ? availablePlans.find(p => p.type === "basic") : availablePlans.find(p => p.type === "premium");
+      if (nextPlan) {
+        navigate("/payment", { state: { selectedPlan: nextPlan } });
+        toast({
+          title: "ترقية مطلوبة",
+          description: `سيتم توجيهك لصفحة الدفع للباقة ${nextPlan.name}`
+        });
+      }
       return;
     }
 
