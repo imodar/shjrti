@@ -528,26 +528,7 @@ const FamilyBuilder = () => {
                        {/* Compact Header Section */}
                        <div className="relative bg-gradient-to-br from-primary/8 via-accent/8 to-secondary/8 p-4">
                          <div className="flex items-center justify-between">
-                           <div className="flex items-center gap-3">
-                             <div className="relative">
-                               <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
-                                 <AvatarImage src={member.image || undefined} className="object-cover" />
-                                 <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-sm">
-                                   {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                 </AvatarFallback>
-                               </Avatar>
-                             </div>
-
-                             {/* Name Only */}
-                             <div>
-                               <h3 className="font-bold text-foreground text-lg leading-tight">{member.name}</h3>
-                               <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded-md mt-1", getGenderColor(member.gender))}>
-                                 {member.gender === "male" ? "ذكر" : "أنثى"}
-                               </Badge>
-                             </div>
-                           </div>
-
-                           {/* Actions Menu */}
+                           {/* Actions Menu - على اليسار */}
                            <DropdownMenu>
                              <DropdownMenuTrigger asChild>
                                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
@@ -558,9 +539,9 @@ const FamilyBuilder = () => {
                                  </div>
                                </Button>
                              </DropdownMenuTrigger>
-                             <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
+                             <DropdownMenuContent align="start" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
                                <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg">
-                                 <Edit className="mr-2 h-4 w-4 text-primary" />
+                                 <Edit className="ml-2 h-4 w-4 text-primary" />
                                  تعديل البيانات
                                </DropdownMenuItem>
                                <DropdownMenuSeparator />
@@ -568,11 +549,32 @@ const FamilyBuilder = () => {
                                  onClick={() => handleDeleteMember(member.id)}
                                  className="text-destructive focus:text-destructive rounded-lg"
                                >
-                                 <Trash2 className="mr-2 h-4 w-4" />
+                                 <Trash2 className="ml-2 h-4 w-4" />
                                  حذف من العائلة
                                </DropdownMenuItem>
                              </DropdownMenuContent>
                            </DropdownMenu>
+
+                           {/* الصورة والاسم - على اليمين */}
+                           <div className="flex items-center gap-3">
+                             <div>
+                               <h3 className="font-bold text-foreground text-lg leading-tight text-right">{member.name}</h3>
+                               <div className="flex justify-end mt-1">
+                                 <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded-md", getGenderColor(member.gender))}>
+                                   {member.gender === "male" ? "ذكر" : "أنثى"}
+                                 </Badge>
+                               </div>
+                             </div>
+                             
+                             <div className="relative">
+                               <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
+                                 <AvatarImage src={member.image || undefined} className="object-cover" />
+                                 <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-sm">
+                                   {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                                 </AvatarFallback>
+                               </Avatar>
+                             </div>
+                           </div>
                          </div>
                        </div>
 
