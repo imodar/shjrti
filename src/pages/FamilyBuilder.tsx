@@ -942,29 +942,29 @@ const FamilyBuilder = () => {
             )}
           </div>
 
-          <DialogFooter className="flex justify-between items-center pt-6 border-t border-primary/20">
-            <div className="flex gap-3">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between items-center pt-6 border-t border-primary/20 gap-4">
+            <div className="flex gap-3 order-2 sm:order-1">
               {currentStep > 1 && (
-                <Button variant="outline" onClick={prevStep} className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
+                <Button variant="outline" onClick={prevStep} className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6 py-2">
+                  <ArrowRight className="ml-2 h-4 w-4" />
                   السابق
                 </Button>
               )}
             </div>
 
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setShowAddMember(false)} className="border-border hover:bg-muted rounded-xl">
+            <div className="flex gap-3 order-1 sm:order-2">
+              <Button variant="outline" onClick={() => setShowAddMember(false)} className="border-border hover:bg-muted rounded-xl px-6 py-2">
                 إلغاء
               </Button>
               
               {currentStep < 3 ? (
-                <Button onClick={nextStep} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
+                <Button onClick={nextStep} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl px-6 py-2">
                   التالي
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowLeft className="mr-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={handleSaveMember} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
-                  <Save className="mr-2 h-4 w-4" />
+                <Button onClick={handleSaveMember} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl px-6 py-2">
+                  <Save className="ml-2 h-4 w-4" />
                   {selectedMember ? 'حفظ التغييرات' : 'إضافة العضو'}
                 </Button>
               )}
