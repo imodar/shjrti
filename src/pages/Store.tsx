@@ -520,9 +520,6 @@ export default function Store() {
                               </div>
                             </div>
                             
-                            {template.isPremium && selectedDesign === template.id && (
-                              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-xl opacity-30 blur-lg" />
-                            )}
                           </div>
                         ))}
                       </div>
