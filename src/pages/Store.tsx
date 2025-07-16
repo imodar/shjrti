@@ -70,6 +70,7 @@ export default function Store() {
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   const [orderNumber] = useState(`ORD-${Date.now()}`);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isCustomizationFinished, setIsCustomizationFinished] = useState(false);
   
   const shippingRef = useRef<HTMLDivElement>(null);
 
@@ -126,7 +127,11 @@ export default function Store() {
   };
 
   const handleFinishConfiguration = () => {
-    shippingRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setIsCustomizationFinished(true);
+  };
+
+  const handleBackToCustomization = () => {
+    setIsCustomizationFinished(false);
   };
 
   const handleNextStep = () => {
@@ -949,8 +954,43 @@ export default function Store() {
             </div>
           </div>
 
-          {/* Shipping Information */}
-          <div ref={shippingRef} className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Conditional Shipping Section with Flip Animation */}
+          {isCustomizationFinished && (
+            <div className="mt-16 animate-fade-in">
+              <div className="max-w-4xl mx-auto">
+                <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-primary/10">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                          <ShoppingBag className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-2xl font-bold text-foreground">إتمام الطلب</CardTitle>
+                          <CardDescription className="text-muted-foreground">أدخل بياناتك لإتمام عملية الشراء</CardDescription>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={handleBackToCustomization}
+                        className="flex items-center gap-2"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                        تعديل التخصيص
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Shipping Information and Order Summary will go here */}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
             
             {/* Shipping Information */}
             <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
@@ -1077,7 +1117,12 @@ export default function Store() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
