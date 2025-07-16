@@ -128,10 +128,10 @@ export default function Store() {
 
       {/* Main Content */}
       <div className="pt-8 relative z-10 min-h-screen">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Live Preview Section */}
-            <div className="xl:col-span-2 space-y-6">
+            <div className="lg:col-span-1 space-y-6">
               <div className="sticky top-24">
                 <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden">
                   <CardHeader className="text-center">
@@ -143,16 +143,16 @@ export default function Store() {
                       شاهد كيف ستبدو شجرة عائلتك
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-8">
+                  <CardContent className="p-6">
                     {/* Live Tree Preview */}
-                    <div className="relative bg-gradient-to-br from-background to-accent/5 rounded-2xl p-8 border-2 border-dashed border-primary/20 min-h-[400px] flex items-center justify-center">
+                    <div className="relative bg-gradient-to-br from-background to-accent/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 min-h-[300px] flex items-center justify-center">
                       {/* Frame Effect */}
                       <div 
                         className={`absolute inset-0 rounded-2xl ${
-                          selectedFrame === 'wood' ? 'bg-gradient-to-br from-amber-100 to-amber-200 border-8 border-amber-400' :
-                          selectedFrame === 'gold' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-8 border-yellow-500' :
-                          selectedFrame === 'silver' ? 'bg-gradient-to-br from-gray-100 to-gray-200 border-8 border-gray-400' :
-                          selectedFrame === 'premium' ? 'bg-gradient-to-br from-purple-100 to-purple-200 border-8 border-purple-500' :
+                          selectedFrame === 'wood' ? 'bg-gradient-to-br from-amber-100 to-amber-200 border-4 border-amber-400' :
+                          selectedFrame === 'gold' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-4 border-yellow-500' :
+                          selectedFrame === 'silver' ? 'bg-gradient-to-br from-gray-100 to-gray-200 border-4 border-gray-400' :
+                          selectedFrame === 'premium' ? 'bg-gradient-to-br from-purple-100 to-purple-200 border-4 border-purple-500' :
                           'bg-transparent'
                         }`}
                       />
@@ -161,55 +161,55 @@ export default function Store() {
                       <div className="relative z-10 flex flex-col items-center">
                         {/* Tree Design Based on Selection */}
                         {selectedDesign === 'classic' && (
-                          <div className="text-center space-y-4">
-                            <div className="text-6xl animate-bounce">🌳</div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs">👨</div>
-                              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs">👩</div>
-                              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs">👶</div>
+                          <div className="text-center space-y-3">
+                            <div className="text-4xl animate-bounce">🌳</div>
+                            <div className="grid grid-cols-3 gap-1">
+                              <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center text-xs">👨</div>
+                              <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center text-xs">👩</div>
+                              <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center text-xs">👶</div>
                             </div>
                           </div>
                         )}
                         
                         {selectedDesign === 'modern' && (
-                          <div className="text-center space-y-4">
-                            <div className="text-6xl animate-pulse">🌲</div>
-                            <div className="flex flex-col items-center space-y-2">
-                              <div className="flex space-x-2">
-                                <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold">A</div>
-                                <div className="w-10 h-10 bg-gradient-to-r from-accent to-secondary rounded-lg flex items-center justify-center text-white font-bold">B</div>
+                          <div className="text-center space-y-3">
+                            <div className="text-4xl animate-pulse">🌲</div>
+                            <div className="flex flex-col items-center space-y-1">
+                              <div className="flex space-x-1">
+                                <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center text-white text-xs font-bold">A</div>
+                                <div className="w-8 h-8 bg-gradient-to-r from-accent to-secondary rounded-lg flex items-center justify-center text-white text-xs font-bold">B</div>
                               </div>
-                              <div className="w-10 h-10 bg-gradient-to-r from-secondary to-primary rounded-lg flex items-center justify-center text-white font-bold">C</div>
+                              <div className="w-8 h-8 bg-gradient-to-r from-secondary to-primary rounded-lg flex items-center justify-center text-white text-xs font-bold">C</div>
                             </div>
                           </div>
                         )}
                         
                         {selectedDesign === 'vintage' && (
-                          <div className="text-center space-y-4 filter sepia">
-                            <div className="text-6xl animate-pulse">🍃</div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="w-12 h-12 bg-amber-200 border-2 border-amber-600 rounded-full flex items-center justify-center text-amber-800">♂</div>
-                              <div className="w-12 h-12 bg-pink-200 border-2 border-pink-600 rounded-full flex items-center justify-center text-pink-800">♀</div>
+                          <div className="text-center space-y-3 filter sepia">
+                            <div className="text-4xl animate-pulse">🍃</div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="w-8 h-8 bg-amber-200 border border-amber-600 rounded-full flex items-center justify-center text-amber-800 text-xs">♂</div>
+                              <div className="w-8 h-8 bg-pink-200 border border-pink-600 rounded-full flex items-center justify-center text-pink-800 text-xs">♀</div>
                             </div>
                           </div>
                         )}
                         
                         {selectedDesign === 'elegant' && (
-                          <div className="text-center space-y-4">
-                            <div className="text-6xl animate-pulse text-primary">🌿</div>
-                            <div className="flex flex-col items-center space-y-3">
-                              <div className="w-16 h-4 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
-                              <div className="flex space-x-4">
-                                <div className="w-4 h-16 bg-gradient-to-b from-primary to-accent rounded-full"></div>
-                                <div className="w-4 h-16 bg-gradient-to-b from-accent to-secondary rounded-full"></div>
+                          <div className="text-center space-y-3">
+                            <div className="text-4xl animate-pulse text-primary">🌿</div>
+                            <div className="flex flex-col items-center space-y-2">
+                              <div className="w-12 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
+                              <div className="flex space-x-2">
+                                <div className="w-2 h-12 bg-gradient-to-b from-primary to-accent rounded-full"></div>
+                                <div className="w-2 h-12 bg-gradient-to-b from-accent to-secondary rounded-full"></div>
                               </div>
                             </div>
                           </div>
                         )}
                         
                         {/* Size Indicator */}
-                        <div className="mt-6 text-center">
-                          <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium">
+                        <div className="mt-4 text-center">
+                          <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-xs">
                             {sizeOptions.find(s => s.id === selectedSize)?.name}
                           </Badge>
                         </div>
@@ -217,22 +217,22 @@ export default function Store() {
                       
                       {/* Animated Background */}
                       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-4 right-4 w-2 h-2 bg-primary/30 rounded-full animate-ping"></div>
-                        <div className="absolute bottom-8 left-6 w-3 h-3 bg-accent/30 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
-                        <div className="absolute top-12 left-12 w-1 h-1 bg-secondary/30 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+                        <div className="absolute top-2 right-2 w-1 h-1 bg-primary/30 rounded-full animate-ping"></div>
+                        <div className="absolute bottom-4 left-3 w-2 h-2 bg-accent/30 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+                        <div className="absolute top-6 left-6 w-1 h-1 bg-secondary/30 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
                       </div>
                     </div>
                     
                     {/* Preview Info */}
-                    <div className="mt-4 p-4 bg-primary/5 rounded-xl border border-primary/20">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">التصميم المحدد:</span>
+                    <div className="mt-3 p-3 bg-primary/5 rounded-xl border border-primary/20">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">التصميم:</span>
                         <span className="font-medium text-primary">
                           {designTemplates.find(d => d.id === selectedDesign)?.name}
                         </span>
                       </div>
                       {selectedFrame !== 'none' && (
-                        <div className="flex items-center justify-between text-sm mt-2">
+                        <div className="flex items-center justify-between text-xs mt-1">
                           <span className="text-muted-foreground">الإطار:</span>
                           <span className="font-medium text-primary">
                             {frameOptions.find(f => f.id === selectedFrame)?.name}
@@ -245,8 +245,8 @@ export default function Store() {
               </div>
             </div>
 
-            {/* Configuration Section */}
-            <div className="xl:col-span-2 space-y-6">
+            {/* Configuration Section - Single Column */}
+            <div className="lg:col-span-3 space-y-6">
               {/* Design Templates */}
               <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
@@ -395,82 +395,63 @@ export default function Store() {
                   </RadioGroup>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Order Summary - Right Column */}
-            <div className="xl:col-span-1">
-              <Card className="sticky top-24 bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
-                <CardHeader>
+              {/* Order Summary */}
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <Package className="h-5 w-5 text-primary" />
                     ملخص الطلب
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="p-6">
                   {/* Selected items summary */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">التصميم:</span>
-                      <span className="font-semibold text-foreground">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="text-center p-4 bg-primary/5 rounded-xl border border-primary/20">
+                      <h4 className="font-semibold text-foreground mb-1">التصميم</h4>
+                      <p className="text-primary font-medium">
                         {designTemplates.find(d => d.id === selectedDesign)?.name}
-                      </span>
+                      </p>
+                      <p className="text-sm text-muted-foreground">{designPrice} ريال</p>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">الإطار:</span>
-                      <span className="font-semibold text-foreground">
+                    <div className="text-center p-4 bg-accent/5 rounded-xl border border-accent/20">
+                      <h4 className="font-semibold text-foreground mb-1">الإطار</h4>
+                      <p className="text-accent font-medium">
                         {frameOptions.find(f => f.id === selectedFrame)?.name}
-                      </span>
+                      </p>
+                      <p className="text-sm text-muted-foreground">{framePrice} ريال</p>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">المقاس:</span>
-                      <span className="font-semibold text-foreground">
+                    <div className="text-center p-4 bg-secondary/5 rounded-xl border border-secondary/20">
+                      <h4 className="font-semibold text-foreground mb-1">المقاس</h4>
+                      <p className="text-secondary font-medium">
                         {sizeOptions.find(s => s.id === selectedSize)?.name}
-                      </span>
+                      </p>
+                      <p className="text-sm text-muted-foreground">{sizePrice} ريال</p>
                     </div>
                   </div>
 
-                  <hr className="border-border" />
-
-                  {/* Price breakdown */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">سعر التصميم</span>
-                      <span className="text-foreground">{designPrice} ريال</span>
+                  <div className="border-t border-border pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-lg font-semibold text-foreground">المجموع الكلي</span>
+                      <span className="text-2xl font-bold text-primary">{totalPrice} ريال</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">سعر الإطار</span>
-                      <span className="text-foreground">{framePrice} ريال</span>
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
+                      <Check className="h-4 w-4 text-green-500" />
+                      <span>الشحن مجاني</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">سعر المقاس</span>
-                      <span className="text-foreground">{sizePrice} ريال</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">الشحن</span>
-                      <span className="text-primary font-medium">مجاني</span>
-                    </div>
+                    <Button 
+                      onClick={handleOrder}
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl py-4 text-lg"
+                      size="lg"
+                    >
+                      <CreditCard className="h-5 w-5 mr-2" />
+                      متابعة للدفع
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center mt-3">
+                      سيتم طباعة وشحن الطلب خلال 3-5 أيام عمل
+                    </p>
                   </div>
-
-                  <hr className="border-border" />
-
-                  <div className="flex justify-between text-lg font-bold">
-                    <span className="text-foreground">المجموع الكلي</span>
-                    <span className="text-primary">{totalPrice} ريال</span>
-                  </div>
-
-                  <Button 
-                    onClick={handleOrder}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl py-3"
-                    size="lg"
-                  >
-                    <CreditCard className="h-5 w-5 mr-2" />
-                    متابعة للدفع
-                    <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    سيتم طباعة وشحن الطلب خلال 3-5 أيام عمل
-                  </p>
                 </CardContent>
               </Card>
             </div>
