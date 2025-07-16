@@ -539,23 +539,23 @@ export default function Store() {
                               
                               {/* Top Section - Icon & Visual */}
                               <div className="p-6 pb-4">
-                                <div className="flex items-center justify-center mb-4">
-                                  <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${
-                                    selectedDesign === template.id
-                                      ? 'bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 shadow-lg transform rotate-3'
-                                      : 'bg-gradient-to-br from-muted/50 to-accent/10 group-hover:shadow-md group-hover:-rotate-1'
-                                  }`}>
+                                 <div className="flex items-center justify-center mb-4">
+                                   <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                                     selectedDesign === template.id
+                                       ? 'bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 shadow-lg transform rotate-3'
+                                       : 'bg-gradient-to-br from-muted/50 to-accent/10 group-hover:shadow-md group-hover:-rotate-1'
+                                   }`}>
                                     {/* Background Pattern */}
                                     <div className="absolute inset-0 rounded-2xl opacity-20">
                                       <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl" />
                                     </div>
                                     
-                                    {/* Template Icon */}
-                                    <span className={`relative text-4xl transition-all duration-500 ${
-                                      selectedDesign === template.id ? 'animate-bounce' : 'group-hover:scale-110'
-                                    }`}>
-                                      {template.image}
-                                    </span>
+                                     {/* Template Icon */}
+                                     <span className={`relative text-3xl transition-all duration-500 ${
+                                       selectedDesign === template.id ? 'animate-bounce' : 'group-hover:scale-110'
+                                     }`}>
+                                       {template.image}
+                                     </span>
                                     
                                     {/* Selection Indicator */}
                                     {selectedDesign === template.id && (
@@ -566,30 +566,30 @@ export default function Store() {
                                   </div>
                                 </div>
                                 
-                                {/* Template Name */}
-                                <h3 className={`text-center text-lg font-bold mb-2 transition-colors duration-300 ${
-                                  selectedDesign === template.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                                }`}>
-                                  {template.name}
-                                </h3>
+                                 {/* Template Name */}
+                                 <h3 className={`text-center text-base font-bold mb-2 transition-colors duration-300 ${
+                                   selectedDesign === template.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
+                                 }`}>
+                                   {template.name}
+                                 </h3>
                                 
-                                {/* Features List */}
-                                <div className="space-y-2 mb-4">
-                                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <span>تصميم احترافي</span>
-                                  </div>
-                                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <span>جودة طباعة عالية</span>
-                                  </div>
-                                  {template.isPremium && (
-                                    <div className="flex items-center justify-center gap-2 text-xs text-accent font-medium">
-                                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                                      <span>ميزات إضافية مميزة</span>
-                                    </div>
-                                  )}
-                                </div>
+                                 {/* Features List */}
+                                 <div className="space-y-1 mb-3">
+                                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                                     <div className="w-1 h-1 bg-current rounded-full"></div>
+                                     <span className="text-xs">تصميم احترافي</span>
+                                   </div>
+                                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                                     <div className="w-1 h-1 bg-current rounded-full"></div>
+                                     <span className="text-xs">جودة طباعة عالية</span>
+                                   </div>
+                                   {template.isPremium && (
+                                     <div className="flex items-center justify-center gap-2 text-xs text-accent font-medium">
+                                       <div className="w-1 h-1 bg-current rounded-full"></div>
+                                       <span className="text-xs">ميزات إضافية مميزة</span>
+                                     </div>
+                                   )}
+                                 </div>
                               </div>
                               
                               {/* Bottom Section - Price & Selection */}
