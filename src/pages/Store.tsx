@@ -755,7 +755,7 @@ export default function Store() {
                             key={size.id}
                             className={`group relative overflow-hidden rounded-xl transition-all duration-500 cursor-pointer ${
                               selectedSize === size.id
-                                ? 'ring-2 ring-secondary ring-offset-2 ring-offset-background shadow-xl shadow-secondary/20'
+                                ? 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-xl shadow-primary/25'
                                 : 'hover:shadow-lg hover:-translate-y-0.5'
                             }`}
                             onClick={() => setSelectedSize(size.id)}
@@ -763,14 +763,14 @@ export default function Store() {
                             {/* Background Gradient */}
                             <div className={`absolute inset-0 transition-all duration-500 ${
                               selectedSize === size.id
-                                ? 'bg-gradient-to-r from-secondary/15 via-primary/8 to-accent/10'
-                                : 'bg-gradient-to-r from-card via-card/95 to-card/90 group-hover:from-primary/3 group-hover:to-secondary/3'
+                                ? 'bg-gradient-to-r from-primary/15 via-accent/8 to-primary/10'
+                                : 'bg-gradient-to-r from-card via-card/95 to-card/90 group-hover:from-primary/3 group-hover:to-accent/3'
                             }`} />
                             
                             {/* Animated Border */}
                             <div className={`absolute inset-0 rounded-xl transition-all duration-500 ${
                               selectedSize === size.id
-                                ? 'border-2 border-secondary'
+                                ? 'border-2 border-primary'
                                 : 'border border-border group-hover:border-primary/30'
                             }`} />
                             
@@ -783,14 +783,14 @@ export default function Store() {
                                     value={size.id} 
                                     id={size.id}
                                     className={`transition-colors duration-300 ${
-                                      selectedSize === size.id ? 'border-secondary text-secondary' : 'border-muted-foreground'
+                                      selectedSize === size.id ? 'border-primary text-primary' : 'border-muted-foreground'
                                     }`}
                                   />
                                   
                                   <div className="flex items-center gap-2">
                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                                       selectedSize === size.id
-                                        ? 'bg-secondary shadow-md'
+                                        ? 'bg-primary shadow-md'
                                         : 'bg-muted group-hover:bg-primary/20'
                                     }`}>
                                       <Ruler className={`h-4 w-4 transition-colors duration-300 ${
@@ -799,7 +799,7 @@ export default function Store() {
                                     </div>
                                     
                                     <Label htmlFor={size.id} className={`font-semibold cursor-pointer transition-colors duration-300 ${
-                                      selectedSize === size.id ? 'text-secondary' : 'text-foreground group-hover:text-primary'
+                                      selectedSize === size.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
                                     }`}>
                                       {size.name}
                                     </Label>
@@ -809,13 +809,13 @@ export default function Store() {
                                 {/* Right side - Price and Check */}
                                 <div className="flex items-center gap-3">
                                   <span className={`font-bold transition-colors duration-300 ${
-                                    selectedSize === size.id ? 'text-secondary' : 'text-muted-foreground group-hover:text-foreground'
+                                    selectedSize === size.id ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
                                   }`}>
                                     {size.price} ريال
                                   </span>
                                   
                                   {selectedSize === size.id && (
-                                    <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center animate-scale-in shadow-md">
+                                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center animate-scale-in shadow-md">
                                       <Check className="h-4 w-4 text-white" />
                                     </div>
                                   )}
@@ -825,7 +825,7 @@ export default function Store() {
                             
                             {/* Glow Effect */}
                             {selectedSize === size.id && (
-                              <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary via-primary to-accent rounded-xl opacity-15 blur-md animate-pulse" />
+                              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-accent to-primary rounded-xl opacity-20 blur-md animate-pulse" />
                             )}
                             
                             {/* Hover Shimmer Effect */}
