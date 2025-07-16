@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,50 +7,77 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { 
-  ShoppingCart, 
-  TreePine, 
-  Package, 
-  CreditCard, 
-  Check, 
-  ArrowRight,
-  Frame,
-  Ruler,
-  Palette,
-  MapPin,
-  Phone,
-  Crown,
-  ChevronRight,
-  ChevronLeft,
-  User,
-  Users
-} from "lucide-react";
+import { ShoppingCart, TreePine, Package, CreditCard, Check, ArrowRight, Frame, Ruler, Palette, MapPin, Phone, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Design options data
-const designTemplates = [
-  { id: 'classic', name: 'كلاسيكي', price: 0, image: '🌳', isPremium: false },
-  { id: 'modern', name: 'عصري', price: 25, image: '🌲', isPremium: true },
-  { id: 'vintage', name: 'تراثي', price: 35, image: '🍃', isPremium: true },
-  { id: 'elegant', name: 'أنيق', price: 45, image: '🌿', isPremium: true },
-];
-
-const frameOptions = [
-  { id: 'none', name: 'بدون إطار', price: 0 },
-  { id: 'wood', name: 'إطار خشبي', price: 20 },
-  { id: 'gold', name: 'إطار ذهبي', price: 35 },
-  { id: 'silver', name: 'إطار فضي', price: 30 },
-  { id: 'premium', name: 'إطار مميز', price: 50 },
-];
-
-const sizeOptions = [
-  { id: 'A4', name: 'A4 (21×30 سم)', price: 15 },
-  { id: 'A3', name: 'A3 (30×42 سم)', price: 25 },
-  { id: 'A2', name: 'A2 (42×59 سم)', price: 40 },
-  { id: 'A1', name: 'A1 (59×84 سم)', price: 60 },
-  { id: 'custom', name: 'مقاس مخصص', price: 75 },
-];
-
+const designTemplates = [{
+  id: 'classic',
+  name: 'كلاسيكي',
+  price: 0,
+  image: '🌳',
+  isPremium: false
+}, {
+  id: 'modern',
+  name: 'عصري',
+  price: 25,
+  image: '🌲',
+  isPremium: true
+}, {
+  id: 'vintage',
+  name: 'تراثي',
+  price: 35,
+  image: '🍃',
+  isPremium: true
+}, {
+  id: 'elegant',
+  name: 'أنيق',
+  price: 45,
+  image: '🌿',
+  isPremium: true
+}];
+const frameOptions = [{
+  id: 'none',
+  name: 'بدون إطار',
+  price: 0
+}, {
+  id: 'wood',
+  name: 'إطار خشبي',
+  price: 20
+}, {
+  id: 'gold',
+  name: 'إطار ذهبي',
+  price: 35
+}, {
+  id: 'silver',
+  name: 'إطار فضي',
+  price: 30
+}, {
+  id: 'premium',
+  name: 'إطار مميز',
+  price: 50
+}];
+const sizeOptions = [{
+  id: 'A4',
+  name: 'A4 (21×30 سم)',
+  price: 15
+}, {
+  id: 'A3',
+  name: 'A3 (30×42 سم)',
+  price: 25
+}, {
+  id: 'A2',
+  name: 'A2 (42×59 سم)',
+  price: 40
+}, {
+  id: 'A1',
+  name: 'A1 (59×84 سم)',
+  price: 60
+}, {
+  id: 'custom',
+  name: 'مقاس مخصص',
+  price: 75
+}];
 export default function Store() {
   const [selectedDesign, setSelectedDesign] = useState('classic');
   const [selectedFrame, setSelectedFrame] = useState('none');
@@ -59,81 +86,44 @@ export default function Store() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   const [orderNumber] = useState(`ORD-${Date.now()}`);
-  const [currentStep, setCurrentStep] = useState(0);
-  
-  const shippingRef = useRef<HTMLDivElement>(null);
-
-  // Mock tree data - In real app, this would come from family tree state
-  const mockTreeData = {
-    rootPerson: { name: 'أحمد محمد', gender: 'male' },
-    spouse: { name: 'فاطمة علي', gender: 'female' },
-    children: [
-      { name: 'محمد أحمد', gender: 'male' },
-      { name: 'عائشة أحمد', gender: 'female' },
-      { name: 'علي أحمد', gender: 'male' }
-    ],
-    parents: [
-      { name: 'محمد حسن', gender: 'male' },
-      { name: 'زينب سالم', gender: 'female' }
-    ]
-  };
 
   // Calculate total price
   const designPrice = designTemplates.find(d => d.id === selectedDesign)?.price || 0;
   const framePrice = frameOptions.find(f => f.id === selectedFrame)?.price || 0;
   const sizePrice = sizeOptions.find(s => s.id === selectedSize)?.price || 0;
   const totalPrice = designPrice + framePrice + sizePrice;
-
-  const wizardSteps = [
-    { title: 'اختر التصميم', icon: Palette },
-    { title: 'اختر الإطار', icon: Frame },
-    { title: 'اختر المقاس', icon: Ruler }
-  ];
-
   const handleOrder = () => {
     if (!shippingAddress.trim() || !phoneNumber.trim()) {
       alert('يرجى ملء جميع البيانات المطلوبة');
       return;
     }
-    
+
     // In a real app, this would redirect to payment gateway
     // For now, we'll show success dialog
     setOrderDialogOpen(true);
   };
-
-  const handleFinishConfiguration = () => {
-    shippingRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleNextStep = () => {
-    if (currentStep < wizardSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      handleFinishConfiguration();
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
+  return <div dir="rtl" className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
+        animationDelay: '2s'
+      }}></div>
+        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-accent/15 to-primary/15 rounded-full blur-2xl animate-bounce" style={{
+        animationDelay: '1s'
+      }}></div>
       </div>
       
       {/* Header */}
       <header className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-xl border-b border-gradient-to-r from-primary/30 to-secondary/30 sticky top-0 z-50">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-2 left-10 w-6 h-6 bg-primary/20 rounded-full animate-pulse"></div>
-          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-accent/30 rotate-45 animate-pulse" style={{
+          animationDelay: '1s'
+        }}></div>
+          <div className="absolute top-4 left-64 w-3 h-3 bg-secondary/25 rounded-full animate-pulse" style={{
+          animationDelay: '2s'
+        }}></div>
         </div>
 
         <div className="container mx-auto px-6 py-6">
@@ -159,10 +149,7 @@ export default function Store() {
             
             <div className="flex items-center gap-4">
               <Link to="/family-builder">
-                <Button
-                  variant="outline"
-                  className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6"
-                >
+                <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6">
                   <ArrowRight className="mr-2 h-4 w-4" />
                   العودة لمنشئ الشجرة
                 </Button>
@@ -175,7 +162,7 @@ export default function Store() {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-8 pb-4">
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-16">
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
           <div className="max-w-7xl mx-auto px-6 relative">
             <div className="text-center mb-12">
@@ -199,8 +186,8 @@ export default function Store() {
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             
-            {/* Live Preview Section - Sticky */}
-            <div className="lg:sticky lg:top-8 space-y-8">
+            {/* Live Preview Section */}
+            <div className="space-y-8">
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl blur-2xl opacity-30" />
                 <Card className="relative bg-gradient-to-br from-card via-card/90 to-accent/5 backdrop-blur-xl border-2 border-primary/20 shadow-2xl overflow-hidden rounded-3xl">
@@ -210,7 +197,9 @@ export default function Store() {
                     <div className="flex items-center justify-center gap-3 mb-2">
                       <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                       <CardTitle className="text-2xl font-bold text-foreground">معاينة مباشرة</CardTitle>
-                      <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}} />
+                      <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{
+                      animationDelay: '0.5s'
+                    }} />
                     </div>
                     <CardDescription className="text-muted-foreground">
                       شاهد شجرة عائلتك كما ستبدو بعد الطباعة
@@ -218,160 +207,54 @@ export default function Store() {
                   </CardHeader>
                   
                   <CardContent className="p-8">
-                    {/* Enhanced Preview Area with Real Tree Data */}
-                    <div className="relative bg-gradient-to-br from-background via-accent/2 to-secondary/2 rounded-2xl p-8 border-2 border-dashed border-primary/30 min-h-[500px] flex items-center justify-center group hover:shadow-2xl transition-all duration-500">
+                    {/* Enhanced Preview Area */}
+                    <div className="relative bg-gradient-to-br from-background via-accent/2 to-secondary/2 rounded-2xl p-12 border-2 border-dashed border-primary/30 min-h-[450px] flex items-center justify-center group hover:shadow-2xl transition-all duration-500">
                       
                       {/* Dynamic Frame Effect */}
-                      <div 
-                        className={`absolute inset-4 rounded-xl transition-all duration-700 ${
-                          selectedFrame === 'wood' ? 
-                            'bg-gradient-to-br from-amber-50 to-amber-100 shadow-[inset_0_0_20px_rgba(217,119,6,0.3)] border-8 border-amber-400' :
-                          selectedFrame === 'gold' ? 
-                            'bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-[inset_0_0_20px_rgba(234,179,8,0.4)] border-8 border-yellow-500' :
-                          selectedFrame === 'silver' ? 
-                            'bg-gradient-to-br from-gray-50 to-gray-100 shadow-[inset_0_0_20px_rgba(107,114,128,0.3)] border-8 border-gray-400' :
-                          selectedFrame === 'premium' ? 
-                            'bg-gradient-to-br from-purple-50 to-purple-100 shadow-[inset_0_0_20px_rgba(147,51,234,0.4)] border-8 border-purple-500' :
-                            'bg-transparent'
-                        }`}
-                      />
+                      <div className={`absolute inset-4 rounded-xl transition-all duration-700 ${selectedFrame === 'wood' ? 'bg-gradient-to-br from-amber-50 to-amber-100 shadow-[inset_0_0_20px_rgba(217,119,6,0.3)] border-8 border-amber-400' : selectedFrame === 'gold' ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-[inset_0_0_20px_rgba(234,179,8,0.4)] border-8 border-yellow-500' : selectedFrame === 'silver' ? 'bg-gradient-to-br from-gray-50 to-gray-100 shadow-[inset_0_0_20px_rgba(107,114,128,0.3)] border-8 border-gray-400' : selectedFrame === 'premium' ? 'bg-gradient-to-br from-purple-50 to-purple-100 shadow-[inset_0_0_20px_rgba(147,51,234,0.4)] border-8 border-purple-500' : 'bg-transparent'}`} />
                       
-                      {/* Live Tree Preview with Real Data */}
-                      <div className="relative z-10 w-full max-w-md transform group-hover:scale-105 transition-transform duration-500">
+                      {/* Enhanced Tree Preview */}
+                      <div className="relative z-10 flex flex-col items-center transform group-hover:scale-105 transition-transform duration-500">
                         
-                        {/* Tree Structure Based on Design */}
-                        {selectedDesign === 'classic' && (
-                          <div className="text-center space-y-6">
-                            {/* Parents Generation */}
-                            <div className="flex justify-center gap-4 mb-4">
-                              {mockTreeData.parents.map((parent, i) => (
-                                <div key={i} className="flex flex-col items-center">
-                                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center shadow-lg border-2 border-primary/30 hover:scale-110 transition-transform">
-                                    {parent.gender === 'male' ? <User className="h-8 w-8 text-primary" /> : <User className="h-8 w-8 text-accent" />}
-                                  </div>
-                                  <span className="text-xs mt-2 font-medium text-muted-foreground">{parent.name}</span>
-                                </div>
-                              ))}
+                        {/* Tree Designs with Enhanced Visuals */}
+                        {selectedDesign === 'classic' && <div className="text-center space-y-6">
+                            <div className="text-8xl animate-bounce drop-shadow-lg">🌳</div>
+                            <div className="grid grid-cols-3 gap-3">
+                              {['👨', '👩', '👶'].map((emoji, i) => <div key={i} className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center text-lg shadow-lg border-2 border-primary/30 hover:scale-110 transition-transform">
+                                  {emoji}
+                                </div>)}
                             </div>
-                            
-                            {/* Tree Icon */}
-                            <div className="text-6xl animate-bounce drop-shadow-lg">🌳</div>
-                            
-                            {/* Current Generation */}
-                            <div className="flex justify-center gap-4">
-                              <div className="flex flex-col items-center">
-                                <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-xl border-3 border-primary hover:scale-110 transition-transform">
-                                  <User className="h-10 w-10 text-white" />
-                                </div>
-                                <span className="text-sm mt-2 font-bold text-primary">{mockTreeData.rootPerson.name}</span>
-                              </div>
-                              <div className="flex flex-col items-center">
-                                <div className="w-20 h-20 bg-gradient-to-br from-accent to-secondary rounded-full flex items-center justify-center shadow-xl border-3 border-accent hover:scale-110 transition-transform">
-                                  <User className="h-10 w-10 text-white" />
-                                </div>
-                                <span className="text-sm mt-2 font-bold text-accent">{mockTreeData.spouse.name}</span>
-                              </div>
-                            </div>
-                            
-                            {/* Children Generation */}
-                            <div className="flex justify-center gap-2 flex-wrap">
-                              {mockTreeData.children.map((child, i) => (
-                                <div key={i} className="flex flex-col items-center">
-                                  <div className="w-14 h-14 bg-gradient-to-br from-secondary/60 to-primary/60 rounded-full flex items-center justify-center shadow-lg border-2 border-secondary hover:scale-110 transition-transform">
-                                    <User className="h-6 w-6 text-white" />
-                                  </div>
-                                  <span className="text-xs mt-1 font-medium text-muted-foreground">{child.name}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                          </div>}
                         
-                        {selectedDesign === 'modern' && (
-                          <div className="text-center space-y-6">
-                            <div className="text-6xl animate-pulse drop-shadow-lg">🌲</div>
+                        {selectedDesign === 'modern' && <div className="text-center space-y-6">
+                            <div className="text-8xl animate-pulse drop-shadow-lg">🌲</div>
+                            <div className="flex flex-col items-center space-y-3">
+                              <div className="flex space-x-3">
+                                <div className="w-14 h-14 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-2xl transform hover:rotate-6 transition-transform">A</div>
+                                <div className="w-14 h-14 bg-gradient-to-br from-accent via-secondary to-primary rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-2xl transform hover:-rotate-6 transition-transform">B</div>
+                              </div>
+                              <div className="w-14 h-14 bg-gradient-to-br from-secondary via-primary to-accent rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-2xl transform hover:rotate-3 transition-transform">C</div>
+                            </div>
+                          </div>}
+                        
+                        {selectedDesign === 'vintage' && <div className="text-center space-y-6 filter sepia-[0.3] contrast-125">
+                            <div className="text-8xl animate-pulse drop-shadow-lg">🍃</div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 border-4 border-amber-600 rounded-full flex items-center justify-center text-amber-800 text-2xl shadow-xl transform hover:scale-110 transition-transform">♂</div>
+                              <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 border-4 border-pink-600 rounded-full flex items-center justify-center text-pink-800 text-2xl shadow-xl transform hover:scale-110 transition-transform">♀</div>
+                            </div>
+                          </div>}
+                        
+                        {selectedDesign === 'elegant' && <div className="text-center space-y-6">
+                            <div className="text-8xl animate-pulse text-primary drop-shadow-lg">🌿</div>
                             <div className="flex flex-col items-center space-y-4">
-                              {/* Modern geometric layout */}
-                              <div className="flex justify-center gap-3">
-                                <div className="w-16 h-16 bg-gradient-to-br from-primary via-accent to-secondary rounded-2xl flex flex-col items-center justify-center text-white shadow-2xl transform hover:rotate-6 transition-transform">
-                                  <User className="h-6 w-6" />
-                                  <span className="text-xs mt-1">{mockTreeData.rootPerson.name.split(' ')[0]}</span>
-                                </div>
-                                <div className="w-16 h-16 bg-gradient-to-br from-accent via-secondary to-primary rounded-2xl flex flex-col items-center justify-center text-white shadow-2xl transform hover:-rotate-6 transition-transform">
-                                  <User className="h-6 w-6" />
-                                  <span className="text-xs mt-1">{mockTreeData.spouse.name.split(' ')[0]}</span>
-                                </div>
-                              </div>
-                              <div className="flex gap-2">
-                                {mockTreeData.children.map((child, i) => (
-                                  <div key={i} className="w-12 h-12 bg-gradient-to-br from-secondary via-primary to-accent rounded-2xl flex items-center justify-center text-white text-xs font-bold shadow-2xl transform hover:rotate-3 transition-transform">
-                                    {child.name.charAt(0)}
-                                  </div>
-                                ))}
+                              <div className="w-20 h-6 bg-gradient-to-r from-primary via-accent via-secondary to-primary rounded-full shadow-xl"></div>
+                              <div className="flex space-x-4">
+                                <div className="w-6 h-20 bg-gradient-to-b from-primary via-accent to-secondary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
+                                <div className="w-6 h-20 bg-gradient-to-b from-accent via-secondary to-primary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
                               </div>
                             </div>
-                          </div>
-                        )}
-                        
-                        {selectedDesign === 'vintage' && (
-                          <div className="text-center space-y-6 filter sepia-[0.3] contrast-125">
-                            <div className="text-6xl animate-pulse drop-shadow-lg">🍃</div>
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-18 h-18 bg-gradient-to-br from-amber-100 to-amber-200 border-4 border-amber-600 rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition-transform">
-                                    <span className="text-amber-800 text-2xl">♂</span>
-                                  </div>
-                                  <span className="text-xs mt-2 text-amber-800 font-semibold">{mockTreeData.rootPerson.name}</span>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                  <div className="w-18 h-18 bg-gradient-to-br from-pink-100 to-pink-200 border-4 border-pink-600 rounded-full flex items-center justify-center shadow-xl transform hover:scale-110 transition-transform">
-                                    <span className="text-pink-800 text-2xl">♀</span>
-                                  </div>
-                                  <span className="text-xs mt-2 text-pink-800 font-semibold">{mockTreeData.spouse.name}</span>
-                                </div>
-                              </div>
-                              <div className="flex justify-center gap-2">
-                                {mockTreeData.children.map((child, i) => (
-                                  <div key={i} className="flex flex-col items-center">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-600 rounded-full flex items-center justify-center shadow-lg">
-                                      <span className="text-green-800 text-sm">{child.gender === 'male' ? '♂' : '♀'}</span>
-                                    </div>
-                                    <span className="text-xs mt-1 text-green-800">{child.name.split(' ')[0]}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {selectedDesign === 'elegant' && (
-                          <div className="text-center space-y-6">
-                            <div className="text-6xl animate-pulse text-primary drop-shadow-lg">🌿</div>
-                            <div className="flex flex-col items-center space-y-4">
-                              {/* Elegant minimalist lines */}
-                              <div className="w-24 h-1 bg-gradient-to-r from-primary via-accent via-secondary to-primary rounded-full shadow-xl"></div>
-                              <div className="flex justify-center gap-6">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-2 h-24 bg-gradient-to-b from-primary via-accent to-secondary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
-                                  <span className="text-xs mt-2 font-medium">{mockTreeData.rootPerson.name}</span>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                  <div className="w-2 h-24 bg-gradient-to-b from-accent via-secondary to-primary rounded-full shadow-xl transform hover:scale-110 transition-transform"></div>
-                                  <span className="text-xs mt-2 font-medium">{mockTreeData.spouse.name}</span>
-                                </div>
-                              </div>
-                              <div className="flex gap-3">
-                                {mockTreeData.children.map((child, i) => (
-                                  <div key={i} className="flex flex-col items-center">
-                                    <div className="w-1 h-16 bg-gradient-to-b from-secondary to-primary rounded-full shadow-lg"></div>
-                                    <span className="text-xs mt-1">{child.name.split(' ')[0]}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                          </div>}
                         
                         {/* Enhanced Size Badge */}
                         <div className="mt-8">
@@ -387,9 +270,15 @@ export default function Store() {
                       {/* Floating Animation Elements */}
                       <div className="absolute inset-0 overflow-hidden pointer-events-none">
                         <div className="absolute top-8 right-8 w-3 h-3 bg-primary/40 rounded-full animate-ping" />
-                        <div className="absolute bottom-12 left-12 w-4 h-4 bg-accent/40 rounded-full animate-ping" style={{animationDelay: '1s'}} />
-                        <div className="absolute top-16 left-16 w-2 h-2 bg-secondary/40 rounded-full animate-ping" style={{animationDelay: '2s'}} />
-                        <div className="absolute bottom-20 right-20 w-2 h-2 bg-primary/40 rounded-full animate-ping" style={{animationDelay: '1.5s'}} />
+                        <div className="absolute bottom-12 left-12 w-4 h-4 bg-accent/40 rounded-full animate-ping" style={{
+                        animationDelay: '1s'
+                      }} />
+                        <div className="absolute top-16 left-16 w-2 h-2 bg-secondary/40 rounded-full animate-ping" style={{
+                        animationDelay: '2s'
+                      }} />
+                        <div className="absolute bottom-20 right-20 w-2 h-2 bg-primary/40 rounded-full animate-ping" style={{
+                        animationDelay: '1.5s'
+                      }} />
                       </div>
                     </div>
                     
@@ -403,347 +292,147 @@ export default function Store() {
                           </span>
                         </div>
                       </div>
-                      {selectedFrame !== 'none' && (
-                        <div className="p-4 bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl border border-accent/20 backdrop-blur-sm">
+                      {selectedFrame !== 'none' && <div className="p-4 bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl border border-accent/20 backdrop-blur-sm">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-muted-foreground">الإطار</span>
                             <span className="font-bold text-accent">
                               {frameOptions.find(f => f.id === selectedFrame)?.name}
                             </span>
                           </div>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   </CardContent>
                 </Card>
               </div>
             </div>
 
-            {/* Unified Wizard Configuration Box */}
+            {/* Configuration Section */}
             <div className="space-y-8">
+              
+              {/* Design Templates */}
               <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
-                
-                <CardHeader>
-                  <CardTitle className="text-center text-xl font-bold">اختر التخصيص المطلوب</CardTitle>
-                  
-                  {/* Wizard Steps Indicator */}
-                  <div className="flex justify-center items-center gap-4 mt-4">
-                    {wizardSteps.map((step, index) => {
-                      const Icon = step.icon;
-                      return (
-                        <div key={index} className="flex items-center">
-                          <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 ${
-                            index === currentStep 
-                              ? 'bg-primary border-primary text-white shadow-lg scale-110' 
-                              : index < currentStep 
-                                ? 'bg-green-500 border-green-500 text-white' 
-                                : 'bg-background border-muted-foreground/30 text-muted-foreground'
-                          }`}>
-                            {index < currentStep ? (
-                              <Check className="h-5 w-5" />
-                            ) : (
-                              <Icon className="h-5 w-5" />
-                            )}
-                          </div>
-                          <span className={`mr-2 text-sm font-medium ${
-                            index === currentStep ? 'text-primary' : index < currentStep ? 'text-green-600' : 'text-muted-foreground'
-                          }`}>
-                            {step.title}
-                          </span>
-                          {index < wizardSteps.length - 1 && (
-                            <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
-                          )}
-                        </div>
-                      );
-                    })}
+                <CardHeader className="bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 border-b border-primary/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                      <Palette className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl font-bold text-foreground">تصاميم الشجرة</CardTitle>
+                      <CardDescription className="text-muted-foreground">اختر التصميم المثالي لشجرة عائلتك</CardDescription>
+                    </div>
                   </div>
                 </CardHeader>
-                
-                <CardContent className="p-8 border-t border-border/50">
-                  {/* Step 0: Design Templates */}
-                  {currentStep === 0 && (
-                    <div className="space-y-6">
-                      <div className="text-center mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg mx-auto mb-4">
-                          <Palette className="h-8 w-8 text-white" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">اختر تصميم الشجرة</h3>
-                        <p className="text-muted-foreground">حدد النمط الذي يناسب ذوقك</p>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {designTemplates.map((template) => (
-                          <div
-                            key={template.id}
-                            onClick={() => setSelectedDesign(template.id)}
-                            className={`relative cursor-pointer group transition-all duration-500 transform ${
-                              selectedDesign === template.id 
-                                ? 'scale-105 z-10' 
-                                : 'hover:scale-102 hover:-translate-y-1'
-                            }`}
-                          >
-                            {/* Selection Glow Effect */}
-                            {selectedDesign === template.id && (
-                              <div className="absolute -inset-2 bg-gradient-to-r from-primary/30 via-accent/30 to-secondary/30 rounded-2xl blur-xl opacity-75 animate-pulse" />
-                            )}
-                            
-                            {/* Main Card */}
-                            <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 backdrop-blur-sm ${
-                              selectedDesign === template.id
-                                ? 'border-primary/60 bg-gradient-to-br from-primary/15 via-accent/10 to-secondary/5 shadow-2xl'
-                                : 'border-border/40 bg-gradient-to-br from-card/90 via-card/70 to-accent/5 hover:border-primary/40 hover:shadow-xl'
-                            }`}>
-                              
-                              {/* Premium Badge Ribbon */}
-                              {template.isPremium && (
-                                <div className="absolute -top-1 -right-1 z-20">
-                                  <div className="bg-gradient-to-r from-accent via-secondary to-primary px-3 py-1 rounded-bl-xl rounded-tr-2xl shadow-lg">
-                                    <div className="flex items-center gap-1">
-                                      <Crown className="h-3 w-3 text-white" />
-                                      <span className="text-xs font-bold text-white">مميز</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {/* Top Section - Icon & Visual */}
-                              <div className="p-6 pb-4">
-                                <div className="flex items-center justify-center mb-4">
-                                  <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${
-                                    selectedDesign === template.id
-                                      ? 'bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 shadow-lg transform rotate-3'
-                                      : 'bg-gradient-to-br from-muted/50 to-accent/10 group-hover:shadow-md group-hover:-rotate-1'
-                                  }`}>
-                                    {/* Background Pattern */}
-                                    <div className="absolute inset-0 rounded-2xl opacity-20">
-                                      <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl" />
-                                    </div>
-                                    
-                                    {/* Template Icon */}
-                                    <span className={`relative text-4xl transition-all duration-500 ${
-                                      selectedDesign === template.id ? 'animate-bounce' : 'group-hover:scale-110'
-                                    }`}>
-                                      {template.image}
-                                    </span>
-                                    
-                                    {/* Selection Indicator */}
-                                    {selectedDesign === template.id && (
-                                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                        <Check className="h-4 w-4 text-white" />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                {/* Template Name */}
-                                <h3 className={`text-center text-lg font-bold mb-2 transition-colors duration-300 ${
-                                  selectedDesign === template.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                                }`}>
-                                  {template.name}
-                                </h3>
-                                
-                                {/* Features List */}
-                                <div className="space-y-2 mb-4">
-                                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <span>تصميم احترافي</span>
-                                  </div>
-                                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <span>جودة طباعة عالية</span>
-                                  </div>
-                                  {template.isPremium && (
-                                    <div className="flex items-center justify-center gap-2 text-xs text-accent font-medium">
-                                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                                      <span>ميزات إضافية مميزة</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              {/* Bottom Section - Price & Selection */}
-                              <div className={`px-6 py-4 border-t transition-all duration-300 ${
-                                selectedDesign === template.id
-                                  ? 'border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5'
-                                  : 'border-border/20 bg-gradient-to-r from-muted/5 to-accent/5'
-                              }`}>
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <div className={`px-3 py-1 rounded-full text-sm font-bold transition-all duration-300 ${
-                                      template.price > 0
-                                        ? selectedDesign === template.id
-                                          ? 'bg-accent/20 text-accent'
-                                          : 'bg-muted/50 text-muted-foreground group-hover:bg-accent/10'
-                                        : selectedDesign === template.id
-                                          ? 'bg-green-100 text-green-700'
-                                          : 'bg-green-50 text-green-600 group-hover:bg-green-100'
-                                    }`}>
-                                      {template.price > 0 ? `+${template.price} ريال` : 'مجاني'}
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Selection Radio */}
-                                  <div className={`relative w-5 h-5 rounded-full border-2 transition-all duration-300 ${
-                                    selectedDesign === template.id 
-                                      ? 'border-primary bg-primary shadow-lg' 
-                                      : 'border-muted-foreground/30 group-hover:border-primary/50'
-                                  }`}>
-                                    {selectedDesign === template.id && (
-                                      <div className="absolute inset-1 bg-white rounded-full animate-scale-in" />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Hover Effect Overlay */}
-                              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-2xl" />
-                              </div>
+                <CardContent className="p-6">
+                  <RadioGroup value={selectedDesign} onValueChange={setSelectedDesign}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {designTemplates.map(design => <div key={design.id} className="relative group">
+                          <RadioGroupItem value={design.id} id={design.id} className="sr-only" />
+                          <label htmlFor={design.id} className={`block p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl ${selectedDesign === design.id ? 'border-primary bg-gradient-to-br from-primary/10 to-accent/5 shadow-xl transform scale-105' : 'border-border hover:border-primary/50 hover:shadow-lg hover:bg-accent/5'}`}>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="text-5xl group-hover:scale-110 transition-transform duration-300">{design.image}</div>
+                              {design.isPremium && <Badge className="bg-gradient-to-r from-accent to-secondary border-0 text-white shadow-lg">
+                                  <Crown className="h-3 w-3 mr-1" />
+                                  مميز
+                                </Badge>}
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 1: Frame Options */}
-                  {currentStep === 1 && (
-                    <div className="space-y-6">
-                      <div className="text-center mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center shadow-lg mx-auto mb-4">
-                          <Frame className="h-8 w-8 text-white" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">اختر الإطار</h3>
-                        <p className="text-muted-foreground">إضافة إطار أنيق لشجرة عائلتك</p>
-                      </div>
-                      
-                      <RadioGroup 
-                        value={selectedFrame} 
-                        onValueChange={setSelectedFrame}
-                        className="space-y-3"
-                      >
-                        {frameOptions.map((frame) => (
-                          <div
-                            key={frame.id}
-                            className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                              selectedFrame === frame.id
-                                ? 'border-accent bg-gradient-to-r from-accent/10 to-secondary/5 shadow-lg'
-                                : 'border-border bg-gradient-to-r from-card to-card/80 hover:border-accent/50 hover:shadow-md'
-                            }`}
-                            onClick={() => setSelectedFrame(frame.id)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <RadioGroupItem 
-                                value={frame.id} 
-                                id={frame.id}
-                                className="border-accent text-accent"
-                              />
-                              <Label htmlFor={frame.id} className="font-medium cursor-pointer">
-                                {frame.name}
-                              </Label>
-                            </div>
-                            <span className={`font-bold transition-colors ${
-                              selectedFrame === frame.id ? 'text-accent' : 'text-muted-foreground'
-                            }`}>
-                              {frame.price > 0 ? `+${frame.price} ريال` : 'مجاني'}
-                            </span>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  )}
-
-                  {/* Step 2: Size Options */}
-                  {currentStep === 2 && (
-                    <div className="space-y-6">
-                      <div className="text-center mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-secondary to-primary rounded-xl flex items-center justify-center shadow-lg mx-auto mb-4">
-                          <Ruler className="h-8 w-8 text-white" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">اختر المقاس</h3>
-                        <p className="text-muted-foreground">حدد الحجم المناسب للطباعة</p>
-                      </div>
-                      
-                      <RadioGroup 
-                        value={selectedSize} 
-                        onValueChange={setSelectedSize}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      >
-                        {sizeOptions.map((size) => (
-                          <div
-                            key={size.id}
-                            className={`relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                              selectedSize === size.id
-                                ? 'border-secondary bg-gradient-to-br from-secondary/10 to-primary/5 shadow-lg scale-105'
-                                : 'border-border bg-gradient-to-br from-card to-card/80 hover:border-secondary/50 hover:shadow-md hover:scale-102'
-                            }`}
-                            onClick={() => setSelectedSize(size.id)}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <RadioGroupItem 
-                                value={size.id} 
-                                id={size.id}
-                                className="border-secondary text-secondary"
-                              />
-                              {selectedSize === size.id && (
-                                <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
+                            <h3 className="font-bold text-lg text-foreground mb-1">{design.name}</h3>
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm text-muted-foreground">
+                                {design.price === 0 ? 'مجاني' : `${design.price} ريال`}
+                              </p>
+                              {selectedDesign === design.id && <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
                                   <Check className="h-4 w-4 text-white" />
-                                </div>
-                              )}
+                                </div>}
                             </div>
-                            
-                            <Label htmlFor={size.id} className="font-semibold cursor-pointer text-foreground mb-1">
-                              {size.name}
-                            </Label>
-                            
-                            <span className={`font-bold text-sm transition-colors ${
-                              selectedSize === size.id ? 'text-secondary' : 'text-muted-foreground'
-                            }`}>
-                              {size.price} ريال
-                            </span>
-                            
-                            {selectedSize === size.id && (
-                              <div className="absolute -inset-1 bg-gradient-to-r from-secondary via-primary to-secondary rounded-xl opacity-20 blur-lg" />
-                            )}
-                          </div>
-                        ))}
-                      </RadioGroup>
+                          </label>
+                        </div>)}
                     </div>
-                  )}
+                  </RadioGroup>
+                </CardContent>
+              </Card>
 
-                  {/* Navigation Buttons */}
-                  <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
-                    <Button
-                      variant="outline"
-                      onClick={handlePrevStep}
-                      disabled={currentStep === 0}
-                      className="flex items-center gap-2"
-                    >
-                      السابق
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground mb-1">الإجمالي</p>
-                      <p className="text-2xl font-bold text-primary">{totalPrice} ريال</p>
+              {/* Frame Selection */}
+              <Card className="bg-gradient-to-br from-card via-card/95 to-accent/2 backdrop-blur-xl border border-accent/20 shadow-xl overflow-hidden rounded-2xl">
+                <CardHeader className="bg-gradient-to-r from-accent/5 via-secondary/5 to-primary/5 border-b border-accent/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center shadow-lg">
+                      <Frame className="h-5 w-5 text-white" />
                     </div>
-                    
-                    <Button
-                      onClick={handleNextStep}
-                      className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      {currentStep === wizardSteps.length - 1 ? 'إنهاء التخصيص' : 'التالي'}
-                    </Button>
+                    <div>
+                      <CardTitle className="text-xl font-bold text-foreground">الإطارات</CardTitle>
+                      <CardDescription className="text-muted-foreground">أضف لمسة جمالية مميزة</CardDescription>
+                    </div>
                   </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <RadioGroup value={selectedFrame} onValueChange={setSelectedFrame}>
+                    <div className="space-y-3">
+                      {frameOptions.map(frame => <div key={frame.id} className="relative group">
+                          <RadioGroupItem value={frame.id} id={frame.id} className="sr-only" />
+                          <label htmlFor={frame.id} className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 group-hover:shadow-lg ${selectedFrame === frame.id ? 'border-accent bg-gradient-to-r from-accent/10 to-secondary/5 shadow-lg' : 'border-border hover:border-accent/50 hover:bg-accent/5'}`}>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${frame.id === 'wood' ? 'bg-amber-100 text-amber-600' : frame.id === 'gold' ? 'bg-yellow-100 text-yellow-600' : frame.id === 'silver' ? 'bg-gray-100 text-gray-600' : frame.id === 'premium' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-400'}`}>
+                                <Frame className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <span className="font-semibold text-foreground">{frame.name}</span>
+                                <p className="text-sm text-muted-foreground">
+                                  {frame.price === 0 ? 'مجاني' : `+${frame.price} ريال`}
+                                </p>
+                              </div>
+                            </div>
+                            {selectedFrame === frame.id && <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center shadow-lg">
+                                <Check className="h-4 w-4 text-white" />
+                              </div>}
+                          </label>
+                        </div>)}
+                    </div>
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+
+              {/* Size Selection */}
+              <Card className="bg-gradient-to-br from-card via-card/95 to-secondary/2 backdrop-blur-xl border border-secondary/20 shadow-xl overflow-hidden rounded-2xl">
+                <CardHeader className="bg-gradient-to-r from-secondary/5 via-primary/5 to-accent/5 border-b border-secondary/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-secondary to-primary rounded-xl flex items-center justify-center shadow-lg">
+                      <Ruler className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl font-bold text-foreground">المقاسات</CardTitle>
+                      <CardDescription className="text-muted-foreground">اختر الحجم المناسب لك</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
+                    <div className="space-y-3">
+                      {sizeOptions.map(size => <div key={size.id} className="relative group">
+                          <RadioGroupItem value={size.id} id={size.id} className="sr-only" />
+                          <label htmlFor={size.id} className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 group-hover:shadow-lg ${selectedSize === size.id ? 'border-secondary bg-gradient-to-r from-secondary/10 to-primary/5 shadow-lg' : 'border-border hover:border-secondary/50 hover:bg-secondary/5'}`}>
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-secondary/20 rounded-lg flex items-center justify-center">
+                                <Ruler className="h-4 w-4 text-secondary" />
+                              </div>
+                              <div>
+                                <span className="font-semibold text-foreground">{size.name}</span>
+                                <p className="text-sm text-muted-foreground">+{size.price} ريال</p>
+                              </div>
+                            </div>
+                            {selectedSize === size.id && <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center shadow-lg">
+                                <Check className="h-4 w-4 text-white" />
+                              </div>}
+                          </label>
+                        </div>)}
+                    </div>
+                  </RadioGroup>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          {/* Shipping Information */}
-          <div ref={shippingRef} className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Order Summary & Checkout */}
+          <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Shipping Information */}
             <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
@@ -761,26 +450,13 @@ export default function Store() {
               <CardContent className="p-6 space-y-6">
                 <div>
                   <Label htmlFor="address" className="text-sm font-semibold text-foreground mb-2 block">عنوان الشحن</Label>
-                  <Textarea
-                    id="address"
-                    placeholder="أدخل عنوانك الكامل هنا..."
-                    value={shippingAddress}
-                    onChange={(e) => setShippingAddress(e.target.value)}
-                    className="min-h-[100px] rounded-xl border-border focus:border-primary"
-                  />
+                  <Textarea id="address" placeholder="أدخل عنوانك الكامل هنا..." value={shippingAddress} onChange={e => setShippingAddress(e.target.value)} className="min-h-[100px] rounded-xl border-border focus:border-primary" />
                 </div>
                 <div>
                   <Label htmlFor="phone" className="text-sm font-semibold text-foreground mb-2 block">رقم الهاتف</Label>
                   <div className="relative">
                     <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="05xxxxxxxx"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="pr-10 rounded-xl border-border focus:border-primary"
-                    />
+                    <Input id="phone" type="tel" placeholder="05xxxxxxxx" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="pr-10 rounded-xl border-border focus:border-primary" />
                   </div>
                 </div>
               </CardContent>
@@ -831,7 +507,7 @@ export default function Store() {
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-secondary/5 to-primary/5 rounded-xl border border-secondary/20">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center">
-                        <Ruler className="h-5 w-5 text-secondary" />
+                        
                       </div>
                       <div>
                         <p className="font-semibold text-foreground">{sizeOptions.find(s => s.id === selectedSize)?.name}</p>
@@ -854,11 +530,7 @@ export default function Store() {
                     <span className="font-medium">الشحن مجاني لجميع أنحاء المملكة</span>
                   </div>
                   
-                  <Button 
-                    onClick={handleOrder}
-                    className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white rounded-xl py-6 text-lg font-bold shadow-2xl transition-all duration-300 hover:shadow-3xl transform hover:scale-[1.02]"
-                    size="lg"
-                  >
+                  <Button onClick={handleOrder} className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white rounded-xl py-6 text-lg font-bold shadow-2xl transition-all duration-300 hover:shadow-3xl transform hover:scale-[1.02]" size="lg">
                     <CreditCard className="h-6 w-6 mr-3" />
                     متابعة للدفع والطلب
                     <ArrowRight className="h-6 w-6 ml-3" />
@@ -894,15 +566,11 @@ export default function Store() {
             </div>
           </div>
           <DialogFooter>
-            <Button 
-              onClick={() => setOrderDialogOpen(false)}
-              className="w-full bg-gradient-to-r from-primary to-accent text-white rounded-xl"
-            >
+            <Button onClick={() => setOrderDialogOpen(false)} className="w-full bg-gradient-to-r from-primary to-accent text-white rounded-xl">
               حسناً، شكراً لك
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 }
