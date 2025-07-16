@@ -20,43 +20,16 @@ import memoryPreservation from "@/assets/memory-preservation.jpg";
 import Footer from "@/components/Footer";
 
 // Mock data
-const mockTrees = [{
-  id: 1,
-  name: "عائلة أحمد",
-  members: 25,
-  generations: 4,
-  lastUpdated: "منذ يومين",
-  image: familySuccess,
-  progress: 85,
-  isPublic: true
-}, {
-  id: 2,
-  name: "عائلة فاطمة",
-  members: 12,
-  generations: 3,
-  lastUpdated: "منذ أسبوع",
-  image: futureFamily,
-  progress: 60,
-  isPublic: false
-}, {
-  id: 3,
-  name: "عائلة محمد",
-  members: 35,
-  generations: 5,
-  lastUpdated: "منذ 3 أيام",
-  image: heritageTech,
-  progress: 92,
-  isPublic: true
-}];
+const mockTrees: any[] = [];
 
 // Mock user plan data
 const currentPlan = {
   name: "مجانية",
   type: "free",
   // free, basic, premium
-  treesUsed: 3,
+  treesUsed: 0,
   treesLimit: 3,
-  membersUsed: 72,
+  membersUsed: 0,
   membersLimit: 100,
   features: ["3 أشجار عائلية", "100 فرد", "مشاركة محدودة"]
 };
@@ -112,8 +85,8 @@ const Dashboard2 = () => {
   const navigate = useNavigate();
 
   // Plan-based features
-  const canCreateNewTree = currentPlan.treesUsed < currentPlan.treesLimit;
-  const planProgress = currentPlan.treesUsed / currentPlan.treesLimit * 100;
+  const canCreateNewTree = trees.length < currentPlan.treesLimit;
+  const planProgress = trees.length / currentPlan.treesLimit * 100;
   const membersProgress = currentPlan.membersUsed / currentPlan.membersLimit * 100;
   
   // Notification functions
@@ -153,7 +126,7 @@ const Dashboard2 = () => {
     }
   };
   const handleCreateTree = () => {
-    if (currentPlan.type === "free" && !canCreateNewTree) {
+    if (currentPlan.type === "free" && trees.length >= currentPlan.treesLimit) {
       setShowUpgradeDialog(true);
       return;
     }
@@ -749,7 +722,7 @@ const Dashboard2 = () => {
             <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">الاستخدام الحالي</span>
-                <span className="text-sm text-muted-foreground">{currentPlan.treesUsed}/{currentPlan.treesLimit}</span>
+                <span className="text-sm text-muted-foreground">{trees.length}/{currentPlan.treesLimit}</span>
               </div>
               <Progress value={100} className="h-2" />
             </div>
