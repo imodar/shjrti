@@ -515,7 +515,7 @@ const Dashboard2 = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-muted-foreground text-sm font-medium">الأجيال</p>
-                    <p className="text-3xl font-bold text-secondary-foreground">{Math.max(...trees.map(tree => tree.generations))}</p>
+                    <p className="text-3xl font-bold text-secondary-foreground">{trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-xl flex items-center justify-center">
                     <TrendingUp className="h-6 w-6 text-secondary-foreground" />
