@@ -171,15 +171,13 @@ const Dashboard2 = () => {
   const handleCreateTree = () => {
     // Check if user has reached the tree limit for their plan
     if (trees.length >= currentPlan.treesLimit) {
-      // Navigate directly to payment page with the next available plan
-      const nextPlan = currentPlan.type === "free" ? availablePlans.find(p => p.type === "basic") : availablePlans.find(p => p.type === "premium");
-      if (nextPlan) {
-        navigate("/payment", { state: { selectedPlan: nextPlan } });
-        toast({
-          title: "ترقية مطلوبة",
-          description: `سيتم توجيهك لصفحة الدفع للباقة ${nextPlan.name}`
-        });
-      }
+      // Show upgrade modal instead of navigating directly to payment
+      setShowUpgradeDialog(true);
+      toast({
+        title: "ترقية مطلوبة",
+        description: `لقد وصلت للحد الأقصى المسموح في باقة ${currentPlan.name}. يرجى الترقية للمتابعة.`,
+        variant: "destructive"
+      });
       return;
     }
 
