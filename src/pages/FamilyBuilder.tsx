@@ -839,7 +839,7 @@ const FamilyBuilder = () => {
                           ? "border-primary bg-gradient-to-br from-primary/10 to-accent/10 shadow-lg"
                           : "border-border hover:border-primary/50 hover:shadow-md"
                       )}
-                      onClick={() => setFormData({...formData, relation: relation.value})}
+                      onClick={() => setFormData({...formData, relation: relation.value, relatedPersonId: null})}
                     >
                       <CardContent className="p-6 text-center">
                         <div className="text-4xl mb-3">{relation.icon}</div>
@@ -848,6 +848,44 @@ const FamilyBuilder = () => {
                     </Card>
                   ))}
                 </div>
+
+                {/* Related Person Selection */}
+                {formData.relation && familyMembers.length > 0 && (
+                  <div className="mt-8 space-y-4">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      اختر الشخص المرتبط به
+                    </Label>
+                    <Select 
+                      value={formData.relatedPersonId?.toString() || ""} 
+                      onValueChange={(value) => setFormData({...formData, relatedPersonId: value ? parseInt(value) : null})}
+                    >
+                      <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input">
+                        <SelectValue placeholder="اختر من قائمة أفراد العائلة" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl max-h-60">
+                        {familyMembers.map((member) => (
+                          <SelectItem 
+                            key={member.id} 
+                            value={member.id.toString()}
+                            className="text-lg py-4 rounded-lg flex items-center gap-2"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{getRelationIcon(member.relation)}</span>
+                              <div className="flex flex-col">
+                                <span className="font-medium">{member.name}</span>
+                                <span className="text-sm text-muted-foreground">{member.relation}</span>
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-muted-foreground">
+                      اختر الشخص الذي يرتبط معه {formData.name} بعلاقة {getRelationshipOptions(formData.gender).find(r => r.value === formData.relation)?.label}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
