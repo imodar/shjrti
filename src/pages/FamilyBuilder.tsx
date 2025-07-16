@@ -822,7 +822,7 @@ const FamilyBuilder = () => {
                   <p className="text-muted-foreground">اختر العلاقة التي تربط هذا الشخص بالعائلة</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   {getRelationshipOptions(formData.gender).map((relation) => (
                     <Card
                       key={relation.value}
