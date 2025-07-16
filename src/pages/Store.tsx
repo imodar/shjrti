@@ -129,12 +129,127 @@ export default function Store() {
       {/* Main Content */}
       <div className="pt-8 relative z-10 min-h-screen">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Design Selection */}
-            <div className="lg:col-span-2 space-y-8">
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+            {/* Live Preview Section */}
+            <div className="xl:col-span-2 space-y-6">
+              <div className="sticky top-24">
+                <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden">
+                  <CardHeader className="text-center">
+                    <CardTitle className="flex items-center justify-center gap-2 text-foreground">
+                      <TreePine className="h-6 w-6 text-primary" />
+                      معاينة مباشرة
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      شاهد كيف ستبدو شجرة عائلتك
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    {/* Live Tree Preview */}
+                    <div className="relative bg-gradient-to-br from-background to-accent/5 rounded-2xl p-8 border-2 border-dashed border-primary/20 min-h-[400px] flex items-center justify-center">
+                      {/* Frame Effect */}
+                      <div 
+                        className={`absolute inset-0 rounded-2xl ${
+                          selectedFrame === 'wood' ? 'bg-gradient-to-br from-amber-100 to-amber-200 border-8 border-amber-400' :
+                          selectedFrame === 'gold' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-8 border-yellow-500' :
+                          selectedFrame === 'silver' ? 'bg-gradient-to-br from-gray-100 to-gray-200 border-8 border-gray-400' :
+                          selectedFrame === 'premium' ? 'bg-gradient-to-br from-purple-100 to-purple-200 border-8 border-purple-500' :
+                          'bg-transparent'
+                        }`}
+                      />
+                      
+                      {/* Tree Design Preview */}
+                      <div className="relative z-10 flex flex-col items-center">
+                        {/* Tree Design Based on Selection */}
+                        {selectedDesign === 'classic' && (
+                          <div className="text-center space-y-4">
+                            <div className="text-6xl animate-bounce">🌳</div>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs">👨</div>
+                              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs">👩</div>
+                              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-xs">👶</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedDesign === 'modern' && (
+                          <div className="text-center space-y-4">
+                            <div className="text-6xl animate-pulse">🌲</div>
+                            <div className="flex flex-col items-center space-y-2">
+                              <div className="flex space-x-2">
+                                <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold">A</div>
+                                <div className="w-10 h-10 bg-gradient-to-r from-accent to-secondary rounded-lg flex items-center justify-center text-white font-bold">B</div>
+                              </div>
+                              <div className="w-10 h-10 bg-gradient-to-r from-secondary to-primary rounded-lg flex items-center justify-center text-white font-bold">C</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedDesign === 'vintage' && (
+                          <div className="text-center space-y-4 filter sepia">
+                            <div className="text-6xl animate-pulse">🍃</div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="w-12 h-12 bg-amber-200 border-2 border-amber-600 rounded-full flex items-center justify-center text-amber-800">♂</div>
+                              <div className="w-12 h-12 bg-pink-200 border-2 border-pink-600 rounded-full flex items-center justify-center text-pink-800">♀</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedDesign === 'elegant' && (
+                          <div className="text-center space-y-4">
+                            <div className="text-6xl animate-pulse text-primary">🌿</div>
+                            <div className="flex flex-col items-center space-y-3">
+                              <div className="w-16 h-4 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
+                              <div className="flex space-x-4">
+                                <div className="w-4 h-16 bg-gradient-to-b from-primary to-accent rounded-full"></div>
+                                <div className="w-4 h-16 bg-gradient-to-b from-accent to-secondary rounded-full"></div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Size Indicator */}
+                        <div className="mt-6 text-center">
+                          <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium">
+                            {sizeOptions.find(s => s.id === selectedSize)?.name}
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      {/* Animated Background */}
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <div className="absolute top-4 right-4 w-2 h-2 bg-primary/30 rounded-full animate-ping"></div>
+                        <div className="absolute bottom-8 left-6 w-3 h-3 bg-accent/30 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+                        <div className="absolute top-12 left-12 w-1 h-1 bg-secondary/30 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+                      </div>
+                    </div>
+                    
+                    {/* Preview Info */}
+                    <div className="mt-4 p-4 bg-primary/5 rounded-xl border border-primary/20">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">التصميم المحدد:</span>
+                        <span className="font-medium text-primary">
+                          {designTemplates.find(d => d.id === selectedDesign)?.name}
+                        </span>
+                      </div>
+                      {selectedFrame !== 'none' && (
+                        <div className="flex items-center justify-between text-sm mt-2">
+                          <span className="text-muted-foreground">الإطار:</span>
+                          <span className="font-medium text-primary">
+                            {frameOptions.find(f => f.id === selectedFrame)?.name}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Configuration Section */}
+            <div className="xl:col-span-2 space-y-6">
               {/* Design Templates */}
-              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
-                <CardHeader>
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <Palette className="h-5 w-5 text-primary" />
                     اختر تصميم الشجرة
@@ -143,22 +258,22 @@ export default function Store() {
                     اختر من بين تصاميمنا المتنوعة لشجرة عائلتك
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <RadioGroup value={selectedDesign} onValueChange={setSelectedDesign}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {designTemplates.map((design) => (
-                        <div key={design.id} className="relative">
+                        <div key={design.id} className="relative group">
                           <RadioGroupItem value={design.id} id={design.id} className="sr-only" />
                           <label
                             htmlFor={design.id}
-                            className={`block p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                            className={`block p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 group-hover:scale-105 ${
                               selectedDesign === design.id
-                                ? 'border-primary bg-primary/10 shadow-lg'
+                                ? 'border-primary bg-primary/10 shadow-lg transform scale-105'
                                 : 'border-border hover:border-primary/50 hover:shadow-md'
                             }`}
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="text-4xl">{design.image}</div>
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="text-4xl group-hover:scale-110 transition-transform">{design.image}</div>
                               {design.isPremium && (
                                 <Badge variant="secondary" className="bg-accent/20 text-accent-foreground border border-accent/30">
                                   <Crown className="h-3 w-3 mr-1" />
@@ -171,7 +286,9 @@ export default function Store() {
                               {design.price === 0 ? 'مجاني' : `${design.price} ريال`}
                             </p>
                             {selectedDesign === design.id && (
-                              <Check className="absolute top-2 left-2 h-5 w-5 text-primary" />
+                              <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="h-4 w-4 text-primary-foreground" />
+                              </div>
                             )}
                           </label>
                         </div>
@@ -182,8 +299,8 @@ export default function Store() {
               </Card>
 
               {/* Frame Selection */}
-              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
-                <CardHeader>
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-accent/5 to-secondary/5">
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <Frame className="h-5 w-5 text-primary" />
                     اختر الإطار
@@ -192,25 +309,34 @@ export default function Store() {
                     أضف لمسة جمالية لشجرة عائلتك
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <RadioGroup value={selectedFrame} onValueChange={setSelectedFrame}>
                     <div className="space-y-3">
                       {frameOptions.map((frame) => (
-                        <div key={frame.id} className="relative">
+                        <div key={frame.id} className="relative group">
                           <RadioGroupItem value={frame.id} id={frame.id} className="sr-only" />
                           <label
                             htmlFor={frame.id}
-                            className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                            className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 group-hover:shadow-md ${
                               selectedFrame === frame.id
                                 ? 'border-primary bg-primary/10 shadow-lg'
-                                : 'border-border hover:border-primary/50 hover:shadow-md'
+                                : 'border-border hover:border-primary/50'
                             }`}
                           >
-                            <div>
-                              <h3 className="font-semibold text-foreground">{frame.name}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {frame.price === 0 ? 'مجاني' : `${frame.price} ريال إضافي`}
-                              </p>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-lg border-2 ${
+                                frame.id === 'wood' ? 'bg-amber-200 border-amber-400' :
+                                frame.id === 'gold' ? 'bg-yellow-200 border-yellow-500' :
+                                frame.id === 'silver' ? 'bg-gray-200 border-gray-400' :
+                                frame.id === 'premium' ? 'bg-purple-200 border-purple-500' :
+                                'bg-transparent border-dashed border-gray-300'
+                              }`}></div>
+                              <div>
+                                <h3 className="font-semibold text-foreground">{frame.name}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {frame.price === 0 ? 'مجاني' : `${frame.price} ريال إضافي`}
+                                </p>
+                              </div>
                             </div>
                             {selectedFrame === frame.id && (
                               <Check className="h-5 w-5 text-primary" />
@@ -224,8 +350,8 @@ export default function Store() {
               </Card>
 
               {/* Size Selection */}
-              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
-                <CardHeader>
+              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-secondary/5 to-primary/5">
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <Ruler className="h-5 w-5 text-primary" />
                     اختر المقاس
@@ -234,28 +360,33 @@ export default function Store() {
                     حدد المقاس المناسب لمساحتك
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {sizeOptions.map((size) => (
-                        <div key={size.id} className="relative">
+                        <div key={size.id} className="relative group">
                           <RadioGroupItem value={size.id} id={size.id} className="sr-only" />
                           <label
                             htmlFor={size.id}
-                            className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                            className={`flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 group-hover:shadow-md ${
                               selectedSize === size.id
                                 ? 'border-primary bg-primary/10 shadow-lg'
-                                : 'border-border hover:border-primary/50 hover:shadow-md'
+                                : 'border-border hover:border-primary/50'
                             }`}
                           >
-                            <div>
-                              <h3 className="font-semibold text-foreground">{size.name}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {size.price} ريال
-                              </p>
+                            <div className={`w-12 h-16 border-2 border-primary/30 rounded mb-2 relative ${
+                              selectedSize === size.id ? 'bg-primary/5' : 'bg-background'
+                            }`}>
+                              <div className="absolute inset-1 border border-primary/20 rounded"></div>
                             </div>
+                            <h3 className="font-semibold text-foreground text-center">{size.name}</h3>
+                            <p className="text-sm text-primary font-medium">
+                              {size.price} ريال
+                            </p>
                             {selectedSize === size.id && (
-                              <Check className="h-5 w-5 text-primary" />
+                              <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="h-4 w-4 text-primary-foreground" />
+                              </div>
                             )}
                           </label>
                         </div>
@@ -264,49 +395,10 @@ export default function Store() {
                   </RadioGroup>
                 </CardContent>
               </Card>
-
-              {/* Shipping Information */}
-              <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    معلومات الشحن
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    أدخل عنوان الشحن ورقم الجوال للتواصل
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="address" className="text-foreground">عنوان الشحن</Label>
-                    <Textarea
-                      id="address"
-                      placeholder="أدخل عنوان الشحن الكامل مع رقم المبنى والحي والمدينة"
-                      value={shippingAddress}
-                      onChange={(e) => setShippingAddress(e.target.value)}
-                      className="min-h-[100px] bg-background/50 border-border focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone" className="flex items-center gap-2 text-foreground">
-                      <Phone className="h-4 w-4" />
-                      رقم الجوال
-                    </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="05xxxxxxxx"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="bg-background/50 border-border focus:border-primary"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
             </div>
 
-            {/* Order Summary */}
-            <div className="lg:col-span-1">
+            {/* Order Summary - Right Column */}
+            <div className="xl:col-span-1">
               <Card className="sticky top-24 bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
@@ -382,6 +474,52 @@ export default function Store() {
                 </CardContent>
               </Card>
             </div>
+          </div>
+          
+          {/* Shipping Information - Full Width Section */}
+          <div className="mt-12">
+            <Card className="bg-card/50 backdrop-blur-xl border border-primary/20 shadow-lg overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  معلومات الشحن
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  أدخل عنوان الشحن ورقم الجوال للتواصل
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="address" className="text-foreground font-medium">عنوان الشحن</Label>
+                    <Textarea
+                      id="address"
+                      placeholder="أدخل عنوان الشحن الكامل مع رقم المبنى والحي والمدينة"
+                      value={shippingAddress}
+                      onChange={(e) => setShippingAddress(e.target.value)}
+                      className="min-h-[120px] bg-background/50 border-border focus:border-primary mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone" className="flex items-center gap-2 text-foreground font-medium">
+                      <Phone className="h-4 w-4" />
+                      رقم الجوال
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="05xxxxxxxx"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="bg-background/50 border-border focus:border-primary mt-2"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      سيتم التواصل معك على هذا الرقم لتأكيد الطلب
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
