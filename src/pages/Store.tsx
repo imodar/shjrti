@@ -486,7 +486,7 @@ export default function Store() {
                             <div className={`p-6 rounded-xl border-2 transition-all duration-300 ${
                               selectedDesign === template.id
                                 ? 'border-primary bg-gradient-to-br from-primary/10 via-primary/5 to-accent/5'
-                                : 'border-border bg-gradient-to-br from-card to-card/80 hover:border-primary/50'
+                                : 'border-border/60 bg-gradient-to-br from-card to-card/80 hover:border-primary/50'
                             }`}>
                               <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
