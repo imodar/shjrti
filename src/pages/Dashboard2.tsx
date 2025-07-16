@@ -26,12 +26,12 @@ const mockTrees: any[] = [];
 const currentPlan = {
   name: "مجانية",
   type: "free",
-  // free: 0/0, basic: 0/2, premium: 0/10
+  // free: 0/1, basic: 0/2, premium: 0/10
   treesUsed: 0,
-  treesLimit: 0, // Free plan has no trees allowed
+  treesLimit: 1, // Free plan allows 1 tree
   membersUsed: 0,
-  membersLimit: 0, // Free plan has no members allowed
-  features: ["لا توجد أشجار مسموحة", "ترقية للحصول على الميزات"]
+  membersLimit: 10, // Free plan allows 10 members
+  features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"]
 };
 // Mock notifications data
 const mockNotifications = [
