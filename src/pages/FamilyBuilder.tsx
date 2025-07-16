@@ -430,15 +430,15 @@ const FamilyBuilder = () => {
             {/* Modern Tabs Navigation */}
             <div className="flex justify-center">
               <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-1 shadow-lg">
-                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md">
+                <TabsTrigger value="overview" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
                   <Users className="mr-2 h-4 w-4" />
                   نظرة عامة
                 </TabsTrigger>
-                <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md">
+                <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
                   <TreePine className="mr-2 h-4 w-4" />
                   عرض الشجرة
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md">
+                <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground">
                   <Star className="mr-2 h-4 w-4" />
                   الإحصائيات
                 </TabsTrigger>
