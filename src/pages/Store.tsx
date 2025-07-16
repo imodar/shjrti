@@ -23,7 +23,8 @@ import {
   ChevronRight,
   ChevronLeft,
   User,
-  Users
+  Users,
+  ShoppingBag
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -958,7 +959,7 @@ export default function Store() {
           {isCustomizationFinished && (
             <div className="mt-16 animate-fade-in">
               <div className="max-w-4xl mx-auto">
-                <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
+                <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl transform-style-3d">
                   <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-primary/10">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -984,139 +985,131 @@ export default function Store() {
                   
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      {/* Shipping Information and Order Summary will go here */}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-            
-            {/* Shipping Information */}
-            <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
-              <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-primary/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
-                    <MapPin className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl font-bold text-foreground">معلومات الشحن</CardTitle>
-                    <CardDescription className="text-muted-foreground">أدخل بياناتك لإتمام الطلب</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                <div>
-                  <Label htmlFor="address" className="text-sm font-semibold text-foreground mb-2 block">عنوان الشحن</Label>
-                  <Textarea
-                    id="address"
-                    placeholder="أدخل عنوانك الكامل هنا..."
-                    value={shippingAddress}
-                    onChange={(e) => setShippingAddress(e.target.value)}
-                    className="min-h-[100px] rounded-xl border-border focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone" className="text-sm font-semibold text-foreground mb-2 block">رقم الهاتف</Label>
-                  <div className="relative">
-                    <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="05xxxxxxxx"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="pr-10 rounded-xl border-border focus:border-primary"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                      {/* Shipping Information */}
+                      <Card className="bg-gradient-to-br from-card via-card/95 to-primary/2 backdrop-blur-xl border border-primary/20 shadow-xl overflow-hidden rounded-2xl">
+                        <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-primary/10">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                              <MapPin className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-xl font-bold text-foreground">معلومات الشحن</CardTitle>
+                              <CardDescription className="text-muted-foreground">أدخل بياناتك لإتمام الطلب</CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-6">
+                          <div>
+                            <Label htmlFor="address" className="text-sm font-semibold text-foreground mb-2 block">عنوان الشحن</Label>
+                            <Textarea
+                              id="address"
+                              placeholder="أدخل عنوانك الكامل هنا..."
+                              value={shippingAddress}
+                              onChange={(e) => setShippingAddress(e.target.value)}
+                              className="min-h-[100px] rounded-xl border-border focus:border-primary"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="phone" className="text-sm font-semibold text-foreground mb-2 block">رقم الهاتف</Label>
+                            <div className="relative">
+                              <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="phone"
+                                type="tel"
+                                placeholder="05xxxxxxxx"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                className="pr-10 rounded-xl border-border focus:border-primary"
+                              />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
 
-            {/* Order Summary */}
-            <Card className="bg-gradient-to-br from-card via-card/95 to-accent/2 backdrop-blur-xl border border-accent/20 shadow-xl overflow-hidden rounded-2xl">
-              <CardHeader className="bg-gradient-to-r from-accent/5 to-secondary/5 border-b border-accent/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center shadow-lg">
-                    <Package className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl font-bold text-foreground">ملخص الطلب</CardTitle>
-                    <CardDescription className="text-muted-foreground">تفاصيل طلبك والمبلغ الإجمالي</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                {/* Order Items */}
-                <div className="space-y-4 mb-6">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-primary/20">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                        <Palette className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">{designTemplates.find(d => d.id === selectedDesign)?.name}</p>
-                        <p className="text-sm text-muted-foreground">تصميم الشجرة</p>
-                      </div>
-                    </div>
-                    <span className="font-bold text-primary">{designPrice} ريال</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/5 to-secondary/5 rounded-xl border border-accent/20">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
-                        <Frame className="h-5 w-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">{frameOptions.find(f => f.id === selectedFrame)?.name}</p>
-                        <p className="text-sm text-muted-foreground">نوع الإطار</p>
-                      </div>
-                    </div>
-                    <span className="font-bold text-accent">{framePrice} ريال</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/8 to-amber-100/10 rounded-xl border border-accent/25">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-accent/30 to-amber-300/20 rounded-lg flex items-center justify-center">
-                        <Ruler className="h-5 w-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">{sizeDisplayName}</p>
-                        <p className="text-sm text-muted-foreground">حجم الطباعة</p>
-                      </div>
-                    </div>
-                    <span className="font-bold text-amber-600">{sizePrice} ريال</span>
-                  </div>
-                </div>
+                      {/* Order Summary */}
+                      <Card className="bg-gradient-to-br from-card via-card/95 to-accent/2 backdrop-blur-xl border border-accent/20 shadow-xl overflow-hidden rounded-2xl">
+                        <CardHeader className="bg-gradient-to-r from-accent/5 to-secondary/5 border-b border-accent/10">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center shadow-lg">
+                              <Package className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-xl font-bold text-foreground">ملخص الطلب</CardTitle>
+                              <CardDescription className="text-muted-foreground">تفاصيل طلبك والمبلغ الإجمالي</CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                          {/* Order Items */}
+                          <div className="space-y-4 mb-6">
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-primary/20">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                                  <Palette className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-foreground">{designTemplates.find(d => d.id === selectedDesign)?.name}</p>
+                                  <p className="text-sm text-muted-foreground">تصميم الشجرة</p>
+                                </div>
+                              </div>
+                              <span className="font-bold text-primary">{designPrice} ريال</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/5 to-secondary/5 rounded-xl border border-accent/20">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
+                                  <Frame className="h-5 w-5 text-accent" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-foreground">{frameOptions.find(f => f.id === selectedFrame)?.name}</p>
+                                  <p className="text-sm text-muted-foreground">نوع الإطار</p>
+                                </div>
+                              </div>
+                              <span className="font-bold text-accent">{framePrice} ريال</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/8 to-amber-100/10 rounded-xl border border-accent/25">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-accent/30 to-amber-300/20 rounded-lg flex items-center justify-center">
+                                  <Ruler className="h-5 w-5 text-accent" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-foreground">{sizeDisplayName}</p>
+                                  <p className="text-sm text-muted-foreground">حجم الطباعة</p>
+                                </div>
+                              </div>
+                              <span className="font-bold text-amber-600">{sizePrice} ريال</span>
+                            </div>
+                          </div>
 
-                {/* Total */}
-                <div className="border-t border-border pt-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-lg font-semibold text-foreground">المجموع الكلي</span>
-                    <span className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">{totalPrice} ريال</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-2 text-sm text-green-600 mb-6 p-3 bg-green-50 rounded-xl border border-green-200">
-                    <Check className="h-4 w-4" />
-                    <span className="font-medium">الشحن مجاني لجميع أنحاء المملكة</span>
-                  </div>
-                  
-                  <Button 
-                    onClick={handleOrder}
-                    className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white rounded-xl py-6 text-lg font-bold shadow-2xl transition-all duration-300 hover:shadow-3xl transform hover:scale-[1.02]"
-                    size="lg"
-                  >
-                    <CreditCard className="h-6 w-6 mr-3" />
-                    متابعة للدفع والطلب
-                    <ArrowRight className="h-6 w-6 ml-3" />
-                  </Button>
-                  
-                  <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
-                    سيتم طباعة وشحن طلبك خلال 3-5 أيام عمل • ضمان الجودة • إمكانية الاستبدال
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+                          {/* Total */}
+                          <div className="border-t border-border pt-6">
+                            <div className="flex justify-between items-center mb-4">
+                              <span className="text-lg font-semibold text-foreground">المجموع الكلي</span>
+                              <span className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">{totalPrice} ريال</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-center gap-2 text-sm text-green-600 mb-6 p-3 bg-green-50 rounded-xl border border-green-200">
+                              <Check className="h-4 w-4" />
+                              <span className="font-medium">الشحن مجاني لجميع أنحاء المملكة</span>
+                            </div>
+                            
+                            <Button 
+                              onClick={handleOrder}
+                              className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white rounded-xl py-6 text-lg font-bold shadow-2xl transition-all duration-300 hover:shadow-3xl transform hover:scale-[1.02]"
+                              size="lg"
+                            >
+                              <CreditCard className="h-6 w-6 mr-3" />
+                              متابعة للدفع والطلب
+                              <ArrowRight className="h-6 w-6 ml-3" />
+                            </Button>
+                            
+                            <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
+                              سيتم طباعة وشحن طلبك خلال 3-5 أيام عمل • ضمان الجودة • إمكانية الاستبدال
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
                   </CardContent>
                 </Card>
