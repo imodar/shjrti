@@ -582,7 +582,7 @@ const FamilyBuilder = () => {
                 <div className="space-y-6">
                   {/* Family name input with enhanced styling */}
                   <div className="space-y-3">
-                    <Label htmlFor="familyName" className="flex flex-row-reverse items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                    <Label htmlFor="familyName" className="text-right flex flex-row-reverse items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
                       <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
                         <Crown className="h-5 w-5 text-white" />
                       </div>
@@ -602,7 +602,7 @@ const FamilyBuilder = () => {
                   
                   {/* Family description with enhanced styling */}
                   <div className="space-y-3">
-                    <Label htmlFor="familyDescription" className="flex flex-row-reverse items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                    <Label htmlFor="familyDescription" className="text-right flex flex-row-reverse items-center gap-3 text-lg font-semibold text-emerald-800 dark:text-emerald-200">
                       <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center">
                         <FileText className="h-5 w-5 text-white" />
                       </div>
@@ -817,7 +817,7 @@ const FamilyBuilder = () => {
                 {/* Name and Gender on same line */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-2">
-                    <Label htmlFor="name" className="flex flex-row-reverse items-center gap-2">
+                    <Label htmlFor="name" className="text-right flex flex-row-reverse items-center gap-2">
                       <User className="h-4 w-4 text-emerald-600" />
                       الاسم الكامل
                     </Label>
@@ -829,7 +829,7 @@ const FamilyBuilder = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="flex flex-row-reverse items-center gap-2 w-full">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2 w-full">
                       <Baby className="h-4 w-4 text-emerald-600" />
                       الجنس
                     </Label>
@@ -848,7 +848,7 @@ const FamilyBuilder = () => {
                 {/* Relationship and Related Person on same line */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="flex flex-row-reverse items-center gap-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
                       <Heart className="h-4 w-4 text-emerald-600" />
                       صلة القرابة
                     </Label>
@@ -910,7 +910,7 @@ const FamilyBuilder = () => {
                 {/* Birth Date and Life Status */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="flex flex-row-reverse items-center gap-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
                       <CalendarIcon className="h-4 w-4 text-emerald-600" />
                       تاريخ الميلاد
                     </Label>
@@ -940,7 +940,7 @@ const FamilyBuilder = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="flex flex-row-reverse items-center gap-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
                       <Clock className="h-4 w-4 text-emerald-600" />
                       حالة الشخص
                     </Label>
@@ -959,7 +959,7 @@ const FamilyBuilder = () => {
                 {/* Death Date (if deceased) */}
                 {!formData.isAlive && (
                   <div className="space-y-2">
-                    <Label className="flex flex-row-reverse items-center gap-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
                       <Skull className="h-4 w-4 text-gray-600" />
                       تاريخ الوفاة (اختياري)
                     </Label>
@@ -990,7 +990,7 @@ const FamilyBuilder = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="flex flex-row-reverse items-center gap-2">
+                  <Label htmlFor="bio" className="text-right flex flex-row-reverse items-center gap-2">
                     <FileText className="h-4 w-4 text-emerald-600" />
                     نبذة شخصية (اختياري)
                   </Label>
@@ -1005,7 +1005,7 @@ const FamilyBuilder = () => {
 
                 {/* Image Upload */}
                 <div className="space-y-2">
-                  <Label className="flex flex-row-reverse items-center gap-2">
+                  <Label className="text-right flex flex-row-reverse items-center gap-2">
                     <Camera className="h-4 w-4 text-emerald-600" />
                     صورة الشخص (اختياري)
                   </Label>
