@@ -817,9 +817,9 @@ const FamilyBuilder = () => {
                 {/* Name and Gender on same line */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-2">
-                    <Label htmlFor="name" className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-emerald-600" />
+                    <Label htmlFor="name" className="text-right flex items-center justify-end gap-2">
                       الاسم الكامل
+                      <User className="h-4 w-4 text-emerald-600" />
                     </Label>
                     <Input 
                       id="name" 
@@ -849,8 +849,8 @@ const FamilyBuilder = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-right flex items-center justify-end gap-2">
-                      <Heart className="h-4 w-4 text-emerald-600" />
                       صلة القرابة
+                      <Heart className="h-4 w-4 text-emerald-600" />
                     </Label>
                     <Select value={formData.relation} onValueChange={(value) => setFormData({...formData, relation: value})}>
                       <SelectTrigger className="text-right">
@@ -910,9 +910,9 @@ const FamilyBuilder = () => {
                 {/* Birth Date and Life Status */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-emerald-600" />
+                    <Label className="text-right flex items-center justify-end gap-2">
                       تاريخ الميلاد
+                      <CalendarIcon className="h-4 w-4 text-emerald-600" />
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -959,9 +959,9 @@ const FamilyBuilder = () => {
                 {/* Death Date (if deceased) */}
                 {!formData.isAlive && (
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <Skull className="h-4 w-4 text-gray-600" />
+                    <Label className="text-right flex items-center justify-end gap-2">
                       تاريخ الوفاة (اختياري)
+                      <Skull className="h-4 w-4 text-gray-600" />
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -990,9 +990,9 @@ const FamilyBuilder = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-emerald-600" />
+                  <Label htmlFor="bio" className="text-right flex items-center justify-end gap-2">
                     نبذة شخصية (اختياري)
+                    <FileText className="h-4 w-4 text-emerald-600" />
                   </Label>
                   <Textarea 
                     id="bio" 
@@ -1005,9 +1005,9 @@ const FamilyBuilder = () => {
 
                 {/* Image Upload */}
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Camera className="h-4 w-4 text-emerald-600" />
+                  <Label className="text-right flex items-center justify-end gap-2">
                     صورة الشخص (اختياري)
+                    <Camera className="h-4 w-4 text-emerald-600" />
                   </Label>
                   <div className="border-2 border-dashed border-emerald-200 rounded-lg p-6 text-center">
                     <input
