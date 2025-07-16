@@ -82,6 +82,7 @@ const FamilyBuilder = () => {
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddMember, setShowAddMember] = useState(false);
+  const [showRelatedPersonDropdown, setShowRelatedPersonDropdown] = useState(false);
   const [showImageCrop, setShowImageCrop] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -857,7 +858,7 @@ const FamilyBuilder = () => {
                       <Users className="h-4 w-4 text-primary" />
                       اختر الشخص المرتبط به
                     </Label>
-                    <Popover>
+                    <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -890,7 +891,10 @@ const FamilyBuilder = () => {
                                 <CommandItem
                                   key={member.id}
                                   value={`${member.name} ${member.relation}`}
-                                  onSelect={() => setFormData({...formData, relatedPersonId: member.id})}
+                                  onSelect={() => {
+                                    setFormData({...formData, relatedPersonId: member.id});
+                                    setShowRelatedPersonDropdown(false);
+                                  }}
                                   className="flex items-center gap-3 p-3 cursor-pointer"
                                 >
                                   <span className="text-2xl">{getRelationIcon(member.relation)}</span>
