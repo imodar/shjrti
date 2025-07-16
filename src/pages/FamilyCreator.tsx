@@ -6,10 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { TreePine, ArrowRight, ArrowLeft, User, Users, Heart, UserPlus, CheckCircle, Plus } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, User, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, Camera, Baby, Skull } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
+import { format } from "date-fns";
+import { ar } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Footer from "@/components/Footer";
 
 const FamilyCreator = () => {
@@ -24,7 +29,13 @@ const FamilyCreator = () => {
   const [firstMember, setFirstMember] = useState({
     name: "",
     gender: "",
-    relation: "founder"
+    relation: "founder",
+    birthDate: null as Date | null,
+    isAlive: true,
+    deathDate: null as Date | null,
+    bio: "",
+    image: null as File | null,
+    croppedImage: null as string | null
   });
 
   const handleNextStep = () => {
@@ -83,6 +94,22 @@ const FamilyCreator = () => {
     });
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFirstMember({...firstMember, image: file});
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setFirstMember(prev => ({...prev, croppedImage: e.target!.result as string}));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const getRelationshipLabel = (gender: string) => {
     return "أول فرد الذي ستبدأ منه العائلة";
   };
@@ -94,12 +121,53 @@ const FamilyCreator = () => {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-teal-400/15 to-cyan-400/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
         <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-cyan-400/10 to-emerald-400/10 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-gradient-to-l from-emerald-400/15 to-teal-400/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '3s'}}></div>
       </div>
       
-      <Header />
+      {/* Enhanced Header matching Dashboard2 */}
+      <div className="relative z-50 bg-gradient-to-r from-emerald-600/95 via-teal-600/95 to-cyan-600/95 backdrop-blur-xl border-b border-emerald-200/50 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo & Navigation */}
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-white rounded-2xl blur-md opacity-30"></div>
+                  <div className="relative bg-white/20 backdrop-blur-sm p-3 rounded-2xl border border-white/30 shadow-lg">
+                    <TreePine className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">
+                    شجرة العائلة
+                  </h1>
+                  <p className="text-emerald-100 text-sm">إنشاء شجرة جديدة</p>
+                </div>
+              </div>
+              
+              <div className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20 text-white">
+                  لوحة التحكم
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20 text-white">
+                  الأشجار
+                </Button>
+              </div>
+            </div>
+            
+            {/* Back Button */}
+            <Button
+              onClick={() => navigate("/dashboard2")}
+              variant="outline"
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm"
+            >
+              <ArrowRight className="mr-2 h-4 w-4" />
+              العودة للوحة التحكم
+            </Button>
+          </div>
+        </div>
+      </div>
       
-      <div className="pt-20 relative z-10">
+      <div className="pt-8 relative z-10">
         {/* Enhanced Steps Indicator */}
         <div className="max-w-4xl mx-auto px-4 pt-8 pb-6">
           <div className="relative flex items-center justify-center space-x-8 rtl:space-x-reverse">
@@ -210,7 +278,7 @@ const FamilyCreator = () => {
             </Card>
           )}
 
-          {/* Step 2: First Member */}
+          {/* Step 2: First Member with Full Details */}
           {currentStep === 2 && (
             <Card className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-emerald-200 shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5"></div>
@@ -224,6 +292,29 @@ const FamilyCreator = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6 relative">
+                {/* Profile Image */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="relative">
+                    <Avatar className="w-24 h-24 border-4 border-emerald-200">
+                      <AvatarImage src={firstMember.croppedImage || undefined} />
+                      <AvatarFallback className="bg-emerald-100 text-emerald-600 text-2xl font-bold">
+                        {firstMember.name ? firstMember.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'صورة'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <label htmlFor="image-upload" className="absolute bottom-0 right-0 bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-full cursor-pointer shadow-lg transition-all">
+                      <Camera className="h-4 w-4" />
+                    </label>
+                  </div>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <Label className="text-sm text-emerald-600">اضغط على الكاميرا لإضافة صورة</Label>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="memberName" className="text-right flex flex-row-reverse items-center gap-2">
@@ -254,6 +345,94 @@ const FamilyCreator = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+
+                {/* Birth Date and Status */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
+                      <Baby className="h-4 w-4 text-emerald-600" />
+                      تاريخ الميلاد
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn("w-full justify-start text-right font-normal", !firstMember.birthDate && "text-muted-foreground")}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {firstMember.birthDate ? format(firstMember.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={firstMember.birthDate}
+                          onSelect={(date) => setFirstMember({...firstMember, birthDate: date})}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
+                      <Heart className="h-4 w-4 text-emerald-600" />
+                      الحالة
+                    </Label>
+                    <Select value={firstMember.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFirstMember({...firstMember, isAlive: value === "alive"})}>
+                      <SelectTrigger className="text-right">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="text-right">
+                        <SelectItem value="alive" className="text-right justify-end">على قيد الحياة</SelectItem>
+                        <SelectItem value="deceased" className="text-right justify-end">متوفى</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Death Date if deceased */}
+                {!firstMember.isAlive && (
+                  <div className="space-y-2">
+                    <Label className="text-right flex flex-row-reverse items-center gap-2">
+                      <Skull className="h-4 w-4 text-gray-600" />
+                      تاريخ الوفاة
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn("w-full justify-start text-right font-normal", !firstMember.deathDate && "text-muted-foreground")}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {firstMember.deathDate ? format(firstMember.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={firstMember.deathDate}
+                          onSelect={(date) => setFirstMember({...firstMember, deathDate: date})}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                )}
+
+                {/* Bio */}
+                <div className="space-y-2">
+                  <Label className="text-right flex flex-row-reverse items-center gap-2">
+                    <Heart className="h-4 w-4 text-emerald-600" />
+                    نبذة عن الشخص (اختياري)
+                  </Label>
+                  <Textarea
+                    value={firstMember.bio}
+                    onChange={(e) => setFirstMember({...firstMember, bio: e.target.value})}
+                    placeholder="اكتب نبذة مختصرة عن هذا الشخص..."
+                    className="text-right min-h-[80px] resize-none"
+                  />
                 </div>
 
                 {firstMember.gender && (
