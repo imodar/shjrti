@@ -33,6 +33,43 @@ const currentPlan = {
   membersLimit: 10, // Free plan allows 10 members
   features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"]
 };
+
+// Available plans data
+const availablePlans = [
+  {
+    name: "أساسية",
+    type: "basic",
+    price: "$9.99",
+    priceArabic: "٩.٩٩ دولار",
+    period: "/شهر",
+    treesLimit: 2,
+    membersLimit: 50,
+    features: ["شجرتان عائليتان", "50 فرد", "مشاركة محدودة", "دعم بريد إلكتروني"],
+    popular: false
+  },
+  {
+    name: "احترافية",
+    type: "premium", 
+    price: "$19.99",
+    priceArabic: "١٩.٩٩ دولار",
+    period: "/شهر",
+    treesLimit: 10,
+    membersLimit: 200,
+    features: ["10 أشجار عائلية", "200 فرد", "مشاركة متقدمة", "تصدير البيانات", "دعم مباشر"],
+    popular: true
+  },
+  {
+    name: "مؤسسية",
+    type: "enterprise",
+    price: "$49.99", 
+    priceArabic: "٤٩.٩٩ دولار",
+    period: "/شهر",
+    treesLimit: -1, // Unlimited
+    membersLimit: -1, // Unlimited
+    features: ["أشجار غير محدودة", "أفراد غير محدودين", "مميزات متقدمة", "دعم أولوية", "تدريب مخصص"],
+    popular: false
+  }
+];
 // Mock notifications data
 const mockNotifications = [
   {
@@ -707,23 +744,24 @@ const Dashboard2 = () => {
 
       {/* Upgrade Modal */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-card to-card/90 backdrop-blur-sm border-border/50">
+        <DialogContent className="sm:max-w-4xl bg-gradient-to-br from-card to-card/90 backdrop-blur-sm border-border/50 max-h-[90vh] overflow-y-auto">
           <DialogHeader className="text-center space-y-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto shadow-lg">
               <Crown className="h-8 w-8 text-primary-foreground" />
             </div>
             <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              ترقية مطلوبة
+              ترقية الباقة
             </DialogTitle>
             <DialogDescription className="text-center">
-              لقد وصلت إلى الحد الأقصى للأشجار في الباقة المجانية. قم بترقية باقتك للحصول على أشجار غير محدودة وميزات متقدمة.
+              لقد وصلت إلى الحد الأقصى في باقتك الحالية. اختر الباقة التي تناسب احتياجاتك.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Current Usage */}
             <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">الاستخدام الحالي</span>
+                <span className="text-sm font-medium">الاستخدام الحالي للأشجار</span>
                 <span className="text-sm text-muted-foreground">{trees.length}/{currentPlan.treesLimit}</span>
               </div>
               <Progress 
@@ -732,36 +770,57 @@ const Dashboard2 = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <h4 className="font-semibold text-foreground">مميزات الباقة الاحترافية:</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  أشجار عائلية غير محدودة
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  أفراد غير محدودين
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  مشاركة متقدمة
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  تصدير البيانات
-                </li>
-              </ul>
+            {/* Plans Grid */}
+            <div className="grid md:grid-cols-3 gap-4">
+              {availablePlans.map((plan, index) => (
+                <Card key={plan.type} className={`relative ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                        الأكثر شعبية
+                      </span>
+                    </div>
+                  )}
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-lg">{plan.name}</CardTitle>
+                    <div className="text-2xl font-bold text-primary">
+                      {plan.priceArabic}
+                      <span className="text-sm font-normal text-muted-foreground">{plan.period}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ul className="space-y-2 text-sm">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      className={`w-full ${plan.popular ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' : ''}`}
+                      variant={plan.popular ? 'default' : 'outline'}
+                      onClick={() => {
+                        // Navigate to payment page
+                        setShowUpgradeDialog(false);
+                        toast({
+                          title: "التوجه للدفع",
+                          description: `سيتم توجيهك لصفحة الدفع للباقة ${plan.name}`
+                        });
+                      }}
+                    >
+                      {plan.popular && <Crown className="mr-2 h-4 w-4" />}
+                      اختيار هذه الباقة
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
           
           <DialogFooter className="flex gap-2 mt-6">
             <Button variant="outline" onClick={() => setShowUpgradeDialog(false)} className="flex-1">
               إلغاء
-            </Button>
-            <Button className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
-              <Crown className="mr-2 h-4 w-4" />
-              ترقية الآن
             </Button>
           </DialogFooter>
         </DialogContent>
