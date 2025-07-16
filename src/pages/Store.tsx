@@ -472,54 +472,135 @@ export default function Store() {
                         <p className="text-muted-foreground">حدد النمط الذي يناسب ذوقك</p>
                       </div>
                       
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {designTemplates.map((template) => (
                           <div
                             key={template.id}
                             onClick={() => setSelectedDesign(template.id)}
-                            className={`relative cursor-pointer group transition-all duration-300 ${
+                            className={`relative cursor-pointer group transition-all duration-500 transform ${
                               selectedDesign === template.id 
-                                ? 'ring-2 ring-primary shadow-xl scale-105' 
-                                : 'hover:shadow-lg hover:scale-102'
+                                ? 'scale-105 z-10' 
+                                : 'hover:scale-102 hover:-translate-y-1'
                             }`}
                           >
-                            <div className={`p-6 rounded-xl border-2 transition-all duration-300 ${
+                            {/* Selection Glow Effect */}
+                            {selectedDesign === template.id && (
+                              <div className="absolute -inset-2 bg-gradient-to-r from-primary/30 via-accent/30 to-secondary/30 rounded-2xl blur-xl opacity-75 animate-pulse" />
+                            )}
+                            
+                            {/* Main Card */}
+                            <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 backdrop-blur-sm ${
                               selectedDesign === template.id
-                                ? 'border-primary bg-gradient-to-br from-primary/10 via-primary/5 to-accent/5'
-                                : 'border-border/60 bg-gradient-to-br from-card to-card/80 hover:border-primary/50'
+                                ? 'border-primary/60 bg-gradient-to-br from-primary/15 via-accent/10 to-secondary/5 shadow-2xl'
+                                : 'border-border/40 bg-gradient-to-br from-card/90 via-card/70 to-accent/5 hover:border-primary/40 hover:shadow-xl'
                             }`}>
-                              <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                  <span className="text-3xl">{template.image}</span>
-                                  <div>
-                                    <h3 className="font-semibold text-foreground">{template.name}</h3>
-                                    {template.isPremium && (
-                                      <Badge variant="secondary" className="text-xs mt-1">
-                                        <Crown className="h-3 w-3 mr-1" />
-                                        مميز
-                                      </Badge>
+                              
+                              {/* Premium Badge Ribbon */}
+                              {template.isPremium && (
+                                <div className="absolute -top-1 -right-1 z-20">
+                                  <div className="bg-gradient-to-r from-accent via-secondary to-primary px-3 py-1 rounded-bl-xl rounded-tr-2xl shadow-lg">
+                                    <div className="flex items-center gap-1">
+                                      <Crown className="h-3 w-3 text-white" />
+                                      <span className="text-xs font-bold text-white">مميز</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Top Section - Icon & Visual */}
+                              <div className="p-6 pb-4">
+                                <div className="flex items-center justify-center mb-4">
+                                  <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                                    selectedDesign === template.id
+                                      ? 'bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 shadow-lg transform rotate-3'
+                                      : 'bg-gradient-to-br from-muted/50 to-accent/10 group-hover:shadow-md group-hover:-rotate-1'
+                                  }`}>
+                                    {/* Background Pattern */}
+                                    <div className="absolute inset-0 rounded-2xl opacity-20">
+                                      <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl" />
+                                    </div>
+                                    
+                                    {/* Template Icon */}
+                                    <span className={`relative text-4xl transition-all duration-500 ${
+                                      selectedDesign === template.id ? 'animate-bounce' : 'group-hover:scale-110'
+                                    }`}>
+                                      {template.image}
+                                    </span>
+                                    
+                                    {/* Selection Indicator */}
+                                    {selectedDesign === template.id && (
+                                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                        <Check className="h-4 w-4 text-white" />
+                                      </div>
                                     )}
                                   </div>
                                 </div>
-                                {selectedDesign === template.id && (
-                                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                                    <Check className="h-4 w-4 text-white" />
+                                
+                                {/* Template Name */}
+                                <h3 className={`text-center text-lg font-bold mb-2 transition-colors duration-300 ${
+                                  selectedDesign === template.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
+                                }`}>
+                                  {template.name}
+                                </h3>
+                                
+                                {/* Features List */}
+                                <div className="space-y-2 mb-4">
+                                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                                    <span>تصميم احترافي</span>
                                   </div>
-                                )}
+                                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                                    <span>جودة طباعة عالية</span>
+                                  </div>
+                                  {template.isPremium && (
+                                    <div className="flex items-center justify-center gap-2 text-xs text-accent font-medium">
+                                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                                      <span>ميزات إضافية مميزة</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                               
-                              <div className="flex items-center justify-between">
-                                <span className="text-sm text-muted-foreground">
-                                  {template.price > 0 ? `+${template.price} ريال` : 'مجاني'}
-                                </span>
-                                <div className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
-                                  selectedDesign === template.id 
-                                    ? 'border-primary bg-primary' 
-                                    : 'border-muted-foreground/30'
-                                }`} />
+                              {/* Bottom Section - Price & Selection */}
+                              <div className={`px-6 py-4 border-t transition-all duration-300 ${
+                                selectedDesign === template.id
+                                  ? 'border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5'
+                                  : 'border-border/20 bg-gradient-to-r from-muted/5 to-accent/5'
+                              }`}>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className={`px-3 py-1 rounded-full text-sm font-bold transition-all duration-300 ${
+                                      template.price > 0
+                                        ? selectedDesign === template.id
+                                          ? 'bg-accent/20 text-accent'
+                                          : 'bg-muted/50 text-muted-foreground group-hover:bg-accent/10'
+                                        : selectedDesign === template.id
+                                          ? 'bg-green-100 text-green-700'
+                                          : 'bg-green-50 text-green-600 group-hover:bg-green-100'
+                                    }`}>
+                                      {template.price > 0 ? `+${template.price} ريال` : 'مجاني'}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Selection Radio */}
+                                  <div className={`relative w-5 h-5 rounded-full border-2 transition-all duration-300 ${
+                                    selectedDesign === template.id 
+                                      ? 'border-primary bg-primary shadow-lg' 
+                                      : 'border-muted-foreground/30 group-hover:border-primary/50'
+                                  }`}>
+                                    {selectedDesign === template.id && (
+                                      <div className="absolute inset-1 bg-white rounded-full animate-scale-in" />
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Hover Effect Overlay */}
+                              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-2xl" />
                               </div>
                             </div>
-                            
                           </div>
                         ))}
                       </div>
