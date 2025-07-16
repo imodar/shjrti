@@ -873,7 +873,7 @@ const FamilyBuilder = () => {
                           onSelect={(date) => setFormData({...formData, birthDate: date})}
                           initialFocus
                           disabled={(date) => date > new Date()}
-                          className="pointer-events-auto !space-y-0 [&_.rdp-caption_start]:space-y-0 [&_.rdp-caption_end]:space-y-0"
+                          className="pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
@@ -922,7 +922,7 @@ const FamilyBuilder = () => {
                           onSelect={(date) => setFormData({...formData, deathDate: date})}
                           initialFocus
                           disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
-                          className="pointer-events-auto !space-y-0 [&_.rdp-caption_start]:space-y-0 [&_.rdp-caption_end]:space-y-0"
+                          className="pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
