@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { 
   Users, 
   Plus, 
@@ -23,15 +25,19 @@ import {
   Calendar,
   MapPin,
   Phone,
-  Mail
+  Mail,
+  CalendarIcon
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { ar } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface FamilyMember {
   id: string;
   name: string;
   relation: string;
-  birthDate?: string;
+  birthDate?: Date | null;
   location?: string;
   phone?: string;
   email?: string;
@@ -50,7 +56,7 @@ const FamilyBuilder2 = () => {
       id: "1",
       name: "أحمد محمد",
       relation: "الأب",
-      birthDate: "1965-03-15",
+      birthDate: new Date("1965-03-15"),
       location: "الرياض",
       phone: "+966501234567",
       email: "ahmed@example.com",
@@ -60,7 +66,7 @@ const FamilyBuilder2 = () => {
       id: "2", 
       name: "فاطمة علي",
       relation: "الأم",
-      birthDate: "1970-07-22",
+      birthDate: new Date("1970-07-22"),
       location: "الرياض", 
       generation: 0
     },
@@ -68,7 +74,7 @@ const FamilyBuilder2 = () => {
       id: "3",
       name: "محمد أحمد",
       relation: "الابن",
-      birthDate: "1995-11-10",
+      birthDate: new Date("1995-11-10"),
       location: "جدة",
       generation: 1
     }
@@ -355,7 +361,7 @@ const FamilyBuilder2 = () => {
                       {member.birthDate && (
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-2" />
-                          {member.birthDate}
+                          {format(member.birthDate, "PPP", { locale: ar })}
                         </div>
                       )}
                       {member.location && (
@@ -428,13 +434,27 @@ const FamilyBuilder2 = () => {
                       
                       <div>
                         <Label htmlFor="birthDate" className="text-base font-medium">تاريخ الميلاد</Label>
-                        <Input
-                          id="birthDate"
-                          type="date"
-                          value={selectedMember.birthDate || ''}
-                          onChange={(e) => setSelectedMember({...selectedMember, birthDate: e.target.value})}
-                          className="mt-2 h-12 rounded-xl border-2"
-                        />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn("w-full justify-start text-right font-normal mt-2 h-12 rounded-xl border-2", !selectedMember.birthDate && "text-muted-foreground")}
+                            >
+                              <CalendarIcon className="ml-2 h-4 w-4" />
+                              {selectedMember.birthDate ? format(selectedMember.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarComponent
+                              mode="single"
+                              selected={selectedMember.birthDate}
+                              onSelect={(date) => setSelectedMember({...selectedMember, birthDate: date})}
+                              initialFocus
+                              className="pointer-events-auto"
+                              disabled={(date) => date > new Date()}
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
                     </div>
                     

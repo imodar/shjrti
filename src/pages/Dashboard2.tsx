@@ -19,8 +19,14 @@ import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
 import Footer from "@/components/Footer";
 
-// Mock data
-const mockTrees: any[] = [];
+// Get trees from localStorage
+const getTreesFromStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem('familyTrees') || '[]');
+  } catch {
+    return [];
+  }
+};
 
 // Mock user plan data
 const currentPlan = {
@@ -107,7 +113,7 @@ const mockNotifications = [
 ];
 
 const Dashboard2 = () => {
-  const [trees, setTrees] = useState(mockTrees);
+  const [trees, setTrees] = useState(getTreesFromStorage());
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
@@ -193,7 +199,9 @@ const Dashboard2 = () => {
   };
   const confirmDeleteTree = () => {
     if (treeToDelete && deleteConfirmText.toLowerCase() === "حذف") {
-      setTrees(trees.filter(tree => tree.id !== treeToDelete));
+      const updatedTrees = trees.filter(tree => tree.id !== treeToDelete);
+      setTrees(updatedTrees);
+      localStorage.setItem('familyTrees', JSON.stringify(updatedTrees));
       setShowDeleteDialog(false);
       setTreeToDelete(null);
       setDeleteConfirmText("");

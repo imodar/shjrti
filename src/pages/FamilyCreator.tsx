@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,19 +9,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { TreePine, ArrowRight, ArrowLeft, User, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, Camera, Baby, Skull } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, User, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, Camera, Baby, Skull, Bell, Settings, LogOut } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Footer from "@/components/Footer";
+import Cropper from "react-easy-crop";
 
 const FamilyCreator = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [cropImage, setCropImage] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  
   const [treeData, setTreeData] = useState({
     name: "",
     description: ""
@@ -68,15 +76,38 @@ const FamilyCreator = () => {
       return;
     }
 
-    // Save family data to localStorage or state management
+    // Save family data and add to existing trees list
     const familyData = {
       tree: treeData,
       firstMember: firstMember,
       id: Date.now(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      membersCount: 1,
+      generations: 1
     };
     
+    // Get existing trees from localStorage
+    const existingTrees = JSON.parse(localStorage.getItem('familyTrees') || '[]');
+    
+    // Add new tree to the list
+    const newTreeForList = {
+      id: familyData.id,
+      name: treeData.name,
+      description: treeData.description,
+      membersCount: 1,
+      generations: 1,
+      lastUpdated: new Date().toISOString(),
+      createdAt: familyData.createdAt,
+      status: "نشط",
+      privacy: "خاص",
+      founderName: firstMember.name,
+      founderImage: firstMember.croppedImage
+    };
+    
+    existingTrees.push(newTreeForList);
+    localStorage.setItem('familyTrees', JSON.stringify(existingTrees));
     localStorage.setItem('newFamilyData', JSON.stringify(familyData));
+    
     setShowSuccessModal(true);
   };
 
@@ -94,19 +125,86 @@ const FamilyCreator = () => {
     });
   };
 
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', error => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) throw new Error('No 2d context');
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const reader = new FileReader();
+          reader.addEventListener('load', () => resolve(reader.result as string));
+          reader.readAsDataURL(blob);
+        }
+      }, 'image/jpeg');
+    });
+  };
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setFirstMember({...firstMember, image: file});
       
-      // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {
-          setFirstMember(prev => ({...prev, croppedImage: e.target!.result as string}));
+          setCropImage(e.target.result as string);
+          setShowCropModal(true);
         }
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropSave = async () => {
+    if (cropImage && croppedAreaPixels) {
+      try {
+        const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
+        setFirstMember(prev => ({...prev, croppedImage}));
+        setShowCropModal(false);
+        setCropImage(null);
+        toast({
+          title: "تم حفظ الصورة",
+          description: "تم قص الصورة وحفظها بنجاح"
+        });
+      } catch (error) {
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ أثناء قص الصورة",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -123,49 +221,88 @@ const FamilyCreator = () => {
         <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-cyan-400/10 to-emerald-400/10 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
       </div>
       
-      {/* Enhanced Header matching Dashboard2 */}
-      <div className="relative z-50 bg-gradient-to-r from-emerald-600/95 via-teal-600/95 to-cyan-600/95 backdrop-blur-xl border-b border-emerald-200/50 shadow-xl">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      {/* Header matching Dashboard2 exactly */}
+      <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-gradient-to-r from-emerald-200/30 to-cyan-200/30 sticky top-0 z-50">
+        {/* Floating geometric shapes */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-2 left-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
+
+        <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            {/* Logo & Navigation */}
-            <div className="flex items-center gap-8">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-white rounded-2xl blur-md opacity-30"></div>
-                  <div className="relative bg-white/20 backdrop-blur-sm p-3 rounded-2xl border border-white/30 shadow-lg">
-                    <TreePine className="h-8 w-8 text-white" />
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">
-                    شجرة العائلة
-                  </h1>
-                  <p className="text-emerald-100 text-sm">إنشاء شجرة جديدة</p>
+            {/* Left side - Logo and Title */}
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                  <TreePine className="h-7 w-7 text-white" />
                 </div>
               </div>
               
-              <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20 text-white">
-                  لوحة التحكم
-                </Button>
-                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20 text-white">
-                  الأشجار
-                </Button>
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                  كينلاك - العائلة الرقمية
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <p className="text-muted-foreground font-medium">إنشاء شجرة عائلية جديدة</p>
+                </div>
               </div>
             </div>
             
-            {/* Back Button */}
-            <Button
-              onClick={() => navigate("/dashboard2")}
-              variant="outline"
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm"
-            >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              العودة للوحة التحكم
-            </Button>
+            {/* Right side - Actions and Profile */}
+            <div className="flex items-center gap-6">
+              {/* Navigation Pills */}
+              <div className="hidden md:flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-full p-1 border border-emerald-200/50 dark:border-emerald-700/50">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="rounded-full px-4 hover:bg-emerald-500/20"
+                  onClick={() => navigate("/dashboard2")}
+                >
+                  الرئيسية
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full px-4 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/30">
+                  إنشاء شجرة
+                </Button>
+              </div>
+
+              {/* User Profile */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
+                    <User className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">المستخدم</p>
+                      <p className="text-xs leading-none text-muted-foreground">user@example.com</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/dashboard2")}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>لوحة التحكم</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>الإعدادات</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>تسجيل الخروج</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
       
       <div className="pt-8 relative z-10">
         {/* Enhanced Steps Indicator */}
@@ -370,6 +507,8 @@ const FamilyCreator = () => {
                           selected={firstMember.birthDate}
                           onSelect={(date) => setFirstMember({...firstMember, birthDate: date})}
                           initialFocus
+                          className="pointer-events-auto"
+                          disabled={(date) => date > new Date()}
                         />
                       </PopoverContent>
                     </Popover>
@@ -415,6 +554,8 @@ const FamilyCreator = () => {
                           selected={firstMember.deathDate}
                           onSelect={(date) => setFirstMember({...firstMember, deathDate: date})}
                           initialFocus
+                          className="pointer-events-auto"
+                          disabled={(date) => date > new Date() || (firstMember.birthDate && date < firstMember.birthDate)}
                         />
                       </PopoverContent>
                     </Popover>
@@ -503,6 +644,68 @@ const FamilyCreator = () => {
             >
               <Plus className="mr-2 h-4 w-4" />
               إضافة أفراد آخرين
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Crop Modal */}
+      <Dialog open={showCropModal} onOpenChange={setShowCropModal}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>قص الصورة</DialogTitle>
+            <DialogDescription>
+              اضبط الصورة كما تريد وانقر على حفظ
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="relative h-96 w-full">
+            {cropImage && (
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                cropShape="round"
+                showGrid={false}
+              />
+            )}
+          </div>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="zoom">تكبير</Label>
+              <input
+                id="zoom"
+                type="range"
+                min="1"
+                max="3"
+                step="0.1"
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCropModal(false);
+                setCropImage(null);
+              }}
+            >
+              إلغاء
+            </Button>
+            <Button
+              onClick={handleCropSave}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              حفظ الصورة
             </Button>
           </DialogFooter>
         </DialogContent>
