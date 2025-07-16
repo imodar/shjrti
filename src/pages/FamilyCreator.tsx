@@ -18,15 +18,19 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Footer from "@/components/Footer";
 import Cropper from "react-easy-crop";
-
 const FamilyCreator = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0
+  });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [treeData, setTreeData] = useState({
@@ -44,7 +48,6 @@ const FamilyCreator = () => {
     image: null as File | null,
     croppedImage: null as string | null
   });
-
   const handleNextStep = () => {
     if (currentStep === 1) {
       if (!treeData.name.trim()) {
@@ -58,13 +61,11 @@ const FamilyCreator = () => {
       setCurrentStep(2);
     }
   };
-
   const handlePrevStep = () => {
     if (currentStep === 2) {
       setCurrentStep(1);
     }
   };
-
   const handleCreateFamily = () => {
     if (!firstMember.name.trim() || !firstMember.gender) {
       toast({
@@ -107,12 +108,10 @@ const FamilyCreator = () => {
     localStorage.setItem('newFamilyData', JSON.stringify(familyData));
     setShowSuccessModal(true);
   };
-
   const handleAddMoreMembers = () => {
     setShowSuccessModal(false);
     navigate("/family-builder?new=true");
   };
-
   const handleSkipTodashboard = () => {
     setShowSuccessModal(false);
     navigate("/dashboard2");
@@ -121,20 +120,16 @@ const FamilyCreator = () => {
       description: "تم إنشاء شجرة العائلة بنجاح، يمكنك إضافة أفراد آخرين لاحقاً"
     });
   };
-
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
-
-  const createImage = (url: string): Promise<HTMLImageElement> =>
-    new Promise((resolve, reject) => {
-      const image = new Image();
-      image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', error => reject(error));
-      image.setAttribute('crossOrigin', 'anonymous');
-      image.src = url;
-    });
-
+  const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', error => reject(error));
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.src = url;
+  });
   const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
@@ -153,11 +148,13 @@ const FamilyCreator = () => {
       }, 'image/jpeg');
     });
   };
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setFirstMember({ ...firstMember, image: file });
+      setFirstMember({
+        ...firstMember,
+        image: file
+      });
       const reader = new FileReader();
       reader.onload = e => {
         if (e.target?.result) {
@@ -168,12 +165,14 @@ const FamilyCreator = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleCropSave = async () => {
     if (cropImage && croppedAreaPixels) {
       try {
         const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
-        setFirstMember(prev => ({ ...prev, croppedImage }));
+        setFirstMember(prev => ({
+          ...prev,
+          croppedImage
+        }));
         setShowCropModal(false);
         setCropImage(null);
         toast({
@@ -189,14 +188,16 @@ const FamilyCreator = () => {
       }
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 dark:from-slate-950 dark:via-indigo-950 dark:to-purple-950 relative overflow-hidden">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 dark:from-slate-950 dark:via-indigo-950 dark:to-purple-950 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-cyan-400/15 to-teal-400/15 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse" style={{
+        animationDelay: '2s'
+      }}></div>
+        <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-cyan-400/15 to-teal-400/15 rounded-full blur-2xl animate-bounce" style={{
+        animationDelay: '1s'
+      }}></div>
       </div>
       
       {/* Header matching Dashboard2 exactly */}
@@ -204,8 +205,12 @@ const FamilyCreator = () => {
         {/* Floating geometric shapes */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-2 left-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
-          <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-6 left-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{
+          animationDelay: '1s'
+        }}></div>
+          <div className="absolute top-4 left-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{
+          animationDelay: '2s'
+        }}></div>
         </div>
 
         <div className="container mx-auto px-6 py-6">
@@ -252,11 +257,7 @@ const FamilyCreator = () => {
                     <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  className="w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" 
-                  align="end" 
-                  forceMount
-                >
+                <DropdownMenuContent className="w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">الإشعارات</p>
@@ -307,20 +308,14 @@ const FamilyCreator = () => {
           <div className="text-center relative">
             {/* Animated Title */}
             <div className="relative inline-block mb-8">
-              <h2 className="text-6xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-4 tracking-tight">
-                بناء العائلة
-              </h2>
+              <h2 className="text-6xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-4 tracking-tight">بناء شجرة العائلة</h2>
               <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 blur-2xl rounded-full"></div>
             </div>
             
             {/* Modern Steps Indicator */}
             <div className="flex items-center justify-center gap-8 mb-12">
               <div className={`relative flex items-center gap-4 ${currentStep >= 1 ? 'opacity-100' : 'opacity-40'}`}>
-                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${
-                  currentStep >= 1 
-                    ? 'bg-gradient-to-br from-purple-500 to-pink-600 shadow-xl shadow-purple-500/30 scale-110' 
-                    : 'bg-gray-200 dark:bg-gray-700'
-                }`}>
+                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${currentStep >= 1 ? 'bg-gradient-to-br from-purple-500 to-pink-600 shadow-xl shadow-purple-500/30 scale-110' : 'bg-gray-200 dark:bg-gray-700'}`}>
                   <TreePine className="h-8 w-8 text-white" />
                   {currentStep >= 1 && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-500 animate-ping opacity-20"></div>}
                 </div>
@@ -331,17 +326,11 @@ const FamilyCreator = () => {
               </div>
               
               <div className="w-20 h-1 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full relative overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 transition-transform duration-1000 ${
-                  currentStep >= 2 ? 'translate-x-0' : '-translate-x-full'
-                }`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 transition-transform duration-1000 ${currentStep >= 2 ? 'translate-x-0' : '-translate-x-full'}`}></div>
               </div>
               
               <div className={`relative flex items-center gap-4 ${currentStep >= 2 ? 'opacity-100' : 'opacity-40'}`}>
-                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${
-                  currentStep >= 2 
-                    ? 'bg-gradient-to-br from-pink-500 to-rose-600 shadow-xl shadow-pink-500/30 scale-110' 
-                    : 'bg-gray-200 dark:bg-gray-700'
-                }`}>
+                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-700 ${currentStep >= 2 ? 'bg-gradient-to-br from-pink-500 to-rose-600 shadow-xl shadow-pink-500/30 scale-110' : 'bg-gray-200 dark:bg-gray-700'}`}>
                   <UserPlus className="h-8 w-8 text-white" />
                   {currentStep >= 2 && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 animate-ping opacity-20"></div>}
                 </div>
@@ -357,12 +346,13 @@ const FamilyCreator = () => {
         {/* Main Content with Modern Layout */}
         <div className="max-w-6xl mx-auto px-4">
           {/* Step 1: Tree Information */}
-          {currentStep === 1 && (
-            <div className="relative">
+          {currentStep === 1 && <div className="relative">
               {/* Background Art */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-2xl animate-pulse"></div>
-                <div className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-tr from-rose-400/15 to-purple-400/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+                <div className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-tr from-rose-400/15 to-purple-400/15 rounded-full blur-3xl animate-pulse" style={{
+              animationDelay: '2s'
+            }}></div>
               </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -385,31 +375,23 @@ const FamilyCreator = () => {
                           <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                             🌳 اسم العائلة
                           </Label>
-                          <Input
-                            value={treeData.name}
-                            onChange={e => setTreeData({ ...treeData, name: e.target.value })}
-                            placeholder="مثال: عائلة الأحمد"
-                            className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner focus:shadow-lg transition-all"
-                          />
+                          <Input value={treeData.name} onChange={e => setTreeData({
+                        ...treeData,
+                        name: e.target.value
+                      })} placeholder="مثال: عائلة الأحمد" className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner focus:shadow-lg transition-all" />
                         </div>
 
                         <div>
                           <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                             📝 وصف العائلة (اختياري)
                           </Label>
-                          <Textarea
-                            value={treeData.description}
-                            onChange={e => setTreeData({ ...treeData, description: e.target.value })}
-                            placeholder="اكتب وصفاً موجزاً عن تاريخ العائلة..."
-                            className="min-h-[120px] border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner resize-none text-lg"
-                          />
+                          <Textarea value={treeData.description} onChange={e => setTreeData({
+                        ...treeData,
+                        description: e.target.value
+                      })} placeholder="اكتب وصفاً موجزاً عن تاريخ العائلة..." className="min-h-[120px] border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner resize-none text-lg" />
                         </div>
 
-                        <Button
-                          onClick={handleNextStep}
-                          disabled={!treeData.name.trim()}
-                          className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
-                        >
+                        <Button onClick={handleNextStep} disabled={!treeData.name.trim()} className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
                           🚀 المتابعة للخطوة التالية
                         </Button>
                       </div>
@@ -434,16 +416,16 @@ const FamilyCreator = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* Step 2: First Member */}
-          {currentStep === 2 && (
-            <div className="relative">
+          {currentStep === 2 && <div className="relative">
               {/* Background Art */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-10 right-10 w-40 h-40 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-2xl animate-pulse"></div>
-                <div className="absolute bottom-10 left-10 w-48 h-48 bg-gradient-to-tr from-pink-400/15 to-rose-400/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute bottom-10 left-10 w-48 h-48 bg-gradient-to-tr from-pink-400/15 to-rose-400/15 rounded-full blur-3xl animate-pulse" style={{
+              animationDelay: '1s'
+            }}></div>
               </div>
 
               <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-0 shadow-2xl shadow-indigo-500/10 rounded-3xl overflow-hidden">
@@ -494,12 +476,10 @@ const FamilyCreator = () => {
                           <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                             👤 الاسم الكامل
                           </Label>
-                          <Input
-                            value={firstMember.name}
-                            onChange={e => setFirstMember({ ...firstMember, name: e.target.value })}
-                            placeholder="أدخل الاسم الكامل"
-                            className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner focus:shadow-lg transition-all"
-                          />
+                          <Input value={firstMember.name} onChange={e => setFirstMember({
+                        ...firstMember,
+                        name: e.target.value
+                      })} placeholder="أدخل الاسم الكامل" className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner focus:shadow-lg transition-all" />
                         </div>
 
                         {/* Gender */}
@@ -507,7 +487,10 @@ const FamilyCreator = () => {
                           <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                             🚻 الجنس
                           </Label>
-                          <Select value={firstMember.gender} onValueChange={value => setFirstMember({ ...firstMember, gender: value })}>
+                          <Select value={firstMember.gender} onValueChange={value => setFirstMember({
+                        ...firstMember,
+                        gender: value
+                      })}>
                             <SelectTrigger className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner">
                               <SelectValue placeholder="اختر الجنس" />
                             </SelectTrigger>
@@ -529,26 +512,18 @@ const FamilyCreator = () => {
                           </Label>
                           <Popover>
                             <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full h-14 justify-start text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner hover:shadow-lg",
-                                  !firstMember.birthDate && "text-muted-foreground"
-                                )}
-                              >
+                              <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner hover:shadow-lg", !firstMember.birthDate && "text-muted-foreground")}>
                                 <CalendarIcon className="ml-2 h-5 w-5" />
-                                {firstMember.birthDate ? format(firstMember.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                                {firstMember.birthDate ? format(firstMember.birthDate, "PPP", {
+                              locale: ar
+                            }) : "اختر التاريخ"}
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                              <Calendar
-                                mode="single"
-                                selected={firstMember.birthDate}
-                                onSelect={date => setFirstMember({ ...firstMember, birthDate: date })}
-                                initialFocus
-                                className="pointer-events-auto"
-                                disabled={date => date > new Date()}
-                              />
+                              <Calendar mode="single" selected={firstMember.birthDate} onSelect={date => setFirstMember({
+                            ...firstMember,
+                            birthDate: date
+                          })} initialFocus className="pointer-events-auto" disabled={date => date > new Date()} />
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -558,7 +533,10 @@ const FamilyCreator = () => {
                           <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                             💗 الحالة
                           </Label>
-                          <Select value={firstMember.isAlive ? "alive" : "deceased"} onValueChange={value => setFirstMember({ ...firstMember, isAlive: value === "alive" })}>
+                          <Select value={firstMember.isAlive ? "alive" : "deceased"} onValueChange={value => setFirstMember({
+                        ...firstMember,
+                        isAlive: value === "alive"
+                      })}>
                             <SelectTrigger className="h-14 text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner">
                               <SelectValue />
                             </SelectTrigger>
@@ -574,67 +552,47 @@ const FamilyCreator = () => {
                         </div>
 
                         {/* Death Date */}
-                        {!firstMember.isAlive && (
-                          <div>
+                        {!firstMember.isAlive && <div>
                             <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                               🕊️ تاريخ الوفاة
                             </Label>
                             <Popover>
                               <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-full h-14 justify-start text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner",
-                                    !firstMember.deathDate && "text-muted-foreground"
-                                  )}
-                                >
+                                <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner", !firstMember.deathDate && "text-muted-foreground")}>
                                   <CalendarIcon className="ml-2 h-5 w-5" />
-                                  {firstMember.deathDate ? format(firstMember.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                                  {firstMember.deathDate ? format(firstMember.deathDate, "PPP", {
+                              locale: ar
+                            }) : "اختر التاريخ"}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                                <Calendar
-                                  mode="single"
-                                  selected={firstMember.deathDate}
-                                  onSelect={date => setFirstMember({ ...firstMember, deathDate: date })}
-                                  initialFocus
-                                  className="pointer-events-auto"
-                                  disabled={date => date > new Date() || (firstMember.birthDate && date < firstMember.birthDate)}
-                                />
+                                <Calendar mode="single" selected={firstMember.deathDate} onSelect={date => setFirstMember({
+                            ...firstMember,
+                            deathDate: date
+                          })} initialFocus className="pointer-events-auto" disabled={date => date > new Date() || firstMember.birthDate && date < firstMember.birthDate} />
                               </PopoverContent>
                             </Popover>
-                          </div>
-                        )}
+                          </div>}
 
                         {/* Bio */}
                         <div className="md:col-span-2">
                           <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 block">
                             📝 نبذة عن الشخص (اختياري)
                           </Label>
-                          <Textarea
-                            value={firstMember.bio}
-                            onChange={e => setFirstMember({ ...firstMember, bio: e.target.value })}
-                            placeholder="اكتب نبذة مختصرة عن هذا الشخص..."
-                            className="min-h-[100px] border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner resize-none text-lg"
-                          />
+                          <Textarea value={firstMember.bio} onChange={e => setFirstMember({
+                        ...firstMember,
+                        bio: e.target.value
+                      })} placeholder="اكتب نبذة مختصرة عن هذا الشخص..." className="min-h-[100px] border-0 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-inner resize-none text-lg" />
                         </div>
                       </div>
 
                       {/* Action Buttons */}
                       <div className="flex justify-between mt-12">
-                        <Button
-                          onClick={handlePrevStep}
-                          variant="outline"
-                          className="h-14 px-8 text-lg border-2 border-gray-200 hover:border-gray-300 rounded-xl transition-all"
-                        >
+                        <Button onClick={handlePrevStep} variant="outline" className="h-14 px-8 text-lg border-2 border-gray-200 hover:border-gray-300 rounded-xl transition-all">
                           ← العودة للخلف
                         </Button>
 
-                        <Button
-                          onClick={handleCreateFamily}
-                          disabled={!firstMember.name.trim() || !firstMember.gender}
-                          className="h-14 px-12 text-lg font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl disabled:opacity-50"
-                        >
+                        <Button onClick={handleCreateFamily} disabled={!firstMember.name.trim() || !firstMember.gender} className="h-14 px-12 text-lg font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl disabled:opacity-50">
                           🎉 إنشاء الشجرة
                         </Button>
                       </div>
@@ -642,8 +600,7 @@ const FamilyCreator = () => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          )}
+            </div>}
         </div>
       </div>
 
@@ -685,45 +642,21 @@ const FamilyCreator = () => {
           </DialogHeader>
           
           <div className="relative h-96 w-full">
-            {cropImage && (
-              <Cropper
-                image={cropImage}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-                cropShape="round"
-                showGrid={false}
-              />
-            )}
+            {cropImage && <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="round" showGrid={false} />}
           </div>
           
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="zoom">تكبير</Label>
-              <input
-                id="zoom"
-                type="range"
-                min="1"
-                max="3"
-                step="0.1"
-                value={zoom}
-                onChange={e => setZoom(Number(e.target.value))}
-                className="w-full"
-              />
+              <input id="zoom" type="range" min="1" max="3" step="0.1" value={zoom} onChange={e => setZoom(Number(e.target.value))} className="w-full" />
             </div>
           </div>
           
           <DialogFooter className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowCropModal(false);
-                setCropImage(null);
-              }}
-            >
+            <Button variant="outline" onClick={() => {
+            setShowCropModal(false);
+            setCropImage(null);
+          }}>
               إلغاء
             </Button>
             <Button onClick={handleCropSave} className="bg-emerald-600 hover:bg-emerald-700">
@@ -734,8 +667,6 @@ const FamilyCreator = () => {
       </Dialog>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default FamilyCreator;
