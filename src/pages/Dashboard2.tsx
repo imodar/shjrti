@@ -798,18 +798,33 @@ const Dashboard2 = () => {
                       ))}
                     </ul>
                     <Button 
-                      className={`w-full mt-auto ${plan.popular ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' : ''}`}
-                      variant={plan.popular ? 'default' : 'outline'}
+                      className={`w-full mt-auto ${
+                        plan.type === currentPlan.type 
+                          ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                          : plan.popular 
+                            ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' 
+                            : ''
+                      }`}
+                      variant={plan.type === currentPlan.type ? 'secondary' : plan.popular ? 'default' : 'outline'}
+                      disabled={plan.type === currentPlan.type}
                       onClick={() => {
-                        setShowUpgradeDialog(false);
-                        toast({
-                          title: "تم اختيار الباقة",
-                          description: `تم اختيار الباقة ${plan.name}`
-                        });
+                        if (plan.type !== currentPlan.type) {
+                          setShowUpgradeDialog(false);
+                          toast({
+                            title: "تم اختيار الباقة",
+                            description: `تم اختيار الباقة ${plan.name}`
+                          });
+                        }
                       }}
                     >
-                      {plan.popular && <Crown className="mr-2 h-4 w-4" />}
-                      اختيار هذه الباقة
+                      {plan.type === currentPlan.type ? (
+                        "الباقة الحالية"
+                      ) : (
+                        <>
+                          {plan.popular && <Crown className="mr-2 h-4 w-4" />}
+                          اختيار هذه الباقة
+                        </>
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
