@@ -540,16 +540,16 @@ const FamilyBuilder = () => {
                                </Button>
                              </DropdownMenuTrigger>
                              <DropdownMenuContent align="start" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
-                               <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg">
-                                 <Edit className="ml-2 h-4 w-4 text-primary" />
+                               <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse">
+                                 <Edit className="mr-2 h-4 w-4 text-primary" />
                                  تعديل البيانات
                                </DropdownMenuItem>
                                <DropdownMenuSeparator />
                                <DropdownMenuItem 
                                  onClick={() => handleDeleteMember(member.id)}
-                                 className="text-destructive focus:text-destructive rounded-lg"
+                                 className="text-destructive focus:text-destructive rounded-lg flex-row-reverse"
                                >
-                                 <Trash2 className="ml-2 h-4 w-4" />
+                                 <Trash2 className="mr-2 h-4 w-4" />
                                  حذف من العائلة
                                </DropdownMenuItem>
                              </DropdownMenuContent>
