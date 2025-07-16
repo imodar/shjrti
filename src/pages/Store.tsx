@@ -626,28 +626,84 @@ export default function Store() {
                         {frameOptions.map((frame) => (
                           <div
                             key={frame.id}
-                            className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                            className={`group relative overflow-hidden rounded-2xl transition-all duration-500 cursor-pointer ${
                               selectedFrame === frame.id
-                                ? 'border-accent bg-gradient-to-r from-accent/10 to-secondary/5 shadow-lg'
-                                : 'border-border bg-gradient-to-r from-card to-card/80 hover:border-accent/50 hover:shadow-md'
+                                ? 'ring-2 ring-accent ring-offset-2 ring-offset-background shadow-2xl shadow-accent/25'
+                                : 'hover:shadow-xl hover:-translate-y-1'
                             }`}
                             onClick={() => setSelectedFrame(frame.id)}
                           >
-                            <div className="flex items-center gap-3">
-                              <RadioGroupItem 
-                                value={frame.id} 
-                                id={frame.id}
-                                className="border-accent text-accent"
-                              />
-                              <Label htmlFor={frame.id} className="font-medium cursor-pointer">
-                                {frame.name}
-                              </Label>
+                            {/* Background Gradient */}
+                            <div className={`absolute inset-0 transition-all duration-500 ${
+                              selectedFrame === frame.id
+                                ? 'bg-gradient-to-r from-accent/20 via-secondary/10 to-primary/15'
+                                : 'bg-gradient-to-r from-card via-card/95 to-card/90 group-hover:from-accent/5 group-hover:to-secondary/5'
+                            }`} />
+                            
+                            {/* Animated Border */}
+                            <div className={`absolute inset-0 rounded-2xl transition-all duration-500 ${
+                              selectedFrame === frame.id
+                                ? 'border-2 border-accent'
+                                : 'border border-border group-hover:border-accent/30'
+                            }`} />
+                            
+                            {/* Content */}
+                            <div className="relative p-6">
+                              <div className="flex items-center justify-between">
+                                {/* Left Side - Radio and Label */}
+                                <div className="flex items-center gap-4">
+                                  <RadioGroupItem 
+                                    value={frame.id} 
+                                    id={frame.id}
+                                    className={`transition-colors duration-300 ${
+                                      selectedFrame === frame.id ? 'border-accent text-accent' : 'border-muted-foreground'
+                                    }`}
+                                  />
+                                  
+                                  {/* Frame Icon */}
+                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                                    selectedFrame === frame.id
+                                      ? 'bg-accent shadow-lg'
+                                      : 'bg-muted group-hover:bg-accent/20'
+                                  }`}>
+                                    <Frame className={`h-5 w-5 transition-colors duration-300 ${
+                                      selectedFrame === frame.id ? 'text-white' : 'text-muted-foreground group-hover:text-accent'
+                                    }`} />
+                                  </div>
+                                  
+                                  <Label htmlFor={frame.id} className={`text-lg font-semibold cursor-pointer transition-colors duration-300 ${
+                                    selectedFrame === frame.id ? 'text-accent' : 'text-foreground group-hover:text-accent'
+                                  }`}>
+                                    {frame.name}
+                                  </Label>
+                                </div>
+                                
+                                {/* Right Side - Price and Check */}
+                                <div className="flex items-center gap-3">
+                                  <span className={`text-xl font-bold transition-colors duration-300 ${
+                                    selectedFrame === frame.id ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground'
+                                  }`}>
+                                    {frame.price > 0 ? `+${frame.price} ريال` : 'مجاني'}
+                                  </span>
+                                  
+                                  {selectedFrame === frame.id && (
+                                    <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center animate-scale-in shadow-lg">
+                                      <Check className="h-5 w-5 text-white" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <span className={`font-bold transition-colors ${
-                              selectedFrame === frame.id ? 'text-accent' : 'text-muted-foreground'
-                            }`}>
-                              {frame.price > 0 ? `+${frame.price} ريال` : 'مجاني'}
-                            </span>
+                            
+                            {/* Glow Effect */}
+                            {selectedFrame === frame.id && (
+                              <div className="absolute -inset-1 bg-gradient-to-r from-accent via-secondary to-primary rounded-2xl opacity-20 blur-lg animate-pulse" />
+                            )}
+                            
+                            {/* Hover Shimmer Effect */}
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                            </div>
                           </div>
                         ))}
                       </RadioGroup>
@@ -673,39 +729,86 @@ export default function Store() {
                         {sizeOptions.map((size) => (
                           <div
                             key={size.id}
-                            className={`relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                            className={`group relative overflow-hidden rounded-2xl transition-all duration-500 cursor-pointer ${
                               selectedSize === size.id
-                                ? 'border-secondary bg-gradient-to-br from-secondary/10 to-primary/5 shadow-lg scale-105'
-                                : 'border-border bg-gradient-to-br from-card to-card/80 hover:border-secondary/50 hover:shadow-md hover:scale-102'
+                                ? 'ring-2 ring-secondary ring-offset-2 ring-offset-background shadow-2xl shadow-secondary/25'
+                                : 'hover:shadow-xl hover:-translate-y-1'
                             }`}
                             onClick={() => setSelectedSize(size.id)}
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <RadioGroupItem 
-                                value={size.id} 
-                                id={size.id}
-                                className="border-secondary text-secondary"
-                              />
-                              {selectedSize === size.id && (
-                                <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
-                                  <Check className="h-4 w-4 text-white" />
+                            {/* Background Gradient */}
+                            <div className={`absolute inset-0 transition-all duration-500 ${
+                              selectedSize === size.id
+                                ? 'bg-gradient-to-br from-secondary/20 via-primary/10 to-accent/15'
+                                : 'bg-gradient-to-br from-card via-card/95 to-card/90 group-hover:from-primary/5 group-hover:to-secondary/5'
+                            }`} />
+                            
+                            {/* Animated Border */}
+                            <div className={`absolute inset-0 rounded-2xl transition-all duration-500 ${
+                              selectedSize === size.id
+                                ? 'border-2 border-secondary'
+                                : 'border border-border group-hover:border-primary/30'
+                            }`} />
+                            
+                            {/* Content */}
+                            <div className="relative p-6 space-y-4">
+                              {/* Header with Radio and Check */}
+                              <div className="flex items-center justify-between">
+                                <RadioGroupItem 
+                                  value={size.id} 
+                                  id={size.id}
+                                  className={`transition-colors duration-300 ${
+                                    selectedSize === size.id ? 'border-secondary text-secondary' : 'border-muted-foreground'
+                                  }`}
+                                />
+                                {selectedSize === size.id && (
+                                  <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center animate-scale-in shadow-lg">
+                                    <Check className="h-5 w-5 text-white" />
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Size Icon */}
+                              <div className="flex justify-center">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                                  selectedSize === size.id
+                                    ? 'bg-secondary shadow-lg'
+                                    : 'bg-muted group-hover:bg-primary/20'
+                                }`}>
+                                  <Ruler className={`h-6 w-6 transition-colors duration-300 ${
+                                    selectedSize === size.id ? 'text-white' : 'text-muted-foreground group-hover:text-primary'
+                                  }`} />
                                 </div>
-                              )}
+                              </div>
+                              
+                              {/* Title */}
+                              <div className="text-center">
+                                <Label htmlFor={size.id} className={`text-lg font-bold cursor-pointer transition-colors duration-300 ${
+                                  selectedSize === size.id ? 'text-secondary' : 'text-foreground group-hover:text-primary'
+                                }`}>
+                                  {size.name}
+                                </Label>
+                              </div>
+                              
+                              {/* Price */}
+                              <div className="text-center">
+                                <span className={`text-2xl font-bold transition-colors duration-300 ${
+                                  selectedSize === size.id ? 'text-secondary' : 'text-muted-foreground group-hover:text-foreground'
+                                }`}>
+                                  {size.price} ريال
+                                </span>
+                              </div>
                             </div>
                             
-                            <Label htmlFor={size.id} className="font-semibold cursor-pointer text-foreground mb-1">
-                              {size.name}
-                            </Label>
-                            
-                            <span className={`font-bold text-sm transition-colors ${
-                              selectedSize === size.id ? 'text-secondary' : 'text-muted-foreground'
-                            }`}>
-                              {size.price} ريال
-                            </span>
-                            
+                            {/* Glow Effect */}
                             {selectedSize === size.id && (
-                              <div className="absolute -inset-1 bg-gradient-to-r from-secondary via-primary to-secondary rounded-xl opacity-20 blur-lg" />
+                              <div className="absolute -inset-1 bg-gradient-to-r from-secondary via-primary to-accent rounded-2xl opacity-20 blur-lg animate-pulse" />
                             )}
+                            
+                            {/* Hover Shimmer Effect */}
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                            </div>
                           </div>
                         ))}
                       </RadioGroup>
