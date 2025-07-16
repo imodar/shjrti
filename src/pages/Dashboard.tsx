@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, TreePine, Plus, Edit, Trash2, TrendingUp, Calendar, Heart, Award, Target, Sparkles, User, CreditCard, FileText, LogOut, Settings, Share2, Copy, Check } from "lucide-react";
+import { Users, TreePine, Plus, Edit, Trash2, TrendingUp, Calendar, Heart, Award, Target, Sparkles, User, CreditCard, FileText, LogOut, Settings, Share2, Copy, Check, ShoppingCart } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import dashboardStatsImage from "@/assets/dashboard-stats.jpg";
@@ -89,6 +89,12 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <Link to="/store">
+                <Button variant="outline" className="gap-2">
+                  <ShoppingCart className="h-4 w-4" />
+                  متجر الطباعة
+                </Button>
+              </Link>
               <Link to="/">
                 <Button variant="outline">
                   العودة للرئيسية
@@ -110,10 +116,16 @@ export default function Dashboard() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/payments" className="w-full flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      طرق الدفع والاشتراكات
-                    </Link>
+              <Link to="/store" className="w-full flex items-center gap-2">
+                <ShoppingCart className="h-4 w-4" />
+                متجر الطباعة
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/payments" className="w-full flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                طرق الدفع والاشتراكات
+              </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>

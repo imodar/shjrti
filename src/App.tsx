@@ -20,6 +20,7 @@ import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import ViewTree from "./pages/ViewTree";
+import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/view-tree" element={<ViewTree />} />
+          <Route path="/store" element={<Store />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
