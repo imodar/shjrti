@@ -519,45 +519,38 @@ const FamilyBuilder = () => {
                   <Card key={member.id} className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
                      <CardContent className="p-0 relative overflow-hidden">
-                       {/* Animated Background Pattern */}
-                       <div className="absolute inset-0 opacity-5">
-                         <div className="absolute top-4 right-4 w-16 h-16 border-2 border-primary rounded-full animate-pulse"></div>
-                         <div className="absolute bottom-4 left-4 w-8 h-8 bg-accent/30 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-                         <div className="absolute top-1/2 left-1/2 w-12 h-12 border border-secondary rotate-45 animate-spin" style={{animationDuration: '8s'}}></div>
+                       {/* Simplified Background Pattern */}
+                       <div className="absolute inset-0 opacity-3">
+                         <div className="absolute top-2 right-2 w-8 h-8 border border-primary/20 rounded-full"></div>
+                         <div className="absolute bottom-2 left-2 w-4 h-4 bg-accent/20 rounded-full"></div>
                        </div>
 
-                       {/* Header Section with Avatar */}
-                       <div className="relative bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 p-6 pb-4">
-                         <div className="flex items-start justify-between">
-                           <div className="flex flex-col items-center gap-3">
-                             <div className="relative group">
-                               <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full opacity-20 group-hover:opacity-40 transition-opacity blur-sm"></div>
-                               <Avatar className="relative w-20 h-20 border-4 border-white/50 shadow-2xl">
+                       {/* Compact Header Section */}
+                       <div className="relative bg-gradient-to-br from-primary/8 via-accent/8 to-secondary/8 p-4">
+                         <div className="flex items-center justify-between">
+                           <div className="flex items-center gap-3">
+                             <div className="relative">
+                               <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
                                  <AvatarImage src={member.image || undefined} className="object-cover" />
-                                 <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-xl">
+                                 <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-sm">
                                    {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                                  </AvatarFallback>
                                </Avatar>
                              </div>
 
-                             {/* Name and Relation */}
-                             <div className="text-center">
-                               <h3 className="font-bold text-foreground text-xl leading-tight mb-1">{member.name}</h3>
-                               <div className="flex items-center justify-center gap-2">
-                                 <div className="text-3xl animate-bounce" style={{animationDuration: '2s'}}>
-                                   {getRelationIcon(member.relation)}
-                                 </div>
-                                 <Badge className={cn("text-sm font-medium px-3 py-1 rounded-full shadow-lg", getGenderColor(member.gender))}>
-                                   {getRelationshipOptions(member.gender).find(r => r.value === member.relation)?.label || member.relation}
-                                 </Badge>
-                               </div>
+                             {/* Name Only */}
+                             <div>
+                               <h3 className="font-bold text-foreground text-lg leading-tight">{member.name}</h3>
+                               <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded-md mt-1", getGenderColor(member.gender))}>
+                                 {member.gender === "male" ? "ذكر" : "أنثى"}
+                               </Badge>
                              </div>
                            </div>
 
                            {/* Actions Menu */}
                            <DropdownMenu>
                              <DropdownMenuTrigger asChild>
-                               <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 transition-all">
+                               <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
                                  <div className="flex flex-col gap-0.5">
                                    <div className="w-1 h-1 bg-current rounded-full"></div>
                                    <div className="w-1 h-1 bg-current rounded-full"></div>
@@ -583,58 +576,36 @@ const FamilyBuilder = () => {
                          </div>
                        </div>
 
-                       {/* Info Section */}
-                       <div className="p-6 pt-4 space-y-4">
-                         {/* Birth Date */}
+                       {/* Compact Info Section */}
+                       <div className="p-4 space-y-3">
+                         {/* Birth Date - Short Format */}
                          {member.birthDate && (
-                           <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10">
-                             <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                               <Calendar className="h-4 w-4 text-white" />
-                             </div>
-                             <div>
-                               <p className="text-xs text-muted-foreground font-medium">تاريخ الميلاد</p>
-                               <p className="text-sm font-bold text-foreground">{format(new Date(member.birthDate), "PPP", { locale: ar })}</p>
-                             </div>
+                           <div className="flex items-center gap-2 text-sm">
+                             <Calendar className="h-4 w-4 text-primary" />
+                             <span className="text-muted-foreground">مولود:</span>
+                             <span className="font-medium text-foreground">{format(new Date(member.birthDate), "dd/MM/yyyy")}</span>
                            </div>
                          )}
 
-                         {/* Status */}
-                         <div className={cn("flex items-center gap-3 p-3 rounded-xl border", 
-                           member.isAlive 
-                             ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800" 
-                             : "bg-gray-50 border-gray-200 dark:bg-gray-900/20 dark:border-gray-800"
-                         )}>
-                           <div className={cn("w-8 h-8 rounded-full flex items-center justify-center",
-                             member.isAlive 
-                               ? "bg-gradient-to-br from-green-400 to-green-600" 
-                               : "bg-gradient-to-br from-gray-400 to-gray-600"
-                           )}>
-                             {member.isAlive ? (
-                               <Heart className="h-4 w-4 text-white animate-pulse" />
-                             ) : (
-                               <Skull className="h-4 w-4 text-white" />
-                             )}
-                           </div>
-                           <div>
-                             <p className="text-xs text-muted-foreground font-medium">الحالة</p>
-                             <p className={cn("text-sm font-bold", 
-                               member.isAlive ? "text-green-700 dark:text-green-400" : "text-gray-600 dark:text-gray-400"
-                             )}>
-                               {member.isAlive ? "على قيد الحياة" : "متوفى"}
-                             </p>
-                           </div>
+                         {/* Status - Compact */}
+                         <div className="flex items-center gap-2 text-sm">
+                           {member.isAlive ? (
+                             <>
+                               <Heart className="h-4 w-4 text-green-500" />
+                               <span className="text-green-600 font-medium">على قيد الحياة</span>
+                             </>
+                           ) : (
+                             <>
+                               <Skull className="h-4 w-4 text-gray-500" />
+                               <span className="text-gray-600 font-medium">متوفى</span>
+                             </>
+                           )}
                          </div>
 
-                         {/* Bio Preview */}
+                         {/* Bio Preview - Compact */}
                          {member.bio && (
-                           <div className="flex items-start gap-3 p-3 bg-accent/5 rounded-xl border border-accent/10">
-                             <div className="w-8 h-8 bg-gradient-to-br from-accent to-secondary rounded-full flex items-center justify-center">
-                               <FileText className="h-4 w-4 text-white" />
-                             </div>
-                             <div className="flex-1">
-                               <p className="text-xs text-muted-foreground font-medium mb-1">نبذة شخصية</p>
-                               <p className="text-sm text-foreground line-clamp-2">{member.bio}</p>
-                             </div>
+                           <div className="text-sm text-muted-foreground">
+                             <p className="line-clamp-1">{member.bio}</p>
                            </div>
                          )}
                        </div>
