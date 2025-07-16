@@ -175,7 +175,7 @@ export default function Store() {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-16">
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-8 pb-4">
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
           <div className="max-w-7xl mx-auto px-6 relative">
             <div className="text-center mb-12">
