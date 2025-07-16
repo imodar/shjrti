@@ -645,32 +645,6 @@ const Dashboard2 = () => {
                             <Badge variant={tree.isPublic ? "default" : "secondary"} className="shadow-md bg-gradient-to-r from-primary/80 to-accent/80 text-white border-0">
                               {tree.isPublic ? "عام" : "خاص"}
                             </Badge>
-                            <div className="relative w-12 h-12">
-                              <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                                <path
-                                  className="text-primary/20"
-                                  stroke="currentColor"
-                                  strokeWidth="3"
-                                  fill="none"
-                                  d="m18,2.0845
-                                    a 15.9155,15.9155 0 0,1 0,31.831
-                                    a 15.9155,15.9155 0 0,1 0,-31.831"
-                                />
-                                <path
-                                  className="text-primary"
-                                  stroke="currentColor"
-                                  strokeWidth="3"
-                                  strokeDasharray={`${tree.progress}, 100`}
-                                  fill="none"
-                                  d="m18,2.0845
-                                    a 15.9155,15.9155 0 0,1 0,31.831
-                                    a 15.9155,15.9155 0 0,1 0,-31.831"
-                                />
-                              </svg>
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-xs font-bold text-primary">{tree.progress}%</span>
-                              </div>
-                            </div>
                           </div>
 
                           {/* Tree name and last updated */}
@@ -680,6 +654,7 @@ const Dashboard2 = () => {
                             </h3>
                             <p className="text-muted-foreground text-sm flex items-center gap-2">
                               <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                              <span className="font-medium">آخر تحديث للشجرة:</span>
                               {tree.lastUpdated}
                             </p>
                           </div>
