@@ -24,9 +24,12 @@ import {
   ChevronLeft,
   User,
   Users,
-  ShoppingBag
+  ShoppingBag,
+  Star,
+  Store as StoreIcon
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Design options data
 const designTemplates = [
@@ -62,6 +65,7 @@ const customSizeOptions = [
 ];
 
 export default function Store() {
+  const navigate = useNavigate();
   const [selectedDesign, setSelectedDesign] = useState('classic');
   const [selectedFrame, setSelectedFrame] = useState('none');
   const [selectedSize, setSelectedSize] = useState('A4');
@@ -204,9 +208,8 @@ export default function Store() {
 
       {/* Main Content */}
       <div className="relative z-10 min-h-screen">
-        {/* Hero Section */}
+        {/* Hero Section with Tabs */}
         <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-8 pb-4">
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
           <div className="max-w-7xl mx-auto px-6 relative">
             <div className="text-center mb-12">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary via-accent to-secondary rounded-3xl shadow-2xl mb-6 relative">
@@ -221,6 +224,38 @@ export default function Store() {
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 احصل على نسخة مطبوعة فاخرة من شجرة عائلتك بأجود الخامات وأحدث التقنيات
               </p>
+              
+              {/* Tab Navigation */}
+              <div className="relative mt-8 flex justify-center">
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-br from-accent to-primary rounded-full animate-pulse"></div>
+                <div className="bg-transparent backdrop-blur-sm border-0 rounded-2xl p-1 shadow-none flex-row-reverse relative flex">
+                  <div 
+                    onClick={() => navigate('/family-builder')}
+                    className="rounded-xl px-6 py-3 transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-primary/10 cursor-pointer flex items-center justify-center"
+                  >
+                    <Star className="ml-2 h-4 w-4" />
+                    الإحصائيات
+                  </div>
+                  <div className="rounded-xl px-6 py-3 transition-all duration-300 bg-primary text-primary-foreground shadow-lg flex items-center justify-center">
+                    <StoreIcon className="ml-2 h-4 w-4" />
+                    المتجر
+                  </div>
+                  <div 
+                    onClick={() => navigate('/family-builder')}
+                    className="rounded-xl px-6 py-3 transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-primary/10 cursor-pointer flex items-center justify-center"
+                  >
+                    <TreePine className="ml-2 h-4 w-4" />
+                    عرض الشجرة
+                  </div>
+                  <div 
+                    onClick={() => navigate('/family-builder')}
+                    className="rounded-xl px-6 py-3 transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-primary/10 cursor-pointer flex items-center justify-center"
+                  >
+                    <Users className="ml-2 h-4 w-4" />
+                    نظرة عامة
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
