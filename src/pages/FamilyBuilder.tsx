@@ -100,6 +100,8 @@ const FamilyBuilder = () => {
               image: member.image_url || null,
               bio: member.biography || ''
             }));
+            
+            console.log('Fetched family members:', transformedMembers);
             setFamilyMembers(transformedMembers);
           }
         }
@@ -298,6 +300,8 @@ const FamilyBuilder = () => {
         biography: formData.bio,
         image_url: formData.croppedImage
       };
+
+      console.log('Saving member data:', memberData);
 
       if (selectedMember) {
         // Update existing member
@@ -755,16 +759,20 @@ const FamilyBuilder = () => {
                           <div className="flex items-center gap-2 text-sm">
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg">
                               <span className="text-xs font-medium text-foreground">
-                                {member.relatedPersonId ? (
-                                  <>
-                                    {member.relation} {" "}
-                                    <span className="text-primary font-semibold">
-                                      {familyMembers.find(m => m.id === member.relatedPersonId)?.name || "غير محدد"}
-                                    </span>
-                                  </>
-                                ) : (
-                                  member.relation
-                                )}
+                                 {member.relatedPersonId ? (
+                                   <>
+                                     {member.relation} {" "}
+                                     <span className="text-primary font-semibold">
+                                       {(() => {
+                                         const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+                                         console.log('Looking for related person:', member.relatedPersonId, 'Found:', relatedPerson);
+                                         return relatedPerson?.name || "غير محدد";
+                                       })()}
+                                     </span>
+                                   </>
+                                 ) : (
+                                   member.relation
+                                 )}
                               </span>
                             </div>
                           </div>
