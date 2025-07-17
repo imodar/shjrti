@@ -5,10 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Home2 from "./pages/Home2";
+import IndexBackup from "./pages/IndexBackup";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import Dashboard2 from "./pages/Dashboard2";
+import DashboardBackup from "./pages/DashboardBackup";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilder2 from "./pages/FamilyBuilder2";
@@ -34,10 +34,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/home2" element={<Home2 />} />
+          <Route path="/home-backup" element={<IndexBackup />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard2" element={<Dashboard2 />} />
+          <Route path="/dashboard-backup" element={<DashboardBackup />} />
           <Route path="/family-creator" element={<FamilyCreator />} />
           <Route path="/family-builder" element={<FamilyBuilder />} />
           <Route path="/family-builder2" element={<FamilyBuilder2 />} />
