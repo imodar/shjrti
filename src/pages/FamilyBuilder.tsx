@@ -395,10 +395,24 @@ const FamilyBuilder = () => {
       }
     }
     
+    // Find the correct family relation for this member
+    let relatedPersonId = member.relatedPersonId || null;
+    
+    // If member has parents, find their marriage (the family this member belongs to)
+    if (member.fatherId && member.motherId) {
+      const parentMarriage = familyMarriages.find(m => 
+        (m.husband?.id === member.fatherId && m.wife?.id === member.motherId) ||
+        (m.husband?.id === member.motherId && m.wife?.id === member.fatherId)
+      );
+      if (parentMarriage) {
+        relatedPersonId = parentMarriage.id;
+      }
+    }
+    
     setFormData({
       name: member.name,
       relation: relation,
-      relatedPersonId: member.relatedPersonId || null,
+      relatedPersonId: relatedPersonId,
       gender: member.gender,
       birthDate: member.birthDate ? new Date(member.birthDate) : null,
       isAlive: member.isAlive,
