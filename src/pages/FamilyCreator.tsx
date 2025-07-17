@@ -170,42 +170,32 @@ const FamilyCreator = () => {
   return (
     <div className="min-h-screen bg-background">
       
-      {/* Top Progress Bar */}
-      <div className="w-full bg-white border-b">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-center gap-8">
-            {/* Step 1 */}
+      {/* Header - matching FamilyBuilder */}
+      <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-sm border-b">
+        <div className="container mx-auto px-4 lg:px-6 py-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                currentStep >= 1 
-                  ? 'bg-gradient-to-br from-primary to-accent shadow-lg' 
-                  : 'bg-muted'
-              }`}>
-                <TreePine className={`h-6 w-6 ${currentStep >= 1 ? 'text-white' : 'text-muted-foreground'}`} />
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                <TreePine className="h-5 w-5 text-white" />
               </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">الخطوة الأولى</p>
-                <h3 className="text-sm font-medium">معلومات الشجرة</h3>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">إنشاء شجرة العائلة</h1>
+                <p className="text-sm text-muted-foreground">ابدأ رحلتك في بناء تاريخ عائلتك</p>
               </div>
             </div>
             
-            {/* Progress Line */}
-            <div className={`w-24 h-1 rounded-full transition-all duration-500 ${
-              currentStep >= 2 ? 'bg-gradient-to-r from-primary to-accent' : 'bg-muted'
-            }`}></div>
-            
-            {/* Step 2 */}
-            <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                currentStep >= 2 
-                  ? 'bg-gradient-to-br from-primary to-accent shadow-lg' 
-                  : 'bg-muted'
+            {/* Progress Indicator */}
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
+                currentStep >= 1 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
               }`}>
-                <Users className={`h-6 w-6 ${currentStep >= 2 ? 'text-white' : 'text-muted-foreground'}`} />
+                1
               </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">الخطوة الثانية</p>
-                <h3 className="text-sm font-medium">بيانات المؤسس</h3>
+              <div className={`w-6 h-0.5 ${currentStep >= 2 ? 'bg-primary' : 'bg-muted'}`}></div>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
+                currentStep >= 2 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+              }`}>
+                2
               </div>
             </div>
           </div>
