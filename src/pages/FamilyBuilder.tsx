@@ -360,6 +360,11 @@ const FamilyBuilder = () => {
     setSelectedMember(null);
     setCurrentStep(1);
     setShowAddMember(true);
+    // Reset all spouse data for new members
+    setHusbands([]);
+    setWives([]);
+    setEditingWife(null);
+    setEditingHusband(null);
     setFormData({
       name: "",
       relation: "",
