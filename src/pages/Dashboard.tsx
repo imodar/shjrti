@@ -26,19 +26,17 @@ import { supabase } from "@/integrations/supabase/client";
 // Get families from database
 const getFamiliesFromDatabase = async (userId: string) => {
   try {
-    const { data: families, error } = await supabase
-      .from('families')
-      .select(`
+    const {
+      data: families,
+      error
+    } = await supabase.from('families').select(`
         *,
         family_tree_members(count)
-      `)
-      .eq('creator_id', userId);
-
+      `).eq('creator_id', userId);
     if (error) {
       console.error('Error fetching families:', error);
       return [];
     }
-
     return families?.map(family => ({
       id: family.id,
       name: family.name,
@@ -59,84 +57,76 @@ const currentPlan = {
   type: "free",
   // free: 0/1, basic: 0/2, premium: 0/10
   treesUsed: 0,
-  treesLimit: 1, // Free plan allows 1 tree
+  treesLimit: 1,
+  // Free plan allows 1 tree
   membersUsed: 0,
-  membersLimit: 10, // Free plan allows 10 members
+  membersLimit: 10,
+  // Free plan allows 10 members
   features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"]
 };
 
 // Available plans data
-const availablePlans = [
-  {
-    name: "مجانية",
-    type: "free",
-    price: "$0",
-    priceArabic: "مجاناً",
-    period: "",
-    treesLimit: 1,
-    membersLimit: 10,
-    features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"],
-    popular: false
-  },
-  {
-    name: "أساسية",
-    type: "basic",
-    price: "$9.99",
-    priceArabic: "٩.٩٩ دولار",
-    period: "/شهر",
-    treesLimit: 2,
-    membersLimit: 50,
-    features: ["شجرتان عائليتان", "50 فرد", "مشاركة محدودة", "دعم بريد إلكتروني"],
-    popular: false
-  },
-  {
-    name: "احترافية",
-    type: "premium", 
-    price: "$19.99",
-    priceArabic: "١٩.٩٩ دولار",
-    period: "/شهر",
-    treesLimit: 10,
-    membersLimit: 200,
-    features: ["10 أشجار عائلية", "200 فرد", "مشاركة متقدمة", "تصدير البيانات", "دعم مباشر"],
-    popular: true
-  }
-];
+const availablePlans = [{
+  name: "مجانية",
+  type: "free",
+  price: "$0",
+  priceArabic: "مجاناً",
+  period: "",
+  treesLimit: 1,
+  membersLimit: 10,
+  features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"],
+  popular: false
+}, {
+  name: "أساسية",
+  type: "basic",
+  price: "$9.99",
+  priceArabic: "٩.٩٩ دولار",
+  period: "/شهر",
+  treesLimit: 2,
+  membersLimit: 50,
+  features: ["شجرتان عائليتان", "50 فرد", "مشاركة محدودة", "دعم بريد إلكتروني"],
+  popular: false
+}, {
+  name: "احترافية",
+  type: "premium",
+  price: "$19.99",
+  priceArabic: "١٩.٩٩ دولار",
+  period: "/شهر",
+  treesLimit: 10,
+  membersLimit: 200,
+  features: ["10 أشجار عائلية", "200 فرد", "مشاركة متقدمة", "تصدير البيانات", "دعم مباشر"],
+  popular: true
+}];
 // Mock notifications data
-const mockNotifications = [
-  {
-    id: 1,
-    title: "تم إضافة فرد جديد",
-    message: "تم إضافة محمد أحمد إلى شجرة عائلة أحمد",
-    time: "منذ 5 دقائق",
-    isRead: false,
-    type: "member"
-  },
-  {
-    id: 2,
-    title: "تحديث في الشجرة",
-    message: "تم تحديث معلومات فاطمة محمد في شجرة عائلة فاطمة",
-    time: "منذ ساعة",
-    isRead: false,
-    type: "update"
-  },
-  {
-    id: 3,
-    title: "مشاركة جديدة",
-    message: "شارك سعد الله شجرة العائلة معك",
-    time: "منذ يومين",
-    isRead: true,
-    type: "share"
-  },
-  {
-    id: 4,
-    title: "انتهاء الاشتراك قريباً",
-    message: "سينتهي اشتراكك خلال 7 أيام",
-    time: "منذ 3 أيام",
-    isRead: false,
-    type: "subscription"
-  }
-];
-
+const mockNotifications = [{
+  id: 1,
+  title: "تم إضافة فرد جديد",
+  message: "تم إضافة محمد أحمد إلى شجرة عائلة أحمد",
+  time: "منذ 5 دقائق",
+  isRead: false,
+  type: "member"
+}, {
+  id: 2,
+  title: "تحديث في الشجرة",
+  message: "تم تحديث معلومات فاطمة محمد في شجرة عائلة فاطمة",
+  time: "منذ ساعة",
+  isRead: false,
+  type: "update"
+}, {
+  id: 3,
+  title: "مشاركة جديدة",
+  message: "شارك سعد الله شجرة العائلة معك",
+  time: "منذ يومين",
+  isRead: true,
+  type: "share"
+}, {
+  id: 4,
+  title: "انتهاء الاشتراك قريباً",
+  message: "سينتهي اشتراكك خلال 7 أيام",
+  time: "منذ 3 أيام",
+  isRead: false,
+  type: "subscription"
+}];
 const Dashboard = () => {
   const [trees, setTrees] = useState<any[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -151,8 +141,16 @@ const Dashboard = () => {
     toast
   } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { notifications, profile, totalMembers, markNotificationAsRead, markAllAsRead } = useDashboardData();
+  const {
+    user
+  } = useAuth();
+  const {
+    notifications,
+    profile,
+    totalMembers,
+    markNotificationAsRead,
+    markAllAsRead
+  } = useDashboardData();
 
   // Load families from database
   useEffect(() => {
@@ -160,10 +158,8 @@ const Dashboard = () => {
       loadFamilies();
     }
   }, [user]);
-
   const loadFamilies = async () => {
     if (!user) return;
-    
     setLoading(true);
     try {
       const families = await getFamiliesFromDatabase(user.id);
@@ -184,12 +180,10 @@ const Dashboard = () => {
   const canCreateNewTree = trees.length < currentPlan.treesLimit;
   const planProgress = trees.length / currentPlan.treesLimit * 100;
   const membersProgress = currentPlan.membersUsed / currentPlan.membersLimit * 100;
-  
+
   // Notification functions
   const unreadNotifications = notifications.filter(n => !n.isRead);
   const unreadCount = unreadNotifications.length;
-  
-  
   const handleMarkNotificationAsRead = (id: string) => {
     markNotificationAsRead(id);
     toast({
@@ -197,7 +191,6 @@ const Dashboard = () => {
       description: "تم تحديث حالة الإشعار"
     });
   };
-
   const handleMarkAllAsRead = () => {
     markAllAsRead();
     toast({
@@ -205,7 +198,6 @@ const Dashboard = () => {
       description: "تم تحديث حالة جميع الإشعارات"
     });
   };
-  
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "member":
@@ -250,12 +242,9 @@ const Dashboard = () => {
   const confirmDeleteTree = async () => {
     if (treeToDelete && deleteConfirmText.toLowerCase() === "حذف") {
       try {
-        const { error } = await supabase
-          .from('families')
-          .delete()
-          .eq('id', treeToDelete)
-          .eq('creator_id', user?.id);
-
+        const {
+          error
+        } = await supabase.from('families').delete().eq('id', treeToDelete).eq('creator_id', user?.id);
         if (error) {
           console.error('Error deleting family:', error);
           toast({
@@ -349,11 +338,11 @@ const Dashboard = () => {
 
           {/* Compact Modern Hero - Single Line */}
           <div className="relative">
-            <div className="flex items-center justify-center py-2">
+            <div className="flex items-center justify-center py-6">
               <div className="flex items-center gap-6">
                 <div className="w-2 h-12 bg-gradient-to-b from-primary via-accent to-secondary rounded-full"></div>
                 <div className="flex items-center gap-4">
-                  <h1 className="text-2xl md:text-3xl font-bold text-primary">
+                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                     مرحباً بك في لوحة التحكم
                   </h1>
                   <span className="text-muted-foreground">•</span>
@@ -364,205 +353,99 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Compact Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Trees Card - Compact */}
-            <Card className="bg-gradient-to-br from-background via-primary/5 to-primary/10 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                    <PieChart className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-primary">{trees.length}</p>
-                    <p className="text-xs text-muted-foreground">شجرة عائلية</p>
-                  </div>
+          {/* Creative Stats Section with Artistic Cards */}
+          
+
+          {/* Creative Upgrade Section */}
+          {currentPlan.type === "free" && <div className="relative">
+              <Card className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border-0 shadow-2xl">
+                {/* Artistic Background Pattern */}
+                <div className="absolute inset-0">
+                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(var(--primary)/0.15),transparent_40%)]"></div>
+                  <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(var(--accent)/0.15),transparent_40%)]"></div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Members Card - Compact */}
-            <Card className="bg-gradient-to-br from-background via-accent/5 to-accent/10 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 bg-gradient-to-br from-accent to-accent/80 rounded-xl flex items-center justify-center">
-                    <Users className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-accent">{trees.reduce((acc, tree) => acc + tree.members, 0)}</p>
-                    <p className="text-xs text-muted-foreground">فرد</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Generations Card - Compact */}
-            <Card className="bg-gradient-to-br from-background via-secondary/5 to-secondary/10 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-secondary">{trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}</p>
-                    <p className="text-xs text-muted-foreground">جيل</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions Bar */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Add New Tree Button - Prominent */}
-            <Button 
-              onClick={handleCreateTree} 
-              className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3 text-lg font-semibold rounded-xl" 
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              إنشاء شجرة جديدة
-            </Button>
-
-          </div>
-
-          {/* Creative Floating Upgrade Card - Only for Free Users */}
-          {currentPlan.type === "free" && (
-            <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50">
-              {/* Main Upgrade Card */}
-              <div className="relative group cursor-pointer" onClick={() => setShowUpgradeDialog(true)}>
-                {/* Card Container */}
-                <div className="bg-white dark:bg-card border-2 border-primary/20 rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 hover:rotate-1 min-w-[280px]">
-                  {/* Header with Crown */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
-                        <Crown className="h-6 w-6 text-white" />
+                
+                <CardContent className="relative z-10 p-12">
+                  <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div className="flex items-center gap-8">
+                      <div className="relative">
+                        <div className="w-20 h-20 bg-gradient-to-br from-primary via-accent to-secondary rounded-3xl flex items-center justify-center shadow-2xl">
+                          <Zap className="h-10 w-10 text-white" />
+                        </div>
+                        <div className="absolute -inset-2 bg-gradient-to-br from-primary/30 via-accent/30 to-secondary/30 rounded-3xl blur-lg animate-pulse"></div>
                       </div>
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full animate-bounce"></div>
+                      <div className="text-center lg:text-right space-y-4">
+                        <h3 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                          ارتقِ إلى مستوى جديد
+                        </h3>
+                        <p className="text-lg text-muted-foreground max-w-lg">
+                          اكتشف قوة الميزات المتقدمة واحصل على تجربة لا محدودة
+                        </p>
+                        <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                          {["أشجار غير محدودة", "تخزين متقدم", "مشاركة احترافية", "تصميمات حصرية"].map((feature, index) => <Badge key={index} variant="outline" className="border-primary/30 text-primary bg-primary/5 px-3 py-1">
+                              {feature}
+                            </Badge>)}
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-primary">خطة مميزة</h3>
-                      <p className="text-sm text-muted-foreground">ترقية حسابك الآن</p>
-                    </div>
+                    <Button className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-8 py-4 text-lg font-semibold" onClick={() => setShowUpgradeDialog(true)}>
+                      <Crown className="mr-3 h-6 w-6" />
+                      ترقية فورية
+                    </Button>
                   </div>
+                </CardContent>
+              </Card>
+            </div>}
 
-                  {/* Features List */}
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <span>أشجار غير محدودة</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      <span>ميزات متقدمة</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                      <span>دعم مباشر</span>
-                    </div>
-                  </div>
-
-                  {/* Upgrade Button */}
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowUpgradeDialog(true);
-                    }}
-                  >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    ترقية الآن
-                  </Button>
-
-                  {/* Decorative Elements */}
-                  <div className="absolute top-2 right-2 w-8 h-8 bg-primary/10 rounded-full animate-ping"></div>
-                  <div className="absolute bottom-2 left-2 w-6 h-6 bg-accent/10 rounded-full animate-pulse"></div>
-                  
-                  {/* Corner Ribbon */}
-                  <div className="absolute -top-2 -right-2 bg-accent text-white text-xs font-bold px-3 py-1 rounded-lg transform rotate-12 shadow-lg">
-                    عرض خاص!
-                  </div>
-                </div>
-
-                {/* Floating Animation */}
-                <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-xl scale-110 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              </div>
-            </div>
-          )}
-
-          {/* Trees Section */}
-          <div className="space-y-8">
-            <div className="text-center space-y-4">
+          {/* Creative Trees Section */}
+          <div className="space-y-12">
+            <div className="text-center space-y-6">
               <div className="relative inline-block">
-                <h2 className="text-3xl font-bold text-primary">
+                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                   أشجار العائلة
                 </h2>
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-primary rounded-full"></div>
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
               </div>
-              <p className="text-muted-foreground">
-                استكشف وأدر مجموعة أشجارك العائلية
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                استكشف وأدر مجموعة أشجارك العائلية في مكان واحد
               </p>
+              
+              <div className="flex justify-center">
+                <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-8 py-4 text-lg font-semibold rounded-2xl">
+                  <Plus className="mr-3 h-6 w-6" />
+                  إنشاء شجرة جديدة
+                </Button>
+              </div>
             </div>
 
-            {trees.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                {trees.map((tree, index) => (
-                  <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-background to-card/50 border-0 shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 hover:rotate-1">
+            {trees.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {trees.map((tree, index) => <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-background to-card/50 border-0 shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 hover:rotate-1">
                     {/* Creative Background Pattern */}
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${
-                        index % 3 === 0 ? 'from-primary/10 to-primary/5' : 
-                        index % 3 === 1 ? 'from-accent/10 to-accent/5' : 
-                        'from-secondary/10 to-secondary/5'
-                      }`}></div>
-                      <div className={`absolute top-0 right-0 w-24 h-24 ${
-                        index % 3 === 0 ? 'bg-primary/20' : 
-                        index % 3 === 1 ? 'bg-accent/20' : 
-                        'bg-secondary/20'
-                      } rounded-full blur-2xl animate-pulse`}></div>
+                      <div className={`absolute inset-0 bg-gradient-to-br ${index % 3 === 0 ? 'from-primary/10 to-primary/5' : index % 3 === 1 ? 'from-accent/10 to-accent/5' : 'from-secondary/10 to-secondary/5'}`}></div>
+                      <div className={`absolute top-0 right-0 w-24 h-24 ${index % 3 === 0 ? 'bg-primary/20' : index % 3 === 1 ? 'bg-accent/20' : 'bg-secondary/20'} rounded-full blur-2xl animate-pulse`}></div>
                     </div>
                     
                     <CardContent className="p-0 relative z-10">
                       {/* Artistic Header */}
-                      <div className={`relative p-8 bg-gradient-to-br ${
-                        index % 3 === 0 ? 'from-primary/5 to-primary/10' : 
-                        index % 3 === 1 ? 'from-accent/5 to-accent/10' : 
-                        'from-secondary/5 to-secondary/10'
-                      }`}>
+                      <div className={`relative p-8 bg-gradient-to-br ${index % 3 === 0 ? 'from-primary/5 to-primary/10' : index % 3 === 1 ? 'from-accent/5 to-accent/10' : 'from-secondary/5 to-secondary/10'}`}>
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-current to-transparent opacity-50"></div>
                         
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <Badge 
-                              variant={tree.isPublic ? "default" : "secondary"} 
-                              className={`${
-                                index % 3 === 0 ? 'bg-primary/10 text-primary border-primary/20' : 
-                                index % 3 === 1 ? 'bg-accent/10 text-accent border-accent/20' : 
-                                'bg-secondary/10 text-secondary border-secondary/20'
-                              } font-medium`}
-                            >
+                            <Badge variant={tree.isPublic ? "default" : "secondary"} className={`${index % 3 === 0 ? 'bg-primary/10 text-primary border-primary/20' : index % 3 === 1 ? 'bg-accent/10 text-accent border-accent/20' : 'bg-secondary/10 text-secondary border-secondary/20'} font-medium`}>
                               {tree.isPublic ? "🌍 عام" : "🔒 خاص"}
                             </Badge>
                             <div className="flex items-center gap-1">
-                              <div className={`w-2 h-2 ${
-                                index % 3 === 0 ? 'bg-primary' : 
-                                index % 3 === 1 ? 'bg-accent' : 
-                                'bg-secondary'
-                              } rounded-full animate-pulse`}></div>
-                              <div className={`w-1 h-1 ${
-                                index % 3 === 0 ? 'bg-primary/60' : 
-                                index % 3 === 1 ? 'bg-accent/60' : 
-                                'bg-secondary/60'
-                              } rounded-full animate-pulse`} style={{animationDelay: '0.5s'}}></div>
+                              <div className={`w-2 h-2 ${index % 3 === 0 ? 'bg-primary' : index % 3 === 1 ? 'bg-accent' : 'bg-secondary'} rounded-full animate-pulse`}></div>
+                              <div className={`w-1 h-1 ${index % 3 === 0 ? 'bg-primary/60' : index % 3 === 1 ? 'bg-accent/60' : 'bg-secondary/60'} rounded-full animate-pulse`} style={{
+                          animationDelay: '0.5s'
+                        }}></div>
                             </div>
                           </div>
                           
                           <div className="space-y-3">
-                            <h3 className={`text-2xl font-bold ${
-                              index % 3 === 0 ? 'text-primary' : 
-                              index % 3 === 1 ? 'text-accent' : 
-                              'text-secondary'
-                            } group-hover:scale-105 transition-transform duration-300`}>
+                            <h3 className={`text-2xl font-bold ${index % 3 === 0 ? 'text-primary' : index % 3 === 1 ? 'text-accent' : 'text-secondary'} group-hover:scale-105 transition-transform duration-300`}>
                               {tree.name}
                             </h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -576,95 +459,42 @@ const Dashboard = () => {
                       {/* Creative Stats Section */}
                       <div className="p-8 space-y-6">
                         <div className="grid grid-cols-2 gap-6">
-                          <div className={`relative p-6 rounded-2xl ${
-                            index % 3 === 0 ? 'bg-primary/5 border border-primary/20' : 
-                            index % 3 === 1 ? 'bg-accent/5 border border-accent/20' : 
-                            'bg-secondary/5 border border-secondary/20'
-                          } text-center group-hover:scale-105 transition-transform duration-300`}>
-                            <Users className={`h-6 w-6 mx-auto mb-3 ${
-                              index % 3 === 0 ? 'text-primary' : 
-                              index % 3 === 1 ? 'text-accent' : 
-                              'text-secondary'
-                            }`} />
-                            <div className={`text-3xl font-bold ${
-                              index % 3 === 0 ? 'text-primary' : 
-                              index % 3 === 1 ? 'text-accent' : 
-                              'text-secondary'
-                            }`}>{tree.members}</div>
+                          <div className={`relative p-6 rounded-2xl ${index % 3 === 0 ? 'bg-primary/5 border border-primary/20' : index % 3 === 1 ? 'bg-accent/5 border border-accent/20' : 'bg-secondary/5 border border-secondary/20'} text-center group-hover:scale-105 transition-transform duration-300`}>
+                            <Users className={`h-6 w-6 mx-auto mb-3 ${index % 3 === 0 ? 'text-primary' : index % 3 === 1 ? 'text-accent' : 'text-secondary'}`} />
+                            <div className={`text-3xl font-bold ${index % 3 === 0 ? 'text-primary' : index % 3 === 1 ? 'text-accent' : 'text-secondary'}`}>{tree.members}</div>
                             <div className="text-xs text-muted-foreground font-medium">فرد</div>
                           </div>
                           
-                          <div className={`relative p-6 rounded-2xl ${
-                            index % 3 === 0 ? 'bg-accent/5 border border-accent/20' : 
-                            index % 3 === 1 ? 'bg-secondary/5 border border-secondary/20' : 
-                            'bg-primary/5 border border-primary/20'
-                          } text-center group-hover:scale-105 transition-transform duration-300`}>
-                            <TrendingUp className={`h-6 w-6 mx-auto mb-3 ${
-                              index % 3 === 0 ? 'text-accent' : 
-                              index % 3 === 1 ? 'text-secondary' : 
-                              'text-primary'
-                            }`} />
-                            <div className={`text-3xl font-bold ${
-                              index % 3 === 0 ? 'text-accent' : 
-                              index % 3 === 1 ? 'text-secondary' : 
-                              'text-primary'
-                            }`}>{tree.generations}</div>
+                          <div className={`relative p-6 rounded-2xl ${index % 3 === 0 ? 'bg-accent/5 border border-accent/20' : index % 3 === 1 ? 'bg-secondary/5 border border-secondary/20' : 'bg-primary/5 border border-primary/20'} text-center group-hover:scale-105 transition-transform duration-300`}>
+                            <TrendingUp className={`h-6 w-6 mx-auto mb-3 ${index % 3 === 0 ? 'text-accent' : index % 3 === 1 ? 'text-secondary' : 'text-primary'}`} />
+                            <div className={`text-3xl font-bold ${index % 3 === 0 ? 'text-accent' : index % 3 === 1 ? 'text-secondary' : 'text-primary'}`}>{tree.generations}</div>
                             <div className="text-xs text-muted-foreground font-medium">جيل</div>
                           </div>
                         </div>
 
                         {/* Creative Action Buttons */}
                         <div className="space-y-4">
-                          <Button 
-                            onClick={() => navigate('/view-tree')} 
-                            className={`w-full ${
-                              index % 3 === 0 ? 'bg-primary hover:bg-primary/90' : 
-                              index % 3 === 1 ? 'bg-accent hover:bg-accent/90' : 
-                              'bg-secondary hover:bg-secondary/90'
-                            } hover:shadow-xl text-white font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300`}
-                          >
+                          <Button onClick={() => navigate('/view-tree')} className={`w-full ${index % 3 === 0 ? 'bg-gradient-to-r from-primary to-accent' : index % 3 === 1 ? 'bg-gradient-to-r from-accent to-secondary' : 'bg-gradient-to-r from-secondary to-primary'} hover:shadow-xl text-white font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300`}>
                             <Eye className="mr-2 h-5 w-5" />
                             استكشف الشجرة
                           </Button>
                           
                           <div className="grid grid-cols-3 gap-3">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => navigate('/family-builder?edit=true')} 
-                              className={`${
-                                index % 3 === 0 ? 'border-primary/30 hover:bg-primary/10 hover:border-primary/60' : 
-                                index % 3 === 1 ? 'border-accent/30 hover:bg-accent/10 hover:border-accent/60' : 
-                                'border-secondary/30 hover:bg-secondary/10 hover:border-secondary/60'
-                              } rounded-xl font-medium`}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder?edit=true')} className={`${index % 3 === 0 ? 'border-primary/30 hover:bg-primary/10 hover:border-primary/60' : index % 3 === 1 ? 'border-accent/30 hover:bg-accent/10 hover:border-accent/60' : 'border-secondary/30 hover:bg-secondary/10 hover:border-secondary/60'} rounded-xl font-medium`}>
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => handleShareTree(tree.id)} 
-                              className="border-muted-foreground/30 hover:bg-muted/20 hover:border-muted-foreground/60 rounded-xl font-medium"
-                            >
+                            <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="border-muted-foreground/30 hover:bg-muted/20 hover:border-muted-foreground/60 rounded-xl font-medium">
                               <Share2 className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => handleDeleteTree(tree.id)} 
-                              className="border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:border-destructive rounded-xl"
-                            >
+                            <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:border-destructive rounded-xl">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="relative overflow-hidden bg-gradient-to-br from-muted/10 to-muted/5 border-2 border-dashed border-muted-foreground/20 shadow-xl">
+                  </Card>)}
+              </div> : <Card className="relative overflow-hidden bg-gradient-to-br from-muted/10 to-muted/5 border-2 border-dashed border-muted-foreground/20 shadow-xl">
                 <CardContent className="p-16 text-center">
                   <div className="relative">
                     <div className="w-32 h-32 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl">
@@ -676,16 +506,12 @@ const Dashboard = () => {
                   <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
                     ابدأ مغامرة استكشاف تاريخ عائلتك واكتب قصة أجيالك الرقمية
                   </p>
-                  <Button 
-                    onClick={handleCreateTree} 
-                    className="bg-primary hover:bg-primary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-10 py-4 text-lg font-semibold rounded-2xl" 
-                  >
+                  <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-10 py-4 text-lg font-semibold rounded-2xl">
                     <Plus className="mr-3 h-6 w-6" />
                     ابدأ أول شجرة
                   </Button>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
         </main>
       </div>
@@ -712,23 +538,17 @@ const Dashboard = () => {
                 <span className="text-sm font-medium">الاستخدام الحالي للأشجار</span>
                 <span className="text-sm text-muted-foreground">{trees.length}/{currentPlan.treesLimit}</span>
               </div>
-              <Progress 
-                value={currentPlan.treesLimit > 0 ? (trees.length / currentPlan.treesLimit) * 100 : 0} 
-                className="h-2" 
-              />
+              <Progress value={currentPlan.treesLimit > 0 ? trees.length / currentPlan.treesLimit * 100 : 0} className="h-2" />
             </div>
 
             {/* Plans Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {availablePlans.map((plan, index) => (
-                <Card key={plan.type} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              {availablePlans.map((plan, index) => <Card key={plan.type} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
+                  {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <span className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
                         الأكثر شعبية
                       </span>
-                    </div>
-                  )}
+                    </div>}
                   <CardHeader className="text-center">
                     <CardTitle className="text-lg">{plan.name}</CardTitle>
                     <div className="text-2xl font-bold text-primary">
@@ -738,46 +558,32 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col justify-between space-y-4">
                     <ul className="space-y-2 text-sm">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-2">
+                      {plan.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
                           <span>{feature}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
-                    <Button 
-                      className={`w-full mt-auto ${
-                        plan.type === currentPlan.type 
-                          ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                          : plan.popular 
-                            ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' 
-                            : ''
-                      }`}
-                      variant={plan.type === currentPlan.type ? 'secondary' : plan.popular ? 'default' : 'outline'}
-                      disabled={plan.type === currentPlan.type}
-                      onClick={() => {
-                        if (plan.type !== currentPlan.type) {
-                          setShowUpgradeDialog(false);
-                          navigate("/payment", { state: { selectedPlan: plan } });
-                          toast({
-                            title: "التوجه للدفع",
-                            description: `سيتم توجيهك لصفحة الدفع للباقة ${plan.name}`
-                          });
-                        }
-                      }}
-                    >
-                      {plan.type === currentPlan.type ? (
-                        "الباقة الحالية"
-                      ) : (
-                        <>
+                    <Button className={`w-full mt-auto ${plan.type === currentPlan.type ? 'bg-muted text-muted-foreground cursor-not-allowed' : plan.popular ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' : ''}`} variant={plan.type === currentPlan.type ? 'secondary' : plan.popular ? 'default' : 'outline'} disabled={plan.type === currentPlan.type} onClick={() => {
+                  if (plan.type !== currentPlan.type) {
+                    setShowUpgradeDialog(false);
+                    navigate("/payment", {
+                      state: {
+                        selectedPlan: plan
+                      }
+                    });
+                    toast({
+                      title: "التوجه للدفع",
+                      description: `سيتم توجيهك لصفحة الدفع للباقة ${plan.name}`
+                    });
+                  }
+                }}>
+                      {plan.type === currentPlan.type ? "الباقة الحالية" : <>
                           {plan.popular && <Crown className="mr-2 h-4 w-4" />}
                           اختيار هذه الباقة
-                        </>
-                      )}
+                        </>}
                     </Button>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </div>
           
@@ -796,20 +602,20 @@ const Dashboard = () => {
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full blur-2xl animate-pulse"></div>
             <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-tr from-orange-500/15 to-yellow-500/15 rounded-full blur-xl animate-pulse" style={{
-              animationDelay: '1s'
-            }}></div>
+            animationDelay: '1s'
+          }}></div>
             <div className="absolute top-1/2 right-4 w-3 h-3 bg-red-400/40 rounded-full animate-bounce" style={{
-              animationDelay: '0.5s'
-            }}></div>
+            animationDelay: '0.5s'
+          }}></div>
             <div className="absolute top-1/4 left-4 w-2 h-2 bg-orange-400/40 rounded-full animate-bounce" style={{
-              animationDelay: '1.5s'
-            }}></div>
+            animationDelay: '1.5s'
+          }}></div>
             
             {/* Danger Lines */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent animate-pulse"></div>
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent animate-pulse" style={{
-              animationDelay: '0.5s'
-            }}></div>
+            animationDelay: '0.5s'
+          }}></div>
           </div>
           
           <div className="relative z-10">
@@ -845,19 +651,12 @@ const Dashboard = () => {
                     اكتب "حذف" للتأكيد النهائي:
                   </label>
                   <div className="relative">
-                    <Input 
-                      value={deleteConfirmText} 
-                      onChange={e => setDeleteConfirmText(e.target.value)} 
-                      placeholder="حذف" 
-                      className="text-center text-lg font-bold bg-white/80 dark:bg-gray-800/80 border-2 border-red-300/50 dark:border-red-600/50 focus:border-red-500 focus:ring-red-500/20 shadow-inner"
-                    />
-                    {deleteConfirmText.toLowerCase() === "حذف" && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder="حذف" className="text-center text-lg font-bold bg-white/80 dark:bg-gray-800/80 border-2 border-red-300/50 dark:border-red-600/50 focus:border-red-500 focus:ring-red-500/20 shadow-inner" />
+                    {deleteConfirmText.toLowerCase() === "حذف" && <div className="absolute right-3 top-1/2 -translate-y-1/2">
                         <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center animate-bounce">
                           <CheckCircle className="h-4 w-4 text-white" />
                         </div>
-                      </div>
-                    )}
+                      </div>}
                   </div>
                 </div>
                 
@@ -877,26 +676,15 @@ const Dashboard = () => {
             </AlertDialogHeader>
             
             <AlertDialogFooter className="flex gap-3 pt-6">
-              <AlertDialogCancel 
-                onClick={() => setShowDeleteDialog(false)}
-                className="flex-1 bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700 dark:hover:to-slate-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium shadow-lg transition-all duration-300"
-              >
+              <AlertDialogCancel onClick={() => setShowDeleteDialog(false)} className="flex-1 bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700 dark:hover:to-slate-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium shadow-lg transition-all duration-300">
                 إلغاء الأمر
               </AlertDialogCancel>
               
-              <AlertDialogAction 
-                onClick={confirmDeleteTree} 
-                disabled={deleteConfirmText.toLowerCase() !== "حذف"}
-                className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 text-white font-bold shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
-              >
-                {deleteConfirmText.toLowerCase() === "حذف" ? (
-                  <span className="flex items-center gap-2">
+              <AlertDialogAction onClick={confirmDeleteTree} disabled={deleteConfirmText.toLowerCase() !== "حذف"} className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 text-white font-bold shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed">
+                {deleteConfirmText.toLowerCase() === "حذف" ? <span className="flex items-center gap-2">
                     <Trash2 className="h-4 w-4 animate-pulse" />
                     حذف نهائي
-                  </span>
-                ) : (
-                  <span className="opacity-50">حذف نهائي</span>
-                )}
+                  </span> : <span className="opacity-50">حذف نهائي</span>}
               </AlertDialogAction>
             </AlertDialogFooter>
           </div>
