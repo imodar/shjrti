@@ -842,6 +842,16 @@ const FamilyBuilder = () => {
       return;
     }
     
+    // Validate family selection for step 1
+    if (currentStep === 1 && formData.relation === "child" && !formData.relatedPersonId) {
+      toast({
+        title: "معلومات ناقصة",
+        description: "يرجى اختيار العائلة المرتبطة للطفل",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Skip step 3 (wives) for female members
     if (currentStep === 2 && formData.gender === "female") {
       setCurrentStep(3); // This will trigger the save since step 3 button shows save
