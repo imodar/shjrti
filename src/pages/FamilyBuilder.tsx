@@ -566,8 +566,10 @@ const FamilyBuilder = () => {
         }
 
         // Add husbands if this is a female member
+        console.log('Checking husbands for female member:', formData.gender, husbands.length, husbands);
         if (formData.gender === "female" && husbands.length > 0) {
           for (const husband of husbands) {
+            console.log('Adding husband:', husband);
             // Create husband as family tree member
             const { data: husbandData, error: husbandError } = await supabase
               .from('family_tree_members')
@@ -2314,7 +2316,9 @@ const FamilyBuilder = () => {
                                 setEditingHusband(null);
                               } else {
                                 // Add new husband
+                                console.log('Adding new husband to state:', husbandData);
                                 setHusbands([...husbands, husbandData]);
+                                console.log('Updated husbands state will be:', [...husbands, husbandData]);
                               }
                               
                               // Reset form
