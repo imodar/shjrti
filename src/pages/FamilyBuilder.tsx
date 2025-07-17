@@ -244,9 +244,9 @@ const FamilyBuilder = () => {
 
   // Filter members based on search term and show only blood relatives
   const filteredMembers = familyMembers.filter(member => {
-    // First filter by search term
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.relation.toLowerCase().includes(searchTerm.toLowerCase());
+    // First filter by search term (with null checks)
+    const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.relation && member.relation.toLowerCase().includes(searchTerm.toLowerCase()));
     
     if (!matchesSearch) return false;
     
