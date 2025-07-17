@@ -290,18 +290,18 @@ const FamilyCreator = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-float-slow"></div>
         </div>
 
-        <div className="container mx-auto px-6 py-16">
+        <div className="container mx-auto px-6 py-8">
           <div className="max-w-6xl mx-auto">
             
-            {/* Page Title - Creative Header */}
-            <div className="text-center mb-16 relative">
-              <div className="inline-flex items-center gap-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-lg border border-primary/20 rounded-full px-8 py-4 mb-8">
-                <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary font-medium">إنشاء شجرة العائلة</span>
-                <div className="w-3 h-3 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+            {/* Page Title - Compact Header */}
+            <div className="text-center mb-8 relative">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-lg border border-primary/20 rounded-full px-6 py-3 mb-6">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-primary font-medium text-sm">إنشاء شجرة العائلة</span>
+                <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
               </div>
               
-              <h1 className="text-5xl lg:text-6xl font-bold text-foreground mb-6 relative">
+              <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4 relative">
                 <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
                   ابدأ رحلة
                 </span>
@@ -309,7 +309,7 @@ const FamilyCreator = () => {
                 <span className="text-foreground">تاريخ عائلتك</span>
               </h1>
               
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
                 اصنع ذكريات تدوم للأبد واحفظ تاريخ عائلتك للأجيال القادمة
               </p>
             </div>
@@ -354,7 +354,7 @@ const FamilyCreator = () => {
                                 value={treeData.name}
                                 onChange={(e) => setTreeData({...treeData, name: e.target.value})}
                                 placeholder="مثال: عائلة الأحمد"
-                                className="h-16 text-lg bg-muted/30 border-2 border-transparent rounded-2xl font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                                className="h-14 text-lg bg-background border-2 border-input rounded-xl font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
                               />
                               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                             </div>
@@ -372,8 +372,8 @@ const FamilyCreator = () => {
                                 value={treeData.description}
                                 onChange={(e) => setTreeData({...treeData, description: e.target.value})}
                                 placeholder="اكتب وصفاً موجزاً عن تاريخ عائلتك..."
-                                className="min-h-[160px] text-base bg-muted/30 border-2 border-transparent rounded-2xl resize-none font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
-                                rows={6}
+                                className="min-h-[120px] text-base bg-background border-2 border-input rounded-xl resize-none font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+                                rows={4}
                               />
                               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                             </div>
