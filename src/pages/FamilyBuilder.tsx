@@ -366,13 +366,30 @@ const FamilyBuilder = () => {
     });
   };
 
-  const handleEditMember = (member: any) => {
+  const handleEditMember = async (member: any) => {
     setSelectedMember(member);
     setCurrentStep(1);
     setShowAddMember(true);
+    
+    // Determine relation based on member properties
+    let relation = "";
+    if (member.isFounder) {
+      relation = "founder";
+    } else if (member.fatherId || member.motherId) {
+      relation = "child";
+    } else {
+      // Check if this member is married (husband or wife)
+      const marriage = familyMarriages.find(m => 
+        m.husband?.id === member.id || m.wife?.id === member.id
+      );
+      if (marriage) {
+        relation = member.gender === "male" ? "husband" : "wife";
+      }
+    }
+    
     setFormData({
       name: member.name,
-      relation: member.relation,
+      relation: relation,
       relatedPersonId: member.relatedPersonId || null,
       gender: member.gender,
       birthDate: member.birthDate ? new Date(member.birthDate) : null,
@@ -382,6 +399,27 @@ const FamilyBuilder = () => {
       image: null,
       croppedImage: member.image
     });
+    
+    // Load wives if this is a male member
+    if (member.gender === "male") {
+      const memberMarriages = familyMarriages.filter(m => m.husband?.id === member.id);
+      const memberWives = memberMarriages.map(marriage => {
+        const wife = familyMembers.find(fm => fm.id === marriage.wife?.id);
+        return {
+          id: wife?.id || marriage.wife?.id,
+          name: marriage.wife?.name || "",
+          isAlive: wife?.isAlive ?? true,
+          birthDate: wife?.birthDate ? new Date(wife.birthDate) : null,
+          deathDate: wife?.deathDate ? new Date(wife.deathDate) : null
+        };
+      }).filter(wife => wife.id); // Filter out any invalid wives
+      
+      setWives(memberWives);
+    } else {
+      setWives([]);
+    }
+    
+    setEditingWife(null); // Reset editing wife
   };
 
   const handleSaveMember = async () => {
