@@ -439,22 +439,22 @@ const FamilyBuilder = () => {
                 <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-br from-accent to-primary rounded-full animate-pulse"></div>
                 <TabsList className="bg-transparent backdrop-blur-sm border-0 rounded-2xl p-1 shadow-none flex-row-reverse relative">
                   <TabsTrigger value="statistics" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground hover:bg-primary/10">
-                    <Star className="mr-2 h-4 w-4" />
+                    <Star className="ml-2 h-4 w-4" />
                     الإحصائيات
                   </TabsTrigger>
                   <div 
                     onClick={() => navigate('/store')}
                     className="rounded-xl px-6 py-3 transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-primary/10 cursor-pointer flex items-center justify-center"
                   >
-                    <Store className="mr-2 h-4 w-4" />
+                    <Store className="ml-2 h-4 w-4" />
                     المتجر
                   </div>
                   <TabsTrigger value="tree-view" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground hover:bg-primary/10">
-                    <TreePine className="mr-2 h-4 w-4" />
+                    <TreePine className="ml-2 h-4 w-4" />
                     عرض الشجرة
                   </TabsTrigger>
                   <TabsTrigger value="overview" className="rounded-xl px-6 py-3 transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg text-muted-foreground hover:text-foreground hover:bg-primary/10">
-                    <Users className="mr-2 h-4 w-4" />
+                    <Users className="ml-2 h-4 w-4" />
                     نظرة عامة
                   </TabsTrigger>
                 </TabsList>
