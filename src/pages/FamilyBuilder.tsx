@@ -616,6 +616,21 @@ const FamilyBuilder = () => {
 
             if (marriageError) throw marriageError;
 
+            // Update spouse_id for both husband and wife
+            const { error: updateHusbandError } = await supabase
+              .from('family_tree_members')
+              .update({ spouse_id: wifeData.id })
+              .eq('id', data.id);
+
+            if (updateHusbandError) throw updateHusbandError;
+
+            const { error: updateWifeError } = await supabase
+              .from('family_tree_members')
+              .update({ spouse_id: data.id })
+              .eq('id', wifeData.id);
+
+            if (updateWifeError) throw updateWifeError;
+
             // Add wife to local state
             const newWife = {
               id: wifeData.id,
@@ -668,6 +683,21 @@ const FamilyBuilder = () => {
               });
 
             if (marriageError) throw marriageError;
+
+            // Update spouse_id for both husband and wife
+            const { error: updateWifeError } = await supabase
+              .from('family_tree_members')
+              .update({ spouse_id: husbandData.id })
+              .eq('id', data.id);
+
+            if (updateWifeError) throw updateWifeError;
+
+            const { error: updateHusbandError } = await supabase
+              .from('family_tree_members')
+              .update({ spouse_id: data.id })
+              .eq('id', husbandData.id);
+
+            if (updateHusbandError) throw updateHusbandError;
 
             // Add husband to local state
             const newHusband = {
