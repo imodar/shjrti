@@ -17,6 +17,7 @@ import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SharedFooter } from "@/components/SharedFooter";
+import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
 const FamilyCreator = () => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const FamilyCreator = () => {
       setCurrentStep(1);
     }
   };
-  const handleCreateFamily = () => {
+  const handleCreateFamily = async () => {
     if (!firstMember.name.trim() || !firstMember.gender) {
       toast({
         title: "خطأ",
@@ -76,37 +77,95 @@ const FamilyCreator = () => {
       return;
     }
 
-    // Save family data and add to existing trees list
-    const familyData = {
-      tree: treeData,
-      firstMember: firstMember,
-      id: Date.now(),
-      createdAt: new Date().toISOString(),
-      membersCount: 1,
-      generations: 1
-    };
+    try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        toast({
+          title: "خطأ في المصادقة",
+          description: "يرجى تسجيل الدخول أولاً",
+          variant: "destructive"
+        });
+        return;
+      }
 
-    // Get existing trees from localStorage
-    const existingTrees = JSON.parse(localStorage.getItem('familyTrees') || '[]');
+      // Create family in database
+      const { data: family, error: familyError } = await supabase
+        .from('families')
+        .insert({
+          name: treeData.name,
+          creator_id: user.id,
+          subscription_status: 'active'
+        })
+        .select()
+        .single();
 
-    // Add new tree to the list
-    const newTreeForList = {
-      id: familyData.id,
-      name: treeData.name,
-      description: treeData.description,
-      members: 1, // Changed from membersCount to members to match Dashboard
-      generations: 1,
-      lastUpdated: new Date().toISOString(),
-      createdAt: familyData.createdAt,
-      status: "نشط",
-      privacy: "خاص",
-      founderName: firstMember.name,
-      founderImage: firstMember.croppedImage
-    };
-    existingTrees.push(newTreeForList);
-    localStorage.setItem('familyTrees', JSON.stringify(existingTrees));
-    localStorage.setItem('newFamilyData', JSON.stringify(familyData));
-    setShowSuccessModal(true);
+      if (familyError) {
+        console.error('Family creation error:', familyError);
+        throw familyError;
+      }
+
+      // Add the main family member (creator) to family_members table
+      const { error: memberError } = await supabase
+        .from('family_members')
+        .insert({
+          family_id: family.id,
+          user_id: user.id,
+          role: 'creator'
+        });
+
+      if (memberError) {
+        console.error('Member creation error:', memberError);
+        throw memberError;
+      }
+
+      // Save family data for localStorage (backward compatibility)
+      const familyData = {
+        tree: treeData,
+        firstMember: firstMember,
+        id: family.id,
+        createdAt: family.created_at,
+        membersCount: 1,
+        generations: 1
+      };
+
+      // Get existing trees from localStorage
+      const existingTrees = JSON.parse(localStorage.getItem('familyTrees') || '[]');
+
+      // Add new tree to the list
+      const newTreeForList = {
+        id: family.id,
+        name: treeData.name,
+        description: treeData.description,
+        members: 1,
+        generations: 1,
+        lastUpdated: family.updated_at,
+        createdAt: family.created_at,
+        status: "نشط",
+        privacy: "خاص",
+        founderName: firstMember.name,
+        founderImage: firstMember.croppedImage
+      };
+      existingTrees.push(newTreeForList);
+      localStorage.setItem('familyTrees', JSON.stringify(existingTrees));
+      localStorage.setItem('newFamilyData', JSON.stringify(familyData));
+      
+      setShowSuccessModal(true);
+      
+      toast({
+        title: "تم إنشاء العائلة بنجاح",
+        description: "تم حفظ بيانات العائلة في قاعدة البيانات"
+      });
+      
+    } catch (error) {
+      console.error('Error creating family:', error);
+      toast({
+        title: "خطأ في إنشاء العائلة",
+        description: "حدث خطأ أثناء حفظ بيانات العائلة، يرجى المحاولة مرة أخرى",
+        variant: "destructive"
+      });
+    }
   };
   const handleAddMoreMembers = () => {
     setShowSuccessModal(false);
