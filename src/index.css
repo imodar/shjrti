@@ -196,4 +196,19 @@ All colors MUST be HSL.
       transform: translateY(0);
     }
   }
+  }
+  
+  /* Calendar-specific styles to prevent class leakage */
+  .calendar-month-spacing {
+    @apply space-y-4;
+  }
+  
+  .calendar-table-spacing {
+    @apply space-y-1;
+  }
+  
+  /* Ensure calendar classes only apply within calendar context */
+  .rdp-caption {
+    /* Calendar caption styles */
+  }
 }
