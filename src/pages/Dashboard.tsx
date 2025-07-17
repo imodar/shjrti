@@ -425,58 +425,67 @@ const Dashboard = () => {
 
           </div>
 
-          {/* Floating Upgrade Ribbon - Only for Free Users */}
+          {/* Creative Floating Upgrade Card - Only for Free Users */}
           {currentPlan.type === "free" && (
-            <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 group">
-              {/* Ribbon Container */}
-              <div className="relative">
-                {/* Main Ribbon */}
-                <div className="bg-primary shadow-2xl rounded-r-2xl pl-6 pr-4 py-6 transform -translate-x-3 group-hover:translate-x-0 transition-transform duration-500 ease-out">
-                  {/* Ribbon Fold Effect */}
-                  <div className="absolute left-0 top-0 w-3 h-full bg-primary/80 rounded-l-2xl transform -translate-x-3"></div>
-                  <div className="absolute left-0 top-2 w-1 h-4 bg-primary/60 rounded-r"></div>
-                  <div className="absolute left-0 bottom-2 w-1 h-4 bg-primary/60 rounded-r"></div>
-                  
-                  {/* Content */}
-                  <div className="text-white space-y-3 min-w-[200px]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
-                        <Crown className="h-5 w-5 text-white" />
+            <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50">
+              {/* Main Upgrade Card */}
+              <div className="relative group cursor-pointer" onClick={() => setShowUpgradeDialog(true)}>
+                {/* Card Container */}
+                <div className="bg-white dark:bg-card border-2 border-primary/20 rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 hover:rotate-1 min-w-[280px]">
+                  {/* Header with Crown */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                        <Crown className="h-6 w-6 text-white" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-lg leading-tight">ترقية</h3>
-                        <p className="text-white/80 text-sm">خطة أفضل</p>
-                      </div>
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full animate-bounce"></div>
                     </div>
-                    
-                    <div className="space-y-2">
-                      <p className="text-white/90 text-sm leading-relaxed">
-                        احصل على ميزات متقدمة وأشجار غير محدودة
-                      </p>
-                      
-                      <Button 
-                        size="sm"
-                        className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur font-semibold py-2 rounded-xl transition-all duration-300 hover:scale-105"
-                        onClick={() => setShowUpgradeDialog(true)}
-                      >
-                        ترقية الآن
-                        <Sparkles className="mr-2 h-4 w-4" />
-                      </Button>
+                    <div>
+                      <h3 className="text-xl font-bold text-primary">خطة مميزة</h3>
+                      <p className="text-sm text-muted-foreground">ترقية حسابك الآن</p>
                     </div>
                   </div>
-                  
-                  {/* Animated Glow */}
-                  <div className="absolute -inset-1 bg-primary/20 rounded-r-2xl blur-xl opacity-75 animate-pulse"></div>
-                </div>
-                
-                {/* Tab to show on hover */}
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-full">
-                  <div className="bg-primary rounded-r-lg px-2 py-4 shadow-lg group-hover:bg-primary/90 transition-colors duration-300">
-                    <div className="text-white text-xs font-bold writing-mode-vertical transform rotate-180">
-                      ترقية
+
+                  {/* Features List */}
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      <span>أشجار غير محدودة</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      <span>ميزات متقدمة</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                      <span>دعم مباشر</span>
                     </div>
                   </div>
+
+                  {/* Upgrade Button */}
+                  <Button 
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUpgradeDialog(true);
+                    }}
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    ترقية الآن
+                  </Button>
+
+                  {/* Decorative Elements */}
+                  <div className="absolute top-2 right-2 w-8 h-8 bg-primary/10 rounded-full animate-ping"></div>
+                  <div className="absolute bottom-2 left-2 w-6 h-6 bg-accent/10 rounded-full animate-pulse"></div>
+                  
+                  {/* Corner Ribbon */}
+                  <div className="absolute -top-2 -right-2 bg-accent text-white text-xs font-bold px-3 py-1 rounded-lg transform rotate-12 shadow-lg">
+                    عرض خاص!
+                  </div>
                 </div>
+
+                {/* Floating Animation */}
+                <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-xl scale-110 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
               </div>
             </div>
           )}
