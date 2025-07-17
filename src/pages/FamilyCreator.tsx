@@ -964,25 +964,8 @@ const FamilyCreator = () => {
                     }}
                   />
                   
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 mt-4 pt-4 border-t border-border/50">
-                    <Button
-                      onClick={() => {
-                        const wifeForm = document.querySelector('input[id="wife-name"]') as HTMLInputElement;
-                        if (wifeForm && wifeForm.value.trim()) {
-                          // Trigger the add wife function
-                          const event = new Event('click', { bubbles: true });
-                          const addButton = document.querySelector('button:has(span:contains("إضافة الزوجة"))');
-                          if (addButton) {
-                            addButton.dispatchEvent(event);
-                          }
-                        }
-                      }}
-                      className="flex-1 h-10 bg-gradient-to-r from-primary via-accent to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-                    >
-                      <Plus className="h-4 w-4 ml-2" />
-                      إضافة الزوجة
-                    </Button>
+                  {/* Close Button Only */}
+                  <div className="flex justify-end mt-4 pt-4 border-t border-border/50">
                     <Button
                       variant="outline"
                       onClick={() => setShowWivesModal(false)}

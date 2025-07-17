@@ -42,55 +42,57 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
 
   return (
     <div className="space-y-4">
-      {/* Wife Name */}
-      <div className="space-y-3">
-        <Label htmlFor="wife-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-          <div className="w-2 h-2 bg-accent rounded-full"></div>
-          اسم الزوجة *
-        </Label>
-        <Input
-          id="wife-name"
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          placeholder="أدخل اسم الزوجة"
-          className="h-10 rounded-lg bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-        />
-      </div>
-
-      {/* Birth Date */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4 text-primary" />
-          تاريخ الميلاد (اختياري)
-        </Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-start text-right font-arabic",
-                !formData.birthDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="ml-auto h-4 w-4" />
-              {formData.birthDate ? (
-                format(formData.birthDate, "PPP", { locale: ar })
-              ) : (
-                <span>اختر تاريخ الميلاد</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-            <Calendar
-              mode="single"
-              selected={formData.birthDate}
-              onSelect={(date) => setFormData({...formData, birthDate: date})}
-              disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
-              initialFocus
-              className="p-3 pointer-events-auto"
-            />
-          </PopoverContent>
-        </Popover>
+      {/* Name and Birth Date Row */}
+      <div className="grid grid-cols-3 gap-3">
+        {/* Wife Name - Takes 2/3 of the width */}
+        <div className="col-span-2 space-y-2">
+          <Label htmlFor="wife-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+            <div className="w-2 h-2 bg-accent rounded-full"></div>
+            اسم الزوجة *
+          </Label>
+          <Input
+            id="wife-name"
+            value={formData.name}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            placeholder="أدخل اسم الزوجة"
+            className="h-10 rounded-lg bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+          />
+        </div>
+        
+        {/* Birth Date - Takes 1/3 of the width */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-primary" />
+            تاريخ الميلاد
+          </Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
+                  !formData.birthDate && "text-muted-foreground"
+                )}
+              >
+                {formData.birthDate ? (
+                  format(formData.birthDate, "yyyy", { locale: ar })
+                ) : (
+                  <span>السنة</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+              <Calendar
+                mode="single"
+                selected={formData.birthDate}
+                onSelect={(date) => setFormData({...formData, birthDate: date})}
+                disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Living Status */}
@@ -171,6 +173,16 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
         </div>
       )}
 
+      
+      {/* Add Button */}
+      <Button
+        onClick={handleSubmit}
+        disabled={!formData.name.trim()}
+        className="w-full h-10 bg-gradient-to-r from-primary via-accent to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+      >
+        <Plus className="h-4 w-4 ml-2" />
+        إضافة الزوجة
+      </Button>
     </div>
   );
 };
