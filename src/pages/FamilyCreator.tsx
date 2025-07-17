@@ -168,134 +168,123 @@ const FamilyCreator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Simple Header */}
-      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-background">
+      
+      {/* Top Progress Bar */}
+      <div className="w-full bg-white border-b">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex items-center justify-center gap-8">
+            {/* Step 1 */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
-                <TreePine className="h-6 w-6 text-white" />
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                currentStep >= 1 
+                  ? 'bg-gradient-to-br from-primary to-accent shadow-lg' 
+                  : 'bg-muted'
+              }`}>
+                <TreePine className={`h-6 w-6 ${currentStep >= 1 ? 'text-white' : 'text-muted-foreground'}`} />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">كينلاك - العائلة الرقمية</h1>
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">الخطوة الأولى</p>
+                <h3 className="text-sm font-medium">معلومات الشجرة</h3>
+              </div>
             </div>
-            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-              العودة للرئيسية
-            </Button>
+            
+            {/* Progress Line */}
+            <div className={`w-24 h-1 rounded-full transition-all duration-500 ${
+              currentStep >= 2 ? 'bg-gradient-to-r from-primary to-accent' : 'bg-muted'
+            }`}></div>
+            
+            {/* Step 2 */}
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                currentStep >= 2 
+                  ? 'bg-gradient-to-br from-primary to-accent shadow-lg' 
+                  : 'bg-muted'
+              }`}>
+                <Users className={`h-6 w-6 ${currentStep >= 2 ? 'text-white' : 'text-muted-foreground'}`} />
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">الخطوة الثانية</p>
+                <h3 className="text-sm font-medium">بيانات المؤسس</h3>
+              </div>
+            </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
             
             {/* Left Side - Form */}
-            <div className="order-2 lg:order-1">
+            <div className="order-2 lg:order-1 space-y-8">
+              
+              {/* Title */}
+              <div className="text-center lg:text-right">
+                <h1 className="text-4xl font-bold text-foreground mb-4">إنشاء شجرة العائلة</h1>
+                <p className="text-lg text-muted-foreground">ابدأ رحلتك في بناء تاريخ عائلتك</p>
+              </div>
+
               {currentStep === 1 && (
                 <div className="space-y-8">
-                  {/* Progress Indicator */}
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-yellow-400 rounded-2xl flex items-center justify-center shadow-lg">
-                        <TreePine className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">الخطوة الأولى</p>
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">معلومات الشجرة</h2>
-                      </div>
-                    </div>
-                    <div className="flex-1 h-px bg-gradient-to-r from-green-200 to-transparent"></div>
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-2xl flex items-center justify-center opacity-50">
-                      <Users className="h-6 w-6 text-gray-400" />
-                    </div>
+                  
+                  {/* Family Name */}
+                  <div className="space-y-3">
+                    <Label htmlFor="family-name" className="text-lg font-medium text-foreground flex items-center gap-2">
+                      <TreePine className="h-5 w-5 text-primary" />
+                      اسم العائلة
+                    </Label>
+                    <Input
+                      id="family-name"
+                      value={treeData.name}
+                      onChange={(e) => setTreeData({...treeData, name: e.target.value})}
+                      placeholder="مثال: عائلة الأحمد"
+                      className="h-16 text-lg bg-muted/50 border-border rounded-2xl font-arabic"
+                    />
+                  </div>
+                  
+                  {/* Family Description */}
+                  <div className="space-y-3">
+                    <Label htmlFor="family-description" className="text-lg font-medium text-foreground flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-destructive" />
+                      وصف العائلة (اختياري)
+                    </Label>
+                    <Textarea
+                      id="family-description"
+                      value={treeData.description}
+                      onChange={(e) => setTreeData({...treeData, description: e.target.value})}
+                      placeholder="اكتب وصفاً موجزاً عن تاريخ عائلتك..."
+                      className="min-h-[140px] text-base bg-muted/50 border-border rounded-2xl resize-none font-arabic"
+                      rows={5}
+                    />
                   </div>
 
-                  {/* Title */}
-                  <div className="text-center lg:text-right mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">إنشاء شجرة العائلة</h1>
-                    <p className="text-gray-600 dark:text-gray-400">ابدأ رحلتك في بناء تاريخ عائلتك</p>
-                  </div>
-
-                  {/* Form */}
-                  <div className="space-y-6">
-                    <div>
-                      <Label htmlFor="family-name" className="text-base font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <TreePine className="h-4 w-4 text-green-500" />
-                        اسم العائلة
-                      </Label>
-                      <Input
-                        id="family-name"
-                        value={treeData.name}
-                        onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                        placeholder="مثال: عائلة الأحمد"
-                        className="mt-3 h-14 text-base bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-2xl"
-                      />
+                  {/* Next Button */}
+                  <Button 
+                    onClick={handleNextStep}
+                    className="w-full h-16 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-medium rounded-2xl text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <span>المتابعة للخطوة التالية</span>
+                      <ArrowRight className="h-6 w-6" />
                     </div>
-                    
-                    <div>
-                      <Label htmlFor="family-description" className="text-base font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <Heart className="h-4 w-4 text-red-500" />
-                        وصف العائلة (اختياري)
-                      </Label>
-                      <Textarea
-                        id="family-description"
-                        value={treeData.description}
-                        onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                        placeholder="اكتب وصفاً موجزاً عن تاريخ عائلتك..."
-                        className="mt-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-2xl min-h-[120px] resize-none"
-                        rows={4}
-                      />
-                    </div>
-
-                    <Button 
-                      onClick={handleNextStep}
-                      className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-base"
-                    >
-                      <div className="flex items-center justify-center gap-3">
-                        <span>المتابعة للخطوة التالية</span>
-                        <ArrowRight className="h-5 w-5" />
-                      </div>
-                    </Button>
-                  </div>
+                  </Button>
                 </div>
               )}
 
               {currentStep === 2 && (
                 <div className="space-y-8">
-                  {/* Progress Indicator */}
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg">
-                        <CheckCircle className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-green-600">مكتملة</p>
-                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">معلومات الشجرة</h3>
-                      </div>
-                    </div>
-                    <div className="flex-1 h-px bg-green-200"></div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <Users className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-blue-600">الخطوة الثانية</p>
-                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">بيانات المؤسس</h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Title */}
-                  <div className="text-center lg:text-right mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">بيانات مؤسس الشجرة</h1>
-                    <p className="text-gray-600 dark:text-gray-400">قم بإدخال بيانات مؤسس شجرة العائلة</p>
-                  </div>
-
+                  
                   {/* Founder Form */}
-                  <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50 rounded-3xl shadow-xl">
-                    <CardContent className="p-8 space-y-6">
+                  <Card className="bg-card border-border rounded-3xl shadow-lg">
+                    <CardHeader className="pb-6">
+                      <CardTitle className="text-2xl font-bold text-center">بيانات مؤسس الشجرة</CardTitle>
+                      <CardDescription className="text-center text-base">
+                        قم بإدخال بيانات مؤسس شجرة العائلة
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="founder-name" className="text-base font-medium">اسم المؤسس *</Label>
@@ -304,14 +293,14 @@ const FamilyCreator = () => {
                             value={founderData.name}
                             onChange={(e) => setFounderData({...founderData, name: e.target.value})}
                             placeholder="اسم المؤسس"
-                            className="mt-2 h-12 rounded-xl"
+                            className="mt-2 h-12 rounded-xl bg-muted/50 font-arabic"
                           />
                         </div>
                         
                         <div>
                           <Label htmlFor="founder-gender" className="text-base font-medium">الجنس *</Label>
                           <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                            <SelectTrigger className="mt-2 h-12 rounded-xl">
+                            <SelectTrigger className="mt-2 h-12 rounded-xl bg-muted/50">
                               <SelectValue placeholder="اختر الجنس" />
                             </SelectTrigger>
                             <SelectContent>
@@ -329,18 +318,18 @@ const FamilyCreator = () => {
                     <Button
                       variant="outline"
                       onClick={handlePrevStep}
-                      className="flex-1 h-12 rounded-xl border-gray-300 dark:border-gray-600"
+                      className="flex-1 h-14 rounded-xl border-border"
                     >
-                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      <ArrowLeft className="h-5 w-5 ml-2" />
                       السابق
                     </Button>
                     
                     <Button
                       onClick={handleNextStep}
-                      className="flex-1 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl"
+                      className="flex-1 h-14 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white rounded-xl font-medium"
                     >
-                      إنشاء الشجرة
-                      <CheckCircle className="h-4 w-4 mr-2" />
+                      <span>إنشاء الشجرة</span>
+                      <CheckCircle className="h-5 w-5 mr-2" />
                     </Button>
                   </div>
                 </div>
@@ -348,39 +337,40 @@ const FamilyCreator = () => {
             </div>
 
             {/* Right Side - Welcome Section */}
-            <div className="order-1 lg:order-2 text-center lg:text-right">
+            <div className="order-1 lg:order-2 text-center">
               <div className="relative">
-                {/* Large Tree Icon */}
-                <div className="w-48 h-48 mx-auto lg:mx-0 mb-8 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-yellow-400 rounded-full blur-3xl opacity-20"></div>
-                  <div className="relative w-full h-full bg-gradient-to-br from-green-400 to-yellow-400 rounded-full flex items-center justify-center shadow-2xl">
-                    <TreePine className="h-24 w-24 text-white" />
+                {/* Large Tree Icon Circle - matching the image exactly */}
+                <div className="w-72 h-72 mx-auto mb-12 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-secondary rounded-full blur-2xl opacity-30"></div>
+                  <div className="relative w-full h-full bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-2xl">
+                    <TreePine className="h-32 w-32 text-white" />
                   </div>
                 </div>
 
                 {/* Welcome Text */}
-                <div className="space-y-6">
-                  <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
-                    <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <span className="text-lg">🌟</span>
+                <div className="space-y-8">
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                      <span className="text-2xl">🌟</span>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">ابدأ رحلتك</h2>
+                    <h2 className="text-3xl font-bold text-foreground">ابدأ رحلتك</h2>
                   </div>
                   
-                  <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                  <p className="text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
                     ستكون هذه بداية شجرة عائلتك الرقمية التي ستحتفظ بذكريات أجيال عديدة
                   </p>
                   
-                  <div className="flex items-center justify-center lg:justify-start gap-4 pt-6">
-                    <div className="flex -space-x-2">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full border-2 border-white shadow-md"></div>
-                      <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full border-2 border-white shadow-md"></div>
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full border-2 border-white shadow-md"></div>
-                      <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full border-2 border-white shadow-md flex items-center justify-center">
-                        <Plus className="h-4 w-4 text-white" />
+                  {/* Avatar Circles */}
+                  <div className="flex items-center justify-center gap-6 pt-8">
+                    <div className="flex -space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full border-4 border-white shadow-lg"></div>
+                      <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full border-4 border-white shadow-lg"></div>
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full border-4 border-white shadow-lg"></div>
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+                        <Plus className="h-5 w-5 text-white" />
                       </div>
                     </div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">أضف أفراد عائلتك</span>
+                    <span className="text-base text-muted-foreground font-medium">أضف أفراد عائلتك</span>
                   </div>
                 </div>
               </div>
@@ -393,8 +383,8 @@ const FamilyCreator = () => {
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
         <DialogContent className="max-w-md text-center">
           <DialogHeader>
-            <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-8 w-8 text-primary" />
             </div>
             <DialogTitle className="text-2xl font-bold">تم إنشاء الشجرة بنجاح!</DialogTitle>
             <DialogDescription>
