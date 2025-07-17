@@ -565,6 +565,57 @@ const FamilyBuilder = () => {
           }
         }
 
+        // Add husbands if this is a female member
+        if (formData.gender === "female" && husbands.length > 0) {
+          for (const husband of husbands) {
+            // Create husband as family tree member
+            const { data: husbandData, error: husbandError } = await supabase
+              .from('family_tree_members')
+              .insert({
+                family_id: familyData?.id,
+                name: husband.name,
+                gender: 'male',
+                birth_date: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : null,
+                death_date: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
+                is_alive: husband.isAlive,
+                created_by: (await supabase.auth.getUser()).data.user?.id
+              })
+              .select()
+              .single();
+
+            if (husbandError) throw husbandError;
+
+            // Create marriage record
+            const { error: marriageError } = await supabase
+              .from('marriages')
+              .insert({
+                family_id: familyData?.id,
+                husband_id: husbandData.id,
+                wife_id: data.id,
+                is_active: true
+              });
+
+            if (marriageError) throw marriageError;
+
+            // Add husband to local state
+            const newHusband = {
+              id: husbandData.id,
+              name: husbandData.name,
+              fatherId: husbandData.father_id,
+              motherId: husbandData.mother_id,
+              isFounder: husbandData.is_founder,
+              gender: husbandData.gender,
+              birthDate: husbandData.birth_date || "",
+              isAlive: husbandData.is_alive,
+              deathDate: husbandData.death_date || null,
+              bio: husbandData.biography || "",
+              image: husbandData.image_url || null,
+              relation: "husband"
+            };
+            setFamilyMembers(prev => [...prev, newHusband]);
+          }
+        }
+
         // Update local state
         const newMember = {
           id: data.id,
@@ -583,7 +634,7 @@ const FamilyBuilder = () => {
         setFamilyMembers([...familyMembers, newMember]);
         toast({
           title: "تم الإضافة",
-          description: `تم إضافة ${formData.name}${wives.length > 0 ? ` مع ${wives.length} زوجة` : ''} للعائلة`
+          description: `تم إضافة ${formData.name}${wives.length > 0 ? ` مع ${wives.length} زوجة` : ''}${husbands.length > 0 ? ` مع ${husbands.length} زوج` : ''} للعائلة`
         });
       }
 
