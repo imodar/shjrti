@@ -68,12 +68,13 @@ const FamilyBuilder = () => {
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select('*')
-          .eq('creator_id', (await supabase.auth.getUser()).data.user?.id);
+          .eq('creator_id', (await supabase.auth.getUser()).data.user?.id)
+          .order('created_at', { ascending: false });
 
         if (familiesError) throw familiesError;
 
         if (families && families.length > 0) {
-          const family = families[0]; // Use first family for now
+          const family = families[0]; // Use most recent family
           setFamilyData(family);
           
           // Get family members
