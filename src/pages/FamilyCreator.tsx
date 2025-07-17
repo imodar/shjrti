@@ -884,116 +884,192 @@ const FamilyCreator = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Wives Management Modal */}
+      {/* Wives Management Modal - Creative Redesign */}
       <Dialog open={showWivesModal} onOpenChange={setShowWivesModal}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold flex items-center justify-center gap-3">
-              <Heart className="h-6 w-6 text-accent" />
-              إدارة الزوجات
-            </DialogTitle>
-            <DialogDescription className="text-center">
-              أضف وأدر معلومات زوجات المؤسس
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-6">
-            {/* Existing Wives List */}
-            {wives.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">الزوجات المضافة</h3>
-                <div className="grid gap-4">
-                  {wives.map((wife, index) => (
-                    <div key={wife.id} className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-primary/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                      <Card className="relative bg-card/80 backdrop-blur-xl border-border/50 rounded-xl">
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center">
-                                <span className="text-lg font-bold text-primary">{index + 1}</span>
-                              </div>
-                              <div>
-                                <h4 className="font-semibold text-foreground">{wife.name}</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {wife.isAlive ? 'على قيد الحياة' : 'متوفاة'}
-                                </p>
-                                {wife.birthDate && (
-                                  <p className="text-xs text-muted-foreground">
-                                    تاريخ الميلاد: {format(wife.birthDate, "PPP", { locale: ar })}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
-                              className="rounded-full"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 bg-gradient-to-br from-card/95 via-background/98 to-muted/95 backdrop-blur-2xl border-0 shadow-2xl">
+          {/* Header with Gradient Background */}
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(var(--primary),0.1),transparent_70%)]"></div>
+            <DialogHeader className="relative p-8 pb-6">
+              <DialogTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent flex items-center justify-center gap-4">
+                <div className="relative">
+                  <Heart className="h-8 w-8 text-accent animate-pulse" />
+                  <div className="absolute inset-0 h-8 w-8 bg-accent/20 rounded-full blur-lg"></div>
                 </div>
-              </div>
-            )}
-
-            {/* Add New Wife Form */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Plus className="h-5 w-5 text-accent" />
-                إضافة زوجة جديدة
-              </h3>
-              
-              <Card className="bg-muted/30 border-2 border-dashed border-border/50 rounded-xl">
-                <CardContent className="p-4">
-                  <WifeForm 
-                    ref={wifeFormRef}
-                    onAddWife={(wifeData) => {
-                      const newWife = {
-                        id: Math.random().toString(36).substr(2, 9),
-                        ...wifeData
-                      };
-                      setWives([...wives, newWife]);
-                      toast({
-                        title: "تم إضافة الزوجة",
-                        description: "تم إضافة الزوجة بنجاح إلى القائمة"
-                      });
-                    }}
-                  />
-                  
-                  {/* Buttons Row */}
-                  <div className="flex justify-between gap-3 mt-4 pt-4 border-t border-border/50">
-                    <Button
-                      onClick={() => wifeFormRef.current?.handleSubmit()}
-                      disabled={!wifeFormRef.current?.isValid()}
-                      className="h-10 px-6 bg-gradient-to-r from-primary via-accent to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-                    >
-                      <Plus className="h-4 w-4 ml-2" />
-                      إضافة الزوجة
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowWivesModal(false)}
-                      className="h-10 px-6 rounded-lg border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-                    >
-                      إغلاق
-                    </Button>
+                إدارة الزوجات
+              </DialogTitle>
+              <DialogDescription className="text-center text-lg mt-3 text-muted-foreground/80">
+                أضف وأدر معلومات زوجات المؤسس بطريقة أنيقة ومنظمة
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          {/* Main Content with Custom Scrollbar */}
+          <div className="px-8 pb-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div className="space-y-8">
+              {/* Existing Wives List with Enhanced Design */}
+              {wives.length > 0 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
+                    <h3 className="text-xl font-bold text-foreground bg-background/80 px-4 py-2 rounded-full border border-border/50">
+                      الزوجات المضافة ({wives.length})
+                    </h3>
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
                   </div>
-                </CardContent>
-              </Card>
+                  
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {wives.map((wife, index) => (
+                      <div key={wife.id} className="relative group animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                        {/* Floating Glow Effect */}
+                        <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"></div>
+                        
+                        {/* Main Card */}
+                        <Card className="relative bg-gradient-to-br from-card/90 to-muted/50 backdrop-blur-xl border border-border/30 rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl">
+                          {/* Card Header with Number Badge */}
+                          <div className="absolute top-4 right-4 z-10">
+                            <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center shadow-lg">
+                              <span className="text-sm font-bold text-white">{index + 1}</span>
+                            </div>
+                          </div>
+                          
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center gap-4 flex-1">
+                                {/* Wife Avatar */}
+                                <div className="relative">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-accent/30 via-primary/20 to-secondary/30 rounded-2xl flex items-center justify-center border-2 border-primary/20 shadow-inner">
+                                    <Heart className="h-6 w-6 text-primary/70" />
+                                  </div>
+                                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full border-2 border-background flex items-center justify-center">
+                                    {wife.isAlive ? (
+                                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                    ) : (
+                                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* Wife Info */}
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-lg text-foreground mb-1 truncate">{wife.name}</h4>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className={cn(
+                                      "px-3 py-1 rounded-full text-xs font-medium",
+                                      wife.isAlive 
+                                        ? "bg-emerald-100 text-emerald-700 border border-emerald-200" 
+                                        : "bg-gray-100 text-gray-600 border border-gray-200"
+                                    )}>
+                                      {wife.isAlive ? 'على قيد الحياة' : 'متوفاة'}
+                                    </div>
+                                  </div>
+                                  
+                                  {wife.birthDate && (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                      <CalendarIcon className="h-3 w-3" />
+                                      <span>ولدت في {format(wife.birthDate, "yyyy", { locale: ar })}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {wife.deathDate && (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                      <CalendarIcon className="h-3 w-3" />
+                                      <span>توفيت في {format(wife.deathDate, "yyyy", { locale: ar })}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Delete Button */}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
+                                className="relative group/delete h-10 w-10 rounded-xl hover:bg-destructive/10 hover:scale-110 transition-all duration-200"
+                              >
+                                <X className="h-4 w-4 text-muted-foreground group-hover/delete:text-destructive transition-colors" />
+                                <div className="absolute inset-0 bg-destructive/20 rounded-xl scale-0 group-hover/delete:scale-100 transition-transform duration-200"></div>
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Add New Wife Form with Enhanced Design */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
+                  <h3 className="text-xl font-bold text-foreground bg-background/80 px-4 py-2 rounded-full border border-border/50 flex items-center gap-3">
+                    <div className="w-6 h-6 bg-gradient-to-br from-accent via-primary to-secondary rounded-full flex items-center justify-center">
+                      <Plus className="h-3 w-3 text-white" />
+                    </div>
+                    إضافة زوجة جديدة
+                  </h3>
+                  <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
+                </div>
+                
+                {/* Enhanced Form Card */}
+                <Card className="relative overflow-hidden bg-gradient-to-br from-muted/30 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl hover:border-primary/50 transition-all duration-300">
+                  {/* Animated Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary),0.3),transparent_70%)] animate-pulse"></div>
+                  </div>
+                  
+                  <CardContent className="relative p-8">
+                    <WifeForm 
+                      ref={wifeFormRef}
+                      onAddWife={(wifeData) => {
+                        const newWife = {
+                          id: Math.random().toString(36).substr(2, 9),
+                          ...wifeData
+                        };
+                        setWives([...wives, newWife]);
+                        toast({
+                          title: "✨ تم إضافة الزوجة بنجاح",
+                          description: "تم حفظ معلومات الزوجة الجديدة في شجرة العائلة",
+                        });
+                      }}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
 
-          <DialogFooter className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => setShowWivesModal(false)}>
-              إغلاق
-            </Button>
-          </DialogFooter>
+          {/* Enhanced Footer with Floating Design */}
+          <div className="relative p-6 bg-gradient-to-r from-background/80 via-card/90 to-background/80 backdrop-blur-xl border-t border-border/30">
+            <div className="flex justify-between items-center gap-4">
+              <Button
+                onClick={() => wifeFormRef.current?.handleSubmit()}
+                disabled={!wifeFormRef.current?.isValid()}
+                className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-primary text-white font-bold rounded-2xl px-8 py-3 h-auto shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center gap-3">
+                  <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
+                    <Plus className="h-3 w-3" />
+                  </div>
+                  إضافة الزوجة
+                </div>
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={() => setShowWivesModal(false)}
+                className="relative overflow-hidden border-2 border-border hover:border-primary/50 rounded-2xl px-8 py-3 h-auto font-semibold hover:bg-primary/5 transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <X className="h-4 w-4" />
+                  إغلاق
+                </div>
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
