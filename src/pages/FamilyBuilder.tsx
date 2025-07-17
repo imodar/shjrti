@@ -77,6 +77,7 @@ const FamilyBuilder = () => {
           setFamilyData(family);
           
           // Get family members
+          // First, get family members
           const { data: members, error: membersError } = await supabase
             .from('family_members')
             .select('*')
@@ -84,19 +85,42 @@ const FamilyBuilder = () => {
 
           if (membersError) throw membersError;
 
-          if (members) {
+          if (members && members.length > 0) {
+            // Get user profiles for the family members
+            const userIds = members.map(member => member.user_id).filter(Boolean);
+            let profiles = [];
+            
+            if (userIds.length > 0) {
+              const { data: profilesData, error: profilesError } = await supabase
+                .from('profiles')
+                .select('user_id, first_name, last_name, email')
+                .in('user_id', userIds);
+              
+              if (!profilesError && profilesData) {
+                profiles = profilesData;
+              }
+            }
+
             // Transform the data to match the expected format
-            const transformedMembers = members.map(member => ({
-              id: member.id,
-              name: member.user_id || 'عضو العائلة', // You might want to join with profiles table
-              relation: member.role === 'creator' ? 'founder' : member.role,
-              gender: 'male', // Default, you might want to get this from profiles
-              birthDate: '',
-              isAlive: true,
-              deathDate: null,
-              image: null,
-              bio: ''
-            }));
+            const transformedMembers = members.map(member => {
+              const profile = profiles.find(p => p.user_id === member.user_id);
+              const name = profile ? 
+                `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 
+                profile.email || 'عضو العائلة' 
+                : 'عضو العائلة';
+              
+              return {
+                id: member.id,
+                name: name,
+                relation: member.role === 'creator' ? 'founder' : member.role,
+                gender: 'male', // Default, you might want to get this from profiles
+                birthDate: '',
+                isAlive: true,
+                deathDate: null,
+                image: null,
+                bio: ''
+              };
+            });
             setFamilyMembers(transformedMembers);
           }
         }
