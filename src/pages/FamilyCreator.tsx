@@ -203,164 +203,294 @@ const FamilyCreator = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
+      <div className="relative overflow-hidden">
+        {/* Background Decoration */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/10 rounded-full blur-3xl animate-float-delayed"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-float-slow"></div>
+        </div>
+
+        <div className="container mx-auto px-6 py-16">
+          <div className="max-w-6xl mx-auto">
             
-            {/* Left Side - Form */}
-            <div className="order-2 lg:order-1 space-y-8">
-              
-              {/* Title */}
-              <div className="text-center lg:text-right">
-                <h1 className="text-4xl font-bold text-foreground mb-4">إنشاء شجرة العائلة</h1>
-                <p className="text-lg text-muted-foreground">ابدأ رحلتك في بناء تاريخ عائلتك</p>
+            {/* Page Title - Creative Header */}
+            <div className="text-center mb-16 relative">
+              <div className="inline-flex items-center gap-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-lg border border-primary/20 rounded-full px-8 py-4 mb-8">
+                <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-primary font-medium">إنشاء شجرة العائلة</span>
+                <div className="w-3 h-3 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
               </div>
-
-              {currentStep === 1 && (
-                <div className="space-y-8">
-                  
-                  {/* Family Name */}
-                  <div className="space-y-3">
-                    <Label htmlFor="family-name" className="text-lg font-medium text-foreground flex items-center gap-2">
-                      <TreePine className="h-5 w-5 text-primary" />
-                      اسم العائلة
-                    </Label>
-                    <Input
-                      id="family-name"
-                      value={treeData.name}
-                      onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                      placeholder="مثال: عائلة الأحمد"
-                      className="h-16 text-lg bg-muted/50 border-border rounded-2xl font-arabic"
-                    />
-                  </div>
-                  
-                  {/* Family Description */}
-                  <div className="space-y-3">
-                    <Label htmlFor="family-description" className="text-lg font-medium text-foreground flex items-center gap-2">
-                      <Heart className="h-5 w-5 text-destructive" />
-                      وصف العائلة (اختياري)
-                    </Label>
-                    <Textarea
-                      id="family-description"
-                      value={treeData.description}
-                      onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                      placeholder="اكتب وصفاً موجزاً عن تاريخ عائلتك..."
-                      className="min-h-[140px] text-base bg-muted/50 border-border rounded-2xl resize-none font-arabic"
-                      rows={5}
-                    />
-                  </div>
-
-                  {/* Next Button */}
-                  <Button 
-                    onClick={handleNextStep}
-                    className="w-full h-16 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-medium rounded-2xl text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="flex items-center justify-center gap-3">
-                      <span>المتابعة للخطوة التالية</span>
-                      <ArrowRight className="h-6 w-6" />
-                    </div>
-                  </Button>
-                </div>
-              )}
-
-              {currentStep === 2 && (
-                <div className="space-y-8">
-                  
-                  {/* Founder Form */}
-                  <Card className="bg-card border-border rounded-3xl shadow-lg">
-                    <CardHeader className="pb-6">
-                      <CardTitle className="text-2xl font-bold text-center">بيانات مؤسس الشجرة</CardTitle>
-                      <CardDescription className="text-center text-base">
-                        قم بإدخال بيانات مؤسس شجرة العائلة
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <Label htmlFor="founder-name" className="text-base font-medium">اسم المؤسس *</Label>
-                          <Input
-                            id="founder-name"
-                            value={founderData.name}
-                            onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                            placeholder="اسم المؤسس"
-                            className="mt-2 h-12 rounded-xl bg-muted/50 font-arabic"
-                          />
-                        </div>
-                        
-                        <div>
-                          <Label htmlFor="founder-gender" className="text-base font-medium">الجنس *</Label>
-                          <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                            <SelectTrigger className="mt-2 h-12 rounded-xl bg-muted/50">
-                              <SelectValue placeholder="اختر الجنس" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="male">ذكر</SelectItem>
-                              <SelectItem value="female">أنثى</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Navigation */}
-                  <div className="flex gap-4">
-                    <Button
-                      variant="outline"
-                      onClick={handlePrevStep}
-                      className="flex-1 h-14 rounded-xl border-border"
-                    >
-                      <ArrowLeft className="h-5 w-5 ml-2" />
-                      السابق
-                    </Button>
-                    
-                    <Button
-                      onClick={handleNextStep}
-                      className="flex-1 h-14 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white rounded-xl font-medium"
-                    >
-                      <span>إنشاء الشجرة</span>
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              
+              <h1 className="text-5xl lg:text-6xl font-bold text-foreground mb-6 relative">
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
+                  ابدأ رحلة
+                </span>
+                <br />
+                <span className="text-foreground">تاريخ عائلتك</span>
+              </h1>
+              
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                اصنع ذكريات تدوم للأبد واحفظ تاريخ عائلتك للأجيال القادمة
+              </p>
             </div>
 
-            {/* Right Side - Welcome Section */}
-            <div className="order-1 lg:order-2 text-center">
-              <div className="relative">
-                {/* Large Tree Icon Circle - matching the image exactly */}
-                <div className="w-72 h-72 mx-auto mb-12 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-secondary rounded-full blur-2xl opacity-30"></div>
-                  <div className="relative w-full h-full bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-2xl">
-                    <TreePine className="h-32 w-32 text-white" />
-                  </div>
-                </div>
+            <div className="grid lg:grid-cols-2 gap-16 items-start">
+              
+              {/* Left Side - Interactive Form */}
+              <div className="order-2 lg:order-1 space-y-8">
+                
+                {currentStep === 1 && (
+                  <div className="space-y-8">
+                    
+                    {/* Welcome Card */}
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+                      <Card className="relative bg-card/80 backdrop-blur-xl border-border/50 rounded-3xl shadow-2xl overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
+                        <CardHeader className="pb-8 pt-10">
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                              <TreePine className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-2xl font-bold text-foreground">معلومات العائلة</CardTitle>
+                              <CardDescription className="text-muted-foreground mt-1">
+                                الخطوة الأولى لبناء شجرة عائلتك
+                              </CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-8 pb-10">
+                          
+                          {/* Family Name Input */}
+                          <div className="space-y-4">
+                            <Label htmlFor="family-name" className="text-lg font-medium text-foreground flex items-center gap-3">
+                              <div className="w-2 h-2 bg-primary rounded-full"></div>
+                              اسم العائلة
+                            </Label>
+                            <div className="relative group">
+                              <Input
+                                id="family-name"
+                                value={treeData.name}
+                                onChange={(e) => setTreeData({...treeData, name: e.target.value})}
+                                placeholder="مثال: عائلة الأحمد"
+                                className="h-16 text-lg bg-muted/30 border-2 border-transparent rounded-2xl font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Family Description */}
+                          <div className="space-y-4">
+                            <Label htmlFor="family-description" className="text-lg font-medium text-foreground flex items-center gap-3">
+                              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                              وصف العائلة (اختياري)
+                            </Label>
+                            <div className="relative group">
+                              <Textarea
+                                id="family-description"
+                                value={treeData.description}
+                                onChange={(e) => setTreeData({...treeData, description: e.target.value})}
+                                placeholder="اكتب وصفاً موجزاً عن تاريخ عائلتك..."
+                                className="min-h-[160px] text-base bg-muted/30 border-2 border-transparent rounded-2xl resize-none font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                                rows={6}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            </div>
+                          </div>
 
-                {/* Welcome Text */}
-                <div className="space-y-8">
-                  <div className="flex items-center justify-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                      <span className="text-2xl">🌟</span>
+                          {/* Next Button - Enhanced */}
+                          <div className="pt-4">
+                            <Button 
+                              onClick={handleNextStep}
+                              className="w-full h-16 bg-gradient-to-r from-primary via-accent to-primary bg-size-200 hover:bg-pos-100 text-white font-semibold rounded-2xl text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 relative overflow-hidden group"
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                              <div className="relative flex items-center justify-center gap-3">
+                                <span>المتابعة للخطوة التالية</span>
+                                <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
+                              </div>
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                    <h2 className="text-3xl font-bold text-foreground">ابدأ رحلتك</h2>
                   </div>
+                )}
+
+                {currentStep === 2 && (
+                  <div className="space-y-8">
+                    
+                    {/* Founder Form - Enhanced */}
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+                      <Card className="relative bg-card/80 backdrop-blur-xl border-border/50 rounded-3xl shadow-2xl overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
+                        <CardHeader className="pb-8 pt-10">
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
+                              <Users className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-2xl font-bold text-foreground">بيانات مؤسس الشجرة</CardTitle>
+                              <CardDescription className="text-muted-foreground mt-1">
+                                أدخل معلومات الشخص الذي ستبدأ منه الشجرة
+                              </CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-8 pb-10">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            {/* Founder Name */}
+                            <div className="space-y-4">
+                              <Label htmlFor="founder-name" className="text-base font-medium text-foreground flex items-center gap-2">
+                                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                اسم المؤسس *
+                              </Label>
+                              <div className="relative group">
+                                <Input
+                                  id="founder-name"
+                                  value={founderData.name}
+                                  onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                                  placeholder="أدخل اسم المؤسس"
+                                  className="h-14 rounded-xl bg-muted/30 border-2 border-transparent font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Gender Selection */}
+                            <div className="space-y-4">
+                              <Label htmlFor="founder-gender" className="text-base font-medium text-foreground flex items-center gap-2">
+                                <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                                الجنس *
+                              </Label>
+                              <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
+                                <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300">
+                                  <SelectValue placeholder="اختر الجنس" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-border/50 bg-card/95 backdrop-blur-xl">
+                                  <SelectItem value="male" className="rounded-lg hover:bg-primary/10 focus:bg-primary/10">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                      ذكر
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="female" className="rounded-lg hover:bg-accent/10 focus:bg-accent/10">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-3 h-3 bg-pink-500 rounded-full"></div>
+                                      أنثى
+                                    </div>
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Navigation - Enhanced */}
+                    <div className="flex gap-6">
+                      <Button
+                        variant="outline"
+                        onClick={handlePrevStep}
+                        className="flex-1 h-16 rounded-xl border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:bg-muted/50 hover:border-primary/30 transition-all duration-300"
+                      >
+                        <ArrowLeft className="h-5 w-5 ml-2" />
+                        السابق
+                      </Button>
+                      
+                      <Button
+                        onClick={handleNextStep}
+                        className="flex-1 h-16 bg-gradient-to-r from-primary via-accent to-primary bg-size-200 hover:bg-pos-100 text-white rounded-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-500 relative overflow-hidden group"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                        <div className="relative flex items-center justify-center gap-3">
+                          <CheckCircle className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                          <span>إنشاء الشجرة</span>
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Side - Enhanced Welcome Section */}
+              <div className="order-1 lg:order-2 text-center">
+                <div className="relative perspective-1000">
                   
-                  <p className="text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
-                    ستكون هذه بداية شجرة عائلتك الرقمية التي ستحتفظ بذكريات أجيال عديدة
-                  </p>
-                  
-                  {/* Avatar Circles */}
-                  <div className="flex items-center justify-center gap-6 pt-8">
-                    <div className="flex -space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full border-4 border-white shadow-lg"></div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full border-4 border-white shadow-lg"></div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full border-4 border-white shadow-lg"></div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-                        <Plus className="h-5 w-5 text-white" />
+                  {/* 3D Tree Icon Circle with Animation */}
+                  <div className="w-80 h-80 mx-auto mb-16 relative preserve-3d">
+                    {/* Background Glow Effects */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-secondary/30 rounded-full blur-3xl animate-pulse"></div>
+                    <div className="absolute inset-4 bg-gradient-to-tr from-accent/40 via-primary/30 to-secondary/40 rounded-full blur-2xl animate-float"></div>
+                    
+                    {/* Main Circle */}
+                    <div className="relative w-full h-full bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center shadow-2xl transform rotate-y-12 hover:rotate-y-0 transition-transform duration-700 group">
+                      <div className="absolute inset-2 bg-gradient-to-tr from-white/10 to-white/5 rounded-full"></div>
+                      <TreePine className="h-32 w-32 text-white relative z-10 group-hover:scale-110 transition-transform duration-500" />
+                      
+                      {/* Floating Elements */}
+                      <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-lg animate-float">
+                        <span className="text-white text-sm">🌟</span>
+                      </div>
+                      <div className="absolute -bottom-6 -left-6 w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg animate-float-delayed">
+                        <Heart className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="absolute top-1/2 -right-8 w-6 h-6 bg-primary rounded-full animate-float-slow opacity-80"></div>
+                    </div>
+                  </div>
+
+                  {/* Enhanced Welcome Content */}
+                  <div className="space-y-10">
+                    
+                    {/* Welcome Header */}
+                    <div className="relative">
+                      <div className="inline-flex items-center gap-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-lg border border-primary/20 rounded-full px-8 py-4 mb-8">
+                        <div className="w-10 h-10 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center animate-spin-slow">
+                          <span className="text-2xl">🌳</span>
+                        </div>
+                        <h2 className="text-2xl font-bold text-foreground">ابدأ رحلتك</h2>
                       </div>
                     </div>
-                    <span className="text-base text-muted-foreground font-medium">أضف أفراد عائلتك</span>
+                    
+                    {/* Description */}
+                    <div className="relative">
+                      <p className="text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
+                        ستكون هذه بداية شجرة عائلتك الرقمية التي ستحتفظ بذكريات أجيال عديدة
+                      </p>
+                      
+                      {/* Decorative Lines */}
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+                      <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+                    </div>
+                    
+                    {/* Feature Icons */}
+                    <div className="grid grid-cols-3 gap-8 pt-8">
+                      <div className="text-center group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <Users className="h-8 w-8 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground font-medium">إضافة الأفراد</p>
+                      </div>
+                      
+                      <div className="text-center group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-accent/20 to-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <Heart className="h-8 w-8 text-accent" />
+                        </div>
+                        <p className="text-sm text-muted-foreground font-medium">حفظ الذكريات</p>
+                      </div>
+                      
+                      <div className="text-center group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <TreePine className="h-8 w-8 text-secondary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground font-medium">بناء الشجرة</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
