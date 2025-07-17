@@ -114,7 +114,7 @@ const FamilyCreator = () => {
   };
   const handleSkipTodashboard = () => {
     setShowSuccessModal(false);
-    navigate("/dashboard2");
+    navigate("/dashboard");
     toast({
       title: "تم إنشاء الشجرة بنجاح",
       description: "تم إنشاء شجرة العائلة بنجاح، يمكنك إضافة أفراد آخرين لاحقاً"
@@ -239,7 +239,7 @@ const FamilyCreator = () => {
             <div className="flex items-center gap-6">
               {/* Navigation Pills */}
               <div className="hidden md:flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-full p-1 border border-primary/50 dark:border-primary/50">
-                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-primary/20" onClick={() => navigate("/dashboard2")}>
+                <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-primary/20" onClick={() => navigate("/dashboard")}>
                   الرئيسية
                 </Button>
                 <Button variant="ghost" size="sm" className="rounded-full px-4 bg-primary/20 text-primary dark:text-primary hover:bg-primary/30">
@@ -282,7 +282,7 @@ const FamilyCreator = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/dashboard2")}>
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     <User className="mr-2 h-4 w-4" />
                     <span>لوحة التحكم</span>
                   </DropdownMenuItem>

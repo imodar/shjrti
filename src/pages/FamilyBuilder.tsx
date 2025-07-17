@@ -20,16 +20,34 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import Footer from "@/components/Footer";
+import { SharedFooter } from "@/components/SharedFooter";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import Cropper from "react-easy-crop";
 
-// Mock data for existing family members
-const mockFamilyMembers = [
-  { id: 1, name: "أحمد محمد الأحمد", relation: "father", gender: "male", birthDate: "1950-03-15", isAlive: false, deathDate: "2020-12-01", image: null, bio: "رب الأسرة وقدوة للجميع، عمل في التجارة وترك إرثاً طيباً" },
-  { id: 2, name: "فاطمة سالم", relation: "mother", gender: "female", birthDate: "1955-08-20", isAlive: true, deathDate: null, image: null, bio: "ربة منزل مثالية ومعلمة للأجيال، تحب الطبخ والحياكة" },
-  { id: 3, name: "محمد أحمد", relation: "son", gender: "male", birthDate: "1975-12-10", isAlive: true, deathDate: null, image: null, bio: "مهندس في شركة تقنية، متزوج وله ثلاثة أطفال" },
-  { id: 4, name: "سارة علي", relation: "daughter", gender: "female", birthDate: "1978-05-22", isAlive: true, deathDate: null, image: null, bio: "طبيبة أطفال، تعمل في مستشفى الملك فيصل" }
-];
+// Get family members from real data
+const getFamilyMembersFromStorage = () => {
+  const existingTrees = JSON.parse(localStorage.getItem('familyTrees') || '[]');
+  const familyData = JSON.parse(localStorage.getItem('newFamilyData') || '{}');
+  
+  // Combine data from both sources
+  let members = [];
+  
+  if (familyData.firstMember) {
+    members.push({
+      id: 1,
+      name: familyData.firstMember.name,
+      relation: familyData.firstMember.relation,
+      gender: familyData.firstMember.gender,
+      birthDate: familyData.firstMember.birthDate,
+      isAlive: familyData.firstMember.isAlive,
+      deathDate: familyData.firstMember.deathDate,
+      image: familyData.firstMember.croppedImage,
+      bio: familyData.firstMember.bio
+    });
+  }
+  
+  return members;
+};
 
 const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
   if (gender === "male") {
@@ -54,6 +72,7 @@ const FamilyBuilder = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { notifications, profile } = useDashboardData();
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
@@ -76,7 +95,7 @@ const FamilyBuilder = () => {
         bio: ""
       }];
     }
-    return isNew ? [] : mockFamilyMembers;
+    return isNew ? [] : getFamilyMembersFromStorage();
   });
   
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -377,12 +396,29 @@ const FamilyBuilder = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-primary/30">
                     <Bell className="h-5 w-5 text-primary dark:text-primary" />
+                    {notifications.filter(n => !n.read).length > 0 && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
+                        {notifications.filter(n => !n.read).length}
+                      </span>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-80 bg-popover backdrop-blur-xl border border-primary/50 shadow-2xl" align="end">
                   <DropdownMenuLabel>الإشعارات</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>لا توجد إشعارات جديدة</DropdownMenuItem>
+                  {notifications.length > 0 ? (
+                    notifications.map(notification => (
+                      <DropdownMenuItem key={notification.id} className={`p-3 ${!notification.read ? 'bg-primary/5' : ''}`}>
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">{notification.title}</p>
+                          <p className="text-xs text-muted-foreground">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground">{notification.time}</p>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <DropdownMenuItem className="text-gray-500">لا توجد إشعارات جديدة</DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -394,18 +430,24 @@ const FamilyBuilder = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56 bg-popover backdrop-blur-xl border border-primary/50 shadow-2xl" align="end">
-                  <DropdownMenuLabel>حساب المستخدم</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">{profile ? `${profile.firstName} ${profile.lastName}` : 'المستخدم'}</p>
+                      <p className="text-xs text-muted-foreground">{profile?.email}</p>
+                      <p className="text-xs text-primary">{profile?.plan}</p>
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/dashboard2")}>
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     <User className="mr-2 h-4 w-4" />
                     لوحة التحكم
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
                     <Settings className="mr-2 h-4 w-4" />
                     الإعدادات
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/auth")}>
                     <LogOut className="mr-2 h-4 w-4" />
                     تسجيل الخروج
                   </DropdownMenuItem>
@@ -413,7 +455,7 @@ const FamilyBuilder = () => {
               </DropdownMenu>
 
               <Button
-                onClick={() => navigate("/dashboard2")}
+                onClick={() => navigate("/dashboard")}
                 variant="outline"
                 className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6"
               >
@@ -1113,7 +1155,7 @@ const FamilyBuilder = () => {
         </DialogContent>
       </Dialog>
 
-      <Footer />
+      <SharedFooter />
     </div>
   );
 };

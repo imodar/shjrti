@@ -112,7 +112,7 @@ const mockNotifications = [
   }
 ];
 
-const Dashboard2 = () => {
+const Dashboard = () => {
   const [trees, setTrees] = useState(getTreesFromStorage());
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
@@ -1036,4 +1036,4 @@ const Dashboard2 = () => {
       <Footer />
     </div>;
 };
-export default Dashboard2;
+export default Dashboard;

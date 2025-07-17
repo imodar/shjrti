@@ -172,7 +172,7 @@ const ViewTree = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => navigate('/dashboard2')}
+                  onClick={() => navigate('/dashboard')}
                   className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30"
                 >
                   <ArrowLeft className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
