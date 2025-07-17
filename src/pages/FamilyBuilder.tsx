@@ -846,22 +846,10 @@ const FamilyBuilder = () => {
                           
                           {/* Member Info with Creative Typography */}
                           <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="flex flex-col flex-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                                  {member.name.split(' ')[0]} {/* First name only */}
-                                </h3>
-                                <span className="text-sm text-muted-foreground">
-                                  ({member.gender === 'male' ? 'ذكر' : 'أنثى'})
-                                </span>
-                              </div>
-                              {member.relatedPersonId && (
-                                <div className="text-sm text-muted-foreground font-medium">
-                                  {getFullName(member).split(' ').slice(1).join(' ')} {/* Father lineage */}
-                                </div>
-                              )}
-                            </div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                                {getFullName(member)}
+                              </h3>
                               <Badge className={cn(
                                 "px-3 py-1 rounded-full font-medium text-xs border-0 shadow-md transition-all duration-300 group-hover:scale-105",
                                 member.gender === "male" 
