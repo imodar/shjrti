@@ -419,23 +419,23 @@ const FamilyCreator = () => {
                         </CardHeader>
                         <CardContent className="space-y-6 pb-10">
                           
-                          {/* Basic Info - Name */}
-                          <div className="space-y-3">
-                            <Label htmlFor="founder-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-                              <div className="w-2 h-2 bg-primary rounded-full"></div>
-                              اسم المؤسس *
-                            </Label>
-                            <Input
-                              id="founder-name"
-                              value={founderData.name}
-                              onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                              placeholder="أدخل اسم المؤسس"
-                              className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-                            />
-                          </div>
-                          
-                          {/* Gender & Birth Date Row */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Name, Gender & Birth Date Row */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            
+                            {/* Name */}
+                            <div className="space-y-3">
+                              <Label htmlFor="founder-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+                                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                اسم المؤسس *
+                              </Label>
+                              <Input
+                                id="founder-name"
+                                value={founderData.name}
+                                onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                                placeholder="أدخل اسم المؤسس"
+                                className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+                              />
+                            </div>
                             
                             {/* Gender Selection */}
                             <div className="space-y-3">
