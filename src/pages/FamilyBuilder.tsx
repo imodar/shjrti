@@ -1330,7 +1330,10 @@ const FamilyBuilder = () => {
                             <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
                             <CommandList className="max-h-60">
                               <CommandGroup>
-                                {familyMarriages.map((marriage) => (
+                                {familyMarriages.filter(marriage => 
+                                  marriage.husband?.id !== selectedMember?.id && 
+                                  marriage.wife?.id !== selectedMember?.id
+                                ).map((marriage) => (
                                   <CommandItem
                                     key={marriage.id}
                                     value={`${marriage.husband?.name} ${marriage.wife?.name} عائلة`}
