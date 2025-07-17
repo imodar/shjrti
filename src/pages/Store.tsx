@@ -209,8 +209,7 @@ export default function Store() {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen">
         {/* Hero Section with Tabs */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-8 pb-4">
-          <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="max-w-7xl mx-auto px-6 relative">
             <div className="text-center mb-12">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary via-accent to-secondary rounded-3xl shadow-2xl mb-6 relative">
                 <ShoppingCart className="h-10 w-10 text-white" />
