@@ -423,23 +423,23 @@ const FamilyCreator = () => {
                         </CardHeader>
                         <CardContent className="space-y-6 pb-10">
                           
-                          {/* Basic Info - Compressed */}
+                          {/* Basic Info - Name */}
+                          <div className="space-y-3">
+                            <Label htmlFor="founder-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+                              <div className="w-2 h-2 bg-primary rounded-full"></div>
+                              اسم المؤسس *
+                            </Label>
+                            <Input
+                              id="founder-name"
+                              value={founderData.name}
+                              onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                              placeholder="أدخل اسم المؤسس"
+                              className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+                            />
+                          </div>
+                          
+                          {/* Gender & Birth Date Row */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
-                            {/* Founder Name */}
-                            <div className="space-y-3">
-                              <Label htmlFor="founder-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                                اسم المؤسس *
-                              </Label>
-                              <Input
-                                id="founder-name"
-                                value={founderData.name}
-                                onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                                placeholder="أدخل اسم المؤسس"
-                                className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-                              />
-                            </div>
                             
                             {/* Gender Selection */}
                             <div className="space-y-3">
@@ -467,10 +467,6 @@ const FamilyCreator = () => {
                                 </SelectContent>
                               </Select>
                             </div>
-                          </div>
-
-                          {/* Birth Date & Living Status */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             
                             {/* Birth Date */}
                             <div className="space-y-3">
@@ -507,58 +503,15 @@ const FamilyCreator = () => {
                                 </PopoverContent>
                               </Popover>
                             </div>
-
-                            {/* Death Date - Only show if not alive */}
-                            {!founderData.isAlive ? (
-                              <div className="space-y-3">
-                                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                                  تاريخ الوفاة
-                                </Label>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      className={cn(
-                                        "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-start text-right font-arabic",
-                                        !founderData.deathDate && "text-muted-foreground"
-                                      )}
-                                    >
-                                      <CalendarIcon className="ml-auto h-4 w-4" />
-                                      {founderData.deathDate ? (
-                                        format(founderData.deathDate, "PPP", { locale: ar })
-                                      ) : (
-                                        <span>اختر تاريخ الوفاة</span>
-                                      )}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                                    <Calendar
-                                      mode="single"
-                                      selected={founderData.deathDate}
-                                      onSelect={(date) => setFounderData({...founderData, deathDate: date})}
-                                      disabled={(date) => 
-                                        date > new Date() || 
-                                        (founderData.birthDate && date < founderData.birthDate)
-                                      }
-                                      initialFocus
-                                      className="p-3 pointer-events-auto"
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-                            ) : (
-                              <div></div>
-                            )}
                           </div>
 
-                          {/* Living Status */}
+                          {/* Living Status & Death Date Row */}
                           <div className="space-y-3">
                             <Label className="text-sm font-medium text-foreground flex items-center gap-2">
                               <div className="w-2 h-2 bg-secondary rounded-full"></div>
                               الحالة الحيوية
                             </Label>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                               <Button
                                 type="button"
                                 variant={founderData.isAlive ? "default" : "outline"}
@@ -586,6 +539,42 @@ const FamilyCreator = () => {
                               >
                                 متوفى
                               </Button>
+                              
+                              {/* Death Date - Only show if not alive */}
+                              {!founderData.isAlive && (
+                                <div className="relative">
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        className={cn(
+                                          "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
+                                          !founderData.deathDate && "text-muted-foreground"
+                                        )}
+                                      >
+                                        {founderData.deathDate ? (
+                                          format(founderData.deathDate, "yyyy", { locale: ar })
+                                        ) : (
+                                          <span>سنة الوفاة</span>
+                                        )}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                                      <Calendar
+                                        mode="single"
+                                        selected={founderData.deathDate}
+                                        onSelect={(date) => setFounderData({...founderData, deathDate: date})}
+                                        disabled={(date) => 
+                                          date > new Date() || 
+                                          (founderData.birthDate && date < founderData.birthDate)
+                                        }
+                                        initialFocus
+                                        className="p-3 pointer-events-auto"
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
+                                </div>
+                              )}
                             </div>
                           </div>
 
