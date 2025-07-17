@@ -768,7 +768,7 @@ const FamilyBuilder = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Family Members - الأفراد أولاً */}
                 {filteredMembers.map((member) => (
-                  <Card key={member.id} className="group relative overflow-hidden bg-gradient-to-br from-card/80 via-card/90 to-card/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl hover:shadow-3xl hover:scale-[1.01] transition-all duration-700 h-auto min-h-[280px]">
+                  <Card key={member.id} className="group relative bg-gradient-to-br from-card/80 via-card/90 to-card/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl hover:shadow-3xl hover:scale-[1.01] transition-all duration-700 h-auto min-h-[280px] overflow-hidden">
                     {/* Animated background with multiple layers */}
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-secondary/3 to-transparent opacity-50"></div>
