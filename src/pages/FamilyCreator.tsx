@@ -518,7 +518,7 @@ const FamilyCreator = () => {
                                     <Button
                                       variant="outline"
                                       className={cn(
-                                        "w-full h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
+                                        "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-start text-right font-arabic",
                                         !founderData.deathDate && "text-muted-foreground"
                                       )}
                                     >
