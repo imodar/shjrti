@@ -1167,22 +1167,12 @@ const FamilyBuilder = () => {
             {currentStep === 2 && (
               <div className="space-y-6">
 
-                <div className="grid grid-cols-4 gap-4">
-                  {getRelationshipOptions(formData.gender).map((relation) => (
-                    <Card
-                      key={relation.value}
-                      className={cn(
-                        "cursor-pointer transition-all duration-300 border-2 rounded-xl overflow-hidden group",
-                        formData.relation === relation.value
-                          ? "border-primary bg-gradient-to-br from-primary/10 to-accent/10 shadow-lg"
-                          : "border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                      onClick={() => setFormData({...formData, relation: relation.value, relatedPersonId: null})}
-                    >
-                      <CardContent className="p-6 text-center">
-                        <div className="text-4xl mb-3">{relation.icon}</div>
-                        <h4 className="font-bold text-lg text-foreground">{relation.label}</h4>
-                      </CardContent>
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">معلومات إضافية</h3>
+                  <p className="text-muted-foreground">أضف التفاصيل الإضافية للشخص</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     </Card>
                   ))}
                 </div>
