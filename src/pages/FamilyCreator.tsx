@@ -298,11 +298,6 @@ const FamilyCreator = () => {
             
             {/* Page Title - Compact Header */}
             <div className="text-center mb-8 relative">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-lg border border-primary/20 rounded-full px-6 py-3 mb-6">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary font-medium text-sm">إنشاء شجرة العائلة</span>
-                <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              </div>
               
               <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4 relative">
                 <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
