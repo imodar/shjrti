@@ -768,104 +768,153 @@ const FamilyBuilder = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Family Members - الأفراد أولاً */}
                 {filteredMembers.map((member) => (
-                  <Card key={member.id} className="bg-card border border-border hover:border-primary/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg">
-                    <CardContent className="p-6">
-                      {/* Header Section */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3 flex-1">
-                          <Avatar className="w-12 h-12 border-2 border-primary/20">
-                            <AvatarImage src={member.image || undefined} className="object-cover" />
-                            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                              {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                          
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground text-base truncate mb-1">
-                              {member.name}
-                            </h3>
-                            <Badge variant="secondary" className="text-xs">
-                              {member.gender === "male" ? "ذكر" : "أنثى"}
-                            </Badge>
-                          </div>
-                        </div>
+                  <Card key={member.id} className="group relative bg-gradient-to-br from-card/60 via-card/80 to-card/90 backdrop-blur-xl border border-white/20 shadow-xl rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] hover:border-primary/40">
+                    {/* Animated background gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    
+                    {/* Floating particles effect */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                      <div className="absolute top-4 right-6 w-2 h-2 bg-primary/30 rounded-full animate-pulse"></div>
+                      <div className="absolute top-8 right-12 w-1 h-1 bg-accent/40 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                      <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-secondary/30 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+                    </div>
 
-                        {/* Actions Menu */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem onClick={() => handleEditMember(member)} className="gap-2">
-                              <Edit className="h-4 w-4" />
-                              تعديل البيانات
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              onClick={() => handleDeleteMember(member.id)}
-                              className="text-destructive gap-2"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              حذف من العائلة
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                    <CardContent className="relative z-10 p-0">
+                      {/* Header Section with Creative Layout */}
+                      <div className="relative p-6 bg-gradient-to-r from-white/10 via-white/5 to-transparent">
+                        <div className="flex items-start gap-4">
+                          {/* Enhanced Avatar with Ring Animation */}
+                          <div className="relative group/avatar">
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary rounded-2xl blur-md opacity-0 group-hover:opacity-60 transition-opacity duration-500 animate-pulse"></div>
+                            <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 shadow-lg group-hover/avatar:border-primary/50 transition-all duration-300">
+                              <Avatar className="w-full h-full rounded-2xl">
+                                <AvatarImage src={member.image || undefined} className="object-cover group-hover/avatar:scale-110 transition-transform duration-500" />
+                                <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-lg rounded-2xl">
+                                  {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
+                              {/* Status indicator with pulse */}
+                              <div className={cn(
+                                "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white shadow-lg",
+                                member.isAlive ? "bg-green-500 animate-pulse" : "bg-gray-400"
+                              )}></div>
+                            </div>
+                          </div>
+                          
+                          {/* Member Info with Creative Typography */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                                {member.name}
+                              </h3>
+                              <Badge className={cn(
+                                "px-3 py-1 rounded-full font-medium text-xs border-0 shadow-md transition-all duration-300 group-hover:scale-105",
+                                member.gender === "male" 
+                                  ? "bg-blue-100 text-blue-700 shadow-blue-200/50" 
+                                  : "bg-pink-100 text-pink-700 shadow-pink-200/50"
+                              )}>
+                                {member.gender === "male" ? "👨 ذكر" : "👩 أنثى"}
+                              </Badge>
+                            </div>
+                            
+                            {/* Birth Date with Icon */}
+                            {member.birthDate && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                  <Calendar className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="font-medium">{new Date(member.birthDate).toLocaleDateString('ar-SA')}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Actions Menu with Creative Design */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 shadow-lg transition-all duration-300 hover:scale-110 hover:rotate-90 group-hover:bg-primary/20">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-52 bg-card/95 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl">
+                              <DropdownMenuItem onClick={() => handleEditMember(member)} className="gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors">
+                                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                  <Edit className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="font-medium">تعديل البيانات</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator className="bg-white/10 my-1" />
+                              <DropdownMenuItem 
+                                onClick={() => handleDeleteMember(member.id)}
+                                className="gap-3 p-3 rounded-xl hover:bg-destructive/10 transition-colors text-destructive"
+                              >
+                                <div className="w-8 h-8 bg-destructive/10 rounded-full flex items-center justify-center">
+                                  <Trash2 className="h-4 w-4" />
+                                </div>
+                                <span className="font-medium">حذف من العائلة</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
 
-                      {/* Content Section */}
-                      <div className="space-y-3">
-                        {/* Relation */}
-                        <div className="bg-muted/50 rounded-lg p-3">
-                          <div className="text-sm text-center">
-                            {member.relatedPersonId ? (
-                              <>
-                                <span className="text-muted-foreground">{member.relation}</span>
-                                {" "}
-                                <span className="font-medium text-primary">
-                                  {(() => {
-                                    const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
-                                    return relatedPerson?.name || "غير محدد";
-                                  })()}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="font-medium text-primary flex items-center justify-center gap-1">
-                                <Crown className="h-4 w-4" />
-                                المؤسس
-                              </span>
-                            )}
+                      {/* Content Section with Creative Cards */}
+                      <div className="p-6 space-y-4">
+                        {/* Relation Card with Gradient */}
+                        <div className="relative group/relation">
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/15 to-secondary/20 rounded-2xl blur-sm opacity-0 group-hover/relation:opacity-100 transition-opacity duration-500"></div>
+                          <div className="relative bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 shadow-inner">
+                            <div className="text-center">
+                              {member.relatedPersonId ? (
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                  <span className="text-sm text-muted-foreground">{member.relation}</span>
+                                  <span className="font-bold text-primary">
+                                    {(() => {
+                                      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+                                      return relatedPerson?.name || "غير محدد";
+                                    })()}
+                                  </span>
+                                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
+                                    <Crown className="h-4 w-4 text-white" />
+                                  </div>
+                                  <span className="font-bold text-primary text-lg">المؤسس</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
 
-                        {/* Birth Date */}
-                        {member.birthDate && (
-                          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="h-4 w-4" />
-                            <span>{new Date(member.birthDate).toLocaleDateString('ar-SA')}</span>
-                          </div>
-                        )}
-
-                        {/* Status */}
+                        {/* Status Card with Animation */}
                         <div className="flex justify-center">
                           <div className={cn(
-                            "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium",
+                            "relative group/status inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-medium text-sm shadow-lg transition-all duration-300 hover:scale-105 border",
                             member.isAlive 
-                              ? "bg-green-100 text-green-700 border border-green-200" 
-                              : "bg-gray-100 text-gray-600 border border-gray-200"
+                              ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200 text-green-700 hover:shadow-green-200/50" 
+                              : "bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 text-gray-600 hover:shadow-gray-200/50"
                           )}>
-                            {member.isAlive ? (
-                              <>
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>على قيد الحياة</span>
-                              </>
-                            ) : (
-                              <>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                <span>متوفى</span>
-                              </>
-                            )}
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-2xl opacity-0 group-hover/status:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative flex items-center gap-3">
+                              {member.isAlive ? (
+                                <>
+                                  <div className="relative">
+                                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+                                  </div>
+                                  <span className="font-semibold">على قيد الحياة</span>
+                                  <Heart className="h-4 w-4 text-green-600 animate-pulse" />
+                                </>
+                              ) : (
+                                <>
+                                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                  <span className="font-semibold">متوفى</span>
+                                  <Skull className="h-4 w-4 text-gray-500" />
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
