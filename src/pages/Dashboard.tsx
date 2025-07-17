@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,11 +20,34 @@ import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
 import { SharedFooter } from "@/components/SharedFooter";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
-// Get trees from localStorage
-const getTreesFromStorage = () => {
+// Get families from database
+const getFamiliesFromDatabase = async (userId: string) => {
   try {
-    return JSON.parse(localStorage.getItem('familyTrees') || '[]');
+    const { data: families, error } = await supabase
+      .from('families')
+      .select(`
+        *,
+        family_tree_members(count)
+      `)
+      .eq('creator_id', userId);
+
+    if (error) {
+      console.error('Error fetching families:', error);
+      return [];
+    }
+
+    return families?.map(family => ({
+      id: family.id,
+      name: family.name,
+      members: family.family_tree_members?.[0]?.count || 0,
+      lastUpdated: new Date(family.updated_at).toLocaleDateString('en-GB'),
+      generations: Math.max(1, Math.ceil((family.family_tree_members?.[0]?.count || 0) / 4)),
+      isPublic: family.subscription_status === 'active',
+      createdAt: family.created_at
+    })) || [];
   } catch {
     return [];
   }
@@ -115,19 +138,47 @@ const mockNotifications = [
 ];
 
 const Dashboard = () => {
-  const [trees, setTrees] = useState(getTreesFromStorage());
+  const [trees, setTrees] = useState<any[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
+  const [treeToDelete, setTreeToDelete] = useState<string | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [treeToShare, setTreeToShare] = useState<number | null>(null);
+  const [treeToShare, setTreeToShare] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
   const {
     toast
   } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { notifications, profile, totalMembers, markNotificationAsRead, markAllAsRead } = useDashboardData();
+
+  // Load families from database
+  useEffect(() => {
+    if (user) {
+      loadFamilies();
+    }
+  }, [user]);
+
+  const loadFamilies = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const families = await getFamiliesFromDatabase(user.id);
+      setTrees(families);
+    } catch (error) {
+      console.error('Error loading families:', error);
+      toast({
+        title: "خطأ في التحميل",
+        description: "حدث خطأ أثناء تحميل البيانات",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Plan-based features
   const canCreateNewTree = trees.length < currentPlan.treesLimit;
@@ -189,28 +240,52 @@ const Dashboard = () => {
       description: "تم توجيهك لصفحة إنشاء الشجرة"
     });
   };
-  const handleDeleteTree = (id: number) => {
+  const handleDeleteTree = (id: string) => {
     const tree = trees.find(t => t.id === id);
     if (tree) {
       setTreeToDelete(id);
       setShowDeleteDialog(true);
     }
   };
-  const confirmDeleteTree = () => {
+  const confirmDeleteTree = async () => {
     if (treeToDelete && deleteConfirmText.toLowerCase() === "حذف") {
-      const updatedTrees = trees.filter(tree => tree.id !== treeToDelete);
-      setTrees(updatedTrees);
-      localStorage.setItem('familyTrees', JSON.stringify(updatedTrees));
-      setShowDeleteDialog(false);
-      setTreeToDelete(null);
-      setDeleteConfirmText("");
-      toast({
-        title: "تم حذف الشجرة",
-        description: "تم حذف الشجرة بنجاح"
-      });
+      try {
+        const { error } = await supabase
+          .from('families')
+          .delete()
+          .eq('id', treeToDelete)
+          .eq('creator_id', user?.id);
+
+        if (error) {
+          console.error('Error deleting family:', error);
+          toast({
+            title: "خطأ في الحذف",
+            description: "حدث خطأ أثناء حذف الشجرة",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Reload families from database
+        await loadFamilies();
+        setShowDeleteDialog(false);
+        setTreeToDelete(null);
+        setDeleteConfirmText("");
+        toast({
+          title: "تم حذف الشجرة",
+          description: "تم حذف الشجرة بنجاح"
+        });
+      } catch (error) {
+        console.error('Error in confirmDeleteTree:', error);
+        toast({
+          title: "خطأ في الحذف",
+          description: "حدث خطأ أثناء حذف الشجرة",
+          variant: "destructive"
+        });
+      }
     }
   };
-  const handleShareTree = (id: number) => {
+  const handleShareTree = (id: string) => {
     setTreeToShare(id);
     setShowShareDialog(true);
   };

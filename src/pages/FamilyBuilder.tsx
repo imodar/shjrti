@@ -732,7 +732,7 @@ const FamilyBuilder = () => {
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">آخر تحديث</p>
                         <p className="text-3xl font-bold text-secondary">
-                          {familyData?.updated_at ? new Date(familyData.updated_at).toLocaleDateString('ar-SA') : 'غير محدد'}
+                          {familyData?.updated_at ? new Date(familyData.updated_at).toLocaleDateString('en-GB') : 'غير محدد'}
                         </p>
                       </div>
                       <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -768,121 +768,137 @@ const FamilyBuilder = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Family Members - الأفراد أولاً */}
                 {filteredMembers.map((member) => (
-                  <Card key={member.id} className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
-                     <CardContent className="p-0 relative overflow-hidden">
-                       {/* Simplified Background Pattern */}
-                       <div className="absolute inset-0 opacity-3">
-                         <div className="absolute top-2 right-2 w-8 h-8 border border-primary/20 rounded-full"></div>
-                         <div className="absolute bottom-2 left-2 w-4 h-4 bg-accent/20 rounded-full"></div>
-                       </div>
+                  <Card key={member.id} className="group relative overflow-hidden bg-gradient-to-br from-card/90 via-card/95 to-card/90 backdrop-blur-xl border-0 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
+                    {/* Animated gradient border */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute inset-[1px] bg-gradient-to-br from-card/95 to-card/90 rounded-3xl"></div>
+                    
+                    {/* Floating decorative elements */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                      <div className="absolute top-4 right-6 w-2 h-2 bg-primary/40 rounded-full animate-pulse"></div>
+                      <div className="absolute top-8 right-12 w-1.5 h-1.5 bg-accent/40 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                      <div className="absolute bottom-6 left-8 w-3 h-3 bg-secondary/30 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                    </div>
 
-                        {/* Compact Header Section */}
-                        <div className="relative bg-gradient-to-br from-primary/8 via-accent/8 to-secondary/8 p-4">
-                          <div className="flex items-center justify-between">
-                            {/* الصورة والاسم - على اليسار */}
-                            <div className="flex items-center gap-3">
-                              <div className="relative">
-                                <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
-                                  <AvatarImage src={member.image || undefined} className="object-cover" />
-                                  <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-sm">
-                                    {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                  </AvatarFallback>
-                                </Avatar>
-                              </div>
-                              
-                              <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="font-bold text-foreground text-lg leading-tight">{member.name}</h3>
-                                  <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded-md", getGenderColor(member.gender))}>
-                                    {member.gender === "male" ? "ذكر" : "أنثى"}
-                                  </Badge>
-                                </div>
-                                {member.birthDate && (
-                                  <div className="text-xs text-muted-foreground">
-                                    {new Date(member.birthDate).toLocaleDateString('en-GB')}
-                                  </div>
-                                )}
-                              </div>
+                    <CardContent className="p-0 relative z-10">
+                      {/* Premium Header Section */}
+                      <div className="relative p-6 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-t-3xl">
+                        <div className="flex items-center justify-between">
+                          {/* Avatar and Name Section */}
+                          <div className="flex items-center gap-4">
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary rounded-full opacity-20 blur-md animate-pulse"></div>
+                              <Avatar className="relative w-16 h-16 border-3 border-white/40 shadow-xl ring-2 ring-primary/20">
+                                <AvatarImage src={member.image || undefined} className="object-cover" />
+                                <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-lg">
+                                  {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
                             </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <h3 className="font-bold text-foreground text-xl leading-tight">{member.name}</h3>
+                                <Badge className={cn("text-xs font-medium px-3 py-1 rounded-full shadow-sm", getGenderColor(member.gender))}>
+                                  {member.gender === "male" ? "ذكر" : "أنثى"}
+                                </Badge>
+                              </div>
+                              {member.birthDate && (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Calendar className="h-4 w-4 text-primary/60" />
+                                  <span>{new Date(member.birthDate).toLocaleDateString('en-GB')}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
 
-                            {/* Actions Menu - على اليمين */}
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
-                                  <div className="flex flex-col gap-0.5">
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                  </div>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
-                                <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse">
-                                  <Edit className="mr-2 h-4 w-4 text-primary" />
-                                  تعديل البيانات
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteMember(member.id)}
-                                  className="text-destructive focus:text-destructive rounded-lg flex-row-reverse"
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  حذف من العائلة
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                          {/* Actions Menu */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 shadow-lg transition-all duration-300 hover:scale-110">
+                                <div className="flex flex-col gap-0.5">
+                                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                                </div>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
+                              <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse">
+                                <Edit className="mr-2 h-4 w-4 text-primary" />
+                                تعديل البيانات
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                onClick={() => handleDeleteMember(member.id)}
+                                className="text-destructive focus:text-destructive rounded-lg flex-row-reverse"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                حذف من العائلة
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      {/* Enhanced Info Section */}
+                      <div className="p-6 space-y-4">
+                        {/* Relation Badge */}
+                        <div className="flex items-center justify-center">
+                          <div className="px-4 py-2 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-2xl backdrop-blur-sm shadow-inner">
+                            <span className="text-sm font-medium text-foreground">
+                              {member.relatedPersonId ? (
+                                <>
+                                  {member.relation} {" "}
+                                  <span className="text-primary font-semibold">
+                                    {(() => {
+                                      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+                                      console.log('Looking for related person:', member.relatedPersonId, 'Found:', relatedPerson);
+                                      return relatedPerson?.name || "غير محدد";
+                                    })()}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-accent font-semibold">المؤسس</span>
+                              )}
+                            </span>
                           </div>
                         </div>
 
-                        {/* Compact Info Section */}
-                        <div className="p-4 space-y-3">
-
-                          {/* Relation - في مكان الجنس السابق */}
-                          <div className="flex items-center gap-2 text-sm">
-                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg">
-                              <span className="text-xs font-medium text-foreground">
-                                 {member.relatedPersonId ? (
-                                   <>
-                                     {member.relation} {" "}
-                                     <span className="text-primary font-semibold">
-                                       {(() => {
-                                         const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
-                                         console.log('Looking for related person:', member.relatedPersonId, 'Found:', relatedPerson);
-                                         return relatedPerson?.name || "غير محدد";
-                                       })()}
-                                     </span>
-                                   </>
-                                 ) : (
-                                   member.relation
-                                 )}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Status - Compact */}
-                          <div className="flex items-center gap-2 text-sm">
+                        {/* Status with enhanced styling */}
+                        <div className="flex items-center justify-center gap-2">
+                          <div className={cn(
+                            "flex items-center gap-2 px-3 py-2 rounded-xl shadow-sm",
+                            member.isAlive 
+                              ? "bg-green-50 border border-green-200 text-green-700" 
+                              : "bg-gray-50 border border-gray-200 text-gray-600"
+                          )}>
                             {member.isAlive ? (
                               <>
                                 <Heart className="h-4 w-4 text-green-500" />
-                                <span className="text-green-600 font-medium">على قيد الحياة</span>
+                                <span className="text-sm font-medium">على قيد الحياة</span>
                               </>
                             ) : (
                               <>
                                 <Skull className="h-4 w-4 text-gray-500" />
-                                <span className="text-gray-600 font-medium">متوفى</span>
+                                <span className="text-sm font-medium">متوفى</span>
                               </>
                             )}
                           </div>
-
-                          {/* Bio Preview - Compact */}
-                          {member.bio && (
-                            <div className="text-sm text-muted-foreground">
-                              <p className="line-clamp-1">{member.bio}</p>
-                            </div>
-                          )}
                         </div>
-                     </CardContent>
+
+                        {/* Enhanced Biography */}
+                        {member.bio && (
+                          <div className="p-4 bg-gradient-to-r from-muted/30 to-muted/20 rounded-2xl border border-muted/40">
+                            <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                              <User className="h-4 w-4 text-primary" />
+                              نبذة شخصية
+                            </h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">{member.bio}</p>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
                   </Card>
                 ))}
 
