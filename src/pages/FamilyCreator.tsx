@@ -876,7 +876,7 @@ const FamilyCreator = () => {
 
       {/* Wives Management Modal - Creative Redesign */}
       <Dialog open={showWivesModal} onOpenChange={setShowWivesModal}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 bg-gradient-to-br from-card/95 via-background/98 to-muted/95 backdrop-blur-2xl border-0 shadow-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden p-0 bg-gradient-to-br from-card/95 via-background/98 to-muted/95 backdrop-blur-2xl border-0 shadow-2xl">
           {/* Header with Gradient Background */}
           <div className="relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10"></div>
