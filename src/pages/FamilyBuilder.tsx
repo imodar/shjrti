@@ -1038,7 +1038,11 @@ const FamilyBuilder = () => {
                 </div>
 
                 {/* Related Person Selection */}
-                {formData.relation && familyMembers.length > 0 && (
+                {formData.relation && (() => {
+                  // Filter out the current member being edited
+                  const availableMembers = familyMembers.filter(m => selectedMember ? m.id !== selectedMember.id : true);
+                  return availableMembers.length > 0;
+                })() && (
                   <div className="mt-8 space-y-4">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                       <Users className="h-4 w-4 text-primary" />
@@ -1073,7 +1077,9 @@ const FamilyBuilder = () => {
                           <CommandEmpty>لم يتم العثور على أي شخص.</CommandEmpty>
                           <CommandList className="max-h-60">
                             <CommandGroup>
-                              {familyMembers.map((member) => (
+                              {familyMembers
+                                .filter(m => selectedMember ? m.id !== selectedMember.id : true)
+                                .map((member) => (
                                 <CommandItem
                                   key={member.id}
                                   value={`${member.name} ${member.relation}`}
