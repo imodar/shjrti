@@ -859,16 +859,6 @@ const FamilyBuilder = () => {
                                 {member.gender === "male" ? "👨 ذكر" : "👩 أنثى"}
                               </Badge>
                             </div>
-                            
-                            {/* Birth Date with Icon */}
-                            {member.birthDate && (
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                  <Calendar className="h-4 w-4 text-primary" />
-                                </div>
-                                <span className="font-medium">{new Date(member.birthDate).toLocaleDateString('ar-SA')}</span>
-                              </div>
-                            )}
                           </div>
 
                           {/* Actions Menu with Creative Design */}
