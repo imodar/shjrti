@@ -207,25 +207,12 @@ export default function Store() {
       </header>
 
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen">
+      <div className="relative z-10">
         {/* Hero Section with Tabs */}
         <div className="max-w-7xl mx-auto px-6 relative">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary via-accent to-secondary rounded-3xl shadow-2xl mb-6 relative">
-                <ShoppingCart className="h-10 w-10 text-white" />
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
-                  <Crown className="h-3 w-3 text-white" />
-                </div>
-              </div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-4">
-                متجر الطباعة المتميز
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                احصل على نسخة مطبوعة فاخرة من شجرة عائلتك بأجود الخامات وأحدث التقنيات
-              </p>
-              
+            <div className="text-center mb-8">
               {/* Tab Navigation */}
-              <div className="relative mt-8 flex justify-center">
+              <div className="relative flex justify-center">
                 <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-br from-accent to-primary rounded-full animate-pulse"></div>
                 <div className="bg-transparent backdrop-blur-sm border-0 rounded-2xl p-1 shadow-none flex-row-reverse relative flex">
                   <div 
