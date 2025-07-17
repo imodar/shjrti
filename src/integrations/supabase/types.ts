@@ -191,6 +191,7 @@ export type Database = {
           mother_id: string | null
           name: string
           related_person_id: string | null
+          spouse_id: string | null
           updated_at: string
         }
         Insert: {
@@ -209,6 +210,7 @@ export type Database = {
           mother_id?: string | null
           name: string
           related_person_id?: string | null
+          spouse_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -227,6 +229,7 @@ export type Database = {
           mother_id?: string | null
           name?: string
           related_person_id?: string | null
+          spouse_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -254,6 +257,13 @@ export type Database = {
           {
             foreignKeyName: "family_tree_members_related_person_id_fkey"
             columns: ["related_person_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_tree_members_spouse_id_fkey"
+            columns: ["spouse_id"]
             isOneToOne: false
             referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
