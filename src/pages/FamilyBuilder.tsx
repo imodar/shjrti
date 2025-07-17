@@ -25,6 +25,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
+import { ModernFamilyMemberModal } from "@/components/ModernFamilyMemberModal";
 
 
 const FamilyBuilder = () => {
@@ -545,6 +546,51 @@ const FamilyBuilder = () => {
     };
     
     return buildNameChain(member);
+  };
+
+  // Handle member submission from the modern modal
+  const handleMemberSubmit = async (memberData: any) => {
+    try {
+      setIsSaving(true);
+      
+      const submitData = {
+        family_id: familyData?.id,
+        name: memberData.name,
+        gender: memberData.gender,
+        birth_date: memberData.birthDate?.toISOString().split('T')[0] || null,
+        is_alive: memberData.isAlive,
+        death_date: memberData.deathDate?.toISOString().split('T')[0] || null,
+        biography: memberData.bio,
+        image_url: memberData.croppedImage,
+        father_id: memberData.fatherId,
+        mother_id: memberData.motherId
+      };
+
+      const { error } = await supabase
+        .from('family_tree_members')
+        .insert(submitData);
+
+      if (error) throw error;
+
+      toast({
+        title: "تم بنجاح",
+        description: "تم إضافة الفرد للعائلة بنجاح"
+      });
+
+      // Refresh the family data
+      await fetchFamilyData();
+      setShowAddMember(false);
+      
+    } catch (error) {
+      console.error('Error adding member:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء إضافة الفرد",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getGenderColor = (gender: string) => {
@@ -1173,9 +1219,78 @@ const FamilyBuilder = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    </Card>
-                  ))}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      تاريخ الميلاد
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                            !formData.birthDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.birthDate ? format(formData.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
+                        <Calendar
+                          mode="single"
+                          selected={formData.birthDate}
+                          onSelect={(date) => {
+                            setFormData({...formData, birthDate: date});
+                          }}
+                          initialFocus
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          className="pointer-events-auto p-3"
+                          defaultMonth={new Date(1970, 0)}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between items-center pt-6 border-t border-primary/20 gap-4">
+            <div className="flex gap-3 order-2 sm:order-1">
+              {currentStep > 1 && (
+                <Button variant="outline" onClick={prevStep} className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl px-6 py-2">
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                  السابق
+                </Button>
+              )}
+            </div>
+
+            <div className="flex gap-3 order-1 sm:order-2">
+              <Button variant="outline" onClick={() => setShowAddMember(false)} className="border-border hover:bg-muted rounded-xl px-6 py-2">
+                إلغاء
+              </Button>
+
+              {currentStep < 2 ? (
+                <Button onClick={nextStep} className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 rounded-xl px-6 py-2 shadow-lg">
+                  التالي
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={isSaving}
+                  className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 rounded-xl px-6 py-2 shadow-lg"
+                >
+                  {isSaving ? "جاري الحفظ..." : selectedMember ? "تحديث" : "إضافة"}
+                  <Save className="mr-2 h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
                 {/* Related Person Selection */}
                 {formData.relation && (() => {
