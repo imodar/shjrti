@@ -423,32 +423,63 @@ const Dashboard = () => {
               إنشاء شجرة جديدة
             </Button>
 
-            {/* Compact Upgrade Banner - Only for Free Users */}
-            {currentPlan.type === "free" && (
-              <Card className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 shadow-md">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                      <Crown className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-sm font-bold text-primary">
-                        ارتقِ لخطة أفضل
-                      </h3>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-primary/30 text-primary hover:bg-primary/10 text-xs"
-                      onClick={() => setShowUpgradeDialog(true)}
-                    >
-                      ترقية
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
+
+          {/* Floating Upgrade Ribbon - Only for Free Users */}
+          {currentPlan.type === "free" && (
+            <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 group">
+              {/* Ribbon Container */}
+              <div className="relative">
+                {/* Main Ribbon */}
+                <div className="bg-primary shadow-2xl rounded-r-2xl pl-6 pr-4 py-6 transform -translate-x-3 group-hover:translate-x-0 transition-transform duration-500 ease-out">
+                  {/* Ribbon Fold Effect */}
+                  <div className="absolute left-0 top-0 w-3 h-full bg-primary/80 rounded-l-2xl transform -translate-x-3"></div>
+                  <div className="absolute left-0 top-2 w-1 h-4 bg-primary/60 rounded-r"></div>
+                  <div className="absolute left-0 bottom-2 w-1 h-4 bg-primary/60 rounded-r"></div>
+                  
+                  {/* Content */}
+                  <div className="text-white space-y-3 min-w-[200px]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
+                        <Crown className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg leading-tight">ترقية</h3>
+                        <p className="text-white/80 text-sm">خطة أفضل</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        احصل على ميزات متقدمة وأشجار غير محدودة
+                      </p>
+                      
+                      <Button 
+                        size="sm"
+                        className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur font-semibold py-2 rounded-xl transition-all duration-300 hover:scale-105"
+                        onClick={() => setShowUpgradeDialog(true)}
+                      >
+                        ترقية الآن
+                        <Sparkles className="mr-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Animated Glow */}
+                  <div className="absolute -inset-1 bg-primary/20 rounded-r-2xl blur-xl opacity-75 animate-pulse"></div>
+                </div>
+                
+                {/* Tab to show on hover */}
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-full">
+                  <div className="bg-primary rounded-r-lg px-2 py-4 shadow-lg group-hover:bg-primary/90 transition-colors duration-300">
+                    <div className="text-white text-xs font-bold writing-mode-vertical transform rotate-180">
+                      ترقية
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Trees Section */}
           <div className="space-y-8">
