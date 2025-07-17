@@ -130,7 +130,7 @@ const Header = () => {
                       
                       {/* Menu Items */}
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-primary/10 transition-all duration-300 cursor-pointer" asChild>
-                        <a href="/dashboard" className="flex items-center gap-3">
+                        <a href="/dashboard" className="flex items-center gap-3 flex-row-reverse">
                           <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
                             <TreePine className="h-4 w-4 text-primary" />
                           </div>
