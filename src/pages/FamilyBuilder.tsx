@@ -688,84 +688,96 @@ const FamilyBuilder = () => {
                          <div className="absolute bottom-2 left-2 w-4 h-4 bg-accent/20 rounded-full"></div>
                        </div>
 
-                       {/* Compact Header Section */}
-                       <div className="relative bg-gradient-to-br from-primary/8 via-accent/8 to-secondary/8 p-4">
-                         <div className="flex items-center justify-between">
-                           {/* Actions Menu - على اليسار */}
-                           <DropdownMenu>
-                             <DropdownMenuTrigger asChild>
-                               <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
-                                 <div className="flex flex-col gap-0.5">
-                                   <div className="w-1 h-1 bg-current rounded-full"></div>
-                                   <div className="w-1 h-1 bg-current rounded-full"></div>
-                                   <div className="w-1 h-1 bg-current rounded-full"></div>
-                                 </div>
-                               </Button>
-                             </DropdownMenuTrigger>
-                             <DropdownMenuContent align="start" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
-                               <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse">
-                                 <Edit className="mr-2 h-4 w-4 text-primary" />
-                                 تعديل البيانات
-                               </DropdownMenuItem>
-                               <DropdownMenuSeparator />
-                               <DropdownMenuItem 
-                                 onClick={() => handleDeleteMember(member.id)}
-                                 className="text-destructive focus:text-destructive rounded-lg flex-row-reverse"
-                               >
-                                 <Trash2 className="mr-2 h-4 w-4" />
-                                 حذف من العائلة
-                               </DropdownMenuItem>
-                             </DropdownMenuContent>
-                           </DropdownMenu>
+                        {/* Compact Header Section */}
+                        <div className="relative bg-gradient-to-br from-primary/8 via-accent/8 to-secondary/8 p-4">
+                          <div className="flex items-center justify-between">
+                            {/* الصورة والاسم - على اليسار */}
+                            <div className="flex items-center gap-3">
+                              <div className="relative">
+                                <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
+                                  <AvatarImage src={member.image || undefined} className="object-cover" />
+                                  <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-sm">
+                                    {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </div>
+                              
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-bold text-foreground text-lg leading-tight">{member.name}</h3>
+                                  <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded-md", getGenderColor(member.gender))}>
+                                    {member.gender === "male" ? "ذكر" : "أنثى"}
+                                  </Badge>
+                                </div>
+                                {member.birthDate && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {new Date(member.birthDate).toLocaleDateString('en-GB')}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
 
-                           {/* الصورة والاسم - على اليمين */}
-                           <div className="flex items-center gap-3">
-                             <div>
-                               <h3 className="font-bold text-foreground text-lg leading-tight text-right">{member.name}</h3>
-                               <div className="flex justify-end mt-1">
-                                 <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded-md", getGenderColor(member.gender))}>
-                                   {member.gender === "male" ? "ذكر" : "أنثى"}
-                                 </Badge>
-                               </div>
-                             </div>
-                             
-                             <div className="relative">
-                               <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
-                                 <AvatarImage src={member.image || undefined} className="object-cover" />
-                                 <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-sm">
-                                   {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                 </AvatarFallback>
-                               </Avatar>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
+                            {/* Actions Menu - على اليمين */}
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
+                                  <div className="flex flex-col gap-0.5">
+                                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                                  </div>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
+                                <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse">
+                                  <Edit className="mr-2 h-4 w-4 text-primary" />
+                                  تعديل البيانات
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteMember(member.id)}
+                                  className="text-destructive focus:text-destructive rounded-lg flex-row-reverse"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  حذف من العائلة
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
 
-                       {/* Compact Info Section */}
-                       <div className="p-4 space-y-3">
+                        {/* Compact Info Section */}
+                        <div className="p-4 space-y-3">
 
-                         {/* Status - Compact */}
-                         <div className="flex items-center gap-2 text-sm">
-                           {member.isAlive ? (
-                             <>
-                               <Heart className="h-4 w-4 text-green-500" />
-                               <span className="text-green-600 font-medium">على قيد الحياة</span>
-                             </>
-                           ) : (
-                             <>
-                               <Skull className="h-4 w-4 text-gray-500" />
-                               <span className="text-gray-600 font-medium">متوفى</span>
-                             </>
-                           )}
-                         </div>
+                          {/* Relation - في مكان الجنس السابق */}
+                          <div className="flex items-center gap-2 text-sm">
+                            <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 rounded-md">
+                              {member.relation}
+                            </Badge>
+                          </div>
 
-                         {/* Bio Preview - Compact */}
-                         {member.bio && (
-                           <div className="text-sm text-muted-foreground">
-                             <p className="line-clamp-1">{member.bio}</p>
-                           </div>
-                         )}
-                       </div>
+                          {/* Status - Compact */}
+                          <div className="flex items-center gap-2 text-sm">
+                            {member.isAlive ? (
+                              <>
+                                <Heart className="h-4 w-4 text-green-500" />
+                                <span className="text-green-600 font-medium">على قيد الحياة</span>
+                              </>
+                            ) : (
+                              <>
+                                <Skull className="h-4 w-4 text-gray-500" />
+                                <span className="text-gray-600 font-medium">متوفى</span>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Bio Preview - Compact */}
+                          {member.bio && (
+                            <div className="text-sm text-muted-foreground">
+                              <p className="line-clamp-1">{member.bio}</p>
+                            </div>
+                          )}
+                        </div>
                      </CardContent>
                   </Card>
                 ))}
