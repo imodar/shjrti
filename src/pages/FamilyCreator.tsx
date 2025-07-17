@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -152,6 +152,75 @@ const FamilyCreator = () => {
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
+
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = document.createElement('img') as HTMLImageElement;
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', error => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const reader = new FileReader();
+          reader.addEventListener('load', () => resolve(reader.result as string));
+          reader.readAsDataURL(blob);
+        }
+      }, 'image/jpeg', 0.8);
+    });
+  };
+
+  const handleCropSave = async () => {
+    if (cropImage && croppedAreaPixels) {
+      try {
+        const croppedImageUrl = await getCroppedImg(cropImage, croppedAreaPixels);
+        setFounderData({...founderData, croppedImage: croppedImageUrl});
+        setShowCropModal(false);
+        setCropImage(null);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        setCroppedAreaPixels(null);
+        toast({
+          title: "تم حفظ الصورة",
+          description: "تم قص الصورة وحفظها بنجاح"
+        });
+      } catch (e) {
+        console.error(e);
+        toast({
+          title: "خطأ في معالجة الصورة",
+          description: "حدث خطأ أثناء قص الصورة",
+          variant: "destructive"
+        });
+      }
+    }
+  };
 
   const handleAddMoreMembers = () => {
     setShowSuccessModal(false);
@@ -341,6 +410,8 @@ const FamilyCreator = () => {
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-8 pb-10">
+                          
+                          {/* Basic Info */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             
                             {/* Founder Name */}
@@ -386,6 +457,208 @@ const FamilyCreator = () => {
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
+                            </div>
+                          </div>
+
+                          {/* Birth Date */}
+                          <div className="space-y-4">
+                            <Label className="text-base font-medium text-foreground flex items-center gap-2">
+                              <CalendarIcon className="h-4 w-4 text-primary" />
+                              تاريخ الميلاد
+                            </Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full h-14 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
+                                    !founderData.birthDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  <CalendarIcon className="ml-auto h-4 w-4" />
+                                  {founderData.birthDate ? (
+                                    format(founderData.birthDate, "PPP", { locale: ar })
+                                  ) : (
+                                    <span>اختر تاريخ الميلاد</span>
+                                  )}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={founderData.birthDate}
+                                  onSelect={(date) => setFounderData({...founderData, birthDate: date})}
+                                  disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
+                                  initialFocus
+                                  className="p-3 pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+
+                          {/* Living Status */}
+                          <div className="space-y-4">
+                            <Label className="text-base font-medium text-foreground flex items-center gap-2">
+                              <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                              الحالة الحيوية
+                            </Label>
+                            <div className="grid grid-cols-2 gap-4">
+                              <Button
+                                type="button"
+                                variant={founderData.isAlive ? "default" : "outline"}
+                                onClick={() => setFounderData({...founderData, isAlive: true, deathDate: null})}
+                                className={cn(
+                                  "h-14 rounded-xl font-arabic transition-all duration-300",
+                                  founderData.isAlive 
+                                    ? "bg-primary text-white shadow-lg" 
+                                    : "bg-muted/30 border-2 border-transparent hover:bg-background/60"
+                                )}
+                              >
+                                <Heart className="h-5 w-5 ml-2" />
+                                على قيد الحياة
+                              </Button>
+                              <Button
+                                type="button"
+                                variant={!founderData.isAlive ? "default" : "outline"}
+                                onClick={() => setFounderData({...founderData, isAlive: false})}
+                                className={cn(
+                                  "h-14 rounded-xl font-arabic transition-all duration-300",
+                                  !founderData.isAlive 
+                                    ? "bg-muted text-foreground shadow-lg" 
+                                    : "bg-muted/30 border-2 border-transparent hover:bg-background/60"
+                                )}
+                              >
+                                متوفى
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Death Date - Only show if not alive */}
+                          {!founderData.isAlive && (
+                            <div className="space-y-4">
+                              <Label className="text-base font-medium text-foreground flex items-center gap-2">
+                                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                تاريخ الوفاة
+                              </Label>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      "w-full h-14 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
+                                      !founderData.deathDate && "text-muted-foreground"
+                                    )}
+                                  >
+                                    <CalendarIcon className="ml-auto h-4 w-4" />
+                                    {founderData.deathDate ? (
+                                      format(founderData.deathDate, "PPP", { locale: ar })
+                                    ) : (
+                                      <span>اختر تاريخ الوفاة</span>
+                                    )}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={founderData.deathDate}
+                                    onSelect={(date) => setFounderData({...founderData, deathDate: date})}
+                                    disabled={(date) => 
+                                      date > new Date() || 
+                                      (founderData.birthDate && date < founderData.birthDate)
+                                    }
+                                    initialFocus
+                                    className="p-3 pointer-events-auto"
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                          )}
+
+                          {/* Profile Image */}
+                          <div className="space-y-4">
+                            <Label className="text-base font-medium text-foreground flex items-center gap-2">
+                              <Upload className="h-4 w-4 text-accent" />
+                              صورة شخصية (اختياري)
+                            </Label>
+                            <div className="flex flex-col items-center gap-6">
+                              {founderData.croppedImage ? (
+                                <div className="relative group">
+                                  <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-primary/20 shadow-lg">
+                                    <img 
+                                      src={founderData.croppedImage} 
+                                      alt="معاينة الصورة" 
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
+                                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full p-0"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="w-32 h-32 rounded-2xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/50 transition-colors duration-300">
+                                  <Upload className="h-8 w-8" />
+                                  <span className="text-sm">رفع صورة</span>
+                                </div>
+                              )}
+                              
+                              <div className="flex gap-3">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => document.getElementById('founder-image-input')?.click()}
+                                  className="h-12 px-6 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 font-arabic"
+                                >
+                                  <Upload className="h-4 w-4 ml-2" />
+                                  {founderData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
+                                </Button>
+                              </div>
+                              
+                              <input
+                                id="founder-image-input"
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files[0]) {
+                                    const file = e.target.files[0];
+                                    setFounderData({...founderData, image: file});
+                                    
+                                    const reader = new FileReader();
+                                    reader.onload = (event) => {
+                                      if (event.target?.result) {
+                                        setCropImage(event.target.result as string);
+                                        setShowCropModal(true);
+                                      }
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Biography */}
+                          <div className="space-y-4">
+                            <Label htmlFor="founder-bio" className="text-base font-medium text-foreground flex items-center gap-2">
+                              <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                              نبذة عن المؤسس (اختياري)
+                            </Label>
+                            <div className="relative group">
+                              <Textarea
+                                id="founder-bio"
+                                value={founderData.bio}
+                                onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
+                                placeholder="اكتب نبذة مختصرة عن حياة المؤسس..."
+                                className="min-h-[120px] text-base bg-muted/30 border-2 border-transparent rounded-xl resize-none font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                                rows={4}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                             </div>
                           </div>
                         </CardContent>
@@ -518,6 +791,52 @@ const FamilyCreator = () => {
             <Button onClick={handleAddMoreMembers} className="gap-2">
               <UserPlus className="h-4 w-4" />
               إضافة أفراد
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Crop Modal */}
+      <Dialog open={showCropModal} onOpenChange={setShowCropModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-center">قص الصورة</DialogTitle>
+            <DialogDescription className="text-center">
+              اضبط الصورة كما تريد ثم اضغط حفظ
+            </DialogDescription>
+          </DialogHeader>
+          
+          {cropImage && (
+            <div className="relative h-96 w-full">
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                cropShape="round"
+                showGrid={false}
+              />
+            </div>
+          )}
+          
+          <DialogFooter className="flex gap-3 justify-center">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowCropModal(false);
+                setCropImage(null);
+                setCrop({ x: 0, y: 0 });
+                setZoom(1);
+                setCroppedAreaPixels(null);
+              }}
+            >
+              إلغاء
+            </Button>
+            <Button onClick={handleCropSave}>
+              حفظ الصورة
             </Button>
           </DialogFooter>
         </DialogContent>
