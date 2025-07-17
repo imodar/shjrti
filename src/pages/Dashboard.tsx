@@ -18,6 +18,7 @@ import futureFamily from "@/assets/future-family.jpg";
 import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
 import Footer from "@/components/Footer";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 // Get trees from localStorage
 const getTreesFromStorage = () => {
@@ -126,6 +127,7 @@ const Dashboard = () => {
     toast
   } = useToast();
   const navigate = useNavigate();
+  const { notifications: realNotifications, profile, totalMembers } = useDashboardData();
 
   // Plan-based features
   const canCreateNewTree = trees.length < currentPlan.treesLimit;
@@ -473,8 +475,10 @@ const Dashboard = () => {
                           <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div className="hidden lg:block text-left">
-                          <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">أحمد محمد</p>
-                          <p className="text-xs text-emerald-600 dark:text-emerald-400">الباقة المميزة</p>
+                          <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+                            {profile ? `${profile.firstName} ${profile.lastName}`.trim() : 'المستخدم'}
+                          </p>
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400">{profile?.plan || 'الباقة الأساسية'}</p>
                         </div>
                       </div>
                     </Button>
@@ -483,9 +487,11 @@ const Dashboard = () => {
                     <DropdownMenuLabel className="font-normal p-4">
                        <div className="flex items-center gap-3">
                           <div className="flex flex-col space-y-1 flex-1 text-right">
-                            <p className="text-base font-semibold leading-none text-emerald-800 dark:text-emerald-200 text-right">أحمد محمد</p>
+                            <p className="text-base font-semibold leading-none text-emerald-800 dark:text-emerald-200 text-right">
+                              {profile ? `${profile.firstName} ${profile.lastName}`.trim() : 'المستخدم'}
+                            </p>
                             <p className="text-sm leading-none text-emerald-600 dark:text-emerald-400 text-right">
-                              ahmed@example.com
+                              {profile?.email || 'البريد الإلكتروني'}
                             </p>
                             <div className="flex items-center gap-1 mt-2 justify-end">
                               <span className="text-xs text-yellow-600 dark:text-yellow-400">عضو مميز</span>
