@@ -148,7 +148,7 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
           </Button>
           
           {/* Death Date - Only show if not alive */}
-          {!formData.isAlive ? (
+          {!formData.isAlive && (
             <div className="relative">
               <Popover>
                 <PopoverTrigger asChild>
@@ -180,10 +180,6 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
                   />
                 </PopoverContent>
               </Popover>
-            </div>
-          ) : (
-            <div className="h-10 rounded-lg bg-muted/30 border-2 border-dashed border-border/30 flex items-center justify-center text-xs text-muted-foreground font-arabic">
-              سنة الوفاة
             </div>
           )}
         </div>
