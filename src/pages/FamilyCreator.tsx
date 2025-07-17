@@ -291,7 +291,7 @@ const FamilyCreator = () => {
         </div>
 
         <div className="container mx-auto px-6 py-8">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             
             {/* Page Title - Compact Header */}
             <div className="text-center mb-8 relative">
