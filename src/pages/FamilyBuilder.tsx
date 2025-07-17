@@ -92,6 +92,7 @@ const FamilyBuilder = () => {
               id: member.id,
               name: member.name,
               relation: member.relation,
+              relatedPersonId: member.related_person_id,
               gender: member.gender || 'male',
               birthDate: member.birth_date || '',
               isAlive: member.is_alive,
@@ -131,7 +132,7 @@ const FamilyBuilder = () => {
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
-    relatedPersonId: null as number | null,
+    relatedPersonId: null as string | null,
     gender: "",
     birthDate: null as Date | null,
     isAlive: true,
@@ -289,6 +290,7 @@ const FamilyBuilder = () => {
         family_id: familyData?.id,
         name: formData.name,
         relation: formData.relation,
+        related_person_id: formData.relatedPersonId,
         gender: formData.gender,
         birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
         is_alive: formData.isAlive,
@@ -751,9 +753,20 @@ const FamilyBuilder = () => {
 
                           {/* Relation - في مكان الجنس السابق */}
                           <div className="flex items-center gap-2 text-sm">
-                            <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 rounded-md">
-                              {member.relation}
-                            </Badge>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg">
+                              <span className="text-xs font-medium text-foreground">
+                                {member.relatedPersonId ? (
+                                  <>
+                                    {member.relation} {" "}
+                                    <span className="text-primary font-semibold">
+                                      {familyMembers.find(m => m.id === member.relatedPersonId)?.name || "غير محدد"}
+                                    </span>
+                                  </>
+                                ) : (
+                                  member.relation
+                                )}
+                              </span>
+                            </div>
                           </div>
 
                           {/* Status - Compact */}

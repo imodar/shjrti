@@ -187,6 +187,7 @@ export type Database = {
           image_url: string | null
           is_alive: boolean | null
           name: string
+          related_person_id: string | null
           relation: string
           updated_at: string
         }
@@ -202,6 +203,7 @@ export type Database = {
           image_url?: string | null
           is_alive?: boolean | null
           name: string
+          related_person_id?: string | null
           relation: string
           updated_at?: string
         }
@@ -217,6 +219,7 @@ export type Database = {
           image_url?: string | null
           is_alive?: boolean | null
           name?: string
+          related_person_id?: string | null
           relation?: string
           updated_at?: string
         }
@@ -226,6 +229,13 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_tree_members_related_person_id_fkey"
+            columns: ["related_person_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
           },
         ]
