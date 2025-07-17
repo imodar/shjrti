@@ -566,31 +566,90 @@ const FamilyCreator = () => {
 
                         {/* Birth Date */}
                         <div>
-                          <Label className="text-sm font-medium text-card-foreground mb-3 block">
-                            🎂 تاريخ الميلاد
+                          <Label className="text-sm font-medium text-card-foreground mb-3 block flex items-center gap-2">
+                            <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white text-sm animate-pulse">
+                              🎂
+                            </div>
+                            تاريخ الميلاد
                           </Label>
                           <Popover>
                             <PopoverTrigger asChild>
-                              <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-input rounded-xl shadow-inner hover:shadow-lg", !firstMember.birthDate && "text-muted-foreground")}>
-                                <CalendarIcon className="ml-2 h-5 w-5" />
-                                {firstMember.birthDate ? format(firstMember.birthDate, "PPP", {
-                              locale: ar
-                            }) : "اختر التاريخ"}
+                              <Button 
+                                variant="outline" 
+                                className={cn(
+                                  "w-full h-16 justify-start text-lg border-2 border-dashed border-pink-200 dark:border-pink-800 bg-gradient-to-r from-pink-50 via-white to-rose-50 dark:from-pink-950/30 dark:via-background dark:to-rose-950/30 rounded-2xl shadow-inner hover:shadow-lg hover:border-pink-300 dark:hover:border-pink-700 transition-all duration-300 group relative overflow-hidden",
+                                  !firstMember.birthDate && "text-muted-foreground"
+                                )}
+                              >
+                                {/* Background sparkles */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-pink-100/0 via-pink-100/50 to-pink-100/0 dark:from-pink-900/0 dark:via-pink-900/20 dark:to-pink-900/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                
+                                <div className="relative flex items-center gap-3 w-full">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-200">
+                                    <CalendarIcon className="h-5 w-5" />
+                                  </div>
+                                  <div className="flex-1 text-right">
+                                    {firstMember.birthDate ? (
+                                      <div className="space-y-1">
+                                        <div className="text-lg font-bold text-primary">
+                                          {format(firstMember.birthDate, "PPP", { locale: ar })}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                          {new Date().getFullYear() - firstMember.birthDate.getFullYear()} سنة
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="text-lg">اختر تاريخ الميلاد ✨</div>
+                                    )}
+                                  </div>
+                                  <div className="text-pink-400 group-hover:animate-bounce">🎈</div>
+                                </div>
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                              <Calendar 
-                                mode="single" 
-                                selected={firstMember.birthDate} 
-                                onSelect={date => setFirstMember({
-                                  ...firstMember,
-                                  birthDate: date
-                                })} 
-                                initialFocus 
-                                className="pointer-events-auto" 
-                                disabled={date => date > new Date() || date < new Date('1900-01-01')} 
-                                defaultMonth={new Date(1970, 0)}
-                              />
+                            <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-2 border-pink-200/50 dark:border-pink-800/50 shadow-2xl rounded-2xl overflow-hidden">
+                              <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50 p-1">
+                                <Calendar 
+                                  mode="single" 
+                                  selected={firstMember.birthDate} 
+                                  onSelect={(date) => {
+                                    setFirstMember({
+                                      ...firstMember,
+                                      birthDate: date
+                                    });
+                                    // Force close the popover after selection
+                                    setTimeout(() => {
+                                      document.querySelector('[data-state="open"]')?.setAttribute('data-state', 'closed');
+                                    }, 100);
+                                  }} 
+                                  initialFocus 
+                                  className="pointer-events-auto rounded-xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm" 
+                                  disabled={(date) => date > new Date() || date < new Date('1900-01-01')} 
+                                  defaultMonth={new Date(1970, 0)}
+                                  classNames={{
+                                    months: "space-y-4",
+                                    month: "space-y-4",
+                                    caption: "flex justify-center pt-1 relative items-center text-lg font-bold text-primary",
+                                    caption_label: "text-lg font-bold",
+                                    nav: "space-x-1 flex items-center",
+                                    nav_button: "h-9 w-9 bg-transparent hover:bg-pink-100 dark:hover:bg-pink-900/50 rounded-lg transition-colors",
+                                    nav_button_previous: "absolute left-1",
+                                    nav_button_next: "absolute right-1",
+                                    table: "w-full border-collapse space-y-1",
+                                    head_row: "flex",
+                                    head_cell: "text-muted-foreground rounded-md w-10 font-bold text-sm",
+                                    row: "flex w-full mt-2",
+                                    cell: "h-10 w-10 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                    day: "h-10 w-10 p-0 font-normal aria-selected:opacity-100 hover:bg-pink-100 dark:hover:bg-pink-900/50 rounded-lg transition-all duration-200 hover:scale-110",
+                                    day_range_end: "day-range-end",
+                                    day_selected: "bg-gradient-to-br from-pink-500 to-rose-500 text-white hover:bg-gradient-to-br hover:from-pink-600 hover:to-rose-600 focus:bg-gradient-to-br focus:from-pink-500 focus:to-rose-500 shadow-lg scale-110 font-bold",
+                                    day_today: "bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 font-bold border-2 border-pink-300 dark:border-pink-700",
+                                    day_outside: "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+                                    day_disabled: "text-muted-foreground opacity-50",
+                                    day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                                    day_hidden: "invisible",
+                                  }}
+                                />
+                              </div>
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -619,35 +678,98 @@ const FamilyCreator = () => {
                         </div>
 
                         {/* Death Date */}
-                        {!firstMember.isAlive && <div>
-                            <Label className="text-sm font-medium text-card-foreground mb-3 block">
-                              🕊️ تاريخ الوفاة
+                        {!firstMember.isAlive && (
+                          <div className="animate-fade-in">
+                            <Label className="text-sm font-medium text-card-foreground mb-3 block flex items-center gap-2">
+                              <div className="w-8 h-8 bg-gradient-to-br from-gray-500 to-slate-600 rounded-full flex items-center justify-center text-white text-sm">
+                                🕊️
+                              </div>
+                              تاريخ الوفاة
                             </Label>
                             <Popover>
                               <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("w-full h-14 justify-start text-lg border-0 bg-input rounded-xl shadow-inner", !firstMember.deathDate && "text-muted-foreground")}>
-                                  <CalendarIcon className="ml-2 h-5 w-5" />
-                                  {firstMember.deathDate ? format(firstMember.deathDate, "PPP", {
-                              locale: ar
-                            }) : "اختر التاريخ"}
+                                <Button 
+                                  variant="outline" 
+                                  className={cn(
+                                    "w-full h-16 justify-start text-lg border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 via-white to-slate-50 dark:from-gray-950/30 dark:via-background dark:to-slate-950/30 rounded-2xl shadow-inner hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 group relative overflow-hidden",
+                                    !firstMember.deathDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  {/* Background effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-gray-100/0 via-gray-100/50 to-gray-100/0 dark:from-gray-900/0 dark:via-gray-900/20 dark:to-gray-900/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                  
+                                  <div className="relative flex items-center gap-3 w-full">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-slate-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-200">
+                                      <CalendarIcon className="h-5 w-5" />
+                                    </div>
+                                    <div className="flex-1 text-right">
+                                      {firstMember.deathDate ? (
+                                        <div className="space-y-1">
+                                          <div className="text-lg font-bold text-gray-700 dark:text-gray-300">
+                                            {format(firstMember.deathDate, "PPP", { locale: ar })}
+                                          </div>
+                                          {firstMember.birthDate && (
+                                            <div className="text-xs text-muted-foreground">
+                                              عاش {firstMember.deathDate.getFullYear() - firstMember.birthDate.getFullYear()} سنة
+                                            </div>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <div className="text-lg">اختر تاريخ الوفاة 🕯️</div>
+                                      )}
+                                    </div>
+                                    <div className="text-gray-400 group-hover:animate-pulse">🌹</div>
+                                  </div>
                                 </Button>
                               </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                                <Calendar 
-                                  mode="single" 
-                                  selected={firstMember.deathDate} 
-                                  onSelect={date => setFirstMember({
-                                    ...firstMember,
-                                    deathDate: date
-                                  })} 
-                                  initialFocus 
-                                  className="pointer-events-auto" 
-                                  disabled={date => date > new Date() || (firstMember.birthDate && date < firstMember.birthDate)} 
-                                  defaultMonth={new Date(1970, 0)}
-                                />
+                              <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-2 border-gray-200/50 dark:border-gray-700/50 shadow-2xl rounded-2xl overflow-hidden">
+                                <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-950/50 dark:to-slate-950/50 p-1">
+                                  <Calendar 
+                                    mode="single" 
+                                    selected={firstMember.deathDate} 
+                                    onSelect={(date) => {
+                                      setFirstMember({
+                                        ...firstMember,
+                                        deathDate: date
+                                      });
+                                      // Force close the popover after selection
+                                      setTimeout(() => {
+                                        document.querySelector('[data-state="open"]')?.setAttribute('data-state', 'closed');
+                                      }, 100);
+                                    }} 
+                                    initialFocus 
+                                    className="pointer-events-auto rounded-xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm" 
+                                    disabled={(date) => date > new Date() || (firstMember.birthDate && date < firstMember.birthDate)} 
+                                    defaultMonth={new Date(1970, 0)}
+                                    classNames={{
+                                      months: "space-y-4",
+                                      month: "space-y-4", 
+                                      caption: "flex justify-center pt-1 relative items-center text-lg font-bold text-gray-700 dark:text-gray-300",
+                                      caption_label: "text-lg font-bold",
+                                      nav: "space-x-1 flex items-center",
+                                      nav_button: "h-9 w-9 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-colors",
+                                      nav_button_previous: "absolute left-1",
+                                      nav_button_next: "absolute right-1",
+                                      table: "w-full border-collapse space-y-1",
+                                      head_row: "flex",
+                                      head_cell: "text-muted-foreground rounded-md w-10 font-bold text-sm",
+                                      row: "flex w-full mt-2",
+                                      cell: "h-10 w-10 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                      day: "h-10 w-10 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-all duration-200 hover:scale-110",
+                                      day_range_end: "day-range-end",
+                                      day_selected: "bg-gradient-to-br from-gray-500 to-slate-600 text-white hover:bg-gradient-to-br hover:from-gray-600 hover:to-slate-700 focus:bg-gradient-to-br focus:from-gray-500 focus:to-slate-600 shadow-lg scale-110 font-bold",
+                                      day_today: "bg-gray-100 dark:bg-gray-800/30 text-gray-700 dark:text-gray-300 font-bold border-2 border-gray-300 dark:border-gray-600",
+                                      day_outside: "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+                                      day_disabled: "text-muted-foreground opacity-50",
+                                      day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                                      day_hidden: "invisible",
+                                    }}
+                                  />
+                                </div>
                               </PopoverContent>
                             </Popover>
-                          </div>}
+                          </div>
+                        )}
 
                         {/* Bio */}
                         <div className="md:col-span-2">
