@@ -1145,116 +1145,119 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Profile Photo Section */}
-                <div className="space-y-4">
-                  <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
-                    <Camera className="h-4 w-4 text-primary" />
-                    الصورة الشخصية (اختياري)
-                  </Label>
-                  
-                  <div className="flex items-center gap-6">
-                    <Avatar className="w-24 h-24 border-4 border-primary/20">
-                      <AvatarImage src={formData.croppedImage || undefined} />
-                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-2xl">
-                        {formData.name ? formData.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '👤'}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex-1">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={onFileChange}
-                        className="hidden"
-                        id="photo-upload"
-                      />
-                      <label
-                        htmlFor="photo-upload"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl cursor-pointer hover:from-primary/20 hover:to-accent/20 transition-all"
-                      >
-                        <UploadCloud className="h-4 w-4" />
-                        اختر صورة
-                      </label>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        يفضل استخدام صور بجودة عالية ونسبة 1:1
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Family Selection */}
-                {familyMarriages.length > 0 && (
+                {/* Profile Photo and Family Selection Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Profile Photo */}
                   <div className="space-y-4">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      اختر العائلة المرتبطة
+                      <Camera className="h-4 w-4 text-primary" />
+                      الصورة الشخصية (اختياري)
                     </Label>
-                    <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full h-12 justify-between text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
-                            !formData.relatedPersonId && "text-muted-foreground"
-                          )}
+                    
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-20 h-20 border-4 border-primary/20">
+                        <AvatarImage src={formData.croppedImage || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-xl">
+                          {formData.name ? formData.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '👤'}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={onFileChange}
+                          className="hidden"
+                          id="photo-upload"
+                        />
+                        <label
+                          htmlFor="photo-upload"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl cursor-pointer hover:from-primary/20 hover:to-accent/20 transition-all"
                         >
-                          {formData.relatedPersonId ? (
-                            <div className="flex items-center gap-3">
-                              <span className="text-xl">❤️</span>
-                              <div className="flex flex-col items-start">
-                                <span className="font-medium">
-                                  {(() => {
-                                    const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
-                                    return marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة';
-                                  })()}
-                                </span>
-                                <span className="text-xs text-muted-foreground">عائلة</span>
-                              </div>
-                            </div>
-                          ) : (
-                            "ابحث واختر من قائمة العائلات"
-                          )}
-                          <Search className="h-4 w-4 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                        <Command>
-                          <CommandInput placeholder="ابحث عن عائلة..." className="h-12 text-lg" />
-                          <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
-                          <CommandList className="max-h-60">
-                            <CommandGroup>
-                              {familyMarriages.map((marriage) => (
-                                <CommandItem
-                                  key={marriage.id}
-                                  value={`${marriage.husband?.name} ${marriage.wife?.name} عائلة`}
-                                  onSelect={() => {
-                                    setFormData({...formData, relatedPersonId: marriage.id});
-                                    setShowRelatedPersonDropdown(false);
-                                  }}
-                                  className="flex items-center gap-3 p-3 cursor-pointer"
-                                >
-                                  <span className="text-2xl">❤️</span>
-                                  <div className="flex flex-col flex-1">
-                                    <span className="font-medium">
-                                      {marriage.husband?.name} + {marriage.wife?.name}
-                                    </span>
-                                    <span className="text-sm text-muted-foreground">عائلة</span>
-                                  </div>
-                                  {formData.relatedPersonId === marriage.id && (
-                                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                                  )}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <p className="text-sm text-muted-foreground">
-                      اختر العائلة التي سينتمي إليها {formData.name}
-                    </p>
+                          <UploadCloud className="h-4 w-4" />
+                          اختر صورة
+                        </label>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          يفضل استخدام صور بجودة عالية ونسبة 1:1
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                )}
+
+                  {/* Family Selection */}
+                  {familyMarriages.length > 0 && (
+                    <div className="space-y-4">
+                      <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                        <Users className="h-4 w-4 text-primary" />
+                        اختر العائلة المرتبطة
+                      </Label>
+                      <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full h-12 justify-between text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                              !formData.relatedPersonId && "text-muted-foreground"
+                            )}
+                          >
+                            {formData.relatedPersonId ? (
+                              <div className="flex items-center gap-3">
+                                <span className="text-xl">❤️</span>
+                                <div className="flex flex-col items-start">
+                                  <span className="font-medium">
+                                    {(() => {
+                                      const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+                                      return marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة';
+                                    })()}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">عائلة</span>
+                                </div>
+                              </div>
+                            ) : (
+                              "ابحث واختر من قائمة العائلات"
+                            )}
+                            <Search className="h-4 w-4 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                          <Command>
+                            <CommandInput placeholder="ابحث عن عائلة..." className="h-12 text-lg" />
+                            <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
+                            <CommandList className="max-h-60">
+                              <CommandGroup>
+                                {familyMarriages.map((marriage) => (
+                                  <CommandItem
+                                    key={marriage.id}
+                                    value={`${marriage.husband?.name} ${marriage.wife?.name} عائلة`}
+                                    onSelect={() => {
+                                      setFormData({...formData, relatedPersonId: marriage.id});
+                                      setShowRelatedPersonDropdown(false);
+                                    }}
+                                    className="flex items-center gap-3 p-3 cursor-pointer"
+                                  >
+                                    <span className="text-2xl">❤️</span>
+                                    <div className="flex flex-col flex-1">
+                                      <span className="font-medium">
+                                        {marriage.husband?.name} + {marriage.wife?.name}
+                                      </span>
+                                      <span className="text-sm text-muted-foreground">عائلة</span>
+                                    </div>
+                                    {formData.relatedPersonId === marriage.id && (
+                                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                    )}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <p className="text-sm text-muted-foreground">
+                        اختر العائلة التي سينتمي إليها {formData.name}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
