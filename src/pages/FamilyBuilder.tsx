@@ -731,6 +731,17 @@ const FamilyBuilder = () => {
 
   const handleDeleteMember = async (id: string) => {
     try {
+      // Check if member is a founder
+      const memberToDelete = familyMembers.find(member => member.id === id);
+      if (memberToDelete?.isFounder) {
+        toast({
+          title: "تحذير",
+          description: "لا يمكن حذف مؤسس العائلة",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('family_tree_members')
         .delete()
@@ -1140,15 +1151,17 @@ const FamilyBuilder = () => {
                                 <span className="font-medium">تعديل البيانات</span>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-white/10 my-1" />
-                              <DropdownMenuItem 
-                                onClick={() => handleDeleteMember(member.id)}
-                                className="gap-3 p-3 rounded-xl hover:bg-destructive/10 transition-colors text-destructive"
-                              >
-                                <div className="w-8 h-8 bg-destructive/10 rounded-full flex items-center justify-center">
-                                  <Trash2 className="h-4 w-4" />
-                                </div>
-                                <span className="font-medium">حذف من العائلة</span>
-                              </DropdownMenuItem>
+                              {!member.isFounder && (
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteMember(member.id)}
+                                  className="gap-3 p-3 rounded-xl hover:bg-destructive/10 transition-colors text-destructive"
+                                >
+                                  <div className="w-8 h-8 bg-destructive/10 rounded-full flex items-center justify-center">
+                                    <Trash2 className="h-4 w-4" />
+                                  </div>
+                                  <span className="font-medium">حذف من العائلة</span>
+                                </DropdownMenuItem>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
