@@ -428,7 +428,7 @@ const FamilyBuilder = () => {
       {/* Main Content */}
       <div className="pt-8 relative z-10 min-h-screen">
         <div className="max-w-7xl mx-auto px-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8" style={{direction: 'rtl'}}>
             {/* Modern Tabs Navigation */}
             <div className="flex justify-center">
               <TabsList className="bg-card/50 backdrop-blur-xl border border-primary/20 rounded-2xl p-1 shadow-lg flex-row-reverse">
