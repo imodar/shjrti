@@ -596,30 +596,12 @@ export default function Store() {
                                 </div>
                                 
                                  {/* Template Name */}
-                                 <h3 className={`text-center text-base font-bold mb-2 transition-colors duration-300 ${
+                                 <h3 className={`text-center text-base font-bold mb-4 transition-colors duration-300 ${
                                    selectedDesign === template.id ? 'text-primary' : 'text-foreground group-hover:text-primary'
                                  }`}>
                                    {template.name}
                                  </h3>
-                                
-                                 {/* Features List */}
-                                 <div className="space-y-1 mb-3">
-                                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                     <div className="w-1 h-1 bg-current rounded-full"></div>
-                                     <span className="text-xs">تصميم احترافي</span>
-                                   </div>
-                                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                     <div className="w-1 h-1 bg-current rounded-full"></div>
-                                     <span className="text-xs">جودة طباعة عالية</span>
-                                   </div>
-                                   {template.isPremium && (
-                                     <div className="flex items-center justify-center gap-2 text-xs text-accent font-medium">
-                                       <div className="w-1 h-1 bg-current rounded-full"></div>
-                                       <span className="text-xs">ميزات إضافية مميزة</span>
-                                     </div>
-                                   )}
-                                 </div>
-                              </div>
+                               </div>
                               
                               {/* Bottom Section - Price & Selection */}
                               <div className={`px-6 py-4 border-t transition-all duration-300 ${
