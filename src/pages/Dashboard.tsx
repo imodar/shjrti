@@ -324,220 +324,234 @@ const Dashboard = () => {
         return <Gift className="h-4 w-4" />;
     }
   };
-  return <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
-      {/* Animated Background Elements */}
+  return <div className="min-h-screen bg-background">
+      {/* Clean Background with Subtle Pattern */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{
-        animationDelay: '2s'
-      }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl animate-pulse" style={{
-        animationDelay: '4s'
-      }}></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.05),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.05),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,hsl(var(--secondary)/0.05),transparent_50%)]"></div>
       </div>
 
       <div className="relative z-10">
         <Header />
 
-        <main className="container mx-auto px-6 py-8 pt-32 space-y-8">
+        <main className="container mx-auto px-6 py-8 pt-32 space-y-12">
 
-          {/* Quick Stats */}
+          {/* Modern Hero Section */}
+          <div className="text-center space-y-6 py-12">
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl font-bold">
+                <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                  مرحباً بك في لوحة التحكم
+                </span>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                إدارة وتنظيم أشجار عائلتك بطريقة عصرية وسهلة
+              </p>
+            </div>
+          </div>
+
+          {/* Stats Cards with Modern Design */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <CardContent className="p-6 relative z-10">
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-background to-primary/5 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-muted-foreground text-sm font-medium">إجمالي الأشجار</p>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">إجمالي الأشجار</p>
                     <p className="text-3xl font-bold text-primary">{trees.length}</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <PieChart className="h-6 w-6 text-primary" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <CardContent className="p-6 relative z-10">
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-background to-accent/5 border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-lg">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-muted-foreground text-sm font-medium">إجمالي الأفراد</p>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">إجمالي الأفراد</p>
                     <p className="text-3xl font-bold text-accent">{trees.reduce((acc, tree) => acc + tree.members, 0)}</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-secondary/20 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center group-hover:bg-accent/20 transition-colors">
                     <Users className="h-6 w-6 text-accent" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-border/50">
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <CardContent className="p-6 relative z-10">
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-background to-secondary/5 border-secondary/20 hover:border-secondary/40 transition-all duration-300 hover:shadow-lg">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-muted-foreground text-sm font-medium">الأجيال</p>
-                    <p className="text-3xl font-bold text-secondary-foreground">{trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}</p>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">الأجيال</p>
+                    <p className="text-3xl font-bold text-secondary">{trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}</p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-secondary-foreground" />
+                  <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+                    <TrendingUp className="h-6 w-6 text-secondary" />
                   </div>
                 </div>
               </CardContent>
             </Card>
-
           </div>
 
-          {/* Plan Upgrade Section (for free users) */}
-          {currentPlan.type === "free" && <Card className="relative overflow-hidden bg-gradient-to-r from-accent/10 via-primary/5 to-secondary/10 border-2 border-dashed border-primary/30">
-              <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5"></div>
-              <CardContent className="p-8 relative z-10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
-                      <Zap className="h-8 w-8 text-primary-foreground" />
+          {/* Modern Upgrade Section */}
+          {currentPlan.type === "free" && <Card className="relative overflow-hidden bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 border border-primary/20">
+              <CardContent className="p-8">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+                      <Zap className="h-8 w-8 text-white" />
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-primary mb-2">ارتقِ بتجربتك</h3>
-                      <p className="text-muted-foreground">احصل على ميزات متقدمة وأشجار عائلية غير محدودة</p>
-                      <div className="flex gap-2 mt-2">
-                        {["أشجار غير محدودة", "تخزين متقدم", "مشاركة متطورة"].map((feature, index) => <Badge key={index} variant="outline" className="text-xs border-primary/30">
+                    <div className="text-center md:text-right">
+                      <h3 className="text-2xl font-bold text-foreground mb-2">ارتقِ بتجربتك</h3>
+                      <p className="text-muted-foreground mb-4">احصل على ميزات متقدمة وأشجار عائلية غير محدودة</p>
+                      <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                        {["أشجار غير محدودة", "تخزين متقدم", "مشاركة متطورة"].map((feature, index) => 
+                          <Badge key={index} variant="outline" className="border-primary/30 text-primary">
                             {feature}
-                          </Badge>)}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowUpgradeDialog(true)}>
-                    <Crown className="mr-2 h-4 w-4" />
+                  <Button 
+                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg" 
+                    onClick={() => setShowUpgradeDialog(true)}
+                    size="lg"
+                  >
+                    <Crown className="mr-2 h-5 w-5" />
                     ترقية الباقة
                   </Button>
                 </div>
               </CardContent>
             </Card>}
 
-          {/* Trees Section */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
+          {/* Trees Section with Modern Header */}
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-foreground">أشجار العائلة</h2>
-                <p className="text-muted-foreground">أدر وتابع جميع أشجار عائلتك</p>
+                <p className="text-muted-foreground">أدر وتابع جميع أشجار عائلتك من مكان واحد</p>
               </div>
-              <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" size="lg">
+              <Button 
+                onClick={handleCreateTree} 
+                className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-300" 
+                size="lg"
+              >
                 <Plus className="mr-2 h-5 w-5" />
                 إنشاء شجرة جديدة
               </Button>
             </div>
 
-            {trees.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {trees.map(tree => <Card key={tree.id} className="group relative overflow-hidden bg-gradient-to-br from-card via-accent/5 to-primary/5 backdrop-blur-sm border-2 border-gradient-to-r from-primary/20 to-accent/20 hover:border-primary/40 hover:shadow-2xl transition-all duration-700 hover:scale-105">
-                    {/* Animated background patterns */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/10 via-transparent to-accent/10"></div>
-                      <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-                      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-                    </div>
-                    
-                    {/* Floating geometric shapes */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                      <div className="absolute top-4 right-6 w-3 h-3 bg-primary/40 rounded-full animate-bounce"></div>
-                      <div className="absolute top-8 right-12 w-2 h-2 bg-accent/40 rotate-45 animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                      <div className="absolute bottom-6 left-8 w-4 h-4 bg-secondary/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-                    </div>
-
-                    <CardContent className="p-0 relative z-10">
-                      {/* Header with curved design */}
-                      <div className="relative p-6 bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="relative z-10">
-                          {/* Status and Progress */}
-                          <div className="flex items-center justify-between mb-4">
-                            <Badge variant={tree.isPublic ? "default" : "secondary"} className="shadow-md bg-gradient-to-r from-primary/80 to-accent/80 text-white border-0">
-                              {tree.isPublic ? "عام" : "خاص"}
-                            </Badge>
-                          </div>
-
-                          {/* Tree name and last updated */}
-                          <div className="space-y-2">
-                            <h3 className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent group-hover:from-primary group-hover:to-accent transition-all duration-500">
-                              {tree.name}
-                            </h3>
-                            <p className="text-muted-foreground text-sm flex items-center gap-2">
-                              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-                              <span className="font-medium">آخر تحديث للشجرة:</span>
-                              {tree.lastUpdated}
-                            </p>
-                          </div>
+            {trees.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {trees.map(tree => (
+                  <Card key={tree.id} className="group relative overflow-hidden bg-card border hover:border-primary/40 hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-0">
+                      {/* Card Header */}
+                      <div className="p-6 border-b border-border/50">
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge variant={tree.isPublic ? "default" : "secondary"} className="bg-primary/10 text-primary border-primary/20">
+                            {tree.isPublic ? "عام" : "خاص"}
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                            {tree.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            آخر تحديث: {tree.lastUpdated}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Stats section with creative layout */}
+                      {/* Stats Section */}
                       <div className="p-6">
                         <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/20 group-hover:border-primary/40 transition-colors duration-500">
-                            <div className="absolute top-2 right-2 w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                              <Users className="h-4 w-4 text-primary" />
+                          <div className="bg-primary/5 rounded-lg p-4 text-center">
+                            <div className="flex items-center justify-center mb-2">
+                              <Users className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="mt-8">
-                              <div className="text-2xl font-bold text-primary">{tree.members}</div>
-                              <div className="text-xs text-muted-foreground">فرد</div>
-                            </div>
+                            <div className="text-2xl font-bold text-primary">{tree.members}</div>
+                            <div className="text-xs text-muted-foreground">فرد</div>
                           </div>
                           
-                          <div className="relative bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 border border-accent/20 group-hover:border-accent/40 transition-colors duration-500">
-                            <div className="absolute top-2 right-2 w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
-                              <Calendar className="h-4 w-4 text-accent" />
+                          <div className="bg-accent/5 rounded-lg p-4 text-center">
+                            <div className="flex items-center justify-center mb-2">
+                              <TrendingUp className="h-5 w-5 text-accent" />
                             </div>
-                            <div className="mt-8">
-                              <div className="text-2xl font-bold text-accent">{tree.generations}</div>
-                              <div className="text-xs text-muted-foreground">أجيال</div>
-                            </div>
+                            <div className="text-2xl font-bold text-accent">{tree.generations}</div>
+                            <div className="text-xs text-muted-foreground">أجيال</div>
                           </div>
                         </div>
 
-                        {/* Action buttons */}
+                        {/* Action Buttons */}
                         <div className="space-y-3">
                           <Button 
                             onClick={() => navigate('/view-tree')} 
-                            className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white"
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             عرض الشجرة
                           </Button>
                           
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => navigate('/family-builder?edit=true')} className="flex-1 border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300">
-                              <Edit className="mr-1 h-4 w-4" />
-                              تحرير
+                          <div className="grid grid-cols-3 gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => navigate('/family-builder?edit=true')} 
+                              className="border-primary/30 hover:bg-primary/10"
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" onClick={() => handleShareTree(tree.id)} className="flex-1 border-accent/30 hover:border-accent/60 hover:bg-accent/10 transition-all duration-300">
-                              <Share2 className="mr-1 h-4 w-4" />
-                              مشاركة
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleShareTree(tree.id)} 
+                              className="border-accent/30 hover:bg-accent/10"
+                            >
+                              <Share2 className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" onClick={() => handleDeleteTree(tree.id)} className="border-destructive/30 hover:border-destructive hover:bg-destructive/10 hover:text-destructive transition-all duration-300">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleDeleteTree(tree.id)} 
+                              className="border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+                            >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
                       </div>
                     </CardContent>
-                  </Card>)}
-              </div> : <Card className="relative overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 border-2 border-dashed border-muted-foreground/30">
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="relative overflow-hidden bg-gradient-to-br from-muted/20 to-muted/5 border-2 border-dashed border-muted-foreground/20">
                 <CardContent className="p-12 text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-muted-foreground/20 to-muted-foreground/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className="w-24 h-24 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Users className="h-12 w-12 text-muted-foreground" />
                   </div>
                   <h3 className="text-2xl font-bold text-muted-foreground mb-4">لا توجد أشجار عائلية بعد</h3>
                   <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                     ابدأ رحلتك في بناء تاريخ عائلتك عبر إنشاء أول شجرة عائلية
                   </p>
-                  <Button onClick={handleCreateTree} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg" size="lg">
+                  <Button 
+                    onClick={handleCreateTree} 
+                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg" 
+                    size="lg"
+                  >
                     <Plus className="mr-2 h-5 w-5" />
                     إنشاء أول شجرة
                   </Button>
                 </CardContent>
-              </Card>}
+              </Card>
+            )}
           </div>
         </main>
       </div>
