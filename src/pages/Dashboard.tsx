@@ -347,28 +347,20 @@ const Dashboard = () => {
 
         <main className="container mx-auto px-6 py-8 pt-32 space-y-16">
 
-          {/* Creative Hero Section with Artistic Layout */}
+          {/* Compact Modern Hero - Single Line */}
           <div className="relative">
-            <div className="text-center space-y-8 py-16">
-              {/* Artistic Text Layout */}
-              <div className="relative">
-                <h1 className="text-5xl md:text-7xl font-black leading-tight">
-                  <span className="block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-gradient">
-                    مرحباً بك
-                  </span>
-                  <span className="block text-2xl md:text-3xl font-medium text-muted-foreground mt-2">
-                    في عالم أشجار العائلة
-                  </span>
-                </h1>
-                
-                {/* Decorative Elements */}
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+            <div className="flex items-center justify-center py-6">
+              <div className="flex items-center gap-6">
+                <div className="w-2 h-12 bg-gradient-to-b from-primary via-accent to-secondary rounded-full"></div>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                    مرحباً بك في لوحة التحكم
+                  </h1>
+                  <span className="text-muted-foreground">•</span>
+                  <p className="text-muted-foreground">إدارة أشجار عائلتك بسهولة</p>
+                </div>
+                <div className="w-2 h-12 bg-gradient-to-b from-secondary via-accent to-primary rounded-full"></div>
               </div>
-              
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                اكتشف تاريخ عائلتك وابني إرثاً رقمياً يدوم للأبد
-              </p>
             </div>
           </div>
 
