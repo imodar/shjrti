@@ -396,9 +396,9 @@ const FamilyBuilder = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-primary/30">
                     <Bell className="h-5 w-5 text-primary dark:text-primary" />
-                    {notifications.filter(n => !n.read).length > 0 && (
+                    {notifications.filter(n => !n.isRead).length > 0 && (
                       <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
-                        {notifications.filter(n => !n.read).length}
+                        {notifications.filter(n => !n.isRead).length}
                       </span>
                     )}
                   </Button>
@@ -408,7 +408,7 @@ const FamilyBuilder = () => {
                   <DropdownMenuSeparator />
                   {notifications.length > 0 ? (
                     notifications.map(notification => (
-                      <DropdownMenuItem key={notification.id} className={`p-3 ${!notification.read ? 'bg-primary/5' : ''}`}>
+                      <DropdownMenuItem key={notification.id} className={`p-3 ${!notification.isRead ? 'bg-primary/5' : ''}`}>
                         <div className="space-y-1">
                           <p className="text-sm font-medium">{notification.title}</p>
                           <p className="text-xs text-muted-foreground">{notification.message}</p>
