@@ -1093,7 +1093,77 @@ const FamilyBuilder = () => {
       </div>
 
       {/* Add/Edit Member Modal */}
-      <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
+      {/* Modern Family Member Modal */}
+      <ModernFamilyMemberModal 
+        isOpen={showAddMember}
+        onClose={() => setShowAddMember(false)}
+        onSubmit={handleMemberSubmit}
+        familyId={familyData?.id || ""}
+      />
+
+      <SharedFooter />
+    </div>
+  );
+};
+
+export default FamilyBuilder;
+      <ModernFamilyMemberModal 
+        isOpen={showAddMember}
+        onClose={() => setShowAddMember(false)}
+        onSubmit={handleMemberSubmit}
+        familyId={familyData?.id || ""}
+      />
+
+      {/* Image Crop Modal */}
+      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
+        <DialogContent className="sm:max-w-2xl bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-foreground">قص الصورة</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              اضبط الصورة كما تريد وانقر على حفظ
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="relative w-full h-[300px] bg-background rounded-xl overflow-hidden">
+            {imageSrc && (
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                cropShape="round"
+                showGrid={false}
+                style={{
+                  containerStyle: {
+                    width: '100%',
+                    height: '300px',
+                    backgroundColor: 'hsl(var(--background))',
+                  },
+                }}
+              />
+            )}
+          </div>
+
+          <DialogFooter className="gap-3">
+            <Button variant="outline" onClick={() => setShowImageCrop(false)}>
+              إلغاء
+            </Button>
+            <Button onClick={handleCropSave} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
+              حفظ الصورة
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <SharedFooter />
+    </div>
+  );
+};
+
+export default FamilyBuilder;
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">{/* Removed problematic positioning classes */}
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
           
