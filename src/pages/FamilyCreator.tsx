@@ -578,7 +578,7 @@ const FamilyCreator = () => {
                                 className={cn(
                                   "h-12 rounded-xl font-arabic transition-all duration-300",
                                   !founderData.isAlive 
-                                    ? "bg-muted text-foreground shadow-lg" 
+                                    ? "bg-destructive text-destructive-foreground shadow-lg" 
                                     : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
                                 )}
                               >
