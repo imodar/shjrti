@@ -212,14 +212,15 @@ export default function Store() {
         <div className="max-w-7xl mx-auto px-6 relative">
             <div className="text-center mb-8">
               {/* Tab Navigation */}
-              <div className="flex justify-center relative">
-                {/* Creative floating background with gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl blur-xl scale-110 animate-pulse opacity-50"></div>
-                <div className="relative z-10 backdrop-blur-3xl bg-gradient-to-r from-card/60 via-card/80 to-card/60 border border-primary/30 rounded-3xl p-2 shadow-2xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-500 hover:scale-105">
-                  {/* Decorative corner elements */}
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-primary to-accent rounded-full animate-ping opacity-60"></div>
-                  <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-br from-accent to-primary rounded-full animate-pulse"></div>
-                  <TabsList className="bg-transparent backdrop-blur-sm border-0 rounded-2xl p-1 shadow-none flex-row-reverse relative">
+              <Tabs value="store" className="space-y-8" style={{direction: 'rtl'}}>
+                <div className="flex justify-center relative">
+                  {/* Creative floating background with gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl blur-xl scale-110 animate-pulse opacity-50"></div>
+                  <div className="relative z-10 backdrop-blur-3xl bg-gradient-to-r from-card/60 via-card/80 to-card/60 border border-primary/30 rounded-3xl p-2 shadow-2xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-500 hover:scale-105">
+                    {/* Decorative corner elements */}
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-primary to-accent rounded-full animate-ping opacity-60"></div>
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-br from-accent to-primary rounded-full animate-pulse"></div>
+                    <TabsList className="bg-transparent backdrop-blur-sm border-0 rounded-2xl p-1 shadow-none flex-row-reverse relative">
                     <div 
                       onClick={() => navigate('/family-builder')}
                       className="rounded-xl px-6 py-3 transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-primary/10 cursor-pointer flex items-center justify-center"
@@ -248,6 +249,7 @@ export default function Store() {
                   </TabsList>
                 </div>
               </div>
+              </Tabs>
             </div>
           </div>
         </div>
