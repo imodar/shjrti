@@ -1015,7 +1015,7 @@ const FamilyBuilder = () => {
 
       {/* Add/Edit Member Modal */}
       <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl z-50 fixed inset-0 m-auto">{/* Fixed positioning to ensure content stays contained */}
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
           
           <DialogHeader className="relative pt-4">
@@ -1242,7 +1242,7 @@ const FamilyBuilder = () => {
                       <Calendar className="h-4 w-4 text-primary" />
                       تاريخ الميلاد
                     </Label>
-                    <Popover>
+                    <Popover modal={true}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -1294,7 +1294,7 @@ const FamilyBuilder = () => {
                       <Skull className="h-4 w-4 text-primary" />
                       تاريخ الوفاة
                     </Label>
-                    <Popover>
+                    <Popover modal={true}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
