@@ -45,6 +45,16 @@ interface Wife {
   croppedImage: string | null;
 }
 
+interface Husband {
+  id: string;
+  name: string;
+  birthDate: Date | null;
+  isAlive: boolean;
+  deathDate: Date | null;
+  image: File | null;
+  croppedImage: string | null;
+}
+
 interface ModernFamilyMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -60,6 +70,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [currentWifeIndex, setCurrentWifeIndex] = useState<number | null>(null);
   const [isMainPersonImage, setIsMainPersonImage] = useState(false);
+  const [isHusbandImage, setIsHusbandImage] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -83,6 +94,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   });
 
   const [wives, setWives] = useState<Wife[]>([]);
+  const [husband, setHusband] = useState<Husband | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -176,14 +188,36 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     ));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>, wifeIndex?: number) => {
+  const addHusband = () => {
+    const newHusband: Husband = {
+      id: Date.now().toString(),
+      name: "",
+      birthDate: null,
+      isAlive: true,
+      deathDate: null,
+      image: null,
+      croppedImage: null
+    };
+    setHusband(newHusband);
+  };
+
+  const updateHusband = (field: keyof Husband, value: any) => {
+    if (husband) {
+      setHusband({ ...husband, [field]: value });
+    }
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>, wifeIndex?: number, isHusband?: boolean) => {
     const file = event.target.files?.[0];
     if (file) {
       setCurrentWifeIndex(typeof wifeIndex === 'number' ? wifeIndex : null);
-      setIsMainPersonImage(typeof wifeIndex !== 'number');
+      setIsMainPersonImage(typeof wifeIndex !== 'number' && !isHusband);
+      setIsHusbandImage(!!isHusband);
       
       if (typeof wifeIndex === 'number') {
         updateWife(wives[wifeIndex].id, 'image', file);
+      } else if (isHusband && husband) {
+        updateHusband('image', file);
       } else {
         setMemberData({ ...memberData, image: file });
       }
@@ -253,12 +287,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           setMemberData(prev => ({ ...prev, croppedImage }));
         } else if (currentWifeIndex !== null) {
           updateWife(wives[currentWifeIndex].id, 'croppedImage', croppedImage);
+        } else if (isHusbandImage && husband) {
+          updateHusband('croppedImage', croppedImage);
         }
         
         setShowCropModal(false);
         setCropImage(null);
         setCurrentWifeIndex(null);
         setIsMainPersonImage(false);
+        setIsHusbandImage(false);
         
         toast({
           title: "تم حفظ الصورة",
@@ -302,13 +339,23 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       return;
     }
 
+    if (memberData.gender === "female" && memberData.isMarried && !husband) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إضافة بيانات الزوج",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const selectedParent = filteredParents.find(p => p.id === memberData.selectedParent);
     
     const submitData = {
       ...memberData,
       fatherId: selectedParent?.fatherId,
       motherId: selectedParent?.motherId,
-      wives: memberData.gender === "male" && memberData.isMarried ? wives : []
+      wives: memberData.gender === "male" && memberData.isMarried ? wives : [],
+      husband: memberData.gender === "female" && memberData.isMarried ? husband : null
     };
 
     onSubmit(submitData);
@@ -331,6 +378,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       hasMultipleWives: false
     });
     setWives([]);
+    setHusband(null);
     setSearchTerm("");
     onClose();
   };
@@ -690,9 +738,139 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 </div>
                 {memberData.isMarried && (
                   <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
-                    <p className="text-sm text-muted-foreground">
-                      سيتم ربط الزوج عند إضافة بياناته في وقت لاحق
-                    </p>
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-semibold">بيانات الزوج</h4>
+                      {!husband && (
+                        <Button onClick={addHusband} size="sm" className="gap-2">
+                          <Plus className="h-4 w-4" />
+                          إضافة بيانات الزوج
+                        </Button>
+                      )}
+                    </div>
+
+                    {!husband ? (
+                      <div className="text-center py-4">
+                        <p className="text-muted-foreground text-sm">لم يتم إضافة بيانات الزوج بعد</p>
+                        <Button onClick={addHusband} size="sm" className="mt-2 gap-2">
+                          <Plus className="h-4 w-4" />
+                          إضافة بيانات الزوج
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="p-4 border rounded-lg bg-white dark:bg-gray-900/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h5 className="font-medium">بيانات الزوج</h5>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setHusband(null)}
+                            className="gap-2 text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            حذف
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="husband-name">اسم الزوج *</Label>
+                            <Input
+                              id="husband-name"
+                              value={husband.name}
+                              onChange={(e) => updateHusband('name', e.target.value)}
+                              placeholder="اسم الزوج"
+                              className="mt-1"
+                            />
+                          </div>
+
+                          <div>
+                            <Label>تاريخ الميلاد</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !husband.birthDate && "text-muted-foreground")}>
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {husband.birthDate ? format(husband.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={husband.birthDate || undefined}
+                                  onSelect={(date) => updateHusband('birthDate', date || null)}
+                                  disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label className="flex items-center gap-2">
+                              على قيد الحياة
+                              <Switch
+                                checked={husband.isAlive}
+                                onCheckedChange={(checked) => updateHusband('isAlive', checked)}
+                              />
+                            </Label>
+                          </div>
+
+                          {!husband.isAlive && (
+                            <div>
+                              <Label>تاريخ الوفاة</Label>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !husband.deathDate && "text-muted-foreground")}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {husband.deathDate ? format(husband.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={husband.deathDate || undefined}
+                                    onSelect={(date) => updateHusband('deathDate', date || null)}
+                                    disabled={(date) => date > new Date() || (husband.birthDate && date < husband.birthDate)}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Husband Image */}
+                        <div>
+                          <Label>صورة الزوج</Label>
+                          <div className="mt-2 flex items-center gap-4">
+                            {husband.croppedImage && (
+                              <Avatar className="w-16 h-16">
+                                <AvatarImage src={husband.croppedImage} />
+                                <AvatarFallback>{husband.name.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                            )}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('husband-image')?.click()}
+                              className="gap-2"
+                            >
+                              <Upload className="h-3 w-3" />
+                              {husband.croppedImage ? 'تغيير' : 'رفع صورة'}
+                            </Button>
+                            <input
+                              id="husband-image"
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, undefined, true)}
+                              className="hidden"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
