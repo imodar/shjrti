@@ -242,7 +242,7 @@ const FamilyBuilder = () => {
     croppedImage: null as string | null
   });
 
-  // Filter members based on search term and exclude spouses who aren't blood relatives
+  // Filter members based on search term and show only blood relatives
   const filteredMembers = familyMembers.filter(member => {
     // First filter by search term
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -256,8 +256,15 @@ const FamilyBuilder = () => {
     // Include members who have parents (blood relatives/children)
     if (member.fatherId || member.motherId) return true;
     
-    // Exclude members who are only connected through marriage (spouses with no parents in this family)
-    return false;
+    // Include members who are not spouses (exclude only if they are married to someone in this family but have no blood relation)
+    // Check if this member is only connected through marriage
+    const isSpouseOnly = familyMarriages.some(marriage => 
+      (marriage.husband?.id === member.id || marriage.wife?.id === member.id) &&
+      !member.fatherId && !member.motherId && !member.isFounder
+    );
+    
+    // Include if not a spouse-only member
+    return !isSpouseOnly;
   });
 
   // Relationship options with translations
