@@ -349,7 +349,7 @@ const Dashboard = () => {
 
           {/* Compact Modern Hero - Single Line */}
           <div className="relative">
-            <div className="flex items-center justify-center py-6">
+            <div className="flex items-center justify-center py-2">
               <div className="flex items-center gap-6">
                 <div className="w-2 h-12 bg-gradient-to-b from-primary via-accent to-secondary rounded-full"></div>
                 <div className="flex items-center gap-4">
