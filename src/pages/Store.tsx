@@ -207,7 +207,7 @@ export default function Store() {
       </header>
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div className="pt-8 relative z-10 min-h-screen">
         {/* Hero Section with Tabs */}
         <div className="max-w-7xl mx-auto px-6 relative">
             <div className="text-center mb-8">
