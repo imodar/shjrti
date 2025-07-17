@@ -142,7 +142,7 @@ const Header = () => {
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-accent/10 transition-all duration-300 cursor-pointer" asChild>
-                        <a href="/profile" className="flex items-center gap-3">
+                        <a href="/profile" className="flex items-center gap-3 flex-row-reverse">
                           <div className="p-2 bg-accent/10 rounded-lg group-hover:bg-accent/20 transition-colors">
                             <Settings className="h-4 w-4 text-accent" />
                           </div>
@@ -154,7 +154,7 @@ const Header = () => {
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-secondary/10 transition-all duration-300 cursor-pointer" asChild>
-                        <a href="/payments" className="flex items-center gap-3">
+                        <a href="/payments" className="flex items-center gap-3 flex-row-reverse">
                           <div className="p-2 bg-secondary/10 rounded-lg group-hover:bg-secondary/20 transition-colors">
                             <CreditCard className="h-4 w-4 text-secondary" />
                           </div>
@@ -166,7 +166,7 @@ const Header = () => {
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-primary/10 transition-all duration-300 cursor-pointer">
-                        <div className="flex items-center gap-3 w-full">
+                         <div className="flex items-center gap-3 w-full flex-row-reverse">
                           <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
                             <HelpCircle className="h-4 w-4 text-primary" />
                           </div>
@@ -184,7 +184,7 @@ const Header = () => {
                         className="group p-3 rounded-xl hover:bg-destructive/10 transition-all duration-300 cursor-pointer text-destructive focus:text-destructive"
                         onClick={signOut}
                       >
-                        <div className="flex items-center gap-3 w-full">
+                        <div className="flex items-center gap-3 w-full flex-row-reverse">
                           <div className="p-2 bg-destructive/10 rounded-lg group-hover:bg-destructive/20 transition-colors">
                             <LogOut className="h-4 w-4 text-destructive" />
                           </div>
