@@ -255,7 +255,7 @@ export default function Store() {
         </div>
 
         {/* Main Product Section */}
-        <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="max-w-7xl mx-auto px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             
             {/* Live Preview Section - Sticky */}
