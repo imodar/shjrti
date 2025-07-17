@@ -565,7 +565,7 @@ const FamilyCreator = () => {
                                   "h-12 rounded-xl font-arabic transition-all duration-300",
                                   founderData.isAlive 
                                     ? "bg-primary text-white shadow-lg" 
-                                    : "bg-muted/30 border-2 border-transparent hover:bg-background/60"
+                                    : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
                                 )}
                               >
                                 <Heart className="h-4 w-4 ml-2" />
@@ -579,7 +579,7 @@ const FamilyCreator = () => {
                                   "h-12 rounded-xl font-arabic transition-all duration-300",
                                   !founderData.isAlive 
                                     ? "bg-muted text-foreground shadow-lg" 
-                                    : "bg-muted/30 border-2 border-transparent hover:bg-background/60"
+                                    : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
                                 )}
                               >
                                 متوفى
