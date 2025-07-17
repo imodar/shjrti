@@ -196,7 +196,6 @@ All colors MUST be HSL.
       transform: translateY(0);
     }
   }
-  }
   
   /* Calendar-specific styles to prevent class leakage */
   .calendar-month-spacing {
