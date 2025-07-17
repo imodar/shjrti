@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -38,6 +65,39 @@ export type Database = {
           role?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      currencies: {
+        Row: {
+          code: string
+          created_at: string
+          exchange_rate: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          exchange_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          exchange_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          symbol?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -119,6 +179,7 @@ export type Database = {
           content: Json
           id: string
           is_active: boolean | null
+          language_code: string | null
           section: string
           updated_at: string
         }
@@ -126,6 +187,7 @@ export type Database = {
           content: Json
           id?: string
           is_active?: boolean | null
+          language_code?: string | null
           section: string
           updated_at?: string
         }
@@ -133,10 +195,19 @@ export type Database = {
           content?: Json
           id?: string
           is_active?: boolean | null
+          language_code?: string | null
           section?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_language"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       invoices: {
         Row: {
@@ -192,6 +263,42 @@ export type Database = {
           },
         ]
       }
+      languages: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string | null
+          direction: string
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string | null
+          direction?: string
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string | null
+          direction?: string
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -235,6 +342,8 @@ export type Database = {
           is_active: boolean | null
           name: string
           price: number
+          price_sar: number | null
+          price_usd: number | null
           updated_at: string
         }
         Insert: {
@@ -246,6 +355,8 @@ export type Database = {
           is_active?: boolean | null
           name: string
           price: number
+          price_sar?: number | null
+          price_usd?: number | null
           updated_at?: string
         }
         Update: {
@@ -257,6 +368,8 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number
+          price_sar?: number | null
+          price_usd?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -335,6 +448,44 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      translations: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          key: string
+          language_code: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          key: string
+          language_code: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          key?: string
+          language_code?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translations_language_code_fkey"
+            columns: ["language_code"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+        ]
       }
     }
     Views: {
