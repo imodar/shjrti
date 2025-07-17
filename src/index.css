@@ -210,4 +210,37 @@ All colors MUST be HSL.
   .rdp-caption {
     /* Calendar caption styles */
   }
+
+  /* Creative Header Animations */
+  @keyframes gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -100% 0; }
+    100% { background-position: 100% 0; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(180deg); }
+  }
+
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+  }
+
+  @keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .animate-gradient { background-size: 200% 200%; }
+  .animate-shimmer { background-size: 200% 100%; }
+  .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+  .preserve-3d { transform-style: preserve-3d; }
+  .perspective-1000 { perspective: 1000px; }
+  .rotate-y-12 { transform: rotateY(12deg); }
 }
