@@ -1049,7 +1049,7 @@ const FamilyCreator = () => {
                 disabled={!wifeFormRef.current?.isValid()}
                 className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-primary text-white font-bold rounded-2xl px-8 py-3 h-auto shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 <div className="relative flex items-center gap-3">
                   <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
                     <Plus className="h-3 w-3" />
