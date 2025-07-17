@@ -364,152 +364,104 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Creative Stats Section with Artistic Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Trees Card with Creative Design */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-background via-primary/5 to-primary/10 border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/20 to-transparent rounded-bl-full"></div>
-              
-              <CardContent className="p-8 relative z-10">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <PieChart className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-4xl font-bold text-primary">{trees.length}</p>
-                      <p className="text-sm text-muted-foreground font-medium">شجرة عائلية</p>
-                    </div>
+          {/* Compact Stats Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Trees Card - Compact */}
+            <Card className="bg-gradient-to-br from-background via-primary/5 to-primary/10 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                    <PieChart className="h-6 w-6 text-white" />
                   </div>
-                  
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-foreground">أشجار العائلة</h3>
-                    <p className="text-sm text-muted-foreground">مجموعة أشجارك المحفوظة</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-primary">{trees.length}</p>
+                    <p className="text-xs text-muted-foreground">شجرة عائلية</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Members Card */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-background via-accent/5 to-accent/10 border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-accent/20 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-accent/20 to-transparent rounded-tr-full"></div>
-              
-              <CardContent className="p-8 relative z-10">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <Users className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-4xl font-bold text-accent">{trees.reduce((acc, tree) => acc + tree.members, 0)}</p>
-                      <p className="text-sm text-muted-foreground font-medium">فرد</p>
-                    </div>
+            {/* Members Card - Compact */}
+            <Card className="bg-gradient-to-br from-background via-accent/5 to-accent/10 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 bg-gradient-to-br from-accent to-accent/80 rounded-xl flex items-center justify-center">
+                    <Users className="h-6 w-6 text-white" />
                   </div>
-                  
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-foreground">أفراد العائلة</h3>
-                    <p className="text-sm text-muted-foreground">إجمالي الأفراد المسجلين</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-accent">{trees.reduce((acc, tree) => acc + tree.members, 0)}</p>
+                    <p className="text-xs text-muted-foreground">فرد</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Generations Card */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-background via-secondary/5 to-secondary/10 border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-secondary/20 to-transparent rounded-br-full"></div>
-              
-              <CardContent className="p-8 relative z-10">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="w-16 h-16 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <TrendingUp className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-4xl font-bold text-secondary">{trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}</p>
-                      <p className="text-sm text-muted-foreground font-medium">جيل</p>
-                    </div>
+            {/* Generations Card - Compact */}
+            <Card className="bg-gradient-to-br from-background via-secondary/5 to-secondary/10 border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-white" />
                   </div>
-                  
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-foreground">الأجيال</h3>
-                    <p className="text-sm text-muted-foreground">عمق الشجرة العائلية</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-secondary">{trees.length > 0 ? Math.max(...trees.map(tree => tree.generations)) : 0}</p>
+                    <p className="text-xs text-muted-foreground">جيل</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Creative Upgrade Section */}
-          {currentPlan.type === "free" && <div className="relative">
-              <Card className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border-0 shadow-2xl">
-                {/* Artistic Background Pattern */}
-                <div className="absolute inset-0">
-                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(var(--primary)/0.15),transparent_40%)]"></div>
-                  <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(var(--accent)/0.15),transparent_40%)]"></div>
-                </div>
-                
-                <CardContent className="relative z-10 p-12">
-                  <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-8">
-                      <div className="relative">
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary via-accent to-secondary rounded-3xl flex items-center justify-center shadow-2xl">
-                          <Zap className="h-10 w-10 text-white" />
-                        </div>
-                        <div className="absolute -inset-2 bg-gradient-to-br from-primary/30 via-accent/30 to-secondary/30 rounded-3xl blur-lg animate-pulse"></div>
-                      </div>
-                      <div className="text-center lg:text-right space-y-4">
-                        <h3 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-                          ارتقِ إلى مستوى جديد
-                        </h3>
-                        <p className="text-lg text-muted-foreground max-w-lg">
-                          اكتشف قوة الميزات المتقدمة واحصل على تجربة لا محدودة
-                        </p>
-                        <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                          {["أشجار غير محدودة", "تخزين متقدم", "مشاركة احترافية", "تصميمات حصرية"].map((feature, index) => 
-                            <Badge key={index} variant="outline" className="border-primary/30 text-primary bg-primary/5 px-3 py-1">
-                              {feature}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+          {/* Quick Actions Bar */}
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Add New Tree Button - Prominent */}
+            <Button 
+              onClick={handleCreateTree} 
+              className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3 text-lg font-semibold rounded-xl" 
+            >
+              <Plus className="mr-2 h-5 w-5" />
+              إنشاء شجرة جديدة
+            </Button>
+
+            {/* Compact Upgrade Banner - Only for Free Users */}
+            {currentPlan.type === "free" && (
+              <Card className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 shadow-md">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-secondary rounded-lg flex items-center justify-center">
+                      <Crown className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                        ارتقِ لخطة أفضل
+                      </h3>
                     </div>
                     <Button 
-                      className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-8 py-4 text-lg font-semibold" 
+                      variant="outline" 
+                      size="sm"
+                      className="border-primary/30 text-primary hover:bg-primary/10 text-xs"
                       onClick={() => setShowUpgradeDialog(true)}
                     >
-                      <Crown className="mr-3 h-6 w-6" />
-                      ترقية فورية
+                      ترقية
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-            </div>}
+            )}
+          </div>
 
-          {/* Creative Trees Section */}
-          <div className="space-y-12">
-            <div className="text-center space-y-6">
+          {/* Trees Section */}
+          <div className="space-y-8">
+            <div className="text-center space-y-4">
               <div className="relative inline-block">
-                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                   أشجار العائلة
                 </h2>
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
               </div>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                استكشف وأدر مجموعة أشجارك العائلية في مكان واحد
+              <p className="text-muted-foreground">
+                استكشف وأدر مجموعة أشجارك العائلية
               </p>
-              
-              <div className="flex justify-center">
-                <Button 
-                  onClick={handleCreateTree} 
-                  className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-8 py-4 text-lg font-semibold rounded-2xl" 
-                >
-                  <Plus className="mr-3 h-6 w-6" />
-                  إنشاء شجرة جديدة
-                </Button>
-              </div>
             </div>
 
             {trees.length > 0 ? (
