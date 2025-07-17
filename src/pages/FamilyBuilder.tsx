@@ -768,70 +768,82 @@ const FamilyBuilder = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Family Members - الأفراد أولاً */}
                 {filteredMembers.map((member) => (
-                  <Card key={member.id} className="group relative overflow-hidden bg-gradient-to-br from-card/90 via-card/95 to-card/90 backdrop-blur-xl border-0 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-500">
-                    {/* Animated gradient border */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="absolute inset-[1px] bg-gradient-to-br from-card/95 to-card/90 rounded-3xl"></div>
+                  <Card key={member.id} className="group relative overflow-hidden bg-gradient-to-br from-card/80 via-card/90 to-card/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-2xl hover:shadow-3xl hover:scale-[1.01] transition-all duration-700 h-auto min-h-[280px]">
+                    {/* Animated background with multiple layers */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-secondary/3 to-transparent opacity-50"></div>
                     
-                    {/* Floating decorative elements */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                      <div className="absolute top-4 right-6 w-2 h-2 bg-primary/40 rounded-full animate-pulse"></div>
-                      <div className="absolute top-8 right-12 w-1.5 h-1.5 bg-accent/40 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                      <div className="absolute bottom-6 left-8 w-3 h-3 bg-secondary/30 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                    {/* Floating orbs animation */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-1000 pointer-events-none">
+                      <div className="absolute top-3 right-4 w-2 h-2 bg-primary/40 rounded-full animate-pulse"></div>
+                      <div className="absolute top-6 right-8 w-1 h-1 bg-accent/50 rounded-full animate-ping" style={{animationDelay: '0.3s'}}></div>
+                      <div className="absolute bottom-4 left-6 w-1.5 h-1.5 bg-secondary/40 rounded-full animate-bounce" style={{animationDelay: '0.8s'}}></div>
                     </div>
 
-                    <CardContent className="p-0 relative z-10">
-                      {/* Premium Header Section */}
-                      <div className="relative p-6 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-t-3xl">
-                        <div className="flex items-center justify-between">
-                          {/* Avatar and Name Section */}
-                          <div className="flex items-center gap-4">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary rounded-full opacity-20 blur-md animate-pulse"></div>
-                              <Avatar className="relative w-16 h-16 border-3 border-white/40 shadow-xl ring-2 ring-primary/20">
+                    <CardContent className="p-0 relative z-10 h-full">
+                      {/* Enhanced Header with glass effect */}
+                      <div className="relative p-5 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm rounded-t-2xl border-b border-white/10">
+                        <div className="flex items-start justify-between gap-3">
+                          {/* Avatar section with enhanced effects */}
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="relative group/avatar">
+                              {/* Glow effect behind avatar */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 via-accent/30 to-secondary/30 rounded-full blur-lg scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                              <Avatar className="relative w-14 h-14 border-2 border-white/30 shadow-xl ring-1 ring-primary/20 group-hover/avatar:ring-primary/40 transition-all duration-300">
                                 <AvatarImage src={member.image || undefined} className="object-cover" />
-                                <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-white font-bold text-lg">
+                                <AvatarFallback className="bg-gradient-to-br from-primary/90 via-accent/90 to-secondary/90 text-white font-bold text-base shadow-inner">
                                   {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                                 </AvatarFallback>
                               </Avatar>
+                              {/* Status indicator */}
+                              <div className={cn(
+                                "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-lg",
+                                member.isAlive ? "bg-green-500" : "bg-gray-400"
+                              )}></div>
                             </div>
                             
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-3">
-                                <h3 className="font-bold text-foreground text-xl leading-tight">{member.name}</h3>
-                                <Badge className={cn("text-xs font-medium px-3 py-1 rounded-full shadow-sm", getGenderColor(member.gender))}>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-bold text-foreground text-lg leading-tight truncate group-hover:text-primary transition-colors duration-300">
+                                  {member.name}
+                                </h3>
+                                <Badge className={cn(
+                                  "text-xs font-medium px-2 py-0.5 rounded-full shadow-sm border-0 transition-all duration-300",
+                                  getGenderColor(member.gender),
+                                  "group-hover:scale-105"
+                                )}>
                                   {member.gender === "male" ? "ذكر" : "أنثى"}
                                 </Badge>
                               </div>
                               {member.birthDate && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <Calendar className="h-4 w-4 text-primary/60" />
-                                  <span>{new Date(member.birthDate).toLocaleDateString('en-GB')}</span>
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                  <Calendar className="h-3 w-3 text-primary/60" />
+                                  <span className="font-medium">{new Date(member.birthDate).toLocaleDateString('en-GB')}</span>
                                 </div>
                               )}
                             </div>
                           </div>
 
-                          {/* Actions Menu */}
+                          {/* Enhanced actions menu */}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 shadow-lg transition-all duration-300 hover:scale-110">
-                                <div className="flex flex-col gap-0.5">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 shadow-md transition-all duration-300 hover:scale-110 hover:rotate-90">
+                                <div className="grid grid-cols-1 gap-0.5">
                                   <div className="w-1 h-1 bg-current rounded-full"></div>
                                   <div className="w-1 h-1 bg-current rounded-full"></div>
                                   <div className="w-1 h-1 bg-current rounded-full"></div>
                                 </div>
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-xl">
-                              <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse">
+                            <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border border-white/20 shadow-2xl rounded-xl animate-in slide-in-from-top-2 duration-200">
+                              <DropdownMenuItem onClick={() => handleEditMember(member)} className="rounded-lg flex-row-reverse hover:bg-primary/10 transition-colors">
                                 <Edit className="mr-2 h-4 w-4 text-primary" />
                                 تعديل البيانات
                               </DropdownMenuItem>
-                              <DropdownMenuSeparator />
+                              <DropdownMenuSeparator className="bg-white/10" />
                               <DropdownMenuItem 
                                 onClick={() => handleDeleteMember(member.id)}
-                                className="text-destructive focus:text-destructive rounded-lg flex-row-reverse"
+                                className="text-destructive focus:text-destructive rounded-lg flex-row-reverse hover:bg-destructive/10 transition-colors"
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 حذف من العائلة
@@ -841,60 +853,67 @@ const FamilyBuilder = () => {
                         </div>
                       </div>
 
-                      {/* Enhanced Info Section */}
-                      <div className="p-6 space-y-4">
-                        {/* Relation Badge */}
-                        <div className="flex items-center justify-center">
-                          <div className="px-4 py-2 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-2xl backdrop-blur-sm shadow-inner">
-                            <span className="text-sm font-medium text-foreground">
-                              {member.relatedPersonId ? (
-                                <>
-                                  {member.relation} {" "}
-                                  <span className="text-primary font-semibold">
-                                    {(() => {
-                                      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
-                                      console.log('Looking for related person:', member.relatedPersonId, 'Found:', relatedPerson);
-                                      return relatedPerson?.name || "غير محدد";
-                                    })()}
+                      {/* Enhanced content section */}
+                      <div className="p-5 space-y-3 flex-1">
+                        {/* Relation with enhanced styling */}
+                        <div className="relative">
+                          <div className="bg-gradient-to-r from-primary/8 via-accent/6 to-secondary/8 backdrop-blur-sm rounded-xl p-3 border border-white/10 shadow-inner group-hover:shadow-lg transition-shadow duration-300">
+                            <div className="flex items-center justify-center gap-2">
+                              <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse"></div>
+                              <span className="text-sm font-semibold text-foreground text-center">
+                                {member.relatedPersonId ? (
+                                  <>
+                                    <span className="text-muted-foreground">{member.relation}</span>
+                                    {" "}
+                                    <span className="text-primary font-bold">
+                                      {(() => {
+                                        const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+                                        return relatedPerson?.name || "غير محدد";
+                                      })()}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-accent font-bold flex items-center gap-1">
+                                    <Crown className="h-3 w-3" />
+                                    المؤسس
                                   </span>
-                                </>
-                              ) : (
-                                <span className="text-accent font-semibold">المؤسس</span>
-                              )}
-                            </span>
+                                )}
+                              </span>
+                              <div className="w-2 h-2 bg-accent/60 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Status with enhanced styling */}
-                        <div className="flex items-center justify-center gap-2">
+                        {/* Status with better design */}
+                        <div className="flex justify-center">
                           <div className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-xl shadow-sm",
+                            "inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium shadow-sm transition-all duration-300 group-hover:scale-105",
                             member.isAlive 
-                              ? "bg-green-50 border border-green-200 text-green-700" 
-                              : "bg-gray-50 border border-gray-200 text-gray-600"
+                              ? "bg-green-100/80 border border-green-200/50 text-green-700 backdrop-blur-sm" 
+                              : "bg-gray-100/80 border border-gray-200/50 text-gray-600 backdrop-blur-sm"
                           )}>
                             {member.isAlive ? (
                               <>
-                                <Heart className="h-4 w-4 text-green-500" />
-                                <span className="text-sm font-medium">على قيد الحياة</span>
+                                <Heart className="h-3 w-3 text-green-500 animate-pulse" />
+                                <span>على قيد الحياة</span>
                               </>
                             ) : (
                               <>
-                                <Skull className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm font-medium">متوفى</span>
+                                <Skull className="h-3 w-3 text-gray-500" />
+                                <span>متوفى</span>
                               </>
                             )}
                           </div>
                         </div>
 
-                        {/* Enhanced Biography */}
+                        {/* Biography with enhanced styling */}
                         {member.bio && (
-                          <div className="p-4 bg-gradient-to-r from-muted/30 to-muted/20 rounded-2xl border border-muted/40">
-                            <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                              <User className="h-4 w-4 text-primary" />
-                              نبذة شخصية
-                            </h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">{member.bio}</p>
+                          <div className="bg-gradient-to-br from-muted/20 via-muted/10 to-transparent backdrop-blur-sm rounded-xl p-3 border border-white/5 shadow-inner group-hover:shadow-md transition-shadow duration-300">
+                            <div className="flex items-center gap-2 mb-2">
+                              <User className="h-3 w-3 text-primary/70" />
+                              <h4 className="text-xs font-bold text-foreground">نبذة شخصية</h4>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{member.bio}</p>
                           </div>
                         )}
                       </div>
