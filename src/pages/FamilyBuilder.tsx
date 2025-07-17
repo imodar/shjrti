@@ -1187,37 +1187,12 @@ const FamilyBuilder = () => {
             {/* Step 2: Additional Details */}
             {currentStep === 2 && (
               <div className="space-y-6">
-
-                <div className="grid grid-cols-4 gap-4">
-                  {getRelationshipOptions(formData.gender).map((relation) => (
-                    <Card
-                      key={relation.value}
-                      className={cn(
-                        "cursor-pointer transition-all duration-300 border-2 rounded-xl overflow-hidden group",
-                        formData.relation === relation.value
-                          ? "border-primary bg-gradient-to-br from-primary/10 to-accent/10 shadow-lg"
-                          : "border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                      onClick={() => setFormData({...formData, relation: relation.value, relatedPersonId: null})}
-                    >
-                      <CardContent className="p-6 text-center">
-                        <div className="text-4xl mb-3">{relation.icon}</div>
-                        <h4 className="font-bold text-lg text-foreground">{relation.label}</h4>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* Related Person Selection */}
-                {formData.relation && (() => {
-                  // Filter out the current member being edited
-                  const availableMembers = familyMembers.filter(m => selectedMember ? m.id !== selectedMember.id : true);
-                  return availableMembers.length > 0;
-                })() && (
-                  <div className="mt-8 space-y-4">
+                {/* Family Selection - Always visible */}
+                {familyMarriages.length > 0 && (
+                  <div className="space-y-4">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                       <Users className="h-4 w-4 text-primary" />
-                      اختر الشخص المرتبط به
+                      اختر العائلة المرتبطة
                     </Label>
                     <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
                       <PopoverTrigger asChild>
@@ -1281,7 +1256,7 @@ const FamilyBuilder = () => {
                       </PopoverContent>
                     </Popover>
                     <p className="text-sm text-muted-foreground">
-                      اختر العائلة التي يرتبط معها {formData.name} بعلاقة {getRelationshipOptions(formData.gender).find(r => r.value === formData.relation)?.label}
+                      اختر العائلة التي سينتمي إليها {formData.name}
                     </p>
                   </div>
                 )}
