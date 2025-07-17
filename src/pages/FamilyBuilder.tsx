@@ -253,17 +253,36 @@ const FamilyBuilder = () => {
     
     if (!matchesSearch) return false;
     
+    // Debug specific user
+    if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
+      console.log('Debugging member d90a7add-7277-41f5-84e7-e7729c2078eb:', member);
+    }
+    
     // Include founders (original family members)
-    if (member.isFounder) return true;
+    if (member.isFounder) {
+      if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
+        console.log('Member is founder - INCLUDED');
+      }
+      return true;
+    }
     
     // For members with parents, check if at least one parent is a blood relative
     if (member.fatherId || member.motherId) {
       const father = member.fatherId ? familyMembers.find(m => m.id === member.fatherId) : null;
       const mother = member.motherId ? familyMembers.find(m => m.id === member.motherId) : null;
       
+      if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
+        console.log('Member has parents - father:', father, 'mother:', mother);
+      }
+      
       // At least one parent must be a founder or have their own parents in the family
       const fatherIsBloodRelative = father && (father.isFounder || father.fatherId || father.motherId);
       const motherIsBloodRelative = mother && (mother.isFounder || mother.fatherId || mother.motherId);
+      
+      if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
+        console.log('Father is blood relative:', fatherIsBloodRelative, 'Mother is blood relative:', motherIsBloodRelative);
+        console.log('Decision:', fatherIsBloodRelative || motherIsBloodRelative ? 'INCLUDED' : 'EXCLUDED');
+      }
       
       return fatherIsBloodRelative || motherIsBloodRelative;
     }
@@ -274,6 +293,10 @@ const FamilyBuilder = () => {
       (marriage.husband?.id === member.id || marriage.wife?.id === member.id) &&
       !member.fatherId && !member.motherId && !member.isFounder
     );
+    
+    if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
+      console.log('Is spouse only:', isSpouseOnly, 'Decision:', !isSpouseOnly ? 'INCLUDED' : 'EXCLUDED');
+    }
     
     // Include if not a spouse-only member
     return !isSpouseOnly;
