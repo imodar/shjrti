@@ -1469,22 +1469,39 @@ const FamilyBuilder = () => {
                               !formData.relatedPersonId && "text-muted-foreground"
                             )}
                           >
-                            {formData.relatedPersonId ? (
-                              <div className="flex items-center gap-3">
-                                <span className="text-xl">❤️</span>
-                                <div className="flex flex-col items-start">
-                                  <span className="font-medium">
-                                    {(() => {
-                                      const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
-                                      return marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة';
-                                    })()}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">عائلة</span>
-                                </div>
-                              </div>
-                            ) : (
-                              "ابحث واختر من قائمة العائلات"
-                            )}
+                            {(() => {
+                              console.log('Family selection debug:');
+                              console.log('- formData.relatedPersonId:', formData.relatedPersonId);
+                              console.log('- available familyMarriages:', familyMarriages.map(m => ({id: m.id, husband: m.husband?.name, wife: m.wife?.name})));
+                              
+                              if (formData.relatedPersonId) {
+                                const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+                                console.log('- found marriage for relatedPersonId:', marriage);
+                                
+                                if (marriage) {
+                                  return (
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-xl">❤️</span>
+                                      <div className="flex flex-col items-start">
+                                        <span className="font-medium">
+                                          {`${marriage.husband?.name} + ${marriage.wife?.name}`}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">عائلة</span>
+                                      </div>
+                                    </div>
+                                  );
+                                } else {
+                                  return (
+                                    <div className="flex items-center gap-3 text-destructive">
+                                      <span className="text-xl">⚠️</span>
+                                      <span>العائلة المحددة غير موجودة</span>
+                                    </div>
+                                  );
+                                }
+                              } else {
+                                return "ابحث واختر من قائمة العائلات";
+                              }
+                            })()}
                             <Search className="h-4 w-4 opacity-50" />
                           </Button>
                         </PopoverTrigger>
