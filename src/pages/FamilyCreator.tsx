@@ -120,6 +120,27 @@ const FamilyCreator = () => {
         throw memberError;
       }
 
+      // Add the first family tree member to family_tree_members table
+      const { error: treeMemberError } = await supabase
+        .from('family_tree_members')
+        .insert({
+          family_id: family.id,
+          name: firstMember.name,
+          gender: firstMember.gender,
+          birth_date: firstMember.birthDate ? new Date(firstMember.birthDate).toISOString().split('T')[0] : null,
+          death_date: firstMember.deathDate ? new Date(firstMember.deathDate).toISOString().split('T')[0] : null,
+          is_alive: firstMember.isAlive,
+          biography: firstMember.bio,
+          relation: 'founder',
+          image_url: firstMember.croppedImage,
+          created_by: user.id
+        });
+
+      if (treeMemberError) {
+        console.error('Tree member creation error:', treeMemberError);
+        throw treeMemberError;
+      }
+
       // Save family data for localStorage (backward compatibility)
       const familyData = {
         tree: treeData,
