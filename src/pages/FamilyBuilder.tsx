@@ -387,10 +387,10 @@ const FamilyBuilder = () => {
   const handleSaveMember = async () => {
     if (isSaving) return; // Prevent double submissions
     
-    if (!formData.name || !formData.gender || !formData.relation) {
+    if (!formData.name || !formData.gender) {
       toast({
         title: "خطأ",
-        description: "يرجى إكمال جميع الحقول المطلوبة",
+        description: "يرجى إكمال جميع الحقول المطلوبة (الاسم والجنس)",
         variant: "destructive"
       });
       return;
@@ -401,14 +401,14 @@ const FamilyBuilder = () => {
       const memberData = {
         family_id: familyData?.id,
         name: formData.name,
-        relation: formData.relation,
         related_person_id: formData.relatedPersonId,
         gender: formData.gender,
         birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
         is_alive: formData.isAlive,
         death_date: formData.deathDate?.toISOString().split('T')[0] || null,
         biography: formData.bio,
-        image_url: formData.croppedImage
+        image_url: formData.croppedImage,
+        created_by: (await supabase.auth.getUser()).data.user?.id
       };
 
       console.log('Saving member data:', memberData);
@@ -427,7 +427,6 @@ const FamilyBuilder = () => {
           member.id === selectedMember.id ? {
             ...member,
             name: formData.name,
-            relation: formData.relation,
             gender: formData.gender,
             birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
             isAlive: formData.isAlive,
@@ -514,8 +513,7 @@ const FamilyBuilder = () => {
           isAlive: data.is_alive,
           deathDate: data.death_date || null,
           bio: data.biography || "",
-          image: data.image_url || null,
-          relation: formData.relation
+          image: data.image_url || null
         };
 
         setFamilyMembers([...familyMembers, newMember]);
