@@ -242,11 +242,23 @@ const FamilyBuilder = () => {
     croppedImage: null as string | null
   });
 
-  // Filter members based on search term
-  const filteredMembers = familyMembers.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.relation.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter members based on search term and exclude spouses who aren't blood relatives
+  const filteredMembers = familyMembers.filter(member => {
+    // First filter by search term
+    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.relation.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (!matchesSearch) return false;
+    
+    // Include founders (original family members)
+    if (member.isFounder) return true;
+    
+    // Include members who have parents (blood relatives/children)
+    if (member.fatherId || member.motherId) return true;
+    
+    // Exclude members who are only connected through marriage (spouses with no parents in this family)
+    return false;
+  });
 
   // Relationship options with translations
   const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
