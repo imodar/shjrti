@@ -514,12 +514,16 @@ const FamilyBuilder = () => {
       let fatherId = null;
       let motherId = null;
       
-      if (formData.relatedPersonId && formData.relation === "child") {
+      console.log('Setting parent relationships - relatedPersonId:', formData.relatedPersonId, 'relation:', formData.relation);
+      
+      if (formData.relatedPersonId) {
         // Find the marriage to get parents
         const selectedMarriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+        console.log('Found selected marriage:', selectedMarriage);
         if (selectedMarriage) {
           fatherId = selectedMarriage.husband?.id || null;
           motherId = selectedMarriage.wife?.id || null;
+          console.log('Set parent IDs - father:', fatherId, 'mother:', motherId);
         }
       }
 
