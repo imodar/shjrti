@@ -911,12 +911,12 @@ const FamilyBuilder = () => {
                                 <div className="flex items-center justify-center gap-2">
                                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                                   <span className="text-sm text-muted-foreground">{member.relation}</span>
-                                  <span className="font-bold text-primary">
-                                    {(() => {
-                                      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
-                                      return relatedPerson?.name || "غير محدد";
-                                    })()}
-                                  </span>
+                                   <span className="font-bold text-primary">
+                                     {(() => {
+                                       const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+                                       return relatedPerson ? getFullName(relatedPerson) : "غير محدد";
+                                     })()}
+                                   </span>
                                   <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
                                 </div>
                               ) : (
