@@ -587,66 +587,93 @@ const FamilyBuilder = () => {
           console.log('Adding wives for male member:', wives);
           for (const wife of wives) {
             console.log('Adding wife:', wife);
-            // Create wife as family tree member
-            const { data: wifeData, error: wifeError } = await supabase
-              .from('family_tree_members')
-              .insert({
-                family_id: familyData?.id,
-                name: wife.name,
-                gender: 'female',
-                birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
-                death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                is_alive: wife.isAlive,
-                created_by: (await supabase.auth.getUser()).data.user?.id
-              })
-              .select()
-              .single();
+            
+            try {
+              // Create wife as family tree member
+              console.log('Creating wife in database...');
+              const { data: wifeData, error: wifeError } = await supabase
+                .from('family_tree_members')
+                .insert({
+                  family_id: familyData?.id,
+                  name: wife.name,
+                  gender: 'female',
+                  birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
+                  death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                  is_alive: wife.isAlive,
+                  created_by: (await supabase.auth.getUser()).data.user?.id
+                })
+                .select()
+                .single();
 
-            if (wifeError) throw wifeError;
+              if (wifeError) {
+                console.error('Error creating wife:', wifeError);
+                throw wifeError;
+              }
+              console.log('Wife created successfully:', wifeData);
 
-            // Create marriage record
-            const { error: marriageError } = await supabase
-              .from('marriages')
-              .insert({
-                family_id: familyData?.id,
-                husband_id: data.id,
-                wife_id: wifeData.id,
-                is_active: true
-              });
+              // Create marriage record
+              console.log('Creating marriage record...');
+              const { error: marriageError } = await supabase
+                .from('marriages')
+                .insert({
+                  family_id: familyData?.id,
+                  husband_id: data.id,
+                  wife_id: wifeData.id,
+                  is_active: true
+                });
 
-            if (marriageError) throw marriageError;
+              if (marriageError) {
+                console.error('Error creating marriage:', marriageError);
+                throw marriageError;
+              }
+              console.log('Marriage created successfully');
 
-            // Update spouse_id for both husband and wife
-            const { error: updateHusbandError } = await supabase
-              .from('family_tree_members')
-              .update({ spouse_id: wifeData.id })
-              .eq('id', data.id);
+              // Update spouse_id for both husband and wife
+              console.log('Updating spouse_id fields...');
+              const { error: updateHusbandError } = await supabase
+                .from('family_tree_members')
+                .update({ spouse_id: wifeData.id })
+                .eq('id', data.id);
 
-            if (updateHusbandError) throw updateHusbandError;
+              if (updateHusbandError) {
+                console.error('Error updating husband spouse_id:', updateHusbandError);
+                throw updateHusbandError;
+              }
 
-            const { error: updateWifeError } = await supabase
-              .from('family_tree_members')
-              .update({ spouse_id: data.id })
-              .eq('id', wifeData.id);
+              const { error: updateWifeError } = await supabase
+                .from('family_tree_members')
+                .update({ spouse_id: data.id })
+                .eq('id', wifeData.id);
 
-            if (updateWifeError) throw updateWifeError;
+              if (updateWifeError) {
+                console.error('Error updating wife spouse_id:', updateWifeError);
+                throw updateWifeError;
+              }
+              console.log('Spouse IDs updated successfully');
 
-            // Add wife to local state
-            const newWife = {
-              id: wifeData.id,
-              name: wifeData.name,
-              fatherId: wifeData.father_id,
-              motherId: wifeData.mother_id,
-              isFounder: wifeData.is_founder,
-              gender: wifeData.gender,
-              birthDate: wifeData.birth_date || "",
-              isAlive: wifeData.is_alive,
-              deathDate: wifeData.death_date || null,
-              bio: wifeData.biography || "",
-              image: wifeData.image_url || null,
-              relation: "wife"
-            };
-            setFamilyMembers(prev => [...prev, newWife]);
+              // Add wife to local state
+              const newWife = {
+                id: wifeData.id,
+                name: wifeData.name,
+                fatherId: wifeData.father_id,
+                motherId: wifeData.mother_id,
+                spouseId: data.id, // Add spouse_id to local state
+                isFounder: wifeData.is_founder,
+                gender: wifeData.gender,
+                birthDate: wifeData.birth_date || "",
+                isAlive: wifeData.is_alive,
+                deathDate: wifeData.death_date || null,
+                bio: wifeData.biography || "",
+                image: wifeData.image_url || null,
+                relation: "wife"
+              };
+              setFamilyMembers(prev => [...prev, newWife]);
+              console.log('Wife added to local state:', newWife);
+              
+            } catch (error) {
+              console.error('Error in wife creation process:', error);
+              throw error;
+            }
           }
         }
 
