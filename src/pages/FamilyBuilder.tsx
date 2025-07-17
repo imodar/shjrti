@@ -398,14 +398,21 @@ const FamilyBuilder = () => {
     // Find the correct family relation for this member
     let relatedPersonId = member.relatedPersonId || null;
     
+    console.log('Debug: Setting relatedPersonId for member:', member);
+    console.log('Debug: Initial relatedPersonId:', relatedPersonId);
+    console.log('Debug: Available familyMarriages:', familyMarriages);
+    
     // If member has parents, find their marriage (the family this member belongs to)
     if (member.fatherId && member.motherId) {
+      console.log('Debug: Looking for parent marriage - father:', member.fatherId, 'mother:', member.motherId);
       const parentMarriage = familyMarriages.find(m => 
         (m.husband?.id === member.fatherId && m.wife?.id === member.motherId) ||
         (m.husband?.id === member.motherId && m.wife?.id === member.fatherId)
       );
+      console.log('Debug: Found parent marriage:', parentMarriage);
       if (parentMarriage) {
         relatedPersonId = parentMarriage.id;
+        console.log('Debug: Set relatedPersonId to parent marriage:', relatedPersonId);
       }
     }
     
@@ -1400,22 +1407,29 @@ const FamilyBuilder = () => {
                               !formData.relatedPersonId && "text-muted-foreground"
                             )}
                           >
-                            {formData.relatedPersonId ? (
-                              <div className="flex items-center gap-3">
-                                <span className="text-xl">❤️</span>
-                                <div className="flex flex-col items-start">
-                                  <span className="font-medium">
-                                    {(() => {
-                                      const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
-                                      return marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة';
-                                    })()}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">عائلة</span>
-                                </div>
-                              </div>
-                            ) : (
-                              "ابحث واختر من قائمة العائلات"
-                            )}
+                            {(() => {
+                              console.log('Debug formData.relatedPersonId:', formData.relatedPersonId);
+                              console.log('Debug familyMarriages:', familyMarriages);
+                              
+                              if (formData.relatedPersonId) {
+                                const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+                                console.log('Debug found marriage:', marriage);
+                                
+                                return (
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-xl">❤️</span>
+                                    <div className="flex flex-col items-start">
+                                      <span className="font-medium">
+                                        {marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة'}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground">عائلة</span>
+                                    </div>
+                                  </div>
+                                );
+                              } else {
+                                return "ابحث واختر من قائمة العائلات";
+                              }
+                            })()}
                             <Search className="h-4 w-4 opacity-50" />
                           </Button>
                         </PopoverTrigger>
