@@ -1290,11 +1290,11 @@ const FamilyBuilder = () => {
                   </div>
 
                   {/* Family Selection */}
-                  {familyMembers.length > 0 && (
+                  {familyMarriages.length > 0 && (
                     <div className="space-y-4">
                       <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary" />
-                        اختر من أعضاء العائلة
+                        اختر العائلة المرتبطة
                       </Label>
                       <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
                         <PopoverTrigger asChild>
@@ -1307,49 +1307,47 @@ const FamilyBuilder = () => {
                           >
                             {formData.relatedPersonId ? (
                               <div className="flex items-center gap-3">
-                                <span className="text-xl">👤</span>
+                                <span className="text-xl">❤️</span>
                                 <div className="flex flex-col items-start">
                                   <span className="font-medium">
                                     {(() => {
-                                      const member = familyMembers.find(m => m.id === formData.relatedPersonId);
-                                      return member ? member.name : 'عضو محدد';
+                                      const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+                                      return marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة';
                                     })()}
                                   </span>
-                                  <span className="text-xs text-muted-foreground">عضو العائلة</span>
+                                  <span className="text-xs text-muted-foreground">عائلة</span>
                                 </div>
                               </div>
                             ) : (
-                              "ابحث واختر من أعضاء العائلة"
+                              "ابحث واختر من قائمة العائلات"
                             )}
                             <Search className="h-4 w-4 opacity-50" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                           <Command>
-                            <CommandInput placeholder="ابحث عن عضو..." className="h-12 text-lg" />
-                            <CommandEmpty>لم يتم العثور على أي عضو.</CommandEmpty>
+                            <CommandInput placeholder="ابحث عن عائلة..." className="h-12 text-lg" />
+                            <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
                             <CommandList className="max-h-60">
                               <CommandGroup>
-                                {familyMembers.filter(member => member.id !== selectedMember?.id).map((member) => (
+                                {familyMarriages.map((marriage) => (
                                   <CommandItem
-                                    key={member.id}
-                                    value={`${member.name} ${member.relation || ''}`}
+                                    key={marriage.id}
+                                    value={`${marriage.husband?.name} ${marriage.wife?.name} عائلة`}
                                     onSelect={() => {
-                                      setFormData({...formData, relatedPersonId: member.id});
+                                      setFormData({...formData, relatedPersonId: marriage.id});
                                       setShowRelatedPersonDropdown(false);
                                     }}
                                     className="flex items-center gap-3 p-3 cursor-pointer"
                                   >
-                                    <span className="text-2xl">👤</span>
+                                    <span className="text-2xl">❤️</span>
                                     <div className="flex flex-col flex-1">
                                       <span className="font-medium">
-                                        {member.name}
+                                        {marriage.husband?.name} + {marriage.wife?.name}
                                       </span>
-                                      <span className="text-sm text-muted-foreground">
-                                        {member.relation || 'عضو العائلة'}
-                                      </span>
+                                      <span className="text-sm text-muted-foreground">عائلة</span>
                                     </div>
-                                    {formData.relatedPersonId === member.id && (
+                                    {formData.relatedPersonId === marriage.id && (
                                       <div className="w-2 h-2 bg-primary rounded-full"></div>
                                     )}
                                   </CommandItem>
@@ -1360,7 +1358,7 @@ const FamilyBuilder = () => {
                         </PopoverContent>
                       </Popover>
                       <p className="text-sm text-muted-foreground">
-                        اختر العضو الذي سيرتبط به {formData.name}
+                        اختر العائلة التي سينتمي إليها {formData.name}
                       </p>
                     </div>
                   )}
