@@ -723,16 +723,23 @@ const FamilyBuilder = () => {
             if (husbandError) throw husbandError;
 
             // Create marriage record
-            const { error: marriageError } = await supabase
+            console.log('Creating marriage record for husband...');
+            const { data: marriageData, error: marriageError } = await supabase
               .from('marriages')
               .insert({
                 family_id: familyData?.id,
                 husband_id: husbandData.id,
                 wife_id: data.id,
                 is_active: true
-              });
+              })
+              .select()
+              .single();
 
-            if (marriageError) throw marriageError;
+            if (marriageError) {
+              console.error('Error creating marriage for husband:', marriageError);
+              throw marriageError;
+            }
+            console.log('Marriage for husband created successfully:', marriageData);
 
             // Update spouse_id for both husband and wife
             const { error: updateWifeError } = await supabase
@@ -765,6 +772,24 @@ const FamilyBuilder = () => {
               relation: "husband"
             };
             setFamilyMembers(prev => [...prev, newHusband]);
+            console.log('Husband added to local state:', newHusband);
+            
+            // Also add the marriage to familyMarriages array
+            const newMarriage = {
+              id: marriageData.id,
+              marriage_date: marriageData.marriage_date,
+              is_active: marriageData.is_active,
+              husband: {
+                id: husbandData.id,
+                name: husbandData.name
+              },
+              wife: {
+                id: data.id,
+                name: formData.name
+              }
+            };
+            setFamilyMarriages(prev => [...prev, newMarriage]);
+            console.log('Marriage added to familyMarriages for husband:', newMarriage);
           }
         }
 
