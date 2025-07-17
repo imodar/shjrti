@@ -151,8 +151,9 @@ const FamilyBuilder = () => {
             const transformedMembers = members.map(member => ({
               id: member.id,
               name: member.name,
-              relation: member.relation,
-              relatedPersonId: member.related_person_id,
+              fatherId: member.father_id,
+              motherId: member.mother_id,
+              isFounder: member.is_founder,
               gender: member.gender || 'male',
               birthDate: member.birth_date || '',
               isAlive: member.is_alive,
@@ -425,7 +426,9 @@ const FamilyBuilder = () => {
         const newMember = {
           id: data.id,
           name: data.name,
-          relation: data.relation,
+          fatherId: data.father_id,
+          motherId: data.mother_id,
+          isFounder: data.is_founder,
           gender: data.gender,
           birthDate: data.birth_date || "",
           isAlive: data.is_alive,

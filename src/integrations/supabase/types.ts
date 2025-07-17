@@ -182,13 +182,15 @@ export type Database = {
           created_by: string | null
           death_date: string | null
           family_id: string
+          father_id: string | null
           gender: string | null
           id: string
           image_url: string | null
           is_alive: boolean | null
+          is_founder: boolean | null
+          mother_id: string | null
           name: string
           related_person_id: string | null
-          relation: string
           updated_at: string
         }
         Insert: {
@@ -198,13 +200,15 @@ export type Database = {
           created_by?: string | null
           death_date?: string | null
           family_id: string
+          father_id?: string | null
           gender?: string | null
           id?: string
           image_url?: string | null
           is_alive?: boolean | null
+          is_founder?: boolean | null
+          mother_id?: string | null
           name: string
           related_person_id?: string | null
-          relation: string
           updated_at?: string
         }
         Update: {
@@ -214,13 +218,15 @@ export type Database = {
           created_by?: string | null
           death_date?: string | null
           family_id?: string
+          father_id?: string | null
           gender?: string | null
           id?: string
           image_url?: string | null
           is_alive?: boolean | null
+          is_founder?: boolean | null
+          mother_id?: string | null
           name?: string
           related_person_id?: string | null
-          relation?: string
           updated_at?: string
         }
         Relationships: [
@@ -229,6 +235,20 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_tree_members_father_id_fkey"
+            columns: ["father_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_tree_members_mother_id_fkey"
+            columns: ["mother_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
           },
           {
@@ -364,6 +384,64 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      marriages: {
+        Row: {
+          created_at: string
+          divorce_date: string | null
+          family_id: string
+          husband_id: string
+          id: string
+          is_active: boolean | null
+          marriage_date: string | null
+          updated_at: string
+          wife_id: string
+        }
+        Insert: {
+          created_at?: string
+          divorce_date?: string | null
+          family_id: string
+          husband_id: string
+          id?: string
+          is_active?: boolean | null
+          marriage_date?: string | null
+          updated_at?: string
+          wife_id: string
+        }
+        Update: {
+          created_at?: string
+          divorce_date?: string | null
+          family_id?: string
+          husband_id?: string
+          id?: string
+          is_active?: boolean | null
+          marriage_date?: string | null
+          updated_at?: string
+          wife_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marriages_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marriages_husband_id_fkey"
+            columns: ["husband_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marriages_wife_id_fkey"
+            columns: ["wife_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
