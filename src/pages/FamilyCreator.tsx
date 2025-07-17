@@ -316,10 +316,10 @@ const FamilyCreator = () => {
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <div className="grid lg:grid-cols-3 gap-16 items-start">
               
               {/* Left Side - Interactive Form */}
-              <div className="order-2 lg:order-1 space-y-8">
+              <div className="order-2 lg:order-1 lg:col-span-2 space-y-8">
                 
                 {currentStep === 1 && (
                   <div className="space-y-8">
@@ -735,7 +735,7 @@ const FamilyCreator = () => {
               </div>
 
               {/* Right Side - Enhanced Welcome Section */}
-              <div className="order-1 lg:order-2 text-center">
+              <div className="order-1 lg:order-2 lg:col-span-1 text-center">
                 <div className="relative perspective-1000">
                   
                   {/* 3D Tree Icon Circle with Animation */}
