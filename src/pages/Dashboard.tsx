@@ -353,7 +353,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-6">
                 <div className="w-2 h-12 bg-gradient-to-b from-primary via-accent to-secondary rounded-full"></div>
                 <div className="flex items-center gap-4">
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                  <h1 className="text-2xl md:text-3xl font-bold text-primary">
                     مرحباً بك في لوحة التحكم
                   </h1>
                   <span className="text-muted-foreground">•</span>
@@ -417,7 +417,7 @@ const Dashboard = () => {
             {/* Add New Tree Button - Prominent */}
             <Button 
               onClick={handleCreateTree} 
-              className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3 text-lg font-semibold rounded-xl" 
+              className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3 text-lg font-semibold rounded-xl" 
             >
               <Plus className="mr-2 h-5 w-5" />
               إنشاء شجرة جديدة
@@ -428,11 +428,11 @@ const Dashboard = () => {
               <Card className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 shadow-md">
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-secondary rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                       <Crown className="h-4 w-4 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sm font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                      <h3 className="text-sm font-bold text-primary">
                         ارتقِ لخطة أفضل
                       </h3>
                     </div>
@@ -454,10 +454,10 @@ const Dashboard = () => {
           <div className="space-y-8">
             <div className="text-center space-y-4">
               <div className="relative inline-block">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold text-primary">
                   أشجار العائلة
                 </h2>
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-primary via-accent to-secondary rounded-full"></div>
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-primary rounded-full"></div>
               </div>
               <p className="text-muted-foreground">
                 استكشف وأدر مجموعة أشجارك العائلية
@@ -578,9 +578,9 @@ const Dashboard = () => {
                           <Button 
                             onClick={() => navigate('/view-tree')} 
                             className={`w-full ${
-                              index % 3 === 0 ? 'bg-gradient-to-r from-primary to-accent' : 
-                              index % 3 === 1 ? 'bg-gradient-to-r from-accent to-secondary' : 
-                              'bg-gradient-to-r from-secondary to-primary'
+                              index % 3 === 0 ? 'bg-primary hover:bg-primary/90' : 
+                              index % 3 === 1 ? 'bg-accent hover:bg-accent/90' : 
+                              'bg-secondary hover:bg-secondary/90'
                             } hover:shadow-xl text-white font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300`}
                           >
                             <Eye className="mr-2 h-5 w-5" />
@@ -638,7 +638,7 @@ const Dashboard = () => {
                   </p>
                   <Button 
                     onClick={handleCreateTree} 
-                    className="bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-10 py-4 text-lg font-semibold rounded-2xl" 
+                    className="bg-primary hover:bg-primary/90 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-10 py-4 text-lg font-semibold rounded-2xl" 
                   >
                     <Plus className="mr-3 h-6 w-6" />
                     ابدأ أول شجرة
