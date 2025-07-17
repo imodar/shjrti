@@ -22,32 +22,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useToast } from "@/hooks/use-toast";
 import { SharedFooter } from "@/components/SharedFooter";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
-
-// Get family members from real data
-const getFamilyMembersFromStorage = () => {
-  const existingTrees = JSON.parse(localStorage.getItem('familyTrees') || '[]');
-  const familyData = JSON.parse(localStorage.getItem('newFamilyData') || '{}');
-  
-  // Combine data from both sources
-  let members = [];
-  
-  if (familyData.firstMember) {
-    members.push({
-      id: 1,
-      name: familyData.firstMember.name,
-      relation: familyData.firstMember.relation,
-      gender: familyData.firstMember.gender,
-      birthDate: familyData.firstMember.birthDate,
-      isAlive: familyData.firstMember.isAlive,
-      deathDate: familyData.firstMember.deathDate,
-      image: familyData.firstMember.croppedImage,
-      bio: familyData.firstMember.bio
-    });
-  }
-  
-  return members;
-};
 
 const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
   if (gender === "male") {
@@ -78,25 +54,66 @@ const FamilyBuilder = () => {
   const isEditMode = searchParams.get('edit') === 'true';
   
   const [activeTab, setActiveTab] = useState("overview");
-  const [familyMembers, setFamilyMembers] = useState(() => {
-    const newFamilyData = localStorage.getItem('newFamilyData');
-    if (newFamilyData) {
-      const parsed = JSON.parse(newFamilyData);
-      localStorage.removeItem('newFamilyData');
-      return [{
-        id: 1,
-        name: parsed.firstMember.name,
-        relation: parsed.firstMember.relation,
-        gender: parsed.firstMember.gender,
-        birthDate: "",
-        isAlive: true,
-        deathDate: null,
-        image: null,
-        bio: ""
-      }];
-    }
-    return isNew ? [] : getFamilyMembersFromStorage();
-  });
+  const [familyMembers, setFamilyMembers] = useState([]);
+  const [familyData, setFamilyData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch family data from database
+  useEffect(() => {
+    const fetchFamilyData = async () => {
+      try {
+        setLoading(true);
+        
+        // Get user's families
+        const { data: families, error: familiesError } = await supabase
+          .from('families')
+          .select('*')
+          .eq('creator_id', (await supabase.auth.getUser()).data.user?.id);
+
+        if (familiesError) throw familiesError;
+
+        if (families && families.length > 0) {
+          const family = families[0]; // Use first family for now
+          setFamilyData(family);
+          
+          // Get family members
+          const { data: members, error: membersError } = await supabase
+            .from('family_members')
+            .select('*')
+            .eq('family_id', family.id);
+
+          if (membersError) throw membersError;
+
+          if (members) {
+            // Transform the data to match the expected format
+            const transformedMembers = members.map(member => ({
+              id: member.id,
+              name: member.user_id || 'عضو العائلة', // You might want to join with profiles table
+              relation: member.role === 'creator' ? 'founder' : member.role,
+              gender: 'male', // Default, you might want to get this from profiles
+              birthDate: '',
+              isAlive: true,
+              deathDate: null,
+              image: null,
+              bio: ''
+            }));
+            setFamilyMembers(transformedMembers);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching family data:', error);
+        toast({
+          title: "خطأ في تحميل البيانات",
+          description: "حدث خطأ أثناء تحميل بيانات العائلة",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFamilyData();
+  }, [toast]);
   
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -352,6 +369,17 @@ const FamilyBuilder = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-muted-foreground">جاري تحميل بيانات العائلة...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div dir="rtl" className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
       {/* Floating Background Elements */}
@@ -526,7 +554,7 @@ const FamilyBuilder = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">الأجيال</p>
-                        <p className="text-3xl font-bold text-accent">3</p>
+                        <p className="text-3xl font-bold text-accent">{Math.max(1, Math.ceil(familyMembers.length / 4))}</p>
                       </div>
                       <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <TreePine className="h-6 w-6 text-accent" />
@@ -540,7 +568,9 @@ const FamilyBuilder = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">آخر تحديث</p>
-                        <p className="text-3xl font-bold text-secondary">اليوم</p>
+                        <p className="text-3xl font-bold text-secondary">
+                          {familyData?.updated_at ? new Date(familyData.updated_at).toLocaleDateString('ar-SA') : 'غير محدد'}
+                        </p>
                       </div>
                       <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Clock className="h-6 w-6 text-secondary" />
