@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -967,30 +968,34 @@ const FamilyCreator = () => {
                                 </div>
                               </div>
                               
-                              {/* Action Buttons */}
-                              <div className="flex items-center gap-2">
-                                {/* Edit Button */}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setEditingWife(wife)}
-                                  className="relative group/edit h-10 w-10 rounded-xl hover:bg-primary/10 hover:scale-110 transition-all duration-200"
-                                >
-                                  <CalendarIcon className="h-4 w-4 text-muted-foreground group-hover/edit:text-primary transition-colors" />
-                                  <div className="absolute inset-0 bg-primary/20 rounded-xl scale-0 group-hover/edit:scale-100 transition-transform duration-200"></div>
-                                </Button>
-                                
-                                {/* Delete Button */}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
-                                  className="relative group/delete h-10 w-10 rounded-xl hover:bg-destructive/10 hover:scale-110 transition-all duration-200"
-                                >
-                                  <X className="h-4 w-4 text-muted-foreground group-hover/delete:text-destructive transition-colors" />
-                                  <div className="absolute inset-0 bg-destructive/20 rounded-xl scale-0 group-hover/delete:scale-100 transition-transform duration-200"></div>
-                                </Button>
-                              </div>
+                              {/* Action Menu */}
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-10 w-10 rounded-xl hover:bg-muted hover:scale-110 transition-all duration-200"
+                                  >
+                                    <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48 bg-card/95 backdrop-blur-xl border-border/50">
+                                  <DropdownMenuItem 
+                                    onClick={() => setEditingWife(wife)}
+                                    className="flex items-center gap-3 rounded-lg hover:bg-primary/10 focus:bg-primary/10 cursor-pointer"
+                                  >
+                                    <Edit className="h-4 w-4 text-primary" />
+                                    <span>تعديل</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
+                                    className="flex items-center gap-3 rounded-lg hover:bg-destructive/10 focus:bg-destructive/10 cursor-pointer text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    <span>حذف</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </CardContent>
                         </Card>
