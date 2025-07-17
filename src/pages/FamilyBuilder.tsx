@@ -154,13 +154,16 @@ const FamilyBuilder = () => {
               name: member.name,
               fatherId: member.father_id,
               motherId: member.mother_id,
+              spouseId: member.spouse_id, // Add the new spouse_id field
+              relatedPersonId: member.related_person_id,
               isFounder: member.is_founder,
               gender: member.gender || 'male',
               birthDate: member.birth_date || '',
               isAlive: member.is_alive,
               deathDate: member.death_date || null,
               image: member.image_url || null,
-              bio: member.biography || ''
+              bio: member.biography || '',
+              relation: "" // Add relation field for consistency
             }));
             
             console.log('Fetched family members:', transformedMembers);
@@ -553,6 +556,8 @@ const FamilyBuilder = () => {
             ...member,
             name: formData.name,
             gender: formData.gender,
+            fatherId: fatherId,
+            motherId: motherId,
             birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
             isAlive: formData.isAlive,
             deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
