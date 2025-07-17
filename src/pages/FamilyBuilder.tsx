@@ -1689,9 +1689,9 @@ const FamilyBuilder = () => {
                       </h4>
                       
                       <div className="space-y-4">
-                        {/* Name and Status Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
+                        {/* Name, Status and Birth Date Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div className="space-y-2 md:col-span-2">
                             <Label className="text-sm font-medium">اسم الزوجة</Label>
                             <Input
                               id="wife-name"
@@ -1713,67 +1713,66 @@ const FamilyBuilder = () => {
                               </SelectContent>
                             </Select>
                           </div>
-                        </div>
 
-                        {/* Birth Date */}
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">تاريخ الميلاد (اختياري)</Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input"
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {editingWife?.birthDate ? format(editingWife.birthDate, "PPP", { locale: ar }) : "اختر تاريخ الميلاد"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                              <div className="p-4 space-y-4">
-                                <div className="grid grid-cols-3 gap-3">
-                                  <div className="space-y-2">
-                                    <Label className="text-xs text-muted-foreground">اليوم</Label>
-                                    <Input
-                                      id="wife-birth-day"
-                                      type="number"
-                                      min="1"
-                                      max="31"
-                                      defaultValue={editingWife?.birthDate?.getDate() || ""}
-                                      placeholder="01"
-                                      className="text-center font-mono text-lg h-12"
-                                    />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label className="text-xs text-muted-foreground">الشهر</Label>
-                                    <Select defaultValue={editingWife?.birthDate?.getMonth()?.toString() || ""}>
-                                      <SelectTrigger id="wife-birth-month" className="h-12">
-                                        <SelectValue placeholder="--" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {Array.from({ length: 12 }, (_, i) => (
-                                          <SelectItem key={i} value={i.toString()}>
-                                            {format(new Date(2000, i, 1), "MMM", { locale: ar })}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label className="text-xs text-muted-foreground">السنة</Label>
-                                    <Input
-                                      id="wife-birth-year"
-                                      type="number"
-                                      min="1900"
-                                      max={new Date().getFullYear()}
-                                      defaultValue={editingWife?.birthDate?.getFullYear() || ""}
-                                      placeholder="1990"
-                                      className="text-center font-mono text-lg h-12"
-                                    />
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">تاريخ الميلاد</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className="w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input"
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {editingWife?.birthDate ? format(editingWife.birthDate, "PPP", { locale: ar }) : "اختر تاريخ الميلاد"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                                <div className="p-4 space-y-4">
+                                  <div className="grid grid-cols-3 gap-3">
+                                    <div className="space-y-2">
+                                      <Label className="text-xs text-muted-foreground">اليوم</Label>
+                                      <Input
+                                        id="wife-birth-day"
+                                        type="number"
+                                        min="1"
+                                        max="31"
+                                        defaultValue={editingWife?.birthDate?.getDate() || ""}
+                                        placeholder="01"
+                                        className="text-center font-mono text-lg h-12"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label className="text-xs text-muted-foreground">الشهر</Label>
+                                      <Select defaultValue={editingWife?.birthDate?.getMonth()?.toString() || ""}>
+                                        <SelectTrigger id="wife-birth-month" className="h-12">
+                                          <SelectValue placeholder="--" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Array.from({ length: 12 }, (_, i) => (
+                                            <SelectItem key={i} value={i.toString()}>
+                                              {format(new Date(2000, i, 1), "MMM", { locale: ar })}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label className="text-xs text-muted-foreground">السنة</Label>
+                                      <Input
+                                        id="wife-birth-year"
+                                        type="number"
+                                        min="1900"
+                                        max={new Date().getFullYear()}
+                                        defaultValue={editingWife?.birthDate?.getFullYear() || ""}
+                                        placeholder="1990"
+                                        className="text-center font-mono text-lg h-12"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
                         </div>
 
                         {/* Death Date - Only shown if status is deceased */}
