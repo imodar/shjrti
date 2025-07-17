@@ -21,6 +21,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import ViewTree from "./pages/ViewTree";
 import Store from "./pages/Store";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/terms" element={<Terms />} />
           <Route path="/view-tree" element={<ViewTree />} />
           <Route path="/store" element={<Store />} />
+          <Route path="/admin" element={<AdminPanel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
