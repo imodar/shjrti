@@ -47,6 +47,82 @@ const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
 const FamilyBuilder = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // Calculate generation statistics from actual data
+  const calculateGenerationCount = () => {
+    if (familyMembers.length === 0) return 1;
+    
+    // Create a map to track generations based on relationships
+    const generationMap = new Map();
+    
+    // Start with founders (people without related_person_id) as generation 1
+    familyMembers.forEach(member => {
+      if (!member.related_person_id) {
+        generationMap.set(member.id, 1);
+      }
+    });
+    
+    // Recursively assign generations based on relationships
+    let changed = true;
+    while (changed) {
+      changed = false;
+      familyMembers.forEach(member => {
+        if (member.related_person_id && !generationMap.has(member.id)) {
+          const parentGeneration = generationMap.get(member.related_person_id);
+          if (parentGeneration !== undefined) {
+            // Children are next generation, spouses are same generation
+            const isChild = ['son', 'daughter', 'ابن', 'ابنة', 'بنت'].some(rel => 
+              member.relation.toLowerCase().includes(rel.toLowerCase())
+            );
+            generationMap.set(member.id, isChild ? parentGeneration + 1 : parentGeneration);
+            changed = true;
+          }
+        }
+      });
+    }
+    
+    return Math.max(1, Math.max(...Array.from(generationMap.values())));
+  };
+
+  const getGenerationStats = () => {
+    if (familyMembers.length === 0) return [];
+    
+    const generationMap = new Map();
+    
+    // Start with founders as generation 1
+    familyMembers.forEach(member => {
+      if (!member.related_person_id) {
+        generationMap.set(member.id, 1);
+      }
+    });
+    
+    // Assign generations
+    let changed = true;
+    while (changed) {
+      changed = false;
+      familyMembers.forEach(member => {
+        if (member.related_person_id && !generationMap.has(member.id)) {
+          const parentGeneration = generationMap.get(member.related_person_id);
+          if (parentGeneration !== undefined) {
+            const isChild = ['son', 'daughter', 'ابن', 'ابنة', 'بنت'].some(rel => 
+              member.relation.toLowerCase().includes(rel.toLowerCase())
+            );
+            generationMap.set(member.id, isChild ? parentGeneration + 1 : parentGeneration);
+            changed = true;
+          }
+        }
+      });
+    }
+    
+    // Count members per generation
+    const generationCounts = new Map();
+    generationMap.forEach((generation) => {
+      generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
+    });
+    
+    return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
+  };
+
   const { toast } = useToast();
   const { notifications, profile } = useDashboardData();
   const treeId = searchParams.get('treeId');
@@ -641,7 +717,7 @@ const FamilyBuilder = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">الأجيال</p>
-                        <p className="text-3xl font-bold text-accent">{Math.max(1, Math.ceil(familyMembers.length / 4))}</p>
+                        <p className="text-3xl font-bold text-accent">{calculateGenerationCount()}</p>
                       </div>
                       <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <TreePine className="h-6 w-6 text-accent" />
@@ -857,14 +933,17 @@ const FamilyBuilder = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span>الجيل الأول</span>
-                        <Badge className="bg-primary/20 text-primary">2 أفراد</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span>الجيل الثاني</span>
-                        <Badge className="bg-accent/20 text-accent">2 أفراد</Badge>
-                      </div>
+                      {getGenerationStats().map(([generation, count]) => (
+                        <div key={generation} className="flex justify-between items-center">
+                          <span>الجيل {generation === 1 ? 'الأول' : generation === 2 ? 'الثاني' : generation === 3 ? 'الثالث' : `الـ${generation}`}</span>
+                          <Badge className="bg-primary/20 text-primary">{count} أفراد</Badge>
+                        </div>
+                      ))}
+                      {getGenerationStats().length === 0 && (
+                        <div className="text-center text-muted-foreground">
+                          لا توجد بيانات أجيال
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
