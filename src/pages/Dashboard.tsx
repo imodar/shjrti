@@ -122,12 +122,11 @@ const Dashboard = () => {
   const [treeToShare, setTreeToShare] = useState<number | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
   const {
     toast
   } = useToast();
   const navigate = useNavigate();
-  const { notifications: realNotifications, profile, totalMembers } = useDashboardData();
+  const { notifications, profile, totalMembers, markNotificationAsRead, markAllAsRead } = useDashboardData();
 
   // Plan-based features
   const canCreateNewTree = trees.length < currentPlan.treesLimit;
@@ -138,21 +137,20 @@ const Dashboard = () => {
   const unreadNotifications = notifications.filter(n => !n.isRead);
   const unreadCount = unreadNotifications.length;
   
-  const markNotificationAsRead = (id: number) => {
-    setNotifications(notifications.map(n => 
-      n.id === id ? { ...n, isRead: true } : n
-    ));
+  
+  const handleMarkNotificationAsRead = (id: string) => {
+    markNotificationAsRead(id);
     toast({
       title: "تم وضع علامة مقروء",
       description: "تم تحديث حالة الإشعار"
     });
   };
-  
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+
+  const handleMarkAllAsRead = () => {
+    markAllAsRead();
     toast({
-      title: "تم وضع علامة مقروء على الكل",
-      description: "تم تحديث جميع الإشعارات"
+      title: "تم وضع علامة مقروء على جميع الإشعارات",
+      description: "تم تحديث حالة جميع الإشعارات"
     });
   };
   
@@ -370,7 +368,7 @@ const Dashboard = () => {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              onClick={markAllAsRead}
+                              onClick={handleMarkAllAsRead}
                               disabled={unreadCount === 0}
                               className="text-xs bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 text-emerald-700 dark:text-emerald-300 hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900 dark:hover:to-teal-900 border border-emerald-200/50 dark:border-emerald-700/50 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -391,7 +389,7 @@ const Dashboard = () => {
                                 ? 'bg-emerald-50/50 dark:bg-emerald-950/30 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/50' 
                                 : 'hover:bg-emerald-50/30 dark:hover:bg-emerald-950/20'
                             }`}
-                            onClick={() => !notification.isRead && markNotificationAsRead(notification.id)}
+                            onClick={() => !notification.isRead && handleMarkNotificationAsRead(notification.id)}
                           >
                             <div className="flex items-start gap-3 w-full">
                               <div className="flex-shrink-0 mt-1">
@@ -425,7 +423,7 @@ const Dashboard = () => {
                                       size="sm" 
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        markNotificationAsRead(notification.id);
+                                        handleMarkNotificationAsRead(notification.id);
                                       }}
                                       className="text-xs text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 p-1 h-auto"
                                     >
