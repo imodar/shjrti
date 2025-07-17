@@ -77,50 +77,27 @@ const FamilyBuilder = () => {
           setFamilyData(family);
           
           // Get family members
-          // First, get family members
+          // Load family tree members from the new table
           const { data: members, error: membersError } = await supabase
-            .from('family_members')
+            .from('family_tree_members')
             .select('*')
             .eq('family_id', family.id);
 
           if (membersError) throw membersError;
 
-          if (members && members.length > 0) {
-            // Get user profiles for the family members
-            const userIds = members.map(member => member.user_id).filter(Boolean);
-            let profiles = [];
-            
-            if (userIds.length > 0) {
-              const { data: profilesData, error: profilesError } = await supabase
-                .from('profiles')
-                .select('user_id, first_name, last_name, email')
-                .in('user_id', userIds);
-              
-              if (!profilesError && profilesData) {
-                profiles = profilesData;
-              }
-            }
-
+          if (members) {
             // Transform the data to match the expected format
-            const transformedMembers = members.map(member => {
-              const profile = profiles.find(p => p.user_id === member.user_id);
-              const name = profile ? 
-                `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 
-                profile.email || 'عضو العائلة' 
-                : 'عضو العائلة';
-              
-              return {
-                id: member.id,
-                name: name,
-                relation: member.role === 'creator' ? 'founder' : member.role,
-                gender: 'male', // Default, you might want to get this from profiles
-                birthDate: '',
-                isAlive: true,
-                deathDate: null,
-                image: null,
-                bio: ''
-              };
-            });
+            const transformedMembers = members.map(member => ({
+              id: member.id,
+              name: member.name,
+              relation: member.relation,
+              gender: member.gender || 'male',
+              birthDate: member.birth_date || '',
+              isAlive: member.is_alive,
+              deathDate: member.death_date || null,
+              image: member.image_url || null,
+              bio: member.biography || ''
+            }));
             setFamilyMembers(transformedMembers);
           }
         }
@@ -292,7 +269,7 @@ const FamilyBuilder = () => {
     });
   };
 
-  const handleSaveMember = () => {
+  const handleSaveMember = async () => {
     if (!formData.name || !formData.gender || !formData.relation) {
       toast({
         title: "خطأ",
@@ -302,58 +279,124 @@ const FamilyBuilder = () => {
       return;
     }
 
-    const memberData = {
-      id: selectedMember ? selectedMember.id : Date.now(),
-      name: formData.name,
-      relation: formData.relation,
-      relatedPersonId: formData.relatedPersonId,
-      gender: formData.gender,
-      birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
-      isAlive: formData.isAlive,
-      deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
-      bio: formData.bio,
-      image: formData.croppedImage
-    };
+    try {
+      const memberData = {
+        family_id: familyData?.id,
+        name: formData.name,
+        relation: formData.relation,
+        gender: formData.gender,
+        birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
+        is_alive: formData.isAlive,
+        death_date: formData.deathDate?.toISOString().split('T')[0] || null,
+        biography: formData.bio,
+        image_url: formData.croppedImage
+      };
 
-    if (selectedMember) {
-      setFamilyMembers(familyMembers.map(member => 
-        member.id === selectedMember.id ? memberData : member
-      ));
-      toast({
-        title: "تم التحديث",
-        description: "تم تحديث بيانات العضو بنجاح"
+      if (selectedMember) {
+        // Update existing member
+        const { error } = await supabase
+          .from('family_tree_members')
+          .update(memberData)
+          .eq('id', selectedMember.id);
+
+        if (error) throw error;
+
+        // Update local state
+        setFamilyMembers(familyMembers.map(member => 
+          member.id === selectedMember.id ? {
+            ...member,
+            name: formData.name,
+            relation: formData.relation,
+            gender: formData.gender,
+            birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
+            isAlive: formData.isAlive,
+            deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
+            bio: formData.bio,
+            image: formData.croppedImage
+          } : member
+        ));
+
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث بيانات العضو بنجاح"
+        });
+      } else {
+        // Create new member
+        const { data, error } = await supabase
+          .from('family_tree_members')
+          .insert([memberData])
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Update local state
+        const newMember = {
+          id: data.id,
+          name: data.name,
+          relation: data.relation,
+          gender: data.gender,
+          birthDate: data.birth_date || "",
+          isAlive: data.is_alive,
+          deathDate: data.death_date || null,
+          bio: data.biography || "",
+          image: data.image_url || null
+        };
+
+        setFamilyMembers([...familyMembers, newMember]);
+        toast({
+          title: "تم الإضافة",
+          description: "تم إضافة عضو جديد للعائلة"
+        });
+      }
+
+      setShowAddMember(false);
+      setSelectedMember(null);
+      setCurrentStep(1);
+      setFormData({
+        name: "",
+        relation: "",
+        relatedPersonId: null,
+        gender: "",
+        birthDate: null,
+        isAlive: true,
+        deathDate: null,
+        bio: "",
+        image: null,
+        croppedImage: null
       });
-    } else {
-      setFamilyMembers([...familyMembers, memberData]);
+    } catch (error) {
+      console.error('Error saving member:', error);
       toast({
-        title: "تم الإضافة",
-        description: "تم إضافة عضو جديد للعائلة"
+        title: "خطأ",
+        description: "حدث خطأ أثناء حفظ البيانات",
+        variant: "destructive"
       });
     }
-
-    setShowAddMember(false);
-    setSelectedMember(null);
-    setCurrentStep(1);
-    setFormData({
-      name: "",
-      relation: "",
-      relatedPersonId: null,
-      gender: "",
-      birthDate: null,
-      isAlive: true,
-      deathDate: null,
-      bio: "",
-      image: null,
-      croppedImage: null
-    });
   };
 
-  const handleDeleteMember = (id: number) => {
-    setFamilyMembers(familyMembers.filter(member => member.id !== id));
-    toast({
-      title: "تم الحذف",
-      description: "تم حذف العضو من شجرة العائلة"
-    });
+  const handleDeleteMember = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('family_tree_members')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setFamilyMembers(familyMembers.filter(member => member.id !== id));
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف العضو من شجرة العائلة"
+      });
+    } catch (error) {
+      console.error('Error deleting member:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حذف العضو",
+        variant: "destructive"
+      });
+    }
   };
 
   const getRelationIcon = (relation: string) => {

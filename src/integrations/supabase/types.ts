@@ -174,6 +174,62 @@ export type Database = {
           },
         ]
       }
+      family_tree_members: {
+        Row: {
+          biography: string | null
+          birth_date: string | null
+          created_at: string
+          created_by: string | null
+          death_date: string | null
+          family_id: string
+          gender: string | null
+          id: string
+          image_url: string | null
+          is_alive: boolean | null
+          name: string
+          relation: string
+          updated_at: string
+        }
+        Insert: {
+          biography?: string | null
+          birth_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          death_date?: string | null
+          family_id: string
+          gender?: string | null
+          id?: string
+          image_url?: string | null
+          is_alive?: boolean | null
+          name: string
+          relation: string
+          updated_at?: string
+        }
+        Update: {
+          biography?: string | null
+          birth_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          death_date?: string | null
+          family_id?: string
+          gender?: string | null
+          id?: string
+          image_url?: string | null
+          is_alive?: boolean | null
+          name?: string
+          relation?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_tree_members_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       homepage_content: {
         Row: {
           content: Json
