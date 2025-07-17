@@ -232,6 +232,7 @@ const FamilyBuilder = () => {
     birthDate: Date | null;
     deathDate: Date | null;
   }>>([]);
+  const [showNonBloodMembers, setShowNonBloodMembers] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -284,7 +285,7 @@ const FamilyBuilder = () => {
         console.log('Decision:', fatherIsBloodRelative || motherIsBloodRelative ? 'INCLUDED' : 'EXCLUDED');
       }
       
-      return fatherIsBloodRelative; // Only include if father is blood relative (patriarchal bloodline) // At least one parent must be blood relative
+      return showNonBloodMembers ? (fatherIsBloodRelative || motherIsBloodRelative) : fatherIsBloodRelative; // Show non-blood members if filter is enabled
     }
     
     // Include members who are not spouses (exclude only if they are married to someone in this family but have no blood relation)
@@ -1232,13 +1233,23 @@ const FamilyBuilder = () => {
                   />
                 </div>
                 
-                <Button
-                  onClick={handleAddNewMember}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12"
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  إضافة فرد جديد
-                </Button>
+                <div className="flex gap-3 items-center">
+                  <Button
+                    variant={showNonBloodMembers ? "default" : "outline"}
+                    onClick={() => setShowNonBloodMembers(!showNonBloodMembers)}
+                    className="h-12 rounded-xl px-6"
+                  >
+                    {showNonBloodMembers ? "إخفاء غير الأقارب" : "إظهار غير الأقارب"}
+                  </Button>
+                  
+                  <Button
+                    onClick={handleAddNewMember}
+                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12"
+                  >
+                    <Plus className="mr-2 h-5 w-5" />
+                    إضافة فرد جديد
+                  </Button>
+                </div>
               </div>
 
               {/* Family Members Grid */}
