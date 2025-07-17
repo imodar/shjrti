@@ -16,6 +16,7 @@ import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { SharedFooter } from "@/components/SharedFooter";
 import { supabase } from "@/integrations/supabase/client";
+import WifeForm from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
 
 const FamilyCreator = () => {
@@ -24,6 +25,7 @@ const FamilyCreator = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
+  const [showWivesModal, setShowWivesModal] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -44,6 +46,14 @@ const FamilyCreator = () => {
     image: null as File | null,
     croppedImage: null as string | null
   });
+
+  const [wives, setWives] = useState<Array<{
+    id: string;
+    name: string;
+    isAlive: boolean;
+    marriageDate: Date | null;
+    divorceDate: Date | null;
+  }>>([]);
 
   const handleNextStep = () => {
     if (currentStep === 1) {
@@ -409,37 +419,34 @@ const FamilyCreator = () => {
                             </div>
                           </div>
                         </CardHeader>
-                        <CardContent className="space-y-8 pb-10">
+                        <CardContent className="space-y-6 pb-10">
                           
-                          {/* Basic Info */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* Basic Info - Compressed */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             
                             {/* Founder Name */}
-                            <div className="space-y-4">
-                              <Label htmlFor="founder-name" className="text-base font-medium text-foreground flex items-center gap-2">
+                            <div className="space-y-3">
+                              <Label htmlFor="founder-name" className="text-sm font-medium text-foreground flex items-center gap-2">
                                 <div className="w-2 h-2 bg-primary rounded-full"></div>
                                 اسم المؤسس *
                               </Label>
-                              <div className="relative group">
-                                <Input
-                                  id="founder-name"
-                                  value={founderData.name}
-                                  onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                                  placeholder="أدخل اسم المؤسس"
-                                  className="h-14 rounded-xl bg-muted/30 border-2 border-transparent font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                              </div>
+                              <Input
+                                id="founder-name"
+                                value={founderData.name}
+                                onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                                placeholder="أدخل اسم المؤسس"
+                                className="h-12 rounded-xl bg-muted/30 border-2 border-transparent font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                              />
                             </div>
                             
                             {/* Gender Selection */}
-                            <div className="space-y-4">
-                              <Label htmlFor="founder-gender" className="text-base font-medium text-foreground flex items-center gap-2">
-                                <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                            <div className="space-y-3">
+                              <Label htmlFor="founder-gender" className="text-sm font-medium text-foreground flex items-center gap-2">
+                                <div className="w-2 h-2 bg-accent rounded-full"></div>
                                 الجنس *
                               </Label>
                               <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                                <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300">
+                                <SelectTrigger className="h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300">
                                   <SelectValue placeholder="اختر الجنس" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-border/50 bg-card/95 backdrop-blur-xl">
@@ -460,45 +467,92 @@ const FamilyCreator = () => {
                             </div>
                           </div>
 
-                          {/* Birth Date */}
-                          <div className="space-y-4">
-                            <Label className="text-base font-medium text-foreground flex items-center gap-2">
-                              <CalendarIcon className="h-4 w-4 text-primary" />
-                              تاريخ الميلاد
-                            </Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-full h-14 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
-                                    !founderData.birthDate && "text-muted-foreground"
-                                  )}
-                                >
-                                  <CalendarIcon className="ml-auto h-4 w-4" />
-                                  {founderData.birthDate ? (
-                                    format(founderData.birthDate, "PPP", { locale: ar })
-                                  ) : (
-                                    <span>اختر تاريخ الميلاد</span>
-                                  )}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={founderData.birthDate}
-                                  onSelect={(date) => setFounderData({...founderData, birthDate: date})}
-                                  disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
-                                  initialFocus
-                                  className="p-3 pointer-events-auto"
-                                />
-                              </PopoverContent>
-                            </Popover>
+                          {/* Birth Date & Living Status */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            {/* Birth Date */}
+                            <div className="space-y-3">
+                              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                                <CalendarIcon className="h-4 w-4 text-primary" />
+                                تاريخ الميلاد
+                              </Label>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      "w-full h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
+                                      !founderData.birthDate && "text-muted-foreground"
+                                    )}
+                                  >
+                                    <CalendarIcon className="ml-auto h-4 w-4" />
+                                    {founderData.birthDate ? (
+                                      format(founderData.birthDate, "PPP", { locale: ar })
+                                    ) : (
+                                      <span>اختر تاريخ الميلاد</span>
+                                    )}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={founderData.birthDate}
+                                    onSelect={(date) => setFounderData({...founderData, birthDate: date})}
+                                    disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
+                                    initialFocus
+                                    className="p-3 pointer-events-auto"
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+
+                            {/* Death Date - Only show if not alive */}
+                            {!founderData.isAlive ? (
+                              <div className="space-y-3">
+                                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                  تاريخ الوفاة
+                                </Label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className={cn(
+                                        "w-full h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
+                                        !founderData.deathDate && "text-muted-foreground"
+                                      )}
+                                    >
+                                      <CalendarIcon className="ml-auto h-4 w-4" />
+                                      {founderData.deathDate ? (
+                                        format(founderData.deathDate, "PPP", { locale: ar })
+                                      ) : (
+                                        <span>اختر تاريخ الوفاة</span>
+                                      )}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={founderData.deathDate}
+                                      onSelect={(date) => setFounderData({...founderData, deathDate: date})}
+                                      disabled={(date) => 
+                                        date > new Date() || 
+                                        (founderData.birthDate && date < founderData.birthDate)
+                                      }
+                                      initialFocus
+                                      className="p-3 pointer-events-auto"
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            ) : (
+                              <div></div>
+                            )}
                           </div>
 
                           {/* Living Status */}
-                          <div className="space-y-4">
-                            <Label className="text-base font-medium text-foreground flex items-center gap-2">
+                          <div className="space-y-3">
+                            <Label className="text-sm font-medium text-foreground flex items-center gap-2">
                               <div className="w-2 h-2 bg-secondary rounded-full"></div>
                               الحالة الحيوية
                             </Label>
@@ -508,13 +562,13 @@ const FamilyCreator = () => {
                                 variant={founderData.isAlive ? "default" : "outline"}
                                 onClick={() => setFounderData({...founderData, isAlive: true, deathDate: null})}
                                 className={cn(
-                                  "h-14 rounded-xl font-arabic transition-all duration-300",
+                                  "h-12 rounded-xl font-arabic transition-all duration-300",
                                   founderData.isAlive 
                                     ? "bg-primary text-white shadow-lg" 
                                     : "bg-muted/30 border-2 border-transparent hover:bg-background/60"
                                 )}
                               >
-                                <Heart className="h-5 w-5 ml-2" />
+                                <Heart className="h-4 w-4 ml-2" />
                                 على قيد الحياة
                               </Button>
                               <Button
@@ -522,7 +576,7 @@ const FamilyCreator = () => {
                                 variant={!founderData.isAlive ? "default" : "outline"}
                                 onClick={() => setFounderData({...founderData, isAlive: false})}
                                 className={cn(
-                                  "h-14 rounded-xl font-arabic transition-all duration-300",
+                                  "h-12 rounded-xl font-arabic transition-all duration-300",
                                   !founderData.isAlive 
                                     ? "bg-muted text-foreground shadow-lg" 
                                     : "bg-muted/30 border-2 border-transparent hover:bg-background/60"
@@ -533,132 +587,119 @@ const FamilyCreator = () => {
                             </div>
                           </div>
 
-                          {/* Death Date - Only show if not alive */}
-                          {!founderData.isAlive && (
-                            <div className="space-y-4">
-                              <Label className="text-base font-medium text-foreground flex items-center gap-2">
-                                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                                تاريخ الوفاة
+                          {/* Marriage Management */}
+                          {founderData.gender === 'male' && (
+                            <div className="space-y-3">
+                              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                                <Heart className="h-4 w-4 text-accent" />
+                                إدارة الزوجات
                               </Label>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full h-14 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
-                                      !founderData.deathDate && "text-muted-foreground"
-                                    )}
-                                  >
-                                    <CalendarIcon className="ml-auto h-4 w-4" />
-                                    {founderData.deathDate ? (
-                                      format(founderData.deathDate, "PPP", { locale: ar })
-                                    ) : (
-                                      <span>اختر تاريخ الوفاة</span>
-                                    )}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                                  <Calendar
-                                    mode="single"
-                                    selected={founderData.deathDate}
-                                    onSelect={(date) => setFounderData({...founderData, deathDate: date})}
-                                    disabled={(date) => 
-                                      date > new Date() || 
-                                      (founderData.birthDate && date < founderData.birthDate)
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowWivesModal(true)}
+                                className="w-full h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 font-arabic transition-all duration-300 flex items-center justify-between"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
+                                    <Users className="h-4 w-4 text-accent" />
+                                  </div>
+                                  <span>
+                                    {wives.length === 0 
+                                      ? 'إضافة الزوجات' 
+                                      : `الزوجات (${wives.length})`
                                     }
-                                    initialFocus
-                                    className="p-3 pointer-events-auto"
-                                  />
-                                </PopoverContent>
-                              </Popover>
+                                  </span>
+                                </div>
+                                <ArrowRight className="h-4 w-4" />
+                              </Button>
                             </div>
                           )}
 
-                          {/* Profile Image */}
-                          <div className="space-y-4">
-                            <Label className="text-base font-medium text-foreground flex items-center gap-2">
-                              <Upload className="h-4 w-4 text-accent" />
-                              صورة شخصية (اختياري)
-                            </Label>
-                            <div className="flex flex-col items-center gap-6">
-                              {founderData.croppedImage ? (
-                                <div className="relative group">
-                                  <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-primary/20 shadow-lg">
-                                    <img 
-                                      src={founderData.croppedImage} 
-                                      alt="معاينة الصورة" 
-                                      className="w-full h-full object-cover"
-                                    />
+                          {/* Profile Image & Bio - Side by side */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            {/* Profile Image */}
+                            <div className="space-y-3">
+                              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                                <Upload className="h-4 w-4 text-accent" />
+                                صورة شخصية
+                              </Label>
+                              <div className="flex flex-col items-center gap-3">
+                                {founderData.croppedImage ? (
+                                  <div className="relative group">
+                                    <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg">
+                                      <img 
+                                        src={founderData.croppedImage} 
+                                        alt="معاينة الصورة" 
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
+                                      className="absolute -top-1 -right-1 w-6 h-6 rounded-full p-0"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
                                   </div>
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
-                                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full p-0"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ) : (
-                                <div className="w-32 h-32 rounded-2xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/50 transition-colors duration-300">
-                                  <Upload className="h-8 w-8" />
-                                  <span className="text-sm">رفع صورة</span>
-                                </div>
-                              )}
-                              
-                              <div className="flex gap-3">
+                                ) : (
+                                  <div className="w-20 h-20 rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center text-muted-foreground hover:border-primary/50 transition-colors duration-300">
+                                    <Upload className="h-6 w-6" />
+                                  </div>
+                                )}
+                                
                                 <Button
                                   type="button"
                                   variant="outline"
+                                  size="sm"
                                   onClick={() => document.getElementById('founder-image-input')?.click()}
-                                  className="h-12 px-6 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 font-arabic"
+                                  className="h-9 px-4 rounded-lg bg-muted/30 border-2 border-transparent hover:bg-background/60 font-arabic text-xs"
                                 >
-                                  <Upload className="h-4 w-4 ml-2" />
-                                  {founderData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
+                                  <Upload className="h-3 w-3 ml-1" />
+                                  {founderData.croppedImage ? 'تغيير' : 'رفع'}
                                 </Button>
+                                
+                                <input
+                                  id="founder-image-input"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                      const file = e.target.files[0];
+                                      setFounderData({...founderData, image: file});
+                                      
+                                      const reader = new FileReader();
+                                      reader.onload = (event) => {
+                                        if (event.target?.result) {
+                                          setCropImage(event.target.result as string);
+                                          setShowCropModal(true);
+                                        }
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                                  className="hidden"
+                                />
                               </div>
-                              
-                              <input
-                                id="founder-image-input"
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => {
-                                  if (e.target.files && e.target.files[0]) {
-                                    const file = e.target.files[0];
-                                    setFounderData({...founderData, image: file});
-                                    
-                                    const reader = new FileReader();
-                                    reader.onload = (event) => {
-                                      if (event.target?.result) {
-                                        setCropImage(event.target.result as string);
-                                        setShowCropModal(true);
-                                      }
-                                    };
-                                    reader.readAsDataURL(file);
-                                  }
-                                }}
-                                className="hidden"
-                              />
                             </div>
-                          </div>
 
-                          {/* Biography */}
-                          <div className="space-y-4">
-                            <Label htmlFor="founder-bio" className="text-base font-medium text-foreground flex items-center gap-2">
-                              <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                              نبذة عن المؤسس (اختياري)
-                            </Label>
-                            <div className="relative group">
+                            {/* Biography */}
+                            <div className="md:col-span-2 space-y-3">
+                              <Label htmlFor="founder-bio" className="text-sm font-medium text-foreground flex items-center gap-2">
+                                <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                                نبذة عن المؤسس (اختياري)
+                              </Label>
                               <Textarea
                                 id="founder-bio"
                                 value={founderData.bio}
                                 onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
                                 placeholder="اكتب نبذة مختصرة عن حياة المؤسس..."
-                                className="min-h-[120px] text-base bg-muted/30 border-2 border-transparent rounded-xl resize-none font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                                className="min-h-[120px] text-sm bg-muted/30 border-2 border-transparent rounded-xl resize-none font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
                                 rows={4}
                               />
-                              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                             </div>
                           </div>
                         </CardContent>
@@ -837,6 +878,99 @@ const FamilyCreator = () => {
             </Button>
             <Button onClick={handleCropSave}>
               حفظ الصورة
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Wives Management Modal */}
+      <Dialog open={showWivesModal} onOpenChange={setShowWivesModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold flex items-center justify-center gap-3">
+              <Heart className="h-6 w-6 text-accent" />
+              إدارة الزوجات
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              أضف وأدر معلومات زوجات المؤسس
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Existing Wives List */}
+            {wives.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground">الزوجات المضافة</h3>
+                <div className="grid gap-4">
+                  {wives.map((wife, index) => (
+                    <div key={wife.id} className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-primary/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                      <Card className="relative bg-card/80 backdrop-blur-xl border-border/50 rounded-xl">
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center">
+                                <span className="text-lg font-bold text-primary">{index + 1}</span>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-foreground">{wife.name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {wife.isAlive ? 'على قيد الحياة' : 'متوفاة'}
+                                </p>
+                                {wife.marriageDate && (
+                                  <p className="text-xs text-muted-foreground">
+                                    تاريخ الزواج: {format(wife.marriageDate, "PPP", { locale: ar })}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
+                              className="rounded-full"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Add New Wife Form */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Plus className="h-5 w-5 text-accent" />
+                إضافة زوجة جديدة
+              </h3>
+              
+              <Card className="bg-muted/30 border-2 border-dashed border-border/50 rounded-xl">
+                <CardContent className="p-6">
+                  <WifeForm 
+                    onAddWife={(wifeData) => {
+                      const newWife = {
+                        id: Math.random().toString(36).substr(2, 9),
+                        ...wifeData
+                      };
+                      setWives([...wives, newWife]);
+                      toast({
+                        title: "تم إضافة الزوجة",
+                        description: "تم إضافة الزوجة بنجاح إلى القائمة"
+                      });
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <DialogFooter className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => setShowWivesModal(false)}>
+              إغلاق
             </Button>
           </DialogFooter>
         </DialogContent>
