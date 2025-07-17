@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, Play, Quote, Shield, Crown, Gem } from "lucide-react";
 import { Link } from "react-router-dom";
+import Header from "@/components/Header";
 import home2Hero from "@/assets/home2-hero.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
 import futureFamily from "@/assets/future-family.jpg";
@@ -65,25 +66,8 @@ const Home2 = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
-      {/* Floating Navigation */}
-      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-full px-6 py-3 shadow-xl border border-white/20">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <TreePine className="h-6 w-6 text-emerald-600" />
-            <span className="font-bold text-emerald-800 dark:text-emerald-200">شجرة العائلة</span>
-          </div>
-          <div className="flex items-center gap-4 text-sm">
-            <Link to="/" className="hover:text-emerald-600 transition-colors">الرئيسية الأولى</Link>
-            <Link to="/auth" className="hover:text-emerald-600 transition-colors">تسجيل الدخول</Link>
-            <Link to="/dashboard">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 rounded-full">
-                لوحة التحكم
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
+      <Header />
 
       {/* Hero Section with Animated Elements */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">

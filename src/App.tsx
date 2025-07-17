@@ -24,7 +24,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import ViewTree from "./pages/ViewTree";
 import Store from "./pages/Store";
-import AdminPanel from "./pages/AdminPanel";
+import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -108,7 +108,7 @@ const App = () => (
           } />
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
-              <AdminPanel />
+              <EnhancedAdminPanel />
             </ProtectedRoute>
           } />
           <Route path="/terms" element={<Terms />} />

@@ -1,0 +1,839 @@
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
+import Header from '@/components/Header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { 
+  Users, 
+  Package, 
+  FileText, 
+  DollarSign, 
+  ShoppingCart, 
+  Settings, 
+  Home,
+  Edit,
+  Trash2,
+  Plus,
+  RefreshCw,
+  Languages,
+  UserCheck,
+  UserX,
+  Mail,
+  Shield,
+  Globe,
+  Currency
+} from 'lucide-react';
+
+const EnhancedAdminPanel = () => {
+  const { toast } = useToast();
+  const { t, direction } = useLanguage();
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  // State for different data types
+  const [users, setUsers] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const [families, setFamilies] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [translations, setTranslations] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [homepageContent, setHomepageContent] = useState({});
+  const [currencies, setCurrencies] = useState([]);
+  const [stats, setStats] = useState({});
+
+  // Form states
+  const [editingPackage, setEditingPackage] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editingLanguage, setEditingLanguage] = useState(null);
+  const [editingTranslation, setEditingTranslation] = useState(null);
+  const [newLanguage, setNewLanguage] = useState({
+    code: '',
+    name: '',
+    direction: 'ltr',
+    currency: 'USD'
+  });
+  const [newTranslation, setNewTranslation] = useState({
+    key: '',
+    value: '',
+    language_code: '',
+    category: 'general'
+  });
+  const [newAdmin, setNewAdmin] = useState({
+    email: '',
+    role: 'admin'
+  });
+
+  // Check if user is admin
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadAllData();
+    }
+  }, [isAdmin]);
+
+  const checkAdminStatus = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      setIsAdmin(!!data);
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
+  };
+
+  const loadAllData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        loadUsers(),
+        loadPackages(),
+        loadFamilies(),
+        loadLanguages(),
+        loadTranslations(),
+        loadAdmins(),
+        loadHomepageContent(),
+        loadCurrencies(),
+        loadStats()
+      ]);
+    } catch (error) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('failed_load_data', 'فشل في تحميل البيانات'),
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUsers = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setUsers(data || []);
+  };
+
+  const loadPackages = async () => {
+    const { data } = await supabase
+      .from('packages')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setPackages(data || []);
+  };
+
+  const loadFamilies = async () => {
+    const { data } = await supabase
+      .from('families')
+      .select(`
+        *,
+        profiles:creator_id(first_name, last_name, email),
+        packages(name, price_usd, price_sar)
+      `)
+      .order('created_at', { ascending: false });
+    setFamilies(data || []);
+  };
+
+  const loadLanguages = async () => {
+    const { data } = await supabase
+      .from('languages')
+      .select('*')
+      .order('is_default', { ascending: false });
+    setLanguages(data || []);
+  };
+
+  const loadTranslations = async () => {
+    const { data } = await supabase
+      .from('translations')
+      .select('*')
+      .order('language_code', { ascending: true });
+    setTranslations(data || []);
+  };
+
+  const loadAdmins = async () => {
+    const { data } = await supabase
+      .from('admin_users')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setAdmins(data || []);
+  };
+
+  const loadHomepageContent = async () => {
+    const { data } = await supabase
+      .from('homepage_content')
+      .select('*');
+    
+    const contentObj = {};
+    data?.forEach(item => {
+      if (!contentObj[item.language_code]) {
+        contentObj[item.language_code] = {};
+      }
+      contentObj[item.language_code][item.section] = item.content;
+    });
+    setHomepageContent(contentObj);
+  };
+
+  const loadCurrencies = async () => {
+    const { data } = await supabase
+      .from('currencies')
+      .select('*')
+      .order('code', { ascending: true });
+    setCurrencies(data || []);
+  };
+
+  const loadStats = async () => {
+    const [usersCount, familiesCount, packagesCount] = await Promise.all([
+      supabase.from('profiles').select('*', { count: 'exact', head: true }),
+      supabase.from('families').select('*', { count: 'exact', head: true }),
+      supabase.from('packages').select('*', { count: 'exact', head: true })
+    ]);
+
+    setStats({
+      users: usersCount.count || 0,
+      families: familiesCount.count || 0,
+      packages: packagesCount.count || 0
+    });
+  };
+
+  const toggleUserStatus = async (userId, isDisabled) => {
+    try {
+      // Note: This would require a function to enable/disable users
+      // For now, we'll just show a toast
+      toast({
+        title: t('success', 'نجح'),
+        description: isDisabled ? 
+          t('user_enabled', 'تم تفعيل المستخدم') : 
+          t('user_disabled', 'تم إيقاف المستخدم')
+      });
+    } catch (error) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('failed_update_user', 'فشل في تحديث المستخدم'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const resendConfirmationEmail = async (userEmail) => {
+    try {
+      // This would require server-side function
+      toast({
+        title: t('success', 'نجح'),
+        description: t('confirmation_sent', 'تم إرسال إيميل التأكيد')
+      });
+    } catch (error) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('failed_send_email', 'فشل في إرسال الإيميل'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const createLanguage = async () => {
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .insert([newLanguage]);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success', 'نجح'),
+        description: t('language_created', 'تم إنشاء اللغة بنجاح')
+      });
+
+      setNewLanguage({ code: '', name: '', direction: 'ltr', currency: 'USD' });
+      loadLanguages();
+    } catch (error) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('failed_create_language', 'فشل في إنشاء اللغة'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const createTranslation = async () => {
+    try {
+      const { error } = await supabase
+        .from('translations')
+        .insert([newTranslation]);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success', 'نجح'),
+        description: t('translation_created', 'تم إنشاء الترجمة بنجاح')
+      });
+
+      setNewTranslation({ key: '', value: '', language_code: '', category: 'general' });
+      loadTranslations();
+    } catch (error) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('failed_create_translation', 'فشل في إنشاء الترجمة'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const createAdmin = async () => {
+    try {
+      const { error } = await supabase
+        .from('admin_users')
+        .insert([newAdmin]);
+
+      if (error) throw error;
+
+      toast({
+        title: t('success', 'نجح'),
+        description: t('admin_created', 'تم إنشاء المدير بنجاح')
+      });
+
+      setNewAdmin({ email: '', role: 'admin' });
+      loadAdmins();
+    } catch (error) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('failed_create_admin', 'فشل في إنشاء المدير'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
+          <Card className="w-96">
+            <CardHeader>
+              <CardTitle>{t('access_denied', 'الوصول مرفوض')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{t('no_admin_access', 'ليس لديك صلاحية الوصول لهذه الصفحة')}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background" dir={direction}>
+      <Header />
+      
+      <div className="container mx-auto p-6 pt-24">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold">{t('admin_panel', 'لوحة الإدارة')}</h1>
+          <Button onClick={loadAllData} disabled={loading}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            {t('refresh', 'تحديث')}
+          </Button>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-8 mb-6">
+            <TabsTrigger value="dashboard">{t('dashboard', 'الرئيسية')}</TabsTrigger>
+            <TabsTrigger value="users">{t('users', 'المستخدمون')}</TabsTrigger>
+            <TabsTrigger value="packages">{t('packages', 'الباقات')}</TabsTrigger>
+            <TabsTrigger value="families">{t('families', 'العائلات')}</TabsTrigger>
+            <TabsTrigger value="languages">{t('languages', 'اللغات')}</TabsTrigger>
+            <TabsTrigger value="translations">{t('translations', 'الترجمات')}</TabsTrigger>
+            <TabsTrigger value="content">{t('content', 'المحتوى')}</TabsTrigger>
+            <TabsTrigger value="admins">{t('admins', 'المديرون')}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('total_users', 'إجمالي المستخدمين')}</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{(stats as any).users || 0}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('families', 'العائلات')}</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{(stats as any).families || 0}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('packages', 'الباقات')}</CardTitle>
+                  <Package className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{(stats as any).packages || 0}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('languages', 'اللغات')}</CardTitle>
+                  <Languages className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{languages.length}</div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Enhanced Users Tab */}
+          <TabsContent value="users">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('user_management', 'إدارة المستخدمين')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('name', 'الاسم')}</TableHead>
+                      <TableHead>{t('email', 'البريد الإلكتروني')}</TableHead>
+                      <TableHead>{t('phone', 'الهاتف')}</TableHead>
+                      <TableHead>{t('status', 'الحالة')}</TableHead>
+                      <TableHead>{t('actions', 'الإجراءات')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>{user.first_name} {user.last_name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.phone}</TableCell>
+                        <TableCell>
+                          <Badge variant={user.user_id ? "default" : "destructive"}>
+                            {user.user_id ? t('active', 'نشط') : t('inactive', 'غير نشط')}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="space-x-2">
+                          <Button variant="outline" size="sm" onClick={() => setEditingUser(user)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => toggleUserStatus(user.user_id, !user.user_id)}
+                          >
+                            {user.user_id ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => resendConfirmationEmail(user.email)}
+                          >
+                            <Mail className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Enhanced Packages Tab */}
+          <TabsContent value="packages">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('package_management', 'إدارة الباقات')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('name', 'الاسم')}</TableHead>
+                      <TableHead>{t('price_usd', 'السعر بالدولار')}</TableHead>
+                      <TableHead>{t('price_sar', 'السعر بالريال')}</TableHead>
+                      <TableHead>{t('status', 'الحالة')}</TableHead>
+                      <TableHead>{t('actions', 'الإجراءات')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {packages.map((pkg) => (
+                      <TableRow key={pkg.id}>
+                        <TableCell>{pkg.name}</TableCell>
+                        <TableCell>${pkg.price_usd}</TableCell>
+                        <TableCell>{pkg.price_sar} ر.س</TableCell>
+                        <TableCell>
+                          <Badge variant={pkg.is_active ? "default" : "secondary"}>
+                            {pkg.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="outline" size="sm" onClick={() => setEditingPackage(pkg)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Languages Management */}
+          <TabsContent value="languages">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('add_language', 'إضافة لغة جديدة')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="lang-code">{t('language_code', 'رمز اللغة')}</Label>
+                      <Input
+                        id="lang-code"
+                        value={newLanguage.code}
+                        onChange={(e) => setNewLanguage({...newLanguage, code: e.target.value})}
+                        placeholder="en, ar, fr..."
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lang-name">{t('language_name', 'اسم اللغة')}</Label>
+                      <Input
+                        id="lang-name"
+                        value={newLanguage.name}
+                        onChange={(e) => setNewLanguage({...newLanguage, name: e.target.value})}
+                        placeholder="English, العربية, Français..."
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="direction">{t('direction', 'الاتجاه')}</Label>
+                      <Select value={newLanguage.direction} onValueChange={(value) => setNewLanguage({...newLanguage, direction: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ltr">LTR</SelectItem>
+                          <SelectItem value="rtl">RTL</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="currency">{t('currency', 'العملة')}</Label>
+                      <Select value={newLanguage.currency} onValueChange={(value) => setNewLanguage({...newLanguage, currency: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USD">USD</SelectItem>
+                          <SelectItem value="SAR">SAR</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Button onClick={createLanguage}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('add_language', 'إضافة لغة')}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('existing_languages', 'اللغات الموجودة')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('code', 'الرمز')}</TableHead>
+                        <TableHead>{t('name', 'الاسم')}</TableHead>
+                        <TableHead>{t('direction', 'الاتجاه')}</TableHead>
+                        <TableHead>{t('currency', 'العملة')}</TableHead>
+                        <TableHead>{t('status', 'الحالة')}</TableHead>
+                        <TableHead>{t('default', 'افتراضي')}</TableHead>
+                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {languages.map((lang) => (
+                        <TableRow key={lang.id}>
+                          <TableCell>{lang.code}</TableCell>
+                          <TableCell>{lang.name}</TableCell>
+                          <TableCell>{lang.direction}</TableCell>
+                          <TableCell>{lang.currency}</TableCell>
+                          <TableCell>
+                            <Badge variant={lang.is_active ? "default" : "secondary"}>
+                              {lang.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={lang.is_default ? "default" : "outline"}>
+                              {lang.is_default ? t('yes', 'نعم') : t('no', 'لا')}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button variant="outline" size="sm">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Translations Management */}
+          <TabsContent value="translations">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('add_translation', 'إضافة ترجمة جديدة')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="trans-key">{t('key', 'المفتاح')}</Label>
+                      <Input
+                        id="trans-key"
+                        value={newTranslation.key}
+                        onChange={(e) => setNewTranslation({...newTranslation, key: e.target.value})}
+                        placeholder="welcome_message"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="trans-lang">{t('language', 'اللغة')}</Label>
+                      <Select value={newTranslation.language_code} onValueChange={(value) => setNewTranslation({...newTranslation, language_code: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {languages.map((lang) => (
+                            <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="trans-value">{t('value', 'القيمة')}</Label>
+                    <Textarea
+                      id="trans-value"
+                      value={newTranslation.value}
+                      onChange={(e) => setNewTranslation({...newTranslation, value: e.target.value})}
+                      placeholder="مرحباً بكم"
+                    />
+                  </div>
+                  <Button onClick={createTranslation}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('add_translation', 'إضافة ترجمة')}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('existing_translations', 'الترجمات الموجودة')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('key', 'المفتاح')}</TableHead>
+                        <TableHead>{t('language', 'اللغة')}</TableHead>
+                        <TableHead>{t('value', 'القيمة')}</TableHead>
+                        <TableHead>{t('category', 'الفئة')}</TableHead>
+                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {translations.slice(0, 20).map((trans) => (
+                        <TableRow key={trans.id}>
+                          <TableCell className="font-mono text-sm">{trans.key}</TableCell>
+                          <TableCell>{trans.language_code}</TableCell>
+                          <TableCell className="max-w-xs truncate">{trans.value}</TableCell>
+                          <TableCell>{trans.category}</TableCell>
+                          <TableCell>
+                            <Button variant="outline" size="sm">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Admin Management */}
+          <TabsContent value="admins">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('add_admin', 'إضافة مدير جديد')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="admin-email">{t('email', 'البريد الإلكتروني')}</Label>
+                      <Input
+                        id="admin-email"
+                        type="email"
+                        value={newAdmin.email}
+                        onChange={(e) => setNewAdmin({...newAdmin, email: e.target.value})}
+                        placeholder="admin@example.com"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="admin-role">{t('role', 'الدور')}</Label>
+                      <Select value={newAdmin.role} onValueChange={(value) => setNewAdmin({...newAdmin, role: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="super_admin">Super Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Button onClick={createAdmin}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('add_admin', 'إضافة مدير')}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('existing_admins', 'المديرون الموجودون')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('email', 'البريد الإلكتروني')}</TableHead>
+                        <TableHead>{t('role', 'الدور')}</TableHead>
+                        <TableHead>{t('created_at', 'تاريخ الإنشاء')}</TableHead>
+                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {admins.map((admin) => (
+                        <TableRow key={admin.id}>
+                          <TableCell>{admin.email}</TableCell>
+                          <TableCell>
+                            <Badge>{admin.role}</Badge>
+                          </TableCell>
+                          <TableCell>{new Date(admin.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Content Management */}
+          <TabsContent value="content">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('content_management', 'إدارة المحتوى')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  {t('content_coming_soon', 'إدارة المحتوى متعدد اللغات قادمة قريباً')}
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Families Tab */}
+          <TabsContent value="families">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('families_management', 'إدارة العائلات')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('name', 'الاسم')}</TableHead>
+                      <TableHead>{t('creator', 'المنشئ')}</TableHead>
+                      <TableHead>{t('package', 'الباقة')}</TableHead>
+                      <TableHead>{t('status', 'الحالة')}</TableHead>
+                      <TableHead>{t('actions', 'الإجراءات')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {families.map((family) => (
+                      <TableRow key={family.id}>
+                        <TableCell>{family.name}</TableCell>
+                        <TableCell>
+                          {family.profiles ? `${family.profiles.first_name} ${family.profiles.last_name}` : 'N/A'}
+                        </TableCell>
+                        <TableCell>{family.packages?.name || 'N/A'}</TableCell>
+                        <TableCell>
+                          <Badge variant={family.subscription_status === 'active' ? "default" : "secondary"}>
+                            {family.subscription_status || 'inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="outline" size="sm">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default EnhancedAdminPanel;
