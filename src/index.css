@@ -130,7 +130,16 @@ All colors MUST be HSL.
     margin-left: 0;
     margin-right: 0.5rem;
   }
-
+  
+  /* Shine animation for buttons */
+  @keyframes shine {
+    0% { 
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% { 
+      transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+  }
   [dir="rtl"] .space-x-4 > * + * {
     margin-left: 0;
     margin-right: 1rem;
