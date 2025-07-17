@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,12 @@ interface WifeFormProps {
   }) => void;
 }
 
-const WifeForm = ({ onAddWife }: WifeFormProps) => {
+export interface WifeFormRef {
+  isValid: () => boolean;
+  handleSubmit: () => void;
+}
+
+const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => {
   const [formData, setFormData] = useState({
     name: "",
     isAlive: true,
@@ -39,6 +44,15 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
       deathDate: null
     });
   };
+
+  const isValid = () => {
+    return formData.name.trim().length > 0;
+  };
+
+  useImperativeHandle(ref, () => ({
+    isValid,
+    handleSubmit
+  }));
 
   return (
     <div className="space-y-4">
@@ -173,18 +187,10 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
         </div>
       )}
 
-      
-      {/* Add Button */}
-      <Button
-        onClick={handleSubmit}
-        disabled={!formData.name.trim()}
-        className="w-full h-10 bg-gradient-to-r from-primary via-accent to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-      >
-        <Plus className="h-4 w-4 ml-2" />
-        إضافة الزوجة
-      </Button>
     </div>
   );
-};
+});
+
+WifeForm.displayName = "WifeForm";
 
 export default WifeForm;

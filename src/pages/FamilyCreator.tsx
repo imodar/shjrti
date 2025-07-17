@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,13 @@ import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { SharedFooter } from "@/components/SharedFooter";
 import { supabase } from "@/integrations/supabase/client";
-import WifeForm from "@/components/WifeForm";
+import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
 
 const FamilyCreator = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
@@ -951,6 +952,7 @@ const FamilyCreator = () => {
               <Card className="bg-muted/30 border-2 border-dashed border-border/50 rounded-xl">
                 <CardContent className="p-4">
                   <WifeForm 
+                    ref={wifeFormRef}
                     onAddWife={(wifeData) => {
                       const newWife = {
                         id: Math.random().toString(36).substr(2, 9),
@@ -964,8 +966,16 @@ const FamilyCreator = () => {
                     }}
                   />
                   
-                  {/* Close Button Only */}
-                  <div className="flex justify-end mt-4 pt-4 border-t border-border/50">
+                  {/* Buttons Row */}
+                  <div className="flex justify-between gap-3 mt-4 pt-4 border-t border-border/50">
+                    <Button
+                      onClick={() => wifeFormRef.current?.handleSubmit()}
+                      disabled={!wifeFormRef.current?.isValid()}
+                      className="h-10 px-6 bg-gradient-to-r from-primary via-accent to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      <Plus className="h-4 w-4 ml-2" />
+                      إضافة الزوجة
+                    </Button>
                     <Button
                       variant="outline"
                       onClick={() => setShowWivesModal(false)}
