@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import IndexBackup from "./pages/IndexBackup";
 import Auth from "./pages/Auth";
@@ -29,32 +31,90 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/home-backup" element={<IndexBackup />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard-backup" element={<DashboardBackup />} />
-          <Route path="/family-creator" element={<FamilyCreator />} />
-          <Route path="/family-builder" element={<FamilyBuilder />} />
-          <Route path="/family-builder2" element={<FamilyBuilder2 />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/payments2" element={<Payments2 />} />
-          <Route path="/plan-selection" element={<PlanSelection />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard-backup" element={
+            <ProtectedRoute>
+              <DashboardBackup />
+            </ProtectedRoute>
+          } />
+          <Route path="/family-creator" element={
+            <ProtectedRoute>
+              <FamilyCreator />
+            </ProtectedRoute>
+          } />
+          <Route path="/family-builder" element={
+            <ProtectedRoute>
+              <FamilyBuilder />
+            </ProtectedRoute>
+          } />
+          <Route path="/family-builder2" element={
+            <ProtectedRoute>
+              <FamilyBuilder2 />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/payments" element={
+            <ProtectedRoute>
+              <Payments />
+            </ProtectedRoute>
+          } />
+          <Route path="/payments2" element={
+            <ProtectedRoute>
+              <Payments2 />
+            </ProtectedRoute>
+          } />
+          <Route path="/plan-selection" element={
+            <ProtectedRoute>
+              <PlanSelection />
+            </ProtectedRoute>
+          } />
+          <Route path="/payment" element={
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          } />
+          <Route path="/change-password" element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          } />
+          <Route path="/view-tree" element={
+            <ProtectedRoute>
+              <ViewTree />
+            </ProtectedRoute>
+          } />
+          <Route path="/store" element={
+            <ProtectedRoute>
+              <Store />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminPanel />
+            </ProtectedRoute>
+          } />
           <Route path="/terms" element={<Terms />} />
-          <Route path="/view-tree" element={<ViewTree />} />
-          <Route path="/store" element={<Store />} />
-          <Route path="/admin" element={<AdminPanel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

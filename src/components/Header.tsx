@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { TreePine, User, LogIn } from "lucide-react";
+import { TreePine, User, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 const Header = () => {
+  const { user, signOut } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -40,18 +43,35 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="gap-2" asChild>
-            <a href="/auth">
-              <LogIn className="h-4 w-4" />
-              تسجيل الدخول
-            </a>
-          </Button>
-          <Button size="sm" className="gap-2 hero-gradient border-0" asChild>
-            <a href="/auth">
-              <User className="h-4 w-4" />
-              إنشاء حساب
-            </a>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" size="sm" className="gap-2" asChild>
+                <a href="/dashboard">
+                  <User className="h-4 w-4" />
+                  لوحة التحكم
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" onClick={signOut}>
+                <LogOut className="h-4 w-4" />
+                تسجيل الخروج
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" className="gap-2" asChild>
+                <a href="/auth">
+                  <LogIn className="h-4 w-4" />
+                  تسجيل الدخول
+                </a>
+              </Button>
+              <Button size="sm" className="gap-2 hero-gradient border-0" asChild>
+                <a href="/auth">
+                  <User className="h-4 w-4" />
+                  إنشاء حساب
+                </a>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
