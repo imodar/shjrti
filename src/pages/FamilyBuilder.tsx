@@ -479,7 +479,7 @@ const FamilyBuilder = () => {
       const memberData = {
         family_id: familyData?.id,
         name: formData.name,
-        related_person_id: formData.relatedPersonId, // Use the selected family relation
+        related_person_id: null, // Set to null for now as this should reference family_tree_members, not marriages
         gender: formData.gender,
         birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
         is_alive: formData.isAlive,
