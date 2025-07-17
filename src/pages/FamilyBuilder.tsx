@@ -1269,7 +1269,7 @@ const FamilyBuilder = () => {
                   <p className="text-muted-foreground">أضف التفاصيل الإضافية للشخص</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-3">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-primary" />
@@ -1319,43 +1319,43 @@ const FamilyBuilder = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                {!formData.isAlive && (
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
-                      <Skull className="h-4 w-4 text-primary" />
-                      تاريخ الوفاة
-                    </Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
-                            !formData.deathDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
-                        <Calendar
-                          mode="single"
-                          selected={formData.deathDate}
-                          onSelect={(date) => {
-                            setFormData({...formData, deathDate: date});
-                          }}
-                          initialFocus
-                          disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
-                          className="pointer-events-auto p-3"
-                          defaultMonth={new Date(1970, 0)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                )}
+                  {!formData.isAlive && (
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                        <Skull className="h-4 w-4 text-primary" />
+                        تاريخ الوفاة
+                      </Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                              !formData.deathDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
+                          <Calendar
+                            mode="single"
+                            selected={formData.deathDate}
+                            onSelect={(date) => {
+                              setFormData({...formData, deathDate: date});
+                            }}
+                            initialFocus
+                            disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
+                            className="pointer-events-auto p-3"
+                            defaultMonth={new Date(1970, 0)}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
+                </div>
 
                 <div className="space-y-3">
                   <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
