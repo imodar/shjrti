@@ -146,11 +146,43 @@ const FamilyCreator = () => {
 
       if (founderError) throw founderError;
 
+      // إضافة الزوجات إلى شجرة العائلة وإنشاء سجلات الزواج
+      for (const wife of wives) {
+        // إضافة الزوجة كعضو في شجرة العائلة
+        const { data: wifeData, error: wifeError } = await supabase
+          .from('family_tree_members')
+          .insert({
+            family_id: family.id,
+            name: wife.name,
+            gender: 'female',
+            birth_date: wife.birthDate ? new Date(wife.birthDate).toISOString().split('T')[0] : null,
+            death_date: wife.deathDate ? new Date(wife.deathDate).toISOString().split('T')[0] : null,
+            is_alive: wife.isAlive,
+            created_by: user.id
+          })
+          .select()
+          .single();
+
+        if (wifeError) throw wifeError;
+
+        // إنشاء سجل الزواج
+        const { error: marriageError } = await supabase
+          .from('marriages')
+          .insert({
+            family_id: family.id,
+            husband_id: founder.id,
+            wife_id: wifeData.id,
+            is_active: true
+          });
+
+        if (marriageError) throw marriageError;
+      }
+
       setShowSuccessModal(true);
       
       toast({
         title: "تم إنشاء العائلة بنجاح",
-        description: "تم حفظ بيانات العائلة في قاعدة البيانات"
+        description: `تم حفظ بيانات العائلة مع ${wives.length} من الزوجات في قاعدة البيانات`
       });
       
     } catch (error) {
