@@ -27,6 +27,7 @@ const FamilyCreator = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [showWivesModal, setShowWivesModal] = useState(false);
+  const [isAddingWife, setIsAddingWife] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -1045,16 +1046,28 @@ const FamilyCreator = () => {
           <div className="relative p-6 bg-gradient-to-r from-background/80 via-card/90 to-background/80 backdrop-blur-xl border-t border-border/30">
             <div className="flex justify-between items-center gap-4">
               <Button
-                onClick={() => wifeFormRef.current?.handleSubmit()}
-                disabled={!wifeFormRef.current?.isValid()}
+                onClick={async () => {
+                  if (isAddingWife) return;
+                  setIsAddingWife(true);
+                  try {
+                    wifeFormRef.current?.handleSubmit();
+                  } finally {
+                    setTimeout(() => setIsAddingWife(false), 1000);
+                  }
+                }}
+                disabled={isAddingWife}
                 className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-primary text-white font-bold rounded-2xl px-8 py-3 h-auto shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 <div className="relative flex items-center gap-3">
                   <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
-                    <Plus className="h-3 w-3" />
+                    {isAddingWife ? (
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <Plus className="h-3 w-3" />
+                    )}
                   </div>
-                  إضافة الزوجة
+                  {isAddingWife ? 'جاري الإضافة...' : 'إضافة الزوجة'}
                 </div>
               </Button>
               
