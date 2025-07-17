@@ -115,6 +115,7 @@ const FamilyBuilder = () => {
   
   const [activeTab, setActiveTab] = useState("overview");
   const [familyMembers, setFamilyMembers] = useState([]);
+  const [familyMarriages, setFamilyMarriages] = useState([]);
   const [familyData, setFamilyData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -164,6 +165,26 @@ const FamilyBuilder = () => {
             
             console.log('Fetched family members:', transformedMembers);
             setFamilyMembers(transformedMembers);
+          }
+
+          // Get marriages to show as family units
+          const { data: marriages, error: marriagesError } = await supabase
+            .from('marriages')
+            .select(`
+              id,
+              husband:family_tree_members!marriages_husband_id_fkey(id, name),
+              wife:family_tree_members!marriages_wife_id_fkey(id, name),
+              marriage_date,
+              is_active
+            `)
+            .eq('family_id', family.id)
+            .eq('is_active', true);
+
+          if (marriagesError) throw marriagesError;
+
+          if (marriages) {
+            setFamilyMarriages(marriages);
+            console.log('Fetched marriages:', marriages);
           }
         }
       } catch (error) {
@@ -1209,14 +1230,19 @@ const FamilyBuilder = () => {
                         >
                           {formData.relatedPersonId ? (
                             <div className="flex items-center gap-3">
-                              <span className="text-xl">{getRelationIcon(familyMembers.find(m => m.id === formData.relatedPersonId)?.relation || "")}</span>
+                              <span className="text-xl">❤️</span>
                               <div className="flex flex-col items-start">
-                                <span className="font-medium">{familyMembers.find(m => m.id === formData.relatedPersonId)?.name}</span>
-                                <span className="text-xs text-muted-foreground">{familyMembers.find(m => m.id === formData.relatedPersonId)?.relation}</span>
+                                <span className="font-medium">
+                                  {(() => {
+                                    const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+                                    return marriage ? `${marriage.husband?.name} + ${marriage.wife?.name}` : 'عائلة محددة';
+                                  })()}
+                                </span>
+                                <span className="text-xs text-muted-foreground">عائلة</span>
                               </div>
                             </div>
                           ) : (
-                            "ابحث واختر من قائمة أفراد العائلة"
+                            "ابحث واختر من قائمة العائلات"
                           )}
                           <Search className="h-4 w-4 opacity-50" />
                         </Button>
@@ -1227,24 +1253,24 @@ const FamilyBuilder = () => {
                           <CommandEmpty>لم يتم العثور على أي شخص.</CommandEmpty>
                           <CommandList className="max-h-60">
                             <CommandGroup>
-                              {familyMembers
-                                .filter(m => selectedMember ? m.id !== selectedMember.id : true)
-                                .map((member) => (
+                              {familyMarriages.map((marriage) => (
                                 <CommandItem
-                                  key={member.id}
-                                  value={`${member.name} ${member.relation}`}
+                                  key={marriage.id}
+                                  value={`${marriage.husband?.name} ${marriage.wife?.name} عائلة`}
                                   onSelect={() => {
-                                    setFormData({...formData, relatedPersonId: member.id});
+                                    setFormData({...formData, relatedPersonId: marriage.id});
                                     setShowRelatedPersonDropdown(false);
                                   }}
                                   className="flex items-center gap-3 p-3 cursor-pointer"
                                 >
-                                  <span className="text-2xl">{getRelationIcon(member.relation)}</span>
+                                  <span className="text-2xl">❤️</span>
                                   <div className="flex flex-col flex-1">
-                                    <span className="font-medium">{getFullName(member)}</span>
-                                    <span className="text-sm text-muted-foreground">{member.relation}</span>
+                                    <span className="font-medium">
+                                      {marriage.husband?.name} + {marriage.wife?.name}
+                                    </span>
+                                    <span className="text-sm text-muted-foreground">عائلة</span>
                                   </div>
-                                  {formData.relatedPersonId === member.id && (
+                                  {formData.relatedPersonId === marriage.id && (
                                     <div className="w-2 h-2 bg-primary rounded-full"></div>
                                   )}
                                 </CommandItem>
@@ -1255,7 +1281,7 @@ const FamilyBuilder = () => {
                       </PopoverContent>
                     </Popover>
                     <p className="text-sm text-muted-foreground">
-                      اختر الشخص الذي يرتبط معه {formData.name} بعلاقة {getRelationshipOptions(formData.gender).find(r => r.value === formData.relation)?.label}
+                      اختر العائلة التي يرتبط معها {formData.name} بعلاقة {getRelationshipOptions(formData.gender).find(r => r.value === formData.relation)?.label}
                     </p>
                   </div>
                 )}
