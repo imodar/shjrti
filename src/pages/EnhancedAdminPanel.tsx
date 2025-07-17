@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -933,6 +933,104 @@ const EnhancedAdminPanel = () => {
           {/* Translations Management */}
           <TabsContent value="translations">
             <div className="space-y-6">
+              {/* Relationship Terms Quick Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>إدارة مصطلحات القرابة</CardTitle>
+                  <CardDescription>إدارة سريعة لمصطلحات القرابة المستخدمة في شجرة العائلة</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Male Relations */}
+                    <div>
+                      <h4 className="font-semibold mb-3 text-blue-700">علاقات الذكور</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: 'father', defaultValue: 'أب', icon: '👨‍🦳' },
+                          { key: 'husband', defaultValue: 'زوج', icon: '👨' },
+                          { key: 'brother', defaultValue: 'أخ', icon: '👨‍🦱' },
+                          { key: 'son', defaultValue: 'ابن', icon: '👶' },
+                          { key: 'grandfather', defaultValue: 'جد', icon: '👴' },
+                          { key: 'uncle', defaultValue: 'عم', icon: '👨‍🦲' }
+                        ].map((relation) => (
+                          <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
+                            <span className="text-2xl">{relation.icon}</span>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{relation.key}</div>
+                              <div className="text-muted-foreground text-xs">
+                                {translations.find(t => t.key === relation.key && t.language_code === 'ar')?.value || relation.defaultValue}
+                              </div>
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                const existing = translations.find(t => t.key === relation.key && t.language_code === 'ar');
+                                if (existing) {
+                                  setEditingTranslation(existing);
+                                } else {
+                                  setNewTranslation({
+                                    key: relation.key,
+                                    value: relation.defaultValue,
+                                    language_code: 'ar',
+                                    category: 'relationships'
+                                  });
+                                }
+                              }}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Female Relations */}
+                    <div>
+                      <h4 className="font-semibold mb-3 text-pink-700">علاقات الإناث</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: 'mother', defaultValue: 'أم', icon: '👩‍🦳' },
+                          { key: 'wife', defaultValue: 'زوجة', icon: '👩' },
+                          { key: 'sister', defaultValue: 'أخت', icon: '👩‍🦱' },
+                          { key: 'daughter', defaultValue: 'ابنة', icon: '👶' },
+                          { key: 'grandmother', defaultValue: 'جدة', icon: '👵' },
+                          { key: 'aunt', defaultValue: 'عمة', icon: '👩‍🦲' }
+                        ].map((relation) => (
+                          <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
+                            <span className="text-2xl">{relation.icon}</span>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{relation.key}</div>
+                              <div className="text-muted-foreground text-xs">
+                                {translations.find(t => t.key === relation.key && t.language_code === 'ar')?.value || relation.defaultValue}
+                              </div>
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                const existing = translations.find(t => t.key === relation.key && t.language_code === 'ar');
+                                if (existing) {
+                                  setEditingTranslation(existing);
+                                } else {
+                                  setNewTranslation({
+                                    key: relation.key,
+                                    value: relation.defaultValue,
+                                    language_code: 'ar',
+                                    category: 'relationships'
+                                  });
+                                }
+                              }}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
               <Card>
                 <CardHeader>
                   <CardTitle>{t('add_translation', 'إضافة ترجمة جديدة')}</CardTitle>
