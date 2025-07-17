@@ -206,6 +206,7 @@ const FamilyBuilder = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddMember, setShowAddMember] = useState(false);
   const [showRelatedPersonDropdown, setShowRelatedPersonDropdown] = useState(false);
+  const [editingWife, setEditingWife] = useState<{ id: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null } | null>(null);
   const [showImageCrop, setShowImageCrop] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -450,6 +451,57 @@ const FamilyBuilder = () => {
 
         if (error) throw error;
 
+        // Add wives if this is a male member
+        if (formData.gender === "male" && wives.length > 0) {
+          for (const wife of wives) {
+            // Create wife as family tree member
+            const { data: wifeData, error: wifeError } = await supabase
+              .from('family_tree_members')
+              .insert({
+                family_id: familyData?.id,
+                name: wife.name,
+                gender: 'female',
+                birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
+                death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                is_alive: wife.isAlive,
+                created_by: (await supabase.auth.getUser()).data.user?.id
+              })
+              .select()
+              .single();
+
+            if (wifeError) throw wifeError;
+
+            // Create marriage record
+            const { error: marriageError } = await supabase
+              .from('marriages')
+              .insert({
+                family_id: familyData?.id,
+                husband_id: data.id,
+                wife_id: wifeData.id,
+                is_active: true
+              });
+
+            if (marriageError) throw marriageError;
+
+            // Add wife to local state
+            const newWife = {
+              id: wifeData.id,
+              name: wifeData.name,
+              fatherId: wifeData.father_id,
+              motherId: wifeData.mother_id,
+              isFounder: wifeData.is_founder,
+              gender: wifeData.gender,
+              birthDate: wifeData.birth_date || "",
+              isAlive: wifeData.is_alive,
+              deathDate: wifeData.death_date || null,
+              bio: wifeData.biography || "",
+              image: wifeData.image_url || null,
+              relation: "wife"
+            };
+            setFamilyMembers(prev => [...prev, newWife]);
+          }
+        }
+
         // Update local state
         const newMember = {
           id: data.id,
@@ -462,19 +514,22 @@ const FamilyBuilder = () => {
           isAlive: data.is_alive,
           deathDate: data.death_date || null,
           bio: data.biography || "",
-          image: data.image_url || null
+          image: data.image_url || null,
+          relation: formData.relation
         };
 
         setFamilyMembers([...familyMembers, newMember]);
         toast({
           title: "تم الإضافة",
-          description: "تم إضافة عضو جديد للعائلة"
+          description: `تم إضافة ${formData.name}${wives.length > 0 ? ` مع ${wives.length} زوجة` : ''} للعائلة`
         });
       }
 
       setShowAddMember(false);
       setSelectedMember(null);
       setCurrentStep(1);
+      setWives([]); // Reset wives
+      setEditingWife(null); // Reset editing wife
       setFormData({
         name: "",
         relation: "",
@@ -1626,57 +1681,260 @@ const FamilyBuilder = () => {
                       </div>
                     )}
 
-                    {/* Add New Wife Form */}
+                    {/* Add/Edit Wife Form */}
                     <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
                       <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Plus className="h-5 w-5 text-primary" />
-                        إضافة زوجة جديدة
+                        {editingWife ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
+                        {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
                       </h4>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">اسم الزوجة</Label>
-                          <Input
-                            id="wife-name"
-                            placeholder="أدخل اسم الزوجة"
-                            className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl"
-                          />
+                      <div className="space-y-4">
+                        {/* Name and Status Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">اسم الزوجة</Label>
+                            <Input
+                              id="wife-name"
+                              defaultValue={editingWife?.name || ""}
+                              placeholder="أدخل اسم الزوجة"
+                              className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl"
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">الحالة</Label>
+                            <Select defaultValue={editingWife?.isAlive !== false ? "alive" : "deceased"}>
+                              <SelectTrigger id="wife-status" className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="alive">💚 على قيد الحياة</SelectItem>
+                                <SelectItem value="deceased">🕊️ متوفاة</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
-                        
+
+                        {/* Birth Date */}
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">الحالة</Label>
-                          <Select defaultValue="alive">
-                            <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="alive">💚 على قيد الحياة</SelectItem>
-                              <SelectItem value="deceased">🕊️ متوفاة</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Label className="text-sm font-medium">تاريخ الميلاد (اختياري)</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {editingWife?.birthDate ? format(editingWife.birthDate, "PPP", { locale: ar }) : "اختر تاريخ الميلاد"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                              <div className="p-4 space-y-4">
+                                <div className="grid grid-cols-3 gap-3">
+                                  <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">اليوم</Label>
+                                    <Input
+                                      id="wife-birth-day"
+                                      type="number"
+                                      min="1"
+                                      max="31"
+                                      defaultValue={editingWife?.birthDate?.getDate() || ""}
+                                      placeholder="01"
+                                      className="text-center font-mono text-lg h-12"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">الشهر</Label>
+                                    <Select defaultValue={editingWife?.birthDate?.getMonth()?.toString() || ""}>
+                                      <SelectTrigger id="wife-birth-month" className="h-12">
+                                        <SelectValue placeholder="--" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {Array.from({ length: 12 }, (_, i) => (
+                                          <SelectItem key={i} value={i.toString()}>
+                                            {format(new Date(2000, i, 1), "MMM", { locale: ar })}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">السنة</Label>
+                                    <Input
+                                      id="wife-birth-year"
+                                      type="number"
+                                      min="1900"
+                                      max={new Date().getFullYear()}
+                                      defaultValue={editingWife?.birthDate?.getFullYear() || ""}
+                                      placeholder="1990"
+                                      className="text-center font-mono text-lg h-12"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+
+                        {/* Death Date - Only shown if status is deceased */}
+                        <div id="wife-death-section" className="space-y-2" style={{ display: 'none' }}>
+                          <Label className="text-sm font-medium">تاريخ الوفاة</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full h-12 justify-start text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {editingWife?.deathDate ? format(editingWife.deathDate, "PPP", { locale: ar }) : "اختر تاريخ الوفاة"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                              <div className="p-4 space-y-4">
+                                <div className="grid grid-cols-3 gap-3">
+                                  <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">اليوم</Label>
+                                    <Input
+                                      id="wife-death-day"
+                                      type="number"
+                                      min="1"
+                                      max="31"
+                                      defaultValue={editingWife?.deathDate?.getDate() || ""}
+                                      placeholder="01"
+                                      className="text-center font-mono text-lg h-12"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">الشهر</Label>
+                                    <Select defaultValue={editingWife?.deathDate?.getMonth()?.toString() || ""}>
+                                      <SelectTrigger id="wife-death-month" className="h-12">
+                                        <SelectValue placeholder="--" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {Array.from({ length: 12 }, (_, i) => (
+                                          <SelectItem key={i} value={i.toString()}>
+                                            {format(new Date(2000, i, 1), "MMM", { locale: ar })}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">السنة</Label>
+                                    <Input
+                                      id="wife-death-year"
+                                      type="number"
+                                      min="1900"
+                                      max={new Date().getFullYear()}
+                                      defaultValue={editingWife?.deathDate?.getFullYear() || ""}
+                                      placeholder={new Date().getFullYear().toString()}
+                                      className="text-center font-mono text-lg h-12"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                       </div>
 
-                      <Button
-                        onClick={() => {
-                          const nameInput = document.getElementById('wife-name') as HTMLInputElement;
-                          if (nameInput?.value.trim()) {
-                            const newWife = {
-                              id: Date.now().toString(),
-                              name: nameInput.value.trim(),
-                              isAlive: true,
-                              birthDate: null,
-                              deathDate: null
-                            };
-                            setWives([...wives, newWife]);
-                            nameInput.value = '';
-                          }
+                      <div className="flex gap-3 mt-6">
+                        {editingWife && (
+                          <Button
+                            variant="outline"
+                            onClick={() => setEditingWife(null)}
+                            className="flex-1 h-12 border-border hover:bg-muted rounded-xl"
+                          >
+                            إلغاء
+                          </Button>
+                        )}
+                        <Button
+                          onClick={() => {
+                            const nameInput = document.getElementById('wife-name') as HTMLInputElement;
+                            const statusSelect = document.querySelector('#wife-status [data-value]') as HTMLElement;
+                            
+                            if (nameInput?.value.trim()) {
+                              // Get birth date
+                              const birthDay = (document.getElementById('wife-birth-day') as HTMLInputElement)?.value;
+                              const birthMonthSelect = document.getElementById('wife-birth-month') as HTMLSelectElement;
+                              const birthYear = (document.getElementById('wife-birth-year') as HTMLInputElement)?.value;
+                              
+                              let birthDate = null;
+                              if (birthDay && birthMonthSelect && birthYear) {
+                                birthDate = new Date(parseInt(birthYear), parseInt(birthMonthSelect.value), parseInt(birthDay));
+                              }
+                              
+                              // Get death date if deceased
+                              const isAlive = statusSelect?.getAttribute('data-value') !== 'deceased';
+                              let deathDate = null;
+                              if (!isAlive) {
+                                const deathDay = (document.getElementById('wife-death-day') as HTMLInputElement)?.value;
+                                const deathMonthSelect = document.getElementById('wife-death-month') as HTMLSelectElement;
+                                const deathYear = (document.getElementById('wife-death-year') as HTMLInputElement)?.value;
+                                
+                                if (deathDay && deathMonthSelect && deathYear) {
+                                  deathDate = new Date(parseInt(deathYear), parseInt(deathMonthSelect.value), parseInt(deathDay));
+                                }
+                              }
+                              
+                              const wifeData = {
+                                id: editingWife?.id || Date.now().toString(),
+                                name: nameInput.value.trim(),
+                                isAlive,
+                                birthDate,
+                                deathDate
+                              };
+                              
+                              if (editingWife) {
+                                // Update existing wife
+                                setWives(wives.map(w => w.id === editingWife.id ? wifeData : w));
+                                setEditingWife(null);
+                              } else {
+                                // Add new wife
+                                setWives([...wives, wifeData]);
+                              }
+                              
+                              // Reset form
+                              nameInput.value = '';
+                            }
+                          }}
+                          className={`${editingWife ? 'flex-1' : 'w-full'} h-12 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold`}
+                        >
+                          {editingWife ? (
+                            <>
+                              <Save className="mr-2 h-4 w-4" />
+                              حفظ التعديلات
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="mr-2 h-4 w-4" />
+                              إضافة الزوجة
+                            </>
+                          )}
+                        </Button>
+                      </div>
+
+                      {/* JavaScript for status change handling */}
+                      <script
+                        dangerouslySetInnerHTML={{
+                          __html: `
+                            document.addEventListener('DOMContentLoaded', function() {
+                              const statusSelect = document.getElementById('wife-status');
+                              const deathSection = document.getElementById('wife-death-section');
+                              
+                              if (statusSelect && deathSection) {
+                                statusSelect.addEventListener('change', function(e) {
+                                  if (e.target.value === 'deceased') {
+                                    deathSection.style.display = 'block';
+                                  } else {
+                                    deathSection.style.display = 'none';
+                                  }
+                                });
+                              }
+                            });
+                          `
                         }}
-                        className="w-full h-12 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold"
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        إضافة الزوجة
-                      </Button>
+                      />
                     </div>
 
                     {wives.length === 0 && (
