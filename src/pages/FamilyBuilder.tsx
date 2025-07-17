@@ -284,7 +284,7 @@ const FamilyBuilder = () => {
         console.log('Decision:', fatherIsBloodRelative || motherIsBloodRelative ? 'INCLUDED' : 'EXCLUDED');
       }
       
-      return fatherIsBloodRelative || motherIsBloodRelative; // At least one parent must be blood relative
+      return fatherIsBloodRelative; // Only include if father is blood relative (patriarchal bloodline) // At least one parent must be blood relative
     }
     
     // Include members who are not spouses (exclude only if they are married to someone in this family but have no blood relation)
