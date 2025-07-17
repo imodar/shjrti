@@ -560,15 +560,7 @@ const FamilyBuilder = () => {
       });
       return;
     }
-    if (currentStep === 2 && !formData.relation) {
-      toast({
-        title: "معلومات ناقصة", 
-        description: "يرجى اختيار صلة القرابة",
-        variant: "destructive"
-      });
-      return;
-    }
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+    setCurrentStep(prev => Math.min(prev + 1, 2));
   };
 
   const prevStep = () => {
@@ -1076,7 +1068,7 @@ const FamilyBuilder = () => {
 
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mb-8">
-              {[1, 2, 3].map((step) => (
+              {[1, 2].map((step) => (
                 <div key={step} className="flex items-center">
                   <div className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
@@ -1086,7 +1078,7 @@ const FamilyBuilder = () => {
                   )}>
                     {step}
                   </div>
-                  {step < 3 && (
+                  {step < 2 && (
                     <div className={cn(
                       "w-16 h-1 rounded-full mx-2 transition-all duration-300",
                       currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
@@ -1171,13 +1163,9 @@ const FamilyBuilder = () => {
               </div>
             )}
 
-            {/* Step 2: Relationship */}
-            {currentStep === 2 && formData.gender && (
+            {/* Step 2: Additional Details */}
+            {currentStep === 2 && (
               <div className="space-y-6">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">تحديد صلة القرابة</h3>
-                  <p className="text-muted-foreground">اختر العلاقة التي تربط هذا الشخص بالعائلة</p>
-                </div>
 
                 <div className="grid grid-cols-4 gap-4">
                   {getRelationshipOptions(formData.gender).map((relation) => (
@@ -1274,9 +1262,14 @@ const FamilyBuilder = () => {
               </div>
             )}
 
-            {/* Step 3: Additional Details */}
-            {currentStep === 3 && (
+            {/* Step 2: Additional Details */}
+            {currentStep === 2 && (
               <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">معلومات إضافية</h3>
+                  <p className="text-muted-foreground">أضف التفاصيل الإضافية للشخص</p>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
