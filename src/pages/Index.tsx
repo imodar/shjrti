@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, Play, Quote, Shield, Crown, Gem } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
+import { useLanguage } from "@/contexts/LanguageContext";
 import home2Hero from "@/assets/home2-hero.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
 import futureFamily from "@/assets/future-family.jpg";
@@ -13,24 +14,25 @@ import futureFamily from "@/assets/future-family.jpg";
 const Home2 = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [email, setEmail] = useState("");
+  const { t } = useLanguage();
 
   const testimonials = [
     {
-      name: "أحمد السعد",
-      role: "رب عائلة",
-      text: "تطبيق رائع ساعدني في جمع تاريخ عائلتي وحفظه للأجيال القادمة. الآن أطفالي يعرفون قصص أجدادهم.",
+      name: t('testimonial_1_name', "أحمد السعد"),
+      role: t('testimonial_1_role', "رب عائلة"),
+      text: t('testimonial_1_text', "تطبيق رائع ساعدني في جمع تاريخ عائلتي وحفظه للأجيال القادمة. الآن أطفالي يعرفون قصص أجدادهم."),
       rating: 5
     },
     {
-      name: "فاطمة الأحمد",
-      role: "أم لأربعة أطفال",
-      text: "واجهة سهلة وجميلة، استطعت إنشاء شجرة عائلة كاملة بكل التفاصيل والصور. أنصح به بشدة.",
+      name: t('testimonial_2_name', "فاطمة الأحمد"),
+      role: t('testimonial_2_role', "أم لأربعة أطفال"),
+      text: t('testimonial_2_text', "واجهة سهلة وجميلة، استطعت إنشاء شجرة عائلة كاملة بكل التفاصيل والصور. أنصح به بشدة."),
       rating: 5
     },
     {
-      name: "محمد العلي",
-      role: "باحث في الأنساب",
-      text: "أداة مثالية للباحثين في الأنساب. إمكانيات متقدمة وتنظيم رائع للمعلومات.",
+      name: t('testimonial_3_name', "محمد العلي"),
+      role: t('testimonial_3_role', "باحث في الأنساب"),
+      text: t('testimonial_3_text', "أداة مثالية للباحثين في الأنساب. إمكانيات متقدمة وتنظيم رائع للمعلومات."),
       rating: 5
     }
   ];
@@ -38,23 +40,23 @@ const Home2 = () => {
   const features = [
     {
       icon: <Crown className="h-8 w-8" />,
-      title: "إرث عائلي فاخر",
-      description: "احفظ تاريخ عائلتك بأسلوب راقي ومميز"
+      title: t('feature_1_title', "إرث عائلي فاخر"),
+      description: t('feature_1_description', "احفظ تاريخ عائلتك بأسلوب راقي ومميز")
     },
     {
       icon: <Gem className="h-8 w-8" />,
-      title: "ذكريات ثمينة",
-      description: "صور وقصص وتفاصيل تحافظ على ذكرياتك الغالية"
+      title: t('feature_2_title', "ذكريات ثمينة"),
+      description: t('feature_2_description', "صور وقصص وتفاصيل تحافظ على ذكرياتك الغالية")
     },
     {
       icon: <Shield className="h-8 w-8" />,
-      title: "حماية متقدمة",
-      description: "أمان عالي وحماية كاملة لبياناتك الشخصية"
+      title: t('feature_3_title', "حماية متقدمة"),
+      description: t('feature_3_description', "أمان عالي وحماية كاملة لبياناتك الشخصية")
     },
     {
       icon: <Infinity className="h-8 w-8" />,
-      title: "للأبد",
-      description: "تاريخ عائلتك محفوظ إلى الأبد للأجيال القادمة"
+      title: t('feature_4_title', "للأبد"),
+      description: t('feature_4_description', "تاريخ عائلتك محفوظ إلى الأبد للأجيال القادمة")
     }
   ];
 
@@ -90,16 +92,15 @@ const Home2 = () => {
               <div className="space-y-6">
                 <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 text-sm">
                   <Sparkles className="h-4 w-4 ml-2" />
-                  الجيل الجديد من حفظ التراث
+                  {t('hero_badge', 'الجيل الجديد من حفظ التراث')}
                 </Badge>
                 <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-tight">
-                  اكتشف
+                  {t('hero_title_1', 'اكتشف')}
                   <br />
-                  <span className="text-gray-800 dark:text-gray-200">تاريخ عائلتك</span>
+                  <span className="text-gray-800 dark:text-gray-200">{t('hero_title_2', 'تاريخ عائلتك')}</span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  رحلة استثنائية عبر الزمن لاستكشاف جذورك وبناء إرث رقمي يدوم للأبد. 
-                  احفظ قصص أجدادك وشاركها مع الأجيال القادمة.
+                  {t('hero_description', 'رحلة استثنائية عبر الزمن لاستكشاف جذورك وبناء إرث رقمي يدوم للأبد. احفظ قصص أجدادك وشاركها مع الأجيال القادمة.')}
                 </p>
               </div>
 
@@ -107,27 +108,27 @@ const Home2 = () => {
                 <Link to="/family-builder?new=true">
                   <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-lg px-8 py-4 rounded-full shadow-xl hover-scale">
                     <TreePine className="h-5 w-5 ml-2" />
-                    ابدأ رحلتك الآن
+                    {t('hero_cta_primary', 'ابدأ رحلتك الآن')}
                   </Button>
                 </Link>
                 <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:hover:bg-emerald-900/20 text-lg px-8 py-4 rounded-full">
                   <Play className="h-5 w-5 ml-2" />
-                  شاهد العرض التوضيحي
+                  {t('hero_cta_secondary', 'شاهد العرض التوضيحي')}
                 </Button>
               </div>
 
               <div className="flex items-center gap-8 pt-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600">+١٠٠٠</div>
-                  <div className="text-sm text-gray-500">عائلة سعيدة</div>
+                  <div className="text-2xl font-bold text-emerald-600">{t('stat_1_number', '+١٠٠٠')}</div>
+                  <div className="text-sm text-gray-500">{t('stat_1_label', 'عائلة سعيدة')}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600">+٥٠٠٠</div>
-                  <div className="text-sm text-gray-500">فرد محفوظ</div>
+                  <div className="text-2xl font-bold text-emerald-600">{t('stat_2_number', '+٥٠٠٠')}</div>
+                  <div className="text-sm text-gray-500">{t('stat_2_label', 'فرد محفوظ')}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600">٩٩٪</div>
-                  <div className="text-sm text-gray-500">رضا المستخدمين</div>
+                  <div className="text-2xl font-bold text-emerald-600">{t('stat_3_number', '٩٩٪')}</div>
+                  <div className="text-sm text-gray-500">{t('stat_3_label', 'رضا المستخدمين')}</div>
                 </div>
               </div>
             </div>
@@ -136,7 +137,7 @@ const Home2 = () => {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img 
                   src={home2Hero} 
-                  alt="شجرة العائلة المبتكرة" 
+                  alt={t('hero_image_alt', 'شجرة العائلة المبتكرة')} 
                   className="w-full h-[600px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 via-transparent to-transparent"></div>
@@ -146,14 +147,14 @@ const Home2 = () => {
               <div className="absolute -top-4 -right-4 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl animate-bounce">
                 <div className="flex items-center gap-2">
                   <Camera className="h-5 w-5 text-emerald-600" />
-                  <span className="text-sm font-medium">ذكريات محفوظة</span>
+                  <span className="text-sm font-medium">{t('floating_card_1', 'ذكريات محفوظة')}</span>
                 </div>
               </div>
               
               <div className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl animate-pulse">
                 <div className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-amber-600" />
-                  <span className="text-sm font-medium">تاريخ عريق</span>
+                  <span className="text-sm font-medium">{t('floating_card_2', 'تاريخ عريق')}</span>
                 </div>
               </div>
             </div>
@@ -178,18 +179,18 @@ const Home2 = () => {
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
               <Sparkles className="h-4 w-4" />
-              الأفضل في العالم العربي
+              {t('features_badge', 'الأفضل في العالم العربي')}
               <Sparkles className="h-4 w-4" />
             </div>
             <h2 className="text-5xl md:text-7xl font-bold mb-8">
               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                لماذا نحن
+                {t('features_title_1', 'لماذا نحن')}
               </span>
               <br />
-              <span className="text-gray-800 dark:text-gray-200">مميزون؟</span>
+              <span className="text-gray-800 dark:text-gray-200">{t('features_title_2', 'مميزون؟')}</span>
             </h2>
             <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              نجمع بين الأصالة والحداثة لنقدم لك تجربة فريدة في حفظ تراث عائلتك
+              {t('features_description', 'نجمع بين الأصالة والحداثة لنقدم لك تجربة فريدة في حفظ تراث عائلتك')}
             </p>
           </div>
 
@@ -236,7 +237,7 @@ const Home2 = () => {
           <div className="text-center mt-20">
             <div className="inline-flex items-center gap-3 text-emerald-600 dark:text-emerald-400 text-lg font-medium">
               <Star className="h-5 w-5 text-amber-500" />
-              <span>تجربة استثنائية تنتظرك</span>
+              <span>{t('features_cta', 'تجربة استثنائية تنتظرك')}</span>
               <Star className="h-5 w-5 text-amber-500" />
             </div>
           </div>
@@ -248,7 +249,7 @@ const Home2 = () => {
         <div className="absolute inset-0">
           <img 
             src={memoryPreservation} 
-            alt="حفظ الذكريات" 
+            alt={t('memory_section_image_alt', 'حفظ الذكريات')} 
             className="w-full h-full object-cover opacity-20"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/80 to-amber-900/80"></div>
@@ -258,13 +259,12 @@ const Home2 = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 text-white">
               <h2 className="text-4xl md:text-5xl font-bold">
-                ذكرياتك في أمان
+                {t('memory_section_title_1', 'ذكرياتك في أمان')}
                 <br />
-                <span className="text-amber-300">للأبد</span>
+                <span className="text-amber-300">{t('memory_section_title_2', 'للأبد')}</span>
               </h2>
               <p className="text-xl leading-relaxed opacity-90">
-                نحن نفهم أن كل صورة وكل قصة لها قيمة لا تقدر بثمن. 
-                لذلك نوفر أعلى مستويات الحماية والأمان لضمان بقاء ذكرياتك محفوظة إلى الأبد.
+                {t('memory_section_description', 'نحن نفهم أن كل صورة وكل قصة لها قيمة لا تقدر بثمن. لذلك نوفر أعلى مستويات الحماية والأمان لضمان بقاء ذكرياتك محفوظة إلى الأبد.')}
               </p>
               
               <div className="space-y-4">
@@ -272,19 +272,19 @@ const Home2 = () => {
                   <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
                     <Shield className="h-4 w-4" />
                   </div>
-                  <span className="text-lg">تشفير متقدم على مستوى البنوك</span>
+                  <span className="text-lg">{t('memory_feature_1', 'تشفير متقدم على مستوى البنوك')}</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
                     <Infinity className="h-4 w-4" />
                   </div>
-                  <span className="text-lg">نسخ احتياطي تلقائي في السحابة</span>
+                  <span className="text-lg">{t('memory_feature_2', 'نسخ احتياطي تلقائي في السحابة')}</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
                     <Gem className="h-4 w-4" />
                   </div>
-                  <span className="text-lg">وصول آمن لجميع أفراد العائلة</span>
+                  <span className="text-lg">{t('memory_feature_3', 'وصول آمن لجميع أفراد العائلة')}</span>
                 </div>
               </div>
             </div>
@@ -292,7 +292,7 @@ const Home2 = () => {
             <div className="relative">
               <img 
                 src={futureFamily} 
-                alt="مستقبل العائلة" 
+                alt={t('future_family_image_alt', 'مستقبل العائلة')} 
                 className="w-full h-[500px] object-cover rounded-3xl shadow-2xl"
               />
             </div>
@@ -320,15 +320,15 @@ const Home2 = () => {
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
               <Heart className="h-4 w-4" />
-              شهادات حقيقية من عملائنا
+              {t('testimonials_badge', 'شهادات حقيقية من عملائنا')}
               <Heart className="h-4 w-4" />
             </div>
             <h2 className="text-5xl md:text-7xl font-bold mb-8">
               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                ماذا يقول
+                {t('testimonials_title_1', 'ماذا يقول')}
               </span>
               <br />
-              <span className="text-gray-800 dark:text-gray-200">عملاؤنا؟</span>
+              <span className="text-gray-800 dark:text-gray-200">{t('testimonials_title_2', 'عملاؤنا؟')}</span>
             </h2>
           </div>
 
@@ -420,15 +420,15 @@ const Home2 = () => {
             <div className="flex flex-wrap justify-center items-center gap-8 text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-emerald-500" />
-                <span className="text-sm font-medium">موثوق من +١٠٠٠ عائلة</span>
+                <span className="text-sm font-medium">{t('trust_indicator_1', 'موثوق من +١٠٠٠ عائلة')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="h-5 w-5 text-amber-500" />
-                <span className="text-sm font-medium">تقييم ٥ نجوم</span>
+                <span className="text-sm font-medium">{t('trust_indicator_2', 'تقييم ٥ نجوم')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Crown className="h-5 w-5 text-amber-500" />
-                <span className="text-sm font-medium">الأفضل في المنطقة</span>
+                <span className="text-sm font-medium">{t('trust_indicator_3', 'الأفضل في المنطقة')}</span>
               </div>
             </div>
           </div>
@@ -453,13 +453,13 @@ const Home2 = () => {
             <div className="mb-8">
               <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
                 <Sparkles className="h-4 w-4" />
-                نيوزليتر حصري
+                {t('newsletter_badge', 'نيوزليتر حصري')}
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                ابق على تواصل معنا
+                {t('newsletter_title', 'ابق على تواصل معنا')}
               </h2>
               <p className="text-lg text-white/90 max-w-2xl mx-auto">
-                احصل على أحدث النصائح والميزات الجديدة لبناء شجرة عائلتك المثالية
+                {t('newsletter_description', 'احصل على أحدث النصائح والميزات الجديدة لبناء شجرة عائلتك المثالية')}
               </p>
             </div>
             
@@ -470,14 +470,14 @@ const Home2 = () => {
                   <div className="flex-1 relative">
                     <Input
                       type="email"
-                      placeholder="البريد الإلكتروني"
+                      placeholder={t('newsletter_email_placeholder', 'البريد الإلكتروني')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="bg-white/20 border-white/30 text-white placeholder:text-white/70 rounded-xl h-12 text-right backdrop-blur-sm focus:bg-white/30 transition-all"
                     />
                   </div>
                   <Button className="bg-white text-emerald-600 hover:bg-gray-100 font-medium px-6 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <span>اشتراك</span>
+                    <span>{t('newsletter_subscribe_button', 'اشتراك')}</span>
                     <ArrowRight className="h-4 w-4 mr-2" />
                   </Button>
                 </div>
@@ -486,17 +486,17 @@ const Home2 = () => {
                 <div className="flex items-center justify-center gap-4 mt-4 text-white/80 text-sm">
                   <div className="flex items-center gap-1">
                     <Shield className="h-4 w-4" />
-                    <span>آمن 100%</span>
+                    <span>{t('newsletter_trust_1', 'آمن 100%')}</span>
                   </div>
                   <div className="w-1 h-1 bg-white/50 rounded-full"></div>
                   <div className="flex items-center gap-1">
                     <Heart className="h-4 w-4" />
-                    <span>بدون إزعاج</span>
+                    <span>{t('newsletter_trust_2', 'بدون إزعاج')}</span>
                   </div>
                   <div className="w-1 h-1 bg-white/50 rounded-full"></div>
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4" />
-                    <span>محتوى حصري</span>
+                    <span>{t('newsletter_trust_3', 'محتوى حصري')}</span>
                   </div>
                 </div>
               </div>
@@ -528,36 +528,36 @@ const Home2 = () => {
                     <TreePine className="relative h-10 w-10 text-emerald-400" />
                   </div>
                   <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                    شجرة العائلة
+                    {t('footer_brand_name', 'شجرة العائلة')}
                   </span>
                 </div>
                 <p className="text-gray-300 text-lg leading-relaxed">
-                  نحفظ تراثك ونبني إرثك الرقمي للأجيال القادمة بأحدث التقنيات وأعلى معايير الجودة
+                  {t('footer_brand_description', 'نحفظ تراثك ونبني إرثك الرقمي للأجيال القادمة بأحدث التقنيات وأعلى معايير الجودة')}
                 </p>
                 <div className="flex items-center gap-3 text-emerald-400">
                   <Crown className="h-5 w-5" />
-                  <span className="text-sm font-medium">الأفضل في المنطقة</span>
+                  <span className="text-sm font-medium">{t('footer_brand_badge', 'الأفضل في المنطقة')}</span>
                 </div>
               </div>
               
               {/* Quick Links */}
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-white relative">
-                  روابط سريعة
+                  {t('footer_quick_links_title', 'روابط سريعة')}
                   <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
                 </h3>
                 <div className="space-y-3">
                   <Link to="/" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    <span>الرئيسية الأولى</span>
+                    <span>{t('footer_link_home', 'الرئيسية الأولى')}</span>
                   </Link>
                   <Link to="/dashboard" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    <span>لوحة التحكم</span>
+                    <span>{t('footer_link_dashboard', 'لوحة التحكم')}</span>
                   </Link>
                   <Link to="/auth" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    <span>تسجيل الدخول</span>
+                    <span>{t('footer_link_auth', 'تسجيل الدخول')}</span>
                   </Link>
                 </div>
               </div>
@@ -565,21 +565,21 @@ const Home2 = () => {
               {/* Support */}
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-white relative">
-                  الدعم والمساعدة
+                  {t('footer_support_title', 'الدعم والمساعدة')}
                   <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
                 </h3>
                 <div className="space-y-3">
                   <Link to="/terms" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                     <Shield className="h-4 w-4" />
-                    <span>الشروط والأحكام</span>
+                    <span>{t('footer_link_terms', 'الشروط والأحكام')}</span>
                   </Link>
                   <a href="#" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                     <Heart className="h-4 w-4" />
-                    <span>مركز المساعدة</span>
+                    <span>{t('footer_link_help', 'مركز المساعدة')}</span>
                   </a>
                   <a href="#" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                     <Users className="h-4 w-4" />
-                    <span>تواصل معنا</span>
+                    <span>{t('footer_link_contact', 'تواصل معنا')}</span>
                   </a>
                 </div>
               </div>
@@ -587,7 +587,7 @@ const Home2 = () => {
               {/* Social & Contact */}
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-white relative">
-                  تواصل معنا
+                  {t('footer_contact_title', 'تواصل معنا')}
                   <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
                 </h3>
                 
@@ -611,11 +611,11 @@ const Home2 = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-gray-300 text-sm">
                     <Shield className="h-4 w-4 text-emerald-400" />
-                    <span>حماية البيانات معتمدة</span>
+                    <span>{t('footer_trust_data', 'حماية البيانات معتمدة')}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-300 text-sm">
                     <Star className="h-4 w-4 text-amber-400" />
-                    <span>تقييم ٥ نجوم من العملاء</span>
+                    <span>{t('footer_trust_rating', 'تقييم ٥ نجوم من العملاء')}</span>
                   </div>
                 </div>
               </div>
@@ -627,12 +627,12 @@ const Home2 = () => {
             <div className="container mx-auto px-4 py-8">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4 text-gray-400">
-                  <p>&copy; ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.</p>
+                  <p>{t('footer_copyright', '© ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.')}</p>
                 </div>
                 <div className="flex items-center gap-6 text-gray-400 text-sm">
                   <span className="flex items-center gap-2">
                     <Gem className="h-4 w-4 text-emerald-400" />
-                    صنع بحب في الشرق الأوسط
+                    {t('footer_made_with_love', 'صنع بحب في الشرق الأوسط')}
                   </span>
                 </div>
               </div>
