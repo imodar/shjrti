@@ -1453,8 +1453,8 @@ const FamilyBuilder = () => {
                     </div>
                   </div>
 
-                  {/* Family Selection */}
-                  {familyMarriages.length > 0 && (
+                  {/* Family Selection - Hidden for founders */}
+                  {familyMarriages.length > 0 && formData.relation !== "founder" && (
                     <div className="space-y-4">
                       <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary" />
