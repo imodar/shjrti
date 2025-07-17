@@ -554,8 +554,11 @@ const FamilyBuilder = () => {
         if (error) throw error;
 
         // Add wives if this is a male member
+        console.log('Checking wives for male member:', formData.gender, wives.length, wives);
         if (formData.gender === "male" && wives.length > 0) {
+          console.log('Adding wives for male member:', wives);
           for (const wife of wives) {
+            console.log('Adding wife:', wife);
             // Create wife as family tree member
             const { data: wifeData, error: wifeError } = await supabase
               .from('family_tree_members')
