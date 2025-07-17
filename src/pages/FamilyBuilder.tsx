@@ -1289,17 +1289,66 @@ const FamilyBuilder = () => {
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
-                        <Calendar
-                          mode="single"
-                          selected={formData.birthDate}
-                          onSelect={(date) => {
-                            setFormData({...formData, birthDate: date});
-                          }}
-                          initialFocus
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                          className="pointer-events-auto p-3"
-                          defaultMonth={new Date(1970, 0)}
-                        />
+                        <div className="p-4 space-y-4">
+                          {/* Year and Month Selectors */}
+                          <div className="flex gap-2">
+                            <Select 
+                              value={formData.birthDate?.getFullYear()?.toString() || ""} 
+                              onValueChange={(year) => {
+                                const currentDate = formData.birthDate || new Date(1990, 0, 1);
+                                const newDate = new Date(parseInt(year), currentDate.getMonth(), currentDate.getDate());
+                                setFormData({...formData, birthDate: newDate});
+                              }}
+                            >
+                              <SelectTrigger className="w-24">
+                                <SelectValue placeholder="السنة" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-60">
+                                {Array.from({ length: 124 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            
+                            <Select 
+                              value={formData.birthDate?.getMonth()?.toString() || ""} 
+                              onValueChange={(month) => {
+                                const currentDate = formData.birthDate || new Date(1990, 0, 1);
+                                const newDate = new Date(currentDate.getFullYear(), parseInt(month), currentDate.getDate());
+                                setFormData({...formData, birthDate: newDate});
+                              }}
+                            >
+                              <SelectTrigger className="flex-1">
+                                <SelectValue placeholder="الشهر" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Array.from({ length: 12 }, (_, i) => (
+                                  <SelectItem key={i} value={i.toString()}>
+                                    {format(new Date(2000, i, 1), "MMMM", { locale: ar })}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Day Calendar */}
+                          <Calendar
+                            mode="single"
+                            selected={formData.birthDate}
+                            onSelect={(date) => {
+                              setFormData({...formData, birthDate: date});
+                            }}
+                            initialFocus
+                            disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                            className="pointer-events-auto"
+                            month={formData.birthDate || new Date(1990, 0)}
+                            onMonthChange={(month) => {
+                              const currentDate = formData.birthDate || new Date(1990, 0, 1);
+                              const newDate = new Date(month.getFullYear(), month.getMonth(), currentDate.getDate());
+                              setFormData({...formData, birthDate: newDate});
+                            }}
+                          />
+                        </div>
                       </PopoverContent>
                     </Popover>
                   </div>
