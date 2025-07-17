@@ -51,8 +51,8 @@ const FamilyCreator = () => {
     id: string;
     name: string;
     isAlive: boolean;
-    marriageDate: Date | null;
-    divorceDate: Date | null;
+    birthDate: Date | null;
+    deathDate: Date | null;
   }>>([]);
 
   const handleNextStep = () => {
@@ -917,9 +917,9 @@ const FamilyCreator = () => {
                                 <p className="text-sm text-muted-foreground">
                                   {wife.isAlive ? 'على قيد الحياة' : 'متوفاة'}
                                 </p>
-                                {wife.marriageDate && (
+                                {wife.birthDate && (
                                   <p className="text-xs text-muted-foreground">
-                                    تاريخ الزواج: {format(wife.marriageDate, "PPP", { locale: ar })}
+                                    تاريخ الميلاد: {format(wife.birthDate, "PPP", { locale: ar })}
                                   </p>
                                 )}
                               </div>
@@ -949,7 +949,7 @@ const FamilyCreator = () => {
               </h3>
               
               <Card className="bg-muted/30 border-2 border-dashed border-border/50 rounded-xl">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <WifeForm 
                     onAddWife={(wifeData) => {
                       const newWife = {
@@ -963,6 +963,34 @@ const FamilyCreator = () => {
                       });
                     }}
                   />
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-4 pt-4 border-t border-border/50">
+                    <Button
+                      onClick={() => {
+                        const wifeForm = document.querySelector('input[id="wife-name"]') as HTMLInputElement;
+                        if (wifeForm && wifeForm.value.trim()) {
+                          // Trigger the add wife function
+                          const event = new Event('click', { bubbles: true });
+                          const addButton = document.querySelector('button:has(span:contains("إضافة الزوجة"))');
+                          if (addButton) {
+                            addButton.dispatchEvent(event);
+                          }
+                        }
+                      }}
+                      className="flex-1 h-10 bg-gradient-to-r from-primary via-accent to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      <Plus className="h-4 w-4 ml-2" />
+                      إضافة الزوجة
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowWivesModal(false)}
+                      className="h-10 px-6 rounded-lg border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                    >
+                      إغلاق
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
