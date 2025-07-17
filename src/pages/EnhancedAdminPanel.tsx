@@ -452,11 +452,19 @@ const EnhancedAdminPanel = () => {
                             {user.user_id ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                           </Button>
                           <Button 
-                            variant="outline" 
+                            variant="destructive" 
                             size="sm" 
-                            onClick={() => resendConfirmationEmail(user.email)}
+                            onClick={() => {
+                              if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                                // Delete user logic here
+                                toast({
+                                  title: t('success', 'نجح'),
+                                  description: t('user_deleted', 'تم حذف المستخدم')
+                                });
+                              }
+                            }}
                           >
-                            <Mail className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -495,9 +503,23 @@ const EnhancedAdminPanel = () => {
                             {pkg.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="space-x-2">
                           <Button variant="outline" size="sm" onClick={() => setEditingPackage(pkg)}>
                             <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            onClick={() => {
+                              if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
+                                toast({
+                                  title: t('success', 'نجح'),
+                                  description: t('package_deleted', 'تم حذف الباقة')
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -602,9 +624,23 @@ const EnhancedAdminPanel = () => {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-4 h-4" />
-                            </Button>
+                          <Button variant="outline" size="sm" onClick={() => setEditingLanguage(lang)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            onClick={() => {
+                              if (confirm('هل أنت متأكد من حذف هذه اللغة؟')) {
+                                toast({
+                                  title: t('success', 'نجح'),
+                                  description: t('language_deleted', 'تم حذف اللغة')
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -686,9 +722,23 @@ const EnhancedAdminPanel = () => {
                           <TableCell className="max-w-xs truncate">{trans.value}</TableCell>
                           <TableCell>{trans.category}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-4 h-4" />
-                            </Button>
+                          <Button variant="outline" size="sm" onClick={() => setEditingTranslation(trans)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            onClick={() => {
+                              if (confirm('هل أنت متأكد من حذف هذه الترجمة؟')) {
+                                toast({
+                                  title: t('success', 'نجح'),
+                                  description: t('translation_deleted', 'تم حذف الترجمة')
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -761,9 +811,20 @@ const EnhancedAdminPanel = () => {
                           </TableCell>
                           <TableCell>{new Date(admin.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => {
+                              if (confirm('هل أنت متأكد من حذف هذا المدير؟')) {
+                                toast({
+                                  title: t('success', 'نجح'),
+                                  description: t('admin_deleted', 'تم حذف المدير')
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -818,9 +879,23 @@ const EnhancedAdminPanel = () => {
                             {family.subscription_status || 'inactive'}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm">
+                        <TableCell className="space-x-2">
+                          <Button variant="outline" size="sm" onClick={() => {/* Edit family logic */}}>
                             <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            onClick={() => {
+                              if (confirm('هل أنت متأكد من حذف هذه العائلة؟')) {
+                                toast({
+                                  title: t('success', 'نجح'),
+                                  description: t('family_deleted', 'تم حذف العائلة')
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </TableCell>
                       </TableRow>

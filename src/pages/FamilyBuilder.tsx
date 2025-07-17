@@ -995,10 +995,13 @@ const FamilyBuilder = () => {
                         <Calendar
                           mode="single"
                           selected={formData.birthDate}
-                          onSelect={(date) => setFormData({...formData, birthDate: date})}
+                          onSelect={(date) => {
+                            setFormData({...formData, birthDate: date});
+                          }}
                           initialFocus
-                          disabled={(date) => date > new Date()}
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                           className="pointer-events-auto"
+                          defaultMonth={new Date(1970, 0)}
                         />
                       </PopoverContent>
                     </Popover>
@@ -1044,10 +1047,13 @@ const FamilyBuilder = () => {
                         <Calendar
                           mode="single"
                           selected={formData.deathDate}
-                          onSelect={(date) => setFormData({...formData, deathDate: date})}
+                          onSelect={(date) => {
+                            setFormData({...formData, deathDate: date});
+                          }}
                           initialFocus
                           disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
                           className="pointer-events-auto"
+                          defaultMonth={new Date(1970, 0)}
                         />
                       </PopoverContent>
                     </Popover>

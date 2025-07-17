@@ -18,7 +18,7 @@ import familySuccess from "@/assets/family-success.jpg";
 import futureFamily from "@/assets/future-family.jpg";
 import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
-import Footer from "@/components/Footer";
+import { SharedFooter } from "@/components/SharedFooter";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
 // Get trees from localStorage
@@ -769,7 +769,7 @@ const Dashboard = () => {
         </DialogContent>
       </Dialog>
 
-      <Footer />
+      <SharedFooter />
     </div>;
 };
 export default Dashboard;

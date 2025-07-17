@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Footer from "@/components/Footer";
+import { SharedFooter } from "@/components/SharedFooter";
 import Cropper from "react-easy-crop";
 const FamilyCreator = () => {
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ const FamilyCreator = () => {
       id: familyData.id,
       name: treeData.name,
       description: treeData.description,
-      membersCount: 1,
+      members: 1, // Changed from membersCount to members to match Dashboard
       generations: 1,
       lastUpdated: new Date().toISOString(),
       createdAt: familyData.createdAt,
@@ -520,10 +520,18 @@ const FamilyCreator = () => {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                              <Calendar mode="single" selected={firstMember.birthDate} onSelect={date => setFirstMember({
-                            ...firstMember,
-                            birthDate: date
-                          })} initialFocus className="pointer-events-auto" disabled={date => date > new Date()} />
+                              <Calendar 
+                                mode="single" 
+                                selected={firstMember.birthDate} 
+                                onSelect={date => setFirstMember({
+                                  ...firstMember,
+                                  birthDate: date
+                                })} 
+                                initialFocus 
+                                className="pointer-events-auto" 
+                                disabled={date => date > new Date() || date < new Date('1900-01-01')} 
+                                defaultMonth={new Date(1970, 0)}
+                              />
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -566,10 +574,18 @@ const FamilyCreator = () => {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                                <Calendar mode="single" selected={firstMember.deathDate} onSelect={date => setFirstMember({
-                            ...firstMember,
-                            deathDate: date
-                          })} initialFocus className="pointer-events-auto" disabled={date => date > new Date() || firstMember.birthDate && date < firstMember.birthDate} />
+                                <Calendar 
+                                  mode="single" 
+                                  selected={firstMember.deathDate} 
+                                  onSelect={date => setFirstMember({
+                                    ...firstMember,
+                                    deathDate: date
+                                  })} 
+                                  initialFocus 
+                                  className="pointer-events-auto" 
+                                  disabled={date => date > new Date() || (firstMember.birthDate && date < firstMember.birthDate)} 
+                                  defaultMonth={new Date(1970, 0)}
+                                />
                               </PopoverContent>
                             </Popover>
                           </div>}
@@ -666,7 +682,7 @@ const FamilyCreator = () => {
         </DialogContent>
       </Dialog>
 
-      <Footer />
+      <SharedFooter />
     </div>;
 };
 export default FamilyCreator;
