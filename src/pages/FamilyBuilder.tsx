@@ -22,27 +22,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useToast } from "@/hooks/use-toast";
 import { SharedFooter } from "@/components/SharedFooter";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
 
-const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
-  if (gender === "male") {
-    return [
-      { value: "father", label: "أب", icon: "👨‍🦳" },
-      { value: "husband", label: "زوج", icon: "👨" },
-      { value: "brother", label: "أخ", icon: "👨‍🦱" },
-      { value: "son", label: "ابن", icon: "👶" }
-    ];
-  } else if (gender === "female") {
-    return [
-      { value: "mother", label: "أم", icon: "👩‍🦳" },
-      { value: "wife", label: "زوجة", icon: "👩" },
-      { value: "sister", label: "أخت", icon: "👩‍🦱" },
-      { value: "daughter", label: "ابنة", icon: "👶" }
-    ];
-  }
-  return [];
-};
 
 const FamilyBuilder = () => {
   const [searchParams] = useSearchParams();
@@ -124,6 +107,7 @@ const FamilyBuilder = () => {
   };
 
   const { toast } = useToast();
+  const { t } = useLanguage();
   const { notifications, profile } = useDashboardData();
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
@@ -225,6 +209,26 @@ const FamilyBuilder = () => {
     member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     member.relation.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Relationship options with translations
+  const getRelationshipOptions = (gender: string, familyMembers: any[] = []) => {
+    if (gender === "male") {
+      return [
+        { value: "father", label: t("father", "أب"), icon: "👨‍🦳" },
+        { value: "husband", label: t("husband", "زوج"), icon: "👨" },
+        { value: "brother", label: t("brother", "أخ"), icon: "👨‍🦱" },
+        { value: "son", label: t("son", "ابن"), icon: "👶" }
+      ];
+    } else if (gender === "female") {
+      return [
+        { value: "mother", label: t("mother", "أم"), icon: "👩‍🦳" },
+        { value: "wife", label: t("wife", "زوجة"), icon: "👩" },
+        { value: "sister", label: t("sister", "أخت"), icon: "👩‍🦱" },
+        { value: "daughter", label: t("daughter", "ابنة"), icon: "👶" }
+      ];
+    }
+    return [];
+  };
 
   // Image handling functions
   const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -900,7 +904,7 @@ const FamilyBuilder = () => {
                               {member.relatedPersonId ? (
                                 <div className="flex items-center justify-center gap-2">
                                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                                  <span className="text-sm text-muted-foreground">{member.relation}</span>
+                                   <span className="text-sm text-muted-foreground">{t(member.relation, member.relation)}</span>
                                    <span className="font-bold text-primary">
                                      {(() => {
                                        const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
