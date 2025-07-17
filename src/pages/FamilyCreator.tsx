@@ -27,6 +27,7 @@ const FamilyCreator = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [showWivesModal, setShowWivesModal] = useState(false);
+  const [editingWife, setEditingWife] = useState<{ id: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null } | null>(null);
   const [isAddingWife, setIsAddingWife] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -971,16 +972,30 @@ const FamilyCreator = () => {
                                 </div>
                               </div>
                               
-                              {/* Delete Button */}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
-                                className="relative group/delete h-10 w-10 rounded-xl hover:bg-destructive/10 hover:scale-110 transition-all duration-200"
-                              >
-                                <X className="h-4 w-4 text-muted-foreground group-hover/delete:text-destructive transition-colors" />
-                                <div className="absolute inset-0 bg-destructive/20 rounded-xl scale-0 group-hover/delete:scale-100 transition-transform duration-200"></div>
-                              </Button>
+                              {/* Action Buttons */}
+                              <div className="flex items-center gap-2">
+                                {/* Edit Button */}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setEditingWife(wife)}
+                                  className="relative group/edit h-10 w-10 rounded-xl hover:bg-primary/10 hover:scale-110 transition-all duration-200"
+                                >
+                                  <CalendarIcon className="h-4 w-4 text-muted-foreground group-hover/edit:text-primary transition-colors" />
+                                  <div className="absolute inset-0 bg-primary/20 rounded-xl scale-0 group-hover/edit:scale-100 transition-transform duration-200"></div>
+                                </Button>
+                                
+                                {/* Delete Button */}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
+                                  className="relative group/delete h-10 w-10 rounded-xl hover:bg-destructive/10 hover:scale-110 transition-all duration-200"
+                                >
+                                  <X className="h-4 w-4 text-muted-foreground group-hover/delete:text-destructive transition-colors" />
+                                  <div className="absolute inset-0 bg-destructive/20 rounded-xl scale-0 group-hover/delete:scale-100 transition-transform duration-200"></div>
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
@@ -1068,6 +1083,189 @@ const FamilyCreator = () => {
                 <div className="flex items-center gap-3">
                   <X className="h-4 w-4" />
                   إغلاق
+                </div>
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Wife Modal */}
+      <Dialog open={!!editingWife} onOpenChange={() => setEditingWife(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0 bg-gradient-to-br from-card/95 via-background/98 to-muted/95 backdrop-blur-2xl border-0 shadow-2xl">
+          {/* Header */}
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10"></div>
+            <DialogHeader className="relative p-6 pb-4">
+              <DialogTitle className="text-center text-2xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent flex items-center justify-center gap-3">
+                <CalendarIcon className="h-6 w-6 text-accent" />
+                تعديل معلومات الزوجة
+              </DialogTitle>
+              <DialogDescription className="text-center text-muted-foreground mt-2">
+                قم بتعديل المعلومات المطلوبة
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          {/* Edit Form */}
+          {editingWife && (
+            <div className="p-6 space-y-6">
+              {/* Name Field */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <div className="w-2 h-2 bg-accent rounded-full"></div>
+                  اسم الزوجة *
+                </Label>
+                <Input
+                  value={editingWife.name}
+                  onChange={(e) => setEditingWife({...editingWife, name: e.target.value})}
+                  placeholder="أدخل اسم الزوجة"
+                  className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+                />
+              </div>
+
+              {/* Birth Date */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                  تاريخ الميلاد
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic",
+                        !editingWife.birthDate && "text-muted-foreground"
+                      )}
+                    >
+                      {editingWife.birthDate ? (
+                        format(editingWife.birthDate, "yyyy", { locale: ar })
+                      ) : (
+                        <span>السنة</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={editingWife.birthDate}
+                      onSelect={(date) => setEditingWife({...editingWife, birthDate: date})}
+                      disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Living Status & Death Date */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Heart className="h-4 w-4 text-accent" />
+                  الحالة الحيوية
+                </Label>
+                <div className="grid grid-cols-3 gap-4">
+                  <Button
+                    type="button"
+                    variant={editingWife.isAlive ? "default" : "outline"}
+                    onClick={() => setEditingWife({...editingWife, isAlive: true, deathDate: null})}
+                    className={cn(
+                      "h-12 rounded-xl font-arabic transition-all duration-300",
+                      editingWife.isAlive 
+                        ? "bg-primary text-white shadow-lg" 
+                        : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    )}
+                  >
+                    <Heart className="h-4 w-4 ml-2" />
+                    على قيد الحياة
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    variant={!editingWife.isAlive ? "default" : "outline"}
+                    onClick={() => setEditingWife({...editingWife, isAlive: false})}
+                    className={cn(
+                      "h-12 rounded-xl font-arabic transition-all duration-300",
+                      !editingWife.isAlive 
+                        ? "bg-destructive text-destructive-foreground shadow-lg" 
+                        : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    )}
+                  >
+                    متوفاة
+                  </Button>
+                  
+                  {/* Death Date - Only show if not alive */}
+                  {!editingWife.isAlive && (
+                    <div className="relative">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
+                              !editingWife.deathDate && "text-muted-foreground"
+                            )}
+                          >
+                            {editingWife.deathDate ? (
+                              format(editingWife.deathDate, "yyyy", { locale: ar })
+                            ) : (
+                              <span>سنة الوفاة</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={editingWife.deathDate}
+                            onSelect={(date) => setEditingWife({...editingWife, deathDate: date})}
+                            disabled={(date) => 
+                              date > new Date() || 
+                              (editingWife.birthDate && date < editingWife.birthDate)
+                            }
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <div className="relative p-6 bg-gradient-to-r from-background/80 via-card/90 to-background/80 backdrop-blur-xl border-t border-border/30">
+            <div className="flex justify-between items-center gap-4">
+              <Button
+                onClick={() => {
+                  if (editingWife && editingWife.name.trim()) {
+                    setWives(wives.map(w => w.id === editingWife.id ? editingWife : w));
+                    setEditingWife(null);
+                    toast({
+                      title: "✨ تم تحديث معلومات الزوجة",
+                      description: "تم حفظ التعديلات بنجاح",
+                    });
+                  }
+                }}
+                disabled={!editingWife?.name.trim()}
+                className="bg-gradient-to-r from-primary via-accent to-primary text-white font-bold rounded-2xl px-8 py-3 h-auto shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
+              >
+                <div className="flex items-center gap-3">
+                  <CalendarIcon className="h-4 w-4" />
+                  حفظ التعديلات
+                </div>
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={() => setEditingWife(null)}
+                className="border-2 border-border hover:border-primary/50 rounded-2xl px-8 py-3 h-auto font-semibold hover:bg-primary/5 transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <X className="h-4 w-4" />
+                  إلغاء
                 </div>
               </Button>
             </div>
