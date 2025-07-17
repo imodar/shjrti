@@ -256,8 +256,17 @@ const FamilyBuilder = () => {
     // Include founders (original family members)
     if (member.isFounder) return true;
     
-    // Include members who have parents (blood relatives/children)
-    if (member.fatherId || member.motherId) return true;
+    // For members with parents, check if at least one parent is a blood relative
+    if (member.fatherId || member.motherId) {
+      const father = member.fatherId ? familyMembers.find(m => m.id === member.fatherId) : null;
+      const mother = member.motherId ? familyMembers.find(m => m.id === member.motherId) : null;
+      
+      // At least one parent must be a founder or have their own parents in the family
+      const fatherIsBloodRelative = father && (father.isFounder || father.fatherId || father.motherId);
+      const motherIsBloodRelative = mother && (mother.isFounder || mother.fatherId || mother.motherId);
+      
+      return fatherIsBloodRelative || motherIsBloodRelative;
+    }
     
     // Include members who are not spouses (exclude only if they are married to someone in this family but have no blood relation)
     // Check if this member is only connected through marriage
