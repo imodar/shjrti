@@ -127,6 +127,7 @@ const FamilyBuilder = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -271,6 +272,8 @@ const FamilyBuilder = () => {
   };
 
   const handleSaveMember = async () => {
+    if (isSaving) return; // Prevent double submissions
+    
     if (!formData.name || !formData.gender || !formData.relation) {
       toast({
         title: "خطأ",
@@ -280,6 +283,7 @@ const FamilyBuilder = () => {
       return;
     }
 
+    setIsSaving(true);
     try {
       const memberData = {
         family_id: familyData?.id,
@@ -373,6 +377,8 @@ const FamilyBuilder = () => {
         description: "حدث خطأ أثناء حفظ البيانات",
         variant: "destructive"
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1195,9 +1201,13 @@ const FamilyBuilder = () => {
                   <ArrowLeft className="mr-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={handleSaveMember} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl px-6 py-2">
+                <Button 
+                  onClick={handleSaveMember} 
+                  disabled={isSaving}
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <Save className="ml-2 h-4 w-4" />
-                  {selectedMember ? 'حفظ التغييرات' : 'إضافة العضو'}
+                  {isSaving ? 'جاري الحفظ...' : (selectedMember ? 'حفظ التغييرات' : 'إضافة العضو')}
                 </Button>
               )}
             </div>
