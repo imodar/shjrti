@@ -435,7 +435,7 @@ const FamilyCreator = () => {
                                 value={founderData.name}
                                 onChange={(e) => setFounderData({...founderData, name: e.target.value})}
                                 placeholder="أدخل اسم المؤسس"
-                                className="h-12 rounded-xl bg-muted/30 border-2 border-transparent font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
+                                className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
                               />
                             </div>
                             
@@ -446,7 +446,7 @@ const FamilyCreator = () => {
                                 الجنس *
                               </Label>
                               <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                                <SelectTrigger className="h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300">
+                                <SelectTrigger className="h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
                                   <SelectValue placeholder="اختر الجنس" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-border/50 bg-card/95 backdrop-blur-xl">
@@ -481,7 +481,7 @@ const FamilyCreator = () => {
                                   <Button
                                     variant="outline"
                                     className={cn(
-                                      "w-full h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 focus:border-primary/50 transition-all duration-300 justify-start text-right font-arabic",
+                                      "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-start text-right font-arabic",
                                       !founderData.birthDate && "text-muted-foreground"
                                     )}
                                   >
