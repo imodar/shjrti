@@ -325,6 +325,63 @@ const EnhancedAdminPanel = () => {
     }
   };
 
+  const updateTranslation = async () => {
+    if (!editingTranslation?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('translations')
+        .update({
+          key: editingTranslation.key,
+          value: editingTranslation.value,
+          category: editingTranslation.category
+        })
+        .eq('id', editingTranslation.id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('translation_updated', 'تم تحديث الترجمة')
+      });
+      
+      setEditingTranslation(null);
+      loadTranslations();
+    } catch (error) {
+      console.error('Error updating translation:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('translation_update_failed', 'فشل في تحديث الترجمة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const deleteTranslation = async (translationId) => {
+    try {
+      const { error } = await supabase
+        .from('translations')
+        .delete()
+        .eq('id', translationId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('translation_deleted', 'تم حذف الترجمة')
+      });
+      
+      loadTranslations();
+    } catch (error) {
+      console.error('Error deleting translation:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('translation_delete_failed', 'فشل في حذف الترجمة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-background">
@@ -725,17 +782,14 @@ const EnhancedAdminPanel = () => {
                           <Button variant="outline" size="sm" onClick={() => setEditingTranslation(trans)}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => {
-                              if (confirm('هل أنت متأكد من حذف هذه الترجمة؟')) {
-                                toast({
-                                  title: t('success', 'نجح'),
-                                  description: t('translation_deleted', 'تم حذف الترجمة')
-                                });
-                              }
-                            }}
+                           <Button 
+                             variant="destructive" 
+                             size="sm" 
+                             onClick={() => {
+                               if (confirm('هل أنت متأكد من حذف هذه الترجمة؟')) {
+                                 deleteTranslation(trans.id);
+                               }
+                             }}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -907,6 +961,48 @@ const EnhancedAdminPanel = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Edit Translation Dialog */}
+      <Dialog open={!!editingTranslation} onOpenChange={() => setEditingTranslation(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('edit_translation', 'تعديل الترجمة')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>{t('key', 'المفتاح')}</Label>
+              <Input
+                value={editingTranslation?.key || ''}
+                onChange={(e) => setEditingTranslation(prev => ({...prev, key: e.target.value}))}
+                className="font-mono"
+              />
+            </div>
+            <div>
+              <Label>{t('value', 'القيمة')}</Label>
+              <Textarea
+                value={editingTranslation?.value || ''}
+                onChange={(e) => setEditingTranslation(prev => ({...prev, value: e.target.value}))}
+                rows={4}
+              />
+            </div>
+            <div>
+              <Label>{t('category', 'الفئة')}</Label>
+              <Input
+                value={editingTranslation?.category || ''}
+                onChange={(e) => setEditingTranslation(prev => ({...prev, category: e.target.value}))}
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditingTranslation(null)}>
+                {t('cancel', 'إلغاء')}
+              </Button>
+              <Button onClick={updateTranslation}>
+                {t('save', 'حفظ')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
