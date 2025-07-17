@@ -1242,7 +1242,7 @@ const FamilyBuilder = () => {
                       <Calendar className="h-4 w-4 text-primary" />
                       تاريخ الميلاد
                     </Label>
-                    <Popover modal={true}>
+                    <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -1255,19 +1255,19 @@ const FamilyBuilder = () => {
                           {formData.birthDate ? format(formData.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
                         </Button>
                       </PopoverTrigger>
-                       <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl z-50">
-                         <Calendar
-                           mode="single"
-                           selected={formData.birthDate}
-                           onSelect={(date) => {
-                             setFormData({...formData, birthDate: date});
-                           }}
-                           initialFocus
-                           disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                           className="pointer-events-auto p-3"
-                           defaultMonth={new Date(1970, 0)}
-                         />
-                       </PopoverContent>
+                      <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
+                        <Calendar
+                          mode="single"
+                          selected={formData.birthDate}
+                          onSelect={(date) => {
+                            setFormData({...formData, birthDate: date});
+                          }}
+                          initialFocus
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          className="pointer-events-auto p-3"
+                          defaultMonth={new Date(1970, 0)}
+                        />
+                      </PopoverContent>
                     </Popover>
                   </div>
 
@@ -1294,7 +1294,7 @@ const FamilyBuilder = () => {
                       <Skull className="h-4 w-4 text-primary" />
                       تاريخ الوفاة
                     </Label>
-                    <Popover modal={true}>
+                    <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -1307,17 +1307,17 @@ const FamilyBuilder = () => {
                           {formData.deathDate ? format(formData.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
                         </Button>
                       </PopoverTrigger>
-                       <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl z-50">
-                         <Calendar
-                           mode="single"
-                           selected={formData.deathDate}
-                           onSelect={(date) => {
-                             setFormData({...formData, deathDate: date});
-                           }}
-                           initialFocus
-                           disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
-                           className="pointer-events-auto p-3"
-                           defaultMonth={new Date(1970, 0)}
+                      <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
+                        <Calendar
+                          mode="single"
+                          selected={formData.deathDate}
+                          onSelect={(date) => {
+                            setFormData({...formData, deathDate: date});
+                          }}
+                          initialFocus
+                          disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
+                          className="pointer-events-auto p-3"
+                          defaultMonth={new Date(1970, 0)}
                         />
                       </PopoverContent>
                     </Popover>
