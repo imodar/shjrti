@@ -848,7 +848,7 @@ const FamilyBuilder = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                                {getFullName(member)}
+                                {member.name}
                               </h3>
                               <Badge className={cn(
                                 "px-3 py-1 rounded-full font-medium text-xs border-0 shadow-md transition-all duration-300 group-hover:scale-105",
