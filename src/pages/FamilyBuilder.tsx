@@ -395,19 +395,10 @@ const FamilyBuilder = () => {
       }
     }
     
-    // Find the marriage this member belongs to for setting relatedPersonId
-    let relatedPersonId = member.relatedPersonId || null;
-    const memberMarriage = familyMarriages.find(m => 
-      m.husband?.id === member.id || m.wife?.id === member.id
-    );
-    if (memberMarriage) {
-      relatedPersonId = memberMarriage.id;
-    }
-    
     setFormData({
       name: member.name,
       relation: relation,
-      relatedPersonId: relatedPersonId,
+      relatedPersonId: member.relatedPersonId || null,
       gender: member.gender,
       birthDate: member.birthDate ? new Date(member.birthDate) : null,
       isAlive: member.isAlive,
