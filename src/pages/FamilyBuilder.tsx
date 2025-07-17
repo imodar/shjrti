@@ -1289,65 +1289,123 @@ const FamilyBuilder = () => {
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
-                        <div className="p-4 space-y-4">
-                          {/* Year and Month Selectors */}
-                          <div className="flex gap-2">
-                            <Select 
-                              value={formData.birthDate?.getFullYear()?.toString() || ""} 
-                              onValueChange={(year) => {
-                                const currentDate = formData.birthDate || new Date(1990, 0, 1);
-                                const newDate = new Date(parseInt(year), currentDate.getMonth(), currentDate.getDate());
-                                setFormData({...formData, birthDate: newDate});
-                              }}
-                            >
-                              <SelectTrigger className="w-24">
-                                <SelectValue placeholder="السنة" />
-                              </SelectTrigger>
-                              <SelectContent className="max-h-60">
-                                {Array.from({ length: 124 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            
-                            <Select 
-                              value={formData.birthDate?.getMonth()?.toString() || ""} 
-                              onValueChange={(month) => {
-                                const currentDate = formData.birthDate || new Date(1990, 0, 1);
-                                const newDate = new Date(currentDate.getFullYear(), parseInt(month), currentDate.getDate());
-                                setFormData({...formData, birthDate: newDate});
-                              }}
-                            >
-                              <SelectTrigger className="flex-1">
-                                <SelectValue placeholder="الشهر" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Array.from({ length: 12 }, (_, i) => (
-                                  <SelectItem key={i} value={i.toString()}>
-                                    {format(new Date(2000, i, 1), "MMMM", { locale: ar })}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                        <div className="p-6 space-y-6 min-w-[320px]">
+                          <div className="text-center">
+                            <h4 className="font-semibold text-foreground mb-1">اختر تاريخ الميلاد</h4>
+                            <p className="text-sm text-muted-foreground">يمكنك كتابة التاريخ مباشرة أو استخدام القوائم</p>
                           </div>
                           
-                          {/* Day Calendar */}
-                          <Calendar
-                            mode="single"
-                            selected={formData.birthDate}
-                            onSelect={(date) => {
-                              setFormData({...formData, birthDate: date});
-                            }}
-                            initialFocus
-                            disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                            className="pointer-events-auto"
-                            month={formData.birthDate || new Date(1990, 0)}
-                            onMonthChange={(month) => {
-                              const currentDate = formData.birthDate || new Date(1990, 0, 1);
-                              const newDate = new Date(month.getFullYear(), month.getMonth(), currentDate.getDate());
-                              setFormData({...formData, birthDate: newDate});
-                            }}
-                          />
+                          {/* Direct Input Fields */}
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="space-y-2">
+                              <Label className="text-xs text-muted-foreground">اليوم</Label>
+                              <Input
+                                type="number"
+                                min="1"
+                                max="31"
+                                value={formData.birthDate?.getDate() || ""}
+                                onChange={(e) => {
+                                  const day = parseInt(e.target.value);
+                                  if (day >= 1 && day <= 31) {
+                                    const currentDate = formData.birthDate || new Date(1990, 0, 1);
+                                    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                                    setFormData({...formData, birthDate: newDate});
+                                  }
+                                }}
+                                placeholder="01"
+                                className="text-center font-mono text-lg h-12"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label className="text-xs text-muted-foreground">الشهر</Label>
+                              <Select 
+                                value={formData.birthDate?.getMonth()?.toString() || ""} 
+                                onValueChange={(month) => {
+                                  const currentDate = formData.birthDate || new Date(1990, 0, 1);
+                                  const newDate = new Date(currentDate.getFullYear(), parseInt(month), currentDate.getDate());
+                                  setFormData({...formData, birthDate: newDate});
+                                }}
+                              >
+                                <SelectTrigger className="h-12">
+                                  <SelectValue placeholder="--" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-60">
+                                  {Array.from({ length: 12 }, (_, i) => (
+                                    <SelectItem key={i} value={i.toString()}>
+                                      {format(new Date(2000, i, 1), "MMM", { locale: ar })}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label className="text-xs text-muted-foreground">السنة</Label>
+                              <Input
+                                type="number"
+                                min="1900"
+                                max={new Date().getFullYear()}
+                                value={formData.birthDate?.getFullYear() || ""}
+                                onChange={(e) => {
+                                  const year = parseInt(e.target.value);
+                                  if (year >= 1900 && year <= new Date().getFullYear()) {
+                                    const currentDate = formData.birthDate || new Date(1990, 0, 1);
+                                    const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
+                                    setFormData({...formData, birthDate: newDate});
+                                  }
+                                }}
+                                placeholder="1990"
+                                className="text-center font-mono text-lg h-12"
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Quick Year Selection */}
+                          <div className="space-y-3">
+                            <Label className="text-sm font-medium">اختيار سريع للسنة</Label>
+                            <div className="grid grid-cols-4 gap-2">
+                              {[1950, 1970, 1990, 2000].map(year => (
+                                <Button
+                                  key={year}
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const currentDate = formData.birthDate || new Date(year, 0, 1);
+                                    const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
+                                    setFormData({...formData, birthDate: newDate});
+                                  }}
+                                  className="h-8 text-xs"
+                                >
+                                  {year}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Mini Calendar for final selection */}
+                          {formData.birthDate && (
+                            <div className="border-t pt-4">
+                              <Label className="text-sm font-medium mb-3 block">اختر اليوم بدقة</Label>
+                              <Calendar
+                                mode="single"
+                                selected={formData.birthDate}
+                                onSelect={(date) => {
+                                  setFormData({...formData, birthDate: date});
+                                }}
+                                month={formData.birthDate}
+                                className="pointer-events-auto w-full"
+                                classNames={{
+                                  table: "w-full",
+                                  head_cell: "text-xs w-8 font-normal text-muted-foreground",
+                                  cell: "text-center text-sm p-0 relative",
+                                  day: "h-8 w-8 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md",
+                                  day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                                  day_today: "bg-accent text-accent-foreground",
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -1389,65 +1447,102 @@ const FamilyBuilder = () => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl" align="start" side="bottom" sideOffset={4}>
-                          <div className="p-4 space-y-4">
-                            {/* Year and Month Selectors */}
-                            <div className="flex gap-2">
-                              <Select 
-                                value={formData.deathDate?.getFullYear()?.toString() || ""} 
-                                onValueChange={(year) => {
-                                  const currentDate = formData.deathDate || new Date();
-                                  const newDate = new Date(parseInt(year), currentDate.getMonth(), currentDate.getDate());
-                                  setFormData({...formData, deathDate: newDate});
-                                }}
-                              >
-                                <SelectTrigger className="w-24">
-                                  <SelectValue placeholder="السنة" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-60">
-                                  {Array.from({ length: 124 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              
-                              <Select 
-                                value={formData.deathDate?.getMonth()?.toString() || ""} 
-                                onValueChange={(month) => {
-                                  const currentDate = formData.deathDate || new Date();
-                                  const newDate = new Date(currentDate.getFullYear(), parseInt(month), currentDate.getDate());
-                                  setFormData({...formData, deathDate: newDate});
-                                }}
-                              >
-                                <SelectTrigger className="flex-1">
-                                  <SelectValue placeholder="الشهر" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {Array.from({ length: 12 }, (_, i) => (
-                                    <SelectItem key={i} value={i.toString()}>
-                                      {format(new Date(2000, i, 1), "MMMM", { locale: ar })}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                          <div className="p-6 space-y-6 min-w-[320px]">
+                            <div className="text-center">
+                              <h4 className="font-semibold text-foreground mb-1">اختر تاريخ الوفاة</h4>
+                              <p className="text-sm text-muted-foreground">يمكنك كتابة التاريخ مباشرة أو استخدام القوائم</p>
                             </div>
                             
-                            {/* Day Calendar */}
-                            <Calendar
-                              mode="single"
-                              selected={formData.deathDate}
-                              onSelect={(date) => {
-                                setFormData({...formData, deathDate: date});
-                              }}
-                              initialFocus
-                              disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
-                              className="pointer-events-auto"
-                              month={formData.deathDate || new Date()}
-                              onMonthChange={(month) => {
-                                const currentDate = formData.deathDate || new Date();
-                                const newDate = new Date(month.getFullYear(), month.getMonth(), currentDate.getDate());
-                                setFormData({...formData, deathDate: newDate});
-                              }}
-                            />
+                            {/* Direct Input Fields */}
+                            <div className="grid grid-cols-3 gap-3">
+                              <div className="space-y-2">
+                                <Label className="text-xs text-muted-foreground">اليوم</Label>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  max="31"
+                                  value={formData.deathDate?.getDate() || ""}
+                                  onChange={(e) => {
+                                    const day = parseInt(e.target.value);
+                                    if (day >= 1 && day <= 31) {
+                                      const currentDate = formData.deathDate || new Date();
+                                      const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                                      setFormData({...formData, deathDate: newDate});
+                                    }
+                                  }}
+                                  placeholder="01"
+                                  className="text-center font-mono text-lg h-12"
+                                />
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label className="text-xs text-muted-foreground">الشهر</Label>
+                                <Select 
+                                  value={formData.deathDate?.getMonth()?.toString() || ""} 
+                                  onValueChange={(month) => {
+                                    const currentDate = formData.deathDate || new Date();
+                                    const newDate = new Date(currentDate.getFullYear(), parseInt(month), currentDate.getDate());
+                                    setFormData({...formData, deathDate: newDate});
+                                  }}
+                                >
+                                  <SelectTrigger className="h-12">
+                                    <SelectValue placeholder="--" />
+                                  </SelectTrigger>
+                                  <SelectContent className="max-h-60">
+                                    {Array.from({ length: 12 }, (_, i) => (
+                                      <SelectItem key={i} value={i.toString()}>
+                                        {format(new Date(2000, i, 1), "MMM", { locale: ar })}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label className="text-xs text-muted-foreground">السنة</Label>
+                                <Input
+                                  type="number"
+                                  min="1900"
+                                  max={new Date().getFullYear()}
+                                  value={formData.deathDate?.getFullYear() || ""}
+                                  onChange={(e) => {
+                                    const year = parseInt(e.target.value);
+                                    if (year >= 1900 && year <= new Date().getFullYear()) {
+                                      const currentDate = formData.deathDate || new Date();
+                                      const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
+                                      setFormData({...formData, deathDate: newDate});
+                                    }
+                                  }}
+                                  placeholder={new Date().getFullYear().toString()}
+                                  className="text-center font-mono text-lg h-12"
+                                />
+                              </div>
+                            </div>
+                            
+                            {/* Mini Calendar for final selection */}
+                            {formData.deathDate && (
+                              <div className="border-t pt-4">
+                                <Label className="text-sm font-medium mb-3 block">اختر اليوم بدقة</Label>
+                                <Calendar
+                                  mode="single"
+                                  selected={formData.deathDate}
+                                  onSelect={(date) => {
+                                    setFormData({...formData, deathDate: date});
+                                  }}
+                                  month={formData.deathDate}
+                                  disabled={(date) => date > new Date() || (formData.birthDate && date < formData.birthDate)}
+                                  className="pointer-events-auto w-full"
+                                  classNames={{
+                                    table: "w-full",
+                                    head_cell: "text-xs w-8 font-normal text-muted-foreground",
+                                    cell: "text-center text-sm p-0 relative",
+                                    day: "h-8 w-8 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md",
+                                    day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                                    day_today: "bg-accent text-accent-foreground",
+                                  }}
+                                />
+                              </div>
+                            )}
                           </div>
                         </PopoverContent>
                       </Popover>
