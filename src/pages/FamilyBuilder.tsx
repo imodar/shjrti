@@ -213,6 +213,13 @@ const FamilyBuilder = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const [wives, setWives] = useState<Array<{
+    id: string;
+    name: string;
+    isAlive: boolean;
+    birthDate: Date | null;
+    deathDate: Date | null;
+  }>>([]);
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -581,7 +588,14 @@ const FamilyBuilder = () => {
       });
       return;
     }
-    setCurrentStep(prev => Math.min(prev + 1, 2));
+    
+    // Skip step 3 (wives) for female members
+    if (currentStep === 2 && formData.gender === "female") {
+      setCurrentStep(3); // This will trigger the save since step 3 button shows save
+      return;
+    }
+    
+    setCurrentStep(prev => Math.min(prev + 1, 3));
   };
 
   const prevStep = () => {
@@ -1089,7 +1103,7 @@ const FamilyBuilder = () => {
 
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mb-8">
-              {[1, 2].map((step) => (
+              {[1, 2, 3].map((step) => (
                 <div key={step} className="flex items-center">
                   <div className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
@@ -1099,7 +1113,7 @@ const FamilyBuilder = () => {
                   )}>
                     {step}
                   </div>
-                  {step < 2 && (
+                  {step < 3 && (
                     <div className={cn(
                       "w-16 h-1 rounded-full mx-2 transition-all duration-300",
                       currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
@@ -1562,6 +1576,124 @@ const FamilyBuilder = () => {
                     className="min-h-[100px] border-2 border-primary/20 focus:border-primary rounded-xl bg-input resize-none text-lg"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Step 3: Wife Management (only for male members) */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">إدارة الزوجات</h3>
+                  <p className="text-muted-foreground">أضف معلومات الزوجات لبناء العائلة</p>
+                </div>
+
+                {formData.gender === "male" ? (
+                  <div className="space-y-6">
+                    {/* Current Wives List */}
+                    {wives.length > 0 && (
+                      <div className="space-y-4">
+                        <Label className="text-lg font-semibold text-foreground">الزوجات المضافة ({wives.length})</Label>
+                        <div className="grid gap-4">
+                          {wives.map((wife, index) => (
+                            <div key={wife.id} className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-4 border border-primary/20">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white font-bold">👩</span>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-foreground">{wife.name}</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                      {wife.isAlive ? '🟢 على قيد الحياة' : '🔴 متوفاة'}
+                                      {wife.birthDate && ` • وُلدت ${format(wife.birthDate, 'yyyy')}`}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setWives(wives.filter(w => w.id !== wife.id));
+                                  }}
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Add New Wife Form */}
+                    <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
+                      <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                        <Plus className="h-5 w-5 text-primary" />
+                        إضافة زوجة جديدة
+                      </h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">اسم الزوجة</Label>
+                          <Input
+                            id="wife-name"
+                            placeholder="أدخل اسم الزوجة"
+                            className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">الحالة</Label>
+                          <Select defaultValue="alive">
+                            <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="alive">💚 على قيد الحياة</SelectItem>
+                              <SelectItem value="deceased">🕊️ متوفاة</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={() => {
+                          const nameInput = document.getElementById('wife-name') as HTMLInputElement;
+                          if (nameInput?.value.trim()) {
+                            const newWife = {
+                              id: Date.now().toString(),
+                              name: nameInput.value.trim(),
+                              isAlive: true,
+                              birthDate: null,
+                              deathDate: null
+                            };
+                            setWives([...wives, newWife]);
+                            nameInput.value = '';
+                          }
+                        }}
+                        className="w-full h-12 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold"
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        إضافة الزوجة
+                      </Button>
+                    </div>
+
+                    {wives.length === 0 && (
+                      <div className="text-center py-8 bg-muted/30 rounded-xl border-2 border-dashed border-muted-foreground/30">
+                        <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">لم يتم إضافة أي زوجات بعد</p>
+                        <p className="text-sm text-muted-foreground mt-1">يمكنك تخطي هذه الخطوة والعودة لاحقاً</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 bg-muted/30 rounded-xl">
+                    <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h4 className="text-lg font-semibold text-foreground mb-2">هذه الخطوة للذكور فقط</h4>
+                    <p className="text-muted-foreground">إدارة الزوجات متاحة فقط عند إضافة أفراد ذكور</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
