@@ -448,9 +448,14 @@ const FamilyBuilder = () => {
     
     // Load wives if this is a male member
     if (member.gender === "male") {
+      console.log('Loading wives for male member:', member.id, member.name);
+      console.log('Available marriages:', familyMarriages);
       const memberMarriages = familyMarriages.filter(m => m.husband?.id === member.id);
+      console.log('Member marriages:', memberMarriages);
+      
       const memberWives = memberMarriages.map(marriage => {
         const wife = familyMembers.find(fm => fm.id === marriage.wife?.id);
+        console.log('Found wife:', wife, 'for marriage:', marriage);
         return {
           id: wife?.id || marriage.wife?.id,
           name: marriage.wife?.name || "",
@@ -460,7 +465,9 @@ const FamilyBuilder = () => {
         };
       }).filter(wife => wife.id); // Filter out any invalid wives
       
+      console.log('Setting wives:', memberWives);
       setWives(memberWives);
+      setHusbands([]); // Reset husbands for male members
     } else if (member.gender === "female") {
       // Load husbands if this is a female member
       const memberMarriages = familyMarriages.filter(m => m.wife?.id === member.id);
