@@ -95,19 +95,20 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
         </div>
       </div>
 
-      {/* Living Status */}
+      {/* Living Status and Death Date Row */}
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground flex items-center gap-2">
           <Heart className="h-4 w-4 text-accent" />
           الحالة الحيوية
         </Label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-6 gap-3">
+          {/* Living Status Buttons - Take 4 columns */}
           <Button
             type="button"
             variant={formData.isAlive ? "default" : "outline"}
             onClick={() => setFormData({...formData, isAlive: true, deathDate: null})}
             className={cn(
-              "h-10 rounded-lg font-arabic transition-all duration-300",
+              "col-span-2 h-10 rounded-lg font-arabic transition-all duration-300",
               formData.isAlive 
                 ? "bg-primary text-white shadow-lg" 
                 : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -121,7 +122,7 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
             variant={!formData.isAlive ? "default" : "outline"}
             onClick={() => setFormData({...formData, isAlive: false})}
             className={cn(
-              "h-10 rounded-lg font-arabic transition-all duration-300",
+              "col-span-2 h-10 rounded-lg font-arabic transition-all duration-300",
               !formData.isAlive 
                 ? "bg-destructive text-destructive-foreground shadow-lg" 
                 : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -129,49 +130,44 @@ const WifeForm = ({ onAddWife }: WifeFormProps) => {
           >
             متوفاة
           </Button>
+          
+          {/* Death Date - Take 2 columns */}
+          <div className="col-span-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  disabled={formData.isAlive}
+                  className={cn(
+                    "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
+                    formData.isAlive && "opacity-50 cursor-not-allowed",
+                    !formData.deathDate && "text-muted-foreground"
+                  )}
+                >
+                  {formData.deathDate ? (
+                    format(formData.deathDate, "yyyy", { locale: ar })
+                  ) : (
+                    <span>تاريخ الوفاة</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
+                <Calendar
+                  mode="single"
+                  selected={formData.deathDate}
+                  onSelect={(date) => setFormData({...formData, deathDate: date})}
+                  disabled={(date) => 
+                    date > new Date() || 
+                    (formData.birthDate && date < formData.birthDate)
+                  }
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
-
-      {/* Death Date - Only show if not alive */}
-      {!formData.isAlive && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-            تاريخ الوفاة (اختياري)
-          </Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-start text-right font-arabic",
-                  !formData.deathDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="ml-auto h-4 w-4" />
-                {formData.deathDate ? (
-                  format(formData.deathDate, "PPP", { locale: ar })
-                ) : (
-                  <span>اختر تاريخ الوفاة</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-              <Calendar
-                mode="single"
-                selected={formData.deathDate}
-                onSelect={(date) => setFormData({...formData, deathDate: date})}
-                disabled={(date) => 
-                  date > new Date() || 
-                  (formData.birthDate && date < formData.birthDate)
-                }
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
 
       
       {/* Add Button */}
