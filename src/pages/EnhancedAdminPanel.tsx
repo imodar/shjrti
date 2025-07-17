@@ -357,6 +357,238 @@ const EnhancedAdminPanel = () => {
     }
   };
 
+  // User Management Functions
+  const updateUser = async () => {
+    if (!editingUser?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          email: editingUser.email,
+          first_name: editingUser.first_name,
+          last_name: editingUser.last_name,
+          phone: editingUser.phone
+        })
+        .eq('id', editingUser.id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('user_updated', 'تم تحديث المستخدم')
+      });
+      
+      setEditingUser(null);
+      loadUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('user_update_failed', 'فشل في تحديث المستخدم'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const deleteUser = async (userId) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('user_deleted', 'تم حذف المستخدم')
+      });
+      
+      loadUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('user_delete_failed', 'فشل في حذف المستخدم'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Package Management Functions
+  const updatePackage = async () => {
+    if (!editingPackage?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('packages')
+        .update({
+          name: editingPackage.name,
+          description: editingPackage.description,
+          price: parseFloat(editingPackage.price),
+          price_usd: parseFloat(editingPackage.price_usd || editingPackage.price),
+          price_sar: parseFloat(editingPackage.price_sar || editingPackage.price),
+          is_active: editingPackage.is_active
+        })
+        .eq('id', editingPackage.id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('package_updated', 'تم تحديث الباقة')
+      });
+      
+      setEditingPackage(null);
+      loadPackages();
+    } catch (error) {
+      console.error('Error updating package:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('package_update_failed', 'فشل في تحديث الباقة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const deletePackage = async (packageId) => {
+    try {
+      const { error } = await supabase
+        .from('packages')
+        .delete()
+        .eq('id', packageId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('package_deleted', 'تم حذف الباقة')
+      });
+      
+      loadPackages();
+    } catch (error) {
+      console.error('Error deleting package:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('package_delete_failed', 'فشل في حذف الباقة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Language Management Functions
+  const updateLanguage = async () => {
+    if (!editingLanguage?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .update({
+          name: editingLanguage.name,
+          code: editingLanguage.code,
+          direction: editingLanguage.direction,
+          currency: editingLanguage.currency,
+          is_active: editingLanguage.is_active
+        })
+        .eq('id', editingLanguage.id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('language_updated', 'تم تحديث اللغة')
+      });
+      
+      setEditingLanguage(null);
+      loadLanguages();
+    } catch (error) {
+      console.error('Error updating language:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('language_update_failed', 'فشل في تحديث اللغة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const deleteLanguage = async (languageId) => {
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .delete()
+        .eq('id', languageId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('language_deleted', 'تم حذف اللغة')
+      });
+      
+      loadLanguages();
+    } catch (error) {
+      console.error('Error deleting language:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('language_delete_failed', 'فشل في حذف اللغة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Admin Management Functions
+  const deleteAdmin = async (adminId) => {
+    try {
+      const { error } = await supabase
+        .from('admin_users')
+        .delete()
+        .eq('id', adminId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('admin_deleted', 'تم حذف المدير')
+      });
+      
+      loadAdmins();
+    } catch (error) {
+      console.error('Error deleting admin:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('admin_delete_failed', 'فشل في حذف المدير'),
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Family Management Functions
+  const deleteFamily = async (familyId) => {
+    try {
+      const { error } = await supabase
+        .from('families')
+        .delete()
+        .eq('id', familyId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: t('success', 'نجح'),
+        description: t('family_deleted', 'تم حذف العائلة')
+      });
+      
+      loadFamilies();
+    } catch (error) {
+      console.error('Error deleting family:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('family_delete_failed', 'فشل في حذف العائلة'),
+        variant: 'destructive'
+      });
+    }
+  };
+
   const deleteTranslation = async (translationId) => {
     try {
       const { error } = await supabase
@@ -508,19 +740,15 @@ const EnhancedAdminPanel = () => {
                           >
                             {user.user_id ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => {
-                              if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
-                                // Delete user logic here
-                                toast({
-                                  title: t('success', 'نجح'),
-                                  description: t('user_deleted', 'تم حذف المستخدم')
-                                });
-                              }
-                            }}
-                          >
+                           <Button 
+                             variant="destructive" 
+                             size="sm" 
+                             onClick={() => {
+                               if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                                 deleteUser(user.id);
+                               }
+                             }}
+                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </TableCell>
@@ -564,20 +792,17 @@ const EnhancedAdminPanel = () => {
                           <Button variant="outline" size="sm" onClick={() => setEditingPackage(pkg)}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => {
-                              if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
-                                toast({
-                                  title: t('success', 'نجح'),
-                                  description: t('package_deleted', 'تم حذف الباقة')
-                                });
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                           <Button 
+                             variant="destructive" 
+                             size="sm" 
+                             onClick={() => {
+                               if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
+                                 deletePackage(pkg.id);
+                               }
+                             }}
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -684,20 +909,17 @@ const EnhancedAdminPanel = () => {
                           <Button variant="outline" size="sm" onClick={() => setEditingLanguage(lang)}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => {
-                              if (confirm('هل أنت متأكد من حذف هذه اللغة؟')) {
-                                toast({
-                                  title: t('success', 'نجح'),
-                                  description: t('language_deleted', 'تم حذف اللغة')
-                                });
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                           <Button 
+                             variant="destructive" 
+                             size="sm" 
+                             onClick={() => {
+                               if (confirm('هل أنت متأكد من حذف هذه اللغة؟')) {
+                                 deleteLanguage(lang.id);
+                               }
+                             }}
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -865,20 +1087,17 @@ const EnhancedAdminPanel = () => {
                           </TableCell>
                           <TableCell>{new Date(admin.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>
-                          <Button 
-                            variant="destructive" 
-                            size="sm"
-                            onClick={() => {
-                              if (confirm('هل أنت متأكد من حذف هذا المدير؟')) {
-                                toast({
-                                  title: t('success', 'نجح'),
-                                  description: t('admin_deleted', 'تم حذف المدير')
-                                });
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                           <Button 
+                             variant="destructive" 
+                             size="sm"
+                             onClick={() => {
+                               if (confirm('هل أنت متأكد من حذف هذا المدير؟')) {
+                                 deleteAdmin(admin.id);
+                               }
+                             }}
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -937,20 +1156,17 @@ const EnhancedAdminPanel = () => {
                           <Button variant="outline" size="sm" onClick={() => {/* Edit family logic */}}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => {
-                              if (confirm('هل أنت متأكد من حذف هذه العائلة؟')) {
-                                toast({
-                                  title: t('success', 'نجح'),
-                                  description: t('family_deleted', 'تم حذف العائلة')
-                                });
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                           <Button 
+                             variant="destructive" 
+                             size="sm" 
+                             onClick={() => {
+                               if (confirm('هل أنت متأكد من حذف هذه العائلة؟')) {
+                                 deleteFamily(family.id);
+                               }
+                             }}
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -997,6 +1213,182 @@ const EnhancedAdminPanel = () => {
                 {t('cancel', 'إلغاء')}
               </Button>
               <Button onClick={updateTranslation}>
+                {t('save', 'حفظ')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('edit_user', 'تعديل المستخدم')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>{t('email', 'البريد الإلكتروني')}</Label>
+              <Input
+                value={editingUser?.email || ''}
+                onChange={(e) => setEditingUser(prev => ({...prev, email: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label>{t('first_name', 'الاسم الأول')}</Label>
+              <Input
+                value={editingUser?.first_name || ''}
+                onChange={(e) => setEditingUser(prev => ({...prev, first_name: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label>{t('last_name', 'الاسم الأخير')}</Label>
+              <Input
+                value={editingUser?.last_name || ''}
+                onChange={(e) => setEditingUser(prev => ({...prev, last_name: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label>{t('phone', 'الهاتف')}</Label>
+              <Input
+                value={editingUser?.phone || ''}
+                onChange={(e) => setEditingUser(prev => ({...prev, phone: e.target.value}))}
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditingUser(null)}>
+                {t('cancel', 'إلغاء')}
+              </Button>
+              <Button onClick={updateUser}>
+                {t('save', 'حفظ')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Package Dialog */}
+      <Dialog open={!!editingPackage} onOpenChange={() => setEditingPackage(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('edit_package', 'تعديل الباقة')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>{t('name', 'الاسم')}</Label>
+              <Input
+                value={editingPackage?.name || ''}
+                onChange={(e) => setEditingPackage(prev => ({...prev, name: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label>{t('description', 'الوصف')}</Label>
+              <Textarea
+                value={editingPackage?.description || ''}
+                onChange={(e) => setEditingPackage(prev => ({...prev, description: e.target.value}))}
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>{t('price_usd', 'السعر بالدولار')}</Label>
+                <Input
+                  type="number"
+                  value={editingPackage?.price_usd || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, price_usd: e.target.value}))}
+                />
+              </div>
+              <div>
+                <Label>{t('price_sar', 'السعر بالريال')}</Label>
+                <Input
+                  type="number"
+                  value={editingPackage?.price_sar || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, price_sar: e.target.value}))}
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={editingPackage?.is_active || false}
+                onCheckedChange={(checked) => setEditingPackage(prev => ({...prev, is_active: checked}))}
+              />
+              <Label>{t('active', 'نشط')}</Label>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditingPackage(null)}>
+                {t('cancel', 'إلغاء')}
+              </Button>
+              <Button onClick={updatePackage}>
+                {t('save', 'حفظ')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Language Dialog */}
+      <Dialog open={!!editingLanguage} onOpenChange={() => setEditingLanguage(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('edit_language', 'تعديل اللغة')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>{t('language_code', 'رمز اللغة')}</Label>
+              <Input
+                value={editingLanguage?.code || ''}
+                onChange={(e) => setEditingLanguage(prev => ({...prev, code: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label>{t('language_name', 'اسم اللغة')}</Label>
+              <Input
+                value={editingLanguage?.name || ''}
+                onChange={(e) => setEditingLanguage(prev => ({...prev, name: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label>{t('direction', 'الاتجاه')}</Label>
+              <Select
+                value={editingLanguage?.direction || 'ltr'}
+                onValueChange={(value) => setEditingLanguage(prev => ({...prev, direction: value}))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ltr">LTR</SelectItem>
+                  <SelectItem value="rtl">RTL</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>{t('currency', 'العملة')}</Label>
+              <Select
+                value={editingLanguage?.currency || 'USD'}
+                onValueChange={(value) => setEditingLanguage(prev => ({...prev, currency: value}))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USD">USD</SelectItem>
+                  <SelectItem value="SAR">SAR</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={editingLanguage?.is_active || false}
+                onCheckedChange={(checked) => setEditingLanguage(prev => ({...prev, is_active: checked}))}
+              />
+              <Label>{t('active', 'نشط')}</Label>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditingLanguage(null)}>
+                {t('cancel', 'إلغاء')}
+              </Button>
+              <Button onClick={updateLanguage}>
                 {t('save', 'حفظ')}
               </Button>
             </div>
