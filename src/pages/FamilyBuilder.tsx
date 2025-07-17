@@ -1181,13 +1181,8 @@ const FamilyBuilder = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Step 2: Additional Details */}
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                {/* Family Selection - Always visible */}
+                {/* Family Selection */}
                 {familyMarriages.length > 0 && (
                   <div className="space-y-4">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
@@ -1224,8 +1219,8 @@ const FamilyBuilder = () => {
                       </PopoverTrigger>
                       <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                         <Command>
-                          <CommandInput placeholder="ابحث عن فرد من العائلة..." className="h-12 text-lg" />
-                          <CommandEmpty>لم يتم العثور على أي شخص.</CommandEmpty>
+                          <CommandInput placeholder="ابحث عن عائلة..." className="h-12 text-lg" />
+                          <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
                           <CommandList className="max-h-60">
                             <CommandGroup>
                               {familyMarriages.map((marriage) => (
