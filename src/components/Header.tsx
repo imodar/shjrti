@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { TreePine, User, LogIn, LogOut } from "lucide-react";
+import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 const Header = () => {
@@ -141,65 +150,176 @@ const Header = () => {
               </div>
               
               {user ? (
-                <div className="flex items-center gap-2">
-                  {/* Dashboard Button */}
-                  <Button variant="ghost" size="sm" className="relative group bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl border border-emerald-200/30 dark:border-emerald-700/30 hover:border-emerald-300/50 transition-all duration-300" asChild>
-                    <a href="/dashboard" className="flex items-center gap-2">
-                      <div className="relative">
-                        <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-emerald-500 rounded-full blur-sm opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+                <div className="flex items-center gap-4">
+                  {/* Creative User Avatar Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="relative group cursor-pointer">
+                        {/* Floating avatar container with multiple layers */}
+                        <div className="absolute inset-0 w-12 h-12 bg-gradient-to-r from-primary via-accent to-secondary rounded-full blur-lg opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-500"></div>
+                        
+                        {/* Main avatar ring */}
+                        <div className="relative w-12 h-12 p-[2px] bg-gradient-to-r from-primary via-accent to-secondary rounded-full group-hover:scale-110 transition-all duration-500">
+                          <div className="w-full h-full bg-background rounded-full p-[2px]">
+                            <Avatar className="h-full w-full">
+                              <AvatarImage src={user.user_metadata?.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-sm">
+                                {user.email?.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                        </div>
+                        
+                        {/* Status indicator */}
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-background flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        </div>
+                        
+                        {/* Hover sparkle effect */}
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <Sparkles className="absolute -top-2 -right-2 h-4 w-4 text-accent animate-bounce" style={{animationDelay: '0s'}} />
+                          <Sparkles className="absolute -bottom-1 -left-2 h-3 w-3 text-primary animate-bounce" style={{animationDelay: '0.5s'}} />
+                          <Sparkles className="absolute top-1 -right-3 h-2 w-2 text-secondary animate-bounce" style={{animationDelay: '1s'}} />
+                        </div>
                       </div>
-                      <span className="text-emerald-700 dark:text-emerald-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-200">
-                        {t('nav.dashboard', 'لوحة التحكم')}
-                      </span>
-                    </a>
-                  </Button>
-                  
-                  {/* Logout Button */}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="relative group bg-white/20 hover:bg-red-50/50 backdrop-blur-sm rounded-xl border border-red-200/30 hover:border-red-300/50 transition-all duration-300" 
-                    onClick={signOut}
-                  >
-                    <div className="relative">
-                      <LogOut className="h-4 w-4 text-red-500 group-hover:scale-110 transition-transform duration-300" />
-                      <div className="absolute inset-0 bg-red-500 rounded-full blur-sm opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                    </div>
-                    <span className="text-red-600 dark:text-red-400 group-hover:text-red-500 ml-2">
-                      {t('nav.logout', 'تسجيل الخروج')}
-                    </span>
-                  </Button>
+                    </DropdownMenuTrigger>
+                    
+                    <DropdownMenuContent 
+                      className="w-64 mt-2 bg-background/95 backdrop-blur-xl border-2 border-primary/20 shadow-2xl rounded-2xl p-2" 
+                      align="end"
+                      sideOffset={8}
+                    >
+                      {/* User Info Header */}
+                      <DropdownMenuLabel className="p-4 pb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage src={user.user_metadata?.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold">
+                                {user.email?.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-background"></div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-foreground truncate">
+                              {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {user.email}
+                            </p>
+                          </div>
+                        </div>
+                      </DropdownMenuLabel>
+                      
+                      <DropdownMenuSeparator className="bg-border/50" />
+                      
+                      {/* Menu Items */}
+                      <DropdownMenuItem className="group p-3 rounded-xl hover:bg-primary/10 transition-all duration-300 cursor-pointer" asChild>
+                        <a href="/dashboard" className="flex items-center gap-3">
+                          <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                            <TreePine className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{t('nav.dashboard', 'لوحة التحكم')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
+                          </div>
+                        </a>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuItem className="group p-3 rounded-xl hover:bg-accent/10 transition-all duration-300 cursor-pointer" asChild>
+                        <a href="/profile" className="flex items-center gap-3">
+                          <div className="p-2 bg-accent/10 rounded-lg group-hover:bg-accent/20 transition-colors">
+                            <Settings className="h-4 w-4 text-accent" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{t('nav.settings', 'الإعدادات')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
+                          </div>
+                        </a>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuItem className="group p-3 rounded-xl hover:bg-secondary/10 transition-all duration-300 cursor-pointer" asChild>
+                        <a href="/payments" className="flex items-center gap-3">
+                          <div className="p-2 bg-secondary/10 rounded-lg group-hover:bg-secondary/20 transition-colors">
+                            <CreditCard className="h-4 w-4 text-secondary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{t('nav.billing', 'الفواتير')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
+                          </div>
+                        </a>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuItem className="group p-3 rounded-xl hover:bg-primary/10 transition-all duration-300 cursor-pointer">
+                        <div className="flex items-center gap-3 w-full">
+                          <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                            <HelpCircle className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{t('nav.help', 'المساعدة')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator className="bg-border/50" />
+                      
+                      {/* Logout */}
+                      <DropdownMenuItem 
+                        className="group p-3 rounded-xl hover:bg-destructive/10 transition-all duration-300 cursor-pointer text-destructive focus:text-destructive"
+                        onClick={signOut}
+                      >
+                        <div className="flex items-center gap-3 w-full">
+                          <div className="p-2 bg-destructive/10 rounded-lg group-hover:bg-destructive/20 transition-colors">
+                            <LogOut className="h-4 w-4 text-destructive" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{t('nav.logout', 'تسجيل الخروج')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  {/* Login Button */}
-                  <Button variant="ghost" size="sm" className="relative group bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30 hover:border-emerald-300/50 transition-all duration-300" asChild>
-                    <a href="/auth" className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
+                  {/* Enhanced Login Button */}
+                  <Button variant="ghost" size="sm" className="relative group bg-background/30 hover:bg-background/50 backdrop-blur-sm rounded-2xl border border-border/50 hover:border-primary/50 transition-all duration-500 px-6 py-3" asChild>
+                    <a href="/auth" className="flex items-center gap-3">
                       <div className="relative">
-                        <LogIn className="h-4 w-4 text-gray-600 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:scale-110 transition-all duration-300" />
-                        <div className="absolute inset-0 bg-emerald-500 rounded-full blur-sm opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+                        <LogIn className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
+                        <div className="absolute inset-0 bg-primary rounded-full blur-sm opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
                       </div>
-                      <span className="text-gray-700 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                      <span className="text-foreground/80 group-hover:text-primary font-medium">
                         {t('nav.login', 'تسجيل الدخول')}
                       </span>
                     </a>
                   </Button>
                   
-                  {/* Register Button with Gradient */}
-                  <Button size="sm" className="relative group overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 border-0 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300" asChild>
-                    <a href="/auth" className="flex items-center gap-2">
-                      {/* Animated background */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  {/* Premium Register Button */}
+                  <Button size="sm" className="relative group overflow-hidden bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 border-0 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-500 px-6 py-3" asChild>
+                    <a href="/auth" className="flex items-center gap-3">
+                      {/* Animated background layers */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-accent/80 to-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,white/20,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                       
-                      <div className="relative flex items-center gap-2">
+                      <div className="relative flex items-center gap-3">
                         <div className="relative">
-                          <User className="h-4 w-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                          <User className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-300" />
                           <div className="absolute inset-0 bg-white/30 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
-                        <span className="text-white font-medium">
+                        <span className="text-white font-semibold">
                           {t('nav.register', 'إنشاء حساب')}
                         </span>
+                      </div>
+                      
+                      {/* Floating sparkles */}
+                      <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <Sparkles className="absolute top-1 left-2 h-3 w-3 text-white/60 animate-bounce" style={{animationDelay: '0s'}} />
+                        <Sparkles className="absolute bottom-1 right-3 h-2 w-2 text-white/40 animate-bounce" style={{animationDelay: '0.7s'}} />
+                        <Sparkles className="absolute top-2 right-1 h-2 w-2 text-white/50 animate-bounce" style={{animationDelay: '1.4s'}} />
                       </div>
                       
                       {/* Shine effect */}
