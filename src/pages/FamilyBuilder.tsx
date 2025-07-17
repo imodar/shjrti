@@ -497,6 +497,49 @@ const FamilyBuilder = () => {
     return icons[relation] || "👤";
   };
 
+// Function to generate full hierarchical name
+  const getFullName = (member: any) => {
+    if (!familyData?.name) return member.name;
+    
+    // For founders, return name + family name
+    if (member.relation === "founder" || !member.relatedPersonId) {
+      return `${member.name} ${familyData.name}`;
+    }
+    
+    // For others, build the chain: name + father's chain + family name
+    const buildNameChain = (currentMember: any, visited = new Set()): string => {
+      // Prevent infinite loops
+      if (visited.has(currentMember.id)) {
+        return currentMember.name;
+      }
+      visited.add(currentMember.id);
+      
+      // If no related person, just return current name
+      if (!currentMember.relatedPersonId) {
+        return currentMember.name;
+      }
+      
+      // Find the related person (parent)
+      const relatedPerson = familyMembers.find(m => m.id === currentMember.relatedPersonId);
+      if (!relatedPerson) {
+        return currentMember.name;
+      }
+      
+      // If related person is founder, build final chain
+      if (relatedPerson.relation === "founder" || !relatedPerson.relatedPersonId) {
+        return `${currentMember.name} ${relatedPerson.name} ${familyData.name}`;
+      }
+      
+      // Recursively build the chain
+      const parentChain = buildNameChain(relatedPerson, visited);
+      // Remove family name from parent chain if it exists to avoid duplication
+      const cleanParentChain = parentChain.replace(` ${familyData.name}`, '');
+      return `${currentMember.name} ${cleanParentChain} ${familyData.name}`;
+    };
+    
+    return buildNameChain(member);
+  };
+
   const getGenderColor = (gender: string) => {
     return gender === "male" ? "bg-blue-500/20 text-blue-700 border-blue-200" : "bg-pink-500/20 text-pink-700 border-pink-200";
   };
@@ -805,7 +848,7 @@ const FamilyBuilder = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                                {member.name}
+                                {getFullName(member)}
                               </h3>
                               <Badge className={cn(
                                 "px-3 py-1 rounded-full font-medium text-xs border-0 shadow-md transition-all duration-300 group-hover:scale-105",
@@ -1213,7 +1256,7 @@ const FamilyBuilder = () => {
                                 >
                                   <span className="text-2xl">{getRelationIcon(member.relation)}</span>
                                   <div className="flex flex-col flex-1">
-                                    <span className="font-medium">{member.name}</span>
+                                    <span className="font-medium">{getFullName(member)}</span>
                                     <span className="text-sm text-muted-foreground">{member.relation}</span>
                                   </div>
                                   {formData.relatedPersonId === member.id && (
