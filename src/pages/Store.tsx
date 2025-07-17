@@ -260,20 +260,7 @@ export default function Store() {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/5 py-8 pb-4">
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-          <div className="max-w-7xl mx-auto px-6 relative">
-            <div className="text-center mb-12">
-              
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-4">
-                متجر الطباعة المتميز
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                احصل على نسخة مطبوعة فاخرة من شجرة عائلتك بأجود الخامات وأحدث التقنيات
-              </p>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Main Product Section */}
         <div className="max-w-7xl mx-auto px-6 py-16">
