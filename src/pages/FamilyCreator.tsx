@@ -598,7 +598,7 @@ const FamilyCreator = () => {
                                 type="button"
                                 variant="outline"
                                 onClick={() => setShowWivesModal(true)}
-                                className="w-full h-12 rounded-xl bg-muted/30 border-2 border-transparent hover:bg-background/60 font-arabic transition-all duration-300 flex items-center justify-between"
+                                className="w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 font-arabic transition-all duration-300 flex items-center justify-between"
                               >
                                 <div className="flex items-center gap-3">
                                   <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
@@ -611,7 +611,7 @@ const FamilyCreator = () => {
                                     }
                                   </span>
                                 </div>
-                                <ArrowRight className="h-4 w-4" />
+                                <ArrowLeft className="h-4 w-4" />
                               </Button>
                             </div>
                           )}
