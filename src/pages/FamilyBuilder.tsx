@@ -500,10 +500,25 @@ const FamilyBuilder = () => {
 
     setIsSaving(true);
     try {
+      // Determine parent IDs based on selected family relation
+      let fatherId = null;
+      let motherId = null;
+      
+      if (formData.relatedPersonId && formData.relation === "child") {
+        // Find the marriage to get parents
+        const selectedMarriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+        if (selectedMarriage) {
+          fatherId = selectedMarriage.husband?.id || null;
+          motherId = selectedMarriage.wife?.id || null;
+        }
+      }
+
       const memberData = {
         family_id: familyData?.id,
         name: formData.name,
         related_person_id: null, // Set to null for now as this should reference family_tree_members, not marriages
+        father_id: fatherId,
+        mother_id: motherId,
         gender: formData.gender,
         birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
         is_alive: formData.isAlive,
@@ -514,6 +529,7 @@ const FamilyBuilder = () => {
       };
 
       console.log('Saving member data:', memberData);
+      console.log('Selected family relation:', formData.relatedPersonId, 'Relation:', formData.relation);
 
       if (selectedMember) {
         // Update existing member
