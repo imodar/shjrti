@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,6 +18,8 @@ const FamilyTreeView = () => {
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [lines, setLines] = useState<{ x1: number, y1: number, x2: number, y2: number }[]>([]);
+  const memberRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
 
   // Fetch family tree data from database
   useEffect(() => {
@@ -297,6 +299,42 @@ const FamilyTreeView = () => {
   console.log('Family tree for rendering:', familyTree);
   console.log('Family tree length:', familyTree.length);
 
+  // Calculate line coordinates after component renders
+  useEffect(() => {
+    const calculateLines = () => {
+      const newLines: typeof lines = [];
+
+      familyTree.forEach(([generation, members]) => {
+        members.forEach((member: any) => {
+          const children = getChildrenOf(member.id);
+          const fromEl = memberRefs.current[member.id];
+          if (!fromEl) return;
+
+          const fromRect = fromEl.getBoundingClientRect();
+          const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
+          const fromY = fromRect.bottom + window.scrollY;
+
+          children.forEach((child) => {
+            const toEl = memberRefs.current[child.id];
+            if (!toEl) return;
+
+            const toRect = toEl.getBoundingClientRect();
+            const toX = toRect.left + toRect.width / 2 + window.scrollX;
+            const toY = toRect.top + window.scrollY;
+
+            newLines.push({ x1: fromX, y1: fromY, x2: toX, y2: toY });
+          });
+        });
+      });
+
+      setLines(newLines);
+    };
+
+    // Use timeout to ensure DOM is fully rendered
+    const timeoutId = setTimeout(calculateLines, 100);
+    return () => clearTimeout(timeoutId);
+  }, [familyTree, zoomLevel]);
+
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setZoomLevel(1);
@@ -539,10 +577,27 @@ const FamilyTreeView = () => {
 
           {/* Diagram Tree View */}
           <TabsContent value="diagram">
-            <div className="bg-card/30 backdrop-blur-sm rounded-xl border border-primary/20 p-6 min-h-[600px] overflow-auto">
+            <div className="bg-card/30 backdrop-blur-sm rounded-xl border border-primary/20 p-6 min-h-[600px] overflow-auto relative">
+              
+              {/* SVG Lines */}
+              <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+                {lines.map((line, idx) => (
+                  <line
+                    key={idx}
+                    x1={line.x1}
+                    y1={line.y1}
+                    x2={line.x2}
+                    y2={line.y2}
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="2"
+                    opacity="0.6"
+                  />
+                ))}
+              </svg>
+
               <div 
                 className="transition-transform duration-300 relative"
-                style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
+                style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center', zIndex: 2 }}
               >
                 {familyTree.length > 0 ? (
                   <div className="relative min-h-[700px] flex flex-col items-center pt-8">
@@ -571,9 +626,13 @@ const FamilyTreeView = () => {
 
                               if (generation === 1 && spouse) {
                                 // For generation 1 (founders), show them as a couple
-                                memberElements.push(
-                                  <div key={member.id} className="relative">
-                                    <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
+                                 memberElements.push(
+                                   <div 
+                                     key={member.id} 
+                                     className="relative"
+                                     ref={(el) => (memberRefs.current[member.id] = el)}
+                                   >
+                                     <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
                                       <div className="flex items-center gap-4">
                                         <div className="text-center">
                                           <Avatar className="h-16 w-16 mx-auto mb-2">
@@ -657,9 +716,13 @@ const FamilyTreeView = () => {
                                   </div>
                                 );
                               } else {
-                                // For other generations, show individual cards
-                                memberElements.push(
-                                  <div key={member.id} className="relative text-center">
+                                 // For other generations, show individual cards
+                                 memberElements.push(
+                                   <div 
+                                     key={member.id} 
+                                     className="relative text-center"
+                                     ref={(el) => (memberRefs.current[member.id] = el)}
+                                   >
                                     <Card className={`p-4 bg-card/80 backdrop-blur-sm ${member.gender === 'female' ? 'border-accent/20' : 'border-primary/20'} min-w-[140px]`}>
                                       <Avatar className="h-14 w-14 mx-auto mb-2">
                                         {member.image_url ? (
