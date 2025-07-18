@@ -499,8 +499,8 @@ const FamilyTreeView = () => {
                       className="absolute h-1 bg-gradient-to-r from-primary to-accent"
                       style={{ 
                         top: 'calc(100% + 40px)', 
-                        left: 'calc(50% - 160px)', 
-                        width: '320px' 
+                        left: 'calc(7% - 160px)', 
+                        width: '533px' 
                       }}
                     ></div>
                     
@@ -508,17 +508,17 @@ const FamilyTreeView = () => {
                     {/* مضر */}
                     <div 
                       className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 40px)', left: 'calc(50% - 160px)' }}
+                      style={{ top: 'calc(100% + 40px)', left: 'calc(7% - 160px)' }}
                     ></div>
                     {/* زينة */}
                     <div 
                       className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 40px)', left: '50%', transform: 'translateX(-50%)' }}
+                      style={{ top: 'calc(100% + 40px)', left: 'calc(7% + 106px)' }}
                     ></div>
                     {/* ربى */}
                     <div 
                       className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 40px)', left: 'calc(50% + 160px)' }}
+                      style={{ top: 'calc(100% + 40px)', left: 'calc(7% + 373px)' }}
                     ></div>
                   </div>
 
