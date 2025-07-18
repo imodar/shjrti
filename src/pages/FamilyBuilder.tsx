@@ -432,7 +432,26 @@ const FamilyBuilder = () => {
         !member.fatherId && !member.motherId && !member.isFounder) {
       const marriage = familyMarriages.find(m => m.wife?.id === member.id);
       if (marriage?.husband) {
-        return `زوجة ${marriage.husband.name}`;
+        const husband = familyMembers.find(h => h.id === marriage.husband.id);
+        if (husband) {
+          let husbandFullName = husband.name;
+          
+          // Add father's name if husband has fatherId
+          if (husband.fatherId) {
+            const husbandFather = familyMembers.find(f => f.id === husband.fatherId);
+            if (husbandFather) {
+              husbandFullName += ` ابن ${husbandFather.name}`;
+            }
+          }
+          
+          // Add family name (assuming first founder is the family patriarch)
+          const founder = familyMembers.find(m => m.isFounder);
+          if (founder) {
+            husbandFullName += ` ${founder.name}`;
+          }
+          
+          return `زوجة ${husbandFullName}`;
+        }
       }
     }
     
