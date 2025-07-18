@@ -279,10 +279,8 @@ const FamilyBuilder = () => {
     birthDate: Date | null;
     deathDate: Date | null;
   }>>([]);
-  // Filter states
-  const [showFemaleFamily, setShowFemaleFamily] = useState(false);
-  const [showNonBloodHusbands, setShowNonBloodHusbands] = useState(false);
-  const [showNonBloodWives, setShowNonBloodWives] = useState(false);
+  // Filter state - single select dropdown
+  const [selectedFilter, setSelectedFilter] = useState("all");
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -296,8 +294,18 @@ const FamilyBuilder = () => {
     croppedImage: null as string | null
   });
 
-  // Filter members based on search term and three filter states
-  console.log('Filter states:', { showFemaleFamily, showNonBloodHusbands, showNonBloodWives });
+  // Filter options
+  const filterOptions = [
+    { value: "all", label: "عرض جميع الأعضاء" },
+    { value: "blood_relations", label: "عرض الأقارب بالدم (نفس العائلة)" },
+    { value: "non_family", label: "عرض الأعضاء خارج العائلة (بدون أزواج)" },
+    { value: "wives", label: "عرض جميع الزوجات" },
+    { value: "husbands", label: "عرض جميع الأزواج" },
+    { value: "blood_with_female_children", label: "الأقارب بالدم وأطفال الإناث من نفس عائلة الأب" }
+  ];
+
+  // Filter members based on search term and selected filter
+  console.log('Current filter:', selectedFilter);
   const filteredMembers = familyMembers.filter(member => {
     // First filter by search term (with null checks)
     const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -305,32 +313,48 @@ const FamilyBuilder = () => {
     
     if (!matchesSearch) return false;
     
-    // If no filters are active, show all members
-    if (!showFemaleFamily && !showNonBloodHusbands && !showNonBloodWives) {
-      return true;
+    // Apply selected filter
+    switch (selectedFilter) {
+      case "all":
+        return true;
+        
+      case "blood_relations":
+        // Show only blood relations (have fatherId or motherId or are founders)
+        return member.fatherId || member.motherId || member.isFounder;
+        
+      case "non_family":
+        // Show members without spouses (not married into family)
+        return !familyMarriages.some(marriage => 
+          marriage.husband?.id === member.id || marriage.wife?.id === member.id
+        ) && !member.fatherId && !member.motherId && !member.isFounder;
+        
+      case "wives":
+        // Show all female members who are married
+        return member.gender === 'female' && 
+          familyMarriages.some(marriage => marriage.wife?.id === member.id);
+        
+      case "husbands":
+        // Show all male members who are married
+        return member.gender === 'male' && 
+          familyMarriages.some(marriage => marriage.husband?.id === member.id);
+          
+      case "blood_with_female_children":
+        // Show blood relations AND children of females from same father's family
+        const isBloodRelation = member.fatherId || member.motherId || member.isFounder;
+        
+        // Check if this is a child of a female from the same father's family
+        const isChildOfFemaleFromSameFamily = member.motherId && 
+          familyMembers.some(potentialMother => 
+            potentialMother.id === member.motherId &&
+            potentialMother.gender === 'female' &&
+            (potentialMother.fatherId || potentialMother.isFounder) // Mother is from father's family
+          );
+          
+        return isBloodRelation || isChildOfFemaleFromSameFamily;
+        
+      default:
+        return true;
     }
-
-    // Check if member is female
-    const isFemale = member.gender === 'female';
-
-    // Check if member is a non-blood husband
-    const isNonBloodHusband = member.gender === 'male' && 
-      familyMarriages.some(marriage => 
-        marriage.husband?.id === member.id &&
-        !member.fatherId && !member.motherId && !member.isFounder
-      );
-
-    // Check if member is a non-blood wife
-    const isNonBloodWife = member.gender === 'female' && 
-      familyMarriages.some(marriage => 
-        marriage.wife?.id === member.id &&
-        !member.fatherId && !member.motherId && !member.isFounder
-      );
-
-    // Show member if they match any active filter (OR logic)
-    return (showFemaleFamily && isFemale) ||
-           (showNonBloodHusbands && isNonBloodHusband) ||
-           (showNonBloodWives && isNonBloodWife);
   });
 
   // Relationship options with translations
@@ -1281,29 +1305,18 @@ const FamilyBuilder = () => {
                 </div>
                 
                 <div className="flex gap-3 items-center">
-                  <Button
-                    variant={showFemaleFamily ? "default" : "outline"}
-                    onClick={() => setShowFemaleFamily(!showFemaleFamily)}
-                    className="h-12 rounded-xl px-6"
-                  >
-                    {showFemaleFamily ? "إخفاء الإناث" : "إظهار الإناث"}
-                  </Button>
-                  
-                  <Button
-                    variant={showNonBloodHusbands ? "default" : "outline"}
-                    onClick={() => setShowNonBloodHusbands(!showNonBloodHusbands)}
-                    className="h-12 rounded-xl px-6"
-                  >
-                    {showNonBloodHusbands ? "إخفاء الأزواج" : "إظهار الأزواج"}
-                  </Button>
-                  
-                  <Button
-                    variant={showNonBloodWives ? "default" : "outline"}
-                    onClick={() => setShowNonBloodWives(!showNonBloodWives)}
-                    className="h-12 rounded-xl px-6"
-                  >
-                    {showNonBloodWives ? "إخفاء الزوجات" : "إظهار الزوجات"}
-                  </Button>
+                  <Select value={selectedFilter} onValueChange={setSelectedFilter}>
+                    <SelectTrigger className="w-80 h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
+                      <SelectValue placeholder="اختر نوع العرض" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filterOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   
                   <div className="flex items-center gap-3">
                     {packageData && (
