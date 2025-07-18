@@ -298,7 +298,7 @@ const FamilyBuilder = () => {
   const filterOptions = [
     { value: "all", label: "عرض جميع الأعضاء" },
     { value: "blood_relations", label: "عرض الأقارب بالدم (نفس العائلة)" },
-    { value: "non_family", label: "عرض الأعضاء خارج العائلة (بدون أزواج)" },
+    { value: "non_family", label: "عرض جميع الأفراد خارج العائلة الأصلية" },
     { value: "wives", label: "عرض جميع الزوجات" },
     { value: "husbands", label: "عرض جميع الأزواج" },
     { value: "blood_with_female_children", label: "الأقارب بالدم وأطفال الإناث من نفس عائلة الأب" }
@@ -348,10 +348,14 @@ const FamilyBuilder = () => {
         return false;
         
       case "non_family":
-        // Show members without spouses (not married into family)
-        return !familyMarriages.some(marriage => 
-          marriage.husband?.id === member.id || marriage.wife?.id === member.id
-        ) && !member.fatherId && !member.motherId && !member.isFounder;
+        // Show all members who are not from the original family (regardless of marriage status)
+        // This includes: married-in spouses and their children
+        return !member.isFounder && 
+               (!member.fatherId || 
+                !familyMembers.some(father => 
+                  father.id === member.fatherId && 
+                  (father.isFounder || father.fatherId)
+                ));
         
       case "wives":
         // Show all female members who are married
