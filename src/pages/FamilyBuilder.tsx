@@ -450,6 +450,34 @@ const FamilyBuilder = () => {
       }
     }
     
+    // For male spouses (married men who are not from the original family)
+    if (member.gender === 'male' && 
+        familyMarriages.some(marriage => marriage.husband?.id === member.id) &&
+        !member.fatherId && !member.motherId && !member.isFounder) {
+      console.log(`${member.name} is a husband from outside family`);
+      const marriage = familyMarriages.find(m => m.husband?.id === member.id);
+      if (marriage?.wife) {
+        const wife = familyMembers.find(w => w.id === marriage.wife.id);
+        if (wife) {
+          let wifeInfo = wife.name;
+          
+          // Add father's name if wife has fatherId
+          if (wife.fatherId) {
+            const wifeFather = familyMembers.find(f => f.id === wife.fatherId);
+            if (wifeFather) {
+              wifeInfo += ` بنت ${wifeFather.name}`;
+            }
+          }
+          
+          // Add family name
+          wifeInfo += ` الشيخ سعيد`;
+          
+          const result = `زوج ${wifeInfo}`;
+          console.log(`Husband result for ${member.name}:`, result);
+          return result;
+        }
+      }
+    }
     // For females from the same family (have fatherId or are founders)
     if (member.gender === 'female' && (member.fatherId || member.isFounder)) {
       console.log(`${member.name} is female with fatherId or founder`);
