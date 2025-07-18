@@ -1,0 +1,385 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { SharedFooter } from "@/components/SharedFooter";
+import { supabase } from "@/integrations/supabase/client";
+
+const FamilyTreeView = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  // Fetch family data
+  useEffect(() => {
+    const fetchFamilyData = async () => {
+      try {
+        setIsLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          navigate('/auth');
+          return;
+        }
+
+        // Fetch family data
+        const { data: familyData, error: familyError } = await supabase
+          .from('families')
+          .select('*')
+          .eq('creator_id', user.id)
+          .single();
+
+        if (familyError && familyError.code !== 'PGRST116') {
+          throw familyError;
+        }
+
+        if (familyData) {
+          // Fetch family members
+          const { data: membersData, error: membersError } = await supabase
+            .from('family_tree_members')
+            .select('*')
+            .eq('family_id', familyData.id)
+            .order('created_at', { ascending: true });
+
+          if (membersError) throw membersError;
+
+          // Transform data
+          const transformedMembers = membersData?.map(member => ({
+            id: member.id,
+            name: member.name,
+            fatherId: member.father_id,
+            motherId: member.mother_id,
+            spouseId: member.spouse_id,
+            isFounder: member.is_founder,
+            gender: member.gender,
+            birthDate: member.birth_date || "",
+            isAlive: member.is_alive,
+            deathDate: member.death_date || null,
+            bio: member.biography || "",
+            image: member.image_url || null,
+            relation: member.is_founder ? "founder" : "member"
+          })) || [];
+
+          setFamilyMembers(transformedMembers);
+
+          // Fetch marriages
+          const { data: marriagesData, error: marriagesError } = await supabase
+            .from('marriages')
+            .select('*')
+            .eq('family_id', familyData.id)
+            .eq('is_active', true);
+
+          if (marriagesError) throw marriagesError;
+
+          const transformedMarriages = marriagesData?.map(marriage => ({
+            id: marriage.id,
+            familyId: marriage.family_id,
+            isActive: marriage.is_active,
+            husband: transformedMembers.find(m => m.id === marriage.husband_id),
+            wife: transformedMembers.find(m => m.id === marriage.wife_id)
+          })) || [];
+
+          setFamilyMarriages(transformedMarriages);
+        }
+
+      } catch (error) {
+        console.error('Error fetching family data:', error);
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ في تحميل بيانات العائلة",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFamilyData();
+  }, [navigate, toast]);
+
+  // Generate family tree structure by generations
+  const generateFamilyTree = () => {
+    const generationMap = new Map();
+    
+    // Start with founders as generation 1
+    familyMembers.forEach(member => {
+      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+        generationMap.set(member.id, 1);
+      }
+    });
+    
+    // Recursively assign generations
+    let changed = true;
+    let maxIterations = 50;
+    let iterations = 0;
+    
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      
+      familyMembers.forEach(member => {
+        if (!generationMap.has(member.id)) {
+          if (member.fatherId || member.motherId) {
+            const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
+            const motherGeneration = member.motherId ? generationMap.get(member.motherId) : undefined;
+            
+            if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+              const parentGeneration = Math.max(
+                fatherGeneration || 0, 
+                motherGeneration || 0
+              );
+              generationMap.set(member.id, parentGeneration + 1);
+              changed = true;
+            }
+          } else {
+            generationMap.set(member.id, 1);
+            changed = true;
+          }
+        }
+      });
+    }
+    
+    // Assign spouses to same generation
+    familyMarriages.forEach(marriage => {
+      const husbandGeneration = generationMap.get(marriage.husband?.id);
+      const wifeGeneration = generationMap.get(marriage.wife?.id);
+      
+      if (husbandGeneration && !wifeGeneration) {
+        generationMap.set(marriage.wife?.id, husbandGeneration);
+      } else if (wifeGeneration && !husbandGeneration) {
+        generationMap.set(marriage.husband?.id, wifeGeneration);
+      }
+    });
+
+    // Group by generation
+    const generations = new Map();
+    generationMap.forEach((generation, memberId) => {
+      if (!generations.has(generation)) {
+        generations.set(generation, []);
+      }
+      const member = familyMembers.find(m => m.id === memberId);
+      if (member) {
+        generations.get(generation).push(member);
+      }
+    });
+
+    return Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
+  };
+
+  const familyTree = generateFamilyTree();
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
+  const handleResetZoom = () => setZoomLevel(1);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-primary/20">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/family-overview')}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                العودة للإدارة
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">شجرة العائلة</h1>
+                <p className="text-muted-foreground mt-1">
+                  عرض تفاعلي لشجرة العائلة - {familyTree.length} أجيال
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 bg-card/50 rounded-lg p-2">
+                <Button variant="ghost" size="sm" onClick={handleZoomOut}>
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+                <span className="text-sm min-w-[3rem] text-center">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleZoomIn}>
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleResetZoom}>
+                  <Maximize className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <Button
+                onClick={() => navigate('/family-overview')}
+                variant="outline"
+                className="gap-2"
+              >
+                <Users className="h-4 w-4" />
+                إدارة الأعضاء
+              </Button>
+              <Button
+                onClick={() => navigate('/family-statistics')}
+                variant="outline"
+                className="gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                الإحصائيات
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tree Container */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="bg-card/30 backdrop-blur-sm rounded-xl border border-primary/20 p-6 min-h-[600px] overflow-auto">
+          <div 
+            className="transition-transform duration-300"
+            style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
+          >
+            {familyTree.length > 0 ? (
+              <div className="space-y-12">
+                {familyTree.map(([generation, members]) => (
+                  <div key={generation} className="text-center">
+                    {/* Generation Header */}
+                    <div className="mb-8">
+                      <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-primary to-accent text-white">
+                        الجيل {generation}
+                      </Badge>
+                    </div>
+
+                    {/* Members in this generation */}
+                    <div className="flex flex-wrap justify-center gap-8 mb-8">
+                      {members.map((member: any) => {
+                        // Find spouse for this member
+                        const marriage = familyMarriages.find(m => 
+                          m.husband?.id === member.id || m.wife?.id === member.id
+                        );
+                        const spouse = marriage ? 
+                          (marriage.husband?.id === member.id ? marriage.wife : marriage.husband) : null;
+
+                        return (
+                          <div key={member.id} className="flex items-center gap-4">
+                            {/* Member Card */}
+                            <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-12 w-12">
+                                  <AvatarImage src={member.image} />
+                                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                                    {member.name.slice(0, 2)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="text-right">
+                                  <h3 className="font-semibold text-foreground">{member.name}</h3>
+                                  <div className="flex gap-2 mt-1">
+                                    {member.isFounder && (
+                                      <Badge variant="secondary" className="text-xs">مؤسس</Badge>
+                                    )}
+                                    <Badge variant="outline" className="text-xs">
+                                      {member.gender === "male" ? "ذكر" : "أنثى"}
+                                    </Badge>
+                                  </div>
+                                  {member.birthDate && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      {new Date(member.birthDate).getFullYear()}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </Card>
+
+                            {/* Marriage Line */}
+                            {spouse && (
+                              <>
+                                <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
+                                
+                                {/* Spouse Card */}
+                                <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                                  <div className="flex items-center gap-3">
+                                    <Avatar className="h-12 w-12">
+                                      <AvatarImage src={spouse.image} />
+                                      <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                                        {spouse.name.slice(0, 2)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div className="text-right">
+                                      <h3 className="font-semibold text-foreground">{spouse.name}</h3>
+                                      <div className="flex gap-2 mt-1">
+                                        <Badge variant="outline" className="text-xs">
+                                          {spouse.gender === "male" ? "ذكر" : "أنثى"}
+                                        </Badge>
+                                      </div>
+                                      {spouse.birthDate && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {new Date(spouse.birthDate).getFullYear()}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Card>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Connection Line to next generation */}
+                    {generation < Math.max(...familyTree.map(([gen]) => gen)) && (
+                      <div className="flex justify-center">
+                        <div className="w-0.5 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-24">
+                <Users className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
+                <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
+                  لا توجد شجرة عائلة بعد
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  ابدأ ببناء شجرة عائلتك بإضافة أول عضو
+                </p>
+                <Button
+                  onClick={() => navigate('/family-overview')}
+                  className="gap-2 bg-gradient-to-r from-primary to-accent"
+                >
+                  <Users className="h-4 w-4" />
+                  إدارة الأعضاء
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <SharedFooter />
+    </div>
+  );
+};
+
+export default FamilyTreeView;

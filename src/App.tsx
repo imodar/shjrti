@@ -16,6 +16,9 @@ import Dashboard from "./pages/Dashboard";
 import DashboardBackup from "./pages/DashboardBackup";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
+import FamilyOverview from "./pages/FamilyOverview";
+import FamilyTreeView from "./pages/FamilyTreeView";
+import FamilyStatistics from "./pages/FamilyStatistics";
 import FamilyBuilder2 from "./pages/FamilyBuilder2";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
@@ -63,6 +66,21 @@ const App = () => (
                 <Route path="/family-builder" element={
                   <ProtectedRoute requireActiveSubscription={true}>
                     <FamilyBuilder />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-overview" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyOverview />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-tree-view" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyTreeView />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-statistics" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyStatistics />
                   </ProtectedRoute>
                 } />
                 <Route path="/family-builder2" element={
