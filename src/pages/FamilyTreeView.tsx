@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,6 +25,140 @@ const FamilyTreeView = () => {
   useEffect(() => {
     fetchFamilyTreeData();
   }, []);
+
+  // Generate family tree structure using useMemo to avoid recalculation
+  const familyTree = useMemo(() => {
+    console.log('Generating family tree with members:', familyMembers.length);
+    
+    if (familyMembers.length === 0) return [];
+    
+    const generationMap = new Map();
+    
+    // STEP 1: Only actual founders (is_founder = true) start as generation 1
+    familyMembers.forEach(member => {
+      if (member.is_founder) {
+        generationMap.set(member.id, 1);
+        console.log(`Setting ${member.name} as generation 1 (founder: ${member.is_founder})`);
+      }
+    });
+    
+    console.log('Initial founders:', Array.from(generationMap.entries()));
+    
+    // STEP 2: Assign spouses of founders to generation 1
+    familyMarriages.forEach(marriage => {
+      const husbandGeneration = generationMap.get(marriage.husband_id);
+      const wifeGeneration = generationMap.get(marriage.wife_id);
+      
+      if (husbandGeneration && !wifeGeneration) {
+        generationMap.set(marriage.wife_id, husbandGeneration);
+        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
+      } else if (wifeGeneration && !husbandGeneration) {
+        generationMap.set(marriage.husband_id, wifeGeneration);
+        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
+      }
+    });
+    
+    // STEP 3: Recursively assign generations based on parent-child relationships
+    let changed = true;
+    let maxIterations = 50;
+    let iterations = 0;
+    
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      
+      familyMembers.forEach(member => {
+        if (!generationMap.has(member.id)) {
+          if (member.father_id || member.mother_id) {
+            const fatherGeneration = member.father_id ? generationMap.get(member.father_id) : undefined;
+            const motherGeneration = member.mother_id ? generationMap.get(member.mother_id) : undefined;
+            
+            if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+              const parentGeneration = Math.max(
+                fatherGeneration || 0, 
+                motherGeneration || 0
+              );
+              generationMap.set(member.id, parentGeneration + 1);
+              console.log(`Setting ${member.name} as generation ${parentGeneration + 1} (child of parents)`);
+              changed = true;
+            }
+          }
+        }
+      });
+    }
+    
+    // STEP 4: Assign spouses of all members to same generation  
+    familyMarriages.forEach(marriage => {
+      const husbandGeneration = generationMap.get(marriage.husband_id);
+      const wifeGeneration = generationMap.get(marriage.wife_id);
+      
+      if (husbandGeneration && !wifeGeneration) {
+        generationMap.set(marriage.wife_id, husbandGeneration);
+        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
+      } else if (wifeGeneration && !husbandGeneration) {
+        generationMap.set(marriage.husband_id, wifeGeneration);
+        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
+      }
+    });
+
+    console.log('Generation map after assignments:', Array.from(generationMap.entries()));
+
+    // Group by generation
+    const generations = new Map();
+    generationMap.forEach((generation, memberId) => {
+      if (!generations.has(generation)) {
+        generations.set(generation, []);
+      }
+      const member = familyMembers.find(m => m.id === memberId);
+      if (member) {
+        generations.get(generation).push(member);
+      }
+    });
+
+    const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
+    console.log('Final generations structure:', result);
+    return result;
+  }, [familyMembers, familyMarriages]);
+
+  // Calculate line coordinates after component renders
+  useEffect(() => {
+    const calculateLines = () => {
+      const newLines: typeof lines = [];
+
+      familyTree.forEach(([generation, members]) => {
+        members.forEach((member: any) => {
+          const children = getChildrenOf(member.id);
+          const fromEl = memberRefs.current[member.id];
+          if (!fromEl) return;
+
+          const fromRect = fromEl.getBoundingClientRect();
+          const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
+          const fromY = fromRect.bottom + window.scrollY;
+
+          children.forEach((child) => {
+            const toEl = memberRefs.current[child.id];
+            if (!toEl) return;
+
+            const toRect = toEl.getBoundingClientRect();
+            const toX = toRect.left + toRect.width / 2 + window.scrollX;
+            const toY = toRect.top + window.scrollY;
+
+            newLines.push({ x1: fromX, y1: fromY, x2: toX, y2: toY });
+          });
+        });
+      });
+
+      setLines(newLines);
+    };
+
+    // Use timeout to ensure DOM is fully rendered
+    const timeoutId = setTimeout(calculateLines, 100);
+    return () => clearTimeout(timeoutId);
+  }, [familyTree, zoomLevel]);
 
   const fetchFamilyTreeData = async () => {
     try {
@@ -197,143 +331,8 @@ const FamilyTreeView = () => {
     );
   }
 
-  // Generate family tree structure by generations
-  const generateFamilyTree = () => {
-    console.log('Generating family tree with members:', familyMembers.length);
-    
-    if (familyMembers.length === 0) return [];
-    
-    const generationMap = new Map();
-    
-    // STEP 1: Only actual founders (is_founder = true) start as generation 1
-    familyMembers.forEach(member => {
-      if (member.is_founder) {
-        generationMap.set(member.id, 1);
-        console.log(`Setting ${member.name} as generation 1 (founder: ${member.is_founder})`);
-      }
-    });
-    
-    console.log('Initial founders:', Array.from(generationMap.entries()));
-    
-    // STEP 2: Assign spouses of founders to generation 1
-    familyMarriages.forEach(marriage => {
-      const husbandGeneration = generationMap.get(marriage.husband_id);
-      const wifeGeneration = generationMap.get(marriage.wife_id);
-      
-      if (husbandGeneration && !wifeGeneration) {
-        generationMap.set(marriage.wife_id, husbandGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
-      } else if (wifeGeneration && !husbandGeneration) {
-        generationMap.set(marriage.husband_id, wifeGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
-      }
-    });
-    
-    // STEP 3: Recursively assign generations based on parent-child relationships
-    let changed = true;
-    let maxIterations = 50;
-    let iterations = 0;
-    
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      
-      familyMembers.forEach(member => {
-        if (!generationMap.has(member.id)) {
-          if (member.father_id || member.mother_id) {
-            const fatherGeneration = member.father_id ? generationMap.get(member.father_id) : undefined;
-            const motherGeneration = member.mother_id ? generationMap.get(member.mother_id) : undefined;
-            
-            if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-              const parentGeneration = Math.max(
-                fatherGeneration || 0, 
-                motherGeneration || 0
-              );
-              generationMap.set(member.id, parentGeneration + 1);
-              console.log(`Setting ${member.name} as generation ${parentGeneration + 1} (child of parents)`);
-              changed = true;
-            }
-          }
-        }
-      });
-    }
-    
-    // STEP 4: Assign spouses of all members to same generation  
-    familyMarriages.forEach(marriage => {
-      const husbandGeneration = generationMap.get(marriage.husband_id);
-      const wifeGeneration = generationMap.get(marriage.wife_id);
-      
-      if (husbandGeneration && !wifeGeneration) {
-        generationMap.set(marriage.wife_id, husbandGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
-      } else if (wifeGeneration && !husbandGeneration) {
-        generationMap.set(marriage.husband_id, wifeGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
-      }
-    });
-
-    console.log('Generation map after assignments:', Array.from(generationMap.entries()));
-
-    // Group by generation
-    const generations = new Map();
-    generationMap.forEach((generation, memberId) => {
-      if (!generations.has(generation)) {
-        generations.set(generation, []);
-      }
-      const member = familyMembers.find(m => m.id === memberId);
-      if (member) {
-        generations.get(generation).push(member);
-      }
-    });
-
-    const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
-    console.log('Final generations structure:', result);
-    return result;
-  };
-
-  const familyTree = generateFamilyTree();
   console.log('Family tree for rendering:', familyTree);
   console.log('Family tree length:', familyTree.length);
-
-  // Calculate line coordinates after component renders
-  useEffect(() => {
-    const calculateLines = () => {
-      const newLines: typeof lines = [];
-
-      familyTree.forEach(([generation, members]) => {
-        members.forEach((member: any) => {
-          const children = getChildrenOf(member.id);
-          const fromEl = memberRefs.current[member.id];
-          if (!fromEl) return;
-
-          const fromRect = fromEl.getBoundingClientRect();
-          const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
-          const fromY = fromRect.bottom + window.scrollY;
-
-          children.forEach((child) => {
-            const toEl = memberRefs.current[child.id];
-            if (!toEl) return;
-
-            const toRect = toEl.getBoundingClientRect();
-            const toX = toRect.left + toRect.width / 2 + window.scrollX;
-            const toY = toRect.top + window.scrollY;
-
-            newLines.push({ x1: fromX, y1: fromY, x2: toX, y2: toY });
-          });
-        });
-      });
-
-      setLines(newLines);
-    };
-
-    // Use timeout to ensure DOM is fully rendered
-    const timeoutId = setTimeout(calculateLines, 100);
-    return () => clearTimeout(timeoutId);
-  }, [familyTree, zoomLevel]);
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
