@@ -493,6 +493,33 @@ const FamilyTreeView = () => {
                         transform: 'translateX(-50%)'
                       }}
                     ></div>
+                    
+                    {/* خط أفقي للأطفال الثلاثة */}
+                    <div 
+                      className="absolute h-1 bg-gradient-to-r from-primary to-accent"
+                      style={{ 
+                        top: 'calc(100% + 80px)', 
+                        left: 'calc(50% - 160px)', 
+                        width: '320px' 
+                      }}
+                    ></div>
+                    
+                    {/* خطوط عمودية للأطفال */}
+                    {/* مضر */}
+                    <div 
+                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 80px)', left: 'calc(50% - 160px)' }}
+                    ></div>
+                    {/* زينة */}
+                    <div 
+                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 80px)', left: '50%', transform: 'translateX(-50%)' }}
+                    ></div>
+                    {/* ربى */}
+                    <div 
+                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 80px)', left: 'calc(50% + 160px)' }}
+                    ></div>
                   </div>
 
                   {/* الجيل الثاني - مضر وزينة وربى */}
