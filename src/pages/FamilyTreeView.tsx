@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,8 +18,6 @@ const FamilyTreeView = () => {
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [lines, setLines] = useState<{ x1: number, y1: number, x2: number, y2: number }[]>([]);
-  const memberRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
 
   // Fetch family tree data from database
   useEffect(() => {
@@ -186,6 +184,16 @@ const FamilyTreeView = () => {
       </div>
     );
   };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Generate family tree structure by generations
   const generateFamilyTree = () => {
@@ -285,65 +293,13 @@ const FamilyTreeView = () => {
     return result;
   };
 
-  // Generate family tree structure using useMemo to prevent re-calculation on every render
-  const familyTree = React.useMemo(() => {
-    return generateFamilyTree();
-  }, [familyMembers, familyMarriages]);
-
+  const familyTree = generateFamilyTree();
   console.log('Family tree for rendering:', familyTree);
   console.log('Family tree length:', familyTree.length);
-
-  // تحديث الخطوط بعد تحميل المربعات
-  useEffect(() => {
-    if (familyTree.length === 0) return;
-    
-    // Wait for next tick to ensure DOM is updated
-    const timeoutId = setTimeout(() => {
-      const newLines: typeof lines = [];
-
-      familyTree.forEach(([generation, members]) => {
-        members.forEach((member: any) => {
-          const children = getChildrenOf(member.id);
-          const fromEl = memberRefs.current[member.id];
-          if (!fromEl) return;
-
-          const fromRect = fromEl.getBoundingClientRect();
-          const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
-          const fromY = fromRect.bottom + window.scrollY;
-
-          children.forEach((child) => {
-            const toEl = memberRefs.current[child.id];
-            if (!toEl) return;
-
-            const toRect = toEl.getBoundingClientRect();
-            const toX = toRect.left + toRect.width / 2 + window.scrollX;
-            const toY = toRect.top + window.scrollY;
-
-            newLines.push({ x1: fromX, y1: fromY, x2: toX, y2: toY });
-          });
-        });
-      });
-
-      setLines(newLines);
-    }, 100);
-
-    return () => clearTimeout(timeoutId);
-  }, [familyTree, familyMembers]);
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setZoomLevel(1);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
