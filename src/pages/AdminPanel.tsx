@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, BarChart3, Store } from "lucide-react";
+import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, BarChart3, Store, Trash2, Save, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +28,7 @@ interface PackageType {
   display_order: number | null;
   is_active: boolean;
   is_featured: boolean;
+  features?: any;
 }
 
 interface UserProfile {
@@ -103,7 +105,8 @@ export default function AdminPanel() {
     max_family_trees: 1,
     display_order: 0,
     is_active: true,
-    is_featured: false
+    is_featured: false,
+    features: []
   });
 
   useEffect(() => {
@@ -260,7 +263,8 @@ export default function AdminPanel() {
         max_family_trees: 1,
         display_order: 0,
         is_active: true,
-        is_featured: false
+        is_featured: false,
+        features: []
       });
     } catch (error) {
       console.error('Error adding package:', error);
@@ -312,7 +316,8 @@ export default function AdminPanel() {
             max_family_trees: pkg.max_family_trees || 1,
             display_order: pkg.display_order || 0,
             is_active: pkg.is_active,
-            is_featured: pkg.is_featured
+            is_featured: pkg.is_featured,
+            features: pkg.features || []
           })
           .eq('id', pkg.id);
 
@@ -522,137 +527,312 @@ export default function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="packages" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Existing Packages</CardTitle>
-                <CardDescription>Manage subscription packages with language-based pricing</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {packages.map((pkg) => (
-                    <div key={pkg.id} className="grid grid-cols-12 gap-4 items-center p-4 border rounded-lg">
-                      <div className="col-span-2">
+            <Tabs defaultValue="overview" className="space-y-4">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="overview">Package Overview</TabsTrigger>
+                <TabsTrigger value="features">Manage Features</TabsTrigger>
+                <TabsTrigger value="create">Create Package</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Package Management</CardTitle>
+                    <CardDescription>Manage subscription packages and their settings</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-6">
+                      {packages.map((pkg) => (
+                        <Card key={pkg.id} className={`border-2 ${pkg.is_featured ? 'border-primary' : 'border-border'}`}>
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <CardTitle className="text-lg">{pkg.name}</CardTitle>
+                                {pkg.is_featured && (
+                                  <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
+                                    Featured
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  checked={pkg.is_active}
+                                  onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_active', checked)}
+                                />
+                                <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Package Name</Label>
+                                <Input
+                                  value={pkg.name || ''}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'name', e.target.value)}
+                                  placeholder="Package Name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Description</Label>
+                                <Input
+                                  value={pkg.description || ''}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'description', e.target.value)}
+                                  placeholder="Package Description"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Display Order</Label>
+                                <Input
+                                  type="number"
+                                  value={pkg.display_order || 0}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'display_order', Number(e.target.value))}
+                                  placeholder="Display Order"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Price USD ($)</Label>
+                                <Input
+                                  type="number"
+                                  value={pkg.price_usd || 0}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'price_usd', Number(e.target.value))}
+                                  placeholder="0.00"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Price SAR (ر.س)</Label>
+                                <Input
+                                  type="number"
+                                  value={pkg.price_sar || 0}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'price_sar', Number(e.target.value))}
+                                  placeholder="0.00"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Max Family Members</Label>
+                                <Input
+                                  type="number"
+                                  value={pkg.max_family_members || 0}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
+                                  placeholder="100"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Max Family Trees</Label>
+                                <Input
+                                  type="number"
+                                  value={pkg.max_family_trees || 0}
+                                  onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_trees', Number(e.target.value))}
+                                  placeholder="1"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`featured-${pkg.id}`}
+                                  checked={pkg.is_featured}
+                                  onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_featured', checked)}
+                                />
+                                <Label htmlFor={`featured-${pkg.id}`} className="text-sm">Mark as Featured Package</Label>
+                              </div>
+                            </div>
+
+                            {/* Package Features Display */}
+                            {pkg.features && (
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Current Features</Label>
+                                <div className="flex flex-wrap gap-2">
+                                  {Array.isArray(pkg.features) ? pkg.features.map((feature, index) => (
+                                    <span key={index} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs">
+                                      {typeof feature === 'string' ? feature : feature.name || 'Feature'}
+                                    </span>
+                                  )) : (
+                                    <span className="text-muted-foreground text-sm">No features configured</span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                    <Button className="mt-6 w-full" onClick={handleBulkUpdatePackages}>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All Changes
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="features" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Manage Package Features</CardTitle>
+                    <CardDescription>Configure features for each subscription package</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {packages.map((pkg) => (
+                      <Card key={pkg.id} className="border">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base">{pkg.name} Features</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium">Features (JSON Format)</Label>
+                              <Textarea
+                                value={pkg.features ? JSON.stringify(pkg.features, null, 2) : '[]'}
+                                onChange={(e) => {
+                                  try {
+                                    const features = JSON.parse(e.target.value);
+                                    handlePackageInputChange(pkg.id, 'features', features);
+                                  } catch {
+                                    // Invalid JSON, handle gracefully
+                                  }
+                                }}
+                                placeholder={`[
+  "Unlimited family members",
+  "Advanced family tree visualization",
+  "Export to PDF",
+  "Premium support"
+]`}
+                                className="min-h-[120px] font-mono text-sm"
+                              />
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Enter features as a JSON array of strings or objects with name properties
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="create" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create New Package</CardTitle>
+                    <CardDescription>Add a new subscription package with all settings</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Package Name</Label>
                         <Input
-                          placeholder="Package Name"
-                          value={pkg.name || ''}
-                          onChange={(e) => handlePackageInputChange(pkg.id, 'name', e.target.value)}
+                          placeholder="e.g., Premium Plan"
+                          value={newPackage.name || ''}
+                          onChange={(e) => handleNewPackageInputChange('name', e.target.value)}
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Description</Label>
                         <Input
-                          type="number"
-                          placeholder="Price USD"
-                          value={pkg.price_usd || 0}
-                          onChange={(e) => handlePackageInputChange(pkg.id, 'price_usd', Number(e.target.value))}
+                          placeholder="Brief description of the package"
+                          value={newPackage.description || ''}
+                          onChange={(e) => handleNewPackageInputChange('description', e.target.value)}
                         />
-                      </div>
-                      <div className="col-span-2">
-                        <Input
-                          type="number"
-                          placeholder="Price SAR"
-                          value={pkg.price_sar || 0}
-                          onChange={(e) => handlePackageInputChange(pkg.id, 'price_sar', Number(e.target.value))}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Input
-                          type="number"
-                          placeholder="Max Members"
-                          value={pkg.max_family_members || 0}
-                          onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Input
-                          type="number"
-                          placeholder="Max Trees"
-                          value={pkg.max_family_trees || 0}
-                          onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_trees', Number(e.target.value))}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Input
-                          type="number"
-                          placeholder="Order"
-                          value={pkg.display_order || 0}
-                          onChange={(e) => handlePackageInputChange(pkg.id, 'display_order', Number(e.target.value))}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`featured-${pkg.id}`}
-                            checked={pkg.is_featured}
-                            onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_featured', checked)}
-                          />
-                          <Label htmlFor={`featured-${pkg.id}`} className="text-sm">Featured</Label>
-                        </div>
-                      </div>
-                      <div className="col-span-1">
-                        <Switch
-                          checked={pkg.is_active}
-                          onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_active', checked)}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
-                          Delete
-                        </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-                <Button className="mt-4" onClick={handleBulkUpdatePackages}>
-                  Update All Packages
-                </Button>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Package</CardTitle>
-                <CardDescription>Create a new subscription package</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Package Name"
-                    value={newPackage.name || ''}
-                    onChange={(e) => handleNewPackageInputChange('name', e.target.value)}
-                  />
-                  <Input
-                    placeholder="Description"
-                    value={newPackage.description || ''}
-                    onChange={(e) => handleNewPackageInputChange('description', e.target.value)}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Price USD"
-                    value={newPackage.price_usd || 0}
-                    onChange={(e) => handleNewPackageInputChange('price_usd', Number(e.target.value))}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Price SAR"
-                    value={newPackage.price_sar || 0}
-                    onChange={(e) => handleNewPackageInputChange('price_sar', Number(e.target.value))}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max Family Members"
-                    value={newPackage.max_family_members || 0}
-                    onChange={(e) => handleNewPackageInputChange('max_family_members', Number(e.target.value))}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max Family Trees"
-                    value={newPackage.max_family_trees || 0}
-                    onChange={(e) => handleNewPackageInputChange('max_family_trees', Number(e.target.value))}
-                  />
-                </div>
-                <Button className="mt-4" onClick={handleAddPackage}>Add Package</Button>
-              </CardContent>
-            </Card>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Price USD ($)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={newPackage.price_usd || 0}
+                          onChange={(e) => handleNewPackageInputChange('price_usd', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Price SAR (ر.س)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={newPackage.price_sar || 0}
+                          onChange={(e) => handleNewPackageInputChange('price_sar', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Max Family Members</Label>
+                        <Input
+                          type="number"
+                          placeholder="100"
+                          value={newPackage.max_family_members || 0}
+                          onChange={(e) => handleNewPackageInputChange('max_family_members', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Max Family Trees</Label>
+                        <Input
+                          type="number"
+                          placeholder="1"
+                          value={newPackage.max_family_trees || 0}
+                          onChange={(e) => handleNewPackageInputChange('max_family_trees', Number(e.target.value))}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Display Order</Label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          value={newPackage.display_order || 0}
+                          onChange={(e) => handleNewPackageInputChange('display_order', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="flex items-center space-x-2 pt-7">
+                        <Checkbox
+                          id="new-featured"
+                          checked={newPackage.is_featured || false}
+                          onCheckedChange={(checked) => handleNewPackageInputChange('is_featured', checked)}
+                        />
+                        <Label htmlFor="new-featured" className="text-sm">Mark as Featured Package</Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Package Features (JSON)</Label>
+                      <Textarea
+                        value={newPackage.features ? JSON.stringify(newPackage.features, null, 2) : '[]'}
+                        onChange={(e) => {
+                          try {
+                            const features = JSON.parse(e.target.value);
+                            handleNewPackageInputChange('features', features);
+                          } catch {
+                            // Invalid JSON, handle gracefully
+                          }
+                        }}
+                        placeholder={`[
+  "Feature 1",
+  "Feature 2",
+  "Feature 3"
+]`}
+                        className="min-h-[100px] font-mono text-sm"
+                      />
+                    </div>
+
+                    <Button className="w-full" onClick={handleAddPackage}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Package
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="families" className="space-y-6">
