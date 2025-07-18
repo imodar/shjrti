@@ -1,37 +1,159 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown } from "lucide-react";
+import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Profile() {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({
-    name: "أحمد محمد الأحمد",
-    email: "ahmed.ahmad@email.com",
-    phone: "+966 50 123 4567",
-    location: "الرياض، المملكة العربية السعودية",
-    bio: "مهتم بحفظ تاريخ العائلة وتوثيق الأنساب للأجيال القادمة",
-    joinDate: "2024-01-15"
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    joinDate: ""
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here would be the actual save logic
+  useEffect(() => {
+    if (user) {
+      fetchProfileData();
+    }
+  }, [user]);
+
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch profile data from database
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "خطأ في التحميل",
+          description: "حدث خطأ أثناء تحميل البيانات",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Set profile data from database or fallback to user auth data
+      const userData = {
+        firstName: profileData?.first_name || user?.email?.split('@')[0] || "",
+        lastName: profileData?.last_name || "",
+        email: profileData?.email || user?.email || "",
+        phone: profileData?.phone || "",
+        joinDate: profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ar-SA') : new Date().toLocaleDateString('ar-SA')
+      };
+
+      setProfileData(userData);
+      
+    } catch (error) {
+      console.error('Error in fetchProfileData:', error);
+      toast({
+        title: "خطأ في التحميل",
+        description: "حدث خطأ أثناء تحميل البيانات",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+
+      // Update profile in database
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user?.id,
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          email: profileData.email,
+          phone: profileData.phone,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast({
+          title: "خطأ في الحفظ",
+          description: "حدث خطأ أثناء حفظ البيانات",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setIsEditing(false);
+      toast({
+        title: "تم الحفظ",
+        description: "تم حفظ معلوماتك الشخصية بنجاح"
+      });
+
+    } catch (error) {
+      console.error('Error in handleSave:', error);
+      toast({
+        title: "خطأ في الحفظ",
+        description: "حدث خطأ أثناء حفظ البيانات",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset form data
+    // Reset form data to original values
+    fetchProfileData();
   };
+
+  const getDisplayName = () => {
+    const fullName = `${profileData.firstName} ${profileData.lastName}`.trim();
+    return fullName || profileData.email || "مستخدم";
+  };
+
+  const getInitials = () => {
+    if (profileData.firstName && profileData.lastName) {
+      return `${profileData.firstName[0]}${profileData.lastName[0]}`;
+    } else if (profileData.firstName) {
+      return profileData.firstName.slice(0, 2);
+    } else if (profileData.email) {
+      return profileData.email.slice(0, 2).toUpperCase();
+    }
+    return "مس";
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
@@ -181,7 +303,7 @@ export default function Profile() {
                   <Avatar className="w-24 h-24 mx-auto">
                     <AvatarImage src="/placeholder.svg" />
                     <AvatarFallback className="text-2xl bg-emerald-100 text-emerald-600">
-                      {profileData.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      {getInitials()}
                     </AvatarFallback>
                   </Avatar>
                   <Button 
@@ -192,7 +314,7 @@ export default function Profile() {
                   </Button>
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                  {profileData.name}
+                  {getDisplayName()}
                 </h3>
                 <p className="text-muted-foreground mb-4">{profileData.email}</p>
                 <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
@@ -239,11 +361,11 @@ export default function Profile() {
                     </Button>
                   ) : (
                     <div className="flex gap-2">
-                      <Button onClick={handleSave} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                      <Button onClick={handleSave} size="sm" className="bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
                         <Save className="h-4 w-4 mr-2" />
                         حفظ
                       </Button>
-                      <Button onClick={handleCancel} size="sm" variant="outline">
+                      <Button onClick={handleCancel} size="sm" variant="outline" disabled={loading}>
                         <X className="h-4 w-4 mr-2" />
                         إلغاء
                       </Button>
@@ -254,15 +376,30 @@ export default function Profile() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="name">الاسم الكامل</Label>
+                    <Label htmlFor="firstName">الاسم الأول</Label>
                     <div className="relative">
                       <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="name"
-                        value={profileData.name}
-                        onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                        id="firstName"
+                        value={profileData.firstName}
+                        onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
                         disabled={!isEditing}
                         className="pr-10"
+                        placeholder="الاسم الأول"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">الاسم الأخير</Label>
+                    <div className="relative">
+                      <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="lastName"
+                        value={profileData.lastName}
+                        onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                        disabled={!isEditing}
+                        className="pr-10"
+                        placeholder="الاسم الأخير"
                       />
                     </div>
                   </div>
@@ -290,33 +427,10 @@ export default function Profile() {
                         onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
                         disabled={!isEditing}
                         className="pr-10"
+                        placeholder="رقم الهاتف"
                       />
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="location">الموقع</Label>
-                    <div className="relative">
-                      <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="location"
-                        value={profileData.location}
-                        onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                        disabled={!isEditing}
-                        className="pr-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="bio">نبذة شخصية</Label>
-                  <Textarea
-                    id="bio"
-                    value={profileData.bio}
-                    onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-                    disabled={!isEditing}
-                    rows={4}
-                    placeholder="اكتب نبذة عن نفسك..."
-                  />
                 </div>
                 
                 {/* Account Settings */}
