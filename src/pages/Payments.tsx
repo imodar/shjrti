@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Bell, LogOut, User, Users } from "lucide-react";
+import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Bell, LogOut, User, Users, Calendar, Download } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -26,6 +26,8 @@ export default function Payments() {
   const navigate = useNavigate();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [invoices, setInvoices] = useState([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [currentFamily, setCurrentFamily] = useState<any>(null);
@@ -114,6 +116,36 @@ export default function Payments() {
     }
   };
 
+  // Load user's invoices
+  const loadInvoices = async () => {
+    if (!user) return;
+    
+    try {
+      setInvoicesLoading(true);
+      const { data, error } = await supabase
+        .from('invoices')
+        .select(`
+          *,
+          packages (name)
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setInvoices(data || []);
+    } catch (error) {
+      console.error('Error loading invoices:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل الفواتير. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
+    } finally {
+      setInvoicesLoading(false);
+    }
+  };
+
   // Load user's current family and subscription
   const loadUserSubscription = async () => {
     if (!user) return;
@@ -148,6 +180,7 @@ export default function Payments() {
   useEffect(() => {
     loadPackages();
     loadUserSubscription();
+    loadInvoices();
   }, [user, currentLanguage]);
 
   const handleDeletePaymentMethod = (id: number) => {
@@ -210,8 +243,9 @@ export default function Payments() {
           throw new Error('Failed to complete free plan upgrade');
         }
 
-        // Reload subscription data
+        // Reload subscription data and invoices
         await loadUserSubscription();
+        await loadInvoices();
         
         toast({
           title: "🎉 تم تفعيل الخطة المجانية",
@@ -275,6 +309,19 @@ export default function Payments() {
     setPaymentMethods([...paymentMethods, newPaymentMethod]);
     setSelectedPaymentMethod(newPaymentMethod.id);
     setShowCreditCardForm(false);
+  };
+
+  const getInvoiceStatusBadge = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return <Badge className="bg-green-500 text-white">مدفوع</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-500 text-white">في انتظار الدفع</Badge>;
+      case 'overdue':
+        return <Badge className="bg-red-500 text-white">متأخر</Badge>;
+      default:
+        return <Badge className="bg-gray-500 text-white">{status}</Badge>;
+    }
   };
 
   const selectedPlanData = packages.find(p => p.id === selectedPlan);
@@ -925,11 +972,55 @@ export default function Payments() {
                 <CardTitle className="text-emerald-800 dark:text-emerald-200">سجل الفواتير</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>لا توجد فواتير بعد</p>
-                  <p className="text-sm">ستظهر فواتيرك هنا بعد الترقية لخطة مدفوعة</p>
-                </div>
+                {invoicesLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                    <p className="text-muted-foreground mt-2">جاري تحميل الفواتير...</p>
+                  </div>
+                ) : invoices.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>لا توجد فواتير بعد</p>
+                    <p className="text-sm">ستظهر فواتيرك هنا بعد الترقية لخطة مدفوعة</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {invoices.map((invoice: any) => (
+                      <div key={invoice.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="font-semibold text-lg">
+                                {invoice.invoice_number}
+                              </span>
+                              {getInvoiceStatusBadge(invoice.payment_status)}
+                            </div>
+                            <div className="text-sm text-muted-foreground space-y-1">
+                              <p>الخطة: {getLocalizedPackageField(invoice.packages, 'name') || 'غير محدد'}</p>
+                              <p className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4" />
+                                تاريخ الإنشاء: {new Date(invoice.created_at).toLocaleDateString('ar-SA')}
+                              </p>
+                              {invoice.due_date && (
+                                <p>تاريخ الاستحقاق: {new Date(invoice.due_date).toLocaleDateString('ar-SA')}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-emerald-600">
+                              {formatPrice(invoice.amount)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">{invoice.currency}</p>
+                            <Button variant="outline" size="sm" className="mt-2">
+                              <Download className="h-4 w-4 mr-1" />
+                              تحميل
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -939,11 +1030,11 @@ export default function Payments() {
         <Dialog open={showAddPaymentModal} onOpenChange={setShowAddPaymentModal}>
           <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
             <DialogHeader className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
                 <CreditCard className="h-8 w-8 text-white" />
               </div>
               
-              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent">
                 إضافة طريقة دفع للترقية
               </DialogTitle>
               
