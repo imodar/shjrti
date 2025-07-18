@@ -74,9 +74,13 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
   useEffect(() => {
     if (requireActiveSubscription && !subscriptionLoading && user) {
       console.log('ProtectedRoute: Checking subscription. isExpired:', isExpired, 'subscriptionLoading:', subscriptionLoading);
+      // Only redirect if we've finished loading AND subscription is expired
       if (isExpired) {
         console.log('ProtectedRoute: Subscription expired, redirecting to renew-subscription');
-        navigate('/renew-subscription');
+        // Add a small delay to ensure subscription context has been updated
+        setTimeout(() => {
+          navigate('/renew-subscription');
+        }, 100);
       }
     }
   }, [requireActiveSubscription, isExpired, subscriptionLoading, navigate, user]);

@@ -104,7 +104,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     await fetchSubscriptionDetails();
   };
 
-  const isExpired = subscription?.is_expired ?? true;
+  // Only consider expired if we have data and it's actually expired
+  const isExpired = subscription !== null ? (subscription?.is_expired ?? true) : true;
   const daysUntilExpiry = subscription?.days_until_expiry ?? null;
   const showExpiryWarning = !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 7;
 
