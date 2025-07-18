@@ -420,7 +420,7 @@ const FamilyBuilder = () => {
       if (member.fatherId) {
         const father = familyMembers.find(m => m.id === member.fatherId);
         if (father) {
-          return `ابن ${father.name}`;
+          return `ابن ${father.name} الشيخ سعيد`;
         }
       }
       return null; // Founders don't need "ابن" 
