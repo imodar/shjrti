@@ -69,17 +69,17 @@ const App = () => (
                   </ProtectedRoute>
                 } />
                 <Route path="/family-overview" element={
-                  <ProtectedRoute requireActiveSubscription={true}>
+                  <ProtectedRoute>
                     <FamilyOverview />
                   </ProtectedRoute>
                 } />
                 <Route path="/family-tree-view" element={
-                  <ProtectedRoute requireActiveSubscription={true}>
+                  <ProtectedRoute>
                     <FamilyTreeView />
                   </ProtectedRoute>
                 } />
                 <Route path="/family-statistics" element={
-                  <ProtectedRoute requireActiveSubscription={true}>
+                  <ProtectedRoute>
                     <FamilyStatistics />
                   </ProtectedRoute>
                 } />
