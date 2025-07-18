@@ -459,8 +459,8 @@ const FamilyTreeView = () => {
               >
                 <div className="relative min-h-[700px] flex flex-col items-center pt-8">
                   
-                  {/* الجيل الأول - أمير ورانية في دائرة واحدة */}
-                  <div className="relative mb-16">
+                  {/* الجيل الأول - أمير ورانية */}
+                  <div className="relative mb-20">
                     <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
                       <div className="flex items-center gap-4">
                         <div className="text-center">
@@ -483,26 +483,15 @@ const FamilyTreeView = () => {
                       </div>
                     </div>
                     
-                    {/* خط رئيسي من الزوجين للأطفال */}
-                    <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-primary to-accent"></div>
-                    
-                    {/* نقطة التفرع */}
-                    <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-accent" style={{ top: 'calc(100% + 64px)' }}></div>
-                    
-                    {/* الخطوط الأفقية للأطفال الثلاثة */}
-                    <div className="absolute left-1/2 transform -translate-x-1/2 h-1 bg-gradient-to-r from-primary to-accent" style={{ top: 'calc(100% + 72px)', width: '400px', left: 'calc(50% - 200px)' }}></div>
-                    
-                    {/* خطوط عمودية للأطفال */}
-                    {/* مضر - يسار */}
-                    <div className="absolute w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ top: 'calc(100% + 72px)', left: 'calc(50% - 133px)' }}></div>
-                    {/* زينة - وسط */}
-                    <div className="absolute w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ top: 'calc(100% + 72px)', left: 'calc(50% - 0.5px)' }}></div>
-                    {/* ربى - يمين */}
-                    <div className="absolute w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ top: 'calc(100% + 72px)', left: 'calc(50% + 133px)' }}></div>
+                    {/* خط عمودي من الزوجين */}
+                    <div 
+                      className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-primary to-accent"
+                      style={{ top: '100%' }}
+                    ></div>
                   </div>
 
                   {/* الجيل الثاني - مضر وزينة وربى */}
-                  <div className="relative mb-16">
+                  <div className="relative mb-20">
                     <div className="flex justify-center items-start gap-32">
                       {/* مضر */}
                       <div className="relative text-center">
@@ -516,9 +505,11 @@ const FamilyTreeView = () => {
                           <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
                         </Card>
                         
-                        {/* خط من مضر لأمير بن مضر */}
-                        <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-primary to-accent"></div>
-                        <div className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-primary" style={{ top: 'calc(100% + 64px)' }}></div>
+                        {/* خط عمودي من مضر لأمير بن مضر */}
+                        <div 
+                          className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-primary to-accent"
+                          style={{ top: '100%' }}
+                        ></div>
                       </div>
 
                       {/* زينة */}
@@ -533,9 +524,11 @@ const FamilyTreeView = () => {
                           <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
                         </Card>
                         
-                        {/* خط من زينة لمجد */}
-                        <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-accent to-primary"></div>
-                        <div className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-accent" style={{ top: 'calc(100% + 64px)' }}></div>
+                        {/* خط عمودي من زينة لمجد */}
+                        <div 
+                          className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                          style={{ top: '100%' }}
+                        ></div>
                       </div>
 
                       {/* ربى */}
@@ -551,6 +544,31 @@ const FamilyTreeView = () => {
                         </Card>
                       </div>
                     </div>
+                    
+                    {/* خط أفقي يصل الأطفال بالوالدين */}
+                    <div 
+                      className="absolute h-1 bg-gradient-to-r from-primary to-accent"
+                      style={{ 
+                        top: '-48px', 
+                        left: '50%', 
+                        transform: 'translateX(-50%)', 
+                        width: '280px' 
+                      }}
+                    ></div>
+                    
+                    {/* خطوط عمودية من الخط الأفقي للأطفال */}
+                    <div 
+                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: '-48px', left: 'calc(50% - 140px)' }}
+                    ></div>
+                    <div 
+                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: '-48px', left: '50%', transform: 'translateX(-50%)' }}
+                    ></div>
+                    <div 
+                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: '-48px', left: 'calc(50% + 140px)' }}
+                    ></div>
                   </div>
 
                   {/* الجيل الثالث */}
