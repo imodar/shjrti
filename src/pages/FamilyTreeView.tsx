@@ -483,39 +483,14 @@ const FamilyTreeView = () => {
                       </div>
                     </div>
                     
-                    {/* خطوط مباشرة من أمير ورانية للأطفال */}
-                    {/* خط مباشر لمضر */}
+                    {/* خط من أسفل الوالدين إلى أعلى وسط الجيل التالي */}
                     <div 
-                      className="absolute w-0.5 bg-gradient-to-b from-primary to-accent origin-top"
-                      style={{ 
-                        top: '100%', 
-                        left: 'calc(50% - 10px)',
-                        height: '180px',
-                        transform: 'rotate(-25deg)',
-                        transformOrigin: 'top'
-                      }}
-                    ></div>
-                    
-                    {/* خط مباشر لزينة */}
-                    <div 
-                      className="absolute w-0.5 bg-gradient-to-b from-primary to-accent"
+                      className="absolute w-1 bg-gradient-to-b from-primary to-accent"
                       style={{ 
                         top: '100%', 
                         left: '50%',
-                        height: '160px',
+                        height: '80px',
                         transform: 'translateX(-50%)'
-                      }}
-                    ></div>
-                    
-                    {/* خط مباشر لربى */}
-                    <div 
-                      className="absolute w-0.5 bg-gradient-to-b from-primary to-accent origin-top"
-                      style={{ 
-                        top: '100%', 
-                        left: 'calc(50% + 10px)',
-                        height: '180px',
-                        transform: 'rotate(25deg)',
-                        transformOrigin: 'top'
                       }}
                     ></div>
                   </div>
