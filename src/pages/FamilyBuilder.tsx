@@ -415,6 +415,7 @@ const FamilyBuilder = () => {
 
   // Function to get additional info for each member
   const getAdditionalInfo = (member) => {
+    console.log('getAdditionalInfo called for:', member.name);
     // For males from the same family (have fatherId or are founders)
     if (member.gender === 'male' && (member.fatherId || member.isFounder)) {
       if (member.fatherId) {
@@ -1531,13 +1532,17 @@ const FamilyBuilder = () => {
                              </div>
                              
                              {/* Additional info under name */}
-                             {getAdditionalInfo(member) && (
-                               <div className="mb-2">
-                                 <p className="text-sm text-muted-foreground/80 font-medium leading-relaxed">
-                                   {getAdditionalInfo(member)}
-                                 </p>
-                               </div>
-                             )}
+                             {(() => {
+                               const additionalInfo = getAdditionalInfo(member);
+                               console.log(`Additional info for ${member.name}:`, additionalInfo);
+                               return additionalInfo ? (
+                                 <div className="mb-2">
+                                   <p className="text-sm text-muted-foreground/80 font-medium leading-relaxed">
+                                     {additionalInfo}
+                                   </p>
+                                 </div>
+                               ) : null;
+                             })()}
                           </div>
 
                           {/* Actions Menu with Creative Design */}
