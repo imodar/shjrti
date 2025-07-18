@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,11 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [stats, setStats] = useState({
+    familiesCreated: 0,
+    totalMembers: 0,
+    lastActivity: "اليوم"
+  });
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -31,8 +37,59 @@ export default function Profile() {
   useEffect(() => {
     if (user) {
       fetchProfileData();
+      fetchUserStats();
     }
   }, [user]);
+
+  const fetchUserStats = async () => {
+    try {
+      if (!user?.id) return;
+
+      console.log('Fetching user stats for:', user.id);
+
+      // Get families created by the user
+      const { data: families, error: familiesError } = await supabase
+        .from('families')
+        .select('id')
+        .eq('creator_id', user.id);
+
+      if (familiesError) {
+        console.error('Error fetching families:', familiesError);
+        return;
+      }
+
+      const familiesCount = families?.length || 0;
+      console.log('Families created:', familiesCount);
+
+      // Get total family tree members from all user's families
+      let totalMembers = 0;
+      if (families && families.length > 0) {
+        const familyIds = families.map(family => family.id);
+        
+        const { count, error: membersError } = await supabase
+          .from('family_tree_members')
+          .select('id', { count: 'exact' })
+          .in('family_id', familyIds);
+
+        if (membersError) {
+          console.error('Error fetching family tree members:', membersError);
+        } else {
+          totalMembers = count || 0;
+        }
+      }
+
+      console.log('Total members:', totalMembers);
+
+      setStats({
+        familiesCreated: familiesCount,
+        totalMembers: totalMembers,
+        lastActivity: "اليوم"
+      });
+
+    } catch (error) {
+      console.error('Error in fetchUserStats:', error);
+    }
+  };
 
   const fetchProfileData = async () => {
     try {
@@ -209,7 +266,6 @@ export default function Profile() {
       <div className="relative z-10">
         {/* Header */}
         <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-gradient-to-r from-emerald-200/30 to-cyan-200/30 sticky top-0 z-50">
-          {/* Floating geometric shapes */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-2 right-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
             <div className="absolute top-6 right-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
@@ -218,7 +274,6 @@ export default function Profile() {
 
           <div className="container mx-auto px-6 py-6">
             <div className="flex items-center justify-between">
-              {/* Left side - Logo and Title */}
               <div className="flex items-center gap-6">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
@@ -238,9 +293,7 @@ export default function Profile() {
                 </div>
               </div>
               
-              {/* Right side - Actions and Profile */}
               <div className="flex items-center gap-6">
-                {/* Navigation Pills */}
                 <div className="hidden md:flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-full p-1 border border-emerald-200/50 dark:border-emerald-700/50">
                   <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20" asChild>
                     <Link to="/dashboard">الرئيسية</Link>
@@ -253,7 +306,6 @@ export default function Profile() {
                   </Button>
                 </div>
 
-                {/* Notification Bell */}
                 <div className="relative">
                   <Button variant="ghost" size="icon" className="relative bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full border border-emerald-200/30">
                     <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
@@ -263,7 +315,6 @@ export default function Profile() {
                   </Button>
                 </div>
                 
-                {/* User Profile */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-auto p-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-emerald-200/30">
@@ -331,7 +382,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Bottom gradient line */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
         </header>
 
@@ -373,15 +423,15 @@ export default function Profile() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">الأشجار المنشأة</span>
-                  <span className="font-medium">2</span>
+                  <span className="font-medium">{stats.familiesCreated}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">إجمالي الأفراد</span>
-                  <span className="font-medium">20</span>
+                  <span className="font-medium">{stats.totalMembers}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">آخر نشاط</span>
-                  <span className="font-medium">اليوم</span>
+                  <span className="font-medium">{stats.lastActivity}</span>
                 </div>
               </CardContent>
             </Card>
@@ -477,13 +527,11 @@ export default function Profile() {
                 
                 {/* Account Settings */}
                 <div className="relative mt-8">
-                  {/* Decorative gradient border */}
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-200 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-800 rounded-xl p-[1px]">
                     <div className="bg-white dark:bg-gray-800 rounded-xl h-full w-full"></div>
                   </div>
                   
                   <div className="relative bg-gradient-to-br from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl p-6 backdrop-blur-sm">
-                    {/* Icon and title with decorative elements */}
                     <div className="flex items-center gap-3 mb-6">
                       <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg blur-sm opacity-30"></div>
@@ -502,7 +550,6 @@ export default function Profile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Link to="/change-password" className="group">
                         <div className="relative overflow-hidden rounded-xl border border-emerald-200/50 dark:border-emerald-800/50 bg-white/50 dark:bg-gray-800/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-200/50 dark:hover:shadow-emerald-800/30 hover:-translate-y-1">
-                          {/* Hover gradient effect */}
                           <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/0 to-teal-100/0 group-hover:from-emerald-100/80 group-hover:to-teal-100/80 dark:group-hover:from-emerald-900/30 dark:group-hover:to-teal-900/30 transition-all duration-300"></div>
                           <div className="relative flex items-center gap-3">
                             <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 group-hover:scale-110 transition-transform duration-300">
@@ -532,7 +579,6 @@ export default function Profile() {
                       </Link>
                     </div>
                     
-                    {/* Danger Zone */}
                     <div className="mt-6 pt-6 border-t border-red-200/50 dark:border-red-800/50">
                       <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 rounded-xl p-4 border border-red-200/50 dark:border-red-800/50">
                         <div className="flex items-center gap-3 mb-3">
@@ -554,12 +600,10 @@ export default function Profile() {
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl" dir="rtl">
-                            {/* Gradient Background */}
                             <div className="absolute inset-0 bg-gradient-to-br from-red-50/90 via-pink-50/90 to-orange-50/90 dark:from-red-950/30 dark:via-pink-950/30 dark:to-orange-950/30 rounded-lg"></div>
                             
                             <div className="relative">
                               <DialogHeader className="text-center pb-6">
-                                {/* Sad emoji with animation */}
                                 <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-900/50 dark:to-pink-900/50 rounded-full flex items-center justify-center">
                                   <div className="text-4xl animate-pulse">😢</div>
                                 </div>
@@ -572,7 +616,6 @@ export default function Profile() {
                                 </DialogDescription>
                               </DialogHeader>
 
-                              {/* Warning Section */}
                               <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 mb-6">
                                 <div className="flex items-start gap-4">
                                   <div className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg">
@@ -600,7 +643,6 @@ export default function Profile() {
                                 </div>
                               </div>
 
-                              {/* Memories Section */}
                               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-6">
                                 <div className="flex items-center gap-3 mb-4">
                                   <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -608,11 +650,11 @@ export default function Profile() {
                                 </div>
                                 <div className="grid grid-cols-3 gap-4 text-center">
                                   <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</div>
+                                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.familiesCreated}</div>
                                     <div className="text-xs text-muted-foreground">أشجار منشأة</div>
                                   </div>
                                   <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">20</div>
+                                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.totalMembers}</div>
                                     <div className="text-xs text-muted-foreground">فرد مضاف</div>
                                   </div>
                                   <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
@@ -622,7 +664,6 @@ export default function Profile() {
                                 </div>
                               </div>
 
-                              {/* Confirmation Input */}
                               <div className="mb-6">
                                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                                   للتأكيد، اكتب <span className="font-bold text-red-600 dark:text-red-400">"احذف حسابي"</span> في المربع أدناه:
