@@ -109,6 +109,10 @@ const FamilyBuilder = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const { notifications, profile } = useDashboardData();
+  
+  // Package and subscription data
+  const [packageData, setPackageData] = useState(null);
+  const [subscriptionData, setSubscriptionData] = useState(null);
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
@@ -124,6 +128,32 @@ const FamilyBuilder = () => {
     const fetchFamilyData = async () => {
       try {
         setLoading(true);
+        
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+
+        // Get user's subscription details
+        const { data: subscription, error: subError } = await supabase
+          .rpc('get_user_subscription_details', { user_uuid: user.id })
+          .single();
+
+        if (subError) console.error('Subscription error:', subError);
+        if (subscription) {
+          setSubscriptionData(subscription);
+          
+          // Get package details
+          const { data: packageInfo, error: packageError } = await supabase
+            .from('packages')
+            .select('*')
+            .eq('id', subscription.subscription_id)
+            .single();
+
+          if (packageError) console.error('Package error:', packageError);
+          if (packageInfo) {
+            setPackageData(packageInfo);
+          }
+        }
         
         // Get user's families
         const { data: families, error: familiesError } = await supabase
@@ -412,6 +442,16 @@ const FamilyBuilder = () => {
   };
 
   const handleAddNewMember = () => {
+    // Check member limit before allowing to add
+    if (packageData && familyMembers.length >= packageData.max_family_members) {
+      toast({
+        title: "تم الوصول للحد الأقصى",
+        description: `لا يمكن إضافة أعضاء جدد. الحد الأقصى المسموح: ${packageData.max_family_members} عضو`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setSelectedMember(null);
     setCurrentStep(1);
     setShowAddMember(true);
@@ -1242,13 +1282,25 @@ const FamilyBuilder = () => {
                     {showNonBloodMembers ? "إخفاء غير الأقارب" : "إظهار غير الأقارب"}
                   </Button>
                   
-                  <Button
-                    onClick={handleAddNewMember}
-                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12"
-                  >
-                    <Plus className="mr-2 h-5 w-5" />
-                    إضافة فرد جديد
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    {packageData && (
+                      <Badge 
+                        variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
+                        className="px-3 py-1 text-sm"
+                      >
+                        {familyMembers.length} / {packageData.max_family_members} أعضاء
+                        {familyMembers.length >= packageData.max_family_members && " (تم الوصول للحد الأقصى)"}
+                      </Badge>
+                    )}
+                    <Button
+                      onClick={handleAddNewMember}
+                      disabled={packageData && familyMembers.length >= packageData.max_family_members}
+                      className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="mr-2 h-5 w-5" />
+                      إضافة فرد جديد
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -1403,18 +1455,39 @@ const FamilyBuilder = () => {
                 ))}
 
                 {/* Add New Member Card - يظهر بعد آخر عضو */}
-                <Card 
-                  className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl cursor-pointer group hover:from-primary/10 hover:to-accent/10 hover:border-primary/50 transition-all duration-300"
-                  onClick={handleAddNewMember}
-                >
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <Plus className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="font-bold text-primary text-lg mb-2">إضافة فرد جديد</h3>
-                    <p className="text-muted-foreground text-center text-sm">انقر هنا لإضافة عضو جديد إلى شجرة العائلة</p>
-                  </CardContent>
-                </Card>
+                {packageData && familyMembers.length >= packageData.max_family_members ? (
+                  <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/50 dark:to-red-900/50 border-2 border-red-200 dark:border-red-800 rounded-2xl">
+                    <CardContent className="p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
+                      <div className="w-16 h-16 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mb-4">
+                        <UserPlus className="h-8 w-8 text-red-600 dark:text-red-400" />
+                      </div>
+                      <h3 className="font-bold text-red-600 dark:text-red-400 text-lg mb-2">تم الوصول للحد الأقصى</h3>
+                      <p className="text-red-500 dark:text-red-300 text-center text-sm mb-4">
+                        لقد وصلت إلى الحد الأقصى المسموح ({packageData.max_family_members} أعضاء)
+                      </p>
+                      <Button 
+                        onClick={() => navigate('/payments')}
+                        variant="outline"
+                        className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        ترقية الباقة
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card 
+                    className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl cursor-pointer group hover:from-primary/10 hover:to-accent/10 hover:border-primary/50 transition-all duration-300"
+                    onClick={handleAddNewMember}
+                  >
+                    <CardContent className="p-6 flex flex-col items-center justify-center h-full min-h-[200px]">
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Plus className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="font-bold text-primary text-lg mb-2">إضافة فرد جديد</h3>
+                      <p className="text-muted-foreground text-center text-sm">انقر هنا لإضافة عضو جديد إلى شجرة العائلة</p>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </TabsContent>
 
