@@ -38,93 +38,93 @@ const App = () => (
       <LanguageProvider>
         <AuthProvider>
           <SubscriptionProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/home-backup" element={<IndexBackup />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard-backup" element={
-            <ProtectedRoute>
-              <DashboardBackup />
-            </ProtectedRoute>
-          } />
-          <Route path="/family-creator" element={
-            <ProtectedRoute requireActiveSubscription={true}>
-              <FamilyCreator />
-            </ProtectedRoute>
-          } />
-          <Route path="/family-builder" element={
-            <ProtectedRoute requireActiveSubscription={true}>
-              <FamilyBuilder />
-            </ProtectedRoute>
-          } />
-          <Route path="/family-builder2" element={
-            <ProtectedRoute requireActiveSubscription={true}>
-              <FamilyBuilder2 />
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/payments" element={
-            <ProtectedRoute>
-              <Payments />
-            </ProtectedRoute>
-          } />
-          <Route path="/payments2" element={
-            <ProtectedRoute>
-              <Payments2 />
-            </ProtectedRoute>
-          } />
-          <Route path="/plan-selection" element={
-            <ProtectedRoute>
-              <PlanSelection />
-            </ProtectedRoute>
-          } />
-          <Route path="/payment" element={
-            <ProtectedRoute>
-              <Payment />
-            </ProtectedRoute>
-          } />
-          <Route path="/change-password" element={
-            <ProtectedRoute>
-              <ChangePassword />
-            </ProtectedRoute>
-          } />
-          <Route path="/view-tree" element={
-            <ProtectedRoute>
-              <ViewTree />
-            </ProtectedRoute>
-          } />
-          <Route path="/store" element={
-            <ProtectedRoute>
-              <Store />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminPanel />
-            </ProtectedRoute>
-          } />
-          <Route path="/renew-subscription" element={
-            <ProtectedRoute>
-              <RenewSubscription />
-            </ProtectedRoute>
-          } />
-          <Route path="/terms" element={<Terms />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/home-backup" element={<IndexBackup />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard-backup" element={
+                  <ProtectedRoute>
+                    <DashboardBackup />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-creator" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyCreator />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-builder" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyBuilder />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-builder2" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyBuilder2 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/payments" element={
+                  <ProtectedRoute>
+                    <Payments />
+                  </ProtectedRoute>
+                } />
+                <Route path="/payments2" element={
+                  <ProtectedRoute>
+                    <Payments2 />
+                  </ProtectedRoute>
+                } />
+                <Route path="/plan-selection" element={
+                  <ProtectedRoute>
+                    <PlanSelection />
+                  </ProtectedRoute>
+                } />
+                <Route path="/payment" element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                } />
+                <Route path="/change-password" element={
+                  <ProtectedRoute>
+                    <ChangePassword />
+                  </ProtectedRoute>
+                } />
+                <Route path="/view-tree" element={
+                  <ProtectedRoute>
+                    <ViewTree />
+                  </ProtectedRoute>
+                } />
+                <Route path="/store" element={
+                  <ProtectedRoute>
+                    <Store />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                } />
+                <Route path="/renew-subscription" element={
+                  <ProtectedRoute>
+                    <RenewSubscription />
+                  </ProtectedRoute>
+                } />
+                <Route path="/terms" element={<Terms />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
           </SubscriptionProvider>
         </AuthProvider>
       </LanguageProvider>
