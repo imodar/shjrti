@@ -431,12 +431,23 @@ const FamilyBuilder = () => {
         const father = familyMembers.find(m => m.id === member.fatherId);
         console.log(`Father found for ${member.name}:`, father);
         if (father) {
-          const result = `ابن ${father.name} الشيخ سعيد`;
-          console.log(`Male result for ${member.name}:`, result);
-          return result;
+          // Check if father is from original family (has fatherId or is founder)
+          const fatherIsFromFamily = father.fatherId || father.isFounder;
+          console.log(`Father ${father.name} is from original family:`, fatherIsFromFamily);
+          
+          if (fatherIsFromFamily) {
+            const result = `ابن ${father.name} الشيخ سعيد`;
+            console.log(`Male result for ${member.name}:`, result);
+            return result;
+          } else {
+            console.log(`${member.name} father is not from original family, will check children case`);
+            // Don't return here, let it fall through to children case
+          }
         }
       }
-      return null; // Founders don't need "ابن" 
+      if (member.isFounder) {
+        return null; // Founders don't need "ابن"
+      }
     }
     
     // For wives (married women who are not from the original family)
