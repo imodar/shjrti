@@ -26,11 +26,13 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<SubscriptionDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
   const fetchSubscriptionDetails = async () => {
     if (!user) {
       setSubscription(null);
       setLoading(false);
+      setHasAttemptedFetch(true);
       return;
     }
 
@@ -82,6 +84,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       });
     } finally {
       setLoading(false);
+      setHasAttemptedFetch(true);
     }
   };
 
@@ -95,9 +98,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     await fetchSubscriptionDetails();
   };
 
-  // Only consider expired if we have finished loading AND have data AND it's actually expired
-  // While loading, don't consider it expired to prevent premature redirects
-  const isExpired = loading ? false : (subscription === null ? true : (subscription?.is_expired ?? true));
+  // Only consider expired if we have actually attempted to fetch data
+  // Don't consider expired until we have real data or confirmed no subscription exists
+  const isExpired = hasAttemptedFetch && !loading ? (subscription?.is_expired ?? true) : false;
   const daysUntilExpiry = subscription?.days_until_expiry ?? null;
   const showExpiryWarning = !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 7;
   
