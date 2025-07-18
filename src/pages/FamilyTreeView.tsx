@@ -197,6 +197,8 @@ const FamilyTreeView = () => {
 
   // Generate family tree structure by generations
   const generateFamilyTree = () => {
+    console.log('Generating family tree with members:', familyMembers.length);
+    
     if (familyMembers.length === 0) return [];
     
     const generationMap = new Map();
@@ -205,8 +207,11 @@ const FamilyTreeView = () => {
     familyMembers.forEach(member => {
       if (member.is_founder || (!member.father_id && !member.mother_id)) {
         generationMap.set(member.id, 1);
+        console.log(`Setting ${member.name} as generation 1 (founder: ${member.is_founder})`);
       }
     });
+    
+    console.log('Initial founders:', Array.from(generationMap.entries()));
     
     // Recursively assign generations
     let changed = true;
@@ -229,15 +234,19 @@ const FamilyTreeView = () => {
                 motherGeneration || 0
               );
               generationMap.set(member.id, parentGeneration + 1);
+              console.log(`Setting ${member.name} as generation ${parentGeneration + 1}`);
               changed = true;
             }
           } else {
             generationMap.set(member.id, 1);
+            console.log(`Setting ${member.name} as generation 1 (no parents)`);
             changed = true;
           }
         }
       });
     }
+    
+    console.log('Generation map after assignments:', Array.from(generationMap.entries()));
     
     // Assign spouses to same generation
     familyMarriages.forEach(marriage => {
@@ -246,8 +255,10 @@ const FamilyTreeView = () => {
       
       if (husbandGeneration && !wifeGeneration) {
         generationMap.set(marriage.wife_id, husbandGeneration);
+        console.log(`Setting wife to same generation as husband: ${husbandGeneration}`);
       } else if (wifeGeneration && !husbandGeneration) {
         generationMap.set(marriage.husband_id, wifeGeneration);
+        console.log(`Setting husband to same generation as wife: ${wifeGeneration}`);
       }
     });
 
@@ -263,7 +274,9 @@ const FamilyTreeView = () => {
       }
     });
 
-    return Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
+    const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
+    console.log('Final generations structure:', result);
+    return result;
   };
 
   const familyTree = generateFamilyTree();
