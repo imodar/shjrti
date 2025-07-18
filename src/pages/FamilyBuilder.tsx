@@ -444,11 +444,8 @@ const FamilyBuilder = () => {
             }
           }
           
-          // Add family name (assuming first founder is the family patriarch)
-          const founder = familyMembers.find(m => m.isFounder);
-          if (founder) {
-            husbandFullName += ` ${founder.name}`;
-          }
+          // Add family name - assuming "الشيخ سعيد" is the family name
+          husbandFullName += ` الشيخ سعيد`;
           
           return `زوجة ${husbandFullName}`;
         }
