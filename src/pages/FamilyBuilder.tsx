@@ -319,8 +319,9 @@ const FamilyBuilder = () => {
         return true;
         
       case "blood_relations":
-        // Show only blood relations (have fatherId or motherId or are founders)
-        return member.fatherId || member.motherId || member.isFounder;
+        // Show only direct blood relations from father's family (have fatherId or are founders)
+        // Do NOT show children of females who married into the family
+        return member.fatherId || member.isFounder;
         
       case "non_family":
         // Show members without spouses (not married into family)
