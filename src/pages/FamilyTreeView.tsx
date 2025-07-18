@@ -280,6 +280,8 @@ const FamilyTreeView = () => {
   };
 
   const familyTree = generateFamilyTree();
+  console.log('Family tree for rendering:', familyTree);
+  console.log('Family tree length:', familyTree.length);
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
