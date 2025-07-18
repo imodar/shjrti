@@ -203,9 +203,9 @@ const FamilyTreeView = () => {
     
     const generationMap = new Map();
     
-    // Start with founders as generation 1
+    // STEP 1: Only actual founders (is_founder = true) start as generation 1
     familyMembers.forEach(member => {
-      if (member.is_founder || (!member.father_id && !member.mother_id)) {
+      if (member.is_founder) {
         generationMap.set(member.id, 1);
         console.log(`Setting ${member.name} as generation 1 (founder: ${member.is_founder})`);
       }
@@ -213,7 +213,23 @@ const FamilyTreeView = () => {
     
     console.log('Initial founders:', Array.from(generationMap.entries()));
     
-    // Recursively assign generations
+    // STEP 2: Assign spouses of founders to generation 1
+    familyMarriages.forEach(marriage => {
+      const husbandGeneration = generationMap.get(marriage.husband_id);
+      const wifeGeneration = generationMap.get(marriage.wife_id);
+      
+      if (husbandGeneration && !wifeGeneration) {
+        generationMap.set(marriage.wife_id, husbandGeneration);
+        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
+      } else if (wifeGeneration && !husbandGeneration) {
+        generationMap.set(marriage.husband_id, wifeGeneration);
+        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
+      }
+    });
+    
+    // STEP 3: Recursively assign generations based on parent-child relationships
     let changed = true;
     let maxIterations = 50;
     let iterations = 0;
@@ -234,33 +250,31 @@ const FamilyTreeView = () => {
                 motherGeneration || 0
               );
               generationMap.set(member.id, parentGeneration + 1);
-              console.log(`Setting ${member.name} as generation ${parentGeneration + 1}`);
+              console.log(`Setting ${member.name} as generation ${parentGeneration + 1} (child of parents)`);
               changed = true;
             }
-          } else {
-            generationMap.set(member.id, 1);
-            console.log(`Setting ${member.name} as generation 1 (no parents)`);
-            changed = true;
           }
         }
       });
     }
     
-    console.log('Generation map after assignments:', Array.from(generationMap.entries()));
-    
-    // Assign spouses to same generation
+    // STEP 4: Assign spouses of all members to same generation  
     familyMarriages.forEach(marriage => {
       const husbandGeneration = generationMap.get(marriage.husband_id);
       const wifeGeneration = generationMap.get(marriage.wife_id);
       
       if (husbandGeneration && !wifeGeneration) {
         generationMap.set(marriage.wife_id, husbandGeneration);
-        console.log(`Setting wife to same generation as husband: ${husbandGeneration}`);
+        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
       } else if (wifeGeneration && !husbandGeneration) {
         generationMap.set(marriage.husband_id, wifeGeneration);
-        console.log(`Setting husband to same generation as wife: ${wifeGeneration}`);
+        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
+        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
       }
     });
+
+    console.log('Generation map after assignments:', Array.from(generationMap.entries()));
 
     // Group by generation
     const generations = new Map();
