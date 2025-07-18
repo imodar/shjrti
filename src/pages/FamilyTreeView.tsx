@@ -16,161 +16,190 @@ const FamilyTreeView = () => {
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // Set to false for demo data
+  const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Demo family data based on user's request
-  const demoFamilyMembers = [
-    // الجيل الأول - أمير ورانية
-    {
-      id: "amir-1",
-      name: "أمير",
-      fatherId: null,
-      motherId: null,
-      spouseId: "rania-1",
-      isFounder: true,
-      gender: "male",
-      birthDate: "1970-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "مؤسس العائلة",
-      image: null,
-      relation: "founder"
-    },
-    {
-      id: "rania-1",
-      name: "رانية",
-      fatherId: null,
-      motherId: null,
-      spouseId: "amir-1",
-      isFounder: true,
-      gender: "female",
-      birthDate: "1972-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "مؤسسة العائلة",
-      image: null,
-      relation: "founder"
-    },
-    // الجيل الثاني - مضر وزينة وربى
-    {
-      id: "mudar-2",
-      name: "مضر",
-      fatherId: "amir-1",
-      motherId: "rania-1",
-      spouseId: null,
-      isFounder: false,
-      gender: "male",
-      birthDate: "1995-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "ابن أمير ورانية",
-      image: null,
-      relation: "son"
-    },
-    {
-      id: "zina-2",
-      name: "زينة",
-      fatherId: "amir-1",
-      motherId: "rania-1",
-      spouseId: null,
-      isFounder: false,
-      gender: "female",
-      birthDate: "1997-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "ابنة أمير ورانية",
-      image: null,
-      relation: "daughter"
-    },
-    {
-      id: "ruba-2",
-      name: "ربى",
-      fatherId: "amir-1",
-      motherId: "rania-1",
-      spouseId: null,
-      isFounder: false,
-      gender: "female",
-      birthDate: "1999-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "ابنة أمير ورانية",
-      image: null,
-      relation: "daughter"
-    },
-    // الجيل الثالث - مجد (ابن زينة) وأمير بن مضر (ابن مضر)
-    {
-      id: "majd-3",
-      name: "مجد",
-      fatherId: null,
-      motherId: "zina-2", // مجد ابن زينة
-      spouseId: null,
-      isFounder: false,
-      gender: "male",
-      birthDate: "2020-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "ابن زينة",
-      image: null,
-      relation: "grandson"
-    },
-    {
-      id: "laith-3",
-      name: "ليث",
-      fatherId: "mudar-2",
-      motherId: null,
-      spouseId: null,
-      isFounder: false,
-      gender: "male",
-      birthDate: "2022-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "ابن مضر",
-      image: null,
-      relation: "grandson"
-    },
-    {
-      id: "amir-3",
-      name: "أمير بن مضر",
-      fatherId: "mudar-2",
-      motherId: null,
-      spouseId: null,
-      isFounder: false,
-      gender: "male",
-      birthDate: "2022-01-01",
-      isAlive: true,
-      deathDate: null,
-      bio: "ابن مضر",
-      image: null,
-      relation: "grandson"
-    }
-  ];
-
-  const demoMarriages = [
-    {
-      id: "marriage-1",
-      familyId: "demo-family",
-      isActive: true,
-      husband: demoFamilyMembers.find(m => m.id === "amir-1"),
-      wife: demoFamilyMembers.find(m => m.id === "rania-1")
-    }
-  ];
-
-  // Initialize with demo data
+  // Fetch family tree data from database
   useEffect(() => {
-    // Set demo data directly
-    setFamilyMembers(demoFamilyMembers);
-    setFamilyMarriages(demoMarriages);
-    setIsLoading(false);
+    fetchFamilyTreeData();
   }, []);
+
+  const fetchFamilyTreeData = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      // First get user's family IDs
+      const { data: userFamilies, error: familiesError } = await supabase
+        .from('families')
+        .select('id')
+        .or(`creator_id.eq.${user.id},id.in.(select family_id from family_members where user_id = '${user.id}')`);
+
+      if (familiesError) {
+        console.error('Error fetching families:', familiesError);
+        return;
+      }
+
+      const familyIds = userFamilies?.map(f => f.id) || [];
+      
+      if (familyIds.length === 0) {
+        setFamilyMembers([]);
+        setFamilyMarriages([]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch family tree members for user's families
+      const { data: members, error: membersError } = await supabase
+        .from('family_tree_members')
+        .select(`
+          *,
+          father:family_tree_members!family_tree_members_father_id_fkey(id, name),
+          mother:family_tree_members!family_tree_members_mother_id_fkey(id, name),
+          spouse:family_tree_members!family_tree_members_spouse_id_fkey(id, name)
+        `)
+        .in('family_id', familyIds);
+
+      if (membersError) {
+        console.error('Error fetching family members:', membersError);
+        toast({
+          title: "خطأ",
+          description: "فشل في تحميل بيانات شجرة العائلة",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Fetch marriages
+      const { data: marriages, error: marriagesError } = await supabase
+        .from('marriages')
+        .select(`
+          *,
+          husband:family_tree_members!marriages_husband_id_fkey(id, name),
+          wife:family_tree_members!marriages_wife_id_fkey(id, name)
+        `)
+        .in('family_id', familyIds);
+
+      if (marriagesError) {
+        console.error('Error fetching marriages:', marriagesError);
+      }
+
+      setFamilyMembers(members || []);
+      setFamilyMarriages(marriages || []);
+      
+    } catch (error) {
+      console.error('Error fetching family tree data:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ في تحميل البيانات",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Helper functions to organize family data
+  const getFounders = () => {
+    return familyMembers.filter(member => member.is_founder);
+  };
+
+  const getChildrenOf = (parentId: string) => {
+    return familyMembers.filter(member => 
+      member.father_id === parentId || member.mother_id === parentId
+    );
+  };
+
+  const getSpouseOf = (memberId: string) => {
+    return familyMembers.find(member => member.spouse_id === memberId);
+  };
+
+  const getGeneration = (member: any, visited = new Set()): number => {
+    if (visited.has(member.id)) return 0;
+    visited.add(member.id);
+    
+    if (member.is_founder) return 1;
+    
+    const father = familyMembers.find(m => m.id === member.father_id);
+    const mother = familyMembers.find(m => m.id === member.mother_id);
+    
+    let maxParentGeneration = 0;
+    if (father) maxParentGeneration = Math.max(maxParentGeneration, getGeneration(father, visited));
+    if (mother) maxParentGeneration = Math.max(maxParentGeneration, getGeneration(mother, visited));
+    
+    return maxParentGeneration + 1;
+  };
+
+  const organizeByGenerations = () => {
+    const generations: { [key: number]: any[] } = {};
+    
+    familyMembers.forEach(member => {
+      const gen = getGeneration(member);
+      if (!generations[gen]) generations[gen] = [];
+      generations[gen].push(member);
+    });
+    
+    return generations;
+  };
+
+  const renderMember = (member: any, showRelation = false) => {
+    const initials = member.name.slice(0, 2);
+    const genderVariant = member.gender === 'female' ? 'accent' : 'primary';
+    
+    return (
+      <div key={member.id} className="text-center">
+        <Card className={`p-4 bg-card/80 backdrop-blur-sm border-${genderVariant}/20 min-w-[140px]`}>
+          <Avatar className="h-14 w-14 mx-auto mb-2">
+            {member.image_url ? (
+              <AvatarImage src={member.image_url} alt={member.name} />
+            ) : (
+              <AvatarFallback className={`bg-gradient-to-br from-${genderVariant}/20 to-accent/20`}>
+                {initials}
+              </AvatarFallback>
+            )}
+          </Avatar>
+          <h3 className="font-semibold">{member.name}</h3>
+          <Badge variant="outline" className="text-xs mt-1">
+            {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+          </Badge>
+          {showRelation && member.biography && (
+            <p className="text-xs text-muted-foreground mt-1">{member.biography}</p>
+          )}
+          {member.birth_date && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {new Date(member.birth_date).getFullYear()}
+            </p>
+          )}
+        </Card>
+      </div>
+    );
+  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Generate family tree structure by generations
   const generateFamilyTree = () => {
+    if (familyMembers.length === 0) return [];
+    
     const generationMap = new Map();
     
     // Start with founders as generation 1
     familyMembers.forEach(member => {
-      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+      if (member.is_founder || (!member.father_id && !member.mother_id)) {
         generationMap.set(member.id, 1);
       }
     });
@@ -186,9 +215,9 @@ const FamilyTreeView = () => {
       
       familyMembers.forEach(member => {
         if (!generationMap.has(member.id)) {
-          if (member.fatherId || member.motherId) {
-            const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
-            const motherGeneration = member.motherId ? generationMap.get(member.motherId) : undefined;
+          if (member.father_id || member.mother_id) {
+            const fatherGeneration = member.father_id ? generationMap.get(member.father_id) : undefined;
+            const motherGeneration = member.mother_id ? generationMap.get(member.mother_id) : undefined;
             
             if (fatherGeneration !== undefined || motherGeneration !== undefined) {
               const parentGeneration = Math.max(
@@ -208,13 +237,13 @@ const FamilyTreeView = () => {
     
     // Assign spouses to same generation
     familyMarriages.forEach(marriage => {
-      const husbandGeneration = generationMap.get(marriage.husband?.id);
-      const wifeGeneration = generationMap.get(marriage.wife?.id);
+      const husbandGeneration = generationMap.get(marriage.husband_id);
+      const wifeGeneration = generationMap.get(marriage.wife_id);
       
       if (husbandGeneration && !wifeGeneration) {
-        generationMap.set(marriage.wife?.id, husbandGeneration);
+        generationMap.set(marriage.wife_id, husbandGeneration);
       } else if (wifeGeneration && !husbandGeneration) {
-        generationMap.set(marriage.husband?.id, wifeGeneration);
+        generationMap.set(marriage.husband_id, wifeGeneration);
       }
     });
 
@@ -238,17 +267,6 @@ const FamilyTreeView = () => {
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setZoomLevel(1);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
@@ -472,173 +490,187 @@ const FamilyTreeView = () => {
                 className="transition-transform duration-300 relative"
                 style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
               >
-                <div className="relative min-h-[700px] flex flex-col items-center pt-8">
-                  
-                  {/* الجيل الأول - أمير ورانية */}
-                  <div className="relative mb-20">
-                    <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="text-center">
-                          <Avatar className="h-16 w-16 mx-auto mb-2">
-                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-lg">
-                              أم
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="font-semibold text-sm">أمير</h3>
+                {familyTree.length > 0 ? (
+                  <div className="relative min-h-[700px] flex flex-col items-center pt-8">
+                    {familyTree.map(([generation, members], genIndex) => (
+                      <div key={generation} className="relative mb-20">
+                        {/* Generation Members */}
+                        <div className="flex justify-center items-start gap-16">
+                          {(() => {
+                            const displayedMembers = new Set();
+                            const memberElements = [];
+
+                            members.forEach((member: any) => {
+                              if (displayedMembers.has(member.id)) return;
+
+                              // Find spouse for this member
+                              const marriage = familyMarriages.find(m => 
+                                m.husband_id === member.id || m.wife_id === member.id
+                              );
+                              const spouse = marriage ? 
+                                (marriage.husband_id === member.id ? 
+                                  familyMembers.find(m => m.id === marriage.wife_id) : 
+                                  familyMembers.find(m => m.id === marriage.husband_id)) : null;
+
+                              displayedMembers.add(member.id);
+                              if (spouse) displayedMembers.add(spouse.id);
+
+                              if (generation === 1 && spouse) {
+                                // For generation 1 (founders), show them as a couple
+                                memberElements.push(
+                                  <div key={member.id} className="relative">
+                                    <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
+                                      <div className="flex items-center gap-4">
+                                        <div className="text-center">
+                                          <Avatar className="h-16 w-16 mx-auto mb-2">
+                                            {member.image_url ? (
+                                              <AvatarImage src={member.image_url} alt={member.name} />
+                                            ) : (
+                                              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-lg">
+                                                {member.name.slice(0, 2)}
+                                              </AvatarFallback>
+                                            )}
+                                          </Avatar>
+                                          <h3 className="font-semibold text-sm">{member.name}</h3>
+                                        </div>
+                                        <div className="text-xl text-primary">♥</div>
+                                        <div className="text-center">
+                                          <Avatar className="h-16 w-16 mx-auto mb-2">
+                                            {spouse.image_url ? (
+                                              <AvatarImage src={spouse.image_url} alt={spouse.name} />
+                                            ) : (
+                                              <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20 text-lg">
+                                                {spouse.name.slice(0, 2)}
+                                              </AvatarFallback>
+                                            )}
+                                          </Avatar>
+                                          <h3 className="font-semibold text-sm">{spouse.name}</h3>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Connection lines for children */}
+                                    {genIndex < familyTree.length - 1 && (
+                                      <>
+                                        {/* Vertical line down */}
+                                        <div 
+                                          className="absolute w-1 bg-gradient-to-b from-primary to-accent"
+                                          style={{ 
+                                            top: '100%', 
+                                            left: '50%',
+                                            height: '40px',
+                                            transform: 'translateX(-50%)'
+                                          }}
+                                        ></div>
+                                        
+                                        {/* Horizontal line for children */}
+                                        {(() => {
+                                          const children = familyMembers.filter(child => 
+                                            child.father_id === member.id || child.mother_id === member.id ||
+                                            child.father_id === spouse.id || child.mother_id === spouse.id
+                                          );
+                                          
+                                          if (children.length > 1) {
+                                            const lineWidth = Math.max(200, (children.length - 1) * 160);
+                                            return (
+                                              <>
+                                                <div 
+                                                  className="absolute h-1 bg-gradient-to-r from-primary to-accent"
+                                                  style={{ 
+                                                    top: 'calc(100% + 40px)', 
+                                                    left: `calc(50% - ${lineWidth/2}px)`, 
+                                                    width: `${lineWidth}px` 
+                                                  }}
+                                                ></div>
+                                                {children.map((child, childIndex) => (
+                                                  <div 
+                                                    key={child.id}
+                                                    className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
+                                                    style={{ 
+                                                      top: 'calc(100% + 40px)', 
+                                                      left: `calc(50% + ${(childIndex - (children.length-1)/2) * 160}px)`,
+                                                      transform: 'translateX(-50%)'
+                                                    }}
+                                                  ></div>
+                                                ))}
+                                              </>
+                                            );
+                                          }
+                                          return null;
+                                        })()}
+                                      </>
+                                    )}
+                                  </div>
+                                );
+                              } else {
+                                // For other generations, show individual cards
+                                memberElements.push(
+                                  <div key={member.id} className="relative text-center">
+                                    <Card className={`p-4 bg-card/80 backdrop-blur-sm ${member.gender === 'female' ? 'border-accent/20' : 'border-primary/20'} min-w-[140px]`}>
+                                      <Avatar className="h-14 w-14 mx-auto mb-2">
+                                        {member.image_url ? (
+                                          <AvatarImage src={member.image_url} alt={member.name} />
+                                        ) : (
+                                          <AvatarFallback className={`bg-gradient-to-br ${member.gender === 'female' ? 'from-accent/20 to-primary/20' : 'from-primary/20 to-accent/20'}`}>
+                                            {member.name.slice(0, 2)}
+                                          </AvatarFallback>
+                                        )}
+                                      </Avatar>
+                                      <h3 className="font-semibold">{member.name}</h3>
+                                      <Badge variant="outline" className="text-xs mt-1">
+                                        {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+                                      </Badge>
+                                      {member.biography && (
+                                        <p className="text-xs text-muted-foreground mt-1">{member.biography}</p>
+                                      )}
+                                    </Card>
+
+                                    {/* Connection line to children */}
+                                    {genIndex < familyTree.length - 1 && (
+                                      (() => {
+                                        const children = familyMembers.filter(child => 
+                                          child.father_id === member.id || child.mother_id === member.id
+                                        );
+                                        if (children.length > 0) {
+                                          return (
+                                            <div 
+                                              className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-primary to-accent"
+                                              style={{ top: '100%' }}
+                                            ></div>
+                                          );
+                                        }
+                                        return null;
+                                      })()
+                                    )}
+                                  </div>
+                                );
+                              }
+                            });
+
+                            return memberElements;
+                          })()}
                         </div>
-                        <div className="text-xl text-primary">♥</div>
-                        <div className="text-center">
-                          <Avatar className="h-16 w-16 mx-auto mb-2">
-                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20 text-lg">
-                              را
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="font-semibold text-sm">رانية</h3>
-                        </div>
                       </div>
-                    </div>
-                    
-                    {/* خط من أسفل الوالدين إلى أعلى وسط الجيل التالي */}
-                    <div 
-                      className="absolute w-1 bg-gradient-to-b from-primary to-accent"
-                      style={{ 
-                        top: '100%', 
-                        left: '50%',
-                        height: '80px',
-                        transform: 'translateX(-50%)'
-                      }}
-                    ></div>
-                    
-                    {/* خط أفقي للأطفال الثلاثة - في منتصف المسافة */}
-                    <div 
-                      className="absolute h-1 bg-gradient-to-r from-primary to-accent"
-                      style={{ 
-                        top: 'calc(100% + 40px)', 
-                        left: 'calc(7% - 160px)', 
-                        width: '533px' 
-                      }}
-                    ></div>
-                    
-                    {/* خطوط عمودية للأطفال */}
-                    {/* مضر */}
-                    <div 
-                      className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 40px)', left: 'calc(7% - 160px)' }}
-                    ></div>
-                    {/* زينة */}
-                    <div 
-                      className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 40px)', left: 'calc(7% + 106px)' }}
-                    ></div>
-                    {/* ربى */}
-                    <div 
-                      className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 40px)', left: 'calc(7% + 373px)' }}
-                    ></div>
+                    ))}
                   </div>
-
-                  {/* الجيل الثاني - مضر وزينة وربى */}
-                  <div className="relative mb-20">
-                    <div className="flex justify-center items-start gap-32">
-                      {/* مضر */}
-                      <div className="relative text-center">
-                        <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[140px]">
-                          <Avatar className="h-14 w-14 mx-auto mb-2">
-                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                              مض
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="font-semibold">مضر</h3>
-                          <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                        </Card>
-                        
-                        {/* خط عمودي من مضر لأمير بن مضر */}
-                        <div 
-                          className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-primary to-accent"
-                          style={{ top: '100%' }}
-                        ></div>
-                      </div>
-
-                      {/* زينة */}
-                      <div className="relative text-center">
-                        <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
-                          <Avatar className="h-14 w-14 mx-auto mb-2">
-                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                              زي
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="font-semibold">زينة</h3>
-                          <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
-                        </Card>
-                        
-                        {/* خط عمودي من زينة لمجد */}
-                        <div 
-                          className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-accent to-primary"
-                          style={{ top: '100%' }}
-                        ></div>
-                      </div>
-
-                      {/* ربى */}
-                      <div className="text-center">
-                        <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
-                          <Avatar className="h-14 w-14 mx-auto mb-2">
-                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                              رب
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="font-semibold">ربى</h3>
-                          <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
-                        </Card>
-                      </div>
-                    </div>
+                ) : (
+                  <div className="text-center py-24">
+                    <Users className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
+                    <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
+                      لا توجد شجرة عائلة بعد
+                    </h3>
+                    <p className="text-muted-foreground mb-6">
+                      ابدأ ببناء شجرة عائلتك بإضافة أول عضو
+                    </p>
+                    <Button
+                      onClick={() => navigate('/family-overview')}
+                      className="gap-2 bg-gradient-to-r from-primary to-accent"
+                    >
+                      <Users className="h-4 w-4" />
+                      إدارة الأعضاء
+                    </Button>
                   </div>
-
-                   {/* الجيل الثالث */}
-                   <div className="flex justify-center gap-32 pt-8">
-                     {/* ليث - ابن مضر */}
-                     <div className="text-center">
-                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
-                         <Avatar className="h-12 w-12 mx-auto mb-2">
-                           <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                             لي
-                           </AvatarFallback>
-                         </Avatar>
-                         <h3 className="font-semibold text-sm">ليث</h3>
-                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                         <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
-                       </Card>
-                     </div>
-
-                     {/* أمير بن مضر - ابن مضر */}
-                     <div className="text-center">
-                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
-                         <Avatar className="h-12 w-12 mx-auto mb-2">
-                           <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                             أم
-                           </AvatarFallback>
-                         </Avatar>
-                         <h3 className="font-semibold text-sm">أمير بن مضر</h3>
-                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                         <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
-                       </Card>
-                     </div>
-
-                     {/* مجد - ابن زينة */}
-                     <div className="text-center">
-                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[120px]">
-                         <Avatar className="h-12 w-12 mx-auto mb-2">
-                           <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                             مج
-                           </AvatarFallback>
-                         </Avatar>
-                         <h3 className="font-semibold text-sm">مجد</h3>
-                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                         <p className="text-xs text-muted-foreground mt-1">ابن زينة</p>
-                       </Card>
-                     </div>
-                   </div>
-
-                </div>
+                )}
               </div>
             </div>
           </TabsContent>
