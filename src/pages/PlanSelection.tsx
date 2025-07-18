@@ -425,6 +425,7 @@ const PlanSelection = () => {
                   </ul>
                   
                   <Button 
+                    type="button"
                     className={`w-full py-3 text-lg font-medium transition-all mt-auto ${
                       currentPlan 
                         ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-not-allowed'
@@ -432,7 +433,11 @@ const PlanSelection = () => {
                           ? 'hero-gradient border-0 text-white hover:shadow-lg' 
                           : 'bg-primary hover:bg-primary/90'
                     }`}
-                    onClick={() => handlePlanSelect(pkg.id)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handlePlanSelect(pkg.id);
+                    }}
                     disabled={buttonDisabled}
                   >
                     {getButtonText(pkg)}
