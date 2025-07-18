@@ -306,6 +306,9 @@ const FamilyBuilder = () => {
 
   // Filter members based on search term and selected filter
   console.log('Current filter:', selectedFilter);
+  console.log('Family members:', familyMembers);
+  console.log('Family marriages:', familyMarriages);
+  
   const filteredMembers = familyMembers.filter(member => {
     // First filter by search term (with null checks)
     const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -319,9 +322,30 @@ const FamilyBuilder = () => {
         return true;
         
       case "blood_relations":
-        // Show only direct blood relations from father's family (have fatherId or are founders)
-        // Do NOT show children of females who married into the family
-        return member.fatherId || member.isFounder;
+        // Show only direct blood relations from the original family
+        // Exclude children whose father is a "married-in" husband
+        if (member.isFounder) return true;
+        
+        if (member.fatherId) {
+          // Check if father is a non-blood husband (married into family)
+          const father = familyMembers.find(m => m.id === member.fatherId);
+          if (father) {
+            const fatherIsNonBlood = father.gender === 'male' && 
+              familyMarriages.some(marriage => 
+                marriage.husband?.id === father.id &&
+                !father.fatherId && !father.motherId && !father.isFounder
+              );
+            
+            // If father is non-blood, this member should not appear in blood relations
+            if (fatherIsNonBlood) {
+              console.log(`${member.name} excluded - father ${father.name} is non-blood husband`);
+              return false;
+            }
+            return true;
+          }
+        }
+        
+        return false;
         
       case "non_family":
         // Show members without spouses (not married into family)
@@ -341,7 +365,12 @@ const FamilyBuilder = () => {
           
       case "blood_with_female_children":
         // Show blood relations AND children of females from same father's family
-        const isBloodRelation = member.fatherId || member.motherId || member.isFounder;
+        const isDirectBloodRelation = member.isFounder || 
+          (member.fatherId && 
+           familyMembers.some(father => 
+             father.id === member.fatherId && 
+             (father.isFounder || father.fatherId) // Father must be from original family
+           ));
         
         // Check if this is a child of a female from the same father's family
         const isChildOfFemaleFromSameFamily = member.motherId && 
@@ -351,7 +380,7 @@ const FamilyBuilder = () => {
             (potentialMother.fatherId || potentialMother.isFounder) // Mother is from father's family
           );
           
-        return isBloodRelation || isChildOfFemaleFromSameFamily;
+        return isDirectBloodRelation || isChildOfFemaleFromSameFamily;
         
       default:
         return true;
