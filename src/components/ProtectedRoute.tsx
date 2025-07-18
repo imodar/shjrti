@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -8,10 +9,12 @@ import { useToast } from '@/hooks/use-toast';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
+  requireActiveSubscription?: boolean;
 }
 
-export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, requireAdmin = false, requireActiveSubscription = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
+  const { isExpired, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -67,7 +70,14 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
     }
   }, [requireAdmin, user, navigate, toast]);
 
-  if (loading || adminLoading) {
+  // Check subscription expiration for subscription-protected routes
+  useEffect(() => {
+    if (requireActiveSubscription && !subscriptionLoading && isExpired) {
+      navigate('/renew-subscription');
+    }
+  }, [requireActiveSubscription, isExpired, subscriptionLoading, navigate]);
+
+  if (loading || adminLoading || subscriptionLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">

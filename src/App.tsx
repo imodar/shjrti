@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -26,6 +27,7 @@ import Terms from "./pages/Terms";
 import ViewTree from "./pages/ViewTree";
 import Store from "./pages/Store";
 import AdminPanel from "./pages/AdminPanel";
+import RenewSubscription from "./pages/RenewSubscription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,7 @@ const App = () => (
     <TooltipProvider>
       <LanguageProvider>
         <AuthProvider>
+          <SubscriptionProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -53,17 +56,17 @@ const App = () => (
             </ProtectedRoute>
           } />
           <Route path="/family-creator" element={
-            <ProtectedRoute>
+            <ProtectedRoute requireActiveSubscription={true}>
               <FamilyCreator />
             </ProtectedRoute>
           } />
           <Route path="/family-builder" element={
-            <ProtectedRoute>
+            <ProtectedRoute requireActiveSubscription={true}>
               <FamilyBuilder />
             </ProtectedRoute>
           } />
           <Route path="/family-builder2" element={
-            <ProtectedRoute>
+            <ProtectedRoute requireActiveSubscription={true}>
               <FamilyBuilder2 />
             </ProtectedRoute>
           } />
@@ -112,11 +115,17 @@ const App = () => (
               <AdminPanel />
             </ProtectedRoute>
           } />
+          <Route path="/renew-subscription" element={
+            <ProtectedRoute>
+              <RenewSubscription />
+            </ProtectedRoute>
+          } />
           <Route path="/terms" element={<Terms />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+          </SubscriptionProvider>
         </AuthProvider>
       </LanguageProvider>
     </TooltipProvider>

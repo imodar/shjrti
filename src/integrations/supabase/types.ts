@@ -703,7 +703,22 @@ export type Database = {
         Args: { admin_email: string }
         Returns: undefined
       }
+      get_user_subscription_details: {
+        Args: { user_uuid: string }
+        Returns: {
+          subscription_id: string
+          package_name: string
+          status: string
+          expires_at: string
+          days_until_expiry: number
+          is_expired: boolean
+        }[]
+      }
       is_admin: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
+      is_subscription_expired: {
         Args: { user_uuid: string }
         Returns: boolean
       }

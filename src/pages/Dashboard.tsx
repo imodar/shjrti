@@ -21,6 +21,8 @@ import memoryPreservation from "@/assets/memory-preservation.jpg";
 import { SharedFooter } from "@/components/SharedFooter";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { SubscriptionGuard } from '@/components/SubscriptionGuard';
 import { supabase } from "@/integrations/supabase/client";
 
 // Get families from database
@@ -385,7 +387,8 @@ const Dashboard = () => {
       <div className="relative z-10">
         <Header />
 
-        <main className="container mx-auto px-6 py-8 pt-32 space-y-16">
+        <SubscriptionGuard requireActiveSubscription={false}>
+          <main className="container mx-auto px-6 py-8 pt-32 space-y-16">
 
           {/* Compact Modern Hero - Single Line */}
           <div className="relative">
@@ -565,6 +568,7 @@ const Dashboard = () => {
               </Card>}
           </div>
         </main>
+        </SubscriptionGuard>
       </div>
 
       {/* Upgrade Modal */}

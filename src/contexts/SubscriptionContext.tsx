@@ -1,0 +1,116 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+
+interface SubscriptionDetails {
+  subscription_id: string | null;
+  package_name: string | null;
+  status: string | null;
+  expires_at: string | null;
+  days_until_expiry: number | null;
+  is_expired: boolean;
+}
+
+interface SubscriptionContextType {
+  subscription: SubscriptionDetails | null;
+  loading: boolean;
+  isExpired: boolean;
+  daysUntilExpiry: number | null;
+  refreshSubscription: () => Promise<void>;
+  showExpiryWarning: boolean;
+}
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+
+export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const [subscription, setSubscription] = useState<SubscriptionDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchSubscriptionDetails = async () => {
+    if (!user) {
+      setSubscription(null);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.rpc('get_user_subscription_details', {
+        user_uuid: user.id
+      });
+
+      if (error) {
+        console.error('Error fetching subscription details:', error);
+        // If no subscription found, treat as expired
+        setSubscription({
+          subscription_id: null,
+          package_name: null,
+          status: null,
+          expires_at: null,
+          days_until_expiry: null,
+          is_expired: true
+        });
+      } else if (data && data.length > 0) {
+        setSubscription(data[0]);
+      } else {
+        // No active subscription found
+        setSubscription({
+          subscription_id: null,
+          package_name: null,
+          status: null,
+          expires_at: null,
+          days_until_expiry: null,
+          is_expired: true
+        });
+      }
+    } catch (error) {
+      console.error('Error in fetchSubscriptionDetails:', error);
+      setSubscription({
+        subscription_id: null,
+        package_name: null,
+        status: null,
+        expires_at: null,
+        days_until_expiry: null,
+        is_expired: true
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscriptionDetails();
+  }, [user]);
+
+  const refreshSubscription = async () => {
+    await fetchSubscriptionDetails();
+  };
+
+  const isExpired = subscription?.is_expired ?? true;
+  const daysUntilExpiry = subscription?.days_until_expiry ?? null;
+  const showExpiryWarning = !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 7;
+
+  const value = {
+    subscription,
+    loading,
+    isExpired,
+    daysUntilExpiry,
+    refreshSubscription,
+    showExpiryWarning,
+  };
+
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
+}
+
+export function useSubscription() {
+  const context = useContext(SubscriptionContext);
+  if (context === undefined) {
+    throw new Error('useSubscription must be used within a SubscriptionProvider');
+  }
+  return context;
+}
