@@ -448,37 +448,19 @@ const EnhancedAdminPanel = () => {
       }
 
       if (result.error) throw result.error;
-    
-    try {
-      const { error } = await supabase
-        .from('packages')
-        .update({
-          name: editingPackage.name,
-          description: editingPackage.description,
-          price: parseFloat(editingPackage.price),
-          price_usd: parseFloat(editingPackage.price_usd || editingPackage.price),
-          price_sar: parseFloat(editingPackage.price_sar || editingPackage.price),
-          max_family_members: parseInt(editingPackage.max_family_members || '100'),
-          max_family_trees: parseInt(editingPackage.max_family_trees || '1'),
-          display_order: parseInt(editingPackage.display_order || '0'),
-          is_active: editingPackage.is_active
-        })
-        .eq('id', editingPackage.id);
-      
-      if (error) throw error;
       
       toast({
         title: t('success', 'نجح'),
-        description: t('package_updated', 'تم تحديث الباقة')
+        description: editingPackage.id ? t('package_updated', 'تم تحديث الباقة') : t('package_created', 'تم إنشاء الباقة')
       });
       
       setEditingPackage(null);
       loadPackages();
     } catch (error) {
-      console.error('Error updating package:', error);
+      console.error('Error saving package:', error);
       toast({
         title: t('error', 'خطأ'),
-        description: t('package_update_failed', 'فشل في تحديث الباقة'),
+        description: editingPackage.id ? t('package_update_failed', 'فشل في تحديث الباقة') : t('package_create_failed', 'فشل في إنشاء الباقة'),
         variant: 'destructive'
       });
     }
