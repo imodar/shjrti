@@ -16,12 +16,15 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 export default function Payments() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [currentPlan, setCurrentPlan] = useState("premium");
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [currentFamily, setCurrentFamily] = useState<any>(null);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -70,14 +73,47 @@ export default function Payments() {
     }
   };
 
+  // Load user's current family and subscription
+  const loadUserSubscription = async () => {
+    if (!user) return;
+    
+    try {
+      // Get user's family and current package
+      const { data: familyData, error: familyError } = await supabase
+        .from('families')
+        .select(`
+          *,
+          packages (*)
+        `)
+        .eq('creator_id', user.id)
+        .maybeSingle();
+
+      if (familyError) throw familyError;
+
+      if (familyData) {
+        setCurrentFamily(familyData);
+        setCurrentPlan(familyData.package_id);
+      } else {
+        // No family found, user is on free plan
+        setCurrentPlan(null);
+      }
+    } catch (error) {
+      console.error('Error loading user subscription:', error);
+      // Default to free plan on error
+      setCurrentPlan(null);
+    }
+  };
+
   useEffect(() => {
     loadPackages();
-  }, []);
+    loadUserSubscription();
+  }, [user]);
   const handleDeletePaymentMethod = (id: number) => {
     setPaymentMethods(paymentMethods.filter(method => method.id !== id));
   };
 
-  const getPlanIndex = (planId: string) => {
+  const getPlanIndex = (planId: string | null) => {
+    if (!planId) return -1; // Free plan has lowest index
     return packages.findIndex(p => p.id === planId);
   };
 
@@ -110,10 +146,42 @@ export default function Payments() {
     }
   };
 
-  const processPayment = () => {
-    // Simulate payment processing
-    setTimeout(() => {
-      setCurrentPlan(selectedPlan!);
+  const processPayment = async () => {
+    if (!selectedPlan || !user) return;
+
+    try {
+      // Update family subscription in database
+      if (currentFamily) {
+        // Update existing family
+        const { error } = await supabase
+          .from('families')
+          .update({
+            package_id: selectedPlan,
+            subscription_status: 'active',
+            subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+          })
+          .eq('id', currentFamily.id);
+
+        if (error) throw error;
+      } else {
+        // Create new family for the user
+        const { error } = await supabase
+          .from('families')
+          .insert({
+            name: `عائلة ${user.email}`,
+            creator_id: user.id,
+            package_id: selectedPlan,
+            subscription_status: 'active',
+            subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          });
+
+        if (error) throw error;
+      }
+
+      // Update local state
+      setCurrentPlan(selectedPlan);
+      await loadUserSubscription(); // Reload subscription data
+      
       setShowPlanModal(false);
       setShowPaymentModal(false);
       setSelectedPlan(null);
@@ -125,7 +193,14 @@ export default function Payments() {
         description: `تم ترقية اشتراكك إلى ${selectedPlanData?.name} بنجاح. استمتع بالميزات الجديدة!`,
         duration: 5000,
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في معالجة الدفع. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePaymentMethodSelect = (methodId: number) => {
@@ -337,32 +412,56 @@ export default function Payments() {
                 <CardTitle className="text-emerald-800 dark:text-emerald-200">خطتك الحالية</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center mb-4">
-                  <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Shield className="h-8 w-8 text-emerald-600" />
+                {loading ? (
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                    <p className="text-muted-foreground mt-2">جاري التحميل...</p>
                   </div>
-                  <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                    الخطة المجانية
-                  </h3>
-                  <p className="text-3xl font-bold text-emerald-600">0 ريال</p>
-                  <p className="text-muted-foreground">شهرياً</p>
-                </div>
-                
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">الأشجار المستخدمة</span>
-                    <span>2 من 1</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">الأفراد المضافين</span>
-                    <span>20 من 50</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div className="bg-emerald-600 h-2 rounded-full" style={{
-                    width: '40%'
-                  }}></div>
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="text-center mb-4">
+                      <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        {currentPlan ? (
+                          currentPlanData?.icon ? <currentPlanData.icon className="h-8 w-8 text-emerald-600" /> : <Crown className="h-8 w-8 text-emerald-600" />
+                        ) : (
+                          <Shield className="h-8 w-8 text-emerald-600" />
+                        )}
+                      </div>
+                      <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
+                        {currentPlan ? currentPlanData?.name || 'الباقة المدفوعة' : 'الباقة المجانية'}
+                      </h3>
+                      <p className="text-3xl font-bold text-emerald-600">
+                        {currentPlan ? `${currentPlanData?.price || '0'} ريال` : '0 ريال'}
+                      </p>
+                      <p className="text-muted-foreground">شهرياً</p>
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">الحد الأقصى للأشجار</span>
+                        <span>{currentPlan ? currentPlanData?.maxTrees || '∞' : '1'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">الحد الأقصى للأفراد</span>
+                        <span>{currentPlan ? currentPlanData?.maxMembers || '∞' : '50'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">حالة الاشتراك</span>
+                        <span className={`${currentPlan ? 'text-green-600' : 'text-gray-600'}`}>
+                          {currentFamily?.subscription_status === 'active' ? 'نشط' : 
+                           currentFamily?.subscription_status === 'expired' ? 'منتهي الصلاحية' : 
+                           currentPlan ? 'نشط' : 'مجاني'}
+                        </span>
+                      </div>
+                      {currentFamily?.subscription_end_date && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">تاريخ الانتهاء</span>
+                          <span>{new Date(currentFamily.subscription_end_date).toLocaleDateString('ar-SA')}</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
