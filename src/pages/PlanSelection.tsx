@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,15 +58,28 @@ const PlanSelection = () => {
   };
 
   const getLocalizedValue = (value: string | object, language: string = currentLanguage): string => {
+    console.log('getLocalizedValue called with:', { value, language, type: typeof value });
+    
     if (typeof value === 'string') {
-      return value;
+      // Try to parse if it's a JSON string
+      try {
+        const parsed = JSON.parse(value);
+        const localizedText = parsed[language] || parsed['en'] || value;
+        console.log('Parsed JSON string:', { parsed, localizedText });
+        return localizedText;
+      } catch {
+        // If parsing fails, return the string as is
+        return value;
+      }
     }
+    
     if (typeof value === 'object' && value !== null) {
       // Handle multilingual JSON objects like {"en":"Free","ar":"مجانية"}
       const localizedText = (value as any)[language] || (value as any)['en'] || '';
       console.log('Localized value for language', language, ':', localizedText, 'from', value);
       return localizedText;
     }
+    
     return String(value || '');
   };
 
@@ -137,6 +151,13 @@ const PlanSelection = () => {
             const packagePrice = getPackagePrice(pkg);
             const packageName = getLocalizedValue(pkg.name);
             const packageFeatures = getPackageFeatures(pkg);
+            
+            console.log('Rendering package:', { 
+              id: pkg.id, 
+              rawName: pkg.name, 
+              packageName, 
+              currentLanguage 
+            });
             
             return (
               <Card 
