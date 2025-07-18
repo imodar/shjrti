@@ -19,6 +19,7 @@ export default function Profile() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -36,6 +37,7 @@ export default function Profile() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
+      console.log('Fetching profile data for user:', user?.id);
       
       // Fetch profile data from database
       const { data: profileData, error } = await supabase
@@ -43,6 +45,8 @@ export default function Profile() {
         .select('*')
         .eq('user_id', user?.id)
         .single();
+
+      console.log('Profile fetch result:', { profileData, error });
 
       if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
         console.error('Error fetching profile:', error);
@@ -63,6 +67,7 @@ export default function Profile() {
         joinDate: profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ar-SA') : new Date().toLocaleDateString('ar-SA')
       };
 
+      console.log('Setting profile data:', userData);
       setProfileData(userData);
       
     } catch (error) {
@@ -79,18 +84,23 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
-      setLoading(true);
+      setSaving(true);
+      console.log('Starting save operation for user:', user?.id);
+      console.log('Profile data to save:', profileData);
 
       // First check if profile exists
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile, error: checkError } = await supabase
         .from('profiles')
         .select('id')
         .eq('user_id', user?.id)
         .single();
 
+      console.log('Existing profile check:', { existingProfile, checkError });
+
       let error;
 
       if (existingProfile) {
+        console.log('Updating existing profile...');
         // Update existing profile
         const result = await supabase
           .from('profiles')
@@ -103,8 +113,10 @@ export default function Profile() {
           })
           .eq('user_id', user?.id);
         
+        console.log('Update result:', result);
         error = result.error;
       } else {
+        console.log('Creating new profile...');
         // Insert new profile
         const result = await supabase
           .from('profiles')
@@ -116,11 +128,12 @@ export default function Profile() {
             phone: profileData.phone
           });
         
+        console.log('Insert result:', result);
         error = result.error;
       }
 
       if (error) {
-        console.error('Error updating profile:', error);
+        console.error('Error saving profile:', error);
         toast({
           title: "خطأ في الحفظ",
           description: "حدث خطأ أثناء حفظ البيانات",
@@ -129,11 +142,15 @@ export default function Profile() {
         return;
       }
 
+      console.log('Profile saved successfully');
       setIsEditing(false);
       toast({
         title: "تم الحفظ",
         description: "تم حفظ معلوماتك الشخصية بنجاح"
       });
+
+      // Refresh profile data from database
+      await fetchProfileData();
 
     } catch (error) {
       console.error('Error in handleSave:', error);
@@ -143,13 +160,13 @@ export default function Profile() {
         variant: "destructive"
       });
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset form data to original values
+    // Reset form data to original values by fetching from database
     fetchProfileData();
   };
 
@@ -255,13 +272,13 @@ export default function Profile() {
                           <Avatar className="w-10 h-10 ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-transparent">
                             <AvatarImage src="/placeholder.svg" />
                             <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white font-bold">
-                              أح
+                              {getInitials()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div className="hidden lg:block text-right">
-                          <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">أحمد محمد</p>
+                          <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">{getDisplayName()}</p>
                           <p className="text-xs text-emerald-600 dark:text-emerald-400">الباقة المميزة</p>
                         </div>
                       </div>
@@ -273,13 +290,13 @@ export default function Profile() {
                         <Avatar className="w-12 h-12 ring-2 ring-emerald-500/50">
                           <AvatarImage src="/placeholder.svg" />
                           <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
-                            أح
+                            {getInitials()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col space-y-1">
-                          <p className="text-base font-semibold leading-none text-emerald-800 dark:text-emerald-200">أحمد محمد</p>
+                          <p className="text-base font-semibold leading-none text-emerald-800 dark:text-emerald-200">{getDisplayName()}</p>
                           <p className="text-sm leading-none text-emerald-600 dark:text-emerald-400">
-                            ahmed@example.com
+                            {profileData.email}
                           </p>
                           <div className="flex items-center gap-1 mt-2">
                             <Crown className="h-3 w-3 text-yellow-500" />
@@ -386,11 +403,11 @@ export default function Profile() {
                     </Button>
                   ) : (
                     <div className="flex gap-2">
-                      <Button onClick={handleSave} size="sm" className="bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
+                      <Button onClick={handleSave} size="sm" className="bg-emerald-600 hover:bg-emerald-700" disabled={saving}>
                         <Save className="h-4 w-4 mr-2" />
-                        حفظ
+                        {saving ? "جاري الحفظ..." : "حفظ"}
                       </Button>
-                      <Button onClick={handleCancel} size="sm" variant="outline" disabled={loading}>
+                      <Button onClick={handleCancel} size="sm" variant="outline" disabled={saving}>
                         <X className="h-4 w-4 mr-2" />
                         إلغاء
                       </Button>
