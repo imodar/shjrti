@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +10,11 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ChangePassword() {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -37,6 +41,9 @@ export default function ChangePassword() {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
+    setSuccess(false);
+    
+    console.log('Starting password change process...');
     
     // Validation
     const newErrors: {[key: string]: string} = {};
@@ -59,16 +66,57 @@ export default function ChangePassword() {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setSuccess(true);
-      setFormData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
+    try {
+      console.log('Attempting to update password...');
+      
+      // Update password using Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: formData.newPassword
       });
-    }, 2000);
+
+      if (error) {
+        console.error('Password update error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('New password should be different')) {
+          setErrors({ newPassword: "كلمة المرور الجديدة يجب أن تكون مختلفة عن الحالية" });
+        } else if (error.message.includes('Password should be at least')) {
+          setErrors({ newPassword: "كلمة المرور قصيرة جداً" });
+        } else {
+          setErrors({ general: "حدث خطأ أثناء تغيير كلمة المرور. يرجى المحاولة مرة أخرى." });
+        }
+        
+        toast({
+          title: "خطأ",
+          description: "فشل في تغيير كلمة المرور",
+          variant: "destructive",
+        });
+      } else {
+        console.log('Password updated successfully');
+        setSuccess(true);
+        setFormData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: ""
+        });
+        
+        toast({
+          title: "نجح",
+          description: "تم تغيير كلمة المرور بنجاح",
+        });
+      }
+    } catch (error) {
+      console.error('Unexpected error during password update:', error);
+      setErrors({ general: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى." });
+      
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ غير متوقع",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = (field: string) => {
@@ -225,6 +273,15 @@ export default function ChangePassword() {
               <Check className="h-4 w-4 text-emerald-600" />
               <AlertDescription className="text-emerald-700 dark:text-emerald-300">
                 تم تغيير كلمة المرور بنجاح! يمكنك الآن استخدام كلمة المرور الجديدة لتسجيل الدخول.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {errors.general && (
+            <Alert className="mb-6 border-red-200 bg-red-50 dark:bg-red-900/20">
+              <X className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-700 dark:text-red-300">
+                {errors.general}
               </AlertDescription>
             </Alert>
           )}
