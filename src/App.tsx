@@ -68,9 +68,21 @@ const App = () => (
                     <FamilyBuilder />
                   </ProtectedRoute>
                 } />
-                <Route path="/family-overview" element={<FamilyOverview />} />
-                <Route path="/family-tree-view" element={<FamilyTreeView />} />
-                <Route path="/family-statistics" element={<FamilyStatistics />} />
+                <Route path="/family-overview" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyOverview />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-tree-view" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyTreeView />
+                  </ProtectedRoute>
+                } />
+                <Route path="/family-statistics" element={
+                  <ProtectedRoute requireActiveSubscription={true}>
+                    <FamilyStatistics />
+                  </ProtectedRoute>
+                } />
                 <Route path="/family-builder2" element={
                   <ProtectedRoute requireActiveSubscription={true}>
                     <FamilyBuilder2 />

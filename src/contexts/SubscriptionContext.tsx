@@ -89,6 +89,17 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     fetchSubscriptionDetails();
   }, [user]);
 
+  // Force refresh every 5 seconds to check for updates
+  useEffect(() => {
+    if (user) {
+      const interval = setInterval(() => {
+        console.log('Auto-refreshing subscription data...');
+        fetchSubscriptionDetails();
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
   const refreshSubscription = async () => {
     await fetchSubscriptionDetails();
   };
