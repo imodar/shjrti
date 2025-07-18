@@ -364,9 +364,10 @@ const FamilyBuilder = () => {
           !member.fatherId && !member.motherId && !member.isFounder;
         
       case "husbands":
-        // Show all male members who are married
+        // Show only male members who married INTO the family (not sons of the family)
         return member.gender === 'male' && 
-          familyMarriages.some(marriage => marriage.husband?.id === member.id);
+          familyMarriages.some(marriage => marriage.husband?.id === member.id) &&
+          !member.fatherId && !member.motherId && !member.isFounder;
           
       case "blood_with_female_children":
         // Show blood relations AND children of females from same father's family
