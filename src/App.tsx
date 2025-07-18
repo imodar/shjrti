@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,7 +25,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import ViewTree from "./pages/ViewTree";
 import Store from "./pages/Store";
-import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -108,7 +109,7 @@ const App = () => (
           } />
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
-              <EnhancedAdminPanel />
+              <AdminPanel />
             </ProtectedRoute>
           } />
           <Route path="/terms" element={<Terms />} />

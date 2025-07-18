@@ -1,242 +1,339 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Users, 
-  Package, 
-  FileText, 
-  DollarSign, 
-  ShoppingCart, 
-  Settings, 
-  Home,
-  Edit,
-  Trash2,
-  Plus,
-  RefreshCw
-} from 'lucide-react';
 
-const AdminPanel = () => {
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, BarChart3, Store } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+interface PackageType {
+  id: string;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  price_usd: number | null;
+  price_sar: number | null;
+  max_family_members: number | null;
+  max_family_trees: number | null;
+  display_order: number | null;
+  is_active: boolean;
+  is_featured: boolean;
+}
+
+interface UserProfile {
+  id: string;
+  user_id: string | null;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  phone: string | null;
+  created_at: string;
+}
+
+interface Family {
+  id: string;
+  name: string;
+  creator_id: string | null;
+  subscription_status: string | null;
+  subscription_end_date: string | null;
+  created_at: string;
+}
+
+interface Invoice {
+  id: string;
+  user_id: string | null;
+  amount: number;
+  currency: string | null;
+  status: string | null;
+  created_at: string;
+}
+
+interface StoreOrder {
+  id: string;
+  user_id: string | null;
+  order_number: string;
+  total_amount: number;
+  status: string | null;
+  tracking_number: string | null;
+  created_at: string;
+}
+
+interface DashboardStats {
+  totalUsers: number;
+  totalFamilies: number;
+  totalInvoices: number;
+  totalOrders: number;
+  activeSubscriptions: number;
+  totalRevenue: number;
+}
+
+export default function AdminPanel() {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
-
-  // State for different data types
-  const [users, setUsers] = useState([]);
-  const [packages, setPackages] = useState([]);
-  const [families, setFamilies] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [storeOrders, setStoreOrders] = useState([]);
-  const [homepageContent, setHomepageContent] = useState({});
-  const [stats, setStats] = useState<{
-    users?: number;
-    families?: number;
-    invoices?: number;
-    orders?: number;
-  }>({});
-
-  // Form states
-  const [editingPackage, setEditingPackage] = useState(null);
-  const [editingContent, setEditingContent] = useState(null);
-  const [newPackage, setNewPackage] = useState({
+  const { currentLanguage, formatPrice, t } = useLanguage();
+  const [packages, setPackages] = useState<PackageType[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [families, setFamilies] = useState<Family[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [orders, setOrders] = useState<StoreOrder[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    totalFamilies: 0,
+    totalInvoices: 0,
+    totalOrders: 0,
+    activeSubscriptions: 0,
+    totalRevenue: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
     description: '',
-    price: '',
-    features: ''
+    price: 0,
+    price_usd: 0,
+    price_sar: 0,
+    max_family_members: 100,
+    max_family_trees: 1,
+    display_order: 0,
+    is_active: true,
+    is_featured: false
   });
 
-  // Check if user is admin
-  const [isAdmin, setIsAdmin] = useState(false);
-
   useEffect(() => {
-    checkAdminStatus();
-    if (isAdmin) {
-      loadAllData();
-    }
-  }, [isAdmin]);
-
-  const checkAdminStatus = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      setIsAdmin(!!data);
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-    }
-  };
+    loadAllData();
+  }, []);
 
   const loadAllData = async () => {
     setLoading(true);
     try {
       await Promise.all([
-        loadUsers(),
         loadPackages(),
+        loadUsers(),
         loadFamilies(),
         loadInvoices(),
-        loadStoreOrders(),
-        loadHomepageContent(),
+        loadOrders(),
         loadStats()
       ]);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load admin data",
-        variant: "destructive"
-      });
+      console.error('Error loading admin data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadUsers = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setUsers(data || []);
+  const loadPackages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('packages')
+        .select('*')
+        .order('display_order');
+
+      if (error) throw error;
+      setPackages(data || []);
+    } catch (error) {
+      console.error('Error loading packages:', error);
+    }
   };
 
-  const loadPackages = async () => {
-    const { data } = await supabase
-      .from('packages')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setPackages(data || []);
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
   };
 
   const loadFamilies = async () => {
-    const { data } = await supabase
-      .from('families')
-      .select(`
-        *,
-        profiles:creator_id(first_name, last_name, email),
-        packages(name, price)
-      `)
-      .order('created_at', { ascending: false });
-    setFamilies(data || []);
+    try {
+      const { data, error } = await supabase
+        .from('families')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setFamilies(data || []);
+    } catch (error) {
+      console.error('Error loading families:', error);
+    }
   };
 
   const loadInvoices = async () => {
-    const { data } = await supabase
-      .from('invoices')
-      .select(`
-        *,
-        profiles:user_id(first_name, last_name, email),
-        packages(name)
-      `)
-      .order('created_at', { ascending: false });
-    setInvoices(data || []);
+    try {
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setInvoices(data || []);
+    } catch (error) {
+      console.error('Error loading invoices:', error);
+    }
   };
 
-  const loadStoreOrders = async () => {
-    const { data } = await supabase
-      .from('store_orders')
-      .select(`
-        *,
-        profiles:user_id(first_name, last_name, email)
-      `)
-      .order('created_at', { ascending: false });
-    setStoreOrders(data || []);
-  };
+  const loadOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('store_orders')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  const loadHomepageContent = async () => {
-    const { data } = await supabase
-      .from('homepage_content')
-      .select('*');
-    
-    const contentObj = {};
-    data?.forEach(item => {
-      contentObj[item.section] = item.content;
-    });
-    setHomepageContent(contentObj);
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
   };
 
   const loadStats = async () => {
-    const [usersCount, familiesCount, invoicesCount, ordersCount] = await Promise.all([
-      supabase.from('profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('families').select('*', { count: 'exact', head: true }),
-      supabase.from('invoices').select('*', { count: 'exact', head: true }),
-      supabase.from('store_orders').select('*', { count: 'exact', head: true })
-    ]);
+    try {
+      const [usersCount, familiesCount, invoicesCount, ordersCount, activeSubsCount, revenueData] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('families').select('id', { count: 'exact', head: true }),
+        supabase.from('invoices').select('id', { count: 'exact', head: true }),
+        supabase.from('store_orders').select('id', { count: 'exact', head: true }),
+        supabase.from('families').select('id', { count: 'exact', head: true }).eq('subscription_status', 'active'),
+        supabase.from('invoices').select('amount').eq('status', 'paid')
+      ]);
 
-    setStats({
-      users: usersCount.count || 0,
-      families: familiesCount.count || 0,
-      invoices: invoicesCount.count || 0,
-      orders: ordersCount.count || 0
-    });
+      const totalRevenue = revenueData.data?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
+
+      setStats({
+        totalUsers: usersCount.count || 0,
+        totalFamilies: familiesCount.count || 0,
+        totalInvoices: invoicesCount.count || 0,
+        totalOrders: ordersCount.count || 0,
+        activeSubscriptions: activeSubsCount.count || 0,
+        totalRevenue
+      });
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
   };
 
-  const createPackage = async () => {
+  const handlePackageInputChange = (id: string, field: string, value: string | number | boolean) => {
+    setPackages(prevPackages =>
+      prevPackages.map(pkg =>
+        pkg.id === id ? { ...pkg, [field]: value } : pkg
+      )
+    );
+  };
+
+  const handleNewPackageInputChange = (field: string, value: string | number | boolean) => {
+    setNewPackage({ ...newPackage, [field]: value });
+  };
+
+  const handleAddPackage = async () => {
     try {
       const { error } = await supabase
         .from('packages')
-        .insert([{
-          name: newPackage.name,
-          description: newPackage.description,
-          price: parseFloat(newPackage.price),
-          features: JSON.parse(newPackage.features || '[]')
-        }]);
+        .insert([newPackage]);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Package created successfully"
+        description: "New package added successfully"
       });
 
-      setNewPackage({ name: '', description: '', price: '', features: '' });
       loadPackages();
+      setNewPackage({
+        name: '',
+        description: '',
+        price: 0,
+        price_usd: 0,
+        price_sar: 0,
+        max_family_members: 100,
+        max_family_trees: 1,
+        display_order: 0,
+        is_active: true,
+        is_featured: false
+      });
     } catch (error) {
+      console.error('Error adding package:', error);
       toast({
         title: "Error",
-        description: "Failed to create package",
+        description: "Failed to add package",
         variant: "destructive"
       });
     }
   };
 
-  const updatePackage = async (id, updates) => {
+  const handleDeletePackage = async (id: string) => {
     try {
       const { error } = await supabase
         .from('packages')
-        .update(updates)
+        .delete()
         .eq('id', id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Package updated successfully"
+        description: "Package deleted successfully"
       });
 
       loadPackages();
     } catch (error) {
+      console.error('Error deleting package:', error);
       toast({
         title: "Error",
-        description: "Failed to update package",
+        description: "Failed to delete package",
         variant: "destructive"
       });
     }
   };
 
-  const updateInvoiceStatus = async (id, status) => {
+  const handleBulkUpdatePackages = async () => {
+    try {
+      for (const pkg of packages) {
+        const { error } = await supabase
+          .from('packages')
+          .update({
+            name: pkg.name || 'Package',
+            description: pkg.description,
+            price: pkg.price || 0,
+            price_usd: pkg.price_usd || 0,
+            price_sar: pkg.price_sar || 0,
+            max_family_members: pkg.max_family_members || 100,
+            max_family_trees: pkg.max_family_trees || 1,
+            display_order: pkg.display_order || 0,
+            is_active: pkg.is_active,
+            is_featured: pkg.is_featured
+          })
+          .eq('id', pkg.id);
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Success",
+        description: "All packages updated successfully"
+      });
+    } catch (error) {
+      console.error('Error updating packages:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update packages",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updateInvoiceStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
         .from('invoices')
@@ -252,6 +349,7 @@ const AdminPanel = () => {
 
       loadInvoices();
     } catch (error) {
+      console.error('Error updating invoice:', error);
       toast({
         title: "Error",
         description: "Failed to update invoice",
@@ -260,25 +358,28 @@ const AdminPanel = () => {
     }
   };
 
-  const updateOrderStatus = async (id: string, status: string, trackingNumber: string | null = null) => {
+  const updateOrderStatus = async (id: string, status: string, trackingNumber?: string) => {
     try {
-      const updates: any = { status };
-      if (trackingNumber) updates.tracking_number = trackingNumber;
+      const updateData: any = { status };
+      if (trackingNumber !== undefined) {
+        updateData.tracking_number = trackingNumber;
+      }
 
       const { error } = await supabase
         .from('store_orders')
-        .update(updates)
+        .update(updateData)
         .eq('id', id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Order updated successfully"
+        description: "Order status updated"
       });
 
-      loadStoreOrders();
+      loadOrders();
     } catch (error) {
+      console.error('Error updating order:', error);
       toast({
         title: "Error",
         description: "Failed to update order",
@@ -287,142 +388,131 @@ const AdminPanel = () => {
     }
   };
 
-  const updateHomepageContent = async (section, content) => {
-    try {
-      const { error } = await supabase
-        .from('homepage_content')
-        .upsert({
-          section,
-          content,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Homepage content updated"
-      });
-
-      loadHomepageContent();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update homepage content",
-        variant: "destructive"
-      });
-    }
+  const getPackagePrice = (pkg: PackageType) => {
+    const price = currentLanguage === 'ar' ? (pkg.price_sar || pkg.price || 0) : (pkg.price_usd || pkg.price || 0);
+    return formatPrice(price);
   };
 
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>You don't have admin access to this panel.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">Admin Panel</h1>
-          <Button onClick={loadAllData} disabled={loading}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
+      <Toaster />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs defaultValue="dashboard" className="space-y-4">
           <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="packages">Packages</TabsTrigger>
-            <TabsTrigger value="families">Families</TabsTrigger>
-            <TabsTrigger value="invoices">Invoices</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="dashboard">
+              <BarChart3 className="mr-2 h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="users">
+              <CircleUserRound className="mr-2 h-4 w-4" />
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="packages">
+              <Package className="mr-2 h-4 w-4" />
+              Packages
+            </TabsTrigger>
+            <TabsTrigger value="families">
+              <Trees className="mr-2 h-4 w-4" />
+              Families
+            </TabsTrigger>
+            <TabsTrigger value="invoices">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Invoices
+            </TabsTrigger>
+            <TabsTrigger value="orders">
+              <Store className="mr-2 h-4 w-4" />
+              Orders
+            </TabsTrigger>
+            <TabsTrigger value="content">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Content
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <CircleUserRound className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.users || 0}</div>
+                  <div className="text-2xl font-bold">{stats.totalUsers}</div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Families</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Total Families</CardTitle>
+                  <Trees className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.families || 0}</div>
+                  <div className="text-2xl font-bold">{stats.totalFamilies}</div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Invoices</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
+                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.invoices || 0}</div>
+                  <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Orders</CardTitle>
-                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.orders || 0}</div>
+                  <div className="text-2xl font-bold">{stats.totalInvoices}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                  <Store className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalOrders}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                  <Scale className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{formatPrice(stats.totalRevenue)}</div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="users">
+          <TabsContent value="users" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
+                <CardDescription>Manage user accounts and profiles</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
+                      <TableHead>Name</TableHead>
                       <TableHead>Phone</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead>Created At</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {users.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell>{user.first_name} {user.last_name}</TableCell>
                         <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.phone}</TableCell>
+                        <TableCell>{`${user.first_name || ''} ${user.last_name || ''}`.trim() || 'N/A'}</TableCell>
+                        <TableCell>{user.phone || 'N/A'}</TableCell>
                         <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -431,126 +521,174 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="packages">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create New Package</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Package Name</Label>
-                      <Input
-                        id="name"
-                        value={newPackage.name}
-                        onChange={(e) => setNewPackage({...newPackage, name: e.target.value})}
-                      />
+          <TabsContent value="packages" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Existing Packages</CardTitle>
+                <CardDescription>Manage subscription packages with language-based pricing</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {packages.map((pkg) => (
+                    <div key={pkg.id} className="grid grid-cols-12 gap-4 items-center p-4 border rounded-lg">
+                      <div className="col-span-2">
+                        <Input
+                          placeholder="Package Name"
+                          value={pkg.name || ''}
+                          onChange={(e) => handlePackageInputChange(pkg.id, 'name', e.target.value)}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Input
+                          type="number"
+                          placeholder="Price USD"
+                          value={pkg.price_usd || 0}
+                          onChange={(e) => handlePackageInputChange(pkg.id, 'price_usd', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Input
+                          type="number"
+                          placeholder="Price SAR"
+                          value={pkg.price_sar || 0}
+                          onChange={(e) => handlePackageInputChange(pkg.id, 'price_sar', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="number"
+                          placeholder="Max Members"
+                          value={pkg.max_family_members || 0}
+                          onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="number"
+                          placeholder="Max Trees"
+                          value={pkg.max_family_trees || 0}
+                          onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_trees', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="number"
+                          placeholder="Order"
+                          value={pkg.display_order || 0}
+                          onChange={(e) => handlePackageInputChange(pkg.id, 'display_order', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`featured-${pkg.id}`}
+                            checked={pkg.is_featured}
+                            onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_featured', checked)}
+                          />
+                          <Label htmlFor={`featured-${pkg.id}`} className="text-sm">Featured</Label>
+                        </div>
+                      </div>
+                      <div className="col-span-1">
+                        <Switch
+                          checked={pkg.is_active}
+                          onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_active', checked)}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
+                          Delete
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="price">Price</Label>
-                      <Input
-                        id="price"
-                        type="number"
-                        value={newPackage.price}
-                        onChange={(e) => setNewPackage({...newPackage, price: e.target.value})}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={newPackage.description}
-                      onChange={(e) => setNewPackage({...newPackage, description: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="features">Features (JSON Array)</Label>
-                    <Textarea
-                      id="features"
-                      value={newPackage.features}
-                      onChange={(e) => setNewPackage({...newPackage, features: e.target.value})}
-                      placeholder='["Feature 1", "Feature 2", "Feature 3"]'
-                    />
-                  </div>
-                  <Button onClick={createPackage}>Create Package</Button>
-                </CardContent>
-              </Card>
+                  ))}
+                </div>
+                <Button className="mt-4" onClick={handleBulkUpdatePackages}>
+                  Update All Packages
+                </Button>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Existing Packages</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {packages.map((pkg) => (
-                        <TableRow key={pkg.id}>
-                          <TableCell>{pkg.name}</TableCell>
-                          <TableCell>${pkg.price}</TableCell>
-                          <TableCell>
-                            <Badge variant={pkg.is_active ? "default" : "secondary"}>
-                              {pkg.is_active ? "Active" : "Inactive"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => updatePackage(pkg.id, { is_active: !pkg.is_active })}
-                              >
-                                {pkg.is_active ? "Deactivate" : "Activate"}
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Add New Package</CardTitle>
+                <CardDescription>Create a new subscription package</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Package Name"
+                    value={newPackage.name || ''}
+                    onChange={(e) => handleNewPackageInputChange('name', e.target.value)}
+                  />
+                  <Input
+                    placeholder="Description"
+                    value={newPackage.description || ''}
+                    onChange={(e) => handleNewPackageInputChange('description', e.target.value)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price USD"
+                    value={newPackage.price_usd || 0}
+                    onChange={(e) => handleNewPackageInputChange('price_usd', Number(e.target.value))}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price SAR"
+                    value={newPackage.price_sar || 0}
+                    onChange={(e) => handleNewPackageInputChange('price_sar', Number(e.target.value))}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Max Family Members"
+                    value={newPackage.max_family_members || 0}
+                    onChange={(e) => handleNewPackageInputChange('max_family_members', Number(e.target.value))}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Max Family Trees"
+                    value={newPackage.max_family_trees || 0}
+                    onChange={(e) => handleNewPackageInputChange('max_family_trees', Number(e.target.value))}
+                  />
+                </div>
+                <Button className="mt-4" onClick={handleAddPackage}>Add Package</Button>
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          <TabsContent value="families">
+          <TabsContent value="families" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Family Management</CardTitle>
+                <CardDescription>Manage family trees and subscriptions</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Family Name</TableHead>
-                      <TableHead>Creator</TableHead>
-                      <TableHead>Package</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Created</TableHead>
+                      <TableHead>Subscription Status</TableHead>
+                      <TableHead>End Date</TableHead>
+                      <TableHead>Created At</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {families.map((family) => (
                       <TableRow key={family.id}>
                         <TableCell>{family.name}</TableCell>
-                        <TableCell>{family.profiles?.first_name} {family.profiles?.last_name}</TableCell>
-                        <TableCell>{family.packages?.name}</TableCell>
                         <TableCell>
-                          <Badge variant={family.subscription_status === 'active' ? "default" : "secondary"}>
-                            {family.subscription_status}
-                          </Badge>
+                          <span className={`px-2 py-1 rounded text-sm ${
+                            family.subscription_status === 'active' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {family.subscription_status || 'inactive'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {family.subscription_end_date 
+                            ? new Date(family.subscription_end_date).toLocaleDateString()
+                            : 'N/A'
+                          }
                         </TableCell>
                         <TableCell>{new Date(family.created_at).toLocaleDateString()}</TableCell>
                       </TableRow>
@@ -561,41 +699,31 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="invoices">
+          <TabsContent value="invoices" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Invoice Management</CardTitle>
+                <CardDescription>Manage billing and payment status</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Package</TableHead>
                       <TableHead>Amount</TableHead>
+                      <TableHead>Currency</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Date</TableHead>
+                      <TableHead>Created At</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {invoices.map((invoice) => (
                       <TableRow key={invoice.id}>
-                        <TableCell>{invoice.profiles?.first_name} {invoice.profiles?.last_name}</TableCell>
-                        <TableCell>{invoice.packages?.name}</TableCell>
-                        <TableCell>${invoice.amount}</TableCell>
-                        <TableCell>
-                          <Badge variant={
-                            invoice.status === 'paid' ? "default" : 
-                            invoice.status === 'pending' ? "secondary" : "destructive"
-                          }>
-                            {invoice.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{new Date(invoice.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell>{invoice.amount}</TableCell>
+                        <TableCell>{invoice.currency}</TableCell>
                         <TableCell>
                           <Select
-                            value={invoice.status}
+                            value={invoice.status || 'pending'}
                             onValueChange={(value) => updateInvoiceStatus(invoice.id, value)}
                           >
                             <SelectTrigger className="w-32">
@@ -605,9 +733,13 @@ const AdminPanel = () => {
                               <SelectItem value="pending">Pending</SelectItem>
                               <SelectItem value="paid">Paid</SelectItem>
                               <SelectItem value="failed">Failed</SelectItem>
-                              <SelectItem value="refunded">Refunded</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
                             </SelectContent>
                           </Select>
+                        </TableCell>
+                        <TableCell>{new Date(invoice.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Button variant="outline" size="sm">View</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -617,58 +749,62 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="orders">
+          <TabsContent value="orders" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Store Order Management</CardTitle>
+                <CardDescription>Manage store orders and shipping</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Order #</TableHead>
-                      <TableHead>Customer</TableHead>
+                      <TableHead>Order Number</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Tracking</TableHead>
-                      <TableHead>Date</TableHead>
+                      <TableHead>Created At</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {storeOrders.map((order) => (
+                    {orders.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell>{order.order_number}</TableCell>
-                        <TableCell>{order.profiles?.first_name} {order.profiles?.last_name}</TableCell>
-                        <TableCell>${order.total_amount}</TableCell>
+                        <TableCell>{formatPrice(order.total_amount)}</TableCell>
                         <TableCell>
-                          <Badge variant={
-                            order.status === 'delivered' ? "default" : 
-                            order.status === 'shipped' ? "secondary" : "outline"
-                          }>
-                            {order.status}
-                          </Badge>
+                          <Select
+                            value={order.status || 'pending'}
+                            onValueChange={(value) => updateOrderStatus(order.id, value)}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="processing">Processing</SelectItem>
+                              <SelectItem value="shipped">Shipped</SelectItem>
+                              <SelectItem value="delivered">Delivered</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </TableCell>
-                        <TableCell>{order.tracking_number || 'N/A'}</TableCell>
+                        <TableCell>
+                          <Input
+                            placeholder="Tracking Number"
+                            value={order.tracking_number || ''}
+                            onChange={(e) => {
+                              // Handle tracking number update
+                              if (e.target.value !== order.tracking_number) {
+                                updateOrderStatus(order.id, order.status || 'pending', e.target.value);
+                              }
+                            }}
+                            className="w-32"
+                          />
+                        </TableCell>
                         <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
                         <TableCell>
-                          <div className="flex gap-2">
-                            <Select
-                              value={order.status}
-                              onValueChange={(value) => updateOrderStatus(order.id, value)}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="processing">Processing</SelectItem>
-                                <SelectItem value="shipped">Shipped</SelectItem>
-                                <SelectItem value="delivered">Delivered</SelectItem>
-                                <SelectItem value="cancelled">Cancelled</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          <Button variant="outline" size="sm">View</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -678,66 +814,23 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="content">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Homepage Content Management</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {Object.entries(homepageContent).map(([section, content]) => (
-                    <div key={section} className="border p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold mb-4 capitalize">{section} Section</h3>
-                      <pre className="bg-muted p-4 rounded text-sm overflow-auto">
-                        {JSON.stringify(content, null, 2)}
-                      </pre>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" className="mt-4">
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit {section}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>Edit {section} Section</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Label>Content (JSON)</Label>
-                            <Textarea
-                              rows={10}
-                              defaultValue={JSON.stringify(content, null, 2)}
-                              onChange={(e) => setEditingContent(e.target.value)}
-                            />
-                            <Button 
-                              onClick={() => {
-                                try {
-                                  const parsed = JSON.parse(editingContent);
-                                  updateHomepageContent(section, parsed);
-                                } catch (error) {
-                                  toast({
-                                    title: "Error",
-                                    description: "Invalid JSON format",
-                                    variant: "destructive"
-                                  });
-                                }
-                              }}
-                            >
-                              Save Changes
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
+          <TabsContent value="content" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Content Management</CardTitle>
+                <CardDescription>Manage website content and translations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <MessageSquare className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Content Management</h3>
+                  <p className="text-muted-foreground">Content management features will be implemented here.</p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
     </div>
   );
-};
-
-export default AdminPanel;
+}
