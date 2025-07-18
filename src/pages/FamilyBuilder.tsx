@@ -413,6 +413,51 @@ const FamilyBuilder = () => {
     return [];
   };
 
+  // Function to get additional info for each member
+  const getAdditionalInfo = (member) => {
+    // For males from the same family (have fatherId or are founders)
+    if (member.gender === 'male' && (member.fatherId || member.isFounder)) {
+      if (member.fatherId) {
+        const father = familyMembers.find(m => m.id === member.fatherId);
+        if (father) {
+          return `ابن ${father.name}`;
+        }
+      }
+      return null; // Founders don't need "ابن" 
+    }
+    
+    // For wives (married women who are not from the original family)
+    if (member.gender === 'female' && 
+        familyMarriages.some(marriage => marriage.wife?.id === member.id) &&
+        !member.fatherId && !member.motherId && !member.isFounder) {
+      const marriage = familyMarriages.find(m => m.wife?.id === member.id);
+      if (marriage?.husband) {
+        return `زوجة ${marriage.husband.name}`;
+      }
+    }
+    
+    // For children of daughters (have both father and mother, where father is not from original family)
+    if (member.fatherId && member.motherId) {
+      const father = familyMembers.find(m => m.id === member.fatherId);
+      const mother = familyMembers.find(m => m.id === member.motherId);
+      
+      if (father && mother) {
+        // Check if father is non-blood (married into family)
+        const fatherIsNonBlood = father.gender === 'male' && 
+          familyMarriages.some(marriage => 
+            marriage.husband?.id === father.id &&
+            !father.fatherId && !father.motherId && !father.isFounder
+          );
+          
+        if (fatherIsNonBlood && (mother.fatherId || mother.isFounder)) {
+          return `بن ${father.name} وأمه ${mother.name}`;
+        }
+      }
+    }
+    
+    return null;
+  };
+
   // Image handling functions
   const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -1418,19 +1463,28 @@ const FamilyBuilder = () => {
                           
                           {/* Member Info with Creative Typography */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                                {member.name}
-                              </h3>
-                              <Badge className={cn(
-                                "px-3 py-1 rounded-full font-medium text-xs border-0 shadow-md transition-all duration-300 group-hover:scale-105",
-                                member.gender === "male" 
-                                  ? "bg-blue-100 text-blue-700 shadow-blue-200/50" 
-                                  : "bg-pink-100 text-pink-700 shadow-pink-200/50"
-                              )}>
-                                {member.gender === "male" ? "👨 ذكر" : "👩 أنثى"}
-                              </Badge>
-                            </div>
+                             <div className="flex items-center gap-3 mb-2">
+                               <h3 className="font-bold text-foreground text-xl leading-tight truncate group-hover:text-primary transition-colors duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                                 {member.name}
+                               </h3>
+                               <Badge className={cn(
+                                 "px-3 py-1 rounded-full font-medium text-xs border-0 shadow-md transition-all duration-300 group-hover:scale-105",
+                                 member.gender === "male" 
+                                   ? "bg-blue-100 text-blue-700 shadow-blue-200/50" 
+                                   : "bg-pink-100 text-pink-700 shadow-pink-200/50"
+                               )}>
+                                 {member.gender === "male" ? "👨 ذكر" : "👩 أنثى"}
+                               </Badge>
+                             </div>
+                             
+                             {/* Additional info under name */}
+                             {getAdditionalInfo(member) && (
+                               <div className="mb-2">
+                                 <p className="text-sm text-muted-foreground/80 font-medium leading-relaxed">
+                                   {getAdditionalInfo(member)}
+                                 </p>
+                               </div>
+                             )}
                           </div>
 
                           {/* Actions Menu with Creative Design */}
