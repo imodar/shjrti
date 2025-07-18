@@ -244,13 +244,15 @@ const PlanSelection = () => {
       return;
     }
 
-    // Check if it's the current package
-    if (isCurrentPackage(planId)) {
+    // Check if it's the current package and subscription is not expired
+    const isExpired = userSubscription?.expires_at ? new Date(userSubscription.expires_at) < new Date() : true;
+    
+    if (isCurrentPackage(planId) && !isExpired) {
       toast({
         title: currentLanguage === 'ar' ? "خطتك الحالية" : "Current Plan",
         description: currentLanguage === 'ar' 
-          ? "هذه هي خطتك الحالية" 
-          : "This is your current plan",
+          ? "هذه هي خطتك الحالية النشطة" 
+          : "This is your current active plan",
       });
       return;
     }
@@ -288,8 +290,14 @@ const PlanSelection = () => {
       return currentLanguage === 'ar' ? "تسجيل الدخول للاختيار" : "Login to Select";
     }
 
+    const isExpired = userSubscription?.expires_at ? new Date(userSubscription.expires_at) < new Date() : true;
+    
     if (isCurrentPackage(pkg.id)) {
-      return currentLanguage === 'ar' ? "خطتك الحالية" : "Current Plan";
+      if (isExpired) {
+        return currentLanguage === 'ar' ? "تجديد الاشتراك" : "Renew Subscription";
+      } else {
+        return currentLanguage === 'ar' ? "خطتك الحالية" : "Current Plan";
+      }
     }
 
     const packagePrice = getPackagePrice(pkg);
@@ -302,7 +310,13 @@ const PlanSelection = () => {
 
   const isButtonDisabled = (pkg: Package): boolean => {
     if (!user) return false; // Allow click to redirect to login
-    return isCurrentPackage(pkg.id);
+    
+    // For renewal scenarios, allow all buttons to be clickable
+    // Only disable if it's exactly the same current plan and subscription is not expired
+    const isCurrent = isCurrentPackage(pkg.id);
+    const isExpired = userSubscription?.expires_at ? new Date(userSubscription.expires_at) < new Date() : true;
+    
+    return isCurrent && !isExpired;
   };
 
   if (authLoading || loading) {
