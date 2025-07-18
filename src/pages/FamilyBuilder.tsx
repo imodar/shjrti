@@ -133,26 +133,43 @@ const FamilyBuilder = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('User not authenticated');
 
-        // Get user's subscription details
-        const { data: subscription, error: subError } = await supabase
-          .rpc('get_user_subscription_details', { user_uuid: user.id })
+        console.log('Loading package data for user:', user.id);
+
+        // Get user's subscription details directly from user_subscriptions table
+        const { data: userSubscription, error: subError } = await supabase
+          .from('user_subscriptions')
+          .select(`
+            *,
+            packages:package_id (
+              id,
+              name,
+              max_family_members,
+              max_family_trees,
+              features
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(1)
           .single();
 
-        if (subError) console.error('Subscription error:', subError);
-        if (subscription) {
-          setSubscriptionData(subscription);
-          
-          // Get package details
-          const { data: packageInfo, error: packageError } = await supabase
+        console.log('User subscription data:', userSubscription, 'Error:', subError);
+
+        if (userSubscription && userSubscription.packages) {
+          console.log('Setting package data from subscription:', userSubscription.packages);
+          setPackageData(userSubscription.packages);
+          setSubscriptionData(userSubscription);
+        } else {
+          // No active subscription, use free package
+          console.log('No subscription found, using free package');
+          const { data: freePackage } = await supabase
             .from('packages')
             .select('*')
-            .eq('id', subscription.subscription_id)
+            .ilike('name->en', 'Free')
             .single();
-
-          if (packageError) console.error('Package error:', packageError);
-          if (packageInfo) {
-            setPackageData(packageInfo);
-          }
+          console.log('Free package fallback:', freePackage);
+          if (freePackage) setPackageData(freePackage);
         }
         
         // Get user's families
@@ -442,8 +459,14 @@ const FamilyBuilder = () => {
   };
 
   const handleAddNewMember = () => {
+    console.log('handleAddNewMember called');
+    console.log('Current family members count:', familyMembers.length);
+    console.log('Package data:', packageData);
+    console.log('Max family members:', packageData?.max_family_members);
+    
     // Check member limit before allowing to add
     if (packageData && familyMembers.length >= packageData.max_family_members) {
+      console.log('Member limit reached, showing toast');
       toast({
         title: "تم الوصول للحد الأقصى",
         description: `لا يمكن إضافة أعضاء جدد. الحد الأقصى المسموح: ${packageData.max_family_members} عضو`,
@@ -452,6 +475,7 @@ const FamilyBuilder = () => {
       return;
     }
     
+    console.log('Member limit check passed, opening modal');
     setSelectedMember(null);
     setCurrentStep(1);
     setShowAddMember(true);
@@ -1293,7 +1317,10 @@ const FamilyBuilder = () => {
                       </Badge>
                     )}
                     <Button
-                      onClick={handleAddNewMember}
+                      onClick={() => {
+                        console.log('Add button clicked - Current members:', familyMembers.length, 'Package data:', packageData);
+                        handleAddNewMember();
+                      }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
                       className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
