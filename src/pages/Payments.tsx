@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Bell, LogOut, User, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Footer from "@/components/Footer";
@@ -23,6 +23,7 @@ export default function Payments() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { currentLanguage, formatPrice } = useLanguage();
+  const navigate = useNavigate();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -34,6 +35,7 @@ export default function Payments() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
+  const [processingInvoice, setProcessingInvoice] = useState(false);
 
   // Helper function to get localized package field
   const getLocalizedPackageField = (pkg: any, field: string, fallbackLang = 'en') => {
@@ -146,7 +148,7 @@ export default function Payments() {
   useEffect(() => {
     loadPackages();
     loadUserSubscription();
-  }, [user, currentLanguage]); // Add currentLanguage to dependencies
+  }, [user, currentLanguage]);
 
   const handleDeletePaymentMethod = (id: number) => {
     setPaymentMethods(paymentMethods.filter(method => method.id !== id));
@@ -157,113 +159,87 @@ export default function Payments() {
     return packages.findIndex(p => p.id === planId);
   };
 
-  const handlePlanSelect = (planId: string) => {
-    if (planId === currentPlan) return;
+  const handlePlanSelect = async (planId: string) => {
+    if (planId === currentPlan || !user) return;
+    
     setSelectedPlan(planId);
-    setShowPlanModal(true);
-  };
-
-  const confirmPlanChange = () => {
-    if (!selectedPlan) return;
-    
-    // If it's a downgrade, just change the plan
-    if (isDowngrade) {
-      setCurrentPlan(selectedPlan);
-      setShowPlanModal(false);
-      setSelectedPlan(null);
-      return;
-    }
-    
-    // For upgrades, check if user has payment methods
-    if (paymentMethods.length > 0) {
-      // Show payment method selection modal
-      setShowPlanModal(false);
-      setShowPaymentModal(true);
-    } else {
-      // No payment methods, show add payment method modal
-      setShowPlanModal(false);
-      setShowAddPaymentModal(true);
-    }
-  };
-
-  const processPayment = async () => {
-    if (!selectedPlan || !user) return;
+    setProcessingInvoice(true);
 
     try {
-      // Update family subscription in database
-      if (currentFamily) {
-        // Update existing family
-        const { error } = await supabase
-          .from('families')
-          .update({
-            package_id: selectedPlan,
-            subscription_status: 'active',
-            subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
-          })
-          .eq('id', currentFamily.id);
-
-        if (error) throw error;
-      } else {
-        // Create new family for the user
-        const { error } = await supabase
-          .from('families')
-          .insert({
-            name: `عائلة ${user.email}`,
-            creator_id: user.id,
-            package_id: selectedPlan,
-            subscription_status: 'active',
-            subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-          });
-
-        if (error) throw error;
+      // Get the selected package details
+      const selectedPackage = packages.find(p => p.id === planId);
+      if (!selectedPackage) {
+        throw new Error('Selected package not found');
       }
 
-      // Update local state
-      setCurrentPlan(selectedPlan);
-      await loadUserSubscription(); // Reload subscription data
+      // Get current family or create family ID
+      let familyId = currentFamily?.id;
+      if (!familyId) {
+        familyId = crypto.randomUUID();
+      }
+
+      // Calculate amount based on current language
+      const amount = currentLanguage === 'ar' 
+        ? selectedPackage.price === "مجاني للأبد" ? 0 : parseFloat(selectedPackage.price)
+        : selectedPackage.price === "مجاني للأبد" ? 0 : parseFloat(selectedPackage.price);
       
-      setShowPlanModal(false);
-      setShowPaymentModal(false);
-      setSelectedPlan(null);
-      setSelectedPaymentMethod(null);
-      
-      // Show success toast
-      const selectedPlanData = packages.find(p => p.id === selectedPlan);
-      toast({
-        title: "🎉 مبروك! تمت عملية الترقية",
-        description: `تم ترقية اشتراكك إلى ${getLocalizedPackageField(selectedPlanData, 'name') || selectedPlanData?.name} بنجاح. استمتع بالميزات الجديدة!`,
-        duration: 5000,
+      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
+
+      // Create invoice using the database function
+      const { data: invoiceId, error: invoiceError } = await supabase.rpc('create_invoice', {
+        p_user_id: user.id,
+        p_family_id: familyId,
+        p_package_id: planId,
+        p_amount: amount,
+        p_currency: currency
       });
+
+      if (invoiceError) {
+        console.error('Error creating invoice:', invoiceError);
+        throw new Error('Failed to create invoice');
+      }
+
+      // If it's a free plan, complete the upgrade immediately
+      if (amount === 0) {
+        const { data: success, error: upgradeError } = await supabase.rpc('complete_payment_and_upgrade', {
+          p_invoice_id: invoiceId,
+          p_stripe_payment_intent_id: null
+        });
+
+        if (upgradeError || !success) {
+          throw new Error('Failed to complete free plan upgrade');
+        }
+
+        // Reload subscription data
+        await loadUserSubscription();
+        
+        toast({
+          title: "🎉 تم تفعيل الخطة المجانية",
+          description: `تم ترقية اشتراكك إلى ${getLocalizedPackageField(selectedPackage, 'name') || selectedPackage.name} بنجاح.`,
+          duration: 5000,
+        });
+      } else {
+        // For paid plans, redirect to payment page
+        navigate('/payment', {
+          state: {
+            planId: planId,
+            invoiceId: invoiceId,
+            amount: amount,
+            currency: currency
+          }
+        });
+      }
     } catch (error) {
-      console.error('Error processing payment:', error);
+      console.error('Error processing plan selection:', error);
       toast({
         title: "خطأ",
-        description: "فشل في معالجة الدفع. يرجى المحاولة مرة أخرى.",
+        description: "فشل في معالجة اختيار الخطة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
+    } finally {
+      setProcessingInvoice(false);
+      setSelectedPlan(null);
     }
-  };
-
-  const handlePaymentMethodSelect = (methodId: number) => {
-    setSelectedPaymentMethod(methodId);
-    processPayment();
-  };
-
-  const handleAddPaymentAndPay = () => {
-    // Add a new payment method (simulated)
-    const newPaymentMethod = {
-      id: paymentMethods.length + 1,
-      type: "visa",
-      last4: "1234",
-      expiry: "12/28",
-      isDefault: false
-    };
-    setPaymentMethods([...paymentMethods, newPaymentMethod]);
-    
-    // Process payment with the new method
-    setSelectedPaymentMethod(newPaymentMethod.id);
-    processPayment();
-    setShowAddPaymentModal(false);
   };
 
   const handlePaymentMethodChoice = (type: 'credit-card' | 'paypal') => {
@@ -280,14 +256,13 @@ export default function Payments() {
       };
       setPaymentMethods([...paymentMethods, newPaymentMethod]);
       setSelectedPaymentMethod(newPaymentMethod.id);
-      processPayment();
       setShowAddPaymentModal(false);
     }
   };
 
   const handleCreditCardSubmit = (e?: React.MouseEvent) => {
-    e?.preventDefault(); // Prevent any default behavior
-    e?.stopPropagation(); // Stop event propagation
+    e?.preventDefault();
+    e?.stopPropagation();
     
     // Add credit card (simulated)
     const newPaymentMethod = {
@@ -299,13 +274,12 @@ export default function Payments() {
     };
     setPaymentMethods([...paymentMethods, newPaymentMethod]);
     setSelectedPaymentMethod(newPaymentMethod.id);
-    processPayment();
     setShowCreditCardForm(false);
   };
 
-  const isDowngrade = selectedPlan ? getPlanIndex(selectedPlan) < getPlanIndex(currentPlan) : false;
   const selectedPlanData = packages.find(p => p.id === selectedPlan);
   const currentPlanData = packages.find(p => p.id === currentPlan);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
       {/* Animated Background Elements */}
@@ -572,9 +546,7 @@ export default function Payments() {
                                   <SelectValue placeholder="MM" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-gray-800 z-50">
-                                  {Array.from({
-                                  length: 12
-                                }, (_, i) => <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                  {Array.from({length: 12}, (_, i) => <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
                                       {String(i + 1).padStart(2, '0')}
                                     </SelectItem>)}
                                 </SelectContent>
@@ -587,9 +559,7 @@ export default function Payments() {
                                   <SelectValue placeholder="YYYY" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-gray-800 z-50">
-                                  {Array.from({
-                                  length: 10
-                                }, (_, i) => <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
+                                  {Array.from({length: 10}, (_, i) => <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
                                       {new Date().getFullYear() + i}
                                     </SelectItem>)}
                                 </SelectContent>
@@ -910,7 +880,7 @@ export default function Payments() {
                           ))}
                         </ul>
                         
-                        {/* Enhanced button with current plan styling */}
+                        {/* Enhanced button with current plan styling and loading state */}
                         <Button 
                           onClick={() => currentPlan !== plan.id && handlePlanSelect(plan.id)}
                           className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 ${
@@ -918,13 +888,18 @@ export default function Payments() {
                               ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed opacity-60' 
                               : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105'
                           }`} 
-                          disabled={currentPlan === plan.id}
+                          disabled={currentPlan === plan.id || (processingInvoice && selectedPlan === plan.id)}
                         >
                           <div className="flex items-center justify-center gap-2">
                             {currentPlan === plan.id ? (
                               <>
                                 <div className="w-2 h-2 bg-white rounded-full"></div>
                                 <span>خطتك الحالية النشطة</span>
+                              </>
+                            ) : processingInvoice && selectedPlan === plan.id ? (
+                              <>
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                <span>جاري إنشاء الفاتورة...</span>
                               </>
                             ) : (
                               <>
@@ -1100,171 +1075,6 @@ export default function Payments() {
                 className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
               >
                 إضافة والدفع
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Payment Method Selection Modal */}
-        <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
-            <DialogHeader className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl">
-                <CreditCard className="h-8 w-8 text-white" />
-              </div>
-              
-              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
-                اختر طريقة الدفع
-              </DialogTitle>
-              
-              <DialogDescription className="text-center text-lg">
-                اختر طريقة الدفع لترقية اشتراكك إلى خطة {selectedPlanData?.name}
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4 py-6">
-              {paymentMethods.map((method) => (
-                <div 
-                  key={method.id}
-                  onClick={() => handlePaymentMethodSelect(method.id)}
-                  className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 hover:border-emerald-300 hover:shadow-lg ${
-                    selectedPaymentMethod === method.id 
-                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' 
-                      : 'border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    {method.type === "paypal" ? (
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white text-lg flex items-center justify-center font-bold shadow-lg">
-                        P
-                      </div>
-                    ) : (
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
-                        <CreditCard className="h-6 w-6 text-emerald-600 dark:text-emerald-300" />
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      {method.type === "paypal" ? (
-                        <>
-                          <p className="font-semibold text-lg">PayPal</p>
-                          <p className="text-sm text-muted-foreground">{method.email}</p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="font-semibold text-lg">•••• •••• •••• {method.last4}</p>
-                          <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
-                        </>
-                      )}
-                    </div>
-                    {method.isDefault && (
-                      <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
-                        افتراضي
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="flex gap-3 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowPaymentModal(false)}
-                className="flex-1 h-12 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300"
-              >
-                إلغاء
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Plan Change Confirmation Modal */}
-        <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
-          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
-            {/* Animated background */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-xl animate-pulse"></div>
-              <div className="absolute -bottom-10 -left-10 w-16 h-16 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
-            </div>
-
-            <DialogHeader className="relative z-10 text-center space-y-4">
-              {/* Icon */}
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl">
-                {isDowngrade ? (
-                  <Shield className="h-8 w-8 text-white" />
-                ) : (
-                  <Crown className="h-8 w-8 text-white" />
-                )}
-              </div>
-              
-              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
-                {isDowngrade ? 'تأكيد تغيير الخطة' : 'ترقية الخطة'}
-              </DialogTitle>
-              
-              <DialogDescription className="text-center text-lg">
-                {isDowngrade ? (
-                  <div className="space-y-3">
-                    <p className="text-orange-600 dark:text-orange-400 font-medium">
-                      ⚠️ تحذير: ستفقد بعض الميزات عند التراجع إلى خطة {selectedPlanData?.name}
-                    </p>
-                    <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
-                      <p className="text-sm text-orange-700 dark:text-orange-300 font-medium mb-2">
-                        الميزات التي ستفقدها:
-                      </p>
-                      <ul className="text-sm text-orange-600 dark:text-orange-400 space-y-1">
-                        {currentPlanData?.features
-                          .filter(feature => !selectedPlanData?.features.includes(feature))
-                          .map((feature, index) => (
-                            <li key={index} className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                              {feature}
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <p className="text-emerald-600 dark:text-emerald-400 font-medium">
-                      🎉 رائع! ستحصل على ميزات متقدمة مع خطة {selectedPlanData?.name}
-                    </p>
-                    <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
-                      <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium mb-2">
-                        الميزات الجديدة التي ستحصل عليها:
-                      </p>
-                      <ul className="text-sm text-emerald-600 dark:text-emerald-400 space-y-1">
-                        {selectedPlanData?.features
-                          .filter(feature => !currentPlanData?.features.includes(feature))
-                          .map((feature, index) => (
-                            <li key={index} className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                              {feature}
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="flex gap-3 pt-6 relative z-10">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowPlanModal(false)}
-                className="flex-1 h-12 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300"
-              >
-                إلغاء
-              </Button>
-              <Button 
-                onClick={confirmPlanChange}
-                className={`flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 ${
-                  isDowngrade 
-                    ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600' 
-                    : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700'
-                } text-white`}
-              >
-                {isDowngrade ? 'تأكيد التراجع' : 'ترقية الآن'}
               </Button>
             </div>
           </DialogContent>
