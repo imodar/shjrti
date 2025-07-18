@@ -320,35 +320,56 @@ export default function AdminPanel() {
   const handleBulkUpdatePackages = async () => {
     try {
       for (const pkg of packages) {
+        // Prepare the update data with proper multilingual handling
+        const updateData = {
+          // Handle multilingual name - preserve JSON structure or convert string to JSON
+          name: typeof pkg.name === 'object' && pkg.name !== null 
+            ? pkg.name 
+            : (pkg.name || 'Package'),
+          
+          // Handle multilingual description - preserve JSON structure or convert string to JSON  
+          description: typeof pkg.description === 'object' && pkg.description !== null
+            ? pkg.description
+            : pkg.description,
+            
+          price: pkg.price || 0,
+          price_usd: pkg.price_usd || 0,
+          price_sar: pkg.price_sar || 0,
+          max_family_members: pkg.max_family_members || 100,
+          max_family_trees: pkg.max_family_trees || 1,
+          display_order: pkg.display_order || 0,
+          is_active: pkg.is_active,
+          is_featured: pkg.is_featured,
+          
+          // Handle multilingual features - preserve JSON structure
+          features: typeof pkg.features === 'object' && pkg.features !== null
+            ? pkg.features
+            : {}
+        };
+
         const { error } = await supabase
           .from('packages')
-          .update({
-            name: pkg.name || 'Package',
-            description: pkg.description,
-            price: pkg.price || 0,
-            price_usd: pkg.price_usd || 0,
-            price_sar: pkg.price_sar || 0,
-            max_family_members: pkg.max_family_members || 100,
-            max_family_trees: pkg.max_family_trees || 1,
-            display_order: pkg.display_order || 0,
-            is_active: pkg.is_active,
-            is_featured: pkg.is_featured,
-            features: pkg.features || {}
-          })
+          .update(updateData)
           .eq('id', pkg.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating package:', pkg.id, error);
+          throw error;
+        }
       }
 
       toast({
         title: "Success",
         description: "All packages updated successfully"
       });
+      
+      // Reload packages to reflect any changes
+      await loadPackages();
     } catch (error) {
       console.error('Error updating packages:', error);
       toast({
         title: "Error",
-        description: "Failed to update packages",
+        description: "Failed to update packages. Please check the console for details.",
         variant: "destructive"
       });
     }
