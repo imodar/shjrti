@@ -56,7 +56,7 @@ export default function Payments() {
           id: pkg.id,
           name: pkg.name,
           description: pkg.description,
-          price: price === 0 ? "مجاني للأبد" : (price * 12).toString(),
+          price: price === 0 ? "مجاني للأبد" : price.toString(),
           period: price === 0 ? "" : "سنوياً",
           features: pkg.features || [],
           maxMembers: pkg.max_family_members,
