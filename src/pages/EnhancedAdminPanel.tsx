@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -184,23 +185,20 @@ export default function EnhancedAdminPanel() {
 
   const handleBulkUpdate = async () => {
     try {
-      const packageData = packages.map(pkg => ({
-        id: pkg.id,
-        name: pkg.name || 'Package', // Add required name field
-        price: pkg.price, // Add required price field
-        price_usd: pkg.price_usd || 0,
-        price_sar: pkg.price_sar || 0,
-        max_family_members: pkg.max_family_members || 0,
-        max_family_trees: pkg.max_family_trees || 0,
-        display_order: pkg.display_order || 0,
-        is_active: pkg.is_active,
-        is_featured: pkg.is_featured
-      }));
-
-      for (const pkg of packageData) {
+      for (const pkg of packages) {
         const { error } = await supabase
           .from('packages')
-          .update(pkg)
+          .update({
+            name: pkg.name || 'Package',
+            price: pkg.price || 0,
+            price_usd: pkg.price_usd || 0,
+            price_sar: pkg.price_sar || 0,
+            max_family_members: pkg.max_family_members || 0,
+            max_family_trees: pkg.max_family_trees || 0,
+            display_order: pkg.display_order || 0,
+            is_active: pkg.is_active,
+            is_featured: pkg.is_featured
+          })
           .eq('id', pkg.id);
 
         if (error) throw error;
@@ -218,6 +216,14 @@ export default function EnhancedAdminPanel() {
         variant: "destructive"
       });
     }
+  };
+
+  const getPackageTranslation = (packageId: string, field: 'name' | 'description') => {
+    const translation = translations.find(t => 
+      t.key === `package.${packageId}.${field}` && 
+      t.language_code === currentLanguage
+    );
+    return translation?.value || 'No translation available';
   };
 
   return (
@@ -259,9 +265,9 @@ export default function EnhancedAdminPanel() {
                   {packages.map((pkg) => (
                     <div key={pkg.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
-                        <p className="font-medium">{pkg.name}</p>
+                        <p className="font-medium">{getPackageTranslation(pkg.id, 'name')}</p>
                         <p className="text-sm text-muted-foreground">
-                          {pkg.description || 'No description'}
+                          {getPackageTranslation(pkg.id, 'description')}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -346,40 +352,41 @@ export default function EnhancedAdminPanel() {
             </Card>
           </TabsContent>
         
-        <TabsContent value="relationships" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Family Relationship Terms</CardTitle>
-              <CardDescription>
-                Manage relationship terms in different languages
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {relationshipTerms.map((term) => {
-                  const translation = translations.find(t => 
-                    t.key === `relationship.${term.key}` && 
-                    t.language_code === currentLanguage
-                  );
-                  
-                  return (
-                    <div key={term.key} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{term.key}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {translation?.value || 'No translation available'}
-                        </p>
+          <TabsContent value="relationships" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Family Relationship Terms</CardTitle>
+                <CardDescription>
+                  Manage relationship terms in different languages
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  {relationshipTerms.map((term) => {
+                    const translation = translations.find(t => 
+                      t.key === `relationship.${term.key}` && 
+                      t.language_code === currentLanguage
+                    );
+                    
+                    return (
+                      <div key={term.key} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <p className="font-medium">{term.key}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {translation?.value || 'No translation available'}
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
