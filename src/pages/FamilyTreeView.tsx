@@ -98,19 +98,19 @@ const FamilyTreeView = () => {
       image: null,
       relation: "daughter"
     },
-    // الجيل الثالث - مجد وأمير بن مضر
+    // الجيل الثالث - مجد (ابن زينة) وأمير بن مضر (ابن مضر)
     {
       id: "majd-3",
       name: "مجد",
-      fatherId: "mudar-2",
-      motherId: null,
+      fatherId: null,
+      motherId: "zina-2", // مجد ابن زينة
       spouseId: null,
       isFounder: false,
       gender: "male",
       birthDate: "2020-01-01",
       isAlive: true,
       deathDate: null,
-      bio: "ابن مضر",
+      bio: "ابن زينة",
       image: null,
       relation: "grandson"
     },
@@ -510,17 +510,15 @@ const FamilyTreeView = () => {
                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
                       </Card>
                       
-                      {/* خط من مضر للأطفال */}
-                      <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="120" height="80">
-                        <line x1="60" y1="0" x2="60" y2="30" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                        <line x1="30" y1="30" x2="90" y2="30" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                        <line x1="30" y1="30" x2="30" y2="60" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                        <line x1="90" y1="30" x2="90" y2="60" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                      {/* خط واحد من مضر لأمير بن مضر فقط */}
+                      <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="80" height="80">
+                        <line x1="40" y1="0" x2="40" y2="40" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                        <line x1="40" y1="40" x2="40" y2="80" stroke="hsl(var(--accent))" strokeWidth="3"/>
                       </svg>
                     </div>
 
                     {/* زينة */}
-                    <div className="text-center">
+                    <div className="relative text-center">
                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
                         <Avatar className="h-14 w-14 mx-auto mb-2">
                           <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
@@ -530,6 +528,12 @@ const FamilyTreeView = () => {
                         <h3 className="font-semibold">زينة</h3>
                         <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
                       </Card>
+                      
+                      {/* خط واحد من زينة لمجد فقط */}
+                      <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="80" height="80">
+                        <line x1="40" y1="0" x2="40" y2="40" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                        <line x1="40" y1="40" x2="40" y2="80" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                      </svg>
                     </div>
 
                     {/* ربى */}
@@ -546,22 +550,23 @@ const FamilyTreeView = () => {
                     </div>
                   </div>
 
-                  {/* الجيل الثالث - أطفال مضر */}
-                  <div className="flex justify-center gap-8">
-                    {/* مجد */}
+                  {/* الجيل الثالث - مجد (ابن زينة) وأمير بن مضر (ابن مضر) */}
+                  <div className="flex justify-center gap-48">
+                    {/* مجد - ابن زينة */}
                     <div className="text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[120px]">
                         <Avatar className="h-12 w-12 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
                             مج
                           </AvatarFallback>
                         </Avatar>
                         <h3 className="font-semibold text-sm">مجد</h3>
                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                        <p className="text-xs text-muted-foreground mt-1">ابن زينة</p>
                       </Card>
                     </div>
 
-                    {/* أمير بن مضر */}
+                    {/* أمير بن مضر - ابن مضر */}
                     <div className="text-center">
                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
                         <Avatar className="h-12 w-12 mx-auto mb-2">
@@ -571,6 +576,7 @@ const FamilyTreeView = () => {
                         </Avatar>
                         <h3 className="font-semibold text-sm">أمير بن مضر</h3>
                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                        <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
                       </Card>
                     </div>
                   </div>
