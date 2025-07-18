@@ -53,6 +53,16 @@ const getFamiliesFromDatabase = async (userId: string) => {
   }
 };
 
+// Helper function to extract localized text
+const getLocalizedText = (value: any, fallback: string = 'نص غير محدد'): string => {
+  if (!value) return fallback;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    return value.ar || value.en || value.name || fallback;
+  }
+  return fallback;
+};
+
 // Get packages from database
 const getPackagesFromDatabase = async () => {
   try {
@@ -69,11 +79,7 @@ const getPackagesFromDatabase = async () => {
     
     return packages?.map(pkg => ({
       id: pkg.id,
-      name: pkg.name && typeof pkg.name === 'object' && (pkg.name as any)?.ar 
-            ? (pkg.name as any).ar 
-            : typeof pkg.name === 'string' 
-            ? pkg.name 
-            : 'خطة غير محددة',
+      name: getLocalizedText(pkg.name, 'خطة غير محددة'),
       type: pkg.name?.toLowerCase().includes('free') || pkg.name?.toLowerCase().includes('مجاني') ? 'free' : 
             pkg.name?.toLowerCase().includes('basic') || pkg.name?.toLowerCase().includes('أساسي') ? 'basic' : 'premium',
       price: `$${pkg.price_usd || 0}`,
