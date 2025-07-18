@@ -315,78 +315,99 @@ const FamilyTreeView = () => {
 
                     {/* Members in this generation */}
                     <div className="flex flex-wrap justify-center gap-8 mb-8">
-                      {members.map((member: any) => {
-                        // Find spouse for this member
-                        const marriage = familyMarriages.find(m => 
-                          m.husband?.id === member.id || m.wife?.id === member.id
-                        );
-                        const spouse = marriage ? 
-                          (marriage.husband?.id === member.id ? marriage.wife : marriage.husband) : null;
+                      {(() => {
+                        const displayedMembers = new Set();
+                        const memberElements = [];
 
-                        return (
-                          <div key={member.id} className="flex items-center gap-4">
-                            {/* Member Card */}
-                            <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-12 w-12">
-                                  <AvatarImage src={member.image} />
-                                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                                    {member.name.slice(0, 2)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="text-right">
-                                  <h3 className="font-semibold text-foreground">{member.name}</h3>
-                                  <div className="flex gap-2 mt-1">
-                                    {member.isFounder && (
-                                      <Badge variant="secondary" className="text-xs">مؤسس</Badge>
-                                    )}
-                                    <Badge variant="outline" className="text-xs">
-                                      {member.gender === "male" ? "ذكر" : "أنثى"}
-                                    </Badge>
-                                  </div>
-                                  {member.birthDate && (
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                      {new Date(member.birthDate).getFullYear()}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            </Card>
+                        members.forEach((member: any) => {
+                          // Skip if this member was already displayed as a spouse
+                          if (displayedMembers.has(member.id)) {
+                            return;
+                          }
 
-                            {/* Marriage Line */}
-                            {spouse && (
-                              <>
-                                <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
-                                
-                                {/* Spouse Card */}
-                                <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
-                                  <div className="flex items-center gap-3">
-                                    <Avatar className="h-12 w-12">
-                                      <AvatarImage src={spouse.image} />
-                                      <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                                        {spouse.name.slice(0, 2)}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    <div className="text-right">
-                                      <h3 className="font-semibold text-foreground">{spouse.name}</h3>
-                                      <div className="flex gap-2 mt-1">
-                                        <Badge variant="outline" className="text-xs">
-                                          {spouse.gender === "male" ? "ذكر" : "أنثى"}
-                                        </Badge>
-                                      </div>
-                                      {spouse.birthDate && (
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                          {new Date(spouse.birthDate).getFullYear()}
-                                        </p>
+                          // Find spouse for this member
+                          const marriage = familyMarriages.find(m => 
+                            m.husband?.id === member.id || m.wife?.id === member.id
+                          );
+                          const spouse = marriage ? 
+                            (marriage.husband?.id === member.id ? marriage.wife : marriage.husband) : null;
+
+                          // Mark both member and spouse as displayed
+                          displayedMembers.add(member.id);
+                          if (spouse) {
+                            displayedMembers.add(spouse.id);
+                          }
+
+                          memberElements.push(
+                            <div key={member.id} className="flex items-center gap-4">
+                              {/* Member Card */}
+                              <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                                <div className="flex items-center gap-3">
+                                  <Avatar className="h-12 w-12">
+                                    <AvatarImage src={member.image} />
+                                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                                      {member.name.slice(0, 2)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="text-right">
+                                    <h3 className="font-semibold text-foreground">{member.name}</h3>
+                                    <div className="flex gap-2 mt-1">
+                                      {member.isFounder && (
+                                        <Badge variant="secondary" className="text-xs">مؤسس</Badge>
                                       )}
+                                      <Badge variant="outline" className="text-xs">
+                                        {member.gender === "male" ? "ذكر" : "أنثى"}
+                                      </Badge>
                                     </div>
+                                    {member.birthDate && (
+                                      <p className="text-xs text-muted-foreground mt-1">
+                                        {new Date(member.birthDate).getFullYear()}
+                                      </p>
+                                    )}
                                   </div>
-                                </Card>
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
+                                </div>
+                              </Card>
+
+                              {/* Marriage Line and Spouse */}
+                              {spouse && (
+                                <>
+                                  <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
+                                  
+                                  {/* Spouse Card */}
+                                  <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                                    <div className="flex items-center gap-3">
+                                      <Avatar className="h-12 w-12">
+                                        <AvatarImage src={spouse.image} />
+                                        <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                                          {spouse.name.slice(0, 2)}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                      <div className="text-right">
+                                        <h3 className="font-semibold text-foreground">{spouse.name}</h3>
+                                        <div className="flex gap-2 mt-1">
+                                          {spouse.isFounder && (
+                                            <Badge variant="secondary" className="text-xs">مؤسس</Badge>
+                                          )}
+                                          <Badge variant="outline" className="text-xs">
+                                            {spouse.gender === "male" ? "ذكر" : "أنثى"}
+                                          </Badge>
+                                        </div>
+                                        {spouse.birthDate && (
+                                          <p className="text-xs text-muted-foreground mt-1">
+                                            {new Date(spouse.birthDate).getFullYear()}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </Card>
+                                </>
+                              )}
+                            </div>
+                          );
+                        });
+
+                        return memberElements;
+                      })()}
                     </div>
 
                     {/* Connection Line to next generation */}
