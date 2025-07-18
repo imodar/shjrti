@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +44,11 @@ interface FamilyMember {
   email?: string;
   photo?: string;
   generation: number;
+  gender?: 'male' | 'female';
+  isFounder?: boolean;
+  fatherId?: string;
+  motherId?: string;
+  spouseId?: string;
 }
 
 const FamilyBuilder2 = () => {
@@ -50,6 +56,11 @@ const FamilyBuilder2 = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
+  
+  // Three independent filter states
+  const [showFemaleFamily, setShowFemaleFamily] = useState(false);
+  const [showNonBloodHusbands, setShowNonBloodHusbands] = useState(false);
+  const [showNonBloodWives, setShowNonBloodWives] = useState(false);
   
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([
     {
@@ -60,7 +71,9 @@ const FamilyBuilder2 = () => {
       location: "الرياض",
       phone: "+966501234567",
       email: "ahmed@example.com",
-      generation: 0
+      generation: 0,
+      gender: 'male',
+      isFounder: true
     },
     {
       id: "2", 
@@ -68,7 +81,9 @@ const FamilyBuilder2 = () => {
       relation: "الأم",
       birthDate: new Date("1970-07-22"),
       location: "الرياض", 
-      generation: 0
+      generation: 0,
+      gender: 'female',
+      isFounder: true
     },
     {
       id: "3",
@@ -76,9 +91,27 @@ const FamilyBuilder2 = () => {
       relation: "الابن",
       birthDate: new Date("1995-11-10"),
       location: "جدة",
-      generation: 1
+      generation: 1,
+      gender: 'male',
+      fatherId: "1",
+      motherId: "2"
+    },
+    {
+      id: "4",
+      name: "زينب خالد",
+      relation: "زوجة الابن",
+      birthDate: new Date("1997-05-15"),
+      location: "جدة",
+      generation: 1,
+      gender: 'female',
+      spouseId: "3"
     }
   ]);
+
+  // Mock marriages data for identifying non-blood relations
+  const familyMarriages = [
+    { husbandId: "3", wifeId: "4" }
+  ];
 
   const generationColors = {
     0: "bg-gradient-to-r from-purple-500 to-pink-500",
@@ -89,15 +122,62 @@ const FamilyBuilder2 = () => {
 
   const relations = [
     "الأب", "الأم", "الابن", "الابنة", "الجد", "الجدة", 
-    "العم", "العمة", "الخال", "الخالة", "الأخ", "الأخت"
+    "العم", "العمة", "الخال", "الخالة", "الأخ", "الأخت",
+    "زوجة الابن", "زوج الابنة"
   ];
+
+  // Filter logic for determining member types
+  const isNonBloodHusband = (member: FamilyMember): boolean => {
+    if (member.gender !== 'male') return false;
+    
+    // Check if he's married to a family member but has no blood relation
+    const isMarriedIn = familyMarriages.some(marriage => marriage.husbandId === member.id);
+    const hasBloodRelation = member.isFounder || member.fatherId || member.motherId;
+    
+    return isMarriedIn && !hasBloodRelation;
+  };
+
+  const isNonBloodWife = (member: FamilyMember): boolean => {
+    if (member.gender !== 'female') return false;
+    
+    // Check if she's married to a family member but has no blood relation
+    const isMarriedIn = familyMarriages.some(marriage => marriage.wifeId === member.id);
+    const hasBloodRelation = member.isFounder || member.fatherId || member.motherId;
+    
+    return isMarriedIn && !hasBloodRelation;
+  };
+
+  const isFemale = (member: FamilyMember): boolean => {
+    return member.gender === 'female';
+  };
+
+  // Apply filters to family members
+  const getFilteredMembers = () => {
+    // If no filters are active, show all members
+    if (!showFemaleFamily && !showNonBloodHusbands && !showNonBloodWives) {
+      return familyMembers;
+    }
+
+    // Show members that match any active filter (OR logic)
+    return familyMembers.filter(member => {
+      return (showFemaleFamily && isFemale(member)) ||
+             (showNonBloodHusbands && isNonBloodHusband(member)) ||
+             (showNonBloodWives && isNonBloodWife(member));
+    });
+  };
+
+  const filteredMembers = getFilteredMembers().filter(member =>
+    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.relation.includes(searchTerm)
+  );
 
   const addNewMember = () => {
     const newMember: FamilyMember = {
       id: Date.now().toString(),
       name: "",
       relation: "الابن",
-      generation: 1
+      generation: 1,
+      gender: 'male'
     };
     setSelectedMember(newMember);
     setActiveTab("edit");
@@ -117,11 +197,6 @@ const FamilyBuilder2 = () => {
       setActiveTab("overview");
     }
   };
-
-  const filteredMembers = familyMembers.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.relation.includes(searchTerm)
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -225,6 +300,55 @@ const FamilyBuilder2 = () => {
               </Card>
             </div>
 
+            {/* Filter Buttons */}
+            <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 mb-6">
+              <CardHeader>
+                <CardTitle className="text-xl text-primary">فلاتر العرض</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={() => setShowFemaleFamily(!showFemaleFamily)}
+                    variant={showFemaleFamily ? "default" : "outline"}
+                    className={`h-10 px-4 rounded-lg transition-all ${
+                      showFemaleFamily 
+                        ? "bg-pink-500 hover:bg-pink-600 text-white" 
+                        : "border-pink-200 text-pink-700 hover:bg-pink-50"
+                    }`}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    {showFemaleFamily ? "إخفاء الإناث" : "إظهار الإناث"}
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowNonBloodHusbands(!showNonBloodHusbands)}
+                    variant={showNonBloodHusbands ? "default" : "outline"}
+                    className={`h-10 px-4 rounded-lg transition-all ${
+                      showNonBloodHusbands 
+                        ? "bg-blue-500 hover:bg-blue-600 text-white" 
+                        : "border-blue-200 text-blue-700 hover:bg-blue-50"
+                    }`}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    {showNonBloodHusbands ? "إخفاء الأزواج" : "إظهار الأزواج"}
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowNonBloodWives(!showNonBloodWives)}
+                    variant={showNonBloodWives ? "default" : "outline"}
+                    className={`h-10 px-4 rounded-lg transition-all ${
+                      showNonBloodWives 
+                        ? "bg-purple-500 hover:bg-purple-600 text-white" 
+                        : "border-purple-200 text-purple-700 hover:bg-purple-50"
+                    }`}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    {showNonBloodWives ? "إخفاء الزوجات" : "إظهار الزوجات"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Quick Actions */}
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
               <CardHeader>
@@ -283,7 +407,7 @@ const FamilyBuilder2 = () => {
               <CardContent className="p-8">
                 <div className="space-y-8">
                   {[0, 1, 2].map(generation => {
-                    const generationMembers = familyMembers.filter(m => m.generation === generation);
+                    const generationMembers = filteredMembers.filter(m => m.generation === generation);
                     if (generationMembers.length === 0) return null;
                     
                     return (
@@ -429,6 +553,19 @@ const FamilyBuilder2 = () => {
                           {relations.map(relation => (
                             <option key={relation} value={relation}>{relation}</option>
                           ))}
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="gender" className="text-base font-medium">الجنس</Label>
+                        <select
+                          id="gender"
+                          value={selectedMember.gender || 'male'}
+                          onChange={(e) => setSelectedMember({...selectedMember, gender: e.target.value as 'male' | 'female'})}
+                          className="mt-2 w-full h-12 rounded-xl border-2 border-gray-300 px-3"
+                        >
+                          <option value="male">ذكر</option>
+                          <option value="female">أنثى</option>
                         </select>
                       </div>
                       
