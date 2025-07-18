@@ -466,7 +466,17 @@ const FamilyBuilder = () => {
           );
           
         if (fatherIsNonBlood && (mother.fatherId || mother.isFounder)) {
-          return `بن ${father.name} وأمه ${mother.name}`;
+          // Get mother's father name
+          let motherInfo = mother.name;
+          if (mother.fatherId) {
+            const motherFather = familyMembers.find(m => m.id === mother.fatherId);
+            if (motherFather) {
+              motherInfo += ` بنت ${motherFather.name}`;
+            }
+          }
+          motherInfo += ` الشيخ سعيد`;
+          
+          return `ابن ${father.name} - زوج ${motherInfo}`;
         }
       }
     }
