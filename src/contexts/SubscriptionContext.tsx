@@ -89,16 +89,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     fetchSubscriptionDetails();
   }, [user]);
 
-  // Auto-refresh every 30 seconds instead of 5 seconds to reduce re-renders
-  useEffect(() => {
-    if (user) {
-      const interval = setInterval(() => {
-        console.log('Auto-refreshing subscription data...');
-        fetchSubscriptionDetails();
-      }, 30000); // Changed from 5000 to 30000 (30 seconds)
-      return () => clearInterval(interval);
-    }
-  }, [user]);
+  // Auto-refresh removed - only check subscription on login or manual refresh
 
   const refreshSubscription = async () => {
     await fetchSubscriptionDetails();
