@@ -186,16 +186,6 @@ const FamilyTreeView = () => {
       </div>
     );
   };
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
-        </div>
-      </div>
-    );
-  }
 
   // Generate family tree structure by generations
   const generateFamilyTree = () => {
@@ -343,6 +333,17 @@ const FamilyTreeView = () => {
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setZoomLevel(1);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري تحميل شجرة العائلة...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
