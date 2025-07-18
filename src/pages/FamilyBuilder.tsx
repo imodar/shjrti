@@ -457,11 +457,36 @@ const FamilyBuilder = () => {
       const father = familyMembers.find(m => m.id === member.fatherId);
       const mother = familyMembers.find(m => m.id === member.motherId);
       
+      // Debug for Majd specifically
+      if (member.name.includes('مجد')) {
+        console.log('=== Debug for Majd ===');
+        console.log('Member:', member);
+        console.log('Father found:', father);
+        console.log('Mother found:', mother);
+        console.log('Father details:', father ? {
+          name: father.name,
+          fatherId: father.fatherId,
+          motherId: father.motherId,
+          isFounder: father.isFounder
+        } : 'NOT FOUND');
+        console.log('Mother details:', mother ? {
+          name: mother.name,
+          fatherId: mother.fatherId,
+          motherId: mother.motherId,
+          isFounder: mother.isFounder
+        } : 'NOT FOUND');
+      }
+      
       if (father && mother) {
         // Check if father is non-blood (married into family) - no fatherId/motherId and not founder
         const fatherIsNonBlood = !father.fatherId && !father.motherId && !father.isFounder;
         // Check if mother is from original family - has fatherId or is founder
         const motherIsFromFamily = mother.fatherId || mother.isFounder;
+        
+        if (member.name.includes('مجد')) {
+          console.log('Father is non-blood:', fatherIsNonBlood);
+          console.log('Mother is from family:', motherIsFromFamily);
+        }
           
         if (fatherIsNonBlood && motherIsFromFamily) {
           // Build mother's full info
@@ -474,7 +499,11 @@ const FamilyBuilder = () => {
           }
           motherInfo += ` الشيخ سعيد`;
           
-          return `ابن ${father.name} - زوج ${motherInfo}`;
+          const result = `ابن ${father.name} - زوج ${motherInfo}`;
+          if (member.name.includes('مجد')) {
+            console.log('Final result:', result);
+          }
+          return result;
         }
       }
     }
