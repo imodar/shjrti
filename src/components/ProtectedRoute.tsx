@@ -87,12 +87,24 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireActiveSubscription, isExpired, subscriptionLoading, navigate, user]);
 
-  if (loading || adminLoading || subscriptionLoading) {
+  if (loading || adminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader className="h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Wait for subscription loading to complete before making decisions
+  if (requireActiveSubscription && subscriptionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">جاري التحقق من الاشتراك...</p>
         </div>
       </div>
     );
