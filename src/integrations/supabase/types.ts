@@ -310,9 +310,12 @@ export type Database = {
           amount: number
           created_at: string
           currency: string | null
+          due_date: string | null
           family_id: string | null
           id: string
+          invoice_number: string | null
           package_id: string | null
+          payment_status: string | null
           status: string | null
           stripe_payment_intent_id: string | null
           updated_at: string
@@ -322,9 +325,12 @@ export type Database = {
           amount: number
           created_at?: string
           currency?: string | null
+          due_date?: string | null
           family_id?: string | null
           id?: string
+          invoice_number?: string | null
           package_id?: string | null
+          payment_status?: string | null
           status?: string | null
           stripe_payment_intent_id?: string | null
           updated_at?: string
@@ -334,9 +340,12 @@ export type Database = {
           amount?: number
           created_at?: string
           currency?: string | null
+          due_date?: string | null
           family_id?: string | null
           id?: string
+          invoice_number?: string | null
           package_id?: string | null
+          payment_status?: string | null
           status?: string | null
           stripe_payment_intent_id?: string | null
           updated_at?: string
@@ -699,9 +708,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_payment_and_upgrade: {
+        Args: { p_invoice_id: string; p_stripe_payment_intent_id?: string }
+        Returns: boolean
+      }
       create_admin_user: {
         Args: { admin_email: string }
         Returns: undefined
+      }
+      create_invoice: {
+        Args: {
+          p_user_id: string
+          p_family_id: string
+          p_package_id: string
+          p_amount: number
+          p_currency?: string
+        }
+        Returns: string
+      }
+      generate_invoice_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_user_subscription_details: {
         Args: { user_uuid: string }

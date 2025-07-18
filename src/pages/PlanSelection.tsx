@@ -230,7 +230,62 @@ const PlanSelection = () => {
     return targetPrice < currentPrice;
   };
 
-  const handlePlanSelect = (planId: string) => {
+  const createInvoiceAndRedirectToPayment = async (packageId: string) => {
+    if (!user) return;
+
+    const selectedPackage = packages.find(pkg => pkg.id === packageId);
+    if (!selectedPackage) return;
+
+    try {
+      // Create a temporary family ID if user doesn't have one
+      const familyId = crypto.randomUUID();
+      const packagePrice = getPackagePrice(selectedPackage);
+      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
+
+      // Create invoice using the database function
+      const { data: invoiceId, error } = await supabase.rpc('create_invoice', {
+        p_user_id: user.id,
+        p_family_id: familyId,
+        p_package_id: packageId,
+        p_amount: packagePrice,
+        p_currency: currency
+      });
+
+      if (error) {
+        console.error('Error creating invoice:', error);
+        toast({
+          title: currentLanguage === 'ar' ? "خطأ" : "Error",
+          description: currentLanguage === 'ar' 
+            ? "حدث خطأ في إنشاء الفاتورة" 
+            : "Error creating invoice",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Navigate to payment page with invoice ID
+      navigate("/payment", { 
+        state: { 
+          planId: packageId, 
+          invoiceId: invoiceId,
+          amount: packagePrice,
+          currency: currency
+        } 
+      });
+
+    } catch (error) {
+      console.error('Error in createInvoiceAndRedirectToPayment:', error);
+      toast({
+        title: currentLanguage === 'ar' ? "خطأ" : "Error",
+        description: currentLanguage === 'ar' 
+          ? "حدث خطأ في معالجة طلبك" 
+          : "Error processing your request",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePlanSelect = async (planId: string) => {
     // Check if user is logged in
     if (!user) {
       toast({
@@ -274,14 +329,14 @@ const PlanSelection = () => {
       }
     }
 
-    // Proceed with plan selection
+    // Generate invoice and redirect to payment for all paid plans
     const packagePrice = getPackagePrice(selectedPackage);
     if (packagePrice === 0) {
-      // Free plan - go directly to dashboard
-      navigate("/dashboard");
+      // Free plan - still create invoice but mark as paid immediately
+      await createInvoiceAndRedirectToPayment(planId);
     } else {
-      // Paid plan - go to payment page
-      navigate("/payment", { state: { planId } });
+      // Paid plan - create invoice and go to payment page
+      await createInvoiceAndRedirectToPayment(planId);
     }
   };
 
@@ -296,7 +351,7 @@ const PlanSelection = () => {
       if (isExpired) {
         return currentLanguage === 'ar' ? "تجديد الاشتراك" : "Renew Subscription";
       } else {
-        return currentLanguage === 'ar' ? "خطتك الحالية" : "Current Plan";
+        return currentLanguage === 'ar' ? "خطتك الحالية النشطة" : "Current Active Plan";
       }
     }
 
@@ -428,7 +483,7 @@ const PlanSelection = () => {
                     type="button"
                     className={`w-full py-3 text-lg font-medium transition-all mt-auto ${
                       currentPlan 
-                        ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-not-allowed'
+                        ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed opacity-60'
                         : pkg.is_featured 
                           ? 'hero-gradient border-0 text-white hover:shadow-lg' 
                           : 'bg-primary hover:bg-primary/90'
@@ -452,8 +507,8 @@ const PlanSelection = () => {
         <div className="text-center text-white/80 mt-12">
           <p className="text-sm">
             {currentLanguage === 'ar' 
-              ? 'يمكنك تغيير خطتك أو إلغائها في أي وقت من إعدادات الحساب'
-              : 'You can change or cancel your plan anytime from account settings'
+              ? 'سيتم إنشاء فاتورة عند اختيار الخطة ولن يتم تفعيل الاشتراك حتى اكتمال الدفع'
+              : 'An invoice will be generated when selecting a plan and subscription will not be activated until payment is completed'
             }
           </p>
         </div>
