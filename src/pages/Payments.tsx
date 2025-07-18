@@ -48,6 +48,7 @@ export default function Payments() {
       const transformedPackages = data.map(pkg => ({
         id: pkg.id,
         name: pkg.name,
+        description: pkg.description,
         price: pkg.price.toString(),
         period: "شهرياً",
         features: pkg.features || [],
@@ -57,7 +58,7 @@ export default function Payments() {
               pkg.name.includes('أساسي') || pkg.name.includes('basic') ? Star : Crown,
         color: pkg.name.includes('مجاني') || pkg.name.includes('free') ? "bg-gray-500" :
                pkg.name.includes('أساسي') || pkg.name.includes('basic') ? "bg-emerald-500" : "bg-purple-500",
-        popular: pkg.name.includes('أساسي') || pkg.name.includes('basic')
+        popular: pkg.is_featured || false
       }));
 
       setPackages(transformedPackages);
@@ -798,15 +799,15 @@ export default function Payments() {
                         <div className="absolute bottom-8 left-4 w-3 h-3 bg-cyan-400/40 rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
                       </div>
 
-                      {/* Popular badge with enhanced styling */}
-                      {plan.popular && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur-sm animate-pulse"></div>
-                            <Badge className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1 text-sm font-bold shadow-lg animate-bounce">
-                              <Star className="h-3 w-3 mr-1 animate-spin" style={{animationDuration: '3s'}} />
-                              الأكثر شعبية
-                            </Badge>
+                       {/* Featured badge with enhanced styling */}
+                       {plan.popular && (
+                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                           <div className="relative">
+                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur-sm animate-pulse"></div>
+                             <Badge className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1 text-sm font-bold shadow-lg animate-bounce">
+                               <Star className="h-3 w-3 mr-1 animate-spin" style={{animationDuration: '3s'}} />
+                               الباقة المميزة
+                             </Badge>
                           </div>
                         </div>
                       )}

@@ -495,6 +495,7 @@ export type Database = {
           features: Json | null
           id: string
           is_active: boolean | null
+          is_featured: boolean | null
           max_family_members: number | null
           max_family_trees: number | null
           name: string
@@ -511,6 +512,7 @@ export type Database = {
           features?: Json | null
           id?: string
           is_active?: boolean | null
+          is_featured?: boolean | null
           max_family_members?: number | null
           max_family_trees?: number | null
           name: string
@@ -527,6 +529,7 @@ export type Database = {
           features?: Json | null
           id?: string
           is_active?: boolean | null
+          is_featured?: boolean | null
           max_family_members?: number | null
           max_family_trees?: number | null
           name?: string
