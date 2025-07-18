@@ -120,26 +120,52 @@ export function useDashboardData() {
     return `منذ ${diffInWeeks} أسبوع`;
   };
 
-  const calculateTotalMembers = () => {
-    // Get family members from localStorage
-    const familyTrees = JSON.parse(localStorage.getItem('familyTrees') || '[]');
-    const newFamilyData = JSON.parse(localStorage.getItem('newFamilyData') || '{}');
-    
-    let count = 0;
-    
-    // Count members from all trees
-    familyTrees.forEach((tree: any) => {
-      if (tree.members) {
-        count += tree.members.length;
+  const calculateTotalMembers = async () => {
+    try {
+      if (!user?.id) {
+        setTotalMembers(0);
+        return;
       }
-    });
-    
-    // Count from new family data
-    if (newFamilyData.firstMember) {
-      count += 1;
+
+      // First get all families created by the user
+      const { data: families, error: familiesError } = await supabase
+        .from('families')
+        .select('id')
+        .eq('creator_id', user.id);
+
+      if (familiesError) {
+        console.error('Error fetching families:', familiesError);
+        setTotalMembers(0);
+        return;
+      }
+
+      if (!families || families.length === 0) {
+        setTotalMembers(0);
+        return;
+      }
+
+      // Get family IDs
+      const familyIds = families.map(family => family.id);
+
+      // Count total family tree members from all user's families
+      const { count, error: membersError } = await supabase
+        .from('family_tree_members')
+        .select('id', { count: 'exact' })
+        .in('family_id', familyIds);
+
+      if (membersError) {
+        console.error('Error fetching family tree members:', membersError);
+        setTotalMembers(0);
+        return;
+      }
+
+      // Set the count from the database
+      setTotalMembers(count || 0);
+      
+    } catch (error) {
+      console.error('Error in calculateTotalMembers:', error);
+      setTotalMembers(0);
     }
-    
-    setTotalMembers(count);
   };
 
   const markNotificationAsRead = async (id: string) => {
