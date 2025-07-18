@@ -446,7 +446,7 @@ const FamilyBuilder = () => {
         }
       }
       if (member.isFounder) {
-        return null; // Founders don't need "ابن"
+        return "الشيخ سعيد"; // Add family name for founders like Amir
       }
     }
     
@@ -490,7 +490,9 @@ const FamilyBuilder = () => {
           return result;
         }
       }
-      return null; // Founders don't need "بنت"
+      if (member.isFounder) {
+        return "الشيخ سعيد"; // Add family name for female founders
+      }
     }
     // For wives (married women who are not from the original family)
     if (member.gender === 'female' && 
