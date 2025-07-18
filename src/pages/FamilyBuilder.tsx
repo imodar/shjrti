@@ -2018,15 +2018,11 @@ const FamilyBuilder = () => {
                                            const husbandName = marriage.husband?.name;
                                            const wifeName = marriage.wife?.name;
                                            const husbandMember = familyMembers.find(m => m.id === marriage.husband?.id);
-                                           const wifeMember = familyMembers.find(m => m.id === marriage.wife?.id);
                                            
                                            const husbandInfo = husbandMember ? getAdditionalInfo(husbandMember) : null;
-                                           const wifeInfo = wifeMember ? getAdditionalInfo(wifeMember) : null;
-                                           
                                            const husbandDisplay = husbandInfo ? `${husbandName} ${husbandInfo}` : husbandName;
-                                           const wifeDisplay = wifeInfo ? `${wifeName} ${wifeInfo}` : wifeName;
                                            
-                                           return `${husbandDisplay} + ${wifeDisplay}`;
+                                           return `${husbandDisplay} + ${wifeName}`;
                                          })()}
                                        </span>
                                        <span className="text-sm text-muted-foreground">عائلة</span>
