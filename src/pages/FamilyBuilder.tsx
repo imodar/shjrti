@@ -450,6 +450,20 @@ const FamilyBuilder = () => {
       }
     }
     
+    // For females from the same family (have fatherId or are founders)
+    if (member.gender === 'female' && (member.fatherId || member.isFounder)) {
+      console.log(`${member.name} is female with fatherId or founder`);
+      if (member.fatherId) {
+        const father = familyMembers.find(m => m.id === member.fatherId);
+        console.log(`Father found for ${member.name}:`, father);
+        if (father) {
+          const result = `بنت ${father.name} الشيخ سعيد`;
+          console.log(`Female result for ${member.name}:`, result);
+          return result;
+        }
+      }
+      return null; // Founders don't need "بنت"
+    }
     // For wives (married women who are not from the original family)
     if (member.gender === 'female' && 
         familyMarriages.some(marriage => marriage.wife?.id === member.id) &&
