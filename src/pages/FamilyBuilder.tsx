@@ -1146,6 +1146,18 @@ const FamilyBuilder = () => {
         return;
       }
 
+      // First, delete any marriage records related to this member
+      const { error: marriageError } = await supabase
+        .from('marriages')
+        .delete()
+        .or(`husband_id.eq.${id},wife_id.eq.${id}`);
+
+      if (marriageError) {
+        console.error('Error deleting marriages:', marriageError);
+        throw marriageError;
+      }
+
+      // Then delete the member
       const { error } = await supabase
         .from('family_tree_members')
         .delete()
@@ -1153,7 +1165,14 @@ const FamilyBuilder = () => {
 
       if (error) throw error;
 
+      // Update local state
       setFamilyMembers(familyMembers.filter(member => member.id !== id));
+      
+      // Update marriages state to remove deleted member's marriages
+      setFamilyMarriages(familyMarriages.filter(marriage => 
+        marriage.husband?.id !== id && marriage.wife?.id !== id
+      ));
+
       toast({
         title: "تم الحذف",
         description: "تم حذف العضو من شجرة العائلة"
