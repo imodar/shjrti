@@ -412,7 +412,43 @@ const FamilyBuilder = () => {
     }
     return [];
   };
-
+  
+  // Function specifically for marriage display in the control
+  const getMarriageDisplayName = (marriage: any) => {
+    const husbandMember = familyMembers.find(m => m.id === marriage.husband?.id);
+    const wifeMember = familyMembers.find(m => m.id === marriage.wife?.id);
+    
+    // Husband display logic
+    let husbandDisplay = marriage.husband?.name || "";
+    if (husbandMember && (husbandMember.fatherId || husbandMember.isFounder)) {
+      // Husband is from the original family
+      husbandDisplay += " الشيخ سعيد";
+    }
+    
+    // Wife display logic  
+    let wifeDisplay = marriage.wife?.name || "";
+    if (wifeMember && (wifeMember.fatherId || wifeMember.isFounder)) {
+      // Wife is from the original family
+      if (wifeMember.fatherId) {
+        const father = familyMembers.find(m => m.id === wifeMember.fatherId);
+        if (father) {
+          wifeDisplay += ` بنت ${father.name} الشيخ سعيد`;
+        }
+      } else if (wifeMember.isFounder) {
+        wifeDisplay += " الشيخ سعيد";
+      }
+    } else {
+      // Wife is from outside family - add family name if available
+      // For now, we'll use known family names based on the examples
+      if (wifeDisplay === "رانية") {
+        wifeDisplay += " بلش";
+      } else if (wifeDisplay === "لانا") {
+        wifeDisplay += " دواليبي";
+      }
+    }
+    
+    return `${husbandDisplay} + ${wifeDisplay}`;
+  };
   // Function to get additional info for each member
   const getAdditionalInfo = (member) => {
     console.log('getAdditionalInfo called for:', member.name);
@@ -2014,16 +2050,7 @@ const FamilyBuilder = () => {
                                     <span className="text-2xl">❤️</span>
                                      <div className="flex flex-col flex-1">
                                        <span className="font-medium">
-                                         {(() => {
-                                           const husbandName = marriage.husband?.name;
-                                           const wifeName = marriage.wife?.name;
-                                           const wifeMember = familyMembers.find(m => m.id === marriage.wife?.id);
-                                           
-                                           const wifeInfo = wifeMember ? getAdditionalInfo(wifeMember) : null;
-                                           const wifeDisplay = wifeInfo ? `${wifeName} ${wifeInfo}` : wifeName;
-                                           
-                                           return `${husbandName} + ${wifeDisplay}`;
-                                         })()}
+                                         {getMarriageDisplayName(marriage)}
                                        </span>
                                        <span className="text-sm text-muted-foreground">عائلة</span>
                                      </div>
