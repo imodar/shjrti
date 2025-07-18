@@ -82,7 +82,7 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      // Update profile in database
+      // Update profile in database - properly configure upsert to avoid duplicates
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -92,6 +92,9 @@ export default function Profile() {
           email: profileData.email,
           phone: profileData.phone,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id', // This ensures we update existing record based on user_id
+          ignoreDuplicates: false // This ensures we actually update the existing record
         });
 
       if (error) {
