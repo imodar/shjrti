@@ -785,7 +785,7 @@ const FamilyBuilder = () => {
         const wife = familyMembers.find(fm => fm.id === marriage.wife?.id);
         console.log('Found wife:', wife, 'for marriage:', marriage);
         return {
-          id: wife?.id || marriage.wife?.id,
+          id: `existing-${wife?.id || marriage.wife?.id}`, // Mark existing wives to prevent deletion
           name: marriage.wife?.name || "",
           isAlive: wife?.isAlive ?? true,
           birthDate: wife?.birthDate ? new Date(wife.birthDate) : null,
@@ -802,7 +802,7 @@ const FamilyBuilder = () => {
       const memberHusbands = memberMarriages.map(marriage => {
         const husband = familyMembers.find(fm => fm.id === marriage.husband?.id);
         return {
-          id: husband?.id || marriage.husband?.id,
+          id: `existing-${husband?.id || marriage.husband?.id}`, // Mark existing husbands to prevent deletion
           name: marriage.husband?.name || "",
           isAlive: husband?.isAlive ?? true,
           birthDate: husband?.birthDate ? new Date(husband.birthDate) : null,
@@ -2537,16 +2537,19 @@ const FamilyBuilder = () => {
                                     </p>
                                   </div>
                                 </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setWives(wives.filter(w => w.id !== wife.id));
-                                  }}
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                {/* Only show delete button for new wives, not existing ones from database */}
+                                {!wife.id.toString().includes('existing-') && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setWives(wives.filter(w => w.id !== wife.id));
+                                    }}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -2554,12 +2557,13 @@ const FamilyBuilder = () => {
                       </div>
                     )}
 
-                    {/* Add/Edit Wife Form */}
-                    <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
-                      <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        {editingWife ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
-                        {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
-                      </h4>
+                    {/* Add/Edit Wife Form - Only show if no existing wives or currently editing */}
+                    {(!wives.some(w => w.id.toString().includes('existing-')) || editingWife) && (
+                      <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
+                        <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                          {editingWife ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
+                          {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
+                        </h4>
                       
                       <div className="space-y-4">
                         {/* Name, Status and Birth Date Row */}
@@ -2807,7 +2811,8 @@ const FamilyBuilder = () => {
                           `
                         }}
                       />
-                    </div>
+                      </div>
+                    )}
 
                     {wives.length === 0 && (
                       <div className="text-center py-8 bg-muted/30 rounded-xl border-2 border-dashed border-muted-foreground/30">
@@ -2839,16 +2844,19 @@ const FamilyBuilder = () => {
                                     </p>
                                   </div>
                                 </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setHusbands(husbands.filter(h => h.id !== husband.id));
-                                  }}
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                {/* Only show delete button for new husbands, not existing ones from database */}
+                                {!husband.id.toString().includes('existing-') && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setHusbands(husbands.filter(h => h.id !== husband.id));
+                                    }}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -2856,10 +2864,11 @@ const FamilyBuilder = () => {
                       </div>
                     )}
 
-                    {/* Add/Edit Husband Form */}
-                    <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
-                      <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        {editingHusband ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
+                    {/* Add/Edit Husband Form - Only show if no existing husbands or currently editing */}
+                    {(!husbands.some(h => h.id.toString().includes('existing-')) || editingHusband) && (
+                      <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
+                        <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                          {editingHusband ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
                         {editingHusband ? 'تعديل بيانات الزوج' : 'إضافة زوج جديد'}
                       </h4>
                       
@@ -3111,7 +3120,8 @@ const FamilyBuilder = () => {
                           `
                         }}
                       />
-                    </div>
+                      </div>
+                    )}
 
                     {husbands.length === 0 && (
                       <div className="text-center py-8 bg-muted/30 rounded-xl border-2 border-dashed border-muted-foreground/30">
