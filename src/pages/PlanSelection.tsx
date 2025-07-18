@@ -61,9 +61,12 @@ const PlanSelection = () => {
       return value;
     }
     if (typeof value === 'object' && value !== null) {
-      return (value as any)[language] || (value as any)['en'] || '';
+      // Handle multilingual JSON objects like {"en":"Free","ar":"مجانية"}
+      const localizedText = (value as any)[language] || (value as any)['en'] || '';
+      console.log('Localized value for language', language, ':', localizedText, 'from', value);
+      return localizedText;
     }
-    return '';
+    return String(value || '');
   };
 
   const getPackageFeatures = (pkg: Package): string[] => {
@@ -155,7 +158,7 @@ const PlanSelection = () => {
                   <CardTitle className="text-2xl font-bold text-primary mb-2">{packageName}</CardTitle>
                   <div className="mt-4">
                     <span className="text-4xl font-bold text-primary">{formatPrice(packagePrice)}</span>
-                    <span className="text-muted-foreground">/شهرياً</span>
+                    <span className="text-muted-foreground">/سنوياً</span>
                   </div>
                 </CardHeader>
                 
