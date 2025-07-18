@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,13 @@ import Footer from '@/components/Footer';
 export default function RenewSubscription() {
   const { subscription, loading, isExpired, daysUntilExpiry } = useSubscription();
   const navigate = useNavigate();
+
+  // Redirect to dashboard if subscription is active
+  useEffect(() => {
+    if (!loading && !isExpired) {
+      navigate('/dashboard');
+    }
+  }, [loading, isExpired, navigate]);
 
   if (loading) {
     return (
