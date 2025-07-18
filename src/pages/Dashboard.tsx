@@ -69,7 +69,11 @@ const getPackagesFromDatabase = async () => {
     
     return packages?.map(pkg => ({
       id: pkg.id,
-      name: pkg.name || '',
+      name: pkg.name && typeof pkg.name === 'object' && (pkg.name as any)?.ar 
+            ? (pkg.name as any).ar 
+            : typeof pkg.name === 'string' 
+            ? pkg.name 
+            : 'خطة غير محددة',
       type: pkg.name?.toLowerCase().includes('free') || pkg.name?.toLowerCase().includes('مجاني') ? 'free' : 
             pkg.name?.toLowerCase().includes('basic') || pkg.name?.toLowerCase().includes('أساسي') ? 'basic' : 'premium',
       price: `$${pkg.price_usd || 0}`,
