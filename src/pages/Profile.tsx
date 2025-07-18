@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +20,11 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [currentPackage, setCurrentPackage] = useState<{
+    name: string;
+    status: string;
+    expires_at?: string;
+  } | null>(null);
   const [stats, setStats] = useState({
     familiesCreated: 0,
     totalMembers: 0,
@@ -38,8 +42,55 @@ export default function Profile() {
     if (user) {
       fetchProfileData();
       fetchUserStats();
+      fetchCurrentPackage();
     }
   }, [user]);
+
+  const fetchCurrentPackage = async () => {
+    try {
+      if (!user?.id) return;
+
+      console.log('Fetching current package for user:', user.id);
+
+      // Get user's active subscription
+      const { data: subscription, error: subError } = await supabase
+        .from('user_subscriptions')
+        .select(`
+          status,
+          expires_at,
+          packages (
+            name
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+
+      if (subError) {
+        console.log('No active subscription found:', subError);
+        setCurrentPackage({
+          name: "الباقة المجانية",
+          status: "active"
+        });
+        return;
+      }
+
+      console.log('Subscription found:', subscription);
+
+      setCurrentPackage({
+        name: subscription.packages?.name || "باقة مخصصة",
+        status: subscription.status,
+        expires_at: subscription.expires_at
+      });
+
+    } catch (error) {
+      console.error('Error fetching current package:', error);
+      setCurrentPackage({
+        name: "الباقة المجانية",
+        status: "active"
+      });
+    }
+  };
 
   const fetchUserStats = async () => {
     try {
@@ -409,9 +460,31 @@ export default function Profile() {
                   {getDisplayName()}
                 </h3>
                 <p className="text-muted-foreground mb-4">{profileData.email}</p>
-                <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
-                  عضو منذ {profileData.joinDate}
-                </Badge>
+                <div className="space-y-2">
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+                    عضو منذ {profileData.joinDate}
+                  </Badge>
+                  {currentPackage && (
+                    <div className="mt-4 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Crown className="h-4 w-4 text-yellow-600" />
+                        <span className="font-semibold text-yellow-800 dark:text-yellow-300">الباقة الحالية</span>
+                      </div>
+                      <p className="text-sm font-medium text-yellow-700 dark:text-yellow-400">{currentPackage.name}</p>
+                      {currentPackage.expires_at && (
+                        <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-1">
+                          تنتهي في: {new Date(currentPackage.expires_at).toLocaleDateString('ar-SA')}
+                        </p>
+                      )}
+                      <Badge 
+                        variant={currentPackage.status === 'active' ? 'default' : 'secondary'}
+                        className={`mt-2 ${currentPackage.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}
+                      >
+                        {currentPackage.status === 'active' ? 'نشط' : 'غير نشط'}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
