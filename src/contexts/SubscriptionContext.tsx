@@ -36,9 +36,13 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
     try {
       setLoading(true);
+      console.log('Fetching subscription for user:', user.id);
       const { data, error } = await supabase.rpc('get_user_subscription_details', {
         user_uuid: user.id
       });
+
+      console.log('Subscription data received:', data);
+      console.log('Subscription error:', error);
 
       if (error) {
         console.error('Error fetching subscription details:', error);
@@ -52,8 +56,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           is_expired: true
         });
       } else if (data && data.length > 0) {
+        console.log('Setting subscription data:', data[0]);
         setSubscription(data[0]);
       } else {
+        console.log('No active subscription found in data');
         // No active subscription found
         setSubscription({
           subscription_id: null,
