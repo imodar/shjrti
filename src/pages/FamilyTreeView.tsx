@@ -92,6 +92,7 @@ const FamilyTreeView = () => {
 
       console.log('Fetched family members:', members);
       console.log('Fetched marriages:', marriages);
+      console.log('All family IDs:', allFamilyIds);
 
       setFamilyMembers(members || []);
       setFamilyMarriages(marriages || []);
