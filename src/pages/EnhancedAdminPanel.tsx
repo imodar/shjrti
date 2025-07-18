@@ -138,11 +138,44 @@ const EnhancedAdminPanel = () => {
   };
 
   const loadPackages = async () => {
-    const { data } = await supabase
+    const { data: packagesData } = await supabase
       .from('packages')
       .select('*')
       .order('created_at', { ascending: false });
-    setPackages(data || []);
+    
+    if (packagesData) {
+      // Load translations for each package
+      const packagesWithTranslations = await Promise.all(
+        packagesData.map(async (pkg) => {
+          const { data: translationsData } = await supabase
+            .from('translations')
+            .select('*')
+            .in('key', [`package_${pkg.id}_name`, `package_${pkg.id}_description`]);
+
+          const translations = {};
+          if (translationsData) {
+            translationsData.forEach(trans => {
+              const langCode = trans.language_code;
+              if (!translations[langCode]) {
+                translations[langCode] = {};
+              }
+              
+              if (trans.key.endsWith('_name')) {
+                translations[langCode].name = trans.value;
+              } else if (trans.key.endsWith('_description')) {
+                translations[langCode].description = trans.value;
+              }
+            });
+          }
+
+          return { ...pkg, translations };
+        })
+      );
+      
+      setPackages(packagesWithTranslations);
+    } else {
+      setPackages([]);
+    }
   };
 
   const loadFamilies = async () => {
@@ -448,6 +481,43 @@ const EnhancedAdminPanel = () => {
       }
 
       if (result.error) throw result.error;
+
+      // Save translations if they exist
+      if (editingPackage.translations) {
+        const packageId = editingPackage.id || result.data?.[0]?.id;
+        
+        for (const [langCode, translation] of Object.entries(editingPackage.translations)) {
+          const typedTranslation = translation as { name?: string; description?: string };
+          
+          // Save name translation
+          if (typedTranslation.name) {
+            await supabase
+              .from('translations')
+              .upsert({
+                key: `package_${packageId}_name`,
+                language_code: langCode,
+                value: typedTranslation.name,
+                category: 'packages'
+              }, {
+                onConflict: 'key,language_code'
+              });
+          }
+          
+          // Save description translation
+          if (typedTranslation.description) {
+            await supabase
+              .from('translations')
+              .upsert({
+                key: `package_${packageId}_description`,
+                language_code: langCode,
+                value: typedTranslation.description,
+                category: 'packages'
+              }, {
+                onConflict: 'key,language_code'
+              });
+          }
+        }
+      }
       
       toast({
         title: t('success', 'نجح'),
@@ -1406,20 +1476,78 @@ const EnhancedAdminPanel = () => {
             <DialogTitle>{t('edit_package', 'تعديل الباقة')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label>{t('name', 'الاسم')}</Label>
-              <Input
-                value={editingPackage?.name || ''}
-                onChange={(e) => setEditingPackage(prev => ({...prev, name: e.target.value}))}
-              />
+            {/* Multi-language Names and Descriptions */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium">{t('multilingual_content', 'المحتوى متعدد اللغات')}</h4>
+              
+              {languages.filter(lang => lang.is_active).map((language) => (
+                <div key={language.code} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    <span className="font-medium">{language.name}</span>
+                    <Badge variant="outline">{language.code}</Badge>
+                  </div>
+                  
+                  <div>
+                    <Label>{t('name', 'الاسم')} ({language.name})</Label>
+                    <Input
+                      value={editingPackage?.translations?.[language.code]?.name || ''}
+                      onChange={(e) => setEditingPackage(prev => ({
+                        ...prev,
+                        translations: {
+                          ...prev?.translations,
+                          [language.code]: {
+                            ...prev?.translations?.[language.code],
+                            name: e.target.value
+                          }
+                        }
+                      }))}
+                      placeholder={`${t('enter_name', 'أدخل الاسم')} ${language.name}`}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>{t('description', 'الوصف')} ({language.name})</Label>
+                    <Textarea
+                      value={editingPackage?.translations?.[language.code]?.description || ''}
+                      onChange={(e) => setEditingPackage(prev => ({
+                        ...prev,
+                        translations: {
+                          ...prev?.translations,
+                          [language.code]: {
+                            ...prev?.translations?.[language.code],
+                            description: e.target.value
+                          }
+                        }
+                      }))}
+                      placeholder={`${t('enter_description', 'أدخل الوصف')} ${language.name}`}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-            <div>
-              <Label>{t('description', 'الوصف')}</Label>
-              <Textarea
-                value={editingPackage?.description || ''}
-                onChange={(e) => setEditingPackage(prev => ({...prev, description: e.target.value}))}
-                rows={3}
-              />
+            
+            {/* Default Name and Description (fallback) */}
+            <div className="space-y-3 border-t pt-4">
+              <h4 className="text-sm font-medium text-muted-foreground">{t('default_fallback', 'القيم الافتراضية (احتياطية)')}</h4>
+              <div>
+                <Label>{t('default_name', 'الاسم الافتراضي')}</Label>
+                <Input
+                  value={editingPackage?.name || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, name: e.target.value}))}
+                  placeholder={t('fallback_name_help', 'يستخدم إذا لم تكن الترجمة متوفرة')}
+                />
+              </div>
+              <div>
+                <Label>{t('default_description', 'الوصف الافتراضي')}</Label>
+                <Textarea
+                  value={editingPackage?.description || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, description: e.target.value}))}
+                  placeholder={t('fallback_description_help', 'يستخدم إذا لم تكن الترجمة متوفرة')}
+                  rows={3}
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
