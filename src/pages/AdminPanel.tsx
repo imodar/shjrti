@@ -436,13 +436,29 @@ export default function AdminPanel() {
     
     const fieldValue = pkg[field as keyof PackageType];
     
+    // Debug logging
+    console.log(`Getting field ${field} for language ${language}:`, fieldValue);
+    
+    // If it's a string, return it directly
     if (typeof fieldValue === 'string') {
       return fieldValue;
     }
     
+    // If it's an object (multilingual), extract the specific language
     if (typeof fieldValue === 'object' && fieldValue !== null) {
-      const localizedValue = (fieldValue as any)[language] || (fieldValue as any)['en'] || '';
-      return localizedValue;
+      // Ensure it's not an array or other non-plain object
+      if (Array.isArray(fieldValue)) {
+        return JSON.stringify(fieldValue);
+      }
+      
+      try {
+        const localizedValue = (fieldValue as any)[language] || (fieldValue as any)['en'] || '';
+        console.log(`Extracted localized value for ${language}:`, localizedValue);
+        return localizedValue;
+      } catch (error) {
+        console.error('Error extracting localized value:', error);
+        return JSON.stringify(fieldValue);
+      }
     }
     
     return String(fieldValue || '');
