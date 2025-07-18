@@ -416,12 +416,24 @@ const FamilyBuilder = () => {
   // Function to get additional info for each member
   const getAdditionalInfo = (member) => {
     console.log('getAdditionalInfo called for:', member.name);
+    console.log('Member details:', {
+      name: member.name,
+      gender: member.gender,
+      fatherId: member.fatherId,
+      motherId: member.motherId,
+      isFounder: member.isFounder
+    });
+    
     // For males from the same family (have fatherId or are founders)
     if (member.gender === 'male' && (member.fatherId || member.isFounder)) {
+      console.log(`${member.name} is male with fatherId or founder`);
       if (member.fatherId) {
         const father = familyMembers.find(m => m.id === member.fatherId);
+        console.log(`Father found for ${member.name}:`, father);
         if (father) {
-          return `ابن ${father.name} الشيخ سعيد`;
+          const result = `ابن ${father.name} الشيخ سعيد`;
+          console.log(`Male result for ${member.name}:`, result);
+          return result;
         }
       }
       return null; // Founders don't need "ابن" 
@@ -431,6 +443,7 @@ const FamilyBuilder = () => {
     if (member.gender === 'female' && 
         familyMarriages.some(marriage => marriage.wife?.id === member.id) &&
         !member.fatherId && !member.motherId && !member.isFounder) {
+      console.log(`${member.name} is a wife from outside family`);
       const marriage = familyMarriages.find(m => m.wife?.id === member.id);
       if (marriage?.husband) {
         const husband = familyMembers.find(h => h.id === marriage.husband.id);
@@ -448,35 +461,20 @@ const FamilyBuilder = () => {
           // Add family name - assuming "الشيخ سعيد" is the family name
           husbandFullName += ` الشيخ سعيد`;
           
-          return `زوجة ${husbandFullName}`;
+          const result = `زوجة ${husbandFullName}`;
+          console.log(`Wife result for ${member.name}:`, result);
+          return result;
         }
       }
     }
     
     // For children of daughters (have both father and mother, where father is not from original family)
     if (member.fatherId && member.motherId) {
+      console.log(`${member.name} has both father and mother IDs`);
       const father = familyMembers.find(m => m.id === member.fatherId);
       const mother = familyMembers.find(m => m.id === member.motherId);
       
-      // Debug for Majd specifically
-      if (member.name.includes('مجد')) {
-        console.log('=== Debug for Majd ===');
-        console.log('Member:', member);
-        console.log('Father found:', father);
-        console.log('Mother found:', mother);
-        console.log('Father details:', father ? {
-          name: father.name,
-          fatherId: father.fatherId,
-          motherId: father.motherId,
-          isFounder: father.isFounder
-        } : 'NOT FOUND');
-        console.log('Mother details:', mother ? {
-          name: mother.name,
-          fatherId: mother.fatherId,
-          motherId: mother.motherId,
-          isFounder: mother.isFounder
-        } : 'NOT FOUND');
-      }
+      console.log(`For ${member.name} - Father:`, father, 'Mother:', mother);
       
       if (father && mother) {
         // Check if father is non-blood (married into family) - no fatherId/motherId and not founder
@@ -484,16 +482,14 @@ const FamilyBuilder = () => {
         // Check if mother is from original family - has fatherId or is founder
         const motherIsFromFamily = mother.fatherId || mother.isFounder;
         
-        if (member.name.includes('مجد')) {
-          console.log('Father is non-blood:', fatherIsNonBlood);
-          console.log('Mother is from family:', motherIsFromFamily);
-        }
+        console.log(`For ${member.name} - Father is non-blood:`, fatherIsNonBlood, 'Mother is from family:', motherIsFromFamily);
           
         if (fatherIsNonBlood && motherIsFromFamily) {
           // Build mother's full info
           let motherInfo = mother.name;
           if (mother.fatherId) {
             const motherFather = familyMembers.find(m => m.id === mother.fatherId);
+            console.log(`Mother's father for ${member.name}:`, motherFather);
             if (motherFather) {
               motherInfo += ` بنت ${motherFather.name}`;
             }
@@ -501,14 +497,13 @@ const FamilyBuilder = () => {
           motherInfo += ` الشيخ سعيد`;
           
           const result = `ابن ${father.name} - زوج ${motherInfo}`;
-          if (member.name.includes('مجد')) {
-            console.log('Final result:', result);
-          }
+          console.log(`Children result for ${member.name}:`, result);
           return result;
         }
       }
     }
     
+    console.log(`No additional info for ${member.name}`);
     return null;
   };
 
