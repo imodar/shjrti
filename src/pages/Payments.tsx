@@ -35,6 +35,36 @@ export default function Payments() {
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
 
+  // Helper function to get localized package field
+  const getLocalizedPackageField = (pkg: any, field: string, fallbackLang = 'en') => {
+    if (!pkg || !pkg[field]) return '';
+    
+    if (typeof pkg[field] === 'string') {
+      return pkg[field];
+    }
+    
+    if (typeof pkg[field] === 'object') {
+      return pkg[field][currentLanguage] || pkg[field][fallbackLang] || '';
+    }
+    
+    return '';
+  };
+
+  // Helper function to get localized features
+  const getLocalizedFeatures = (pkg: any, language = currentLanguage) => {
+    if (!pkg || !pkg.features) return [];
+    
+    if (Array.isArray(pkg.features)) {
+      return pkg.features;
+    }
+    
+    if (typeof pkg.features === 'object') {
+      return pkg.features[language] || pkg.features['en'] || [];
+    }
+    
+    return [];
+  };
+
   // Load packages from database
   const loadPackages = async () => {
     try {
@@ -61,10 +91,10 @@ export default function Payments() {
           features: pkg.features || [],
           maxMembers: pkg.max_family_members,
           maxTrees: pkg.max_family_trees,
-          icon: pkg.name.includes('مجاني') || pkg.name.includes('free') ? Shield :
-                pkg.name.includes('أساسي') || pkg.name.includes('basic') ? Star : Crown,
-          color: pkg.name.includes('مجاني') || pkg.name.includes('free') ? "bg-gray-500" :
-                 pkg.name.includes('أساسي') || pkg.name.includes('basic') ? "bg-emerald-500" : "bg-purple-500",
+          icon: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? Shield :
+                getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? Star : Crown,
+          color: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? "bg-gray-500" :
+                 getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? "bg-emerald-500" : "bg-purple-500",
           popular: pkg.is_featured || false
         };
       });
@@ -198,9 +228,10 @@ export default function Payments() {
       setSelectedPaymentMethod(null);
       
       // Show success toast
+      const selectedPlanData = packages.find(p => p.id === selectedPlan);
       toast({
         title: "🎉 مبروك! تمت عملية الترقية",
-        description: `تم ترقية اشتراكك إلى ${selectedPlanData?.name} بنجاح. استمتع بالميزات الجديدة!`,
+        description: `تم ترقية اشتراكك إلى ${getLocalizedPackageField(selectedPlanData, 'name') || selectedPlanData?.name} بنجاح. استمتع بالميزات الجديدة!`,
         duration: 5000,
       });
     } catch (error) {
@@ -438,7 +469,7 @@ export default function Payments() {
                         )}
                       </div>
                       <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                        {currentPlan ? currentPlanData?.name || 'الباقة المدفوعة' : 'الباقة المجانية'}
+                        {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || 'الباقة المدفوعة' : 'الباقة المجانية'}
                       </h3>
                       <p className="text-3xl font-bold text-emerald-600">
                         {currentPlan ? `${currentPlanData?.price || '0'} ريال` : '0 ريال'}
@@ -836,7 +867,7 @@ export default function Payments() {
                         
                         {/* Enhanced title */}
                         <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent group-hover:from-emerald-700 group-hover:to-teal-600 transition-all duration-500">
-                          {plan.name}
+                          {getLocalizedPackageField(plan, 'name') || plan.name || 'Unnamed Package'}
                         </CardTitle>
                         
                         {/* Enhanced pricing */}
@@ -863,7 +894,7 @@ export default function Payments() {
                       <CardContent className="flex flex-col flex-grow relative z-10 px-6">
                         {/* Enhanced features list */}
                         <ul className="space-y-3 mb-8 flex-grow">
-                          {plan.features.map((feature, featureIndex) => (
+                          {getLocalizedFeatures(plan).map((feature, featureIndex) => (
                             <li 
                               key={featureIndex} 
                               className="flex items-start gap-3 text-sm group-hover:translate-x-1 transition-transform duration-300"
