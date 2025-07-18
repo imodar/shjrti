@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,7 +96,11 @@ const PlanSelection = () => {
   };
 
   const getPackagePrice = (pkg: Package): number => {
-    return currentLanguage === 'ar' ? (pkg.price_sar || pkg.price || 0) : (pkg.price_usd || pkg.price || 0);
+    if (currentLanguage === 'ar') {
+      return pkg.price_sar || 0;
+    } else {
+      return pkg.price_usd || 0;
+    }
   };
 
   const getPackageIcon = (index: number) => {
@@ -221,3 +226,4 @@ const PlanSelection = () => {
 };
 
 export default PlanSelection;
+
