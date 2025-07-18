@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -297,148 +298,288 @@ const FamilyTreeView = () => {
 
       {/* Tree Container */}
       <div className="container mx-auto px-4 py-6">
-        <div className="bg-card/30 backdrop-blur-sm rounded-xl border border-primary/20 p-6 min-h-[600px] overflow-auto">
-          <div 
-            className="transition-transform duration-300"
-            style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-          >
-            {familyTree.length > 0 ? (
-              <div className="space-y-12">
-                {familyTree.map(([generation, members]) => (
-                  <div key={generation} className="text-center">
-                    {/* Generation Header */}
-                    <div className="mb-8">
-                      <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-primary to-accent text-white">
-                        الجيل {generation}
-                      </Badge>
-                    </div>
+        <Tabs defaultValue="traditional" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="traditional">العرض التقليدي</TabsTrigger>
+            <TabsTrigger value="diagram">العرض التخطيطي</TabsTrigger>
+          </TabsList>
+          
+          {/* Traditional Tree View */}
+          <TabsContent value="traditional">
+            <div className="bg-card/30 backdrop-blur-sm rounded-xl border border-primary/20 p-6 min-h-[600px] overflow-auto">
+              <div 
+                className="transition-transform duration-300"
+                style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
+              >
+                {familyTree.length > 0 ? (
+                  <div className="space-y-12">
+                    {familyTree.map(([generation, members]) => (
+                      <div key={generation} className="text-center">
+                        {/* Generation Header */}
+                        <div className="mb-8">
+                          <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-primary to-accent text-white">
+                            الجيل {generation}
+                          </Badge>
+                        </div>
 
-                    {/* Members in this generation */}
-                    <div className="flex flex-wrap justify-center gap-8 mb-8">
-                      {(() => {
-                        const displayedMembers = new Set();
-                        const memberElements = [];
+                        {/* Members in this generation */}
+                        <div className="flex flex-wrap justify-center gap-8 mb-8">
+                          {(() => {
+                            const displayedMembers = new Set();
+                            const memberElements = [];
 
-                        members.forEach((member: any) => {
-                          // Skip if this member was already displayed as a spouse
-                          if (displayedMembers.has(member.id)) {
-                            return;
-                          }
+                            members.forEach((member: any) => {
+                              // Skip if this member was already displayed as a spouse
+                              if (displayedMembers.has(member.id)) {
+                                return;
+                              }
 
-                          // Find spouse for this member
-                          const marriage = familyMarriages.find(m => 
-                            m.husband?.id === member.id || m.wife?.id === member.id
-                          );
-                          const spouse = marriage ? 
-                            (marriage.husband?.id === member.id ? marriage.wife : marriage.husband) : null;
+                              // Find spouse for this member
+                              const marriage = familyMarriages.find(m => 
+                                m.husband?.id === member.id || m.wife?.id === member.id
+                              );
+                              const spouse = marriage ? 
+                                (marriage.husband?.id === member.id ? marriage.wife : marriage.husband) : null;
 
-                          // Mark both member and spouse as displayed
-                          displayedMembers.add(member.id);
-                          if (spouse) {
-                            displayedMembers.add(spouse.id);
-                          }
+                              // Mark both member and spouse as displayed
+                              displayedMembers.add(member.id);
+                              if (spouse) {
+                                displayedMembers.add(spouse.id);
+                              }
 
-                          memberElements.push(
-                            <div key={member.id} className="flex items-center gap-4">
-                              {/* Member Card */}
-                              <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
-                                <div className="flex items-center gap-3">
-                                  <Avatar className="h-12 w-12">
-                                    <AvatarImage src={member.image} />
-                                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                                      {member.name.slice(0, 2)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="text-right">
-                                    <h3 className="font-semibold text-foreground">{member.name}</h3>
-                                    <div className="flex gap-2 mt-1">
-                                      {member.isFounder && (
-                                        <Badge variant="secondary" className="text-xs">مؤسس</Badge>
-                                      )}
-                                      <Badge variant="outline" className="text-xs">
-                                        {member.gender === "male" ? "ذكر" : "أنثى"}
-                                      </Badge>
-                                    </div>
-                                    {member.birthDate && (
-                                      <p className="text-xs text-muted-foreground mt-1">
-                                        {new Date(member.birthDate).getFullYear()}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              </Card>
-
-                              {/* Marriage Line and Spouse */}
-                              {spouse && (
-                                <>
-                                  <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
-                                  
-                                  {/* Spouse Card */}
-                                  <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                              memberElements.push(
+                                <div key={member.id} className="flex items-center gap-4">
+                                  {/* Member Card */}
+                                  <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
                                     <div className="flex items-center gap-3">
                                       <Avatar className="h-12 w-12">
-                                        <AvatarImage src={spouse.image} />
-                                        <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                                          {spouse.name.slice(0, 2)}
+                                        <AvatarImage src={member.image} />
+                                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                                          {member.name.slice(0, 2)}
                                         </AvatarFallback>
                                       </Avatar>
                                       <div className="text-right">
-                                        <h3 className="font-semibold text-foreground">{spouse.name}</h3>
+                                        <h3 className="font-semibold text-foreground">{member.name}</h3>
                                         <div className="flex gap-2 mt-1">
-                                          {spouse.isFounder && (
+                                          {member.isFounder && (
                                             <Badge variant="secondary" className="text-xs">مؤسس</Badge>
                                           )}
                                           <Badge variant="outline" className="text-xs">
-                                            {spouse.gender === "male" ? "ذكر" : "أنثى"}
+                                            {member.gender === "male" ? "ذكر" : "أنثى"}
                                           </Badge>
                                         </div>
-                                        {spouse.birthDate && (
+                                        {member.birthDate && (
                                           <p className="text-xs text-muted-foreground mt-1">
-                                            {new Date(spouse.birthDate).getFullYear()}
+                                            {new Date(member.birthDate).getFullYear()}
                                           </p>
                                         )}
                                       </div>
                                     </div>
                                   </Card>
-                                </>
-                              )}
-                            </div>
-                          );
-                        });
 
-                        return memberElements;
-                      })()}
+                                  {/* Marriage Line and Spouse */}
+                                  {spouse && (
+                                    <>
+                                      <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
+                                      
+                                      {/* Spouse Card */}
+                                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                                        <div className="flex items-center gap-3">
+                                          <Avatar className="h-12 w-12">
+                                            <AvatarImage src={spouse.image} />
+                                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                                              {spouse.name.slice(0, 2)}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          <div className="text-right">
+                                            <h3 className="font-semibold text-foreground">{spouse.name}</h3>
+                                            <div className="flex gap-2 mt-1">
+                                              {spouse.isFounder && (
+                                                <Badge variant="secondary" className="text-xs">مؤسس</Badge>
+                                              )}
+                                              <Badge variant="outline" className="text-xs">
+                                                {spouse.gender === "male" ? "ذكر" : "أنثى"}
+                                              </Badge>
+                                            </div>
+                                            {spouse.birthDate && (
+                                              <p className="text-xs text-muted-foreground mt-1">
+                                                {new Date(spouse.birthDate).getFullYear()}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </Card>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            });
+
+                            return memberElements;
+                          })()}
+                        </div>
+
+                        {/* Connection Line to next generation */}
+                        {generation < Math.max(...familyTree.map(([gen]) => gen)) && (
+                          <div className="flex justify-center">
+                            <div className="w-0.5 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-24">
+                    <Users className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
+                    <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
+                      لا توجد شجرة عائلة بعد
+                    </h3>
+                    <p className="text-muted-foreground mb-6">
+                      ابدأ ببناء شجرة عائلتك بإضافة أول عضو
+                    </p>
+                    <Button
+                      onClick={() => navigate('/family-overview')}
+                      className="gap-2 bg-gradient-to-r from-primary to-accent"
+                    >
+                      <Users className="h-4 w-4" />
+                      إدارة الأعضاء
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Diagram Tree View */}
+          <TabsContent value="diagram">
+            <div className="bg-card/30 backdrop-blur-sm rounded-xl border border-primary/20 p-6 min-h-[600px] overflow-auto">
+              <div 
+                className="transition-transform duration-300 relative"
+                style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
+              >
+                <div className="relative min-h-[500px] flex flex-col items-center">
+                  
+                  {/* الجيل الأول - أمير ورانية في دائرة واحدة */}
+                  <div className="relative mb-24">
+                    <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="text-center">
+                          <Avatar className="h-16 w-16 mx-auto mb-2">
+                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-lg">
+                              أم
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-semibold text-sm">أمير</h3>
+                        </div>
+                        <div className="text-xl text-primary">♥</div>
+                        <div className="text-center">
+                          <Avatar className="h-16 w-16 mx-auto mb-2">
+                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20 text-lg">
+                              را
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-semibold text-sm">رانية</h3>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* الخطوط الثلاثة المتجهة للأطفال */}
+                    <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="300" height="100">
+                      {/* خط عمودي من المركز */}
+                      <line x1="150" y1="0" x2="150" y2="40" stroke="hsl(var(--primary))" strokeWidth="3"/>
+                      {/* خط أفقي */}
+                      <line x1="50" y1="40" x2="250" y2="40" stroke="hsl(var(--primary))" strokeWidth="3"/>
+                      {/* خطوط للأطفال */}
+                      <line x1="75" y1="40" x2="75" y2="80" stroke="hsl(var(--primary))" strokeWidth="3"/>
+                      <line x1="150" y1="40" x2="150" y2="80" stroke="hsl(var(--primary))" strokeWidth="3"/>
+                      <line x1="225" y1="40" x2="225" y2="80" stroke="hsl(var(--primary))" strokeWidth="3"/>
+                    </svg>
+                  </div>
+
+                  {/* الجيل الثاني - مضر وزينة وربى */}
+                  <div className="flex justify-center gap-16 mb-24">
+                    {/* مضر */}
+                    <div className="relative text-center">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[140px]">
+                        <Avatar className="h-14 w-14 mx-auto mb-2">
+                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                            مض
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold">مضر</h3>
+                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                      </Card>
+                      
+                      {/* خط من مضر للأطفال */}
+                      <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="120" height="80">
+                        <line x1="60" y1="0" x2="60" y2="30" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                        <line x1="30" y1="30" x2="90" y2="30" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                        <line x1="30" y1="30" x2="30" y2="60" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                        <line x1="90" y1="30" x2="90" y2="60" stroke="hsl(var(--accent))" strokeWidth="3"/>
+                      </svg>
                     </div>
 
-                    {/* Connection Line to next generation */}
-                    {generation < Math.max(...familyTree.map(([gen]) => gen)) && (
-                      <div className="flex justify-center">
-                        <div className="w-0.5 h-8 bg-gradient-to-b from-primary to-accent"></div>
-                      </div>
-                    )}
+                    {/* زينة */}
+                    <div className="text-center">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
+                        <Avatar className="h-14 w-14 mx-auto mb-2">
+                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                            زي
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold">زينة</h3>
+                        <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
+                      </Card>
+                    </div>
+
+                    {/* ربى */}
+                    <div className="text-center">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
+                        <Avatar className="h-14 w-14 mx-auto mb-2">
+                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                            رب
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold">ربى</h3>
+                        <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
+                      </Card>
+                    </div>
                   </div>
-                ))}
+
+                  {/* الجيل الثالث - أطفال مضر */}
+                  <div className="flex justify-center gap-8">
+                    {/* مجد */}
+                    <div className="text-center">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
+                        <Avatar className="h-12 w-12 mx-auto mb-2">
+                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                            مج
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold text-sm">مجد</h3>
+                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                      </Card>
+                    </div>
+
+                    {/* أمير بن مضر */}
+                    <div className="text-center">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
+                        <Avatar className="h-12 w-12 mx-auto mb-2">
+                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                            أم
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold text-sm">أمير بن مضر</h3>
+                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                      </Card>
+                    </div>
+                  </div>
+
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-24">
-                <Users className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
-                <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
-                  لا توجد شجرة عائلة بعد
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  ابدأ ببناء شجرة عائلتك بإضافة أول عضو
-                </p>
-                <Button
-                  onClick={() => navigate('/family-overview')}
-                  className="gap-2 bg-gradient-to-r from-primary to-accent"
-                >
-                  <Users className="h-4 w-4" />
-                  إدارة الأعضاء
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <SharedFooter />
