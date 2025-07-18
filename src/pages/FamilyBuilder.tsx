@@ -2012,12 +2012,25 @@ const FamilyBuilder = () => {
                                     className="flex items-center gap-3 p-3 cursor-pointer"
                                   >
                                     <span className="text-2xl">❤️</span>
-                                    <div className="flex flex-col flex-1">
-                                      <span className="font-medium">
-                                        {marriage.husband?.name} + {marriage.wife?.name}
-                                      </span>
-                                      <span className="text-sm text-muted-foreground">عائلة</span>
-                                    </div>
+                                     <div className="flex flex-col flex-1">
+                                       <span className="font-medium">
+                                         {(() => {
+                                           const husbandName = marriage.husband?.name;
+                                           const wifeName = marriage.wife?.name;
+                                           const husbandMember = familyMembers.find(m => m.id === marriage.husband?.id);
+                                           const wifeMember = familyMembers.find(m => m.id === marriage.wife?.id);
+                                           
+                                           const husbandInfo = husbandMember ? getAdditionalInfo(husbandMember) : null;
+                                           const wifeInfo = wifeMember ? getAdditionalInfo(wifeMember) : null;
+                                           
+                                           const husbandDisplay = husbandInfo ? `${husbandName} ${husbandInfo}` : husbandName;
+                                           const wifeDisplay = wifeInfo ? `${wifeName} ${wifeInfo}` : wifeName;
+                                           
+                                           return `${husbandDisplay} + ${wifeDisplay}`;
+                                         })()}
+                                       </span>
+                                       <span className="text-sm text-muted-foreground">عائلة</span>
+                                     </div>
                                     {formData.relatedPersonId === marriage.id && (
                                       <div className="w-2 h-2 bg-primary rounded-full"></div>
                                     )}
