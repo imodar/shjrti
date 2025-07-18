@@ -77,8 +77,20 @@ export default function Profile() {
 
       console.log('Subscription found:', subscription);
 
+      // Parse the package name JSON to get the Arabic name
+      let packageName = "باقة مخصصة";
+      if (subscription.packages?.name) {
+        try {
+          const nameObj = JSON.parse(subscription.packages.name);
+          packageName = nameObj.ar || nameObj.en || "باقة مخصصة";
+        } catch (e) {
+          // If it's not JSON, use the name as is
+          packageName = subscription.packages.name;
+        }
+      }
+
       setCurrentPackage({
-        name: subscription.packages?.name || "باقة مخصصة",
+        name: packageName,
         status: subscription.status,
         expires_at: subscription.expires_at
       });
@@ -371,7 +383,7 @@ export default function Profile() {
                     <Button variant="ghost" className="relative h-auto p-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-emerald-200/30">
                       <div className="flex items-center gap-3">
                         <div className="relative">
-                          <Avatar className="w-10 h-10 ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-transparent">
+                          <Avatar className="w-10 h-10 ring-2 ring-emerald-500/50">
                             <AvatarImage src="/placeholder.svg" />
                             <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white font-bold">
                               {getInitials()}
