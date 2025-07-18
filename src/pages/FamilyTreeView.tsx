@@ -485,8 +485,42 @@ const FamilyTreeView = () => {
                     
                     {/* خط عمودي من الزوجين */}
                     <div 
-                      className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-primary to-accent"
+                      className="absolute left-1/2 transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-primary to-accent"
                       style={{ top: '100%' }}
+                    ></div>
+                    
+                    {/* نقطة التفرع */}
+                    <div 
+                      className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-accent"
+                      style={{ top: 'calc(100% + 64px)' }}
+                    ></div>
+                    
+                    {/* خط أفقي للأطفال الثلاثة */}
+                    <div 
+                      className="absolute h-1 bg-gradient-to-r from-primary to-accent"
+                      style={{ 
+                        top: 'calc(100% + 64px)', 
+                        left: '50%', 
+                        transform: 'translateX(-50%)', 
+                        width: '360px' 
+                      }}
+                    ></div>
+                    
+                    {/* خطوط عمودية للأطفال الثلاثة */}
+                    {/* مضر - يسار */}
+                    <div 
+                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 64px)', left: 'calc(50% - 180px)' }}
+                    ></div>
+                    {/* زينة - وسط */}
+                    <div 
+                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 64px)', left: '50%', transform: 'translateX(-50%)' }}
+                    ></div>
+                    {/* ربى - يمين */}
+                    <div 
+                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 64px)', left: 'calc(50% + 180px)' }}
                     ></div>
                   </div>
 
@@ -544,31 +578,6 @@ const FamilyTreeView = () => {
                         </Card>
                       </div>
                     </div>
-                    
-                    {/* خط أفقي يصل الأطفال بالوالدين */}
-                    <div 
-                      className="absolute h-1 bg-gradient-to-r from-primary to-accent"
-                      style={{ 
-                        top: '-48px', 
-                        left: '50%', 
-                        transform: 'translateX(-50%)', 
-                        width: '280px' 
-                      }}
-                    ></div>
-                    
-                    {/* خطوط عمودية من الخط الأفقي للأطفال */}
-                    <div 
-                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: '-48px', left: 'calc(50% - 140px)' }}
-                    ></div>
-                    <div 
-                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: '-48px', left: '50%', transform: 'translateX(-50%)' }}
-                    ></div>
-                    <div 
-                      className="absolute w-1 h-12 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: '-48px', left: 'calc(50% + 140px)' }}
-                    ></div>
                   </div>
 
                   {/* الجيل الثالث */}
