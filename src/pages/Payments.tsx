@@ -49,8 +49,8 @@ export default function Payments() {
         id: pkg.id,
         name: pkg.name,
         description: pkg.description,
-        price: pkg.price.toString(),
-        period: "شهرياً",
+        price: pkg.price === 0 ? "مجاني للأبد" : (pkg.price * 12).toString(),
+        period: pkg.price === 0 ? "" : "سنوياً",
         features: pkg.features || [],
         maxMembers: pkg.max_family_members,
         maxTrees: pkg.max_family_trees,
@@ -832,15 +832,17 @@ export default function Payments() {
                         
                         {/* Enhanced pricing */}
                         <div className="mt-6 relative">
-                          <div className="flex items-center justify-center gap-1">
-                            <span className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                              {plan.price}
-                            </span>
-                            <div className="text-right">
-                              <span className="text-sm text-muted-foreground block">ريال</span>
-                              <span className="text-xs text-muted-foreground">{plan.period}</span>
-                            </div>
-                          </div>
+                           <div className="flex items-center justify-center gap-1">
+                             <span className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                               {plan.price.includes('مجاني') ? plan.price : plan.price}
+                             </span>
+                             {!plan.price.includes('مجاني') && (
+                               <div className="text-right">
+                                 <span className="text-sm text-muted-foreground block">ريال</span>
+                                 <span className="text-xs text-muted-foreground">{plan.period}</span>
+                               </div>
+                             )}
+                           </div>
                           {plan.id === 'premium' && (
                             <div className="absolute -top-2 -right-2">
                               <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
