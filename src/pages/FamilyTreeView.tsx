@@ -457,10 +457,10 @@ const FamilyTreeView = () => {
                 className="transition-transform duration-300 relative"
                 style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
               >
-                <div className="relative min-h-[600px] flex flex-col items-center pt-8">
+                <div className="relative min-h-[700px] flex flex-col items-center pt-8">
                   
                   {/* الجيل الأول - أمير ورانية في دائرة واحدة */}
-                  <div className="relative mb-8">
+                  <div className="relative mb-16">
                     <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
                       <div className="flex items-center gap-4">
                         <div className="text-center">
@@ -482,22 +482,30 @@ const FamilyTreeView = () => {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* خط رئيسي من الزوجين للأطفال */}
+                    <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-primary to-accent"></div>
+                    
+                    {/* نقطة التفرع */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-accent" style={{ top: 'calc(100% + 64px)' }}></div>
+                    
+                    {/* الخطوط الأفقية للأطفال الثلاثة */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2 h-1 bg-gradient-to-r from-primary to-accent" style={{ top: 'calc(100% + 72px)', width: '400px', left: 'calc(50% - 200px)' }}></div>
+                    
+                    {/* خطوط عمودية للأطفال */}
+                    {/* مضر - يسار */}
+                    <div className="absolute w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ top: 'calc(100% + 72px)', left: 'calc(50% - 133px)' }}></div>
+                    {/* زينة - وسط */}
+                    <div className="absolute w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ top: 'calc(100% + 72px)', left: 'calc(50% - 0.5px)' }}></div>
+                    {/* ربى - يمين */}
+                    <div className="absolute w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ top: 'calc(100% + 72px)', left: 'calc(50% + 133px)' }}></div>
                   </div>
 
-                  {/* خط عمودي من الزوجين */}
-                  <div className="w-1 h-16 bg-gradient-to-b from-primary to-accent mb-8"></div>
-
                   {/* الجيل الثاني - مضر وزينة وربى */}
-                  <div className="relative mb-8">
-                    {/* خط أفقي يربط الأطفال */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-1 bg-gradient-to-r from-primary via-accent to-primary"></div>
-                    
-                    <div className="flex justify-center items-start gap-32 pt-8">
+                  <div className="relative mb-16">
+                    <div className="flex justify-center items-start gap-32">
                       {/* مضر */}
                       <div className="relative text-center">
-                        {/* خط عمودي للاتصال بالخط الأفقي */}
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 w-1 h-8 bg-gradient-to-b from-primary to-accent"></div>
-                        
                         <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[140px]">
                           <Avatar className="h-14 w-14 mx-auto mb-2">
                             <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
@@ -507,13 +515,14 @@ const FamilyTreeView = () => {
                           <h3 className="font-semibold">مضر</h3>
                           <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
                         </Card>
+                        
+                        {/* خط من مضر لأمير بن مضر */}
+                        <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-primary to-accent"></div>
+                        <div className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-primary" style={{ top: 'calc(100% + 64px)' }}></div>
                       </div>
 
                       {/* زينة */}
                       <div className="relative text-center">
-                        {/* خط عمودي للاتصال بالخط الأفقي */}
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 w-1 h-8 bg-gradient-to-b from-primary to-accent"></div>
-                        
                         <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
                           <Avatar className="h-14 w-14 mx-auto mb-2">
                             <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
@@ -523,13 +532,14 @@ const FamilyTreeView = () => {
                           <h3 className="font-semibold">زينة</h3>
                           <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
                         </Card>
+                        
+                        {/* خط من زينة لمجد */}
+                        <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-accent to-primary"></div>
+                        <div className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-accent" style={{ top: 'calc(100% + 64px)' }}></div>
                       </div>
 
                       {/* ربى */}
-                      <div className="relative text-center">
-                        {/* خط عمودي للاتصال بالخط الأفقي */}
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 w-1 h-8 bg-gradient-to-b from-primary to-accent"></div>
-                        
+                      <div className="text-center">
                         <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
                           <Avatar className="h-14 w-14 mx-auto mb-2">
                             <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
@@ -541,15 +551,6 @@ const FamilyTreeView = () => {
                         </Card>
                       </div>
                     </div>
-                  </div>
-
-                  {/* خطوط للجيل الثالث */}
-                  <div className="relative mb-8">
-                    {/* خط من مضر لأمير بن مضر */}
-                    <div className="absolute left-0 w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ left: 'calc(50% - 160px)' }}></div>
-                    
-                    {/* خط من زينة لمجد */}
-                    <div className="absolute right-0 w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ right: 'calc(50% - 160px)' }}></div>
                   </div>
 
                   {/* الجيل الثالث */}
