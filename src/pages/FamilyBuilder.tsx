@@ -358,9 +358,10 @@ const FamilyBuilder = () => {
                 ));
         
       case "wives":
-        // Show all female members who are married
+        // Show only female members who married INTO the family (not daughters of the family)
         return member.gender === 'female' && 
-          familyMarriages.some(marriage => marriage.wife?.id === member.id);
+          familyMarriages.some(marriage => marriage.wife?.id === member.id) &&
+          !member.fatherId && !member.motherId && !member.isFounder;
         
       case "husbands":
         // Show all male members who are married
