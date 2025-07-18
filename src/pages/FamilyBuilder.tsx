@@ -457,6 +457,8 @@ const FamilyBuilder = () => {
       const father = familyMembers.find(m => m.id === member.fatherId);
       const mother = familyMembers.find(m => m.id === member.motherId);
       
+      console.log(`Checking member ${member.name}:`, { father, mother });
+      
       if (father && mother) {
         // Check if father is non-blood (married into family)
         const fatherIsNonBlood = father.gender === 'male' && 
@@ -465,18 +467,24 @@ const FamilyBuilder = () => {
             !father.fatherId && !father.motherId && !father.isFounder
           );
           
+        console.log(`Father ${father.name} is non-blood:`, fatherIsNonBlood);
+        console.log(`Mother ${mother.name} has fatherId:`, mother.fatherId);
+          
         if (fatherIsNonBlood && (mother.fatherId || mother.isFounder)) {
           // Get mother's father name
           let motherInfo = mother.name;
           if (mother.fatherId) {
             const motherFather = familyMembers.find(m => m.id === mother.fatherId);
+            console.log('Mother father found:', motherFather);
             if (motherFather) {
               motherInfo += ` بنت ${motherFather.name}`;
             }
           }
           motherInfo += ` الشيخ سعيد`;
           
-          return `ابن ${father.name} - زوج ${motherInfo}`;
+          const result = `ابن ${father.name} - زوج ${motherInfo}`;
+          console.log(`Result for ${member.name}:`, result);
+          return result;
         }
       }
     }
