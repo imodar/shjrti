@@ -86,15 +86,17 @@ export default function AdminPanel() {
   const [families, setFamilies] = useState<Family[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [orders, setOrders] = useState<StoreOrder[]>([]);
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalFamilies: 0,
     totalInvoices: 0,
     totalOrders: 0,
-    activeSubscriptions: 0,
-    totalRevenue: 0
+    totalRevenue: 0,
+    activeSubscriptions: 0
   });
-  const [loading, setLoading] = useState(true);
+  const [languages, setLanguages] = useState<any[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
     description: '',
@@ -115,20 +117,16 @@ export default function AdminPanel() {
 
   const loadAllData = async () => {
     setLoading(true);
-    try {
-      await Promise.all([
-        loadPackages(),
-        loadUsers(),
-        loadFamilies(),
-        loadInvoices(),
-        loadOrders(),
-        loadStats()
-      ]);
-    } catch (error) {
-      console.error('Error loading admin data:', error);
-    } finally {
-      setLoading(false);
-    }
+    await Promise.all([
+      loadPackages(),
+      loadUsers(),
+      loadFamilies(),
+      loadInvoices(),
+      loadOrders(),
+      loadStats(),
+      loadLanguages()
+    ]);
+    setLoading(false);
   };
 
   const loadPackages = async () => {
@@ -198,6 +196,25 @@ export default function AdminPanel() {
       setOrders(data || []);
     } catch (error) {
       console.error('Error loading orders:', error);
+    }
+  };
+
+  const loadLanguages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('languages')
+        .select('*')
+        .eq('is_active', true)
+        .order('is_default', { ascending: false });
+      
+      if (error) {
+        console.error('Error loading languages:', error);
+        return;
+      }
+      
+      setLanguages(data || []);
+    } catch (error) {
+      console.error('Error loading languages:', error);
     }
   };
 
@@ -393,6 +410,89 @@ export default function AdminPanel() {
     }
   };
 
+  // Multilanguage helper functions
+  const getLocalizedPackageField = (pkg: PackageType, field: string, language: string) => {
+    if (!pkg[field as keyof PackageType]) return '';
+    
+    const fieldValue = pkg[field as keyof PackageType];
+    if (typeof fieldValue === 'string') {
+      return fieldValue;
+    }
+    
+    if (typeof fieldValue === 'object' && fieldValue !== null) {
+      return (fieldValue as any)[language] || (fieldValue as any)['en'] || '';
+    }
+    
+    return String(fieldValue || '');
+  };
+
+  const handleLocalizedPackageChange = (id: string, field: string, language: string, value: string) => {
+    setPackages(prevPackages =>
+      prevPackages.map(pkg => {
+        if (pkg.id !== id) return pkg;
+        
+        const currentFieldValue = pkg[field as keyof PackageType];
+        let newFieldValue;
+        
+        if (typeof currentFieldValue === 'object' && currentFieldValue !== null) {
+          newFieldValue = { ...currentFieldValue, [language]: value };
+        } else {
+          newFieldValue = language === 'en' ? value : { en: currentFieldValue || '', [language]: value };
+        }
+        
+        return { ...pkg, [field]: newFieldValue };
+      })
+    );
+  };
+
+  const getLocalizedFeatures = (pkg: PackageType, language: string): string[] => {
+    if (!pkg.features) return [];
+    
+    if (Array.isArray(pkg.features)) {
+      return pkg.features.map(f => typeof f === 'string' ? f : f.name || '');
+    }
+    
+    if (typeof pkg.features === 'object' && pkg.features[language]) {
+      return Array.isArray(pkg.features[language]) ? pkg.features[language] : [];
+    }
+    
+    return [];
+  };
+
+  const handleLocalizedFeaturesChange = (id: string, language: string, features: string[]) => {
+    setPackages(prevPackages =>
+      prevPackages.map(pkg => {
+        if (pkg.id !== id) return pkg;
+        
+        const currentFeatures = pkg.features || {};
+        const newFeatures = typeof currentFeatures === 'object' ? 
+          { ...currentFeatures, [language]: features } : 
+          { [language]: features };
+        
+        return { ...pkg, features: newFeatures };
+      })
+    );
+  };
+
+  const getLocalizedFeaturesForNewPackage = (language: string): string[] => {
+    if (!newPackage.features) return [];
+    
+    if (typeof newPackage.features === 'object' && newPackage.features[language]) {
+      return Array.isArray(newPackage.features[language]) ? newPackage.features[language] : [];
+    }
+    
+    return [];
+  };
+
+  const handleNewPackageFeaturesChange = (language: string, features: string[]) => {
+    const currentFeatures = newPackage.features || {};
+    const newFeatures = typeof currentFeatures === 'object' ? 
+      { ...currentFeatures, [language]: features } : 
+      { [language]: features };
+    
+    setNewPackage({ ...newPackage, features: newFeatures });
+  };
+
   const getPackagePrice = (pkg: PackageType) => {
     const price = currentLanguage === 'ar' ? (pkg.price_sar || pkg.price || 0) : (pkg.price_usd || pkg.price || 0);
     return formatPrice(price);
@@ -535,12 +635,30 @@ export default function AdminPanel() {
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-medium">Package Management</h3>
+                    <p className="text-sm text-muted-foreground">Manage subscription packages and their settings</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Label className="text-sm font-medium">Language:</Label>
+                    <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languages.map((lang) => (
+                          <SelectItem key={lang.code} value={lang.code}>
+                            {lang.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Package Management</CardTitle>
-                    <CardDescription>Manage subscription packages and their settings</CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-6">
                     <div className="grid gap-6">
                       {packages.map((pkg) => (
                         <Card key={pkg.id} className={`border-2 ${pkg.is_featured ? 'border-primary' : 'border-border'}`}>
@@ -568,18 +686,18 @@ export default function AdminPanel() {
                           <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">Package Name</Label>
+                                <Label className="text-sm font-medium">Package Name ({selectedLanguage.toUpperCase()})</Label>
                                 <Input
-                                  value={pkg.name || ''}
-                                  onChange={(e) => handlePackageInputChange(pkg.id, 'name', e.target.value)}
+                                  value={getLocalizedPackageField(pkg, 'name', selectedLanguage)}
+                                  onChange={(e) => handleLocalizedPackageChange(pkg.id, 'name', selectedLanguage, e.target.value)}
                                   placeholder="Package Name"
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">Description</Label>
+                                <Label className="text-sm font-medium">Description ({selectedLanguage.toUpperCase()})</Label>
                                 <Input
-                                  value={pkg.description || ''}
-                                  onChange={(e) => handlePackageInputChange(pkg.id, 'description', e.target.value)}
+                                  value={getLocalizedPackageField(pkg, 'description', selectedLanguage)}
+                                  onChange={(e) => handleLocalizedPackageChange(pkg.id, 'description', selectedLanguage, e.target.value)}
                                   placeholder="Package Description"
                                 />
                               </div>
@@ -645,20 +763,20 @@ export default function AdminPanel() {
                             </div>
 
                             {/* Package Features Display */}
-                            {pkg.features && (
-                              <div className="space-y-2">
-                                <Label className="text-sm font-medium">Current Features</Label>
-                                <div className="flex flex-wrap gap-2">
-                                  {Array.isArray(pkg.features) ? pkg.features.map((feature, index) => (
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium">Current Features ({selectedLanguage.toUpperCase()})</Label>
+                              <div className="flex flex-wrap gap-2">
+                                {getLocalizedFeatures(pkg, selectedLanguage).length > 0 ? 
+                                  getLocalizedFeatures(pkg, selectedLanguage).map((feature, index) => (
                                     <span key={index} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs">
-                                      {typeof feature === 'string' ? feature : feature.name || 'Feature'}
+                                      {feature}
                                     </span>
                                   )) : (
-                                    <span className="text-muted-foreground text-sm">No features configured</span>
-                                  )}
-                                </div>
+                                    <span className="text-muted-foreground text-sm">No features configured for {selectedLanguage.toUpperCase()}</span>
+                                  )
+                                }
                               </div>
-                            )}
+                            </div>
                           </CardContent>
                         </Card>
                       ))}
@@ -672,42 +790,58 @@ export default function AdminPanel() {
               </TabsContent>
 
               <TabsContent value="features" className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-medium">Manage Package Features</h3>
+                    <p className="text-sm text-muted-foreground">Configure features for each subscription package in multiple languages</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Label className="text-sm font-medium">Language:</Label>
+                    <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languages.map((lang) => (
+                          <SelectItem key={lang.code} value={lang.code}>
+                            {lang.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Manage Package Features</CardTitle>
-                    <CardDescription>Configure features for each subscription package</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-6 p-6">
                     {packages.map((pkg) => (
                       <Card key={pkg.id} className="border">
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-base">{pkg.name} Features</CardTitle>
+                          <CardTitle className="text-base">{pkg.name} Features ({selectedLanguage.toUpperCase()})</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
                             <div className="space-y-2">
-                              <Label className="text-sm font-medium">Features (JSON Format)</Label>
+                              <Label className="text-sm font-medium">
+                                Features for {selectedLanguage.toUpperCase()} (One per line)
+                              </Label>
                               <Textarea
-                                value={pkg.features ? JSON.stringify(pkg.features, null, 2) : '[]'}
+                                value={getLocalizedFeatures(pkg, selectedLanguage).join('\n')}
                                 onChange={(e) => {
-                                  try {
-                                    const features = JSON.parse(e.target.value);
-                                    handlePackageInputChange(pkg.id, 'features', features);
-                                  } catch {
-                                    // Invalid JSON, handle gracefully
-                                  }
+                                  const features = e.target.value.split('\n').filter(f => f.trim() !== '');
+                                  handleLocalizedFeaturesChange(pkg.id, selectedLanguage, features);
                                 }}
-                                placeholder={`[
-  "Unlimited family members",
-  "Advanced family tree visualization",
-  "Export to PDF",
-  "Premium support"
-]`}
-                                className="min-h-[120px] font-mono text-sm"
+                                placeholder={`Enter features for ${selectedLanguage.toUpperCase()}, one per line:
+Unlimited family members
+Advanced family tree visualization
+Export to PDF
+Premium support`}
+                                className="min-h-[120px] text-sm"
+                                rows={6}
                               />
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Enter features as a JSON array of strings or objects with name properties
+                              Enter each feature on a new line. Features will be saved for the selected language.
                             </div>
                           </div>
                         </CardContent>
@@ -805,23 +939,19 @@ export default function AdminPanel() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Package Features (JSON)</Label>
+                      <Label className="text-sm font-medium">Package Features ({selectedLanguage.toUpperCase()})</Label>
                       <Textarea
-                        value={newPackage.features ? JSON.stringify(newPackage.features, null, 2) : '[]'}
+                        value={getLocalizedFeaturesForNewPackage(selectedLanguage).join('\n')}
                         onChange={(e) => {
-                          try {
-                            const features = JSON.parse(e.target.value);
-                            handleNewPackageInputChange('features', features);
-                          } catch {
-                            // Invalid JSON, handle gracefully
-                          }
+                          const features = e.target.value.split('\n').filter(f => f.trim() !== '');
+                          handleNewPackageFeaturesChange(selectedLanguage, features);
                         }}
-                        placeholder={`[
-  "Feature 1",
-  "Feature 2",
-  "Feature 3"
-]`}
-                        className="min-h-[100px] font-mono text-sm"
+                        placeholder={`Enter features for ${selectedLanguage.toUpperCase()}, one per line:
+Feature 1
+Feature 2
+Feature 3`}
+                        className="min-h-[100px] text-sm"
+                        rows={4}
                       />
                     </div>
 
