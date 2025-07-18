@@ -35,36 +35,65 @@ const FamilyBuilder = () => {
   const calculateGenerationCount = () => {
     if (familyMembers.length === 0) return 1;
     
-    // Create a map to track generations based on relationships
+    // Create a map to track generations based on parent-child relationships
     const generationMap = new Map();
     
-    // Start with founders (people without related_person_id) as generation 1
+    // Start with founders (people without parents) as generation 1
     familyMembers.forEach(member => {
-      if (!member.related_person_id) {
+      if (member.isFounder || (!member.fatherId && !member.motherId)) {
         generationMap.set(member.id, 1);
       }
     });
     
-    // Recursively assign generations based on relationships
+    // Recursively assign generations based on parent-child relationships
     let changed = true;
-    while (changed) {
+    let maxIterations = 50; // Safety limit to prevent infinite loops
+    let iterations = 0;
+    
+    while (changed && iterations < maxIterations) {
       changed = false;
+      iterations++;
+      
       familyMembers.forEach(member => {
-        if (member.related_person_id && !generationMap.has(member.id)) {
-          const parentGeneration = generationMap.get(member.related_person_id);
-          if (parentGeneration !== undefined) {
-            // Children are next generation, spouses are same generation
-            const isChild = ['son', 'daughter', 'ابن', 'ابنة', 'بنت'].some(rel => 
-              member.relation.toLowerCase().includes(rel.toLowerCase())
-            );
-            generationMap.set(member.id, isChild ? parentGeneration + 1 : parentGeneration);
+        if (!generationMap.has(member.id)) {
+          // Check if this member has parents
+          if (member.fatherId || member.motherId) {
+            const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
+            const motherGeneration = member.motherId ? generationMap.get(member.motherId) : undefined;
+            
+            // If at least one parent has a generation assigned
+            if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+              // Take the maximum generation of the parents and add 1
+              const parentGeneration = Math.max(
+                fatherGeneration || 0, 
+                motherGeneration || 0
+              );
+              generationMap.set(member.id, parentGeneration + 1);
+              changed = true;
+            }
+          } else {
+            // If no parents and not a founder, consider as generation 1 (could be married-in spouse)
+            generationMap.set(member.id, 1);
             changed = true;
           }
         }
       });
     }
     
-    return Math.max(1, Math.max(...Array.from(generationMap.values())));
+    // Assign spouses to same generation as their partners
+    familyMarriages.forEach(marriage => {
+      const husbandGeneration = generationMap.get(marriage.husband?.id);
+      const wifeGeneration = generationMap.get(marriage.wife?.id);
+      
+      if (husbandGeneration && !wifeGeneration) {
+        generationMap.set(marriage.wife?.id, husbandGeneration);
+      } else if (wifeGeneration && !husbandGeneration) {
+        generationMap.set(marriage.husband?.id, wifeGeneration);
+      }
+    });
+    
+    const generations = Array.from(generationMap.values());
+    return generations.length > 0 ? Math.max(...generations) : 1;
   };
 
   const getGenerationStats = () => {
@@ -72,30 +101,59 @@ const FamilyBuilder = () => {
     
     const generationMap = new Map();
     
-    // Start with founders as generation 1
+    // Start with founders (people without parents) as generation 1
     familyMembers.forEach(member => {
-      if (!member.related_person_id) {
+      if (member.isFounder || (!member.fatherId && !member.motherId)) {
         generationMap.set(member.id, 1);
       }
     });
     
-    // Assign generations
+    // Recursively assign generations based on parent-child relationships
     let changed = true;
-    while (changed) {
+    let maxIterations = 50; // Safety limit to prevent infinite loops
+    let iterations = 0;
+    
+    while (changed && iterations < maxIterations) {
       changed = false;
+      iterations++;
+      
       familyMembers.forEach(member => {
-        if (member.related_person_id && !generationMap.has(member.id)) {
-          const parentGeneration = generationMap.get(member.related_person_id);
-          if (parentGeneration !== undefined) {
-            const isChild = ['son', 'daughter', 'ابن', 'ابنة', 'بنت'].some(rel => 
-              member.relation.toLowerCase().includes(rel.toLowerCase())
-            );
-            generationMap.set(member.id, isChild ? parentGeneration + 1 : parentGeneration);
+        if (!generationMap.has(member.id)) {
+          // Check if this member has parents
+          if (member.fatherId || member.motherId) {
+            const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
+            const motherGeneration = member.motherId ? generationMap.get(member.motherId) : undefined;
+            
+            // If at least one parent has a generation assigned
+            if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+              // Take the maximum generation of the parents and add 1
+              const parentGeneration = Math.max(
+                fatherGeneration || 0, 
+                motherGeneration || 0
+              );
+              generationMap.set(member.id, parentGeneration + 1);
+              changed = true;
+            }
+          } else {
+            // If no parents and not a founder, consider as generation 1 (could be married-in spouse)
+            generationMap.set(member.id, 1);
             changed = true;
           }
         }
       });
     }
+    
+    // Assign spouses to same generation as their partners
+    familyMarriages.forEach(marriage => {
+      const husbandGeneration = generationMap.get(marriage.husband?.id);
+      const wifeGeneration = generationMap.get(marriage.wife?.id);
+      
+      if (husbandGeneration && !wifeGeneration) {
+        generationMap.set(marriage.wife?.id, husbandGeneration);
+      } else if (wifeGeneration && !husbandGeneration) {
+        generationMap.set(marriage.husband?.id, wifeGeneration);
+      }
+    });
     
     // Count members per generation
     const generationCounts = new Map();
