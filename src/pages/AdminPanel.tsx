@@ -665,7 +665,7 @@ export default function AdminPanel() {
                           <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <CardTitle className="text-lg">{pkg.name}</CardTitle>
+                                <CardTitle className="text-lg">{getLocalizedPackageField(pkg, 'name', 'en') || pkg.name || 'Unnamed Package'}</CardTitle>
                                 {pkg.is_featured && (
                                   <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
                                     Featured
@@ -817,7 +817,7 @@ export default function AdminPanel() {
                     {packages.map((pkg) => (
                       <Card key={pkg.id} className="border">
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-base">{pkg.name} Features ({selectedLanguage.toUpperCase()})</CardTitle>
+                          <CardTitle className="text-base">{getLocalizedPackageField(pkg, 'name', 'en') || pkg.name || 'Unnamed Package'} Features ({selectedLanguage.toUpperCase()})</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
