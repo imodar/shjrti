@@ -912,19 +912,19 @@ export default function Payments() {
                         
                         {/* Enhanced button with current plan styling */}
                         <Button 
-                          onClick={() => handlePlanSelect(plan.id)}
-                          className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 transform group-hover:scale-105 ${
+                          onClick={() => currentPlan !== plan.id && handlePlanSelect(plan.id)}
+                          className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 ${
                             currentPlan === plan.id 
-                              ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg cursor-not-allowed' 
-                              : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl hover:shadow-2xl'
+                              ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed opacity-60' 
+                              : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105'
                           }`} 
                           disabled={currentPlan === plan.id}
                         >
                           <div className="flex items-center justify-center gap-2">
                             {currentPlan === plan.id ? (
                               <>
-                                <div className="w-2 h-2 bg-white/60 rounded-full"></div>
-                                <span>الخطة الحالية</span>
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                                <span>خطتك الحالية النشطة</span>
                               </>
                             ) : (
                               <>
