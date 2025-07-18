@@ -16,6 +16,7 @@ export default function RenewSubscription() {
   // Redirect to dashboard if subscription is active
   useEffect(() => {
     if (!loading && !isExpired) {
+      console.log('RenewSubscription: Redirecting to dashboard because subscription is active');
       navigate('/dashboard');
     }
   }, [loading, isExpired, navigate]);
