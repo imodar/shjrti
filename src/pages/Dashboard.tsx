@@ -51,52 +51,94 @@ const getFamiliesFromDatabase = async (userId: string) => {
   }
 };
 
-// Mock user plan data
-const currentPlan = {
-  name: "مجانية",
-  type: "free",
-  // free: 0/1, basic: 0/2, premium: 0/10
-  treesUsed: 0,
-  treesLimit: 1,
-  // Free plan allows 1 tree
-  membersUsed: 0,
-  membersLimit: 10,
-  // Free plan allows 10 members
-  features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"]
+// Get packages from database
+const getPackagesFromDatabase = async () => {
+  try {
+    const { data: packages, error } = await supabase
+      .from('packages')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order');
+    
+    if (error) {
+      console.error('Error fetching packages:', error);
+      return [];
+    }
+    
+    return packages?.map(pkg => ({
+      id: pkg.id,
+      name: pkg.name || '',
+      type: pkg.name?.toLowerCase().includes('free') || pkg.name?.toLowerCase().includes('مجاني') ? 'free' : 
+            pkg.name?.toLowerCase().includes('basic') || pkg.name?.toLowerCase().includes('أساسي') ? 'basic' : 'premium',
+      price: `$${pkg.price_usd || 0}`,
+      priceArabic: pkg.price_sar ? `${pkg.price_sar} ر.س` : pkg.price_usd ? `${pkg.price_usd} دولار` : 'مجاناً',
+      period: (pkg.price_usd && pkg.price_usd > 0) ? "/شهر" : "",
+      treesLimit: pkg.max_family_trees || 1,
+      membersLimit: pkg.max_family_members || 10,
+      features: Array.isArray(pkg.features) ? pkg.features : 
+                typeof pkg.features === 'string' ? [pkg.features] :
+                pkg.name?.toLowerCase().includes('free') || pkg.name?.toLowerCase().includes('مجاني') ? 
+                ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"] :
+                pkg.name?.toLowerCase().includes('basic') || pkg.name?.toLowerCase().includes('أساسي') ? 
+                ["شجرتان عائليتان", "50 فرد", "مشاركة محدودة", "دعم بريد إلكتروني"] :
+                ["10 أشجار عائلية", "200 فرد", "مشاركة متقدمة", "تصدير البيانات", "دعم مباشر"],
+      popular: pkg.is_featured || false
+    })) || [];
+  } catch (error) {
+    console.error('Error fetching packages:', error);
+    return [];
+  }
 };
 
-// Available plans data
-const availablePlans = [{
-  name: "مجانية",
-  type: "free",
-  price: "$0",
-  priceArabic: "مجاناً",
-  period: "",
-  treesLimit: 1,
-  membersLimit: 10,
-  features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"],
-  popular: false
-}, {
-  name: "أساسية",
-  type: "basic",
-  price: "$9.99",
-  priceArabic: "٩.٩٩ دولار",
-  period: "/شهر",
-  treesLimit: 2,
-  membersLimit: 50,
-  features: ["شجرتان عائليتان", "50 فرد", "مشاركة محدودة", "دعم بريد إلكتروني"],
-  popular: false
-}, {
-  name: "احترافية",
-  type: "premium",
-  price: "$19.99",
-  priceArabic: "١٩.٩٩ دولار",
-  period: "/شهر",
-  treesLimit: 10,
-  membersLimit: 200,
-  features: ["10 أشجار عائلية", "200 فرد", "مشاركة متقدمة", "تصدير البيانات", "دعم مباشر"],
-  popular: true
-}];
+// Get user's current plan from database
+const getCurrentUserPlan = async (userId: string, packages: any[]) => {
+  try {
+    // Get user's family with package_id
+    const { data: families, error: familyError } = await supabase
+      .from('families')
+      .select('package_id')
+      .eq('creator_id', userId)
+      .limit(1);
+    
+    if (familyError) {
+      console.error('Error fetching user families:', familyError);
+    }
+    
+    const packageId = families?.[0]?.package_id;
+    
+    if (packageId) {
+      // Find the package from fetched packages
+      const userPackage = packages.find(pkg => pkg.id === packageId);
+      if (userPackage) {
+        return {
+          ...userPackage,
+          treesUsed: 0,
+          membersUsed: 0
+        };
+      }
+    }
+    
+    // Default to free plan if no package found
+    const freePlan = packages.find(pkg => pkg.type === 'free') || packages[0];
+    return {
+      ...freePlan,
+      treesUsed: 0,
+      membersUsed: 0
+    };
+  } catch (error) {
+    console.error('Error getting user plan:', error);
+    // Return default free plan
+    return {
+      name: "مجانية",
+      type: "free",
+      treesUsed: 0,
+      treesLimit: 1,
+      membersUsed: 0,
+      membersLimit: 10,
+      features: ["شجرة واحدة", "10 أفراد", "مشاركة محدودة"]
+    };
+  }
+};
 // Mock notifications data
 const mockNotifications = [{
   id: 1,
@@ -128,58 +170,50 @@ const mockNotifications = [{
   type: "subscription"
 }];
 const Dashboard = () => {
-  const [trees, setTrees] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const { totalMembers } = useDashboardData();
+
+  const [trees, setTrees] = useState([]);
+  const [availablePlans, setAvailablePlans] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState(null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [treeToDelete, setTreeToDelete] = useState<string | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [treeToShare, setTreeToShare] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
-  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [loading, setLoading] = useState(true);
-  const {
-    toast
-  } = useToast();
-  const navigate = useNavigate();
-  const {
-    user
-  } = useAuth();
-  const {
-    notifications,
-    profile,
-    totalMembers,
-    markNotificationAsRead,
-    markAllAsRead
-  } = useDashboardData();
 
-  // Load families from database
+  const { notifications, profile, markNotificationAsRead, markAllAsRead } = useDashboardData();
+
   useEffect(() => {
-    if (user) {
-      loadFamilies();
-    }
-  }, [user]);
-  const loadFamilies = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const families = await getFamiliesFromDatabase(user.id);
-      setTrees(families);
-    } catch (error) {
-      console.error('Error loading families:', error);
-      toast({
-        title: "خطأ في التحميل",
-        description: "حدث خطأ أثناء تحميل البيانات",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadDashboardData = async () => {
+      if (user?.id) {
+        // Load families
+        const familiesData = await getFamiliesFromDatabase(user.id);
+        setTrees(familiesData);
+        
+        // Load packages and user's current plan
+        const packagesData = await getPackagesFromDatabase();
+        setAvailablePlans(packagesData);
+        
+        if (packagesData.length > 0) {
+          const userPlan = await getCurrentUserPlan(user.id, packagesData);
+          setCurrentPlan(userPlan);
+        }
+      }
+    };
 
-  // Plan-based features
-  const canCreateNewTree = trees.length < currentPlan.treesLimit;
-  const planProgress = trees.length / currentPlan.treesLimit * 100;
-  const membersProgress = currentPlan.membersUsed / currentPlan.membersLimit * 100;
+    loadDashboardData();
+  }, [user]);
+
+  // Plan-based features - only compute if currentPlan is loaded
+  const canCreateNewTree = currentPlan ? trees.length < currentPlan.treesLimit : false;
+  const planProgress = currentPlan && currentPlan.treesLimit > 0 ? trees.length / currentPlan.treesLimit * 100 : 0;
+  const membersProgress = currentPlan && currentPlan.membersLimit > 0 ? currentPlan.membersUsed / currentPlan.membersLimit * 100 : 0;
 
   // Notification functions
   const unreadNotifications = notifications.filter(n => !n.isRead);
@@ -212,14 +246,33 @@ const Dashboard = () => {
         return <Bell className="h-4 w-4 text-gray-500" />;
     }
   };
+  
+  const loadFamilies = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const families = await getFamiliesFromDatabase(user.id);
+      setTrees(families);
+    } catch (error) {
+      console.error('Error loading families:', error);
+      toast({
+        title: "خطأ في التحميل",
+        description: "حدث خطأ أثناء تحميل البيانات",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const handleCreateTree = () => {
     // Check if user has reached the tree limit for their plan
-    if (trees.length >= currentPlan.treesLimit) {
+    if (!currentPlan || trees.length >= currentPlan.treesLimit) {
       // Show upgrade modal instead of navigating directly to payment
       setShowUpgradeDialog(true);
       toast({
         title: "ترقية مطلوبة",
-        description: `لقد وصلت للحد الأقصى المسموح في باقة ${currentPlan.name}. يرجى الترقية للمتابعة.`,
+        description: currentPlan ? `لقد وصلت للحد الأقصى المسموح في باقة ${currentPlan.name}. يرجى الترقية للمتابعة.` : "يرجى تحديد الباقة المناسبة للمتابعة.",
         variant: "destructive"
       });
       return;
@@ -242,9 +295,7 @@ const Dashboard = () => {
   const confirmDeleteTree = async () => {
     if (treeToDelete && deleteConfirmText.toLowerCase() === "حذف") {
       try {
-        const {
-          error
-        } = await supabase.from('families').delete().eq('id', treeToDelete).eq('creator_id', user?.id);
+        const { error } = await supabase.from('families').delete().eq('id', treeToDelete).eq('creator_id', user?.id);
         if (error) {
           console.error('Error deleting family:', error);
           toast({
@@ -357,7 +408,7 @@ const Dashboard = () => {
           
 
           {/* Creative Upgrade Section */}
-          {currentPlan.type === "free" && <div className="relative">
+          {currentPlan && currentPlan.type === "free" && <div className="relative">
               <Card className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border-0 shadow-2xl">
                 {/* Artistic Background Pattern */}
                 <div className="absolute inset-0">
@@ -536,9 +587,9 @@ const Dashboard = () => {
             <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">الاستخدام الحالي للأشجار</span>
-                <span className="text-sm text-muted-foreground">{trees.length}/{currentPlan.treesLimit}</span>
+                <span className="text-sm text-muted-foreground">{trees.length}/{currentPlan?.treesLimit || 0}</span>
               </div>
-              <Progress value={currentPlan.treesLimit > 0 ? trees.length / currentPlan.treesLimit * 100 : 0} className="h-2" />
+              <Progress value={currentPlan && currentPlan.treesLimit > 0 ? trees.length / currentPlan.treesLimit * 100 : 0} className="h-2" />
             </div>
 
             {/* Plans Grid */}
@@ -563,8 +614,8 @@ const Dashboard = () => {
                           <span>{feature}</span>
                         </li>)}
                     </ul>
-                    <Button className={`w-full mt-auto ${plan.type === currentPlan.type ? 'bg-muted text-muted-foreground cursor-not-allowed' : plan.popular ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' : ''}`} variant={plan.type === currentPlan.type ? 'secondary' : plan.popular ? 'default' : 'outline'} disabled={plan.type === currentPlan.type} onClick={() => {
-                  if (plan.type !== currentPlan.type) {
+                    <Button className={`w-full mt-auto ${currentPlan && plan.type === currentPlan.type ? 'bg-muted text-muted-foreground cursor-not-allowed' : plan.popular ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground' : ''}`} variant={currentPlan && plan.type === currentPlan.type ? 'secondary' : plan.popular ? 'default' : 'outline'} disabled={currentPlan && plan.type === currentPlan.type} onClick={() => {
+                  if (!currentPlan || plan.type !== currentPlan.type) {
                     setShowUpgradeDialog(false);
                     navigate("/payment", {
                       state: {
@@ -577,7 +628,7 @@ const Dashboard = () => {
                     });
                   }
                 }}>
-                      {plan.type === currentPlan.type ? "الباقة الحالية" : <>
+                      {currentPlan && plan.type === currentPlan.type ? "الباقة الحالية" : <>
                           {plan.popular && <Crown className="mr-2 h-4 w-4" />}
                           اختيار هذه الباقة
                         </>}
