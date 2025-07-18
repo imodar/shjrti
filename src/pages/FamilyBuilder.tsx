@@ -297,6 +297,7 @@ const FamilyBuilder = () => {
   });
 
   // Filter members based on search term and three filter states
+  console.log('Filter states:', { showFemaleFamily, showNonBloodHusbands, showNonBloodWives });
   const filteredMembers = familyMembers.filter(member => {
     // First filter by search term (with null checks)
     const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
