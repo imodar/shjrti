@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, TreePine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SharedFooter } from "@/components/SharedFooter";
 import { supabase } from "@/integrations/supabase/client";
@@ -480,15 +480,25 @@ const FamilyTreeView = () => {
                       لا توجد شجرة عائلة بعد
                     </h3>
                     <p className="text-muted-foreground mb-6">
-                      ابدأ ببناء شجرة عائلتك بإضافة أول عضو
+                      لم يتم إنشاء أي عائلة أو إضافة أعضاء بعد. ابدأ ببناء شجرة عائلتك الآن!
                     </p>
-                    <Button
-                      onClick={() => navigate('/family-overview')}
-                      className="gap-2 bg-gradient-to-r from-primary to-accent"
-                    >
-                      <Users className="h-4 w-4" />
-                      إدارة الأعضاء
-                    </Button>
+                    <div className="flex gap-4 justify-center">
+                      <Button
+                        onClick={() => navigate('/family-overview')}
+                        className="gap-2 bg-gradient-to-r from-primary to-accent"
+                      >
+                        <Users className="h-4 w-4" />
+                        إدارة الأعضاء
+                      </Button>
+                      <Button
+                        onClick={() => navigate('/family-builder')}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        <TreePine className="h-4 w-4" />
+                        بناء العائلة
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
