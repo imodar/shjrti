@@ -183,8 +183,18 @@ const PlanSelection = () => {
                   </div>
                   <CardTitle className="text-2xl font-bold text-primary mb-2">{packageName}</CardTitle>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold text-primary">{formatPrice(packagePrice)}</span>
-                    <span className="text-muted-foreground">/سنوياً</span>
+                    {packagePrice === 0 ? (
+                      <div className="text-center">
+                        <span className="text-3xl font-bold text-emerald-600">
+                          {currentLanguage === 'ar' ? 'مجانا للأبد' : 'Free Forever'}
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-4xl font-bold text-primary">{formatPrice(packagePrice)}</span>
+                        <span className="text-muted-foreground">/سنوياً</span>
+                      </>
+                    )}
                   </div>
                 </CardHeader>
                 
