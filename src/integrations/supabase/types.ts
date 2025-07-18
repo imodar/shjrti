@@ -491,9 +491,12 @@ export type Database = {
           created_at: string
           currency: string | null
           description: string | null
+          display_order: number | null
           features: Json | null
           id: string
           is_active: boolean | null
+          max_family_members: number | null
+          max_family_trees: number | null
           name: string
           price: number
           price_sar: number | null
@@ -504,9 +507,12 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          display_order?: number | null
           features?: Json | null
           id?: string
           is_active?: boolean | null
+          max_family_members?: number | null
+          max_family_trees?: number | null
           name: string
           price: number
           price_sar?: number | null
@@ -517,9 +523,12 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          display_order?: number | null
           features?: Json | null
           id?: string
           is_active?: boolean | null
+          max_family_members?: number | null
+          max_family_trees?: number | null
           name?: string
           price?: number
           price_sar?: number | null

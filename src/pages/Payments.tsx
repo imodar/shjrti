@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,29 +15,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { supabase } from "@/integrations/supabase/client";
 export default function Payments() {
   const { toast } = useToast();
-  const [paymentMethods, setPaymentMethods] = useState([
-    // Comment out all payment methods to test the case where user has no payment methods
-    // {
-    //   id: 1,
-    //   type: "visa",
-    //   last4: "4242",
-    //   expiry: "12/26",
-    //   isDefault: true
-    // }, {
-    //   id: 2,
-    //   type: "mastercard",
-    //   last4: "5555",
-    //   expiry: "08/25",
-    //   isDefault: false
-    // }, {
-    //   id: 3,
-    //   type: "paypal",
-    //   email: "user@example.com",
-    //   isDefault: false
-    // }
-  ]);
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [paymentMethods, setPaymentMethods] = useState([]);
   const [currentPlan, setCurrentPlan] = useState("premium");
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -45,38 +28,57 @@ export default function Payments() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
-  const plans = [{
-    id: "free",
-    name: "مجانية",
-    price: "0",
-    period: "شهرياً",
-    features: ["إنشاء شجرة عائلة واحدة", "حتى 50 فرد", "التصدير الأساسي", "دعم المجتمع"],
-    icon: Shield,
-    color: "bg-gray-500"
-  }, {
-    id: "premium",
-    name: "أساسية",
-    price: "29",
-    period: "شهرياً",
-    features: ["أشجار عائلة غير محدودة", "أفراد غير محدودين", "التصدير المتقدم", "رفع الصور والمستندات", "الدعم المباشر"],
-    icon: Star,
-    color: "bg-emerald-500",
-    popular: true
-  }, {
-    id: "enterprise",
-    name: "احترافية",
-    price: "99",
-    period: "شهرياً",
-    features: ["جميع مميزات البريميوم", "التعاون الجماعي", "النسخ الاحتياطي التلقائي", "API للمطورين", "الدعم ذو الأولوية", "تخصيص العلامة التجارية"],
-    icon: Crown,
-    color: "bg-purple-500"
-  }];
+
+  // Load packages from database
+  const loadPackages = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('packages')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+
+      // Transform database data to match UI format
+      const transformedPackages = data.map(pkg => ({
+        id: pkg.id,
+        name: pkg.name,
+        price: pkg.price.toString(),
+        period: "شهرياً",
+        features: pkg.features || [],
+        maxMembers: pkg.max_family_members,
+        maxTrees: pkg.max_family_trees,
+        icon: pkg.name.includes('مجاني') || pkg.name.includes('free') ? Shield :
+              pkg.name.includes('أساسي') || pkg.name.includes('basic') ? Star : Crown,
+        color: pkg.name.includes('مجاني') || pkg.name.includes('free') ? "bg-gray-500" :
+               pkg.name.includes('أساسي') || pkg.name.includes('basic') ? "bg-emerald-500" : "bg-purple-500",
+        popular: pkg.name.includes('أساسي') || pkg.name.includes('basic')
+      }));
+
+      setPackages(transformedPackages);
+    } catch (error) {
+      console.error('Error loading packages:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل الباقات. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPackages();
+  }, []);
   const handleDeletePaymentMethod = (id: number) => {
     setPaymentMethods(paymentMethods.filter(method => method.id !== id));
   };
 
   const getPlanIndex = (planId: string) => {
-    return plans.findIndex(p => p.id === planId);
+    return packages.findIndex(p => p.id === planId);
   };
 
   const handlePlanSelect = (planId: string) => {
@@ -186,8 +188,8 @@ export default function Payments() {
   };
 
   const isDowngrade = selectedPlan ? getPlanIndex(selectedPlan) < getPlanIndex(currentPlan) : false;
-  const selectedPlanData = plans.find(p => p.id === selectedPlan);
-  const currentPlanData = plans.find(p => p.id === currentPlan);
+  const selectedPlanData = packages.find(p => p.id === selectedPlan);
+  const currentPlanData = packages.find(p => p.id === currentPlan);
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
       {/* Animated Background Elements */}
@@ -657,7 +659,26 @@ export default function Payments() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-                  {plans.map((plan, index) => 
+                  {loading ? (
+                    Array(3).fill(0).map((_, index) => (
+                      <Card key={index} className="h-96 animate-pulse">
+                        <CardContent className="p-6">
+                          <div className="h-full flex flex-col justify-between">
+                            <div className="space-y-4">
+                              <div className="h-6 bg-gray-300 rounded"></div>
+                              <div className="h-8 bg-gray-300 rounded"></div>
+                              <div className="space-y-2">
+                                <div className="h-4 bg-gray-200 rounded"></div>
+                                <div className="h-4 bg-gray-200 rounded"></div>
+                                <div className="h-4 bg-gray-200 rounded"></div>
+                              </div>
+                            </div>
+                            <div className="h-10 bg-gray-300 rounded"></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : packages.map((plan, index) =>
                     <Card 
                       key={plan.id} 
                       className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:scale-105 flex flex-col h-full transform hover:-translate-y-2 ${

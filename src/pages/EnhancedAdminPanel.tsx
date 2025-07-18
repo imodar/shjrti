@@ -418,7 +418,36 @@ const EnhancedAdminPanel = () => {
 
   // Package Management Functions
   const updatePackage = async () => {
-    if (!editingPackage?.id) return;
+    if (!editingPackage) return;
+    
+    const packageData = {
+      name: editingPackage.name,
+      description: editingPackage.description,
+      price: parseFloat(editingPackage.price || editingPackage.price_usd || '0'),
+      price_usd: parseFloat(editingPackage.price_usd || '0'),
+      price_sar: parseFloat(editingPackage.price_sar || '0'),
+      max_family_members: parseInt(editingPackage.max_family_members || '100'),
+      max_family_trees: parseInt(editingPackage.max_family_trees || '1'),
+      display_order: parseInt(editingPackage.display_order || '0'),
+      is_active: editingPackage.is_active
+    };
+
+    try {
+      let result;
+      if (editingPackage.id) {
+        // Update existing package
+        result = await supabase
+          .from('packages')
+          .update(packageData)
+          .eq('id', editingPackage.id);
+      } else {
+        // Create new package
+        result = await supabase
+          .from('packages')
+          .insert([packageData]);
+      }
+
+      if (result.error) throw result.error;
     
     try {
       const { error } = await supabase
@@ -429,6 +458,9 @@ const EnhancedAdminPanel = () => {
           price: parseFloat(editingPackage.price),
           price_usd: parseFloat(editingPackage.price_usd || editingPackage.price),
           price_sar: parseFloat(editingPackage.price_sar || editingPackage.price),
+          max_family_members: parseInt(editingPackage.max_family_members || '100'),
+          max_family_trees: parseInt(editingPackage.max_family_trees || '1'),
+          display_order: parseInt(editingPackage.display_order || '0'),
           is_active: editingPackage.is_active
         })
         .eq('id', editingPackage.id);
@@ -763,8 +795,22 @@ const EnhancedAdminPanel = () => {
           {/* Enhanced Packages Tab */}
           <TabsContent value="packages">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{t('package_management', 'إدارة الباقات')}</CardTitle>
+                <Button onClick={() => setEditingPackage({
+                  name: '',
+                  description: '',
+                  price: '0',
+                  price_usd: '0',
+                  price_sar: '0',
+                  max_family_members: '100',
+                  max_family_trees: '1',
+                  display_order: '0',
+                  is_active: true
+                })}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  إضافة باقة جديدة
+                </Button>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -773,6 +819,9 @@ const EnhancedAdminPanel = () => {
                       <TableHead>{t('name', 'الاسم')}</TableHead>
                       <TableHead>{t('price_usd', 'السعر بالدولار')}</TableHead>
                       <TableHead>{t('price_sar', 'السعر بالريال')}</TableHead>
+                      <TableHead>عدد الأفراد</TableHead>
+                      <TableHead>عدد الشجرات</TableHead>
+                      <TableHead>ترتيب العرض</TableHead>
                       <TableHead>{t('status', 'الحالة')}</TableHead>
                       <TableHead>{t('actions', 'الإجراءات')}</TableHead>
                     </TableRow>
@@ -783,6 +832,9 @@ const EnhancedAdminPanel = () => {
                         <TableCell>{pkg.name}</TableCell>
                         <TableCell>${pkg.price_usd}</TableCell>
                         <TableCell>{pkg.price_sar} ر.س</TableCell>
+                        <TableCell>{pkg.max_family_members || 'غير محدد'}</TableCell>
+                        <TableCell>{pkg.max_family_trees || 'غير محدد'}</TableCell>
+                        <TableCell>{pkg.display_order || 0}</TableCell>
                         <TableCell>
                           <Badge variant={pkg.is_active ? "default" : "secondary"}>
                             {pkg.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
@@ -1402,6 +1454,32 @@ const EnhancedAdminPanel = () => {
                   type="number"
                   value={editingPackage?.price_sar || ''}
                   onChange={(e) => setEditingPackage(prev => ({...prev, price_sar: e.target.value}))}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>عدد الأفراد المسموح</Label>
+                <Input
+                  type="number"
+                  value={editingPackage?.max_family_members || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, max_family_members: e.target.value}))}
+                />
+              </div>
+              <div>
+                <Label>عدد الشجرات المسموح</Label>
+                <Input
+                  type="number"
+                  value={editingPackage?.max_family_trees || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, max_family_trees: e.target.value}))}
+                />
+              </div>
+              <div>
+                <Label>ترتيب العرض</Label>
+                <Input
+                  type="number"
+                  value={editingPackage?.display_order || ''}
+                  onChange={(e) => setEditingPackage(prev => ({...prev, display_order: e.target.value}))}
                 />
               </div>
             </div>
