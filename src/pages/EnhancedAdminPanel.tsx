@@ -1,1693 +1,386 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/contexts/LanguageContext';
-import Header from '@/components/Header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { 
-  Users, 
-  Package, 
-  FileText, 
-  DollarSign, 
-  ShoppingCart, 
-  Settings, 
-  Home,
-  Edit,
-  Trash2,
-  Plus,
-  RefreshCw,
-  Languages,
-  UserCheck,
-  UserX,
-  Mail,
-  Shield,
-  Globe,
-  Currency
-} from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Tree2, LucideIcon } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const EnhancedAdminPanel = () => {
+interface PackageType {
+  id: string;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  price_usd: number | null;
+  price_sar: number | null;
+  max_family_members: number | null;
+  max_family_trees: number | null;
+  display_order: number | null;
+  is_active: boolean;
+  is_featured: boolean;
+}
+
+interface TranslationType {
+  id: string;
+  key: string;
+  value: string;
+  language_code: string;
+  category: string;
+}
+
+interface RelationshipTerm {
+  key: string;
+  label: string;
+}
+
+export default function EnhancedAdminPanel() {
   const { toast } = useToast();
-  const { t, direction } = useLanguage();
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
-
-  // State for different data types
-  const [users, setUsers] = useState([]);
-  const [packages, setPackages] = useState([]);
-  const [families, setFamilies] = useState([]);
-  const [languages, setLanguages] = useState([]);
-  const [translations, setTranslations] = useState([]);
-  const [admins, setAdmins] = useState([]);
-  const [homepageContent, setHomepageContent] = useState({});
-  const [currencies, setCurrencies] = useState([]);
-  const [stats, setStats] = useState({});
-
-  // Form states
-  const [editingPackage, setEditingPackage] = useState(null);
-  const [editingUser, setEditingUser] = useState(null);
-  const [editingLanguage, setEditingLanguage] = useState(null);
-  const [editingTranslation, setEditingTranslation] = useState(null);
-  const [newLanguage, setNewLanguage] = useState({
-    code: '',
+  const { currentLanguage } = useLanguage();
+  const [packages, setPackages] = useState<PackageType[]>([]);
+  const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
-    direction: 'ltr',
-    currency: 'USD'
+    description: '',
+    price: 0,
+    price_usd: 0,
+    price_sar: 0,
+    max_family_members: 0,
+    max_family_trees: 0,
+    display_order: 0,
+    is_active: true,
+    is_featured: false
   });
-  const [newTranslation, setNewTranslation] = useState({
-    key: '',
-    value: '',
-    language_code: '',
-    category: 'general'
-  });
-  const [newAdmin, setNewAdmin] = useState({
-    email: '',
-    role: 'admin'
-  });
-
-  // Check if user is admin
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    checkAdminStatus();
-  }, []);
-
-  useEffect(() => {
-    if (isAdmin) {
-      loadAllData();
-    }
-  }, [isAdmin]);
-
-  const checkAdminStatus = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      setIsAdmin(!!data);
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-    }
-  };
-
-  const loadAllData = async () => {
-    setLoading(true);
-    try {
-      await Promise.all([
-        loadUsers(),
-        loadPackages(),
-        loadFamilies(),
-        loadLanguages(),
-        loadTranslations(),
-        loadAdmins(),
-        loadHomepageContent(),
-        loadCurrencies(),
-        loadStats()
-      ]);
-    } catch (error) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('failed_load_data', 'فشل في تحميل البيانات'),
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadUsers = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setUsers(data || []);
-  };
+  const [loading, setLoading] = useState(true);
+  const [relationshipTerms, setRelationshipTerms] = useState<RelationshipTerm[]>([
+    { key: 'father', label: 'Father' },
+    { key: 'mother', label: 'Mother' },
+    { key: 'son', label: 'Son' },
+    { key: 'daughter', label: 'Daughter' },
+    { key: 'brother', label: 'Brother' },
+    { key: 'sister', label: 'Sister' },
+    { key: 'grandfather', label: 'Grandfather' },
+    { key: 'grandmother', label: 'Grandmother' },
+    { key: 'uncle', label: 'Uncle' },
+    { key: 'aunt', label: 'Aunt' },
+    { key: 'cousin', label: 'Cousin' },
+    { key: 'husband', label: 'Husband' },
+    { key: 'wife', label: 'Wife' },
+    { key: 'friend', label: 'Friend' },
+    { key: 'other', label: 'Other' },
+  ]);
+  const [translations, setTranslations] = useState<TranslationType[]>([]);
 
   const loadPackages = async () => {
-    const { data: packagesData } = await supabase
-      .from('packages')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (packagesData) {
-      // Load translations for each package
-      const packagesWithTranslations = await Promise.all(
-        packagesData.map(async (pkg) => {
-          const { data: translationsData } = await supabase
-            .from('translations')
-            .select('*')
-            .in('key', [`package_${pkg.id}_name`, `package_${pkg.id}_description`]);
+    try {
+      const { data, error } = await supabase
+        .from('packages')
+        .select('*')
+        .order('display_order');
 
-          const translations = {};
-          if (translationsData) {
-            translationsData.forEach(trans => {
-              const langCode = trans.language_code;
-              if (!translations[langCode]) {
-                translations[langCode] = {};
-              }
-              
-              if (trans.key.endsWith('_name')) {
-                translations[langCode].name = trans.value;
-              } else if (trans.key.endsWith('_description')) {
-                translations[langCode].description = trans.value;
-              }
-            });
-          }
-
-          return { ...pkg, translations };
-        })
-      );
-      
-      setPackages(packagesWithTranslations);
-    } else {
-      setPackages([]);
+      if (error) throw error;
+      setPackages(data || []);
+    } catch (error) {
+      console.error('Error loading packages:', error);
     }
-  };
-
-  const loadFamilies = async () => {
-    const { data } = await supabase
-      .from('families')
-      .select(`
-        *,
-        profiles:creator_id(first_name, last_name, email),
-        packages(name, price_usd, price_sar)
-      `)
-      .order('created_at', { ascending: false });
-    setFamilies(data || []);
-  };
-
-  const loadLanguages = async () => {
-    const { data } = await supabase
-      .from('languages')
-      .select('*')
-      .order('is_default', { ascending: false });
-    setLanguages(data || []);
   };
 
   const loadTranslations = async () => {
-    const { data } = await supabase
-      .from('translations')
-      .select('*')
-      .order('language_code', { ascending: true });
-    setTranslations(data || []);
-  };
-
-  const loadAdmins = async () => {
-    const { data } = await supabase
-      .from('admin_users')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setAdmins(data || []);
-  };
-
-  const loadHomepageContent = async () => {
-    const { data } = await supabase
-      .from('homepage_content')
-      .select('*');
-    
-    const contentObj = {};
-    data?.forEach(item => {
-      if (!contentObj[item.language_code]) {
-        contentObj[item.language_code] = {};
-      }
-      contentObj[item.language_code][item.section] = item.content;
-    });
-    setHomepageContent(contentObj);
-  };
-
-  const loadCurrencies = async () => {
-    const { data } = await supabase
-      .from('currencies')
-      .select('*')
-      .order('code', { ascending: true });
-    setCurrencies(data || []);
-  };
-
-  const loadStats = async () => {
-    const [usersCount, familiesCount, packagesCount] = await Promise.all([
-      supabase.from('profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('families').select('*', { count: 'exact', head: true }),
-      supabase.from('packages').select('*', { count: 'exact', head: true })
-    ]);
-
-    setStats({
-      users: usersCount.count || 0,
-      families: familiesCount.count || 0,
-      packages: packagesCount.count || 0
-    });
-  };
-
-  const toggleUserStatus = async (userId, isDisabled) => {
     try {
-      // Note: This would require a function to enable/disable users
-      // For now, we'll just show a toast
-      toast({
-        title: t('success', 'نجح'),
-        description: isDisabled ? 
-          t('user_enabled', 'تم تفعيل المستخدم') : 
-          t('user_disabled', 'تم إيقاف المستخدم')
-      });
-    } catch (error) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('failed_update_user', 'فشل في تحديث المستخدم'),
-        variant: "destructive"
-      });
-    }
-  };
-
-  const resendConfirmationEmail = async (userEmail) => {
-    try {
-      // This would require server-side function
-      toast({
-        title: t('success', 'نجح'),
-        description: t('confirmation_sent', 'تم إرسال إيميل التأكيد')
-      });
-    } catch (error) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('failed_send_email', 'فشل في إرسال الإيميل'),
-        variant: "destructive"
-      });
-    }
-  };
-
-  const createLanguage = async () => {
-    try {
-      const { error } = await supabase
-        .from('languages')
-        .insert([newLanguage]);
-
-      if (error) throw error;
-
-      toast({
-        title: t('success', 'نجح'),
-        description: t('language_created', 'تم إنشاء اللغة بنجاح')
-      });
-
-      setNewLanguage({ code: '', name: '', direction: 'ltr', currency: 'USD' });
-      loadLanguages();
-    } catch (error) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('failed_create_language', 'فشل في إنشاء اللغة'),
-        variant: "destructive"
-      });
-    }
-  };
-
-  const createTranslation = async () => {
-    try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('translations')
-        .insert([newTranslation]);
+        .select('*');
 
       if (error) throw error;
-
-      toast({
-        title: t('success', 'نجح'),
-        description: t('translation_created', 'تم إنشاء الترجمة بنجاح')
-      });
-
-      setNewTranslation({ key: '', value: '', language_code: '', category: 'general' });
-      loadTranslations();
+      setTranslations(data || []);
     } catch (error) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('failed_create_translation', 'فشل في إنشاء الترجمة'),
-        variant: "destructive"
-      });
+      console.error('Error loading translations:', error);
     }
   };
 
-  const createAdmin = async () => {
+  useEffect(() => {
+    loadPackages();
+    loadTranslations();
+  }, []);
+
+  const handleInputChange = (id: string, field: string, value: string | number | boolean) => {
+    setPackages(prevPackages =>
+      prevPackages.map(pkg =>
+        pkg.id === id ? { ...pkg, [field]: value } : pkg
+      )
+    );
+  };
+
+  const handleNewPackageInputChange = (field: string, value: string | number | boolean) => {
+    setNewPackage({ ...newPackage, [field]: value });
+  };
+
+  const handleAddPackage = async () => {
     try {
       const { error } = await supabase
-        .from('admin_users')
-        .insert([newAdmin]);
+        .from('packages')
+        .insert([newPackage]);
 
       if (error) throw error;
 
       toast({
-        title: t('success', 'نجح'),
-        description: t('admin_created', 'تم إنشاء المدير بنجاح')
+        title: "Success",
+        description: "New package added successfully"
       });
 
-      setNewAdmin({ email: '', role: 'admin' });
-      loadAdmins();
-    } catch (error) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('failed_create_admin', 'فشل في إنشاء المدير'),
-        variant: "destructive"
-      });
-    }
-  };
-
-  const updateTranslation = async () => {
-    if (!editingTranslation?.id) return;
-    
-    try {
-      const { error } = await supabase
-        .from('translations')
-        .update({
-          key: editingTranslation.key,
-          value: editingTranslation.value,
-          category: editingTranslation.category
-        })
-        .eq('id', editingTranslation.id);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('translation_updated', 'تم تحديث الترجمة')
-      });
-      
-      setEditingTranslation(null);
-      loadTranslations();
-    } catch (error) {
-      console.error('Error updating translation:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('translation_update_failed', 'فشل في تحديث الترجمة'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // User Management Functions
-  const updateUser = async () => {
-    if (!editingUser?.id) return;
-    
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          email: editingUser.email,
-          first_name: editingUser.first_name,
-          last_name: editingUser.last_name,
-          phone: editingUser.phone
-        })
-        .eq('id', editingUser.id);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('user_updated', 'تم تحديث المستخدم')
-      });
-      
-      setEditingUser(null);
-      loadUsers();
-    } catch (error) {
-      console.error('Error updating user:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('user_update_failed', 'فشل في تحديث المستخدم'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const deleteUser = async (userId) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('user_deleted', 'تم حذف المستخدم')
-      });
-      
-      loadUsers();
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('user_delete_failed', 'فشل في حذف المستخدم'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // Package Management Functions
-  const updatePackage = async () => {
-    if (!editingPackage) return;
-    
-    const packageData = {
-      price: parseFloat(editingPackage.price || editingPackage.price_usd || '0'),
-      price_usd: parseFloat(editingPackage.price_usd || '0'),
-      price_sar: parseFloat(editingPackage.price_sar || '0'),
-      max_family_members: parseInt(editingPackage.max_family_members || '100'),
-      max_family_trees: parseInt(editingPackage.max_family_trees || '1'),
-      display_order: parseInt(editingPackage.display_order || '0'),
-      is_active: editingPackage.is_active,
-      is_featured: editingPackage.is_featured
-    };
-
-    try {
-      let result;
-      if (editingPackage.id) {
-        // Update existing package
-        result = await supabase
-          .from('packages')
-          .update(packageData)
-          .eq('id', editingPackage.id);
-      } else {
-        // Create new package
-        result = await supabase
-          .from('packages')
-          .insert([packageData]);
-      }
-
-      if (result.error) throw result.error;
-
-      // Save translations if they exist
-      if (editingPackage.translations) {
-        const packageId = editingPackage.id || result.data?.[0]?.id;
-        
-        for (const [langCode, translation] of Object.entries(editingPackage.translations)) {
-          const typedTranslation = translation as { name?: string; description?: string };
-          
-          // Save name translation
-          if (typedTranslation.name) {
-            await supabase
-              .from('translations')
-              .upsert({
-                key: `package_${packageId}_name`,
-                language_code: langCode,
-                value: typedTranslation.name,
-                category: 'packages'
-              }, {
-                onConflict: 'key,language_code'
-              });
-          }
-          
-          // Save description translation
-          if (typedTranslation.description) {
-            await supabase
-              .from('translations')
-              .upsert({
-                key: `package_${packageId}_description`,
-                language_code: langCode,
-                value: typedTranslation.description,
-                category: 'packages'
-              }, {
-                onConflict: 'key,language_code'
-              });
-          }
-        }
-      }
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: editingPackage.id ? t('package_updated', 'تم تحديث الباقة') : t('package_created', 'تم إنشاء الباقة')
-      });
-      
-      setEditingPackage(null);
       loadPackages();
+      setNewPackage({
+        name: '',
+        description: '',
+        price: 0,
+        price_usd: 0,
+        price_sar: 0,
+        max_family_members: 0,
+        max_family_trees: 0,
+        display_order: 0,
+        is_active: true,
+        is_featured: false
+      });
     } catch (error) {
-      console.error('Error saving package:', error);
+      console.error('Error adding package:', error);
       toast({
-        title: t('error', 'خطأ'),
-        description: editingPackage.id ? t('package_update_failed', 'فشل في تحديث الباقة') : t('package_create_failed', 'فشل في إنشاء الباقة'),
-        variant: 'destructive'
+        title: "Error",
+        description: "Failed to add package",
+        variant: "destructive"
       });
     }
   };
 
-  const deletePackage = async (packageId) => {
+  const handleDeletePackage = async (id: string) => {
     try {
       const { error } = await supabase
         .from('packages')
         .delete()
-        .eq('id', packageId);
-      
+        .eq('id', id);
+
       if (error) throw error;
-      
+
       toast({
-        title: t('success', 'نجح'),
-        description: t('package_deleted', 'تم حذف الباقة')
+        title: "Success",
+        description: "Package deleted successfully"
       });
-      
+
       loadPackages();
     } catch (error) {
       console.error('Error deleting package:', error);
       toast({
-        title: t('error', 'خطأ'),
-        description: t('package_delete_failed', 'فشل في حذف الباقة'),
-        variant: 'destructive'
+        title: "Error",
+        description: "Failed to delete package",
+        variant: "destructive"
       });
     }
   };
 
-  // Language Management Functions
-  const updateLanguage = async () => {
-    if (!editingLanguage?.id) return;
-    
+  const handleBulkUpdate = async () => {
     try {
-      const { error } = await supabase
-        .from('languages')
-        .update({
-          name: editingLanguage.name,
-          code: editingLanguage.code,
-          direction: editingLanguage.direction,
-          currency: editingLanguage.currency,
-          is_active: editingLanguage.is_active
-        })
-        .eq('id', editingLanguage.id);
-      
-      if (error) throw error;
-      
+      const packageData = packages.map(pkg => ({
+        id: pkg.id,
+        name: pkg.name || 'Package', // Add required name field
+        price: pkg.price, // Add required price field
+        price_usd: pkg.price_usd || 0,
+        price_sar: pkg.price_sar || 0,
+        max_family_members: pkg.max_family_members || 0,
+        max_family_trees: pkg.max_family_trees || 0,
+        display_order: pkg.display_order || 0,
+        is_active: pkg.is_active,
+        is_featured: pkg.is_featured
+      }));
+
+      for (const pkg of packageData) {
+        const { error } = await supabase
+          .from('packages')
+          .update(pkg)
+          .eq('id', pkg.id);
+
+        if (error) throw error;
+      }
+
       toast({
-        title: t('success', 'نجح'),
-        description: t('language_updated', 'تم تحديث اللغة')
+        title: "Success",
+        description: "All packages updated successfully"
       });
-      
-      setEditingLanguage(null);
-      loadLanguages();
     } catch (error) {
-      console.error('Error updating language:', error);
+      console.error('Error updating packages:', error);
       toast({
-        title: t('error', 'خطأ'),
-        description: t('language_update_failed', 'فشل في تحديث اللغة'),
-        variant: 'destructive'
+        title: "Error",
+        description: "Failed to update packages",
+        variant: "destructive"
       });
     }
   };
-
-  const deleteLanguage = async (languageId) => {
-    try {
-      const { error } = await supabase
-        .from('languages')
-        .delete()
-        .eq('id', languageId);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('language_deleted', 'تم حذف اللغة')
-      });
-      
-      loadLanguages();
-    } catch (error) {
-      console.error('Error deleting language:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('language_delete_failed', 'فشل في حذف اللغة'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // Admin Management Functions
-  const deleteAdmin = async (adminId) => {
-    try {
-      const { error } = await supabase
-        .from('admin_users')
-        .delete()
-        .eq('id', adminId);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('admin_deleted', 'تم حذف المدير')
-      });
-      
-      loadAdmins();
-    } catch (error) {
-      console.error('Error deleting admin:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('admin_delete_failed', 'فشل في حذف المدير'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // Family Management Functions
-  const deleteFamily = async (familyId) => {
-    try {
-      const { error } = await supabase
-        .from('families')
-        .delete()
-        .eq('id', familyId);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('family_deleted', 'تم حذف العائلة')
-      });
-      
-      loadFamilies();
-    } catch (error) {
-      console.error('Error deleting family:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('family_delete_failed', 'فشل في حذف العائلة'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const deleteTranslation = async (translationId) => {
-    try {
-      const { error } = await supabase
-        .from('translations')
-        .delete()
-        .eq('id', translationId);
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('success', 'نجح'),
-        description: t('translation_deleted', 'تم حذف الترجمة')
-      });
-      
-      loadTranslations();
-    } catch (error) {
-      console.error('Error deleting translation:', error);
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('translation_delete_failed', 'فشل في حذف الترجمة'),
-        variant: 'destructive'
-      });
-    }
-  };
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
-          <Card className="w-96">
-            <CardHeader>
-              <CardTitle>{t('access_denied', 'الوصول مرفوض')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>{t('no_admin_access', 'ليس لديك صلاحية الوصول لهذه الصفحة')}</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-background" dir={direction}>
-      <Header />
-      
-      <div className="container mx-auto p-6 pt-24">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">{t('admin_panel', 'لوحة الإدارة')}</h1>
-          <Button onClick={loadAllData} disabled={loading}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            {t('refresh', 'تحديث')}
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
+      <Toaster />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Enhanced Admin Panel</h1>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-8 mb-6">
-            <TabsTrigger value="dashboard">{t('dashboard', 'الرئيسية')}</TabsTrigger>
-            <TabsTrigger value="users">{t('users', 'المستخدمون')}</TabsTrigger>
-            <TabsTrigger value="packages">{t('packages', 'الباقات')}</TabsTrigger>
-            <TabsTrigger value="families">{t('families', 'العائلات')}</TabsTrigger>
-            <TabsTrigger value="languages">{t('languages', 'اللغات')}</TabsTrigger>
-            <TabsTrigger value="translations">{t('translations', 'الترجمات')}</TabsTrigger>
-            <TabsTrigger value="content">{t('content', 'المحتوى')}</TabsTrigger>
-            <TabsTrigger value="admins">{t('admins', 'المديرون')}</TabsTrigger>
+        <Tabs defaultValue="packages" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="packages">
+              <Package className="mr-2 h-4 w-4" />
+              Packages
+            </TabsTrigger>
+            <TabsTrigger value="relationships">
+              <Users className="mr-2 h-4 w-4" />
+              Relationships
+            </TabsTrigger>
+            <TabsTrigger value="translations">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Translations
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Scale className="mr-2 h-4 w-4" />
+              Settings
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('total_users', 'إجمالي المستخدمين')}</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{(stats as any).users || 0}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('families', 'العائلات')}</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{(stats as any).families || 0}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('packages', 'الباقات')}</CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{(stats as any).packages || 0}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('languages', 'اللغات')}</CardTitle>
-                  <Languages className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{languages.length}</div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Enhanced Users Tab */}
-          <TabsContent value="users">
+          <TabsContent value="packages" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('user_management', 'إدارة المستخدمين')}</CardTitle>
+                <CardTitle>Existing Packages</CardTitle>
+                <CardDescription>
+                  Manage existing subscription packages
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('name', 'الاسم')}</TableHead>
-                      <TableHead>{t('email', 'البريد الإلكتروني')}</TableHead>
-                      <TableHead>{t('phone', 'الهاتف')}</TableHead>
-                      <TableHead>{t('status', 'الحالة')}</TableHead>
-                      <TableHead>{t('actions', 'الإجراءات')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>{user.first_name} {user.last_name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.phone}</TableCell>
-                        <TableCell>
-                          <Badge variant={user.user_id ? "default" : "destructive"}>
-                            {user.user_id ? t('active', 'نشط') : t('inactive', 'غير نشط')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="space-x-2">
-                          <Button variant="outline" size="sm" onClick={() => setEditingUser(user)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => toggleUserStatus(user.user_id, !user.user_id)}
-                          >
-                            {user.user_id ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                          </Button>
-                           <Button 
-                             variant="destructive" 
-                             size="sm" 
-                             onClick={() => {
-                               if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
-                                 deleteUser(user.id);
-                               }
-                             }}
-                           >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Enhanced Packages Tab */}
-          <TabsContent value="packages">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{t('package_management', 'إدارة الباقات')}</CardTitle>
-                <Button onClick={() => setEditingPackage({
-                  price: '0',
-                  price_usd: '0',
-                  price_sar: '0',
-                  max_family_members: '100',
-                  max_family_trees: '1',
-                  display_order: '0',
-                  is_active: true,
-                  is_featured: false,
-                  translations: {}
-                })}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  إضافة باقة جديدة
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('name', 'الاسم')}</TableHead>
-                      <TableHead>{t('price_usd', 'السعر بالدولار')}</TableHead>
-                      <TableHead>{t('price_sar', 'السعر بالريال')}</TableHead>
-                      <TableHead>عدد الأفراد</TableHead>
-                      <TableHead>عدد الشجرات</TableHead>
-                      <TableHead>ترتيب العرض</TableHead>
-                      <TableHead>{t('status', 'الحالة')}</TableHead>
-                      <TableHead>{t('actions', 'الإجراءات')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {packages.map((pkg) => {
-                      // Get name from translations or show "No translation available"
-                      const packageName = pkg.translations?.[languages.find(l => l.is_default)?.code]?.name || 
-                                          Object.values(pkg.translations || {})[0]?.name || 
-                                          'لا توجد ترجمة متاحة';
-                      
-                      return (
-                        <TableRow key={pkg.id}>
-                          <TableCell>{packageName}</TableCell>
-                          <TableCell>${pkg.price_usd}</TableCell>
-                          <TableCell>{pkg.price_sar} ر.س</TableCell>
-                          <TableCell>{pkg.max_family_members || 'غير محدد'}</TableCell>
-                          <TableCell>{pkg.max_family_trees || 'غير محدد'}</TableCell>
-                          <TableCell>{pkg.display_order || 0}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Badge variant={pkg.is_active ? "default" : "secondary"}>
-                                {pkg.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
-                              </Badge>
-                              {pkg.is_featured && (
-                                <Badge variant="outline" className="text-yellow-600 border-yellow-600">
-                                  ⭐ مميز
-                                </Badge>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="space-x-2">
-                            <Button variant="outline" size="sm" onClick={() => setEditingPackage(pkg)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                             <Button 
-                               variant="destructive" 
-                               size="sm" 
-                               onClick={() => {
-                                 if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
-                                   deletePackage(pkg.id);
-                                 }
-                               }}
-                             >
-                               <Trash2 className="w-4 h-4" />
-                             </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Languages Management */}
-          <TabsContent value="languages">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('add_language', 'إضافة لغة جديدة')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="lang-code">{t('language_code', 'رمز اللغة')}</Label>
-                      <Input
-                        id="lang-code"
-                        value={newLanguage.code}
-                        onChange={(e) => setNewLanguage({...newLanguage, code: e.target.value})}
-                        placeholder="en, ar, fr..."
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lang-name">{t('language_name', 'اسم اللغة')}</Label>
-                      <Input
-                        id="lang-name"
-                        value={newLanguage.name}
-                        onChange={(e) => setNewLanguage({...newLanguage, name: e.target.value})}
-                        placeholder="English, العربية, Français..."
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="direction">{t('direction', 'الاتجاه')}</Label>
-                      <Select value={newLanguage.direction} onValueChange={(value) => setNewLanguage({...newLanguage, direction: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ltr">LTR</SelectItem>
-                          <SelectItem value="rtl">RTL</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="currency">{t('currency', 'العملة')}</Label>
-                      <Select value={newLanguage.currency} onValueChange={(value) => setNewLanguage({...newLanguage, currency: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="USD">USD</SelectItem>
-                          <SelectItem value="SAR">SAR</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button onClick={createLanguage}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('add_language', 'إضافة لغة')}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('existing_languages', 'اللغات الموجودة')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('code', 'الرمز')}</TableHead>
-                        <TableHead>{t('name', 'الاسم')}</TableHead>
-                        <TableHead>{t('direction', 'الاتجاه')}</TableHead>
-                        <TableHead>{t('currency', 'العملة')}</TableHead>
-                        <TableHead>{t('status', 'الحالة')}</TableHead>
-                        <TableHead>{t('default', 'افتراضي')}</TableHead>
-                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {languages.map((lang) => (
-                        <TableRow key={lang.id}>
-                          <TableCell>{lang.code}</TableCell>
-                          <TableCell>{lang.name}</TableCell>
-                          <TableCell>{lang.direction}</TableCell>
-                          <TableCell>{lang.currency}</TableCell>
-                          <TableCell>
-                            <Badge variant={lang.is_active ? "default" : "secondary"}>
-                              {lang.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={lang.is_default ? "default" : "outline"}>
-                              {lang.is_default ? t('yes', 'نعم') : t('no', 'لا')}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                          <Button variant="outline" size="sm" onClick={() => setEditingLanguage(lang)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                           <Button 
-                             variant="destructive" 
-                             size="sm" 
-                             onClick={() => {
-                               if (confirm('هل أنت متأكد من حذف هذه اللغة؟')) {
-                                 deleteLanguage(lang.id);
-                               }
-                             }}
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Translations Management */}
-          <TabsContent value="translations">
-            <div className="space-y-6">
-              {/* Relationship Terms Quick Management */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>إدارة مصطلحات القرابة</CardTitle>
-                  <CardDescription>إدارة سريعة لمصطلحات القرابة المستخدمة في شجرة العائلة</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Male Relations */}
-                    <div>
-                      <h4 className="font-semibold mb-3 text-blue-700">علاقات الذكور</h4>
-                      <div className="space-y-2">
-                        {[
-                          { key: 'father', icon: '👨‍🦳' },
-                          { key: 'husband', icon: '👨' },
-                          { key: 'brother', icon: '👨‍🦱' },
-                          { key: 'son', icon: '👶' },
-                          { key: 'grandfather', icon: '👴' },
-                          { key: 'uncle', icon: '👨‍🦲' }
-                        ].map((relation) => {
-                          const translation = translations.find(t => t.key === relation.key && t.language_code === 'ar');
-                          return (
-                            <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
-                              <span className="text-2xl">{relation.icon}</span>
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{relation.key}</div>
-                                <div className="text-muted-foreground text-xs">
-                                  {translation?.value || 'لا توجد ترجمة'}
-                                </div>
-                              </div>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  if (translation) {
-                                    setEditingTranslation(translation);
-                                  } else {
-                                    setNewTranslation({
-                                      key: relation.key,
-                                      value: '',
-                                      language_code: 'ar',
-                                      category: 'relationships'
-                                    });
-                                  }
-                                }}
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          );
-                        })}
+                <div className="grid gap-4">
+                  {packages.map((pkg) => (
+                    <div key={pkg.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{pkg.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {pkg.description || 'No description'}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          type="number"
+                          placeholder="Price USD"
+                          value={pkg.price_usd || 0}
+                          onChange={(e) => handleInputChange(pkg.id, 'price_usd', Number(e.target.value))}
+                          className="w-24"
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Price SAR"
+                          value={pkg.price_sar || 0}
+                          onChange={(e) => handleInputChange(pkg.id, 'price_sar', Number(e.target.value))}
+                          className="w-24"
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Max Members"
+                          value={pkg.max_family_members || 0}
+                          onChange={(e) => handleInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
+                          className="w-24"
+                        />
+                        <Switch
+                          checked={pkg.is_active}
+                          onCheckedChange={(checked) => handleInputChange(pkg.id, 'is_active', checked)}
+                        />
+                        <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
+                          Delete
+                        </Button>
                       </div>
                     </div>
-
-                    {/* Female Relations */}
-                    <div>
-                      <h4 className="font-semibold mb-3 text-pink-700">علاقات الإناث</h4>
-                      <div className="space-y-2">
-                        {[
-                          { key: 'mother', icon: '👩‍🦳' },
-                          { key: 'wife', icon: '👩' },
-                          { key: 'sister', icon: '👩‍🦱' },
-                          { key: 'daughter', icon: '👶' },
-                          { key: 'grandmother', icon: '👵' },
-                          { key: 'aunt', icon: '👩‍🦲' }
-                        ].map((relation) => {
-                          const translation = translations.find(t => t.key === relation.key && t.language_code === 'ar');
-                          return (
-                            <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
-                              <span className="text-2xl">{relation.icon}</span>
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{relation.key}</div>
-                                <div className="text-muted-foreground text-xs">
-                                  {translation?.value || 'لا توجد ترجمة'}
-                                </div>
-                              </div>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  if (translation) {
-                                    setEditingTranslation(translation);
-                                  } else {
-                                    setNewTranslation({
-                                      key: relation.key,
-                                      value: '',
-                                      language_code: 'ar',
-                                      category: 'relationships'
-                                    });
-                                  }
-                                }}
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('add_translation', 'إضافة ترجمة جديدة')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="trans-key">{t('key', 'المفتاح')}</Label>
-                      <Input
-                        id="trans-key"
-                        value={newTranslation.key}
-                        onChange={(e) => setNewTranslation({...newTranslation, key: e.target.value})}
-                        placeholder="welcome_message"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="trans-lang">{t('language', 'اللغة')}</Label>
-                      <Select value={newTranslation.language_code} onValueChange={(value) => setNewTranslation({...newTranslation, language_code: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {languages.map((lang) => (
-                            <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="trans-value">{t('value', 'القيمة')}</Label>
-                    <Textarea
-                      id="trans-value"
-                      value={newTranslation.value}
-                      onChange={(e) => setNewTranslation({...newTranslation, value: e.target.value})}
-                      placeholder="مرحباً بكم"
-                    />
-                  </div>
-                  <Button onClick={createTranslation}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('add_translation', 'إضافة ترجمة')}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('existing_translations', 'الترجمات الموجودة')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('key', 'المفتاح')}</TableHead>
-                        <TableHead>{t('language', 'اللغة')}</TableHead>
-                        <TableHead>{t('value', 'القيمة')}</TableHead>
-                        <TableHead>{t('category', 'الفئة')}</TableHead>
-                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {translations.slice(0, 20).map((trans) => (
-                        <TableRow key={trans.id}>
-                          <TableCell className="font-mono text-sm">{trans.key}</TableCell>
-                          <TableCell>{trans.language_code}</TableCell>
-                          <TableCell className="max-w-xs truncate">{trans.value}</TableCell>
-                          <TableCell>{trans.category}</TableCell>
-                          <TableCell>
-                          <Button variant="outline" size="sm" onClick={() => setEditingTranslation(trans)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                           <Button 
-                             variant="destructive" 
-                             size="sm" 
-                             onClick={() => {
-                               if (confirm('هل أنت متأكد من حذف هذه الترجمة؟')) {
-                                 deleteTranslation(trans.id);
-                               }
-                             }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Admin Management */}
-          <TabsContent value="admins">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('add_admin', 'إضافة مدير جديد')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="admin-email">{t('email', 'البريد الإلكتروني')}</Label>
-                      <Input
-                        id="admin-email"
-                        type="email"
-                        value={newAdmin.email}
-                        onChange={(e) => setNewAdmin({...newAdmin, email: e.target.value})}
-                        placeholder="admin@example.com"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="admin-role">{t('role', 'الدور')}</Label>
-                      <Select value={newAdmin.role} onValueChange={(value) => setNewAdmin({...newAdmin, role: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="super_admin">Super Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button onClick={createAdmin}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('add_admin', 'إضافة مدير')}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('existing_admins', 'المديرون الموجودون')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('email', 'البريد الإلكتروني')}</TableHead>
-                        <TableHead>{t('role', 'الدور')}</TableHead>
-                        <TableHead>{t('created_at', 'تاريخ الإنشاء')}</TableHead>
-                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {admins.map((admin) => (
-                        <TableRow key={admin.id}>
-                          <TableCell>{admin.email}</TableCell>
-                          <TableCell>
-                            <Badge>{admin.role}</Badge>
-                          </TableCell>
-                          <TableCell>{new Date(admin.created_at).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                           <Button 
-                             variant="destructive" 
-                             size="sm"
-                             onClick={() => {
-                               if (confirm('هل أنت متأكد من حذف هذا المدير؟')) {
-                                 deleteAdmin(admin.id);
-                               }
-                             }}
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Content Management */}
-          <TabsContent value="content">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('content_management', 'إدارة المحتوى')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  {t('content_coming_soon', 'إدارة المحتوى متعدد اللغات قادمة قريباً')}
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Families Tab */}
-          <TabsContent value="families">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('families_management', 'إدارة العائلات')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('name', 'الاسم')}</TableHead>
-                      <TableHead>{t('creator', 'المنشئ')}</TableHead>
-                      <TableHead>{t('package', 'الباقة')}</TableHead>
-                      <TableHead>{t('status', 'الحالة')}</TableHead>
-                      <TableHead>{t('actions', 'الإجراءات')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {families.map((family) => (
-                      <TableRow key={family.id}>
-                        <TableCell>{family.name}</TableCell>
-                        <TableCell>
-                          {family.profiles ? `${family.profiles.first_name} ${family.profiles.last_name}` : 'N/A'}
-                        </TableCell>
-                        <TableCell>{family.packages?.name || 'N/A'}</TableCell>
-                        <TableCell>
-                          <Badge variant={family.subscription_status === 'active' ? "default" : "secondary"}>
-                            {family.subscription_status || 'inactive'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="space-x-2">
-                          <Button variant="outline" size="sm" onClick={() => {/* Edit family logic */}}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                           <Button 
-                             variant="destructive" 
-                             size="sm" 
-                             onClick={() => {
-                               if (confirm('هل أنت متأكد من حذف هذه العائلة؟')) {
-                                 deleteFamily(family.id);
-                               }
-                             }}
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-
-      {/* Edit Translation Dialog */}
-      <Dialog open={!!editingTranslation} onOpenChange={() => setEditingTranslation(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('edit_translation', 'تعديل الترجمة')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>{t('key', 'المفتاح')}</Label>
-              <Input
-                value={editingTranslation?.key || ''}
-                onChange={(e) => setEditingTranslation(prev => ({...prev, key: e.target.value}))}
-                className="font-mono"
-              />
-            </div>
-            <div>
-              <Label>{t('value', 'القيمة')}</Label>
-              <Textarea
-                value={editingTranslation?.value || ''}
-                onChange={(e) => setEditingTranslation(prev => ({...prev, value: e.target.value}))}
-                rows={4}
-              />
-            </div>
-            <div>
-              <Label>{t('category', 'الفئة')}</Label>
-              <Input
-                value={editingTranslation?.category || ''}
-                onChange={(e) => setEditingTranslation(prev => ({...prev, category: e.target.value}))}
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditingTranslation(null)}>
-                {t('cancel', 'إلغاء')}
-              </Button>
-              <Button onClick={updateTranslation}>
-                {t('save', 'حفظ')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit User Dialog */}
-      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('edit_user', 'تعديل المستخدم')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>{t('email', 'البريد الإلكتروني')}</Label>
-              <Input
-                value={editingUser?.email || ''}
-                onChange={(e) => setEditingUser(prev => ({...prev, email: e.target.value}))}
-              />
-            </div>
-            <div>
-              <Label>{t('first_name', 'الاسم الأول')}</Label>
-              <Input
-                value={editingUser?.first_name || ''}
-                onChange={(e) => setEditingUser(prev => ({...prev, first_name: e.target.value}))}
-              />
-            </div>
-            <div>
-              <Label>{t('last_name', 'الاسم الأخير')}</Label>
-              <Input
-                value={editingUser?.last_name || ''}
-                onChange={(e) => setEditingUser(prev => ({...prev, last_name: e.target.value}))}
-              />
-            </div>
-            <div>
-              <Label>{t('phone', 'الهاتف')}</Label>
-              <Input
-                value={editingUser?.phone || ''}
-                onChange={(e) => setEditingUser(prev => ({...prev, phone: e.target.value}))}
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditingUser(null)}>
-                {t('cancel', 'إلغاء')}
-              </Button>
-              <Button onClick={updateUser}>
-                {t('save', 'حفظ')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Package Dialog */}
-      <Dialog open={!!editingPackage} onOpenChange={() => setEditingPackage(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingPackage?.id ? t('edit_package', 'تعديل الباقة') : 'إضافة باقة جديدة'}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6">
-            {/* Multi-language Names and Descriptions */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium">{t('multilingual_content', 'المحتوى متعدد اللغات')}</h4>
-              
-              {languages.filter(lang => lang.is_active).map((language) => (
-                <div key={language.code} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4" />
-                    <span className="font-medium">{language.name}</span>
-                    <Badge variant="outline">{language.code}</Badge>
-                  </div>
-                  
-                  <div>
-                    <Label>{t('name', 'الاسم')} ({language.name})</Label>
-                    <Input
-                      value={editingPackage?.translations?.[language.code]?.name || ''}
-                      onChange={(e) => setEditingPackage(prev => ({
-                        ...prev,
-                        translations: {
-                          ...prev?.translations,
-                          [language.code]: {
-                            ...prev?.translations?.[language.code],
-                            name: e.target.value
-                          }
-                        }
-                      }))}
-                      placeholder={`${t('enter_name', 'أدخل الاسم')} ${language.name}`}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>{t('description', 'الوصف')} ({language.name})</Label>
-                    <Textarea
-                      value={editingPackage?.translations?.[language.code]?.description || ''}
-                      onChange={(e) => setEditingPackage(prev => ({
-                        ...prev,
-                        translations: {
-                          ...prev?.translations,
-                          [language.code]: {
-                            ...prev?.translations?.[language.code],
-                            description: e.target.value
-                          }
-                        }
-                      }))}
-                      placeholder={`${t('enter_description', 'أدخل الوصف')} ${language.name}`}
-                      rows={3}
-                    />
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>{t('price_usd', 'السعر بالدولار')}</Label>
-                <Input
-                  type="number"
-                  value={editingPackage?.price_usd || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, price_usd: e.target.value}))}
-                />
-              </div>
-              <div>
-                <Label>{t('price_sar', 'السعر بالريال')}</Label>
-                <Input
-                  type="number"
-                  value={editingPackage?.price_sar || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, price_sar: e.target.value}))}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label>عدد الأفراد المسموح</Label>
-                <Input
-                  type="number"
-                  value={editingPackage?.max_family_members || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, max_family_members: e.target.value}))}
-                />
-              </div>
-              <div>
-                <Label>عدد الشجرات المسموح</Label>
-                <Input
-                  type="number"
-                  value={editingPackage?.max_family_trees || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, max_family_trees: e.target.value}))}
-                />
-              </div>
-              <div>
-                <Label>ترتيب العرض</Label>
-                <Input
-                  type="number"
-                  value={editingPackage?.display_order || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, display_order: e.target.value}))}
-                />
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={editingPackage?.is_active || false}
-                  onCheckedChange={(checked) => setEditingPackage(prev => ({...prev, is_active: checked}))}
-                />
-                <Label>{t('active', 'نشط')}</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={editingPackage?.is_featured || false}
-                  onCheckedChange={(checked) => setEditingPackage(prev => ({...prev, is_featured: checked}))}
-                />
-                <Label>مميز ⭐</Label>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditingPackage(null)}>
-                {t('cancel', 'إلغاء')}
-              </Button>
-              <Button onClick={updatePackage}>
-                {t('save', 'حفظ')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+                <Button className="mt-4" onClick={handleBulkUpdate}>
+                  Update All
+                </Button>
+              </CardContent>
+            </Card>
 
-      {/* Edit Language Dialog */}
-      <Dialog open={!!editingLanguage} onOpenChange={() => setEditingLanguage(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('edit_language', 'تعديل اللغة')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>{t('language_code', 'رمز اللغة')}</Label>
-              <Input
-                value={editingLanguage?.code || ''}
-                onChange={(e) => setEditingLanguage(prev => ({...prev, code: e.target.value}))}
-              />
-            </div>
-            <div>
-              <Label>{t('language_name', 'اسم اللغة')}</Label>
-              <Input
-                value={editingLanguage?.name || ''}
-                onChange={(e) => setEditingLanguage(prev => ({...prev, name: e.target.value}))}
-              />
-            </div>
-            <div>
-              <Label>{t('direction', 'الاتجاه')}</Label>
-              <Select
-                value={editingLanguage?.direction || 'ltr'}
-                onValueChange={(value) => setEditingLanguage(prev => ({...prev, direction: value}))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ltr">LTR</SelectItem>
-                  <SelectItem value="rtl">RTL</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t('currency', 'العملة')}</Label>
-              <Select
-                value={editingLanguage?.currency || 'USD'}
-                onValueChange={(value) => setEditingLanguage(prev => ({...prev, currency: value}))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="SAR">SAR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={editingLanguage?.is_active || false}
-                onCheckedChange={(checked) => setEditingLanguage(prev => ({...prev, is_active: checked}))}
-              />
-              <Label>{t('active', 'نشط')}</Label>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditingLanguage(null)}>
-                {t('cancel', 'إلغاء')}
-              </Button>
-              <Button onClick={updateLanguage}>
-                {t('save', 'حفظ')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+            <Card>
+              <CardHeader>
+                <CardTitle>Add New Package</CardTitle>
+                <CardDescription>Add a new subscription package</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  <Input
+                    type="text"
+                    placeholder="Package Name"
+                    value={newPackage.name || ''}
+                    onChange={(e) => handleNewPackageInputChange('name', e.target.value)}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Description"
+                    value={newPackage.description || ''}
+                    onChange={(e) => handleNewPackageInputChange('description', e.target.value)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price USD"
+                    value={newPackage.price_usd || 0}
+                    onChange={(e) => handleNewPackageInputChange('price_usd', Number(e.target.value))}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price SAR"
+                    value={newPackage.price_sar || 0}
+                    onChange={(e) => handleNewPackageInputChange('price_sar', Number(e.target.value))}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Max Family Members"
+                    value={newPackage.max_family_members || 0}
+                    onChange={(e) => handleNewPackageInputChange('max_family_members', Number(e.target.value))}
+                  />
+                  <Button onClick={handleAddPackage}>Add Package</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        
+        <TabsContent value="relationships" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Family Relationship Terms</CardTitle>
+              <CardDescription>
+                Manage relationship terms in different languages
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {relationshipTerms.map((term) => {
+                  const translation = translations.find(t => 
+                    t.key === `relationship.${term.key}` && 
+                    t.language_code === currentLanguage
+                  );
+                  
+                  return (
+                    <div key={term.key} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{term.key}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {translation?.value || 'No translation available'}
+                        </p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </div>
     </div>
   );
-};
-
-export default EnhancedAdminPanel;
+}

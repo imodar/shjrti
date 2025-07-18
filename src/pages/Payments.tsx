@@ -17,9 +17,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+
 export default function Payments() {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { currentLanguage, formatPrice } = useLanguage();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -44,22 +47,27 @@ export default function Payments() {
 
       if (error) throw error;
 
-      // Transform database data to match UI format
-      const transformedPackages = data.map(pkg => ({
-        id: pkg.id,
-        name: pkg.name,
-        description: pkg.description,
-        price: pkg.price === 0 ? "مجاني للأبد" : (pkg.price * 12).toString(),
-        period: pkg.price === 0 ? "" : "سنوياً",
-        features: pkg.features || [],
-        maxMembers: pkg.max_family_members,
-        maxTrees: pkg.max_family_trees,
-        icon: pkg.name.includes('مجاني') || pkg.name.includes('free') ? Shield :
-              pkg.name.includes('أساسي') || pkg.name.includes('basic') ? Star : Crown,
-        color: pkg.name.includes('مجاني') || pkg.name.includes('free') ? "bg-gray-500" :
-               pkg.name.includes('أساسي') || pkg.name.includes('basic') ? "bg-emerald-500" : "bg-purple-500",
-        popular: pkg.is_featured || false
-      }));
+      // Transform database data to match UI format with language-based pricing
+      const transformedPackages = data.map(pkg => {
+        // Select price based on current language
+        const price = currentLanguage === 'ar' ? (pkg.price_sar || 0) : (pkg.price_usd || 0);
+        
+        return {
+          id: pkg.id,
+          name: pkg.name,
+          description: pkg.description,
+          price: price === 0 ? "مجاني للأبد" : (price * 12).toString(),
+          period: price === 0 ? "" : "سنوياً",
+          features: pkg.features || [],
+          maxMembers: pkg.max_family_members,
+          maxTrees: pkg.max_family_trees,
+          icon: pkg.name.includes('مجاني') || pkg.name.includes('free') ? Shield :
+                pkg.name.includes('أساسي') || pkg.name.includes('basic') ? Star : Crown,
+          color: pkg.name.includes('مجاني') || pkg.name.includes('free') ? "bg-gray-500" :
+                 pkg.name.includes('أساسي') || pkg.name.includes('basic') ? "bg-emerald-500" : "bg-purple-500",
+          popular: pkg.is_featured || false
+        };
+      });
 
       setPackages(transformedPackages);
     } catch (error) {
@@ -108,7 +116,8 @@ export default function Payments() {
   useEffect(() => {
     loadPackages();
     loadUserSubscription();
-  }, [user]);
+  }, [user, currentLanguage]); // Add currentLanguage to dependencies
+
   const handleDeletePaymentMethod = (id: number) => {
     setPaymentMethods(paymentMethods.filter(method => method.id !== id));
   };
@@ -870,12 +879,12 @@ export default function Payments() {
                           ))}
                         </ul>
                         
-                        {/* Enhanced button */}
+                        {/* Enhanced button with current plan styling */}
                         <Button 
                           onClick={() => handlePlanSelect(plan.id)}
                           className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 transform group-hover:scale-105 ${
                             currentPlan === plan.id 
-                              ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed text-white shadow-lg' 
+                              ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg cursor-not-allowed' 
                               : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl hover:shadow-2xl'
                           }`} 
                           disabled={currentPlan === plan.id}
@@ -1130,7 +1139,7 @@ export default function Payments() {
               <Button 
                 variant="outline" 
                 onClick={() => setShowPaymentModal(false)}
-                className="flex-1 h-12"
+                className="flex-1 h-12 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300"
               >
                 إلغاء
               </Button>
