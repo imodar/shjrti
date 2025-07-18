@@ -115,6 +115,21 @@ const FamilyTreeView = () => {
       relation: "grandson"
     },
     {
+      id: "laith-3",
+      name: "ليث",
+      fatherId: "mudar-2",
+      motherId: null,
+      spouseId: null,
+      isFounder: false,
+      gender: "male",
+      birthDate: "2022-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "ابن مضر",
+      image: null,
+      relation: "grandson"
+    },
+    {
       id: "amir-3",
       name: "أمير بن مضر",
       fatherId: "mudar-2",
@@ -578,36 +593,50 @@ const FamilyTreeView = () => {
                     </div>
                   </div>
 
-                  {/* الجيل الثالث */}
-                  <div className="flex justify-center gap-64 pt-8">
-                    {/* أمير بن مضر - ابن مضر */}
-                    <div className="text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
-                        <Avatar className="h-12 w-12 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                            أم
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold text-sm">أمير بن مضر</h3>
-                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                        <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
-                      </Card>
-                    </div>
+                   {/* الجيل الثالث */}
+                   <div className="flex justify-center gap-32 pt-8">
+                     {/* ليث - ابن مضر */}
+                     <div className="text-center">
+                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
+                         <Avatar className="h-12 w-12 mx-auto mb-2">
+                           <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                             لي
+                           </AvatarFallback>
+                         </Avatar>
+                         <h3 className="font-semibold text-sm">ليث</h3>
+                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                         <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
+                       </Card>
+                     </div>
 
-                    {/* مجد - ابن زينة */}
-                    <div className="text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[120px]">
-                        <Avatar className="h-12 w-12 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                            مج
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold text-sm">مجد</h3>
-                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                        <p className="text-xs text-muted-foreground mt-1">ابن زينة</p>
-                      </Card>
-                    </div>
-                  </div>
+                     {/* أمير بن مضر - ابن مضر */}
+                     <div className="text-center">
+                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
+                         <Avatar className="h-12 w-12 mx-auto mb-2">
+                           <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                             أم
+                           </AvatarFallback>
+                         </Avatar>
+                         <h3 className="font-semibold text-sm">أمير بن مضر</h3>
+                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                         <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
+                       </Card>
+                     </div>
+
+                     {/* مجد - ابن زينة */}
+                     <div className="text-center">
+                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[120px]">
+                         <Avatar className="h-12 w-12 mx-auto mb-2">
+                           <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                             مج
+                           </AvatarFallback>
+                         </Avatar>
+                         <h3 className="font-semibold text-sm">مجد</h3>
+                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                         <p className="text-xs text-muted-foreground mt-1">ابن زينة</p>
+                       </Card>
+                     </div>
+                   </div>
 
                 </div>
               </div>
