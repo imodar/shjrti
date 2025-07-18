@@ -280,6 +280,8 @@ const FamilyBuilder = () => {
     deathDate: Date | null;
   }>>([]);
   const [showNonBloodMembers, setShowNonBloodMembers] = useState(false);
+  const [showNonBloodWives, setShowNonBloodWives] = useState(false);
+  const [showNonBloodHusbands, setShowNonBloodHusbands] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -301,17 +303,31 @@ const FamilyBuilder = () => {
     
     if (!matchesSearch) return false;
     
-    // Debug specific user
-    if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
-      console.log('Debugging member d90a7add-7277-41f5-84e7-e7729c2078eb:', member);
-    }
+    // Check if member is a non-blood wife (married into the family)
+    const isNonBloodWife = familyMarriages.some(marriage => 
+      marriage.wife?.id === member.id &&
+      !member.fatherId && !member.motherId && !member.isFounder
+    );
+    
+    // Check if member is a non-blood husband (married into the family)
+    const isNonBloodHusband = familyMarriages.some(marriage => 
+      marriage.husband?.id === member.id &&
+      !member.fatherId && !member.motherId && !member.isFounder
+    );
     
     // Include founders (original family members)
     if (member.isFounder) {
-      if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
-        console.log('Member is founder - INCLUDED');
-      }
       return true;
+    }
+    
+    // Handle non-blood wives filter
+    if (isNonBloodWife) {
+      return showNonBloodWives;
+    }
+    
+    // Handle non-blood husbands filter  
+    if (isNonBloodHusband) {
+      return showNonBloodHusbands;
     }
     
     // For members with parents, check if at least one parent is a blood relative
@@ -319,20 +335,11 @@ const FamilyBuilder = () => {
       const father = member.fatherId ? familyMembers.find(m => m.id === member.fatherId) : null;
       const mother = member.motherId ? familyMembers.find(m => m.id === member.motherId) : null;
       
-      if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
-        console.log('Member has parents - father:', father, 'mother:', mother);
-      }
-      
       // At least one parent must be a founder or have their own parents in the family
       const fatherIsBloodRelative = father && (father.isFounder || father.fatherId || father.motherId);
       const motherIsBloodRelative = mother && (mother.isFounder || mother.fatherId || mother.motherId);
       
-      if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
-        console.log('Father is blood relative:', fatherIsBloodRelative, 'Mother is blood relative:', motherIsBloodRelative);
-        console.log('Decision:', fatherIsBloodRelative || motherIsBloodRelative ? 'INCLUDED' : 'EXCLUDED');
-      }
-      
-      return showNonBloodMembers ? (fatherIsBloodRelative || motherIsBloodRelative) : fatherIsBloodRelative; // Show non-blood members if filter is enabled
+      return showNonBloodMembers ? (fatherIsBloodRelative || motherIsBloodRelative) : fatherIsBloodRelative;
     }
     
     // Include members who are not spouses (exclude only if they are married to someone in this family but have no blood relation)
@@ -341,10 +348,6 @@ const FamilyBuilder = () => {
       (marriage.husband?.id === member.id || marriage.wife?.id === member.id) &&
       !member.fatherId && !member.motherId && !member.isFounder
     );
-    
-    if (member.id === 'd90a7add-7277-41f5-84e7-e7729c2078eb') {
-      console.log('Is spouse only:', isSpouseOnly, 'Decision:', !isSpouseOnly ? 'INCLUDED' : 'EXCLUDED');
-    }
     
     // Include if not a spouse-only member
     return !isSpouseOnly;
@@ -1297,7 +1300,7 @@ const FamilyBuilder = () => {
                   />
                 </div>
                 
-                <div className="flex gap-3 items-center">
+                <div className="flex gap-3 items-center flex-wrap">
                   <Button
                     variant={showNonBloodMembers ? "default" : "outline"}
                     onClick={() => setShowNonBloodMembers(!showNonBloodMembers)}
@@ -1306,7 +1309,24 @@ const FamilyBuilder = () => {
                     {showNonBloodMembers ? "إخفاء غير الأقارب" : "إظهار غير الأقارب"}
                   </Button>
                   
-                  <div className="flex items-center gap-3">
+                  <Button
+                    variant={showNonBloodWives ? "default" : "outline"}
+                    onClick={() => setShowNonBloodWives(!showNonBloodWives)}
+                    className="h-12 rounded-xl px-6"
+                  >
+                    {showNonBloodWives ? "إخفاء الزوجات" : "إظهار الزوجات"}
+                  </Button>
+                  
+                  <Button
+                    variant={showNonBloodHusbands ? "default" : "outline"}
+                    onClick={() => setShowNonBloodHusbands(!showNonBloodHusbands)}
+                    className="h-12 rounded-xl px-6"
+                  >
+                    {showNonBloodHusbands ? "إخفاء الأزواج" : "إظهار الأزواج"}
+                  </Button>
+                </div>
+                   
+                <div className="flex items-center gap-3">
                     {packageData && (
                       <Badge 
                         variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
