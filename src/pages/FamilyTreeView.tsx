@@ -494,11 +494,11 @@ const FamilyTreeView = () => {
                       }}
                     ></div>
                     
-                    {/* خط أفقي للأطفال الثلاثة */}
+                    {/* خط أفقي للأطفال الثلاثة - في منتصف المسافة */}
                     <div 
                       className="absolute h-1 bg-gradient-to-r from-primary to-accent"
                       style={{ 
-                        top: 'calc(100% + 80px)', 
+                        top: 'calc(100% + 40px)', 
                         left: 'calc(50% - 160px)', 
                         width: '320px' 
                       }}
@@ -507,18 +507,18 @@ const FamilyTreeView = () => {
                     {/* خطوط عمودية للأطفال */}
                     {/* مضر */}
                     <div 
-                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 80px)', left: 'calc(50% - 160px)' }}
+                      className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 40px)', left: 'calc(50% - 160px)' }}
                     ></div>
                     {/* زينة */}
                     <div 
-                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 80px)', left: '50%', transform: 'translateX(-50%)' }}
+                      className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 40px)', left: '50%', transform: 'translateX(-50%)' }}
                     ></div>
                     {/* ربى */}
                     <div 
-                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 80px)', left: 'calc(50% + 160px)' }}
+                      className="absolute w-1 h-40 bg-gradient-to-b from-accent to-primary"
+                      style={{ top: 'calc(100% + 40px)', left: 'calc(50% + 160px)' }}
                     ></div>
                   </div>
 
