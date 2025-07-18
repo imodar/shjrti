@@ -15,95 +15,138 @@ const FamilyTreeView = () => {
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Set to false for demo data
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Fetch family data
+  // Demo family data based on user's request
+  const demoFamilyMembers = [
+    // الجيل الأول - أمير ورانية
+    {
+      id: "amir-1",
+      name: "أمير",
+      fatherId: null,
+      motherId: null,
+      spouseId: "rania-1",
+      isFounder: true,
+      gender: "male",
+      birthDate: "1970-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "مؤسس العائلة",
+      image: null,
+      relation: "founder"
+    },
+    {
+      id: "rania-1",
+      name: "رانية",
+      fatherId: null,
+      motherId: null,
+      spouseId: "amir-1",
+      isFounder: true,
+      gender: "female",
+      birthDate: "1972-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "مؤسسة العائلة",
+      image: null,
+      relation: "founder"
+    },
+    // الجيل الثاني - مضر وزينة وربى
+    {
+      id: "mudar-2",
+      name: "مضر",
+      fatherId: "amir-1",
+      motherId: "rania-1",
+      spouseId: null,
+      isFounder: false,
+      gender: "male",
+      birthDate: "1995-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "ابن أمير ورانية",
+      image: null,
+      relation: "son"
+    },
+    {
+      id: "zina-2",
+      name: "زينة",
+      fatherId: "amir-1",
+      motherId: "rania-1",
+      spouseId: null,
+      isFounder: false,
+      gender: "female",
+      birthDate: "1997-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "ابنة أمير ورانية",
+      image: null,
+      relation: "daughter"
+    },
+    {
+      id: "ruba-2",
+      name: "ربى",
+      fatherId: "amir-1",
+      motherId: "rania-1",
+      spouseId: null,
+      isFounder: false,
+      gender: "female",
+      birthDate: "1999-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "ابنة أمير ورانية",
+      image: null,
+      relation: "daughter"
+    },
+    // الجيل الثالث - مجد وأمير بن مضر
+    {
+      id: "majd-3",
+      name: "مجد",
+      fatherId: "mudar-2",
+      motherId: null,
+      spouseId: null,
+      isFounder: false,
+      gender: "male",
+      birthDate: "2020-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "ابن مضر",
+      image: null,
+      relation: "grandson"
+    },
+    {
+      id: "amir-3",
+      name: "أمير بن مضر",
+      fatherId: "mudar-2",
+      motherId: null,
+      spouseId: null,
+      isFounder: false,
+      gender: "male",
+      birthDate: "2022-01-01",
+      isAlive: true,
+      deathDate: null,
+      bio: "ابن مضر",
+      image: null,
+      relation: "grandson"
+    }
+  ];
+
+  const demoMarriages = [
+    {
+      id: "marriage-1",
+      familyId: "demo-family",
+      isActive: true,
+      husband: demoFamilyMembers.find(m => m.id === "amir-1"),
+      wife: demoFamilyMembers.find(m => m.id === "rania-1")
+    }
+  ];
+
+  // Initialize with demo data
   useEffect(() => {
-    const fetchFamilyData = async () => {
-      try {
-        setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          navigate('/auth');
-          return;
-        }
-
-        // Fetch family data
-        const { data: familyData, error: familyError } = await supabase
-          .from('families')
-          .select('*')
-          .eq('creator_id', user.id)
-          .single();
-
-        if (familyError && familyError.code !== 'PGRST116') {
-          throw familyError;
-        }
-
-        if (familyData) {
-          // Fetch family members
-          const { data: membersData, error: membersError } = await supabase
-            .from('family_tree_members')
-            .select('*')
-            .eq('family_id', familyData.id)
-            .order('created_at', { ascending: true });
-
-          if (membersError) throw membersError;
-
-          // Transform data
-          const transformedMembers = membersData?.map(member => ({
-            id: member.id,
-            name: member.name,
-            fatherId: member.father_id,
-            motherId: member.mother_id,
-            spouseId: member.spouse_id,
-            isFounder: member.is_founder,
-            gender: member.gender,
-            birthDate: member.birth_date || "",
-            isAlive: member.is_alive,
-            deathDate: member.death_date || null,
-            bio: member.biography || "",
-            image: member.image_url || null,
-            relation: member.is_founder ? "founder" : "member"
-          })) || [];
-
-          setFamilyMembers(transformedMembers);
-
-          // Fetch marriages
-          const { data: marriagesData, error: marriagesError } = await supabase
-            .from('marriages')
-            .select('*')
-            .eq('family_id', familyData.id)
-            .eq('is_active', true);
-
-          if (marriagesError) throw marriagesError;
-
-          const transformedMarriages = marriagesData?.map(marriage => ({
-            id: marriage.id,
-            familyId: marriage.family_id,
-            isActive: marriage.is_active,
-            husband: transformedMembers.find(m => m.id === marriage.husband_id),
-            wife: transformedMembers.find(m => m.id === marriage.wife_id)
-          })) || [];
-
-          setFamilyMarriages(transformedMarriages);
-        }
-
-      } catch (error) {
-        console.error('Error fetching family data:', error);
-        toast({
-          title: "خطأ",
-          description: "حدث خطأ في تحميل بيانات العائلة",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFamilyData();
-  }, [navigate, toast]);
+    // Set demo data directly
+    setFamilyMembers(demoFamilyMembers);
+    setFamilyMarriages(demoMarriages);
+    setIsLoading(false);
+  }, []);
 
   // Generate family tree structure by generations
   const generateFamilyTree = () => {
