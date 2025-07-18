@@ -89,6 +89,83 @@ const FamilyCreator = () => {
     }
   };
 
+  const checkFamilyCreationLimits = async (userId: string): Promise<boolean> => {
+    try {
+      // Get user's profile to find their current package
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (profileError || !profile) {
+        toast({
+          title: "خطأ",
+          description: "لم يتم العثور على معلومات المستخدم",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      // Get all families the user has created
+      const { data: families, error: familiesError } = await supabase
+        .from('families')
+        .select('id')
+        .eq('creator_id', userId);
+
+      if (familiesError) {
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ في التحقق من حدود الباقة",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      const currentFamilyCount = families?.length || 0;
+
+      // Get user's package information by checking their subscription
+      // For now, we'll assume a default package with max_family_trees = 1 if no package is found
+      // You may need to adjust this based on how you track user packages
+      const { data: packages, error: packagesError } = await supabase
+        .from('packages')
+        .select('max_family_trees')
+        .eq('is_active', true)
+        .order('price', { ascending: true })
+        .limit(1);
+
+      if (packagesError) {
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ في التحقق من حدود الباقة",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      const maxFamilyTrees = packages?.[0]?.max_family_trees || 1;
+
+      if (currentFamilyCount >= maxFamilyTrees) {
+        toast({
+          title: "تم الوصول للحد الأقصى",
+          description: `لقد وصلت للحد الأقصى من أشجار العائلة (${maxFamilyTrees}). يرجى ترقية باقتك لإنشاء المزيد من الأشجار.`,
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking family creation limits:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ في التحقق من حدود الباقة",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
   const handleCreateFamily = async () => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -100,6 +177,12 @@ const FamilyCreator = () => {
           variant: "destructive"
         });
         return;
+      }
+
+      // Check user's package limits before creating family
+      const canCreateFamily = await checkFamilyCreationLimits(user.id);
+      if (!canCreateFamily) {
+        return; // Error message is shown in the function
       }
 
       // إنشاء العائلة
