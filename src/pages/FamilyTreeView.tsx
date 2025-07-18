@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -295,38 +295,49 @@ const FamilyTreeView = () => {
     return result;
   };
 
-  const familyTree = generateFamilyTree();
+  // Generate family tree structure using useMemo to prevent re-calculation on every render
+  const familyTree = React.useMemo(() => {
+    return generateFamilyTree();
+  }, [familyMembers, familyMarriages]);
+
   console.log('Family tree for rendering:', familyTree);
   console.log('Family tree length:', familyTree.length);
 
   // تحديث الخطوط بعد تحميل المربعات
   useEffect(() => {
-    const newLines: typeof lines = [];
+    if (familyTree.length === 0) return;
+    
+    // Wait for next tick to ensure DOM is updated
+    const timeoutId = setTimeout(() => {
+      const newLines: typeof lines = [];
 
-    familyTree.forEach(([generation, members]) => {
-      members.forEach((member: any) => {
-        const children = getChildrenOf(member.id);
-        const fromEl = memberRefs.current[member.id];
-        if (!fromEl) return;
+      familyTree.forEach(([generation, members]) => {
+        members.forEach((member: any) => {
+          const children = getChildrenOf(member.id);
+          const fromEl = memberRefs.current[member.id];
+          if (!fromEl) return;
 
-        const fromRect = fromEl.getBoundingClientRect();
-        const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
-        const fromY = fromRect.bottom + window.scrollY;
+          const fromRect = fromEl.getBoundingClientRect();
+          const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
+          const fromY = fromRect.bottom + window.scrollY;
 
-        children.forEach((child) => {
-          const toEl = memberRefs.current[child.id];
-          if (!toEl) return;
+          children.forEach((child) => {
+            const toEl = memberRefs.current[child.id];
+            if (!toEl) return;
 
-          const toRect = toEl.getBoundingClientRect();
-          const toX = toRect.left + toRect.width / 2 + window.scrollX;
-          const toY = toRect.top + window.scrollY;
+            const toRect = toEl.getBoundingClientRect();
+            const toX = toRect.left + toRect.width / 2 + window.scrollX;
+            const toY = toRect.top + window.scrollY;
 
-          newLines.push({ x1: fromX, y1: fromY, x2: toX, y2: toY });
+            newLines.push({ x1: fromX, y1: fromY, x2: toX, y2: toY });
+          });
         });
       });
-    });
 
-    setLines(newLines);
+      setLines(newLines);
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [familyTree, familyMembers]);
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
