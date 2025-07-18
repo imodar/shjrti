@@ -35,20 +35,29 @@ const FamilyTreeView = () => {
         return;
       }
 
-      // First get user's family IDs
-      const { data: userFamilies, error: familiesError } = await supabase
+      // First get families where user is creator
+      const { data: createdFamilies, error: createdFamiliesError } = await supabase
         .from('families')
         .select('id')
-        .or(`creator_id.eq.${user.id},id.in.(select family_id from family_members where user_id = '${user.id}')`);
+        .eq('creator_id', user.id);
 
-      if (familiesError) {
-        console.error('Error fetching families:', familiesError);
+      // Then get families where user is a member
+      const { data: memberFamilies, error: memberFamiliesError } = await supabase
+        .from('family_members')
+        .select('family_id')
+        .eq('user_id', user.id);
+
+      if (createdFamiliesError || memberFamiliesError) {
+        console.error('Error fetching families:', createdFamiliesError || memberFamiliesError);
         return;
       }
 
-      const familyIds = userFamilies?.map(f => f.id) || [];
+      // Combine all family IDs
+      const createdFamilyIds = createdFamilies?.map(f => f.id) || [];
+      const memberFamilyIds = memberFamilies?.map(f => f.family_id) || [];
+      const allFamilyIds = [...new Set([...createdFamilyIds, ...memberFamilyIds])];
       
-      if (familyIds.length === 0) {
+      if (allFamilyIds.length === 0) {
         setFamilyMembers([]);
         setFamilyMarriages([]);
         setIsLoading(false);
@@ -64,7 +73,7 @@ const FamilyTreeView = () => {
           mother:family_tree_members!family_tree_members_mother_id_fkey(id, name),
           spouse:family_tree_members!family_tree_members_spouse_id_fkey(id, name)
         `)
-        .in('family_id', familyIds);
+        .in('family_id', allFamilyIds);
 
       if (membersError) {
         console.error('Error fetching family members:', membersError);
@@ -84,11 +93,14 @@ const FamilyTreeView = () => {
           husband:family_tree_members!marriages_husband_id_fkey(id, name),
           wife:family_tree_members!marriages_wife_id_fkey(id, name)
         `)
-        .in('family_id', familyIds);
+        .in('family_id', allFamilyIds);
 
       if (marriagesError) {
         console.error('Error fetching marriages:', marriagesError);
       }
+
+      console.log('Fetched family members:', members);
+      console.log('Fetched marriages:', marriages);
 
       setFamilyMembers(members || []);
       setFamilyMarriages(marriages || []);
