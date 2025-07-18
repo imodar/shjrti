@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,7 +107,7 @@ export default function AdminPanel() {
     display_order: 0,
     is_active: true,
     is_featured: false,
-    features: []
+    features: {}
   });
 
   useEffect(() => {
@@ -281,7 +280,7 @@ export default function AdminPanel() {
         display_order: 0,
         is_active: true,
         is_featured: false,
-        features: []
+        features: {}
       });
     } catch (error) {
       console.error('Error adding package:', error);
@@ -334,7 +333,7 @@ export default function AdminPanel() {
             display_order: pkg.display_order || 0,
             is_active: pkg.is_active,
             is_featured: pkg.is_featured,
-            features: pkg.features || []
+            features: pkg.features || {}
           })
           .eq('id', pkg.id);
 
@@ -410,17 +409,19 @@ export default function AdminPanel() {
     }
   };
 
-  // Multilanguage helper functions
-  const getLocalizedPackageField = (pkg: PackageType, field: string, language: string) => {
-    if (!pkg[field as keyof PackageType]) return '';
+  // Enhanced multilanguage helper functions
+  const getLocalizedPackageField = (pkg: PackageType, field: string, language = selectedLanguage) => {
+    if (!pkg || !pkg[field as keyof PackageType]) return '';
     
     const fieldValue = pkg[field as keyof PackageType];
+    
     if (typeof fieldValue === 'string') {
       return fieldValue;
     }
     
     if (typeof fieldValue === 'object' && fieldValue !== null) {
-      return (fieldValue as any)[language] || (fieldValue as any)['en'] || '';
+      const localizedValue = (fieldValue as any)[language] || (fieldValue as any)['en'] || '';
+      return localizedValue;
     }
     
     return String(fieldValue || '');
@@ -437,7 +438,9 @@ export default function AdminPanel() {
         if (typeof currentFieldValue === 'object' && currentFieldValue !== null) {
           newFieldValue = { ...currentFieldValue, [language]: value };
         } else {
-          newFieldValue = language === 'en' ? value : { en: currentFieldValue || '', [language]: value };
+          // Convert string to multilingual object
+          const currentStringValue = currentFieldValue as string || '';
+          newFieldValue = language === 'en' ? { en: value } : { en: currentStringValue, [language]: value };
         }
         
         return { ...pkg, [field]: newFieldValue };
@@ -445,15 +448,20 @@ export default function AdminPanel() {
     );
   };
 
-  const getLocalizedFeatures = (pkg: PackageType, language: string): string[] => {
+  const getLocalizedFeatures = (pkg: PackageType, language = selectedLanguage): string[] => {
     if (!pkg.features) return [];
     
     if (Array.isArray(pkg.features)) {
-      return pkg.features.map(f => typeof f === 'string' ? f : f.name || '');
+      return pkg.features.map(f => typeof f === 'string' ? f : (f.name || ''));
     }
     
     if (typeof pkg.features === 'object' && pkg.features[language]) {
       return Array.isArray(pkg.features[language]) ? pkg.features[language] : [];
+    }
+    
+    // Fallback to English if selected language not available
+    if (typeof pkg.features === 'object' && pkg.features['en']) {
+      return Array.isArray(pkg.features['en']) ? pkg.features['en'] : [];
     }
     
     return [];
@@ -474,7 +482,21 @@ export default function AdminPanel() {
     );
   };
 
-  const getLocalizedFeaturesForNewPackage = (language: string): string[] => {
+  const handleNewPackageLocalizedChange = (field: string, language: string, value: string) => {
+    const currentFieldValue = newPackage[field as keyof typeof newPackage];
+    let newFieldValue;
+    
+    if (typeof currentFieldValue === 'object' && currentFieldValue !== null) {
+      newFieldValue = { ...currentFieldValue, [language]: value };
+    } else {
+      const currentStringValue = currentFieldValue as string || '';
+      newFieldValue = language === 'en' ? { en: value } : { en: currentStringValue, [language]: value };
+    }
+    
+    setNewPackage({ ...newPackage, [field]: newFieldValue });
+  };
+
+  const getLocalizedFeaturesForNewPackage = (language = selectedLanguage): string[] => {
     if (!newPackage.features) return [];
     
     if (typeof newPackage.features === 'object' && newPackage.features[language]) {
@@ -496,6 +518,11 @@ export default function AdminPanel() {
   const getPackagePrice = (pkg: PackageType) => {
     const price = currentLanguage === 'ar' ? (pkg.price_sar || pkg.price || 0) : (pkg.price_usd || pkg.price || 0);
     return formatPrice(price);
+  };
+
+  const getDisplayName = (pkg: PackageType) => {
+    const localizedName = getLocalizedPackageField(pkg, 'name');
+    return localizedName || 'Unnamed Package';
   };
 
   return (
@@ -536,6 +563,7 @@ export default function AdminPanel() {
             </TabsTrigger>
           </TabsList>
 
+          {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <Card>
@@ -595,6 +623,7 @@ export default function AdminPanel() {
             </div>
           </TabsContent>
 
+          {/* Users Tab */}
           <TabsContent value="users" className="space-y-6">
             <Card>
               <CardHeader>
@@ -626,6 +655,7 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
+          {/* Packages Tab */}
           <TabsContent value="packages" className="space-y-6">
             <Tabs defaultValue="overview" className="space-y-4">
               <TabsList className="grid w-full grid-cols-3">
@@ -659,13 +689,13 @@ export default function AdminPanel() {
                 
                 <Card>
                   <CardContent className="p-6">
-                    <div className="grid gap-6">
+                    <div className="space-y-4">
                       {packages.map((pkg) => (
                         <Card key={pkg.id} className={`border-2 ${pkg.is_featured ? 'border-primary' : 'border-border'}`}>
                           <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <CardTitle className="text-lg">{getLocalizedPackageField(pkg, 'name', 'en') || pkg.name || 'Unnamed Package'}</CardTitle>
+                                <CardTitle className="text-lg">{getDisplayName(pkg)}</CardTitle>
                                 {pkg.is_featured && (
                                   <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
                                     Featured
@@ -762,7 +792,6 @@ export default function AdminPanel() {
                               </div>
                             </div>
 
-                            {/* Package Features Display */}
                             <div className="space-y-2">
                               <Label className="text-sm font-medium">Current Features ({selectedLanguage.toUpperCase()})</Label>
                               <div className="flex flex-wrap gap-2">
@@ -817,7 +846,7 @@ export default function AdminPanel() {
                     {packages.map((pkg) => (
                       <Card key={pkg.id} className="border">
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-base">{getLocalizedPackageField(pkg, 'name', 'en') || pkg.name || 'Unnamed Package'} Features ({selectedLanguage.toUpperCase()})</CardTitle>
+                          <CardTitle className="text-base">{getDisplayName(pkg)} Features ({selectedLanguage.toUpperCase()})</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
@@ -847,6 +876,10 @@ Premium support`}
                         </CardContent>
                       </Card>
                     ))}
+                    <Button className="w-full" onClick={handleBulkUpdatePackages}>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All Features
+                    </Button>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -858,21 +891,37 @@ Premium support`}
                     <CardDescription>Add a new subscription package with all settings</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <Label className="text-sm font-medium">Editing Language:</Label>
+                      <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                        <SelectTrigger className="w-[120px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {languages.map((lang) => (
+                            <SelectItem key={lang.code} value={lang.code}>
+                              {lang.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Package Name</Label>
+                        <Label className="text-sm font-medium">Package Name ({selectedLanguage.toUpperCase()})</Label>
                         <Input
                           placeholder="e.g., Premium Plan"
-                          value={newPackage.name || ''}
-                          onChange={(e) => handleNewPackageInputChange('name', e.target.value)}
+                          value={typeof newPackage.name === 'object' ? (newPackage.name as any)[selectedLanguage] || '' : newPackage.name || ''}
+                          onChange={(e) => handleNewPackageLocalizedChange('name', selectedLanguage, e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Description</Label>
+                        <Label className="text-sm font-medium">Description ({selectedLanguage.toUpperCase()})</Label>
                         <Input
                           placeholder="Brief description of the package"
-                          value={newPackage.description || ''}
-                          onChange={(e) => handleNewPackageInputChange('description', e.target.value)}
+                          value={typeof newPackage.description === 'object' ? (newPackage.description as any)[selectedLanguage] || '' : newPackage.description || ''}
+                          onChange={(e) => handleNewPackageLocalizedChange('description', selectedLanguage, e.target.value)}
                         />
                       </div>
                     </div>
@@ -965,6 +1014,7 @@ Feature 3`}
             </Tabs>
           </TabsContent>
 
+          {/* Families Tab */}
           <TabsContent value="families" className="space-y-6">
             <Card>
               <CardHeader>
@@ -1009,6 +1059,7 @@ Feature 3`}
             </Card>
           </TabsContent>
 
+          {/* Invoices Tab */}
           <TabsContent value="invoices" className="space-y-6">
             <Card>
               <CardHeader>
@@ -1059,6 +1110,7 @@ Feature 3`}
             </Card>
           </TabsContent>
 
+          {/* Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
             <Card>
               <CardHeader>
@@ -1104,7 +1156,6 @@ Feature 3`}
                             placeholder="Tracking Number"
                             value={order.tracking_number || ''}
                             onChange={(e) => {
-                              // Handle tracking number update
                               if (e.target.value !== order.tracking_number) {
                                 updateOrderStatus(order.id, order.status || 'pending', e.target.value);
                               }
@@ -1124,6 +1175,7 @@ Feature 3`}
             </Card>
           </TabsContent>
 
+          {/* Content Tab */}
           <TabsContent value="content" className="space-y-6">
             <Card>
               <CardHeader>
