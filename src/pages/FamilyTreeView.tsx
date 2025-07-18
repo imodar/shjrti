@@ -363,151 +363,162 @@ const FamilyTreeView = () => {
                 className="transition-transform duration-300"
                 style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
               >
-                {familyTree.length > 0 ? (
-                  <div className="space-y-12">
-                    {familyTree.map(([generation, members]) => (
-                      <div key={generation} className="text-center">
-                        {/* Generation Header */}
-                        <div className="mb-8">
-                          <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-primary to-accent text-white">
-                            الجيل {generation}
-                          </Badge>
-                        </div>
+                {(() => {
+                  console.log('Rendering check - familyTree.length:', familyTree.length);
+                  console.log('familyTree content:', familyTree);
+                  
+                  if (familyTree.length > 0) {
+                    console.log('Should show tree structure');
+                    return (
+                      <div className="space-y-12">
+                        {familyTree.map(([generation, members]) => (
+                          <div key={generation} className="text-center">
+                            {/* Generation Header */}
+                            <div className="mb-8">
+                              <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-primary to-accent text-white">
+                                الجيل {generation}
+                              </Badge>
+                            </div>
 
-                        {/* Members in this generation */}
-                        <div className="flex flex-wrap justify-center gap-8 mb-8">
-                          {(() => {
-                            const displayedMembers = new Set();
-                            const memberElements = [];
+                            {/* Members in this generation */}
+                            <div className="flex flex-wrap justify-center gap-8 mb-8">
+                              {(() => {
+                                const displayedMembers = new Set();
+                                const memberElements = [];
 
-                            members.forEach((member: any) => {
-                              // Skip if this member was already displayed as a spouse
-                              if (displayedMembers.has(member.id)) {
-                                return;
-                              }
+                                members.forEach((member: any) => {
+                                  // Skip if this member was already displayed as a spouse
+                                  if (displayedMembers.has(member.id)) {
+                                    return;
+                                  }
 
-                              // Find spouse for this member
-                              const marriage = familyMarriages.find(m => 
-                                m.husband?.id === member.id || m.wife?.id === member.id
-                              );
-                              const spouse = marriage ? 
-                                (marriage.husband?.id === member.id ? marriage.wife : marriage.husband) : null;
+                                  // Find spouse for this member
+                                  const marriage = familyMarriages.find(m => 
+                                    m.husband_id === member.id || m.wife_id === member.id
+                                  );
+                                  const spouse = marriage ? 
+                                    familyMembers.find(m => m.id === (marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id)) : null;
 
-                              // Mark both member and spouse as displayed
-                              displayedMembers.add(member.id);
-                              if (spouse) {
-                                displayedMembers.add(spouse.id);
-                              }
+                                  // Mark both member and spouse as displayed
+                                  displayedMembers.add(member.id);
+                                  if (spouse) {
+                                    displayedMembers.add(spouse.id);
+                                  }
 
-                              memberElements.push(
-                                <div key={member.id} className="flex items-center gap-4">
-                                  {/* Member Card */}
-                                  <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
-                                    <div className="flex items-center gap-3">
-                                      <Avatar className="h-12 w-12">
-                                        <AvatarImage src={member.image} />
-                                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                                          {member.name.slice(0, 2)}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <div className="text-right">
-                                        <h3 className="font-semibold text-foreground">{member.name}</h3>
-                                        <div className="flex gap-2 mt-1">
-                                          {member.isFounder && (
-                                            <Badge variant="secondary" className="text-xs">مؤسس</Badge>
-                                          )}
-                                          <Badge variant="outline" className="text-xs">
-                                            {member.gender === "male" ? "ذكر" : "أنثى"}
-                                          </Badge>
-                                        </div>
-                                        {member.birthDate && (
-                                          <p className="text-xs text-muted-foreground mt-1">
-                                            {new Date(member.birthDate).getFullYear()}
-                                          </p>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </Card>
-
-                                  {/* Marriage Line and Spouse */}
-                                  {spouse && (
-                                    <>
-                                      <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
-                                      
-                                      {/* Spouse Card */}
-                                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                                  memberElements.push(
+                                    <div key={member.id} className="flex items-center gap-4">
+                                      {/* Member Card */}
+                                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
                                         <div className="flex items-center gap-3">
                                           <Avatar className="h-12 w-12">
-                                            <AvatarImage src={spouse.image} />
-                                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                                              {spouse.name.slice(0, 2)}
+                                            <AvatarImage src={member.image_url} />
+                                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                                              {member.name.slice(0, 2)}
                                             </AvatarFallback>
                                           </Avatar>
                                           <div className="text-right">
-                                            <h3 className="font-semibold text-foreground">{spouse.name}</h3>
+                                            <h3 className="font-semibold text-foreground">{member.name}</h3>
                                             <div className="flex gap-2 mt-1">
-                                              {spouse.isFounder && (
+                                              {member.is_founder && (
                                                 <Badge variant="secondary" className="text-xs">مؤسس</Badge>
                                               )}
                                               <Badge variant="outline" className="text-xs">
-                                                {spouse.gender === "male" ? "ذكر" : "أنثى"}
+                                                {member.gender === "male" ? "ذكر" : "أنثى"}
                                               </Badge>
                                             </div>
-                                            {spouse.birthDate && (
+                                            {member.birth_date && (
                                               <p className="text-xs text-muted-foreground mt-1">
-                                                {new Date(spouse.birthDate).getFullYear()}
+                                                {new Date(member.birth_date).getFullYear()}
                                               </p>
                                             )}
                                           </div>
                                         </div>
                                       </Card>
-                                    </>
-                                  )}
-                                </div>
-                              );
-                            });
 
-                            return memberElements;
-                          })()}
-                        </div>
+                                      {/* Marriage Line and Spouse */}
+                                      {spouse && (
+                                        <>
+                                          <div className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent"></div>
+                                          
+                                          {/* Spouse Card */}
+                                          <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 hover:shadow-lg transition-all duration-300 min-w-[200px]">
+                                            <div className="flex items-center gap-3">
+                                              <Avatar className="h-12 w-12">
+                                                <AvatarImage src={spouse.image_url} />
+                                                <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                                                  {spouse.name.slice(0, 2)}
+                                                </AvatarFallback>
+                                              </Avatar>
+                                              <div className="text-right">
+                                                <h3 className="font-semibold text-foreground">{spouse.name}</h3>
+                                                <div className="flex gap-2 mt-1">
+                                                  {spouse.is_founder && (
+                                                    <Badge variant="secondary" className="text-xs">مؤسس</Badge>
+                                                  )}
+                                                  <Badge variant="outline" className="text-xs">
+                                                    {spouse.gender === "male" ? "ذكر" : "أنثى"}
+                                                  </Badge>
+                                                </div>
+                                                {spouse.birth_date && (
+                                                  <p className="text-xs text-muted-foreground mt-1">
+                                                    {new Date(spouse.birth_date).getFullYear()}
+                                                  </p>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </Card>
+                                        </>
+                                      )}
+                                    </div>
+                                  );
+                                });
 
-                        {/* Connection Line to next generation */}
-                        {generation < Math.max(...familyTree.map(([gen]) => gen)) && (
-                          <div className="flex justify-center">
-                            <div className="w-0.5 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                                return memberElements;
+                              })()}
+                            </div>
+
+                            {/* Connection Line to next generation */}
+                            {generation < Math.max(...familyTree.map(([gen]) => gen)) && (
+                              <div className="flex justify-center">
+                                <div className="w-0.5 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-24">
-                    <Users className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
-                    <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
-                      لا توجد شجرة عائلة بعد
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      لم يتم إنشاء أي عائلة أو إضافة أعضاء بعد. ابدأ ببناء شجرة عائلتك الآن!
-                    </p>
-                    <div className="flex gap-4 justify-center">
-                      <Button
-                        onClick={() => navigate('/family-overview')}
-                        className="gap-2 bg-gradient-to-r from-primary to-accent"
-                      >
-                        <Users className="h-4 w-4" />
-                        إدارة الأعضاء
-                      </Button>
-                      <Button
-                        onClick={() => navigate('/family-builder')}
-                        variant="outline"
-                        className="gap-2"
-                      >
-                        <TreePine className="h-4 w-4" />
-                        بناء العائلة
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                    );
+                  } else {
+                    console.log('Should show empty state');
+                    return (
+                      <div className="text-center py-24">
+                        <Users className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
+                        <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
+                          لا توجد شجرة عائلة بعد
+                        </h3>
+                        <p className="text-muted-foreground mb-6">
+                          لم يتم إنشاء أي عائلة أو إضافة أعضاء بعد. ابدأ ببناء شجرة عائلتك الآن!
+                        </p>
+                        <div className="flex gap-4 justify-center">
+                          <Button
+                            onClick={() => navigate('/family-overview')}
+                            className="gap-2 bg-gradient-to-r from-primary to-accent"
+                          >
+                            <Users className="h-4 w-4" />
+                            إدارة الأعضاء
+                          </Button>
+                          <Button
+                            onClick={() => navigate('/family-builder')}
+                            variant="outline"
+                            className="gap-2"
+                          >
+                            <TreePine className="h-4 w-4" />
+                            بناء العائلة
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  }
+                })()}
               </div>
             </div>
           </TabsContent>
