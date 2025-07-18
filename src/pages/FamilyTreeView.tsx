@@ -457,10 +457,10 @@ const FamilyTreeView = () => {
                 className="transition-transform duration-300 relative"
                 style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
               >
-                <div className="relative min-h-[500px] flex flex-col items-center">
+                <div className="relative min-h-[600px] flex flex-col items-center pt-8">
                   
                   {/* الجيل الأول - أمير ورانية في دائرة واحدة */}
-                  <div className="relative mb-24">
+                  <div className="relative mb-8">
                     <div className="flex items-center justify-center w-64 h-32 rounded-full border-4 border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
                       <div className="flex items-center gap-4">
                         <div className="text-center">
@@ -482,90 +482,78 @@ const FamilyTreeView = () => {
                         </div>
                       </div>
                     </div>
-                    
-                    {/* الخطوط الثلاثة المتجهة للأطفال */}
-                    <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="300" height="100">
-                      {/* خط عمودي من المركز */}
-                      <line x1="150" y1="0" x2="150" y2="40" stroke="hsl(var(--primary))" strokeWidth="3"/>
-                      {/* خط أفقي */}
-                      <line x1="50" y1="40" x2="250" y2="40" stroke="hsl(var(--primary))" strokeWidth="3"/>
-                      {/* خطوط للأطفال */}
-                      <line x1="75" y1="40" x2="75" y2="80" stroke="hsl(var(--primary))" strokeWidth="3"/>
-                      <line x1="150" y1="40" x2="150" y2="80" stroke="hsl(var(--primary))" strokeWidth="3"/>
-                      <line x1="225" y1="40" x2="225" y2="80" stroke="hsl(var(--primary))" strokeWidth="3"/>
-                    </svg>
                   </div>
+
+                  {/* خط عمودي من الزوجين */}
+                  <div className="w-1 h-16 bg-gradient-to-b from-primary to-accent mb-8"></div>
 
                   {/* الجيل الثاني - مضر وزينة وربى */}
-                  <div className="flex justify-center gap-16 mb-24">
-                    {/* مضر */}
-                    <div className="relative text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[140px]">
-                        <Avatar className="h-14 w-14 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
-                            مض
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold">مضر</h3>
-                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                      </Card>
-                      
-                      {/* خط واحد من مضر لأمير بن مضر فقط */}
-                      <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="80" height="80">
-                        <line x1="40" y1="0" x2="40" y2="40" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                        <line x1="40" y1="40" x2="40" y2="80" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                      </svg>
-                    </div>
+                  <div className="relative mb-8">
+                    {/* خط أفقي يربط الأطفال */}
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-1 bg-gradient-to-r from-primary via-accent to-primary"></div>
+                    
+                    <div className="flex justify-center items-start gap-32 pt-8">
+                      {/* مضر */}
+                      <div className="relative text-center">
+                        {/* خط عمودي للاتصال بالخط الأفقي */}
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 w-1 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                        
+                        <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[140px]">
+                          <Avatar className="h-14 w-14 mx-auto mb-2">
+                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+                              مض
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-semibold">مضر</h3>
+                          <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                        </Card>
+                      </div>
 
-                    {/* زينة */}
-                    <div className="relative text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
-                        <Avatar className="h-14 w-14 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                            زي
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold">زينة</h3>
-                        <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
-                      </Card>
-                      
-                      {/* خط واحد من زينة لمجد فقط */}
-                      <svg className="absolute top-full left-1/2 transform -translate-x-1/2" width="80" height="80">
-                        <line x1="40" y1="0" x2="40" y2="40" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                        <line x1="40" y1="40" x2="40" y2="80" stroke="hsl(var(--accent))" strokeWidth="3"/>
-                      </svg>
-                    </div>
+                      {/* زينة */}
+                      <div className="relative text-center">
+                        {/* خط عمودي للاتصال بالخط الأفقي */}
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 w-1 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                        
+                        <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
+                          <Avatar className="h-14 w-14 mx-auto mb-2">
+                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                              زي
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-semibold">زينة</h3>
+                          <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
+                        </Card>
+                      </div>
 
-                    {/* ربى */}
-                    <div className="text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
-                        <Avatar className="h-14 w-14 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                            رب
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold">ربى</h3>
-                        <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
-                      </Card>
+                      {/* ربى */}
+                      <div className="relative text-center">
+                        {/* خط عمودي للاتصال بالخط الأفقي */}
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 w-1 h-8 bg-gradient-to-b from-primary to-accent"></div>
+                        
+                        <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]">
+                          <Avatar className="h-14 w-14 mx-auto mb-2">
+                            <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                              رب
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-semibold">ربى</h3>
+                          <Badge variant="outline" className="text-xs mt-1">أنثى</Badge>
+                        </Card>
+                      </div>
                     </div>
                   </div>
 
-                  {/* الجيل الثالث - مجد (ابن زينة) وأمير بن مضر (ابن مضر) */}
-                  <div className="flex justify-center gap-48">
-                    {/* مجد - ابن زينة */}
-                    <div className="text-center">
-                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[120px]">
-                        <Avatar className="h-12 w-12 mx-auto mb-2">
-                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
-                            مج
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold text-sm">مجد</h3>
-                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
-                        <p className="text-xs text-muted-foreground mt-1">ابن زينة</p>
-                      </Card>
-                    </div>
+                  {/* خطوط للجيل الثالث */}
+                  <div className="relative mb-8">
+                    {/* خط من مضر لأمير بن مضر */}
+                    <div className="absolute left-0 w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ left: 'calc(50% - 160px)' }}></div>
+                    
+                    {/* خط من زينة لمجد */}
+                    <div className="absolute right-0 w-1 h-16 bg-gradient-to-b from-accent to-primary" style={{ right: 'calc(50% - 160px)' }}></div>
+                  </div>
 
+                  {/* الجيل الثالث */}
+                  <div className="flex justify-center gap-64 pt-8">
                     {/* أمير بن مضر - ابن مضر */}
                     <div className="text-center">
                       <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[120px]">
@@ -577,6 +565,20 @@ const FamilyTreeView = () => {
                         <h3 className="font-semibold text-sm">أمير بن مضر</h3>
                         <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
                         <p className="text-xs text-muted-foreground mt-1">ابن مضر</p>
+                      </Card>
+                    </div>
+
+                    {/* مجد - ابن زينة */}
+                    <div className="text-center">
+                      <Card className="p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[120px]">
+                        <Avatar className="h-12 w-12 mx-auto mb-2">
+                          <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20">
+                            مج
+                          </AvatarFallback>
+                        </Avatar>
+                        <h3 className="font-semibold text-sm">مجد</h3>
+                        <Badge variant="outline" className="text-xs mt-1">ذكر</Badge>
+                        <p className="text-xs text-muted-foreground mt-1">ابن زينة</p>
                       </Card>
                     </div>
                   </div>
