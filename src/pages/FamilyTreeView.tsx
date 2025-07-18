@@ -483,48 +483,45 @@ const FamilyTreeView = () => {
                       </div>
                     </div>
                     
-                    {/* خط عمودي من الزوجين */}
+                    {/* خطوط مباشرة من أمير ورانية للأطفال */}
+                    {/* خط مباشر لمضر */}
                     <div 
-                      className="absolute left-1/2 transform -translate-x-1/2 w-1 h-12 bg-gradient-to-b from-primary to-accent"
-                      style={{ top: '100%' }}
-                    ></div>
-                    
-                    {/* نقطة التفرع */}
-                    <div 
-                      className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-accent"
-                      style={{ top: 'calc(100% + 48px)' }}
-                    ></div>
-                    
-                    {/* خط أفقي للأطفال الثلاثة - يمتد من مضر إلى ربى */}
-                    <div 
-                      className="absolute h-1 bg-gradient-to-r from-primary to-accent"
+                      className="absolute w-0.5 bg-gradient-to-b from-primary to-accent origin-top"
                       style={{ 
-                        top: 'calc(100% + 48px)', 
-                        left: 'calc(50% - 160px)', 
-                        width: '320px' 
+                        top: '100%', 
+                        left: 'calc(50% - 10px)',
+                        height: '180px',
+                        transform: 'rotate(-25deg)',
+                        transformOrigin: 'top'
                       }}
                     ></div>
                     
-                    {/* خطوط عمودية للأطفال الثلاثة */}
-                    {/* مضر - يسار */}
+                    {/* خط مباشر لزينة */}
                     <div 
-                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 48px)', left: 'calc(50% - 160px)' }}
+                      className="absolute w-0.5 bg-gradient-to-b from-primary to-accent"
+                      style={{ 
+                        top: '100%', 
+                        left: '50%',
+                        height: '160px',
+                        transform: 'translateX(-50%)'
+                      }}
                     ></div>
-                    {/* زينة - وسط */}
+                    
+                    {/* خط مباشر لربى */}
                     <div 
-                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 48px)', left: '50%', transform: 'translateX(-50%)' }}
-                    ></div>
-                    {/* ربى - يمين */}
-                    <div 
-                      className="absolute w-1 h-8 bg-gradient-to-b from-accent to-primary"
-                      style={{ top: 'calc(100% + 48px)', left: 'calc(50% + 160px)' }}
+                      className="absolute w-0.5 bg-gradient-to-b from-primary to-accent origin-top"
+                      style={{ 
+                        top: '100%', 
+                        left: 'calc(50% + 10px)',
+                        height: '180px',
+                        transform: 'rotate(25deg)',
+                        transformOrigin: 'top'
+                      }}
                     ></div>
                   </div>
 
                   {/* الجيل الثاني - مضر وزينة وربى */}
-                  <div className="relative">
+                  <div className="relative mb-20">
                     <div className="flex justify-center items-start gap-32">
                       {/* مضر */}
                       <div className="relative text-center">
