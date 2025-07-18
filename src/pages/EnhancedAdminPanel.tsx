@@ -454,15 +454,14 @@ const EnhancedAdminPanel = () => {
     if (!editingPackage) return;
     
     const packageData = {
-      name: editingPackage.name,
-      description: editingPackage.description,
       price: parseFloat(editingPackage.price || editingPackage.price_usd || '0'),
       price_usd: parseFloat(editingPackage.price_usd || '0'),
       price_sar: parseFloat(editingPackage.price_sar || '0'),
       max_family_members: parseInt(editingPackage.max_family_members || '100'),
       max_family_trees: parseInt(editingPackage.max_family_trees || '1'),
       display_order: parseInt(editingPackage.display_order || '0'),
-      is_active: editingPackage.is_active
+      is_active: editingPackage.is_active,
+      is_featured: editingPackage.is_featured
     };
 
     try {
@@ -850,15 +849,15 @@ const EnhancedAdminPanel = () => {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{t('package_management', 'إدارة الباقات')}</CardTitle>
                 <Button onClick={() => setEditingPackage({
-                  name: '',
-                  description: '',
                   price: '0',
                   price_usd: '0',
                   price_sar: '0',
                   max_family_members: '100',
                   max_family_trees: '1',
                   display_order: '0',
-                  is_active: true
+                  is_active: true,
+                  is_featured: false,
+                  translations: {}
                 })}>
                   <Plus className="w-4 h-4 mr-2" />
                   إضافة باقة جديدة
@@ -879,37 +878,51 @@ const EnhancedAdminPanel = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {packages.map((pkg) => (
-                      <TableRow key={pkg.id}>
-                        <TableCell>{pkg.name}</TableCell>
-                        <TableCell>${pkg.price_usd}</TableCell>
-                        <TableCell>{pkg.price_sar} ر.س</TableCell>
-                        <TableCell>{pkg.max_family_members || 'غير محدد'}</TableCell>
-                        <TableCell>{pkg.max_family_trees || 'غير محدد'}</TableCell>
-                        <TableCell>{pkg.display_order || 0}</TableCell>
-                        <TableCell>
-                          <Badge variant={pkg.is_active ? "default" : "secondary"}>
-                            {pkg.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="space-x-2">
-                          <Button variant="outline" size="sm" onClick={() => setEditingPackage(pkg)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                           <Button 
-                             variant="destructive" 
-                             size="sm" 
-                             onClick={() => {
-                               if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
-                                 deletePackage(pkg.id);
-                               }
-                             }}
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {packages.map((pkg) => {
+                      // Get name from translations or show "No translation available"
+                      const packageName = pkg.translations?.[languages.find(l => l.is_default)?.code]?.name || 
+                                          Object.values(pkg.translations || {})[0]?.name || 
+                                          'لا توجد ترجمة متاحة';
+                      
+                      return (
+                        <TableRow key={pkg.id}>
+                          <TableCell>{packageName}</TableCell>
+                          <TableCell>${pkg.price_usd}</TableCell>
+                          <TableCell>{pkg.price_sar} ر.س</TableCell>
+                          <TableCell>{pkg.max_family_members || 'غير محدد'}</TableCell>
+                          <TableCell>{pkg.max_family_trees || 'غير محدد'}</TableCell>
+                          <TableCell>{pkg.display_order || 0}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Badge variant={pkg.is_active ? "default" : "secondary"}>
+                                {pkg.is_active ? t('active', 'نشط') : t('inactive', 'غير نشط')}
+                              </Badge>
+                              {pkg.is_featured && (
+                                <Badge variant="outline" className="text-yellow-600 border-yellow-600">
+                                  ⭐ مميز
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="space-x-2">
+                            <Button variant="outline" size="sm" onClick={() => setEditingPackage(pkg)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                             <Button 
+                               variant="destructive" 
+                               size="sm" 
+                               onClick={() => {
+                                 if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
+                                   deletePackage(pkg.id);
+                                 }
+                               }}
+                             >
+                               <Trash2 className="w-4 h-4" />
+                             </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -1050,42 +1063,44 @@ const EnhancedAdminPanel = () => {
                       <h4 className="font-semibold mb-3 text-blue-700">علاقات الذكور</h4>
                       <div className="space-y-2">
                         {[
-                          { key: 'father', defaultValue: 'أب', icon: '👨‍🦳' },
-                          { key: 'husband', defaultValue: 'زوج', icon: '👨' },
-                          { key: 'brother', defaultValue: 'أخ', icon: '👨‍🦱' },
-                          { key: 'son', defaultValue: 'ابن', icon: '👶' },
-                          { key: 'grandfather', defaultValue: 'جد', icon: '👴' },
-                          { key: 'uncle', defaultValue: 'عم', icon: '👨‍🦲' }
-                        ].map((relation) => (
-                          <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
-                            <span className="text-2xl">{relation.icon}</span>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{relation.key}</div>
-                              <div className="text-muted-foreground text-xs">
-                                {translations.find(t => t.key === relation.key && t.language_code === 'ar')?.value || relation.defaultValue}
+                          { key: 'father', icon: '👨‍🦳' },
+                          { key: 'husband', icon: '👨' },
+                          { key: 'brother', icon: '👨‍🦱' },
+                          { key: 'son', icon: '👶' },
+                          { key: 'grandfather', icon: '👴' },
+                          { key: 'uncle', icon: '👨‍🦲' }
+                        ].map((relation) => {
+                          const translation = translations.find(t => t.key === relation.key && t.language_code === 'ar');
+                          return (
+                            <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
+                              <span className="text-2xl">{relation.icon}</span>
+                              <div className="flex-1">
+                                <div className="font-medium text-sm">{relation.key}</div>
+                                <div className="text-muted-foreground text-xs">
+                                  {translation?.value || 'لا توجد ترجمة'}
+                                </div>
                               </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  if (translation) {
+                                    setEditingTranslation(translation);
+                                  } else {
+                                    setNewTranslation({
+                                      key: relation.key,
+                                      value: '',
+                                      language_code: 'ar',
+                                      category: 'relationships'
+                                    });
+                                  }
+                                }}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
                             </div>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => {
-                                const existing = translations.find(t => t.key === relation.key && t.language_code === 'ar');
-                                if (existing) {
-                                  setEditingTranslation(existing);
-                                } else {
-                                  setNewTranslation({
-                                    key: relation.key,
-                                    value: relation.defaultValue,
-                                    language_code: 'ar',
-                                    category: 'relationships'
-                                  });
-                                }
-                              }}
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -1094,42 +1109,44 @@ const EnhancedAdminPanel = () => {
                       <h4 className="font-semibold mb-3 text-pink-700">علاقات الإناث</h4>
                       <div className="space-y-2">
                         {[
-                          { key: 'mother', defaultValue: 'أم', icon: '👩‍🦳' },
-                          { key: 'wife', defaultValue: 'زوجة', icon: '👩' },
-                          { key: 'sister', defaultValue: 'أخت', icon: '👩‍🦱' },
-                          { key: 'daughter', defaultValue: 'ابنة', icon: '👶' },
-                          { key: 'grandmother', defaultValue: 'جدة', icon: '👵' },
-                          { key: 'aunt', defaultValue: 'عمة', icon: '👩‍🦲' }
-                        ].map((relation) => (
-                          <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
-                            <span className="text-2xl">{relation.icon}</span>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{relation.key}</div>
-                              <div className="text-muted-foreground text-xs">
-                                {translations.find(t => t.key === relation.key && t.language_code === 'ar')?.value || relation.defaultValue}
+                          { key: 'mother', icon: '👩‍🦳' },
+                          { key: 'wife', icon: '👩' },
+                          { key: 'sister', icon: '👩‍🦱' },
+                          { key: 'daughter', icon: '👶' },
+                          { key: 'grandmother', icon: '👵' },
+                          { key: 'aunt', icon: '👩‍🦲' }
+                        ].map((relation) => {
+                          const translation = translations.find(t => t.key === relation.key && t.language_code === 'ar');
+                          return (
+                            <div key={relation.key} className="flex items-center gap-3 p-3 border rounded-lg">
+                              <span className="text-2xl">{relation.icon}</span>
+                              <div className="flex-1">
+                                <div className="font-medium text-sm">{relation.key}</div>
+                                <div className="text-muted-foreground text-xs">
+                                  {translation?.value || 'لا توجد ترجمة'}
+                                </div>
                               </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  if (translation) {
+                                    setEditingTranslation(translation);
+                                  } else {
+                                    setNewTranslation({
+                                      key: relation.key,
+                                      value: '',
+                                      language_code: 'ar',
+                                      category: 'relationships'
+                                    });
+                                  }
+                                }}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
                             </div>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => {
-                                const existing = translations.find(t => t.key === relation.key && t.language_code === 'ar');
-                                if (existing) {
-                                  setEditingTranslation(existing);
-                                } else {
-                                  setNewTranslation({
-                                    key: relation.key,
-                                    value: relation.defaultValue,
-                                    language_code: 'ar',
-                                    category: 'relationships'
-                                  });
-                                }
-                              }}
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -1471,11 +1488,11 @@ const EnhancedAdminPanel = () => {
 
       {/* Edit Package Dialog */}
       <Dialog open={!!editingPackage} onOpenChange={() => setEditingPackage(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t('edit_package', 'تعديل الباقة')}</DialogTitle>
+            <DialogTitle>{editingPackage?.id ? t('edit_package', 'تعديل الباقة') : 'إضافة باقة جديدة'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Multi-language Names and Descriptions */}
             <div className="space-y-4">
               <h4 className="text-sm font-medium">{t('multilingual_content', 'المحتوى متعدد اللغات')}</h4>
@@ -1528,27 +1545,6 @@ const EnhancedAdminPanel = () => {
               ))}
             </div>
             
-            {/* Default Name and Description (fallback) */}
-            <div className="space-y-3 border-t pt-4">
-              <h4 className="text-sm font-medium text-muted-foreground">{t('default_fallback', 'القيم الافتراضية (احتياطية)')}</h4>
-              <div>
-                <Label>{t('default_name', 'الاسم الافتراضي')}</Label>
-                <Input
-                  value={editingPackage?.name || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, name: e.target.value}))}
-                  placeholder={t('fallback_name_help', 'يستخدم إذا لم تكن الترجمة متوفرة')}
-                />
-              </div>
-              <div>
-                <Label>{t('default_description', 'الوصف الافتراضي')}</Label>
-                <Textarea
-                  value={editingPackage?.description || ''}
-                  onChange={(e) => setEditingPackage(prev => ({...prev, description: e.target.value}))}
-                  placeholder={t('fallback_description_help', 'يستخدم إذا لم تكن الترجمة متوفرة')}
-                  rows={3}
-                />
-              </div>
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>{t('price_usd', 'السعر بالدولار')}</Label>
@@ -1593,12 +1589,21 @@ const EnhancedAdminPanel = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={editingPackage?.is_active || false}
-                onCheckedChange={(checked) => setEditingPackage(prev => ({...prev, is_active: checked}))}
-              />
-              <Label>{t('active', 'نشط')}</Label>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={editingPackage?.is_active || false}
+                  onCheckedChange={(checked) => setEditingPackage(prev => ({...prev, is_active: checked}))}
+                />
+                <Label>{t('active', 'نشط')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={editingPackage?.is_featured || false}
+                  onCheckedChange={(checked) => setEditingPackage(prev => ({...prev, is_featured: checked}))}
+                />
+                <Label>مميز ⭐</Label>
+              </div>
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setEditingPackage(null)}>
