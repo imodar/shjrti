@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,20 +81,43 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      // Update profile in database - properly configure upsert to avoid duplicates
-      const { error } = await supabase
+      // First check if profile exists
+      const { data: existingProfile } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user?.id,
-          first_name: profileData.firstName,
-          last_name: profileData.lastName,
-          email: profileData.email,
-          phone: profileData.phone,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id', // This ensures we update existing record based on user_id
-          ignoreDuplicates: false // This ensures we actually update the existing record
-        });
+        .select('id')
+        .eq('user_id', user?.id)
+        .single();
+
+      let error;
+
+      if (existingProfile) {
+        // Update existing profile
+        const result = await supabase
+          .from('profiles')
+          .update({
+            first_name: profileData.firstName,
+            last_name: profileData.lastName,
+            email: profileData.email,
+            phone: profileData.phone,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user?.id);
+        
+        error = result.error;
+      } else {
+        // Insert new profile
+        const result = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user?.id,
+            first_name: profileData.firstName,
+            last_name: profileData.lastName,
+            email: profileData.email,
+            phone: profileData.phone
+          });
+        
+        error = result.error;
+      }
 
       if (error) {
         console.error('Error updating profile:', error);
