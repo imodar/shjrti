@@ -67,12 +67,7 @@ const FamilyTreeView = () => {
       // Fetch family tree members for user's families
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
-        .select(`
-          *,
-          father:family_tree_members!family_tree_members_father_id_fkey(id, name),
-          mother:family_tree_members!family_tree_members_mother_id_fkey(id, name),
-          spouse:family_tree_members!family_tree_members_spouse_id_fkey(id, name)
-        `)
+        .select('*')
         .in('family_id', allFamilyIds);
 
       if (membersError) {
@@ -88,11 +83,7 @@ const FamilyTreeView = () => {
       // Fetch marriages
       const { data: marriages, error: marriagesError } = await supabase
         .from('marriages')
-        .select(`
-          *,
-          husband:family_tree_members!marriages_husband_id_fkey(id, name),
-          wife:family_tree_members!marriages_wife_id_fkey(id, name)
-        `)
+        .select('*')
         .in('family_id', allFamilyIds);
 
       if (marriagesError) {
