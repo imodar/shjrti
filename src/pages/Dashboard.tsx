@@ -357,10 +357,9 @@ const Dashboard = () => {
                 </div>
               </section>
             ) : familyTrees.length === 0 ? (
-              // Empty State - Encourage Building First Tree
               <section className="py-12 relative">
                 <div className="container mx-auto px-4 relative z-10">
-                  {/* Encouragement Section */}
+                  {/* Packages Section - Beautiful Header */}
                   <div className="text-center mb-16">
                     <div className="mb-8">
                       <div className="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-2xl mb-8 animate-pulse">
@@ -374,64 +373,131 @@ const Dashboard = () => {
                       </span>
                     </h2>
                     
-                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-12">
                       {t('building_easy_desc', 'بناء شجرة عائلتك أمر بسيط وممتع! فقط ببضع خطوات ستحصل على شجرة رائعة تحفظ تاريخ عائلتك للأبد')}
                     </p>
 
+                    {/* Packages Grid - Beautiful Design */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
+                      {/* Free Package */}
+                      <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
+                        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 opacity-90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-700 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
+                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
+                        
+                        <CardContent className="relative p-8 text-center">
+                          <div className="relative mb-6">
+                            <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
+                            <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500">
+                              <Shield className="h-8 w-8 text-white" />
+                            </div>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                            الباقة المجانية
+                          </h3>
+                          <div className="text-3xl font-bold text-gray-600 dark:text-gray-300 mb-4">
+                            مجاناً
+                          </div>
+                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6">
+                            <li>• شجرة عائلية واحدة</li>
+                            <li>• حتى 50 فرد</li>
+                            <li>• مميزات أساسية</li>
+                          </ul>
+                          <Link to="/family-builder?new=true">
+                            <Button className="w-full bg-gray-500 hover:bg-gray-600 text-white">
+                              <Plus className="h-4 w-4 ml-2" />
+                              ابدأ مجاناً
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+
+                      {/* Premium Package */}
+                      <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4 ring-2 ring-emerald-400">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-emerald-950 dark:via-gray-900 dark:to-teal-950 opacity-90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
+                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
+                        
+                        {/* Popular Badge */}
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
+                            الأكثر شعبية
+                          </div>
+                        </div>
+                        
+                        <CardContent className="relative p-8 text-center">
+                          <div className="relative mb-6">
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
+                            <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500">
+                              <Star className="h-8 w-8 text-white" />
+                            </div>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                            الباقة المميزة
+                          </h3>
+                          <div className="text-3xl font-bold text-emerald-600 mb-4">
+                            99 ريال <span className="text-sm text-gray-500">سنوياً</span>
+                          </div>
+                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6">
+                            <li>• 5 أشجار عائلية</li>
+                            <li>• حتى 500 فرد</li>
+                            <li>• جميع المميزات</li>
+                            <li>• دعم فني مميز</li>
+                          </ul>
+                          <Link to="/payments">
+                            <Button className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
+                              <Crown className="h-4 w-4 ml-2" />
+                              اختر هذه الباقة
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+
+                      {/* Professional Package */}
+                      <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-amber-100 dark:from-purple-950 dark:via-gray-900 dark:to-amber-950 opacity-90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-amber-500 to-purple-600 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
+                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
+                        
+                        <CardContent className="relative p-8 text-center">
+                          <div className="relative mb-6">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
+                            <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-amber-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500">
+                              <Crown className="h-8 w-8 text-white" />
+                            </div>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                            الباقة الاحترافية
+                          </h3>
+                          <div className="text-3xl font-bold text-purple-600 mb-4">
+                            199 ريال <span className="text-sm text-gray-500">سنوياً</span>
+                          </div>
+                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6">
+                            <li>• أشجار غير محدودة</li>
+                            <li>• أفراد غير محدودين</li>
+                            <li>• مميزات متقدمة</li>
+                            <li>• دعم ذو أولوية</li>
+                          </ul>
+                          <Link to="/payments">
+                            <Button className="w-full bg-gradient-to-r from-purple-500 to-amber-500 hover:from-purple-600 hover:to-amber-600 text-white">
+                              <Crown className="h-4 w-4 ml-2" />
+                              اختر هذه الباقة
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Call to Action */}
                     <Link to="/family-builder?new=true">
                       <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-xl px-12 py-6 rounded-full shadow-2xl hover-scale">
                         <Plus className="h-6 w-6 ml-3" />
                         {t('build_first_tree', 'ابني شجرتك الأولى الآن')}
                       </Button>
                     </Link>
-                  </div>
-
-                  {/* Why Build Section */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    {[
-                      {
-                        icon: <Heart className="h-8 w-8" />,
-                        title: t('preserve_memories', 'احفظ الذكريات'),
-                        description: t('preserve_memories_desc', 'احفظ قصص وذكريات عائلتك للأجيال القادمة'),
-                        color: "from-pink-500 to-rose-500"
-                      },
-                      {
-                        icon: <Crown className="h-8 w-8" />,
-                        title: t('family_pride', 'فخر العائلة'),
-                        description: t('family_pride_desc', 'اعرض تاريخ عائلتك العريق بطريقة جميلة ومنظمة'),
-                        color: "from-amber-500 to-orange-500"
-                      },
-                      {
-                        icon: <Shield className="h-8 w-8" />,
-                        title: t('secure_heritage', 'تراث آمن'),
-                        description: t('secure_heritage_desc', 'احم معلومات عائلتك بأعلى مستويات الأمان'),
-                        color: "from-emerald-500 to-teal-500"
-                      }
-                    ].map((benefit, index) => (
-                      <Card key={index} className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-emerald-50 dark:from-gray-800 dark:via-gray-900 dark:to-emerald-950 opacity-90"></div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
-                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                        
-                        <CardContent className="relative p-8 text-center">
-                          <div className="relative mb-6">
-                            <div className={`absolute inset-0 bg-gradient-to-r ${benefit.color} rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110`}></div>
-                            <div className={`relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${benefit.color} rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500`}>
-                              <div className="text-white">
-                                {benefit.icon}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
-                            {benefit.title}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
-                            {benefit.description}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    ))}
                   </div>
 
                   {/* Simple Steps */}
