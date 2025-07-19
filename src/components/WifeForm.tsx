@@ -190,7 +190,7 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
       </div>
 
       {/* Marital Status Row */}
-      <div className="space-y-2">
+      <div className="space-y-2 w-1/3">
         <Label className="text-sm font-medium text-foreground flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
           الحالة الزوجية
