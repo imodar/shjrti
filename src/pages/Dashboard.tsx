@@ -1,18 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { 
   Sparkles, 
-  Heart, 
-  Users, 
-  Star, 
   TreePine,
   Crown,
   Plus,
+  Users,
+  Calendar,
+  Edit,
+  Eye,
+  Trash2,
   ArrowRight,
-  Quote,
-  UserPlus,
-  Wand2
+  Heart,
+  Star,
+  Gem,
+  Shield
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
@@ -21,248 +24,92 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  ReactFlow, 
-  Node, 
-  Edge, 
-  addEdge, 
-  Connection, 
-  useNodesState, 
-  useEdgesState,
-  Background,
-  Controls,
-  MiniMap,
-  NodeTypes,
-  Position,
-  Handle
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+import { useToast } from "@/hooks/use-toast";
 
-// Custom Family Member Node Component
-const FamilyMemberNode = ({ data, id }: { data: any; id: string }) => {
-  return (
-    <div className="family-node">
-      <Handle type="target" position={Position.Top} className="opacity-0" />
-      <div className="relative group">
-        {/* Luxury Card Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-emerald-50 dark:from-gray-800 dark:via-gray-900 dark:to-emerald-950 opacity-90 rounded-2xl"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
-        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-        
-        <div className="relative p-6 text-center min-w-[180px]">
-          {/* Avatar */}
-          <div className="relative mb-4">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
-            <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500 mx-auto">
-              {data.image_url ? (
-                <img src={data.image_url} alt={data.name} className="w-full h-full rounded-full object-cover" />
-              ) : (
-                data.name?.charAt(0)?.toUpperCase() || '?'
-              )}
-            </div>
-          </div>
-          
-          {/* Name and Details */}
-          <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
-            {data.name || 'Unknown'}
-          </h3>
-          
-          {data.birth_date && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {new Date(data.birth_date).getFullYear()}
-            </p>
-          )}
-          
-          {data.is_founder && (
-            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs mt-2">
-              <Crown className="h-3 w-3 mr-1" />
-              المؤسس
-            </Badge>
-          )}
-        </div>
-      </div>
-      <Handle type="source" position={Position.Bottom} className="opacity-0" />
-    </div>
-  );
-};
-
-// Add Member Node Component  
-const AddMemberNode = ({ data }: { data: any }) => {
-  return (
-    <div className="add-member-node">
-      <Link to="/family-builder?new=true">
-        <div className="group cursor-pointer">
-          <div className="relative p-8 min-w-[180px] text-center">
-            {/* Dashed Border */}
-            <div className="absolute inset-0 border-2 border-dashed border-emerald-300 dark:border-emerald-700 rounded-2xl group-hover:border-emerald-500 transition-colors duration-300"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 group-hover:from-emerald-100 dark:group-hover:from-emerald-900/50 group-hover:to-teal-100 dark:group-hover:to-teal-900/50 rounded-2xl transition-colors duration-300"></div>
-            
-            <div className="relative">
-              {/* Plus Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Plus className="h-8 w-8" />
-              </div>
-              
-              <h3 className="font-bold text-gray-600 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
-                {data.label}
-              </h3>
-            </div>
-          </div>
-        </div>
-      </Link>
-    </div>
-  );
-};
-
-const nodeTypes: NodeTypes = {
-  familyMember: FamilyMemberNode,
-  addMember: AddMemberNode,
-};
+interface FamilyTree {
+  id: string;
+  name: string;
+  members_count: number;
+  created_at: string;
+  updated_at: string;
+}
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const { toast } = useToast();
+  const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
   const [loading, setLoading] = useState(true);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [currentQuote, setCurrentQuote] = useState(0);
 
-  const quotes = [
-    {
-      text: t('quote_1', "العائلة هي الجذور التي تحميك من عواصف الحياة"),
-      author: t('quote_1_author', "المثل العربي")
-    },
-    {
-      text: t('quote_2', "من عرف نفسه عرف ربه، ومن عرف عائلته عرف تاريخه"),
-      author: t('quote_2_author', "الحكمة الشعبية")
-    },
-    {
-      text: t('quote_3', "الإرث الحقيقي ليس ما نتركه من مال، بل ما نتركه من ذكريات"),
-      author: t('quote_3_author', "قول مأثور")
-    }
-  ];
-
-  // Fetch family members
+  // Fetch user's family trees
   useEffect(() => {
-    const fetchFamilyMembers = async () => {
+    const fetchFamilyTrees = async () => {
       if (!user?.id) return;
       
       setLoading(true);
       try {
-        const { data: families } = await supabase
+        const { data: families, error } = await supabase
           .from('families')
-          .select('id')
-          .eq('creator_id', user.id)
-          .limit(1);
+          .select(`
+            id,
+            name,
+            created_at,
+            updated_at,
+            family_tree_members(count)
+          `)
+          .eq('creator_id', user.id);
 
-        if (families && families.length > 0) {
-          const { data: members } = await supabase
-            .from('family_tree_members')
-            .select('*')
-            .eq('family_id', families[0].id);
+        if (error) throw error;
 
-          setFamilyMembers(members || []);
-        }
+        const treesData = families?.map(family => ({
+          id: family.id,
+          name: family.name,
+          members_count: family.family_tree_members?.[0]?.count || 0,
+          created_at: family.created_at,
+          updated_at: family.updated_at
+        })) || [];
+
+        setFamilyTrees(treesData);
       } catch (error) {
-        console.error('Error fetching family members:', error);
+        console.error('Error fetching family trees:', error);
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ في تحميل البيانات",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFamilyMembers();
-  }, [user?.id]);
+    fetchFamilyTrees();
+  }, [user?.id, toast]);
 
-  // Create tree nodes and edges
-  useEffect(() => {
-    if (familyMembers.length === 0) {
-      // Show empty state with add member option
-      const emptyNodes: Node[] = [
-        {
-          id: 'add-first',
-          type: 'addMember',
-          position: { x: 400, y: 300 },
-          data: { 
-            label: t('add_first_member', 'أضف أول فرد في العائلة'),
-          },
-          draggable: false,
-        },
-      ];
-      setNodes(emptyNodes);
-      setEdges([]);
-      return;
-    }
+  // Delete family tree
+  const handleDeleteTree = async (treeId: string) => {
+    try {
+      const { error } = await supabase
+        .from('families')
+        .delete()
+        .eq('id', treeId)
+        .eq('creator_id', user?.id);
 
-    // Create nodes for existing family members
-    const treeNodes: Node[] = [];
-    const treeEdges: Edge[] = [];
+      if (error) throw error;
 
-    // Find founder or first member
-    const founder = familyMembers.find(member => member.is_founder) || familyMembers[0];
-    
-    if (founder) {
-      treeNodes.push({
-        id: founder.id,
-        type: 'familyMember',
-        position: { x: 400, y: 50 },
-        data: founder,
-        draggable: false,
+      setFamilyTrees(prev => prev.filter(tree => tree.id !== treeId));
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف الشجرة بنجاح"
       });
-
-      // Add children
-      const children = familyMembers.filter(member => 
-        member.father_id === founder.id || member.mother_id === founder.id
-      );
-
-      children.forEach((child, index) => {
-        const xOffset = (index - (children.length - 1) / 2) * 220;
-        treeNodes.push({
-          id: child.id,
-          type: 'familyMember',
-          position: { x: 400 + xOffset, y: 250 },
-          data: child,
-          draggable: false,
-        });
-
-        // Add edge from parent to child
-        treeEdges.push({
-          id: `edge-${founder.id}-${child.id}`,
-          source: founder.id,
-          target: child.id,
-          type: 'smoothstep',
-          style: { stroke: '#10b981', strokeWidth: 2 },
-          animated: true,
-        });
-      });
-
-      // Add "Add Member" node
-      treeNodes.push({
-        id: 'add-member',
-        type: 'addMember',
-        position: { x: 400 + (children.length * 110), y: 250 },
-        data: { 
-          label: t('add_member', 'إضافة فرد جديد'),
-        },
-        draggable: false,
+    } catch (error) {
+      console.error('Error deleting tree:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ في حذف الشجرة",
+        variant: "destructive"
       });
     }
-
-    setNodes(treeNodes);
-    setEdges(treeEdges);
-  }, [familyMembers, t]);
-
-  // Quote rotation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentQuote((prev) => (prev + 1) % quotes.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [quotes.length]);
-
-  const onConnect = useCallback((params: Connection) => {
-    setEdges((eds) => addEdge(params, eds));
-  }, [setEdges]);
+  };
 
   return (
     <div className="min-h-screen">
@@ -291,222 +138,228 @@ const Dashboard = () => {
             {/* Hero Section */}
             <section className="py-12 relative">
               <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center mb-8">
+                <div className="text-center mb-12">
                   <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 text-sm mb-6 shadow-lg">
                     <Sparkles className="h-4 w-4 ml-2" />
-                    {t('dashboard_welcome_badge', 'شجرتك العائلية')}
+                    {t('dashboard_welcome_badge', 'لوحة التحكم')}
                   </Badge>
                   
                   <h1 className="text-4xl md:text-6xl font-bold mb-6">
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                      {familyMembers.length === 0 
-                        ? t('welcome_build_tree', 'ابني شجرة عائلتك')
-                        : t('your_family_tree', 'شجرة عائلتك')
-                      }
+                      {t('dashboard_welcome', 'أهلاً بك')}
+                    </span>
+                    <br />
+                    <span className="text-gray-800 dark:text-gray-200">
+                      {user?.email?.split('@')[0] || t('dashboard_user', 'صديقي العزيز')}
                     </span>
                   </h1>
                   
                   <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                    {familyMembers.length === 0 
-                      ? t('start_journey_desc', 'ابدأ رحلتك في توثيق تاريخ عائلتك')
-                      : t('manage_tree_desc', `${familyMembers.length} فرد في شجرتك العائلية`)
+                    {familyTrees.length === 0 
+                      ? t('no_trees_desc', 'لم تقم ببناء أي شجرة عائلية بعد')
+                      : t('trees_count_desc', `لديك ${familyTrees.length} شجرة عائلية`)
                     }
                   </p>
                 </div>
               </div>
             </section>
 
-            {/* Interactive Family Tree */}
-            <section className="relative py-8">
-              <div className="container mx-auto px-4 relative z-10">
-                {loading ? (
-                  <div className="h-96 flex items-center justify-center">
+            {loading ? (
+              <section className="py-12">
+                <div className="container mx-auto px-4">
+                  <div className="flex items-center justify-center h-64">
                     <div className="animate-spin w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
                   </div>
-                ) : (
-                  <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-10 rounded-2xl"></div>
-                    <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                    
-                    <CardContent className="relative p-0">
-                      <div className="h-96 md:h-[500px]">
-                        <ReactFlow
-                          nodes={nodes}
-                          edges={edges}
-                          onNodesChange={onNodesChange}
-                          onEdgesChange={onEdgesChange}
-                          onConnect={onConnect}
-                          nodeTypes={nodeTypes}
-                          fitView
-                          fitViewOptions={{ padding: 0.2 }}
-                          attributionPosition="bottom-left"
-                          style={{ backgroundColor: 'transparent' }}
-                          proOptions={{ hideAttribution: true }}
-                        >
-                          <Background color="#10b981" gap={16} size={1} />
-                          <Controls className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-emerald-200 dark:border-emerald-700" />
-                          <MiniMap 
-                            nodeColor="#10b981"
-                            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-emerald-200 dark:border-emerald-700"
-                          />
-                        </ReactFlow>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </section>
-
-            {/* Quick Actions */}
-            {familyMembers.length === 0 ? (
+                </div>
+              </section>
+            ) : familyTrees.length === 0 ? (
+              // Empty State - Encourage Building First Tree
               <section className="py-12 relative">
                 <div className="container mx-auto px-4 relative z-10">
-                  <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  {/* Encouragement Section */}
+                  <div className="text-center mb-16">
+                    <div className="mb-8">
+                      <div className="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-2xl mb-8 animate-pulse">
+                        <TreePine className="h-16 w-16 text-white" />
+                      </div>
+                    </div>
+                    
+                    <h2 className="text-3xl md:text-5xl font-bold mb-6">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        {t('how_to_start', 'كيف تبدأ؟')}
+                        {t('start_your_legacy', 'ابدأ إرثك العائلي')}
                       </span>
                     </h2>
+                    
+                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+                      {t('building_easy_desc', 'بناء شجرة عائلتك أمر بسيط وممتع! فقط ببضع خطوات ستحصل على شجرة رائعة تحفظ تاريخ عائلتك للأبد')}
+                    </p>
+
+                    <Link to="/family-builder?new=true">
+                      <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-xl px-12 py-6 rounded-full shadow-2xl hover-scale">
+                        <Plus className="h-6 w-6 ml-3" />
+                        {t('build_first_tree', 'ابني شجرتك الأولى الآن')}
+                      </Button>
+                    </Link>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                  {/* Why Build Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                     {[
                       {
-                        step: "01",
-                        icon: <UserPlus className="h-8 w-8" />,
-                        title: t('step_1_title', 'أضف نفسك أو أحد الوالدين'),
-                        description: t('step_1_desc', 'ابدأ بإضافة أول فرد في العائلة'),
-                        color: "from-emerald-500 to-teal-500"
+                        icon: <Heart className="h-8 w-8" />,
+                        title: t('preserve_memories', 'احفظ الذكريات'),
+                        description: t('preserve_memories_desc', 'احفظ قصص وذكريات عائلتك للأجيال القادمة'),
+                        color: "from-pink-500 to-rose-500"
                       },
                       {
-                        step: "02",
-                        icon: <Users className="h-8 w-8" />,
-                        title: t('step_2_title', 'أضف أفراد العائلة'),
-                        description: t('step_2_desc', 'أضف الأطفال والأقارب وحدد العلاقات'),
+                        icon: <Crown className="h-8 w-8" />,
+                        title: t('family_pride', 'فخر العائلة'),
+                        description: t('family_pride_desc', 'اعرض تاريخ عائلتك العريق بطريقة جميلة ومنظمة'),
                         color: "from-amber-500 to-orange-500"
                       },
                       {
-                        step: "03",
-                        icon: <TreePine className="h-8 w-8" />,
-                        title: t('step_3_title', 'شاهد شجرتك تنمو'),
-                        description: t('step_3_desc', 'استمتع بمشاهدة شجرة عائلتك التفاعلية'),
-                        color: "from-pink-500 to-rose-500"
+                        icon: <Shield className="h-8 w-8" />,
+                        title: t('secure_heritage', 'تراث آمن'),
+                        description: t('secure_heritage_desc', 'احم معلومات عائلتك بأعلى مستويات الأمان'),
+                        color: "from-emerald-500 to-teal-500"
                       }
-                    ].map((step, index) => (
+                    ].map((benefit, index) => (
                       <Card key={index} className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
                         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-emerald-50 dark:from-gray-800 dark:via-gray-900 dark:to-emerald-950 opacity-90"></div>
                         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
                         <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
                         
                         <CardContent className="relative p-8 text-center">
-                          <div className="text-6xl font-bold text-emerald-100 dark:text-emerald-900/20 mb-4">
-                            {step.step}
-                          </div>
-                          
-                          <div className="relative mb-6 -mt-12">
-                            <div className={`absolute inset-0 bg-gradient-to-r ${step.color} rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110`}></div>
-                            <div className={`relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${step.color} rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500`}>
+                          <div className="relative mb-6">
+                            <div className={`absolute inset-0 bg-gradient-to-r ${benefit.color} rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110`}></div>
+                            <div className={`relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${benefit.color} rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500`}>
                               <div className="text-white">
-                                {step.icon}
+                                {benefit.icon}
                               </div>
                             </div>
                           </div>
                           
                           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
-                            {step.title}
+                            {benefit.title}
                           </h3>
                           <p className="text-gray-600 dark:text-gray-300 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
-                            {step.description}
+                            {benefit.description}
                           </p>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
 
-                  <div className="text-center mt-12">
-                    <Link to="/family-builder?new=true">
-                      <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-lg px-8 py-4 rounded-full shadow-xl hover-scale">
-                        <Wand2 className="h-5 w-5 ml-2" />
-                        {t('start_building', 'ابدأ بناء شجرتك الآن')}
-                      </Button>
-                    </Link>
+                  {/* Simple Steps */}
+                  <div className="mt-16 text-center">
+                    <h3 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200">
+                      {t('just_three_steps', 'فقط ثلاث خطوات بسيطة')}
+                    </h3>
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
+                        <span className="text-lg text-gray-700 dark:text-gray-300">{t('step_1_simple', 'أضف اسمك')}</span>
+                      </div>
+                      <ArrowRight className="h-6 w-6 text-emerald-500 transform md:rotate-0 rotate-90" />
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div>
+                        <span className="text-lg text-gray-700 dark:text-gray-300">{t('step_2_simple', 'أضف أفراد العائلة')}</span>
+                      </div>
+                      <ArrowRight className="h-6 w-6 text-emerald-500 transform md:rotate-0 rotate-90" />
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
+                        <span className="text-lg text-gray-700 dark:text-gray-300">{t('step_3_simple', 'استمتع بالنتيجة')}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
             ) : (
+              // Show Existing Trees
               <section className="py-12 relative">
                 <div className="container mx-auto px-4 relative z-10">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Quick Actions */}
-                    <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-0 shadow-2xl">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-20 rounded-2xl blur-xl"></div>
-                      <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                      
-                      <CardContent className="relative p-8">
-                        <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-6 flex items-center gap-3">
-                          <Crown className="h-6 w-6 text-emerald-600" />
-                          {t('quick_actions', 'إجراءات سريعة')}
-                        </h3>
-                        
-                        <div className="space-y-4">
-                          <Link to="/family-builder?new=true">
-                            <Button className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl justify-start text-lg p-6">
-                              <Plus className="h-5 w-5 ml-3" />
-                              {t('add_family_member', 'إضافة فرد جديد')}
-                            </Button>
-                          </Link>
-                          
-                          <Link to="/family-overview">
-                            <Button variant="outline" className="w-full border-emerald-200 dark:border-emerald-700 rounded-xl justify-start text-lg p-6">
-                              <Users className="h-5 w-5 ml-3" />
-                              {t('view_all_members', 'عرض جميع الأفراد')}
-                            </Button>
-                          </Link>
-                          
-                          <Link to="/family-tree-view">
-                            <Button variant="outline" className="w-full border-emerald-200 dark:border-emerald-700 rounded-xl justify-start text-lg p-6">
-                              <TreePine className="h-5 w-5 ml-3" />
-                              {t('detailed_tree_view', 'عرض الشجرة التفصيلي')}
-                            </Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
+                  {/* Trees Header */}
+                  <div className="flex flex-col md:flex-row justify-between items-center mb-12">
+                    <div>
+                      <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                        <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                          {t('your_family_trees', 'أشجارك العائلية')}
+                        </span>
+                      </h2>
+                      <p className="text-lg text-gray-600 dark:text-gray-300">
+                        {t('manage_trees_desc', 'إدارة وتطوير أشجارك العائلية')}
+                      </p>
+                    </div>
+                    <Link to="/family-builder?new=true">
+                      <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-lg px-8 py-4 rounded-full shadow-xl">
+                        <Plus className="h-5 w-5 ml-2" />
+                        {t('create_new_tree', 'إنشاء شجرة جديدة')}
+                      </Button>
+                    </Link>
+                  </div>
 
-                    {/* Motivational Quote */}
-                    <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-0 shadow-2xl">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-20 rounded-2xl blur-xl"></div>
-                      <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                      
-                      <CardContent className="relative p-12 text-center">
-                        <div className="mb-8">
-                          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-xl mb-6">
-                            <Quote className="h-8 w-8 text-white" />
+                  {/* Trees Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {familyTrees.map((tree, index) => (
+                      <Card key={tree.id} className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-emerald-50 dark:from-gray-800 dark:via-gray-900 dark:to-emerald-950 opacity-90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
+                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
+                        
+                        <CardHeader className="relative">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
+                                <TreePine className="h-6 w-6 text-white" />
+                              </div>
+                              <div>
+                                <CardTitle className="text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
+                                  {tree.name}
+                                </CardTitle>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  {new Date(tree.created_at).toLocaleDateString('ar-SA')}
+                                </p>
+                              </div>
+                            </div>
+                            <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300">
+                              {tree.members_count} {t('member', 'فرد')}
+                            </Badge>
                           </div>
-                        </div>
+                        </CardHeader>
                         
-                        <blockquote className="text-xl md:text-2xl font-medium text-gray-800 dark:text-gray-200 mb-6 leading-relaxed">
-                          "{quotes[currentQuote].text}"
-                        </blockquote>
-                        
-                        <div className="text-emerald-600 dark:text-emerald-400 font-medium">
-                          — {quotes[currentQuote].author}
-                        </div>
-                        
-                        <div className="flex justify-center mt-6 space-x-2">
-                          {quotes.map((_, index) => (
-                            <div 
-                              key={index}
-                              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                index === currentQuote 
-                                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 scale-125' 
-                                  : 'bg-gray-300 dark:bg-gray-600'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
+                        <CardContent className="relative">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
+                            <Calendar className="h-4 w-4" />
+                            <span>
+                              {t('last_update', 'آخر تحديث')}: {new Date(tree.updated_at).toLocaleDateString('ar-SA')}
+                            </span>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <Link to={`/family-tree-view?family=${tree.id}`} className="flex-1">
+                              <Button variant="outline" size="sm" className="w-full border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                <Eye className="h-4 w-4 ml-2" />
+                                {t('view', 'عرض')}
+                              </Button>
+                            </Link>
+                            <Link to={`/family-overview?family=${tree.id}`} className="flex-1">
+                              <Button variant="outline" size="sm" className="w-full border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                <Edit className="h-4 w-4 ml-2" />
+                                {t('manage', 'إدارة')}
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="border-red-200 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400"
+                              onClick={() => handleDeleteTree(tree.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </div>
               </section>
