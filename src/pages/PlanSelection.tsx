@@ -186,38 +186,8 @@ const PlanSelection = () => {
   };
 
   const getPackageIcon = (index: number) => {
-    const icons = [Rocket, Crown, Infinity];
+    const icons = [Shield, Crown, Gem];
     return icons[index % icons.length];
-  };
-
-  const getPackageTheme = (index: number) => {
-    const themes = [
-      {
-        gradient: "from-emerald-400 via-cyan-400 to-blue-500",
-        bgGradient: "from-emerald-50 via-cyan-50 to-blue-50",
-        darkBgGradient: "from-emerald-950/20 via-cyan-950/20 to-blue-950/20",
-        accent: "emerald-500",
-        icon: "emerald-100",
-        ring: "emerald-500/20"
-      },
-      {
-        gradient: "from-purple-400 via-pink-500 to-red-500",
-        bgGradient: "from-purple-50 via-pink-50 to-red-50",
-        darkBgGradient: "from-purple-950/20 via-pink-950/20 to-red-950/20",
-        accent: "purple-500",
-        icon: "purple-100",
-        ring: "purple-500/20"
-      },
-      {
-        gradient: "from-amber-400 via-orange-500 to-red-500",
-        bgGradient: "from-amber-50 via-orange-50 to-red-50",
-        darkBgGradient: "from-amber-950/20 via-orange-950/20 to-red-950/20",
-        accent: "amber-500",
-        icon: "amber-100",
-        ring: "amber-500/20"
-      }
-    ];
-    return themes[index % themes.length];
   };
 
   const isCurrentPackage = (packageId: string): boolean => {
@@ -351,69 +321,63 @@ const PlanSelection = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20 relative overflow-hidden">
-      {/* Background Decorations */}
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-background relative overflow-hidden">
+      {/* Background decorations matching home page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/5 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-muted/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 right-10 text-tree-primary/10 text-8xl animate-float">
+          <TreePine />
+        </div>
+        <div className="absolute bottom-20 left-10 text-tree-secondary/20 text-6xl animate-float-delayed">
+          <Heart />
+        </div>
+        <div className="absolute top-1/2 left-1/4 text-accent/5 text-4xl animate-float-slow">
+          <Star />
+        </div>
       </div>
       
-      <div className="container mx-auto px-6 py-16 max-w-7xl relative z-10">
-        {/* Hero Section */}
-        <div className="text-center mb-20">
+      <div className="container mx-auto px-6 py-16 max-w-6xl relative z-10">
+        {/* Header section matching home style */}
+        <div className="text-center mb-16 fade-in">
           <div className="flex flex-col items-center gap-8">
-            {/* Logo with creative effect */}
+            {/* Logo */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-2xl transform scale-150"></div>
               <img 
                 src={familyTreeLogo} 
                 alt="شجرتي" 
-                className="h-32 w-32 rounded-3xl shadow-2xl hover:scale-105 transition-all duration-500 relative z-10 ring-4 ring-primary/10"
+                className="h-20 w-20 rounded-2xl tree-shadow hover:scale-105 transition-all duration-300"
               />
             </div>
             
-            {/* Title with creative typography */}
-            <div className="space-y-6">
-              <h1 className="text-6xl md:text-7xl font-extrabold mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-300% animate-gradient">
-                  {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
+            {/* Title with matching gradient */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-center gap-2 text-accent font-medium mb-4">
+                <Star className="h-5 w-5 fill-current" />
+                {currentLanguage === 'ar' ? 'خطط مميزة لحفظ تراث عائلتك' : 'Premium Plans for Your Family Heritage'}
+              </div>
+              
+              <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+                {currentLanguage === 'ar' ? 'اختر' : 'Choose'}{" "}
+                <span className="text-transparent bg-clip-text hero-gradient">
+                  {currentLanguage === 'ar' ? 'خطتك' : 'Your Plan'}
                 </span>
+                <br />
+                {currentLanguage === 'ar' ? 'المثالية' : 'Perfect'}
               </h1>
               
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                 {currentLanguage === 'ar' 
-                  ? 'انضم إلى آلاف العائلات حول العالم واحتفظ بقصص أجدادك للأجيال القادمة بأسلوب عصري ومبتكر'
-                  : 'Join thousands of families worldwide and preserve your ancestors\' stories for future generations with modern innovation'
+                  ? 'اختر الخطة التي تناسب احتياجاتك واحفظ تاريخ عائلتك بأفضل الطرق'
+                  : 'Choose the plan that fits your needs and preserve your family history in the best way'
                 }
               </p>
-              
-              {/* Feature highlights */}
-              <div className="flex flex-wrap justify-center gap-6 pt-8">
-                {[
-                  { icon: Award, text: currentLanguage === 'ar' ? 'جودة عالية' : 'Premium Quality', color: 'from-emerald-500 to-cyan-500' },
-                  { icon: Shield, text: currentLanguage === 'ar' ? 'أمان تام' : 'Secure & Safe', color: 'from-blue-500 to-purple-500' },
-                  { icon: Zap, text: currentLanguage === 'ar' ? 'سهل الاستخدام' : 'Easy to Use', color: 'from-amber-500 to-orange-500' }
-                ].map((feature, idx) => (
-                  <div key={idx} className="group flex items-center gap-3 bg-background/50 backdrop-blur-sm rounded-full px-6 py-3 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:scale-105">
-                    <div className={`p-2 rounded-full bg-gradient-to-r ${feature.color} text-white group-hover:scale-110 transition-transform duration-300`}>
-                      <feature.icon className="h-4 w-4" />
-                    </div>
-                    <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300">
-                      {feature.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Creative Plans Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        {/* Plans grid with smaller, elegant design */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {packages.map((pkg, index) => {
             const PackageIcon = getPackageIcon(index);
-            const theme = getPackageTheme(index);
             const packagePrice = getPackagePrice(pkg);
             const packageName = getLocalizedValue(pkg.name);
             const packageFeatures = getPackageFeatures(pkg);
@@ -422,146 +386,140 @@ const PlanSelection = () => {
             const isFeatured = pkg.is_featured;
             
             return (
-              <div key={pkg.id} className="relative group">
-                {/* Featured glow effect */}
+              <Card 
+                key={pkg.id} 
+                className={`
+                  relative h-full transition-all duration-500 hover:scale-105 hover:shadow-lg
+                  ${isFeatured ? 'ring-2 ring-primary/20 scale-105' : ''}
+                  ${currentPlan ? 'ring-2 ring-accent/50' : ''}
+                  bg-white/80 dark:bg-card/80 backdrop-blur-sm border border-border/50
+                `}
+              >
+                {/* Featured badge */}
                 {isFeatured && (
-                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-red-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse"></div>
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                    <Badge className="hero-gradient text-white px-4 py-1.5 text-xs font-semibold">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      {currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Current plan badge */}
+                {currentPlan && (
+                  <div className="absolute -top-3 right-4 z-10">
+                    <Badge className="bg-accent text-accent-foreground px-3 py-1.5 text-xs">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      {currentLanguage === 'ar' ? 'نشطة' : 'Active'}
+                    </Badge>
+                  </div>
                 )}
                 
-                <Card className={`
-                  relative h-full border-0 overflow-hidden transition-all duration-700 hover:scale-105 cursor-pointer
-                  ${isFeatured ? 'scale-105 lg:scale-110' : ''}
-                  ${currentPlan ? 'ring-2 ring-primary/50 shadow-primary/25' : ''}
-                  bg-gradient-to-br ${theme.bgGradient} dark:${theme.darkBgGradient}
-                  shadow-2xl hover:shadow-3xl backdrop-blur-sm
-                `}>
-                  
-                  {/* Animated background pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${theme.gradient} transform rotate-12 scale-150 group-hover:rotate-45 transition-transform duration-1000`}></div>
+                <CardHeader className="text-center pb-4 pt-8">
+                  {/* Icon */}
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-all duration-300">
+                    <PackageIcon className="h-6 w-6 text-primary" />
                   </div>
                   
-                  {/* Floating elements */}
-                  <div className="absolute top-8 right-8 w-20 h-20 bg-gradient-to-br from-white/10 to-white/5 rounded-full group-hover:scale-150 group-hover:rotate-180 transition-all duration-1000"></div>
-                  <div className="absolute bottom-8 left-8 w-12 h-12 bg-gradient-to-br from-white/5 to-white/2 rounded-full group-hover:scale-125 group-hover:-rotate-90 transition-all duration-700"></div>
-
-                  {/* Featured badge */}
-                  {isFeatured && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <Badge className={`bg-gradient-to-r ${theme.gradient} text-white px-8 py-3 shadow-xl animate-bounce hover:animate-none transition-all duration-300 text-sm font-bold`}>
-                        <Sparkles className="h-4 w-4 mr-2 animate-spin" />
-                        {currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
-                      </Badge>
-                    </div>
-                  )}
-
-                  {/* Current plan badge */}
-                  {currentPlan && (
-                    <div className="absolute -top-4 right-6 z-20">
-                      <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white px-6 py-2 shadow-lg">
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        {currentLanguage === 'ar' ? 'نشطة' : 'Active'}
-                      </Badge>
-                    </div>
-                  )}
+                  <CardTitle className="text-xl font-bold text-foreground mb-3">
+                    {packageName}
+                  </CardTitle>
                   
-                  <CardHeader className="text-center pb-8 pt-12 relative z-10">
-                    {/* Creative icon container */}
-                    <div className="relative mb-8">
-                      <div className={`w-24 h-24 bg-gradient-to-br ${theme.gradient} rounded-3xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 ring-4 ring-${theme.ring}`}>
-                        <PackageIcon className="h-12 w-12 text-white drop-shadow-lg" />
-                        <div className="absolute inset-0 rounded-3xl bg-white/20 group-hover:bg-white/30 transition-colors duration-300"></div>
+                  {/* Pricing */}
+                  <div className="mb-4">
+                    {packagePrice === 0 ? (
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">
+                          {currentLanguage === 'ar' ? 'مجاني' : 'Free'}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {currentLanguage === 'ar' ? 'للأبد' : 'Forever'}
+                        </p>
                       </div>
-                      
-                      {/* Floating icon effects */}
-                      <div className={`absolute -top-2 -right-2 w-6 h-6 bg-${theme.accent} rounded-full opacity-80 group-hover:scale-150 transition-all duration-500`}></div>
-                      <div className={`absolute -bottom-2 -left-2 w-4 h-4 bg-${theme.accent} rounded-full opacity-60 group-hover:scale-125 transition-all duration-700`}></div>
-                    </div>
-                    
-                    <CardTitle className="text-3xl font-bold text-foreground mb-6 group-hover:scale-105 transition-all duration-300">
-                      {packageName}
-                    </CardTitle>
-                    
-                    {/* Creative pricing display */}
-                    <div className="mb-8">
-                      {packagePrice === 0 ? (
-                        <div className="text-center space-y-2">
-                          <div className={`text-5xl font-bold bg-gradient-to-r ${theme.gradient} bg-clip-text text-transparent`}>
-                            {currentLanguage === 'ar' ? 'مجاني' : 'Free'}
-                          </div>
-                          <div className="flex items-center justify-center gap-2">
-                            <Infinity className="h-5 w-5 text-muted-foreground" />
-                            <p className="text-muted-foreground font-medium">
-                              {currentLanguage === 'ar' ? 'للأبد' : 'Forever'}
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center space-y-3">
-                          <div className="flex items-baseline justify-center gap-2">
-                            <span className={`text-5xl font-bold bg-gradient-to-r ${theme.gradient} bg-clip-text text-transparent`}>
-                              {formatPrice(packagePrice)}
-                            </span>
-                            <span className="text-xl text-muted-foreground font-semibold">
-                              {currentLanguage === 'ar' ? '/سنة' : '/year'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                            <Target className="h-4 w-4" />
-                            <p className="text-sm font-medium">
-                              {currentLanguage === 'ar' 
-                                ? `${Math.round(packagePrice / 12)} ريال شهرياً` 
-                                : `$${Math.round(packagePrice / 12)} per month`
-                              }
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="px-8 pb-8 relative z-10">
-                    {/* Features list with creative styling */}
-                    <div className="space-y-4 mb-8">
-                      {packageFeatures.map((feature, featureIndex) => (
-                        <div 
-                          key={featureIndex}
-                          className="flex items-center gap-4 group/feature hover:scale-105 transition-all duration-300"
-                        >
-                          <div className={`w-6 h-6 bg-gradient-to-r ${theme.gradient} rounded-full flex items-center justify-center flex-shrink-0 group-hover/feature:scale-110 transition-transform duration-300`}>
-                            <CheckCircle className="h-3 w-3 text-white" />
-                          </div>
-                          <span className="text-foreground font-medium group-hover/feature:text-primary transition-colors duration-300">
-                            {feature}
+                    ) : (
+                      <div className="text-center">
+                        <div className="flex items-baseline justify-center gap-1 mb-1">
+                          <span className="text-2xl font-bold text-primary">
+                            {formatPrice(packagePrice)}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {currentLanguage === 'ar' ? '/سنة' : '/year'}
                           </span>
                         </div>
-                      ))}
-                    </div>
-                    
-                    {/* Call-to-action button */}
-                    <Button
-                      onClick={() => handlePlanSelect(pkg.id)}
-                      disabled={buttonDisabled}
-                      className={`
-                        w-full h-14 text-lg font-bold rounded-2xl transition-all duration-500 group/btn
-                        ${buttonDisabled 
-                          ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                          : `bg-gradient-to-r ${theme.gradient} hover:shadow-2xl hover:scale-105 text-white shadow-lg hover:shadow-${theme.accent}/50`
-                        }
-                      `}
-                    >
-                      <span className="flex items-center gap-3">
-                        {getButtonText(pkg)}
-                        {!buttonDisabled && (
-                          <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                        )}
-                      </span>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+                        <p className="text-xs text-muted-foreground">
+                          {currentLanguage === 'ar' 
+                            ? `${Math.round(packagePrice / 12)} ريال شهرياً` 
+                            : `$${Math.round(packagePrice / 12)} per month`
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="px-6 pb-6">
+                  {/* Features list */}
+                  <div className="space-y-2 mb-6">
+                    {packageFeatures.slice(0, 4).map((feature, featureIndex) => (
+                      <div 
+                        key={featureIndex}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <div className="w-4 h-4 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-2.5 w-2.5 text-primary" />
+                        </div>
+                        <span className="text-foreground text-sm">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* CTA Button */}
+                  <Button
+                    onClick={() => handlePlanSelect(pkg.id)}
+                    disabled={buttonDisabled}
+                    className={`
+                      w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
+                      ${buttonDisabled 
+                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                        : 'hero-gradient hover:shadow-lg text-white hover:scale-105'
+                      }
+                    `}
+                  >
+                    <span className="flex items-center gap-2">
+                      {getButtonText(pkg)}
+                      {!buttonDisabled && (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </span>
+                  </Button>
+                </CardContent>
+              </Card>
             );
           })}
+        </div>
+
+        {/* Bottom stats section matching home style */}
+        <div className="flex items-center justify-center gap-8 pt-16 fade-in">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">+1000</div>
+            <div className="text-sm text-muted-foreground">
+              {currentLanguage === 'ar' ? 'عائلة سعيدة' : 'Happy families'}
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">+50k</div>
+            <div className="text-sm text-muted-foreground">
+              {currentLanguage === 'ar' ? 'فرد محفوظ' : 'Members preserved'}
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">99%</div>
+            <div className="text-sm text-muted-foreground">
+              {currentLanguage === 'ar' ? 'رضا المستخدمين' : 'User satisfaction'}
+            </div>
+          </div>
         </div>
       </div>
     </div>
