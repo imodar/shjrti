@@ -439,7 +439,7 @@ const Dashboard = () => {
                   {/* Modern Header */}
                   <div className="relative mb-8">
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/10 to-amber-500/5 rounded-3xl blur-3xl"></div>
-                    <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-2xl border border-white/30 dark:border-gray-700/30 rounded-3xl p-6 shadow-2xl">
+                    <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-2xl border border-white/30 dark:border-gray-700/30 rounded-3xl p-4 shadow-2xl">
                       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                         <div className="flex items-center gap-4">
                           <div className="relative">
