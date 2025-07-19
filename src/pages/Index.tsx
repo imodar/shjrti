@@ -4,9 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, ArrowLeft, Play, Quote, Shield, Crown, Gem } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -22,6 +23,8 @@ const Home2 = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const testimonials = [
     {
@@ -162,12 +165,14 @@ const Home2 = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/family-builder?new=true">
-                  <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-lg px-8 py-4 rounded-full shadow-xl hover-scale">
-                    <TreePine className="h-5 w-5 ml-2" />
-                    {t('hero_cta_primary', 'ابدأ رحلتك الآن')}
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-lg px-8 py-4 rounded-full shadow-xl hover-scale"
+                  onClick={() => user ? navigate('/dashboard') : navigate('/auth')}
+                >
+                  <TreePine className="h-5 w-5 ml-2" />
+                  {t('hero_cta_primary', 'ابدأ رحلتك الآن')}
+                </Button>
                 <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:hover:bg-emerald-900/20 text-lg px-8 py-4 rounded-full">
                   <Play className="h-5 w-5 ml-2" />
                   {t('hero_cta_secondary', 'شاهد العرض التوضيحي')}
