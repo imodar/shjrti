@@ -201,16 +201,15 @@ const PlanSelection = () => {
     if (!selectedPackage) return;
 
     try {
-      const familyId = crypto.randomUUID();
       const packagePrice = getPackagePrice(selectedPackage);
       const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
 
       const { data: invoiceId, error } = await supabase.rpc('create_invoice', {
         p_user_id: user.id,
-        p_family_id: familyId,
         p_package_id: packageId,
         p_amount: packagePrice,
-        p_currency: currency
+        p_currency: currency,
+        p_family_id: null  // User-based subscription, no family
       });
 
       if (error) {
