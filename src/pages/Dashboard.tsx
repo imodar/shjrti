@@ -515,66 +515,34 @@ const Dashboard = () => {
                 </div>
               </section>
             ) : (
-              <section className="py-8 relative mt-8">
+              <section className="py-8 relative mt-4">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Statistics Box */}
-                  <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-2xl p-6 mb-8 border border-emerald-200/50 dark:border-emerald-700/50">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-2xl p-4 mb-8 border border-emerald-200/50 dark:border-emerald-700/50">
+                    <div className="grid grid-cols-2 gap-8">
                       {/* Total Families */}
                       <div className="text-center">
                         <div className="flex items-center justify-center mb-2">
-                          <TreePine className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+                          <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                          {familyTrees.length}
+                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                          {familyTrees.length} / {userSubscription?.max_trees || '∞'}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          عدد الأشجار
+                          أشجار العائلة
                         </div>
                       </div>
                       
                       {/* Total Members */}
                       <div className="text-center">
                         <div className="flex items-center justify-center mb-2">
-                          <Users className="h-8 w-8 text-teal-600 dark:text-teal-400" />
+                          <Users className="h-6 w-6 text-teal-600 dark:text-teal-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                          {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)}
+                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                          {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
                           إجمالي الأفراد
-                        </div>
-                      </div>
-                      
-                      {/* Latest Update */}
-                      <div className="text-center">
-                        <div className="flex items-center justify-center mb-2">
-                          <Calendar className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                          {familyTrees.length > 0 
-                            ? new Date(Math.max(...familyTrees.map(t => new Date(t.updated_at).getTime()))).toLocaleDateString('ar-SA', { month: 'short', day: 'numeric' })
-                            : '--'
-                          }
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          آخر تحديث
-                        </div>
-                      </div>
-                      
-                      {/* Completion Status */}
-                      <div className="text-center">
-                        <div className="flex items-center justify-center mb-2">
-                          <Star className="h-8 w-8 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                          {familyTrees.length > 0 
-                            ? Math.round((familyTrees.filter(t => (t.members_count || 0) > 1).length / familyTrees.length) * 100)
-                            : 0
-                          }%
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          نسبة الإكمال
                         </div>
                       </div>
                     </div>
