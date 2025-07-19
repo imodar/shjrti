@@ -549,12 +549,22 @@ const Dashboard = () => {
                           
                           <CardHeader className="relative pb-6 pt-8">
                             <div className="flex items-start justify-between mb-4">
-                              {/* Tree Icon with Animation */}
-                              <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-md opacity-50 group-hover:opacity-70 transition-opacity duration-300 animate-pulse"></div>
-                                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                  <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
-                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full opacity-80 animate-ping"></div>
+                              {/* Tree Icon with Family Name */}
+                              <div className="flex items-center gap-4">
+                                <div className="relative">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-md opacity-50 group-hover:opacity-70 transition-opacity duration-300 animate-pulse"></div>
+                                  <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                                    <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full opacity-80 animate-ping"></div>
+                                  </div>
+                                </div>
+                                
+                                {/* Family Name Section */}
+                                <div className="flex flex-col">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">عائلة</span>
+                                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 leading-tight">
+                                    {tree.name}
+                                  </h3>
                                 </div>
                               </div>
                               
@@ -568,18 +578,11 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            {/* Tree Title */}
-                            <div className="relative">
-                              <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 mb-3 leading-tight">
-                                {tree.name}
-                              </CardTitle>
-                              
-                              {/* Creation Date */}
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                <Calendar className="h-4 w-4" />
-                                <span className="font-medium">تم الإنشاء في {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
-                              </div>
+                            {/* Creation Date */}
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mr-20">
+                              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                              <Calendar className="h-4 w-4" />
+                              <span className="font-medium">تم الإنشاء في {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
                             </div>
                           </CardHeader>
                           
