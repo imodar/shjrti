@@ -34,8 +34,8 @@ export const GlobalHeader = () => {
       
       <div className="relative z-10 border-b border-white/10">
         {/* Main Header Container */}
-        <div className="max-w-7xl mx-auto px-6 py-2">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between h-16">
             {/* Creative Logo Section */}
             <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               <div className="relative">
@@ -65,7 +65,7 @@ export const GlobalHeader = () => {
               </div>
               
               {/* Brand Name and Tagline with enhanced styling */}
-              <div className="flex flex-col">
+              <div className="hidden sm:flex flex-col">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-500 filter drop-shadow-lg">
                   {t('site.name', 'شجرة العائلة')}
                 </h1>
