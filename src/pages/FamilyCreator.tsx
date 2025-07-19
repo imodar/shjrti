@@ -669,7 +669,7 @@ const FamilyCreator = () => {
                               </div>
 
                               {/* Creative Feature Cards */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 px-8">
                                 {[
                                   { 
                                     icon: Heart, 
@@ -697,23 +697,23 @@ const FamilyCreator = () => {
                                     {/* Floating Card */}
                                     <div className="relative transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
                                       {/* Card Container */}
-                                      <div className={`relative bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 dark:from-${item.color}-900/20 dark:to-${item.color}-800/20 rounded-2xl p-4 shadow-lg group-hover:shadow-2xl transition-all duration-500 border border-${item.color}-200/50 dark:border-${item.color}-300/20`}>
+                                      <div className={`relative bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 dark:from-${item.color}-900/20 dark:to-${item.color}-800/20 rounded-xl p-3 shadow-md group-hover:shadow-lg transition-all duration-500 border border-${item.color}-200/50 dark:border-${item.color}-300/20`}>
                                         
                                         {/* Icon with Glow */}
-                                        <div className="relative mb-3">
-                                          <div className={`mx-auto w-12 h-12 bg-gradient-to-br from-${item.color}-400 to-${item.color}-600 rounded-xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform duration-500`}>
-                                            <item.icon className="h-6 w-6 text-white drop-shadow-lg" />
+                                        <div className="relative mb-2">
+                                          <div className={`mx-auto w-10 h-10 bg-gradient-to-br from-${item.color}-400 to-${item.color}-600 rounded-lg flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500`}>
+                                            <item.icon className="h-5 w-5 text-white drop-shadow-lg" />
                                           </div>
                                           {/* Glow Effect */}
-                                          <div className={`absolute inset-0 bg-${item.color}-400/30 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500`}></div>
+                                          <div className={`absolute inset-0 bg-${item.color}-400/30 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500`}></div>
                                         </div>
                                         
                                         {/* Text Content */}
                                         <div className="space-y-2">
-                                          <h4 className={`font-bold text-${item.color}-700 dark:text-${item.color}-300 text-xl leading-tight`}>
+                                          <h4 className={`font-bold text-${item.color}-700 dark:text-${item.color}-300 text-base leading-tight`}>
                                             {item.title}
                                           </h4>
-                                          <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                          <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                                             {item.desc}
                                           </p>
                                         </div>
