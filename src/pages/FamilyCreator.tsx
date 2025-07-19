@@ -442,11 +442,11 @@ const FamilyCreator = () => {
                 <div className="flex items-center gap-4">
                   <div className="relative group">
                     {/* Removed the glowing green effect that was causing the issue */}
-                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30 transform hover:scale-110 transition-all duration-300">
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30 transform hover:scale-110 transition-all duration-300">
                       <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
                     </div>
                     {/* Status Indicator */}
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
                       <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
                     </div>
                   </div>
@@ -454,7 +454,7 @@ const FamilyCreator = () => {
                   {/* Text Content */}
                   <div className="text-right">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 bg-clip-text text-transparent">
                         إنشاء شجرة العائلة
                       </span>
                     </h1>
