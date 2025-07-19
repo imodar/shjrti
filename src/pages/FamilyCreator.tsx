@@ -615,7 +615,7 @@ const FamilyCreator = () => {
                             </div>
 
                             {/* Main Content with Light Glassmorphism */}
-                            <div className="relative bg-white/60 dark:bg-white/10 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-300/20 rounded-3xl shadow-xl p-12">
+                            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10 p-12">
                               
                               {/* Header Section with Soft Colors */}
                               <div className="text-center space-y-8 mb-12">
