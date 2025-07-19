@@ -768,94 +768,100 @@ const FamilyCreator = () => {
                       </CardDescription>
                     </CardHeader>
                     
-                    <CardContent className="p-10 md:p-16">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                        {/* Name */}
-                        <div className="space-y-4">
-                          <Label htmlFor="founderName" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
-                            الاسم الكامل *
-                          </Label>
-                          <Input
-                            id="founderName"
-                            placeholder="الاسم الكامل للمؤسس"
-                            value={founderData.name}
-                            onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                            className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
-                          />
+                    <CardContent className="p-6 md:p-8">
+                      <div className="space-y-6">
+                        {/* Top Row - Essential Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Name */}
+                          <div className="group">
+                            <Label htmlFor="founderName" className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                              الاسم الكامل *
+                            </Label>
+                            <Input
+                              id="founderName"
+                              placeholder="الاسم الكامل للمؤسس"
+                              value={founderData.name}
+                              onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                              className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl"
+                            />
+                          </div>
+
+                          {/* Gender */}
+                          <div className="group">
+                            <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                              <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
+                              الجنس *
+                            </Label>
+                            <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
+                              <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
+                                <SelectValue placeholder="اختر الجنس" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="male">ذكر</SelectItem>
+                                <SelectItem value="female">أنثى</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
 
-                        {/* Gender */}
-                        <div className="space-y-4">
-                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
-                            الجنس *
-                          </Label>
-                          <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                            <SelectTrigger className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl">
-                              <SelectValue placeholder="اختر الجنس" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="male">ذكر</SelectItem>
-                              <SelectItem value="female">أنثى</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        {/* Middle Row - Dates and Status */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Birth Date */}
+                          <div className="group">
+                            <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                              <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                              تاريخ الميلاد
+                            </Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
+                                    !founderData.birthDate && "text-gray-500"
+                                  )}
+                                >
+                                  <CalendarIcon className="ml-2 h-4 w-4" />
+                                  {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الميلاد"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={founderData.birthDate}
+                                  onSelect={(date) => setFounderData({...founderData, birthDate: date})}
+                                  locale={ar}
+                                  initialFocus
+                                  className="rounded-md border pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
 
-                        {/* Birth Date */}
-                        <div className="space-y-4">
-                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-amber-500 rounded-full shadow-lg"></div>
-                            تاريخ الميلاد
-                          </Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-left font-normal w-full hover:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl",
-                                  !founderData.birthDate && "text-gray-500"
-                                )}
-                              >
-                                <CalendarIcon className="mr-4 h-6 w-6" />
-                                {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الميلاد"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={founderData.birthDate}
-                                onSelect={(date) => setFounderData({...founderData, birthDate: date})}
-                                locale={ar}
-                                initialFocus
-                                className="rounded-md border pointer-events-auto"
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
-                        {/* Status */}
-                        <div className="space-y-4">
-                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
-                            الحالة
-                          </Label>
-                          <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                            <SelectTrigger className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="alive">على قيد الحياة</SelectItem>
-                              <SelectItem value="deceased">متوفى</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {/* Status */}
+                          <div className="group">
+                            <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                              الحالة
+                            </Label>
+                            <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
+                              <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="alive">على قيد الحياة</SelectItem>
+                                <SelectItem value="deceased">متوفى</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
 
                         {/* Death Date (if deceased) */}
                         {!founderData.isAlive && (
-                          <div className="space-y-4 lg:col-span-2">
-                            <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                              <div className="w-3 h-3 bg-red-500 rounded-full shadow-lg"></div>
+                          <div className="group">
+                            <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                               تاريخ الوفاة
                             </Label>
                             <Popover>
@@ -863,11 +869,11 @@ const FamilyCreator = () => {
                                 <Button
                                   variant="outline"
                                   className={cn(
-                                    "h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-left font-normal w-full hover:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl",
+                                    "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
                                     !founderData.deathDate && "text-gray-500"
                                   )}
                                 >
-                                  <CalendarIcon className="mr-4 h-6 w-6" />
+                                  <CalendarIcon className="ml-2 h-4 w-4" />
                                   {founderData.deathDate ? format(founderData.deathDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الوفاة"}
                                 </Button>
                               </PopoverTrigger>
@@ -885,28 +891,13 @@ const FamilyCreator = () => {
                           </div>
                         )}
 
-                        {/* Biography */}
-                        <div className="space-y-4 lg:col-span-2">
-                          <Label htmlFor="founderBio" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
-                            السيرة الذاتية (اختياري)
-                          </Label>
-                          <Textarea
-                            id="founderBio"
-                            placeholder="معلومات عن المؤسس، إنجازاته، مهنته، قصص مميزة، أو أي معلومات مهمة تود توثيقها..."
-                            value={founderData.bio}
-                            onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
-                            className="min-h-[160px] text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
-                          />
-                        </div>
-
-                        {/* Enhanced Image Upload */}
-                        <div className="space-y-4 lg:col-span-2">
-                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-amber-500 rounded-full shadow-lg"></div>
+                        {/* Image Upload - Compact Card */}
+                        <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200/50 dark:border-amber-700/50">
+                          <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3">
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                             صورة المؤسس (اختياري)
                           </Label>
-                          <div className="flex items-center gap-8">
+                          <div className="flex items-center gap-4">
                             <input
                               type="file"
                               accept="image/*"
@@ -925,14 +916,14 @@ const FamilyCreator = () => {
                               className="hidden"
                               id="founder-image"
                             />
-                            <Label htmlFor="founder-image" className="cursor-pointer">
-                              <div className="group flex items-center gap-4 px-8 py-6 border-2 border-dashed border-amber-300/50 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-500 transition-all duration-300 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm">
-                                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                                  <Upload className="h-7 w-7 text-white" />
+                            <Label htmlFor="founder-image" className="cursor-pointer flex-1">
+                              <div className="group flex items-center gap-3 px-4 py-3 border-2 border-dashed border-amber-300/50 rounded-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all duration-300">
+                                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+                                  <Upload className="h-5 w-5 text-white" />
                                 </div>
-                                <div>
-                                  <p className="text-lg font-bold text-gray-700 dark:text-gray-300">اختر صورة المؤسس</p>
-                                  <p className="text-sm text-gray-500 dark:text-gray-400">JPG, PNG أو GIF</p>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">اختر صورة</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG أو GIF</p>
                                 </div>
                               </div>
                             </Label>
@@ -941,17 +932,32 @@ const FamilyCreator = () => {
                                 <img 
                                   src={founderData.croppedImage} 
                                   alt="صورة المؤسس" 
-                                  className="w-24 h-24 rounded-2xl object-cover border-4 border-amber-200 dark:border-amber-700 shadow-xl group-hover:scale-105 transition-transform" 
+                                  className="w-16 h-16 rounded-lg object-cover border-2 border-amber-300 dark:border-amber-600 group-hover:scale-105 transition-transform" 
                                 />
                                 <button
                                   onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
-                                  className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xs"
                                 >
-                                  <X className="h-4 w-4" />
+                                  <X className="h-3 w-3" />
                                 </button>
                               </div>
                             )}
                           </div>
+                        </div>
+
+                        {/* Biography - Compact Card */}
+                        <div className="bg-gradient-to-br from-teal-50/50 to-cyan-50/50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 border border-teal-200/50 dark:border-teal-700/50">
+                          <Label htmlFor="founderBio" className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3">
+                            <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
+                            السيرة الذاتية (اختياري)
+                          </Label>
+                          <Textarea
+                            id="founderBio"
+                            placeholder="معلومات عن المؤسس، إنجازاته، مهنته، قصص مميزة..."
+                            value={founderData.bio}
+                            onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
+                            className="min-h-[120px] border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl resize-none"
+                          />
                         </div>
                       </div>
                     </CardContent>
