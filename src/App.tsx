@@ -33,6 +33,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Disable browser's scroll restoration globally
+if ('scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
