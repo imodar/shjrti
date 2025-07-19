@@ -509,80 +509,140 @@ const FamilyCreator = () => {
                 <Card className="relative border-0 shadow-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl ring-1 ring-white/20 dark:ring-gray-500/20 overflow-hidden rounded-3xl">
                   <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500"></div>
                   
-                  <CardContent className="p-8 md:p-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                      {/* Left Side - Form */}
-                      <div className="space-y-8">
-                        <div className="text-center lg:text-right mb-6">
-                          <h3 className="text-2xl font-bold mb-2">
-                            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                              معلومات العائلة
-                            </span>
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm">
-                            أدخل المعلومات الأساسية لشجرة العائلة الجديدة
-                          </p>
-                        </div>
-
-                        <div className="space-y-4">
-                          <Label htmlFor="familyName" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
-                            اسم العائلة *
-                          </Label>
-                          <Input
-                            id="familyName"
-                            placeholder="مثال: عائلة الأحمد"
-                            value={treeData.name}
-                            onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                            className="h-14 text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl"
-                          />
-                        </div>
+                  <CardContent className="p-0 overflow-hidden">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
+                      {/* Left Side - Form with Creative Design */}
+                      <div className="p-8 md:p-12 bg-gradient-to-br from-white/80 to-emerald-50/80 dark:from-gray-800/80 dark:to-emerald-900/20 relative overflow-hidden">
+                        {/* Floating decoration elements */}
+                        <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-br from-emerald-200/30 to-teal-200/30 rounded-full blur-xl"></div>
+                        <div className="absolute bottom-6 left-6 w-16 h-16 bg-gradient-to-tr from-amber-200/30 to-emerald-200/30 rounded-full blur-lg"></div>
                         
-                        <div className="space-y-4">
-                          <Label htmlFor="familyDescription" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                            <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
-                            وصف العائلة (اختياري)
-                          </Label>
-                          <Textarea
-                            id="familyDescription"
-                            placeholder="وصف مختصر عن تاريخ العائلة، قصص مميزة، أو أي معلومات إضافية تود توثيقها..."
-                            value={treeData.description}
-                            onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                            className="min-h-[120px] text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl"
-                          />
+                        <div className="relative z-10 space-y-8">
+                          <div className="text-center lg:text-right">
+                            <div className="inline-flex items-center gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full mb-4">
+                              <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                              <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">الخطوة الأولى</span>
+                            </div>
+                            <h3 className="text-3xl font-bold mb-3">
+                              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                                معلومات العائلة
+                              </span>
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                              ابدأ رحلتك بتحديد هوية عائلتك الفريدة
+                            </p>
+                          </div>
+
+                          <div className="space-y-6">
+                            <div className="group">
+                              <Label htmlFor="familyName" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                اسم العائلة *
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="familyName"
+                                  placeholder="مثال: عائلة الأحمد"
+                                  value={treeData.name}
+                                  onChange={(e) => setTreeData({...treeData, name: e.target.value})}
+                                  className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                />
+                                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                                  <span className="text-white text-xs font-bold">1</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="group">
+                              <Label htmlFor="familyDescription" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                <div className="w-3 h-3 bg-gradient-to-r from-teal-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                وصف العائلة (اختياري)
+                              </Label>
+                              <div className="relative">
+                                <Textarea
+                                  id="familyDescription"
+                                  placeholder="شارك قصة عائلتك، تاريخها، أو أي تفاصيل مميزة تود الاحتفاظ بها..."
+                                  value={treeData.description}
+                                  onChange={(e) => setTreeData({...treeData, description: e.target.value})}
+                                  className="min-h-[120px] text-lg border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                />
+                                <div className="absolute right-4 top-4 w-6 h-6 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center">
+                                  <span className="text-white text-xs font-bold">2</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Right Side - Motivational Content */}
-                      <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-right space-y-6">
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full blur-xl"></div>
-                          <div className="relative w-32 h-32 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl">
-                            <TreePine className="h-16 w-16 text-white drop-shadow-lg" />
-                          </div>
+                      {/* Right Side - Motivational Content with Enhanced Design */}
+                      <div className="p-8 md:p-12 bg-gradient-to-bl from-emerald-500/10 via-teal-500/5 to-amber-500/10 dark:from-emerald-900/30 dark:via-teal-900/20 dark:to-amber-900/30 relative overflow-hidden flex flex-col justify-center">
+                        {/* Animated background elements */}
+                        <div className="absolute top-0 left-0 w-full h-full opacity-30">
+                          <div className="absolute top-8 left-8 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full animate-pulse"></div>
+                          <div className="absolute bottom-12 right-12 w-24 h-24 bg-gradient-to-tl from-amber-400/20 to-emerald-400/20 rounded-full animate-pulse delay-1000"></div>
+                          <div className="absolute top-1/2 right-8 w-16 h-16 bg-gradient-to-r from-teal-400/20 to-amber-400/20 rounded-full animate-pulse delay-500"></div>
                         </div>
 
-                        <div className="space-y-4">
-                          <h3 className="text-3xl font-bold">
-                            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                              رحلة الألف ميل
-                            </span>
-                          </h3>
-                          <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                            تبدأ بخطوة واحدة. كل عائلة عظيمة لها بداية، وبدايتك تبدأ الآن.
-                          </p>
-                          <div className="space-y-3 text-sm text-gray-500 dark:text-gray-400">
-                            <div className="flex items-center gap-3 justify-center lg:justify-start">
-                              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                              <span>حفظ التاريخ العائلي للأجيال القادمة</span>
+                        <div className="relative z-10 text-center lg:text-right space-y-8">
+                          {/* Main Icon with Enhanced Animation */}
+                          <div className="flex justify-center lg:justify-start mb-6">
+                            <div className="relative group">
+                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/30 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500 animate-pulse"></div>
+                              <div className="relative w-40 h-40 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl transform hover:scale-105 transition-all duration-300 border-4 border-white/30 dark:border-gray-700/30">
+                                <TreePine className="h-20 w-20 text-white drop-shadow-2xl" />
+                              </div>
+                              {/* Orbiting elements */}
+                              <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full border-2 border-white shadow-lg animate-bounce"></div>
+                              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full border-2 border-white shadow-lg animate-bounce delay-300"></div>
                             </div>
-                            <div className="flex items-center gap-3 justify-center lg:justify-start">
-                              <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                              <span>توثيق القصص والذكريات المميزة</span>
-                            </div>
-                            <div className="flex items-center gap-3 justify-center lg:justify-start">
-                              <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                              <span>ربط أفراد العائلة ببعضهم البعض</span>
+                          </div>
+
+                          <div className="space-y-6">
+                            <h3 className="text-4xl font-bold leading-tight">
+                              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                                رحلة الألف ميل
+                              </span>
+                              <br />
+                              <span className="text-2xl text-gray-600 dark:text-gray-300 font-normal">
+                                تبدأ بخطوة واحدة
+                              </span>
+                            </h3>
+                            
+                            <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                              كل عائلة عظيمة لها بداية، وبدايتك تبدأ الآن من هنا.
+                            </p>
+                            
+                            <div className="space-y-4">
+                              <div className="group flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:scale-105">
+                                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                  <Heart className="h-6 w-6 text-white" />
+                                </div>
+                                <div className="text-right">
+                                  <h4 className="font-bold text-gray-800 dark:text-gray-200">حفظ الذكريات</h4>
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">للأجيال القادمة</p>
+                                </div>
+                              </div>
+                              
+                              <div className="group flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:scale-105">
+                                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-amber-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                  <Users className="h-6 w-6 text-white" />
+                                </div>
+                                <div className="text-right">
+                                  <h4 className="font-bold text-gray-800 dark:text-gray-200">ربط الأجيال</h4>
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">بقصص مشتركة</p>
+                                </div>
+                              </div>
+                              
+                              <div className="group flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:scale-105">
+                                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                  <Star className="h-6 w-6 text-white" />
+                                </div>
+                                <div className="text-right">
+                                  <h4 className="font-bold text-gray-800 dark:text-gray-200">إرث دائم</h4>
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">يفتخر به الجميع</p>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
