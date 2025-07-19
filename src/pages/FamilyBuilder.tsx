@@ -1993,79 +1993,44 @@ const FamilyBuilder = () => {
 
       {/* Add/Edit Member Modal */}
       <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-2xl border border-white/30 dark:border-gray-600/30 shadow-2xl rounded-3xl ring-1 ring-white/20 dark:ring-gray-500/20">
-          {/* Floating Background Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
-            <div className="absolute top-10 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-full blur-xl animate-pulse"></div>
-            <div className="absolute bottom-20 left-10 w-16 h-16 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-full blur-xl animate-bounce"></div>
-            <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400/20 to-rose-400/20 rounded-full blur-xl animate-pulse"></div>
-          </div>
-
-          {/* Gradient Header Bar */}
-          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-t-3xl"></div>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">{/* Removed problematic positioning classes */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
           
-          <DialogHeader className="relative pt-6 pb-4">
-            <div className="flex items-center gap-6 mb-8">
-              <div className="relative">
-                <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
-                  <UserPlus className="h-10 w-10 text-white drop-shadow-lg" />
-                </div>
-                {/* Status Indicator */}
-                <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center">
-                  <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
-                </div>
+          <DialogHeader className="relative pt-4">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+                <UserPlus className="h-8 w-8 text-primary-foreground" />
               </div>
-              <div className="flex-1">
-                <DialogTitle className="text-3xl md:text-4xl font-bold mb-3">
-                  <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                    {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
-                  </span>
+              <div>
+                <DialogTitle className="text-3xl font-bold text-foreground">
+                  {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
                 </DialogTitle>
-                <DialogDescription className="text-gray-600 dark:text-gray-300 text-lg">
-                  {selectedMember ? 'قم بتعديل معلومات العضو في شجرة العائلة' : 'أدخل معلومات الفرد الجديد وأضفه إلى شجرة العائلة'}
+                <DialogDescription className="text-muted-foreground text-lg">
+                  {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
                 </DialogDescription>
               </div>
             </div>
 
-            {/* Enhanced Progress Steps */}
-            <div className="relative">
-              <div className="flex items-center justify-center gap-6 mb-8">
-                {[
-                  { step: 1, label: 'المعلومات الأساسية', icon: User },
-                  { step: 2, label: 'العلاقات العائلية', icon: Heart },
-                  { step: 3, label: 'الصورة والسيرة', icon: Camera }
-                ].map(({ step, label, icon: Icon }) => (
-                  <div key={step} className="flex flex-col items-center">
-                    <div className={cn(
-                      "relative w-14 h-14 rounded-2xl flex items-center justify-center font-bold transition-all duration-500 shadow-lg",
-                      currentStep >= step 
-                        ? "bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 text-white scale-110 shadow-xl" 
-                        : "bg-white/40 dark:bg-gray-700/40 text-gray-500 dark:text-gray-400 backdrop-blur-sm border border-white/30"
-                    )}>
-                      <Icon className="h-6 w-6" />
-                      {currentStep >= step && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-amber-500/20 rounded-2xl animate-pulse"></div>
-                      )}
-                    </div>
-                    <span className={cn(
-                      "text-xs font-medium mt-2 transition-colors duration-300",
-                      currentStep >= step 
-                        ? "text-emerald-600 dark:text-emerald-400" 
-                        : "text-gray-500 dark:text-gray-400"
-                    )}>
-                      {label}
-                    </span>
-                    {step < 3 && (
-                      <div className={cn(
-                        "absolute top-7 w-24 h-1 rounded-full transition-all duration-500",
-                        currentStep > step 
-                          ? "bg-gradient-to-r from-emerald-500 to-teal-500" 
-                          : "bg-white/30 dark:bg-gray-600/30"
-                      )} style={{ left: '4rem' }}></div>
-                    )}
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
+                    currentStep >= step 
+                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg" 
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    {step}
                   </div>
-                ))}
-              </div>
+                  {step < 3 && (
+                    <div className={cn(
+                      "w-16 h-1 rounded-full mx-2 transition-all duration-300",
+                      currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
+                    )}></div>
+                  )}
+                </div>
+              ))}
             </div>
           </DialogHeader>
 
