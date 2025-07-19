@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, Play, Quote, Shield, Crown, Gem } from "lucide-react";
 import { Link } from "react-router-dom";
-import Header from "@/components/Header";
+
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalHeader } from "@/components/GlobalHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import home2Hero from "@/assets/home2-hero.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
@@ -70,7 +71,7 @@ const Home2 = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
-      <Header />
+      <GlobalHeader />
 
       {/* Hero Section with Animated Elements */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">

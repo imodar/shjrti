@@ -18,11 +18,12 @@ import {
   X
 } from "lucide-react";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalHeader } from "@/components/GlobalHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import Header from "@/components/Header";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
@@ -213,7 +214,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <GlobalHeader />
       <SubscriptionGuard>
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
           {/* Floating Background Elements */}
