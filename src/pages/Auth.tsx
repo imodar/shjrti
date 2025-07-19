@@ -534,9 +534,19 @@ const Auth = () => {
                   /* Regular Auth Tabs */
                   <>
                     <Tabs defaultValue="register" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="register">إنشاء حساب</TabsTrigger>
-                        <TabsTrigger value="login">تسجيل الدخول</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1 gap-1">
+                        <TabsTrigger 
+                          value="register" 
+                          className="rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-200 data-[state=active]:hover:bg-emerald-600"
+                        >
+                          إنشاء حساب
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="login" 
+                          className="rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-200 data-[state=active]:hover:bg-emerald-600"
+                        >
+                          تسجيل الدخول
+                        </TabsTrigger>
                       </TabsList>
 
                       {/* Register Tab */}
