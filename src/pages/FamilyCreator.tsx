@@ -674,7 +674,7 @@ const FamilyCreator = () => {
                                   { 
                                     icon: Heart, 
                                     title: "ذكريات خالدة", 
-                                    desc: "احفظ قصص عائلتك الثمينة",
+                                    desc: "احفظ قصص عائلتك",
                                     color: "emerald",
                                     delay: "0"
                                   },
