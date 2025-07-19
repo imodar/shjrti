@@ -361,16 +361,16 @@ const Dashboard = () => {
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Header with Icon and Title on Same Line */}
                   <div className="text-center mb-12">
-                    <div className="flex items-center justify-center gap-4 mb-6">
+                    <div className="flex items-center justify-center gap-4 mb-4">
                       <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-xl">
                         <TreePine className="h-8 w-8 text-white" />
                       </div>
-                      <h2 className="text-3xl md:text-5xl font-bold">
+                      <h2 className="text-2xl md:text-4xl font-bold">
                         <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                           {t('start_your_legacy', 'ابدأ إرثك العائلي')}
                         </span>
                       </h2>
-                      <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+                      <p className="text-base md:text-lg text-gray-600 dark:text-gray-300">
                         {t('building_easy_desc', 'بناء شجرة عائلتك أمر بسيط وممتع!')}
                       </p>
                     </div>
