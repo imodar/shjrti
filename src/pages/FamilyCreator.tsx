@@ -229,6 +229,7 @@ const FamilyCreator = () => {
         .from('families')
         .insert({
           name: treeData.name,
+          description: treeData.description,
           creator_id: user.id,
           subscription_status: 'active'
         })
