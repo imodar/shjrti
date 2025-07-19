@@ -242,7 +242,7 @@ export const GlobalHeader = () => {
                   >
                     <Link to="/auth" className="flex items-center gap-3">
                       <User className="h-5 w-5" />
-                      <span>{t('nav.register_now', 'التسجيل الآن')}</span>
+                      <span>{t('nav.login', 'تسجيل الدخول')}</span>
                     </Link>
                   </Button>
                 </div>
