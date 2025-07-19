@@ -131,28 +131,32 @@ const FamilyBuilder = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-teal-400/5 via-emerald-400/8 to-cyan-400/3 rounded-full blur-3xl animate-float-slow opacity-30"></div>
         </div>
 
-        {/* Enhanced Page Header */}
-        <div className="relative overflow-hidden bg-white/50 dark:bg-gray-800/30 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/30 mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5"></div>
-          
-          <div className="container mx-auto px-6 py-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                  <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
-                    <Users className="h-8 w-8 text-white" />
+        {/* Enhanced Page Header Box from Family Creator */}
+        <div className="mb-8">
+          <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
+            <div className="flex items-center justify-between gap-8">
+              {/* Right Side: Icon + Title + Description */}
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                    <Users className="h-8 w-8 text-white drop-shadow-lg" />
+                  </div>
+                  {/* Status Indicator */}
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    إدارة أفراد العائلة
+                {/* Text Content */}
+                <div className="text-right">
+                  <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                      إدارة أفراد العائلة
+                    </span>
                   </h1>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <p className="text-muted-foreground font-medium text-lg">أضف وعدل أفراد شجرة العائلة</p>
-                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                    أضف وعدل أفراد شجرة العائلة وتحديد العلاقات بينهم
+                  </p>
                   {familyData && (
                     <div className="flex items-center gap-2 mt-2">
                       <Badge variant="outline" className="bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-700/50 dark:text-emerald-300">
@@ -164,6 +168,7 @@ const FamilyBuilder = () => {
                 </div>
               </div>
 
+              {/* Left Side: Action Buttons */}
               <div className="flex items-center gap-4">
                 <Button
                   onClick={() => navigate("/dashboard")}
@@ -177,7 +182,6 @@ const FamilyBuilder = () => {
             </div>
           </div>
         </div>
-
         {/* Main Content */}
         <div className="container mx-auto px-6 pb-16">
           <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-gray-200/50 dark:border-gray-700/50 shadow-2xl rounded-2xl">
