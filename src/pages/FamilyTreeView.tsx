@@ -311,7 +311,7 @@ const FamilyTreeView = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/family-overview')}
+                onClick={() => navigate('/dashboard')}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -342,7 +342,7 @@ const FamilyTreeView = () => {
               </div>
               
               <Button
-                onClick={() => navigate('/family-overview')}
+                onClick={() => navigate('/dashboard')}
                 variant="outline"
                 className="gap-2"
               >
@@ -514,7 +514,7 @@ const FamilyTreeView = () => {
                         </p>
                         <div className="flex gap-4 justify-center">
                           <Button
-                            onClick={() => navigate('/family-overview')}
+                            onClick={() => navigate('/dashboard')}
                             className="gap-2 bg-gradient-to-r from-primary to-accent"
                           >
                             <Users className="h-4 w-4" />
@@ -717,7 +717,7 @@ const FamilyTreeView = () => {
                       ابدأ ببناء شجرة عائلتك بإضافة أول عضو
                     </p>
                     <Button
-                      onClick={() => navigate('/family-overview')}
+                      onClick={() => navigate('/dashboard')}
                       className="gap-2 bg-gradient-to-r from-primary to-accent"
                     >
                       <Users className="h-4 w-4" />

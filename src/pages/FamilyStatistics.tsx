@@ -209,7 +209,7 @@ const FamilyStatistics = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/family-overview')}
+                onClick={() => navigate('/dashboard')}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -225,7 +225,7 @@ const FamilyStatistics = () => {
 
             <div className="flex items-center gap-3">
               <Button
-                onClick={() => navigate('/family-overview')}
+                onClick={() => navigate('/dashboard')}
                 variant="outline"
                 className="gap-2"
               >
@@ -455,7 +455,7 @@ const FamilyStatistics = () => {
               أضف أعضاء إلى شجرة العائلة لعرض الإحصائيات التفصيلية
             </p>
             <Button
-              onClick={() => navigate('/family-overview')}
+              onClick={() => navigate('/dashboard')}
               className="gap-2 bg-gradient-to-r from-primary to-accent"
             >
               <Users className="h-4 w-4" />

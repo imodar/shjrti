@@ -656,7 +656,7 @@ const Dashboard = () => {
                             {/* Action Buttons - New Creative Design */}
                             <div className="flex items-center justify-between gap-2">
                               {/* Manage Button - Primary */}
-                              <Link to={`/family-overview?family=${tree.id}`} className="flex-1 group/btn">
+                              <Link to={`/family-builder?family=${tree.id}`} className="flex-1 group/btn">
                                 <Button className="w-full h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Edit className="h-4 w-4 ml-2" />
                                   <span className="font-medium">إدارة</span>
