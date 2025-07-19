@@ -599,61 +599,80 @@ const FamilyCreator = () => {
                         </div>
 
                         <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center min-h-full">
-                          {/* Creative hero section */}
+                          {/* Creative hero section with consistent styling */}
                           <div className="text-center space-y-8">
-                            {/* Innovative icon design */}
+                            {/* Enhanced icon design matching page theme */}
                             <div className="relative mx-auto w-fit">
                               <div className="relative">
-                                {/* Main icon with glassmorphism effect */}
+                                {/* Main icon with emerald theme */}
                                 <div className="relative w-32 h-32 mx-auto">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/20 rounded-3xl shadow-2xl"></div>
-                                  <div className="absolute inset-2 bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 rounded-2xl flex items-center justify-center shadow-inner">
-                                    <TreePine className="h-12 w-12 text-white drop-shadow-2xl" />
+                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 backdrop-blur-xl border border-emerald-300/30 rounded-3xl shadow-2xl"></div>
+                                  <div className="absolute inset-2 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-inner">
+                                    <TreePine className="h-16 w-16 text-white drop-shadow-2xl" />
                                   </div>
+                                  {/* Glow effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/40 to-teal-400/40 rounded-3xl blur-xl animate-pulse"></div>
                                 </div>
                                 
-                                {/* Orbiting elements */}
-                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full shadow-lg animate-spin-slow"></div>
-                                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full shadow-lg animate-bounce"></div>
-                                <div className="absolute top-1/2 -right-6 w-4 h-4 bg-gradient-to-br from-purple-400 to-violet-400 rounded-full shadow-lg animate-pulse"></div>
-                                <div className="absolute top-1/2 -left-6 w-4 h-4 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-full shadow-lg animate-pulse animation-delay-1000"></div>
+                                {/* Floating elements with consistent colors */}
+                                <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full shadow-lg animate-bounce"></div>
+                                <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-gradient-to-br from-teal-400 to-amber-400 rounded-full shadow-lg animate-bounce delay-300"></div>
+                                <div className="absolute top-1/2 -right-8 w-4 h-4 bg-gradient-to-br from-amber-400 to-emerald-400 rounded-full shadow-lg animate-pulse"></div>
+                                <div className="absolute top-1/2 -left-8 w-4 h-4 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full shadow-lg animate-pulse delay-500"></div>
                               </div>
                             </div>
 
-                            {/* Dynamic typography with multiple effects */}
+                            {/* Typography matching the page theme */}
                             <div className="space-y-4">
-                              <h3 className="text-4xl md:text-5xl font-black leading-tight">
-                                <span className="inline-block bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent animate-shimmer">
+                              <h3 className="text-4xl md:text-5xl font-bold leading-tight">
+                                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                   رحلة الإبداع
                                 </span>
                                 <br />
-                                <span className="text-2xl md:text-3xl bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent font-light">
+                                <span className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 font-light">
                                   تبدأ بحلم
                                 </span>
                               </h3>
                               
-                              <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-md mx-auto font-light">
+                              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
                                 كل شجرة عائلة عظيمة بدأت بحلم شخص واحد. اليوم هو يومك لتحقيق هذا الحلم.
                               </p>
                             </div>
 
-                            {/* Interactive feature cards */}
-                            <div className="grid grid-cols-1 gap-4 mt-8">
+                            {/* Feature highlights with consistent design */}
+                            <div className="space-y-4">
                               {[
-                                { icon: Heart, title: "ذكريات خالدة", desc: "احفظ قصص عائلتك", color: "from-pink-500 to-rose-500" },
-                                { icon: Users, title: "روابط قوية", desc: "اربط بين الأجيال", color: "from-blue-500 to-cyan-500" },
-                                { icon: Star, title: "إرث مميز", desc: "اترك بصمة دائمة", color: "from-yellow-500 to-orange-500" }
+                                { 
+                                  icon: Heart, 
+                                  title: "ذكريات خالدة", 
+                                  desc: "احفظ قصص عائلتك", 
+                                  gradient: "from-emerald-500 to-teal-500",
+                                  bgColor: "from-emerald-50/80 to-teal-50/80 dark:from-emerald-900/30 dark:to-teal-900/30"
+                                },
+                                { 
+                                  icon: Users, 
+                                  title: "روابط قوية", 
+                                  desc: "اربط بين الأجيال", 
+                                  gradient: "from-teal-500 to-amber-500",
+                                  bgColor: "from-teal-50/80 to-amber-50/80 dark:from-teal-900/30 dark:to-amber-900/30"
+                                },
+                                { 
+                                  icon: Star, 
+                                  title: "إرث مميز", 
+                                  desc: "اترك بصمة دائمة", 
+                                  gradient: "from-amber-500 to-emerald-500",
+                                  bgColor: "from-amber-50/80 to-emerald-50/80 dark:from-amber-900/30 dark:to-emerald-900/30"
+                                }
                               ].map((item, index) => (
                                 <div key={index} className="group relative">
-                                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-2xl blur-sm group-hover:blur-none transition-all duration-300"></div>
-                                  <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                                    <div className="flex items-center gap-4 text-left">
-                                      <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform`}>
-                                        <item.icon className="h-6 w-6 text-white" />
+                                  <div className={`bg-gradient-to-r ${item.bgColor} backdrop-blur-sm border border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-5 hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+                                    <div className="flex items-center gap-4 text-right">
+                                      <div className={`w-14 h-14 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform`}>
+                                        <item.icon className="h-7 w-7 text-white" />
                                       </div>
                                       <div className="flex-1">
-                                        <h4 className="font-bold text-white text-lg leading-tight">{item.title}</h4>
-                                        <p className="text-white/80 text-sm">{item.desc}</p>
+                                        <h4 className="font-bold text-gray-800 dark:text-gray-200 text-xl leading-tight">{item.title}</h4>
+                                        <p className="text-gray-600 dark:text-gray-400">{item.desc}</p>
                                       </div>
                                     </div>
                                   </div>
@@ -661,18 +680,25 @@ const FamilyCreator = () => {
                               ))}
                             </div>
 
-                            {/* Call to action with advanced styling */}
-                            <div className="mt-8 p-6 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl">
-                              <div className="text-center space-y-3">
+                            {/* Call to action matching page design */}
+                            <div className="mt-8 p-6 bg-gradient-to-r from-emerald-100/80 to-teal-100/80 dark:from-emerald-900/30 dark:to-teal-900/30 backdrop-blur-sm border border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl">
+                              <div className="text-center space-y-4">
                                 <div className="flex justify-center">
-                                  <div className="w-16 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full"></div>
+                                  <div className="w-20 h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-full"></div>
                                 </div>
-                                <p className="text-white/90 font-medium text-lg">
-                                  🌟 ابدأ رحلتك اليوم 🌟
-                                </p>
-                                <p className="text-white/70 text-sm">
-                                  انضم لآلاف العائلات التي حفظت تاريخها معنا
-                                </p>
+                                <div className="space-y-2">
+                                  <h4 className="text-emerald-700 dark:text-emerald-300 font-bold text-xl">
+                                    🌟 ابدأ رحلتك اليوم 🌟
+                                  </h4>
+                                  <p className="text-gray-600 dark:text-gray-400">
+                                    انضم لآلاف العائلات التي حفظت تاريخها معنا
+                                  </p>
+                                  <div className="flex justify-center gap-2 mt-3">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse delay-200"></div>
+                                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse delay-400"></div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
