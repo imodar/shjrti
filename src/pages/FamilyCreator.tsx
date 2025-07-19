@@ -576,19 +576,7 @@ const FamilyCreator = () => {
                       </div>
 
                       {/* Right Side - Motivational Content with Consistent Design */}
-                      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-teal-900 to-amber-900 dark:from-emerald-950 dark:via-teal-950 dark:to-amber-950">
-                        {/* Beautiful background with consistent colors */}
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-400/20 via-teal-400/10 to-transparent"></div>
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-teal-400/20 via-amber-400/10 to-transparent"></div>
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-400/10 via-transparent to-transparent"></div>
-                        
-                        {/* Mesh gradient overlay with page colors */}
-                        <div className="absolute inset-0 opacity-30">
-                          <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-                          <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-teal-500/30 to-amber-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-                          <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-gradient-to-br from-amber-500/30 to-emerald-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
-                        </div>
-
+                      <div className="relative">
                         {/* Floating particles with consistent colors */}
                         <div className="absolute inset-0 overflow-hidden pointer-events-none">
                           <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/80 rounded-full animate-float-up"></div>
