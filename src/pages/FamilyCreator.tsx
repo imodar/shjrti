@@ -788,11 +788,14 @@ const FamilyCreator = () => {
                               <div className="group">
                                 <Label htmlFor="founderName" className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
                                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                  الاسم الكامل *
+                                  الاسم الأول * 
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    (عائلة: {treeData.name})
+                                  </span>
                                 </Label>
                                 <Input
                                   id="founderName"
-                                  placeholder="الاسم الكامل للمؤسس"
+                                  placeholder={`الاسم الأول فقط - عائلة ${treeData.name}`}
                                   value={founderData.name}
                                   onChange={(e) => setFounderData({...founderData, name: e.target.value})}
                                   className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl"
