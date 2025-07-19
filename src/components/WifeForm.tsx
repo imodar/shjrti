@@ -119,54 +119,54 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
           <Heart className="h-4 w-4 text-accent" />
           الحالة الحيوية
         </Label>
-        <div className="grid grid-cols-3 gap-3">
-          {/* Alive Button */}
-          <Button
-            type="button"
-            variant={formData.isAlive ? "default" : "outline"}
-            onClick={() => setFormData({...formData, isAlive: true, deathDate: null})}
-            className={cn(
-              "h-10 rounded-lg font-arabic transition-all duration-300",
-              formData.isAlive 
-                ? "bg-primary text-white shadow-lg" 
-                : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-            )}
-          >
-            <Heart className="h-4 w-4 ml-2" />
-            على قيد الحياة
-          </Button>
+        <div className="flex gap-3">
+          {/* Status Dropdown */}
+          <div className="flex-1">
+            <Select 
+              value={formData.isAlive ? "alive" : "deceased"} 
+              onValueChange={(value) => setFormData({
+                ...formData, 
+                isAlive: value === "alive",
+                deathDate: value === "alive" ? null : formData.deathDate
+              })}
+            >
+              <SelectTrigger className="h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
+                <SelectValue placeholder="اختر الحالة الحيوية" />
+              </SelectTrigger>
+              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                <SelectItem value="alive" className="font-arabic">
+                  <div className="flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-green-500" />
+                    على قيد الحياة
+                  </div>
+                </SelectItem>
+                <SelectItem value="deceased" className="font-arabic">
+                  <div className="flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-red-500" />
+                    متوفاة
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           
-          {/* Deceased Button */}
-          <Button
-            type="button"
-            variant={!formData.isAlive ? "default" : "outline"}
-            onClick={() => setFormData({...formData, isAlive: false})}
-            className={cn(
-              "h-10 rounded-lg font-arabic transition-all duration-300",
-              !formData.isAlive 
-                ? "bg-destructive text-destructive-foreground shadow-lg" 
-                : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-            )}
-          >
-            متوفاة
-          </Button>
-          
-          {/* Death Date - Only show if not alive */}
+          {/* Death Date - Only show if deceased */}
           {!formData.isAlive && (
-            <div className="relative">
+            <div className="flex-1">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
+                      "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic",
                       !formData.deathDate && "text-muted-foreground"
                     )}
                   >
+                    <CalendarIcon className="h-4 w-4 ml-2" />
                     {formData.deathDate ? (
-                      format(formData.deathDate, "yyyy", { locale: ar })
+                      format(formData.deathDate, "yyyy/MM/dd", { locale: ar })
                     ) : (
-                      <span>سنة الوفاة</span>
+                      <span>تاريخ الوفاة</span>
                     )}
                   </Button>
                 </PopoverTrigger>
