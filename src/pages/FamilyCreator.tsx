@@ -85,7 +85,9 @@ const FamilyCreator = () => {
   };
 
   const handlePrevStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 1) {
+      navigate('/dashboard');
+    } else if (currentStep === 2) {
       setCurrentStep(1);
     }
   };
@@ -1045,11 +1047,10 @@ const FamilyCreator = () => {
               <Button
                 onClick={handlePrevStep}
                 variant="outline"
-                disabled={currentStep === 1}
-                className="h-16 px-10 text-lg border-2 border-gray-200/50 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 disabled:opacity-50 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
+                className="h-16 px-10 text-lg border-2 border-gray-200/50 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
               >
                 <ArrowRight className="h-6 w-6 mr-3" />
-                السابق
+                {currentStep === 1 ? "العودة للوحة التحكم" : "السابق"}
               </Button>
               
               <Button
