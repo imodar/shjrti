@@ -13,11 +13,13 @@ import {
   Heart,
   Star,
   Gem,
-  Shield
+  Shield,
+  X
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -55,6 +57,7 @@ const Dashboard = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Fetch user's data
   useEffect(() => {
@@ -156,6 +159,23 @@ const Dashboard = () => {
 
     fetchUserData();
   }, [user?.id, toast]);
+
+  // Check if user can create new trees
+  const canCreateNewTree = () => {
+    if (!userSubscription?.max_trees) return false;
+    return familyTrees.length < userSubscription.max_trees;
+  };
+
+  // Handle create new tree
+  const handleCreateNewTree = () => {
+    if (canCreateNewTree()) {
+      // Navigate to family builder
+      window.location.href = "/family-builder?new=true";
+    } else {
+      // Show upgrade modal
+      setShowUpgradeModal(true);
+    }
+  };
 
   // Delete family tree
   const handleDeleteTree = async (treeId: string) => {
@@ -510,12 +530,14 @@ const Dashboard = () => {
                         </div>
                         
                         <div className="flex flex-col items-end gap-3">
-                          <Link to="/family-builder?new=true">
-                            <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover-scale border-0">
-                              <Plus className="h-5 w-5 ml-2" />
-                              {t('create_new_tree', 'إنشاء شجرة جديدة')}
-                            </Button>
-                          </Link>
+                          <Button 
+                            size="lg" 
+                            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover-scale border-0"
+                            onClick={handleCreateNewTree}
+                          >
+                            <Plus className="h-5 w-5 ml-2" />
+                            {t('create_new_tree', 'إنشاء شجرة جديدة')}
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -637,6 +659,52 @@ const Dashboard = () => {
           </main>
         </div>
       </SubscriptionGuard>
+
+      {/* Upgrade Modal */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Crown className="h-6 w-6 text-amber-500" />
+                <span>ترقية الباقة مطلوبة</span>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-center space-y-4">
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50">
+              <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300 mb-2">
+                <Shield className="h-5 w-5" />
+                <span className="font-semibold">حد الاستخدام</span>
+              </div>
+              <p className="text-sm text-amber-600 dark:text-amber-400">
+                لقد وصلت للحد الأقصى المسموح في باقتك الحالية ({userSubscription?.max_trees || 1} شجرة)
+              </p>
+            </div>
+
+            <p className="text-gray-600 dark:text-gray-300">
+              لإنشاء المزيد من الأشجار العائلية، يمكنك ترقية باقتك للحصول على مميزات أكثر
+            </p>
+
+            <div className="flex gap-3 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowUpgradeModal(false)}
+                className="flex-1"
+              >
+                إلغاء
+              </Button>
+              <Link to="/plan-selection" className="flex-1">
+                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+                  <Crown className="h-4 w-4 ml-2" />
+                  ترقية الباقة
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
