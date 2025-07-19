@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, MoreVertical, Edit, Trash2, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -397,12 +397,23 @@ const FamilyCreator = () => {
   return (
     <>
       <GlobalHeader />
-      <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
-        {/* Luxury Background Elements */}
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-primary/10 via-secondary/8 to-accent/5 rounded-full blur-3xl animate-pulse opacity-60"></div>
-          <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-tr from-accent/8 via-secondary/10 to-primary/5 rounded-full blur-2xl animate-pulse opacity-40"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-secondary/5 via-primary/8 to-accent/3 rounded-full blur-3xl animate-pulse opacity-30"></div>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+        </div>
+
+        {/* Floating Animated Icons */}
+        <div className="absolute top-32 right-20 animate-pulse">
+          <Heart className="h-10 w-10 text-pink-400 opacity-60" />
+        </div>
+        <div className="absolute bottom-40 left-20 animate-bounce">
+          <Users className="h-12 w-12 text-emerald-400 opacity-40" />
+        </div>
+        <div className="absolute top-1/2 left-10 animate-pulse">
+          <Star className="h-8 w-8 text-yellow-400 opacity-60" />
         </div>
         
         {/* Main Content */}
