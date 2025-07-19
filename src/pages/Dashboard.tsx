@@ -172,8 +172,8 @@ const Dashboard = () => {
   // Handle create new tree
   const handleCreateNewTree = () => {
     if (canCreateNewTree()) {
-      // Navigate to family builder
-      window.location.href = "/family-builder?new=true";
+      // Navigate to family creator
+      window.location.href = "/family-creator";
     } else {
       // Show upgrade modal
       setShowUpgradeModal(true);
