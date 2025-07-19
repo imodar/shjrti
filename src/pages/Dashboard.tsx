@@ -630,18 +630,18 @@ const Dashboard = () => {
                     {/* Add New Family Tree Card - Always Last */}
                     <div className="group relative">
                       {/* Floating Background Effect */}
-                      <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700 animate-pulse"></div>
+                      <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700 animate-pulse"></div>
                       
-                      <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-2 border-dashed border-blue-300 dark:border-blue-600 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-3 rounded-3xl min-h-[300px] flex items-center justify-center cursor-pointer"
+                      <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-3 rounded-3xl cursor-pointer"
                             onClick={() => navigate('/family-creator')}>
                         {/* Dynamic Gradient Background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-blue-50/60 to-purple-50/60 dark:from-gray-800/90 dark:via-blue-950/60 dark:to-purple-950/60"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-gray-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         
-                        <CardContent className="relative z-10 p-8 text-center">
+                        <CardContent className="relative z-10 p-6 text-center flex flex-col justify-center h-full">
                           <div className="flex flex-col items-center space-y-4">
                             {/* Plus Icon with Animation */}
-                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                               <Plus className="h-8 w-8 text-white" />
                             </div>
                             
@@ -657,10 +657,10 @@ const Dashboard = () => {
                           
                           {/* Floating Mini Icons */}
                           <div className="absolute top-4 left-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-                            <TreePine className="h-6 w-6 text-blue-400" />
+                            <TreePine className="h-6 w-6 text-emerald-400" />
                           </div>
                           <div className="absolute bottom-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-                            <Users className="h-5 w-5 text-purple-400" />
+                            <Users className="h-5 w-5 text-teal-400" />
                           </div>
                         </CardContent>
                       </Card>
