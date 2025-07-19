@@ -590,36 +590,33 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            {/* Action Buttons - Redesigned Layout */}
-                            <div className="space-y-3">
-                              {/* Primary Actions - Side by Side */}
-                              <div className="grid grid-cols-2 gap-3">
-                                <Link to={`/family-overview?family=${tree.id}`} className="group/btn">
-                                  <Button className="w-full h-12 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
-                                    <Edit className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
-                                    <span className="font-semibold">إدارة الشجرة</span>
-                                  </Button>
-                                </Link>
-                                <Link to={`/family-tree-view?family=${tree.id}`} className="group/btn">
-                                  <Button className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
-                                    <Eye className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
-                                    <span className="font-semibold">عرض الشجرة</span>
-                                  </Button>
-                                </Link>
-                              </div>
-                              
-                              {/* Secondary Action - Small Delete Button */}
-                              <div className="flex justify-center">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-8 px-4 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300 transition-all duration-300 rounded-lg group/btn text-xs"
-                                  onClick={() => handleDeleteTree(tree.id)}
-                                >
-                                  <Trash2 className="h-3 w-3 ml-1 group-hover/btn:scale-110 transition-transform duration-200" />
-                                  <span>حذف</span>
+                            {/* Action Buttons - New Creative Design */}
+                            <div className="flex items-center justify-between gap-2">
+                              {/* Manage Button - Primary */}
+                              <Link to={`/family-overview?family=${tree.id}`} className="flex-1 group/btn">
+                                <Button className="w-full h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
+                                  <Edit className="h-4 w-4 ml-2" />
+                                  <span className="font-medium">إدارة</span>
                                 </Button>
-                              </div>
+                              </Link>
+                              
+                              {/* View Button - Secondary */}
+                              <Link to={`/family-tree-view?family=${tree.id}`} className="flex-1 group/btn">
+                                <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
+                                  <Eye className="h-4 w-4 ml-2" />
+                                  <span className="font-medium">عرض</span>
+                                </Button>
+                              </Link>
+                              
+                              {/* Delete Button - Compact */}
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-10 h-11 p-0 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-300 group/btn"
+                                onClick={() => handleDeleteTree(tree.id)}
+                              >
+                                <Trash2 className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-200" />
+                              </Button>
                             </div>
                           </CardContent>
                           
