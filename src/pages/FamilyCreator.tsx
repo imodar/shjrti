@@ -1175,9 +1175,12 @@ const FamilyCreator = () => {
               إلغاء
             </Button>
             <Button 
-              onClick={() => wifeFormRef.current?.handleSubmit()}
-              disabled={!wifeFormRef.current?.isValid()}
-              className="flex-1 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                if (wifeFormRef.current?.isValid()) {
+                  wifeFormRef.current?.handleSubmit();
+                }
+              }}
+              className="flex-1 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
             >
               <Heart className="h-4 w-4 mr-2" />
               إضافة الزوجة

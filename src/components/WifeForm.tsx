@@ -205,7 +205,6 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
           <SelectContent>
             <SelectItem value="married">متزوجة</SelectItem>
             <SelectItem value="divorced">مطلقة</SelectItem>
-            <SelectItem value="widowed">أرملة</SelectItem>
           </SelectContent>
         </Select>
       </div>
