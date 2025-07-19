@@ -1041,7 +1041,7 @@ const FamilyCreator = () => {
             )}
 
             {/* Enhanced Navigation Buttons */}
-            <div className="flex justify-between items-center mt-20 gap-6">
+            <div className="flex justify-between items-center mt-8 gap-6">
               <Button
                 onClick={handlePrevStep}
                 variant="outline"
