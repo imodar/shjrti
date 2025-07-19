@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LuxuryFooter } from "@/components/LuxuryFooter";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+966");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -108,7 +110,7 @@ const Auth = () => {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
-            phone: phone,
+            phone: `${countryCode} ${phone}`,
           }
         }
       });
@@ -132,6 +134,7 @@ const Auth = () => {
       setPassword("");
       setFullName("");
       setPhone("");
+      setCountryCode("+966");
     } catch (error: any) {
       toast({
         title: "خطأ",
@@ -379,17 +382,40 @@ const Auth = () => {
 
                       <div className="space-y-2">
                         <Label htmlFor="phone">رقم الهاتف</Label>
-                        <div className="relative">
-                          <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="+966 50 123 4567"
-                            className="pr-10"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            required
-                          />
+                        <div className="flex gap-2">
+                          <Select value={countryCode} onValueChange={setCountryCode}>
+                            <SelectTrigger className="w-32">
+                              <SelectValue placeholder="كود الدولة" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="+966">🇸🇦 +966</SelectItem>
+                              <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                              <SelectItem value="+965">🇰🇼 +965</SelectItem>
+                              <SelectItem value="+973">🇧🇭 +973</SelectItem>
+                              <SelectItem value="+974">🇶🇦 +974</SelectItem>
+                              <SelectItem value="+968">🇴🇲 +968</SelectItem>
+                              <SelectItem value="+962">🇯🇴 +962</SelectItem>
+                              <SelectItem value="+961">🇱🇧 +961</SelectItem>
+                              <SelectItem value="+20">🇪🇬 +20</SelectItem>
+                              <SelectItem value="+212">🇲🇦 +212</SelectItem>
+                              <SelectItem value="+213">🇩🇿 +213</SelectItem>
+                              <SelectItem value="+216">🇹🇳 +216</SelectItem>
+                              <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                              <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <div className="relative flex-1">
+                            <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="phone"
+                              type="tel"
+                              placeholder="50 123 4567"
+                              className="pr-10"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              required
+                            />
+                          </div>
                         </div>
                       </div>
 
