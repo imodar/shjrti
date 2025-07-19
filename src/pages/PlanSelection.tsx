@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, Crown, Shield, Lock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Star, Crown, Shield, Lock, ArrowLeft, CheckCircle, Users, TreePine, Sparkles, Gem, Menu, X } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -198,7 +198,7 @@ const PlanSelection = () => {
   };
 
   const getPackageColor = (index: number) => {
-    const colors = ["bg-gray-500", "bg-emerald-500", "bg-purple-500"];
+    const colors = ["from-gray-500 to-gray-600", "from-emerald-500 to-emerald-600", "from-purple-500 to-purple-600"];
     return colors[index % colors.length];
   };
 
@@ -386,143 +386,281 @@ const PlanSelection = () => {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center hero-gradient">
-        <div className="text-white text-xl">
-          {currentLanguage === 'ar' ? "جاري تحميل الباقات..." : "Loading packages..."}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted-foreground">
+            {currentLanguage === 'ar' ? "جاري تحميل الباقات..." : "Loading packages..."}
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center hero-gradient p-8">
-      <div className="w-full max-w-6xl">
-        {/* Header */}
-        <div className="text-center text-white mb-12">
-          <img 
-            src={familyTreeLogo} 
-            alt="شجرتي" 
-            className="h-20 w-20 rounded-full mx-auto mb-6 border-4 border-white/20"
-          />
-          <h1 className="text-4xl font-bold mb-4">
-            {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
-          </h1>
-          <p className="text-xl opacity-90 max-w-2xl mx-auto">
-            {currentLanguage === 'ar' 
-              ? 'ابدأ رحلتك مع الخطة التي تناسب احتياجاتك في بناء شجرة عائلتك'
-              : 'Start your journey with the plan that fits your family tree building needs'
-            }
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      {/* Dashboard Header */}
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between px-6 h-16">
+          {/* Logo and Brand */}
+          <div className="flex items-center gap-3">
+            <img 
+              src={familyTreeLogo} 
+              alt="شجرتي" 
+              className="h-8 w-8 rounded-full"
+            />
+            <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              شجرتي
+            </span>
+          </div>
+
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link 
+              to="/dashboard" 
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {currentLanguage === 'ar' ? 'العودة للوحة التحكم' : 'Back to Dashboard'}
+            </Link>
+          </nav>
+
+          {/* User Info */}
+          <div className="flex items-center gap-3">
+            {user && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <span className="text-sm text-muted-foreground hidden sm:block">
+                  {user.email?.split('@')[0]}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+      </header>
 
-        {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {packages.map((pkg, index) => {
-            const PackageIcon = getPackageIcon(index);
-            const packageColor = getPackageColor(index);
-            const packagePrice = getPackagePrice(pkg);
-            const packageName = getLocalizedValue(pkg.name);
-            const packageFeatures = getPackageFeatures(pkg);
-            const currentPlan = isCurrentPackage(pkg.id);
-            const buttonDisabled = isButtonDisabled(pkg);
-            
-            return (
-              <Card 
-                key={pkg.id} 
-                className={`relative transition-all hover:shadow-2xl hover:scale-105 bg-white/95 backdrop-blur-sm flex flex-col h-full ${
-                  selectedPlan === pkg.id ? 'ring-4 ring-white scale-105' : ''
-                } ${pkg.is_featured ? 'border-emerald-300 shadow-2xl' : ''} ${
-                  currentPlan ? 'ring-2 ring-emerald-500 bg-emerald-50/90' : ''
-                }`}
-              >
-                {pkg.is_featured && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-emerald-600 text-white px-6 py-2 text-sm">
-                      {currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
-                    </Badge>
-                  </div>
-                )}
+      {/* Main Content */}
+      <main className="p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
+            </h1>
+            <p className="text-muted-foreground">
+              {currentLanguage === 'ar' 
+                ? 'اختر الباقة التي تناسب احتياجاتك في بناء شجرة عائلتك الرقمية'
+                : 'Select the package that fits your digital family tree building needs'
+              }
+            </p>
+          </div>
 
-                {currentPlan && (
-                  <div className="absolute -top-4 right-4">
-                    <Badge className="bg-emerald-600 text-white px-4 py-2 text-sm">
-                      {currentLanguage === 'ar' ? 'خطتك الحالية' : 'Current Plan'}
-                    </Badge>
+          {/* Current Usage Stats */}
+          {user && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <Card className="border-0 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                      <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{userStats.familyTreesCount}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {currentLanguage === 'ar' ? 'أشجار العائلة' : 'Family Trees'}
+                      </p>
+                    </div>
                   </div>
-                )}
-                
-                <CardHeader className="text-center pt-8">
-                  <div className={`w-16 h-16 ${packageColor} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative`}>
-                    <PackageIcon className="h-8 w-8 text-white" />
-                    {currentPlan && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center">
-                        <Lock className="h-3 w-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <CardTitle className="text-2xl font-bold text-primary mb-2">{packageName}</CardTitle>
-                  <div className="mt-4">
-                    {packagePrice === 0 ? (
-                      <div className="text-center">
-                        <span className="text-3xl font-bold text-emerald-600">
-                          {currentLanguage === 'ar' ? 'مجانا للأبد' : 'Free Forever'}
-                        </span>
-                      </div>
-                    ) : (
-                      <>
-                        <span className="text-4xl font-bold text-primary">{formatPrice(packagePrice)}</span>
-                        <span className="text-muted-foreground">
-                          {currentLanguage === 'ar' ? '/سنوياً' : '/yearly'}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="px-6 pb-8 flex flex-col flex-grow">
-                  <ul className="space-y-3 mb-8 flex-grow">
-                    {packageFeatures.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center gap-3 text-sm">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    type="button"
-                    className={`w-full py-3 text-lg font-medium transition-all mt-auto ${
-                      currentPlan 
-                        ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed opacity-60'
-                        : pkg.is_featured 
-                          ? 'hero-gradient border-0 text-white hover:shadow-lg' 
-                          : 'bg-primary hover:bg-primary/90'
-                    }`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handlePlanSelect(pkg.id);
-                    }}
-                    disabled={buttonDisabled}
-                  >
-                    {getButtonText(pkg)}
-                  </Button>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
 
-        {/* Footer */}
-        <div className="text-center text-white/80 mt-12">
-          <p className="text-sm">
-            {currentLanguage === 'ar' 
-              ? 'سيتم إنشاء فاتورة عند اختيار الخطة ولن يتم تفعيل الاشتراك حتى اكتمال الدفع'
-              : 'An invoice will be generated when selecting a plan and subscription will not be activated until payment is completed'
-            }
-          </p>
+              <Card className="border-0 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                      <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{userStats.familyMembersCount}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {currentLanguage === 'ar' ? 'أفراد العائلة' : 'Family Members'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+                      <Crown className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {userSubscription?.package_id ? 'باقة مدفوعة' : 'باقة مجانية'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {currentLanguage === 'ar' ? 'الاشتراك الحالي' : 'Current Subscription'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Plans Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {packages.map((pkg, index) => {
+              const PackageIcon = getPackageIcon(index);
+              const packageColor = getPackageColor(index);
+              const packagePrice = getPackagePrice(pkg);
+              const packageName = getLocalizedValue(pkg.name);
+              const packageFeatures = getPackageFeatures(pkg);
+              const currentPlan = isCurrentPackage(pkg.id);
+              const buttonDisabled = isButtonDisabled(pkg);
+              
+              return (
+                <Card 
+                  key={pkg.id} 
+                  className={`relative border-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+                    pkg.is_featured ? 'ring-2 ring-emerald-500 shadow-emerald-500/20' : ''
+                  } ${currentPlan ? 'ring-2 ring-blue-500 shadow-blue-500/20' : ''}`}
+                >
+                  {pkg.is_featured && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-emerald-600 text-white px-4 py-1">
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
+                      </Badge>
+                    </div>
+                  )}
+
+                  {currentPlan && (
+                    <div className="absolute -top-3 right-4">
+                      <Badge className="bg-blue-600 text-white px-4 py-1">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        {currentLanguage === 'ar' ? 'خطتك الحالية' : 'Current Plan'}
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  <CardHeader className="text-center pb-4">
+                    <div className={`w-16 h-16 bg-gradient-to-br ${packageColor} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                      <PackageIcon className="h-8 w-8 text-white" />
+                    </div>
+                    
+                    <CardTitle className="text-xl font-bold text-foreground mb-2">
+                      {packageName}
+                    </CardTitle>
+                    
+                    <div className="mb-4">
+                      {packagePrice === 0 ? (
+                        <div className="text-center">
+                          <span className="text-3xl font-bold text-emerald-600">
+                            {currentLanguage === 'ar' ? 'مجاني' : 'Free'}
+                          </span>
+                          <p className="text-sm text-muted-foreground">
+                            {currentLanguage === 'ar' ? 'للأبد' : 'Forever'}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <span className="text-3xl font-bold text-foreground">
+                            {formatPrice(packagePrice)}
+                          </span>
+                          <p className="text-sm text-muted-foreground">
+                            {currentLanguage === 'ar' ? '/سنوياً' : '/yearly'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0">
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">
+                          {currentLanguage === 'ar' ? 'أشجار العائلة' : 'Family Trees'}
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {pkg.max_family_trees === -1 
+                            ? (currentLanguage === 'ar' ? 'غير محدود' : 'Unlimited')
+                            : pkg.max_family_trees
+                          }
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">
+                          {currentLanguage === 'ar' ? 'أفراد العائلة' : 'Family Members'}
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {pkg.max_family_members === -1 
+                            ? (currentLanguage === 'ar' ? 'غير محدود' : 'Unlimited')
+                            : pkg.max_family_members
+                          }
+                        </span>
+                      </div>
+                    </div>
+
+                    {packageFeatures.length > 0 && (
+                      <ul className="space-y-2 mb-6">
+                        {packageFeatures.slice(0, 4).map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                            <span className="text-muted-foreground">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    
+                    <Button 
+                      onClick={() => handlePlanSelect(pkg.id)}
+                      disabled={buttonDisabled}
+                      className={`w-full ${
+                        currentPlan 
+                          ? 'bg-blue-600 hover:bg-blue-700' 
+                          : pkg.is_featured
+                          ? 'bg-emerald-600 hover:bg-emerald-700'
+                          : 'bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900'
+                      } text-white transition-colors`}
+                    >
+                      {getButtonText(pkg)}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Help Section */}
+          <div className="mt-12 text-center">
+            <Card className="border-0 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30">
+              <CardContent className="p-8">
+                <Gem className="h-12 w-12 text-emerald-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {currentLanguage === 'ar' 
+                    ? 'هل تحتاج إلى مساعدة في اختيار الخطة المناسبة؟'
+                    : 'Need help choosing the right plan?'
+                  }
+                </h3>
+                <p className="text-muted-foreground">
+                  {currentLanguage === 'ar' 
+                    ? 'فريقنا جاهز لمساعدتك في اختيار الباقة المثالية لاحتياجاتك'
+                    : 'Our team is ready to help you choose the perfect package for your needs'
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
