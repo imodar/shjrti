@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { Plus, Users, Calendar, Share2, Edit, Trash2, Crown, TrendingUp, Eye, Copy, CheckCircle, Sparkles, BarChart3, PieChart, Gift, Zap, Settings, User, LogOut, Bell, Heart, Star, TreePine, Gem, Camera, UserPlus, Activity } from "lucide-react";
+import { Plus, Users, Calendar, Share2, Edit, Trash2, Crown, TrendingUp, Eye, Copy, CheckCircle, Sparkles, BarChart3, PieChart, Gift, Zap, Settings, User, LogOut, Bell, Heart, Star, TreePine, Gem, Camera, UserPlus, Activity, Palette, Brush, Layers, Globe, Shield, Infinity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Header from "@/components/Header";
@@ -92,316 +92,388 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
       <Header />
       
-      {/* Main Content with Luxury Design */}
-      <main className="flex-1 overflow-hidden relative">
-        {/* Floating Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-10 animate-pulse"></div>
-          <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-10 animate-bounce"></div>
-          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-10 animate-pulse"></div>
-          <div className="absolute top-1/3 left-1/3 w-8 h-8 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full opacity-10 animate-bounce"></div>
-        </div>
+      {/* Creative Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Floating Geometric Shapes */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 rounded-full animate-pulse transform rotate-45"></div>
+        <div className="absolute top-40 left-10 w-24 h-24 bg-gradient-to-r from-emerald-400/20 to-teal-500/20 transform rotate-12 animate-bounce" style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}></div>
+        <div className="absolute bottom-40 right-32 w-28 h-28 bg-gradient-to-r from-pink-400/20 to-rose-500/20 rounded-lg transform rotate-45 animate-pulse"></div>
+        <div className="absolute top-60 right-60 w-16 h-16 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 transform rotate-45 animate-bounce"></div>
+        
+        {/* Creative Mesh Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(120,119,198,0.3),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,119,198,0.3),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,rgba(34,197,94,0.2),transparent_50%)]"></div>
+        
+        {/* Floating Lines */}
+        <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8B5CF6" />
+              <stop offset="100%" stopColor="#06B6D4" />
+            </linearGradient>
+          </defs>
+          <path d="M100,200 Q200,100 300,200 T500,200" stroke="url(#grad1)" strokeWidth="2" fill="none" className="animate-pulse" />
+          <path d="M600,300 Q700,200 800,300 T1000,300" stroke="url(#grad1)" strokeWidth="2" fill="none" className="animate-pulse" style={{ animationDelay: '1s' }} />
+        </svg>
+      </div>
 
-        <div className="container mx-auto px-6 py-8 max-w-7xl relative z-10">
-          {/* Luxury Welcome Section */}
-          <div className="mb-16">
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950 dark:via-teal-950 dark:to-amber-950 rounded-3xl p-8 shadow-2xl border border-emerald-200/20 backdrop-blur-xl">
-              {/* Luxury Background Pattern */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(16,185,129,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_20%_50%,rgba(16,185,129,0.1),transparent_50%)]"></div>
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)]"></div>
+      {/* Main Creative Content */}
+      <main className="relative z-10 pt-24">
+        <div className="container mx-auto px-6 py-8 max-w-7xl">
+          
+          {/* Creative Hero Section - Artistic Layout */}
+          <div className="mb-20">
+            <div className="relative">
+              {/* Floating Welcome Card */}
+              <div className="absolute -top-10 -left-10 w-72 h-40 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-3xl backdrop-blur-md border border-white/10 transform -rotate-6 animate-pulse"></div>
               
-              {/* Floating Decorative Elements */}
-              <div className="absolute top-4 right-8 animate-pulse">
-                <Sparkles className="h-6 w-6 text-emerald-400 opacity-60" />
-              </div>
-              <div className="absolute bottom-4 left-8 animate-bounce">
-                <Crown className="h-5 w-5 text-amber-400 opacity-60" />
-              </div>
-
-              <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6">
-                <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                    <Gem className="h-4 w-4" />
-                    {t('dashboard_badge', 'لوحة التحكم الخاصة')}
+              {/* Main Hero Content */}
+              <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-[3rem] p-12 border border-white/20 shadow-2xl">
+                {/* Creative Header Layout */}
+                <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
+                  
+                  {/* Left: Welcome Content */}
+                  <div className="flex-1 space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-3 h-20 bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500 rounded-full animate-pulse"></div>
+                      <div>
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600/30 to-pink-600/30 backdrop-blur-sm text-white px-6 py-2 rounded-full text-sm font-medium border border-white/20">
+                          <Crown className="h-4 w-4" />
+                          {t('dashboard_badge', 'مساحة الإبداع الشخصية')}
+                        </div>
+                        <h1 className="text-5xl lg:text-6xl font-bold mt-4 leading-tight">
+                          <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            أهلاً وسهلاً
+                          </span>
+                          <br />
+                          <span className="text-white/90">
+                            {(profile as any)?.full_name || (profile as any)?.name || user?.email?.split('@')[0] || t('guest', 'صديقي')}
+                          </span>
+                        </h1>
+                        <p className="text-xl text-white/70 leading-relaxed mt-4 max-w-xl">
+                          رحلة استثنائية عبر تراثك العائلي في عالم رقمي مبتكر ومليء بالإبداع
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <h1 className="text-4xl lg:text-5xl font-bold">
-                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                      {t('dashboard_welcome_title', 'مرحباً،')}
-                    </span>
-                    <br />
-                    <span className="text-gray-800 dark:text-gray-200">
-                      {(profile as any)?.full_name || (profile as any)?.name || user?.email?.split('@')[0] || t('guest', 'ضيف')}!
-                    </span>
-                  </h1>
-                  <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
-                    {t('dashboard_subtitle', 'إدارة شجرة عائلتك الرقمية وتتبع تراثك العريق من مكان واحد مميز')}
-                  </p>
+
+                  {/* Right: Creative Action Panel */}
+                  <div className="relative">
+                    {/* Floating Background */}
+                    <div className="absolute -inset-6 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-3xl transform rotate-3 animate-pulse"></div>
+                    
+                    <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+                      <div className="space-y-4">
+                        <Button 
+                          onClick={handleCreateTree}
+                          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        >
+                          <Plus className="h-5 w-5 ml-2" />
+                          {t('create_masterpiece', 'ابدأ التحفة')}
+                        </Button>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button variant="outline" className="border-white/20 text-white/80 hover:bg-white/10 backdrop-blur-sm rounded-xl">
+                            <Settings className="h-4 w-4 ml-2" />
+                            إعدادات
+                          </Button>
+                          <Button variant="outline" className="border-white/20 text-white/80 hover:bg-white/10 backdrop-blur-sm rounded-xl">
+                            <Palette className="h-4 w-4 ml-2" />
+                            تخصيص
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    onClick={handleCreateTree}
-                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl text-lg shadow-xl hover-scale"
-                  >
-                    <Plus className="h-5 w-5 ml-2" />
-                    {t('add_member', 'إضافة فرد')}
-                  </Button>
-                  <Button variant="outline" className="border-2 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:hover:bg-emerald-900/20 px-8 py-4 rounded-2xl text-lg">
-                    <Settings className="h-5 w-5 ml-2" />
-                    {t('settings', 'الإعدادات')}
-                  </Button>
+
+                {/* Creative Stats Bar */}
+                <div className="mt-12 grid grid-cols-4 gap-6">
+                  {[
+                    { value: trees.length, label: 'أشجار', icon: TreePine, color: 'from-emerald-400 to-cyan-400' },
+                    { value: totalMembers, label: 'أفراد', icon: Users, color: 'from-blue-400 to-purple-400' },
+                    { value: `${profileCompletion}%`, label: 'مكتمل', icon: Layers, color: 'from-purple-400 to-pink-400' },
+                    { value: memoryCount, label: 'ذكريات', icon: Camera, color: 'from-pink-400 to-rose-400' }
+                  ].map((stat, index) => (
+                    <div key={index} className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-2xl transform group-hover:scale-105 transition-transform duration-300"></div>
+                      <div className="relative text-center p-6">
+                        <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r ${stat.color} rounded-xl mb-3 shadow-lg`}>
+                          <stat.icon className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="text-2xl font-bold text-white">{isLoading ? '...' : stat.value}</div>
+                        <div className="text-sm text-white/60">{stat.label}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Luxury Stats Section */}
-          <div className="mb-16">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
-                <BarChart3 className="h-4 w-4" />
-                {t('stats_badge', 'إحصائيات تراثك')}
-                <BarChart3 className="h-4 w-4" />
+          {/* Creative Dashboard Grid - Asymmetrical Layout */}
+          <div className="grid grid-cols-12 gap-8 mb-20">
+            
+            {/* Large Feature Card - Spans 8 columns */}
+            <div className="col-span-12 lg:col-span-8">
+              <div className="relative h-96">
+                {/* Creative Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-xl rounded-[2rem] border border-white/20 shadow-2xl transform rotate-1"></div>
+                
+                <div className="relative h-full bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-[2rem] p-8 border border-white/20">
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                          <Activity className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white">النشاط الإبداعي</h3>
+                      </div>
+                      <Badge className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 text-white border-white/20">
+                        مباشر
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex-1 flex items-center justify-center">
+                      {recentActivity.length > 0 ? (
+                        <div className="space-y-4 w-full">
+                          {recentActivity.map((activity, index) => (
+                            <div key={index} className="flex items-center gap-4 p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center">
+                                <UserPlus className="h-5 w-5 text-white" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-white font-medium">{activity.action}</p>
+                                <p className="text-white/60 text-sm">{new Date(activity.created_at).toLocaleDateString('ar-SA')}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <div className="w-24 h-24 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-white/10">
+                            <Sparkles className="h-12 w-12 text-white/60" />
+                          </div>
+                          <h4 className="text-xl font-bold text-white mb-2">مساحة إبداعية فارغة</h4>
+                          <p className="text-white/60">ابدأ رحلتك الإبداعية الآن</p>
+                          <Button 
+                            onClick={handleCreateTree}
+                            className="mt-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl"
+                          >
+                            <Plus className="h-4 w-4 ml-2" />
+                            إنشاء
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold">
-                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                  {t('stats_title', 'نظرة على')}
-                </span>
-                <br />
-                <span className="text-gray-800 dark:text-gray-200">{t('stats_subtitle', 'عائلتك الكريمة')}</span>
-              </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {/* Stats Cards */}
-              <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
-                <CardContent className="relative p-8 text-center">
-                  <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-xl group-hover:scale-110 transition-all duration-500">
-                      <Users className="h-8 w-8 text-white" />
-                    </div>
-                  </div>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mb-2">
-                    {t('total_members', 'إجمالي الأفراد')}
-                  </p>
-                  <p className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">
-                    {isLoading ? '...' : totalMembers}
-                  </p>
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </CardContent>
-              </Card>
-
-              <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
-                <CardContent className="relative p-8 text-center">
-                  <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full shadow-xl group-hover:scale-110 transition-all duration-500">
-                      <UserPlus className="h-8 w-8 text-white" />
-                    </div>
-                  </div>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-2">
-                    {t('recent_additions', 'إضافات حديثة')}
-                  </p>
-                  <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
-                    {isLoading ? '...' : recentMembers}
-                  </p>
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </CardContent>
-              </Card>
-
-              <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
-                <CardContent className="relative p-8 text-center">
-                  <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full shadow-xl group-hover:scale-110 transition-all duration-500">
-                      <BarChart3 className="h-8 w-8 text-white" />
-                    </div>
-                  </div>
-                  <p className="text-sm text-amber-600 dark:text-amber-400 font-medium mb-2">
-                    {t('profile_completion', 'اكتمال الملفات')}
-                  </p>
-                  <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">
-                    {isLoading ? '...' : `${profileCompletion}%`}
-                  </p>
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </CardContent>
-              </Card>
-
-              <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
-                <CardContent className="relative p-8 text-center">
-                  <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full shadow-xl group-hover:scale-110 transition-all duration-500">
-                      <Camera className="h-8 w-8 text-white" />
-                    </div>
-                  </div>
-                  <p className="text-sm text-purple-600 dark:text-purple-400 font-medium mb-2">
-                    {t('memory_count', 'عدد الذكريات')}
-                  </p>
-                  <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
-                    {isLoading ? '...' : memoryCount}
-                  </p>
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Activity & Actions Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Recent Activity Card */}
-            <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-emerald-50 dark:from-gray-800 dark:via-gray-900 dark:to-emerald-950 opacity-90"></div>
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-emerald-100/30 dark:to-emerald-900/30 group-hover:to-emerald-200/50 dark:group-hover:to-emerald-800/50 transition-all duration-700"></div>
+            {/* Right Sidebar - Creative Cards Stack */}
+            <div className="col-span-12 lg:col-span-4 space-y-6">
               
-              <CardHeader className="relative pb-6">
-                <CardTitle className="flex items-center gap-3 text-2xl">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-20"></div>
-                    <div className="relative inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full">
-                      <Activity className="h-5 w-5 text-white" />
-                    </div>
-                  </div>
-                  <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    {t('recent_activity', 'النشاط الأخير')}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="relative space-y-4">
-                {isLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-gray-50 to-emerald-50/50 dark:from-gray-700/50 dark:to-emerald-900/20 rounded-xl">
-                      <div className="w-12 h-12 bg-gradient-to-r from-gray-200 to-emerald-200 dark:from-gray-600 dark:to-emerald-600 rounded-full animate-pulse"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gradient-to-r from-gray-200 to-emerald-200 dark:from-gray-600 dark:to-emerald-600 rounded animate-pulse"></div>
-                        <div className="h-3 bg-gradient-to-r from-gray-200 to-emerald-200 dark:from-gray-600 dark:to-emerald-600 rounded animate-pulse w-3/4"></div>
-                      </div>
-                    </div>
-                  ))
-                ) : recentActivity.length > 0 ? (
-                  recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-gray-50 to-emerald-50/50 dark:from-gray-700/50 dark:to-emerald-900/20 rounded-xl hover:from-emerald-50 hover:to-emerald-100/50 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/20 transition-all duration-300 hover-scale">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-                        <UserPlus className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
-                          {activity.action}
-                        </p>
-                        <p className="text-sm text-emerald-600 dark:text-emerald-400">
-                          {new Date(activity.created_at).toLocaleDateString('ar-SA')}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900 dark:to-teal-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Activity className="h-8 w-8 text-emerald-500" />
-                    </div>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg">
-                      {t('no_recent_activity', 'لا توجد أنشطة حديثة')}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions Card */}
-            <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-amber-50 dark:from-gray-800 dark:via-gray-900 dark:to-amber-950 opacity-90"></div>
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-amber-100/30 dark:to-amber-900/30 group-hover:to-amber-200/50 dark:group-hover:to-amber-800/50 transition-all duration-700"></div>
-              
-              <CardHeader className="relative pb-6">
-                <CardTitle className="flex items-center gap-3 text-2xl">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg opacity-20"></div>
-                    <div className="relative inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full">
+              {/* Quick Actions Card */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-cyan-600/20 rounded-3xl transform -rotate-2 animate-pulse"></div>
+                <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center">
                       <Zap className="h-5 w-5 text-white" />
                     </div>
+                    <h3 className="text-lg font-bold text-white">أدوات سريعة</h3>
                   </div>
-                  <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                    {t('quick_actions', 'إجراءات سريعة')}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="relative space-y-4">
-                <Button 
-                  onClick={() => navigate("/family-builder?new=true")} 
-                  variant="outline" 
-                  className="w-full justify-start text-right h-auto p-6 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 border-2 border-emerald-200 dark:border-emerald-800 rounded-xl hover-scale transition-all duration-300"
-                >
-                  <div className="flex items-center gap-4 w-full">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <Plus className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <div className="font-semibold text-lg text-emerald-700 dark:text-emerald-300">{t('add_family_member', 'إضافة فرد جديد')}</div>
-                      <div className="text-sm text-emerald-600 dark:text-emerald-400">{t('add_member_desc', 'أضف معلومات فرد جديد للعائلة')}</div>
-                    </div>
+                  
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={() => navigate("/family-builder?new=true")}
+                      className="w-full bg-gradient-to-r from-emerald-600/30 to-cyan-600/30 hover:from-emerald-600/50 hover:to-cyan-600/50 text-white border border-white/20 backdrop-blur-sm rounded-xl justify-start"
+                    >
+                      <Plus className="h-4 w-4 ml-2" />
+                      إضافة فرد
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => navigate("/family-tree-view")}
+                      className="w-full bg-gradient-to-r from-blue-600/30 to-purple-600/30 hover:from-blue-600/50 hover:to-purple-600/50 text-white border border-white/20 backdrop-blur-sm rounded-xl justify-start"
+                    >
+                      <TreePine className="h-4 w-4 ml-2" />
+                      عرض الشجرة
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => navigate("/family-statistics")}
+                      className="w-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-600/50 hover:to-pink-600/50 text-white border border-white/20 backdrop-blur-sm rounded-xl justify-start"
+                    >
+                      <BarChart3 className="h-4 w-4 ml-2" />
+                      الإحصائيات
+                    </Button>
                   </div>
-                </Button>
+                </div>
+              </div>
 
-                <Button 
-                  onClick={() => navigate("/family-tree-view")} 
-                  variant="outline" 
-                  className="w-full justify-start text-right h-auto p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900/20 dark:hover:to-cyan-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl hover-scale transition-all duration-300"
-                >
-                  <div className="flex items-center gap-4 w-full">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <TreePine className="h-6 w-6 text-white" />
+              {/* Creative Stats Card */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-600/20 to-rose-600/20 rounded-3xl transform rotate-1"></div>
+                <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl flex items-center justify-center">
+                      <Globe className="h-5 w-5 text-white" />
                     </div>
-                    <div className="flex-1 text-right">
-                      <div className="font-semibold text-lg text-blue-700 dark:text-blue-300">{t('view_family_tree', 'عرض شجرة العائلة')}</div>
-                      <div className="text-sm text-blue-600 dark:text-blue-400">{t('tree_view_desc', 'استكشف شجرة عائلتك التفاعلية')}</div>
+                    <h3 className="text-lg font-bold text-white">نظرة عامة</h3>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70">معدل الإكمال</span>
+                      <span className="text-white font-bold">{profileCompletion}%</span>
+                    </div>
+                    <Progress value={profileCompletion} className="h-2 bg-white/10" />
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70">النشاط الأسبوعي</span>
+                      <span className="text-white font-bold">+{recentMembers}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70">الذكريات المحفوظة</span>
+                      <span className="text-white font-bold">{memoryCount}</span>
                     </div>
                   </div>
-                </Button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                <Button 
-                  onClick={() => navigate("/family-statistics")} 
-                  variant="outline" 
-                  className="w-full justify-start text-right h-auto p-6 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 border-2 border-purple-200 dark:border-purple-800 rounded-xl hover-scale transition-all duration-300"
-                >
-                  <div className="flex items-center gap-4 w-full">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <BarChart3 className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <div className="font-semibold text-lg text-purple-700 dark:text-purple-300">{t('view_statistics', 'عرض الإحصائيات')}</div>
-                      <div className="text-sm text-purple-600 dark:text-purple-400">{t('stats_desc', 'تحليل بيانات عائلتك والإحصائيات')}</div>
-                    </div>
-                  </div>
-                </Button>
+          {/* Creative Gallery Section */}
+          <div className="mb-20">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600/30 to-pink-600/30 backdrop-blur-sm text-white px-8 py-3 rounded-full text-sm font-medium border border-white/20 mb-6">
+                <Brush className="h-4 w-4" />
+                معرض الإبداعات
+                <Brush className="h-4 w-4" />
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  مجموعة أعمالك
+                </span>
+                <br />
+                <span className="text-white/90">الفنية الرقمية</span>
+              </h2>
+              <p className="text-xl text-white/70 max-w-3xl mx-auto">
+                استكشف وأدر مجموعة أشجارك العائلية في تجربة بصرية مذهلة
+              </p>
+            </div>
 
-                <Button 
-                  onClick={() => navigate("/profile")} 
-                  variant="outline" 
-                  className="w-full justify-start text-right h-auto p-6 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-xl hover-scale transition-all duration-300"
-                >
-                  <div className="flex items-center gap-4 w-full">
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <Settings className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <div className="font-semibold text-lg text-amber-700 dark:text-amber-300">{t('profile_settings', 'إعدادات الملف الشخصي')}</div>
-                      <div className="text-sm text-amber-600 dark:text-amber-400">{t('profile_desc', 'تحديث معلوماتك الشخصية')}</div>
+            {trees.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {trees.map((tree, index) => (
+                  <div key={tree.id} className="relative group">
+                    {/* Creative Background Shape */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${
+                      index % 4 === 0 ? 'from-emerald-600/20 to-cyan-600/20' :
+                      index % 4 === 1 ? 'from-blue-600/20 to-purple-600/20' :
+                      index % 4 === 2 ? 'from-purple-600/20 to-pink-600/20' :
+                      'from-pink-600/20 to-rose-600/20'
+                    } rounded-3xl transform group-hover:scale-105 group-hover:rotate-1 transition-all duration-500`}></div>
+                    
+                    <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20 h-64">
+                      <div className="flex flex-col h-full">
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge className={`${
+                            tree.isPublic ? 'bg-green-600/30 text-green-200' : 'bg-gray-600/30 text-gray-200'
+                          } border-white/20`}>
+                            {tree.isPublic ? '🌍 عام' : '🔒 خاص'}
+                          </Badge>
+                          <div className="flex gap-2">
+                            <div className={`w-2 h-2 rounded-full animate-pulse ${
+                              index % 4 === 0 ? 'bg-emerald-400' :
+                              index % 4 === 1 ? 'bg-blue-400' :
+                              index % 4 === 2 ? 'bg-purple-400' :
+                              'bg-pink-400'
+                            }`}></div>
+                          </div>
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-white mb-2 group-hover:scale-105 transition-transform duration-300">
+                          {tree.name}
+                        </h3>
+                        
+                        <p className="text-white/60 text-sm mb-4 flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          آخر تحديث: {tree.lastUpdated}
+                        </p>
+                        
+                        <div className="flex-1 flex items-end">
+                          <div className="w-full grid grid-cols-2 gap-4">
+                            <div className="text-center">
+                              <div className={`text-2xl font-bold ${
+                                index % 4 === 0 ? 'text-emerald-400' :
+                                index % 4 === 1 ? 'text-blue-400' :
+                                index % 4 === 2 ? 'text-purple-400' :
+                                'text-pink-400'
+                              }`}>
+                                {tree.members}
+                              </div>
+                              <div className="text-xs text-white/60">أفراد</div>
+                            </div>
+                            <div className="text-center">
+                              <div className={`text-2xl font-bold ${
+                                index % 4 === 0 ? 'text-cyan-400' :
+                                index % 4 === 1 ? 'text-purple-400' :
+                                index % 4 === 2 ? 'text-pink-400' :
+                                'text-rose-400'
+                              }`}>
+                                {tree.generations}
+                              </div>
+                              <div className="text-xs text-white/60">أجيال</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <Button 
+                          onClick={() => navigate('/family-tree-view')}
+                          className={`mt-4 w-full bg-gradient-to-r ${
+                            index % 4 === 0 ? 'from-emerald-600 to-cyan-600' :
+                            index % 4 === 1 ? 'from-blue-600 to-purple-600' :
+                            index % 4 === 2 ? 'from-purple-600 to-pink-600' :
+                            'from-pink-600 to-rose-600'
+                          } text-white rounded-xl font-semibold transform hover:scale-105 transition-all duration-300`}
+                        >
+                          <Eye className="h-4 w-4 ml-2" />
+                          استكشف
+                        </Button>
+                      </div>
                     </div>
                   </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center">
+                <div className="relative inline-block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-full blur-2xl"></div>
+                  <div className="relative w-32 h-32 bg-gradient-to-br from-white/10 to-white/5 rounded-full flex items-center justify-center mx-auto mb-8 backdrop-blur-xl border border-white/20">
+                    <TreePine className="h-16 w-16 text-white/60" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-4">لوحة فارغة تنتظر إبداعك</h3>
+                <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
+                  ابدأ رحلة استثنائية في رسم تاريخ عائلتك الرقمي بأسلوب فني مبتكر
+                </p>
+                <Button 
+                  onClick={handleCreateTree}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-4 rounded-2xl text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+                >
+                  <Plus className="h-6 w-6 ml-2" />
+                  ابدأ التحفة الأولى
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            )}
           </div>
         </div>
       </main>
