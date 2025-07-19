@@ -509,50 +509,84 @@ const FamilyCreator = () => {
                 <Card className="relative border-0 shadow-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl ring-1 ring-white/20 dark:ring-gray-500/20 overflow-hidden rounded-3xl">
                   <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500"></div>
                   
-                  <CardHeader className="text-center pb-10 relative">
-                    <div className="absolute top-6 right-6 w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-xl opacity-60"></div>
-                    
-                    <CardTitle className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-6 relative z-10 mb-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl">
-                        <Users className="h-8 w-8 text-white" />
+                  <CardContent className="p-8 md:p-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                      {/* Left Side - Form */}
+                      <div className="space-y-8">
+                        <div className="text-center lg:text-right mb-6">
+                          <h3 className="text-2xl font-bold mb-2">
+                            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                              معلومات العائلة
+                            </span>
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm">
+                            أدخل المعلومات الأساسية لشجرة العائلة الجديدة
+                          </p>
+                        </div>
+
+                        <div className="space-y-4">
+                          <Label htmlFor="familyName" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
+                            اسم العائلة *
+                          </Label>
+                          <Input
+                            id="familyName"
+                            placeholder="مثال: عائلة الأحمد"
+                            value={treeData.name}
+                            onChange={(e) => setTreeData({...treeData, name: e.target.value})}
+                            className="h-14 text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl"
+                          />
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <Label htmlFor="familyDescription" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
+                            وصف العائلة (اختياري)
+                          </Label>
+                          <Textarea
+                            id="familyDescription"
+                            placeholder="وصف مختصر عن تاريخ العائلة، قصص مميزة، أو أي معلومات إضافية تود توثيقها..."
+                            value={treeData.description}
+                            onChange={(e) => setTreeData({...treeData, description: e.target.value})}
+                            className="min-h-[120px] text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl"
+                          />
+                        </div>
                       </div>
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        معلومات العائلة
-                      </span>
-                    </CardTitle>
-                    
-                    <CardDescription className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                      أدخل المعلومات الأساسية لشجرة العائلة الجديدة وابدأ في توثيق تاريخك العائلي المميز
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="p-10 md:p-16 space-y-10">
-                    <div className="space-y-4">
-                      <Label htmlFor="familyName" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                        <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
-                        اسم العائلة *
-                      </Label>
-                      <Input
-                        id="familyName"
-                        placeholder="مثال: عائلة الأحمد"
-                        value={treeData.name}
-                        onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                        className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
-                      />
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <Label htmlFor="familyDescription" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                        <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
-                        وصف العائلة (اختياري)
-                      </Label>
-                      <Textarea
-                        id="familyDescription"
-                        placeholder="وصف مختصر عن تاريخ العائلة، قصص مميزة، أو أي معلومات إضافية تود توثيقها..."
-                        value={treeData.description}
-                        onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                        className="min-h-[160px] text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
-                      />
+
+                      {/* Right Side - Motivational Content */}
+                      <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-right space-y-6">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full blur-xl"></div>
+                          <div className="relative w-32 h-32 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl">
+                            <TreePine className="h-16 w-16 text-white drop-shadow-lg" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <h3 className="text-3xl font-bold">
+                            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                              رحلة الألف ميل
+                            </span>
+                          </h3>
+                          <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                            تبدأ بخطوة واحدة. كل عائلة عظيمة لها بداية، وبدايتك تبدأ الآن.
+                          </p>
+                          <div className="space-y-3 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="flex items-center gap-3 justify-center lg:justify-start">
+                              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                              <span>حفظ التاريخ العائلي للأجيال القادمة</span>
+                            </div>
+                            <div className="flex items-center gap-3 justify-center lg:justify-start">
+                              <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                              <span>توثيق القصص والذكريات المميزة</span>
+                            </div>
+                            <div className="flex items-center gap-3 justify-center lg:justify-start">
+                              <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                              <span>ربط أفراد العائلة ببعضهم البعض</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
