@@ -328,141 +328,30 @@ const PlanSelection = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Creative Navigation Bar */}
-      <div className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Link 
-              to="/dashboard" 
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105"
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <ArrowLeft className="h-4 w-4 text-white" />
-              </div>
-              <span className="font-medium">
-                {currentLanguage === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
-              </span>
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
+      <div className="container mx-auto px-6 py-8 max-w-7xl">
+        {/* Logo Section */}
+        <div className="text-center mb-12 relative">
+          <div className="flex flex-col items-center gap-6">
             <img 
               src={familyTreeLogo} 
               alt="شجرتي" 
-              className="h-8 w-8 rounded-full"
+              className="h-24 w-24 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300"
             />
-            <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              شجرتي
-            </span>
-          </div>
-
-          {user && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">
-                  {user.email?.charAt(0).toUpperCase()}
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-purple-600 bg-clip-text text-transparent">
+                  {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
                 </span>
-              </div>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                {currentLanguage === 'ar' 
+                  ? 'انضم إلى آلاف العائلات التي تحتفظ بتاريخها الرقمي معنا'
+                  : 'Join thousands of families preserving their digital heritage with us'
+                }
+              </p>
             </div>
-          )}
-        </div>
-      </div>
-
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
-        {/* Creative Hero Section */}
-        <div className="text-center mb-12 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-purple-500/10 rounded-3xl blur-3xl"></div>
-          <div className="relative">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-purple-600 bg-clip-text text-transparent">
-                {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
-              </span>
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {currentLanguage === 'ar' 
-                ? 'انضم إلى آلاف العائلات التي تحتفظ بتاريخها الرقمي معنا'
-                : 'Join thousands of families preserving their digital heritage with us'
-              }
-            </p>
           </div>
         </div>
-
-        {/* Dashboard Stats */}
-        {user && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <Card className="border-0 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/50 dark:to-emerald-900/50 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-1">
-                      {currentLanguage === 'ar' ? 'أشجار العائلة' : 'Family Trees'}
-                    </p>
-                    <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
-                      {userStats.familyTreesCount}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
-                    <TreePine className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/50 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-600 dark:text-blue-400 text-sm font-medium mb-1">
-                      {currentLanguage === 'ar' ? 'أفراد العائلة' : 'Family Members'}
-                    </p>
-                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                      {userStats.familyMembersCount}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                    <Users className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/50 dark:to-purple-900/50 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-purple-600 dark:text-purple-400 text-sm font-medium mb-1">
-                      {currentLanguage === 'ar' ? 'الباقة الحالية' : 'Current Plan'}
-                    </p>
-                    <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">
-                      {userSubscription?.package_id ? 'مدفوعة' : 'مجانية'}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
-                    <Crown className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/50 dark:to-amber-900/50 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-amber-600 dark:text-amber-400 text-sm font-medium mb-1">
-                      {currentLanguage === 'ar' ? 'النمو' : 'Growth'}
-                    </p>
-                    <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
-                      +{userStats.familyMembersCount > 0 ? Math.round((userStats.familyMembersCount / 10) * 100) : 0}%
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Creative Plans Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
