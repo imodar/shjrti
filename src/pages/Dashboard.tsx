@@ -455,25 +455,25 @@ const Dashboard = () => {
                               </span>
                             </h2>
                             
-                            {/* Package Usage Stats */}
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            {/* Package Usage Stats - Single Row Design */}
+                            <div className="flex items-center gap-6 justify-center">
                               {/* Trees Usage */}
                               <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-700/40 rounded-2xl px-4 py-3 backdrop-blur-sm border border-emerald-200/30 dark:border-emerald-700/30">
                                 <div className="relative">
-                                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <TreePine className="h-6 w-6 text-white" />
+                                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+                                    <TreePine className="h-5 w-5 text-white" />
                                   </div>
                                   {userSubscription?.max_trees && familyTrees.length >= userSubscription.max_trees && (
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
-                                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                                     </div>
                                   )}
                                 </div>
                                 <div>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{familyTrees.length}</span>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400">من</span>
-                                    <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_trees || 1}</span>
+                                    <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{familyTrees.length}</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">من</span>
+                                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_trees || 1}</span>
                                   </div>
                                   <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                     {familyTrees.length === 1 ? 'شجرة' : 'أشجار'}
@@ -481,23 +481,26 @@ const Dashboard = () => {
                                 </div>
                               </div>
 
+                              {/* Separator */}
+                              <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
+
                               {/* Members Usage */}
                               <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-700/40 rounded-2xl px-4 py-3 backdrop-blur-sm border border-teal-200/30 dark:border-teal-700/30">
                                 <div className="relative">
-                                  <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <Users className="h-6 w-6 text-white" />
+                                  <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+                                    <Users className="h-5 w-5 text-white" />
                                   </div>
                                   {userSubscription?.max_members && familyTrees.reduce((acc, tree) => acc + tree.members_count, 0) >= userSubscription.max_members && (
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
-                                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                                     </div>
                                   )}
                                 </div>
                                 <div>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-2xl font-bold text-teal-600 dark:text-teal-400">{familyTrees.reduce((acc, tree) => acc + tree.members_count, 0)}</span>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400">من</span>
-                                    <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_members || 50}</span>
+                                    <span className="text-xl font-bold text-teal-600 dark:text-teal-400">{familyTrees.reduce((acc, tree) => acc + tree.members_count, 0)}</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">من</span>
+                                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_members || 50}</span>
                                   </div>
                                   <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">فرد</p>
                                 </div>
