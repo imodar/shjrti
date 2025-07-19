@@ -417,102 +417,115 @@ const FamilyCreator = () => {
         </div>
         
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-16 relative z-10">
-          {/* Creative Hero Section */}
-          <div className="text-center mb-20 relative">
-            {/* Floating Elements */}
-            <div className="absolute -top-8 left-1/4 w-32 h-32 opacity-20 animate-pulse">
-              <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-xl"></div>
-            </div>
-            <div className="absolute -top-4 right-1/3 w-24 h-24 opacity-15 animate-pulse delay-1000">
-              <div className="w-full h-full bg-gradient-to-tl from-accent/40 to-primary/20 rounded-full blur-lg"></div>
-            </div>
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          {/* Hero Section with Dashboard Style */}
+          <div className="text-center mb-16 relative">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-3xl blur-3xl"></div>
             
-            {/* Main Icon with Enhanced Design */}
-            <div className="flex justify-center mb-8">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-accent rounded-3xl blur-lg opacity-50 group-hover:opacity-80 transition-all duration-500 animate-pulse"></div>
-                <div className="absolute inset-2 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl blur opacity-60"></div>
-                <div className="relative w-24 h-24 bg-gradient-to-br from-primary via-secondary to-accent rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-110 hover:rotate-3 transition-all duration-300">
-                  <TreePine className="h-12 w-12 text-primary-foreground drop-shadow-lg" />
+            {/* Main Hero Container */}
+            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-3xl py-12 px-8 shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10">
+              {/* Icon with Enhanced Design */}
+              <div className="flex justify-center mb-8">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl blur-lg opacity-50 group-hover:opacity-80 transition-all duration-500 animate-pulse"></div>
+                  <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-3xl flex items-center justify-center shadow-2xl border-4 border-white/30 dark:border-gray-700/30 transform hover:scale-110 transition-all duration-300">
+                    <TreePine className="h-12 w-12 text-white drop-shadow-lg" />
+                  </div>
+                  {/* Status Indicator */}
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                    <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Enhanced Typography */}
-            <div className="relative">
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-6 leading-tight">
-                إنشاء شجرة العائلة
+              
+              {/* Enhanced Typography */}
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                  إنشاء شجرة العائلة
+                </span>
               </h1>
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 blur-2xl -z-10"></div>
-            </div>
-            
-            <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed mb-8">
-              ابدأ رحلتك الاستثنائية في بناء تاريخ عائلتك وحفظ ذكرياتك الثمينة للأجيال القادمة
-            </p>
-            
-            {/* Creative Progress Indicator */}
-            <div className="flex items-center justify-center gap-8 mt-12">
-              <div className="flex flex-col items-center">
-                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold transition-all duration-500 ${
-                  currentStep >= 1 
-                    ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-2xl scale-110' 
-                    : 'bg-muted/50 text-muted-foreground border-2 border-border/50'
-                }`}>
-                  <span className="relative z-10">1</span>
-                  {currentStep >= 1 && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-2xl blur opacity-40 animate-pulse"></div>
-                  )}
+              
+              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+                ابدأ رحلتك الاستثنائية في بناء تاريخ عائلتك وحفظ ذكرياتك الثمينة للأجيال القادمة
+              </p>
+              
+              {/* Progress Indicator with Dashboard Style */}
+              <div className="flex items-center justify-center gap-8 mt-12">
+                <div className="flex flex-col items-center">
+                  <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold transition-all duration-500 ${
+                    currentStep >= 1 
+                      ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-2xl scale-110' 
+                      : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border-2 border-gray-200/50'
+                  }`}>
+                    <span className="relative z-10">1</span>
+                    {currentStep >= 1 && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur opacity-60 animate-pulse"></div>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400 mt-3 font-medium">معلومات العائلة</span>
                 </div>
-                <span className="text-sm text-muted-foreground mt-2 font-medium">معلومات العائلة</span>
-              </div>
-              
-              <div className={`relative w-20 h-2 rounded-full transition-all duration-700 ${
-                currentStep >= 2 ? 'bg-gradient-to-r from-primary via-secondary to-accent' : 'bg-border/50'
-              }`}>
-                {currentStep >= 2 && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-accent rounded-full blur opacity-60 animate-pulse"></div>
-                )}
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold transition-all duration-500 ${
-                  currentStep >= 2 
-                    ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-2xl scale-110' 
-                    : 'bg-muted/50 text-muted-foreground border-2 border-border/50'
+                
+                <div className={`relative w-24 h-3 rounded-full transition-all duration-700 ${
+                  currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500' : 'bg-gray-200/50 dark:bg-gray-700/50'
                 }`}>
-                  <span className="relative z-10">2</span>
                   {currentStep >= 2 && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-2xl blur opacity-40 animate-pulse"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-full blur opacity-60 animate-pulse"></div>
                   )}
                 </div>
-                <span className="text-sm text-muted-foreground mt-2 font-medium">بيانات المؤسس</span>
+                
+                <div className="flex flex-col items-center">
+                  <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold transition-all duration-500 ${
+                    currentStep >= 2 
+                      ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-2xl scale-110' 
+                      : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border-2 border-gray-200/50'
+                  }`}>
+                    <span className="relative z-10">2</span>
+                    {currentStep >= 2 && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur opacity-60 animate-pulse"></div>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400 mt-3 font-medium">بيانات المؤسس</span>
+                </div>
               </div>
+
+              {/* Decorative Elements */}
+              <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-emerald-300/40 dark:border-emerald-700/40 rounded-tr-lg"></div>
+              <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-emerald-300/40 dark:border-emerald-700/40 rounded-bl-lg"></div>
             </div>
           </div>
 
-          {/* Enhanced Step Content */}
-          <div className="max-w-5xl mx-auto">
+          {/* Enhanced Step Content with Dashboard Style */}
+          <div className="max-w-6xl mx-auto">
             {currentStep === 1 && (
               <div className="relative">
-                <Card className="border-0 shadow-2xl bg-gradient-to-br from-card/95 to-accent/5 backdrop-blur-sm overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-                  <CardHeader className="text-center pb-8 border-b border-border/30 relative">
-                    <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full blur-xl opacity-60"></div>
-                    <CardTitle className="text-3xl font-bold flex items-center justify-center gap-4 relative z-10">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-                        <Users className="h-6 w-6 text-primary-foreground" />
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/10 to-amber-500/5 rounded-3xl blur-2xl"></div>
+                
+                <Card className="relative border-0 shadow-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl ring-1 ring-white/20 dark:ring-gray-500/20 overflow-hidden rounded-3xl">
+                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500"></div>
+                  
+                  <CardHeader className="text-center pb-10 relative">
+                    <div className="absolute top-6 right-6 w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-xl opacity-60"></div>
+                    
+                    <CardTitle className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-6 relative z-10 mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl">
+                        <Users className="h-8 w-8 text-white" />
                       </div>
-                      معلومات العائلة
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        معلومات العائلة
+                      </span>
                     </CardTitle>
-                    <CardDescription className="text-lg mt-4 max-w-2xl mx-auto">
-                      أدخل المعلومات الأساسية لشجرة العائلة الجديدة وابدأ في توثيق تاريخك العائلي
+                    
+                    <CardDescription className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                      أدخل المعلومات الأساسية لشجرة العائلة الجديدة وابدأ في توثيق تاريخك العائلي المميز
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-10 space-y-8">
-                    <div className="space-y-3">
-                      <Label htmlFor="familyName" className="text-lg font-semibold flex items-center gap-2">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  
+                  <CardContent className="p-10 md:p-16 space-y-10">
+                    <div className="space-y-4">
+                      <Label htmlFor="familyName" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                        <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
                         اسم العائلة *
                       </Label>
                       <Input
@@ -520,13 +533,13 @@ const FamilyCreator = () => {
                         placeholder="مثال: عائلة الأحمد"
                         value={treeData.name}
                         onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                        className="h-14 text-lg border-2 border-border/50 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300 bg-background/50"
+                        className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
                       />
                     </div>
                     
-                    <div className="space-y-3">
-                      <Label htmlFor="familyDescription" className="text-lg font-semibold flex items-center gap-2">
-                        <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                    <div className="space-y-4">
+                      <Label htmlFor="familyDescription" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                        <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
                         وصف العائلة (اختياري)
                       </Label>
                       <Textarea
@@ -534,7 +547,7 @@ const FamilyCreator = () => {
                         placeholder="وصف مختصر عن تاريخ العائلة، قصص مميزة، أو أي معلومات إضافية تود توثيقها..."
                         value={treeData.description}
                         onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                        className="min-h-[140px] text-lg border-2 border-border/50 focus:border-secondary focus:ring-4 focus:ring-secondary/20 transition-all duration-300 bg-background/50"
+                        className="min-h-[160px] text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
                       />
                     </div>
                   </CardContent>
@@ -543,29 +556,37 @@ const FamilyCreator = () => {
             )}
 
             {currentStep === 2 && (
-              <div className="space-y-10">
-                {/* Enhanced Founder Information */}
+              <div className="space-y-12">
+                {/* Founder Information */}
                 <div className="relative">
-                  <Card className="border-0 shadow-2xl bg-gradient-to-br from-card/95 to-primary/5 backdrop-blur-sm overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-                    <CardHeader className="text-center pb-8 border-b border-border/30 relative">
-                      <div className="absolute top-4 left-4 w-20 h-20 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-xl opacity-50"></div>
-                      <CardTitle className="text-3xl font-bold flex items-center justify-center gap-4 relative z-10">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-                          <UserPlus className="h-6 w-6 text-primary-foreground" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/10 to-amber-500/5 rounded-3xl blur-2xl"></div>
+                  
+                  <Card className="relative border-0 shadow-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl ring-1 ring-white/20 dark:ring-gray-500/20 overflow-hidden rounded-3xl">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500"></div>
+                    
+                    <CardHeader className="text-center pb-10 relative">
+                      <div className="absolute top-6 left-6 w-24 h-24 bg-gradient-to-br from-emerald-500/10 to-amber-500/10 rounded-full blur-xl opacity-50"></div>
+                      
+                      <CardTitle className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-6 relative z-10 mb-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-xl">
+                          <UserPlus className="h-8 w-8 text-white" />
                         </div>
-                        معلومات مؤسس العائلة
+                        <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                          معلومات مؤسس العائلة
+                        </span>
                       </CardTitle>
-                      <CardDescription className="text-lg mt-4 max-w-2xl mx-auto">
+                      
+                      <CardDescription className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                         أدخل معلومات الشخص الذي ستبدأ منه شجرة العائلة - الجذر الذي ستنمو منه فروع التاريخ
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-10">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <CardContent className="p-10 md:p-16">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                         {/* Name */}
-                        <div className="space-y-3">
-                          <Label htmlFor="founderName" className="text-lg font-semibold flex items-center gap-2">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                        <div className="space-y-4">
+                          <Label htmlFor="founderName" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
                             الاسم الكامل *
                           </Label>
                           <Input
@@ -573,18 +594,18 @@ const FamilyCreator = () => {
                             placeholder="الاسم الكامل للمؤسس"
                             value={founderData.name}
                             onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                            className="h-14 text-lg border-2 border-border/50 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300 bg-background/50"
+                            className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
                           />
                         </div>
 
                         {/* Gender */}
-                        <div className="space-y-3">
-                          <Label className="text-lg font-semibold flex items-center gap-2">
-                            <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                        <div className="space-y-4">
+                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
                             الجنس *
                           </Label>
                           <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                            <SelectTrigger className="h-14 text-lg border-2 border-border/50 focus:border-secondary focus:ring-4 focus:ring-secondary/20 transition-all duration-300">
+                            <SelectTrigger className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl">
                               <SelectValue placeholder="اختر الجنس" />
                             </SelectTrigger>
                             <SelectContent>
@@ -595,9 +616,9 @@ const FamilyCreator = () => {
                         </div>
 
                         {/* Birth Date */}
-                        <div className="space-y-3">
-                          <Label className="text-lg font-semibold flex items-center gap-2">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
+                        <div className="space-y-4">
+                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-amber-500 rounded-full shadow-lg"></div>
                             تاريخ الميلاد
                           </Label>
                           <Popover>
@@ -605,11 +626,11 @@ const FamilyCreator = () => {
                               <Button
                                 variant="outline"
                                 className={cn(
-                                  "h-14 text-lg border-2 border-border/50 justify-start text-left font-normal w-full hover:border-accent focus:ring-4 focus:ring-accent/20 transition-all duration-300",
-                                  !founderData.birthDate && "text-muted-foreground"
+                                  "h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-left font-normal w-full hover:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl",
+                                  !founderData.birthDate && "text-gray-500"
                                 )}
                               >
-                                <CalendarIcon className="mr-3 h-5 w-5" />
+                                <CalendarIcon className="mr-4 h-6 w-6" />
                                 {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الميلاد"}
                               </Button>
                             </PopoverTrigger>
@@ -627,13 +648,13 @@ const FamilyCreator = () => {
                         </div>
 
                         {/* Status */}
-                        <div className="space-y-3">
-                          <Label className="text-lg font-semibold flex items-center gap-2">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                        <div className="space-y-4">
+                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
                             الحالة
                           </Label>
                           <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                            <SelectTrigger className="h-14 text-lg border-2 border-border/50 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300">
+                            <SelectTrigger className="h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -645,9 +666,9 @@ const FamilyCreator = () => {
 
                         {/* Death Date (if deceased) */}
                         {!founderData.isAlive && (
-                          <div className="space-y-3 lg:col-span-2">
-                            <Label className="text-lg font-semibold flex items-center gap-2">
-                              <div className="w-2 h-2 bg-destructive rounded-full"></div>
+                          <div className="space-y-4 lg:col-span-2">
+                            <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                              <div className="w-3 h-3 bg-red-500 rounded-full shadow-lg"></div>
                               تاريخ الوفاة
                             </Label>
                             <Popover>
@@ -655,11 +676,11 @@ const FamilyCreator = () => {
                                 <Button
                                   variant="outline"
                                   className={cn(
-                                    "h-14 text-lg border-2 border-border/50 justify-start text-left font-normal w-full hover:border-destructive focus:ring-4 focus:ring-destructive/20 transition-all duration-300",
-                                    !founderData.deathDate && "text-muted-foreground"
+                                    "h-16 text-xl border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-left font-normal w-full hover:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl",
+                                    !founderData.deathDate && "text-gray-500"
                                   )}
                                 >
-                                  <CalendarIcon className="mr-3 h-5 w-5" />
+                                  <CalendarIcon className="mr-4 h-6 w-6" />
                                   {founderData.deathDate ? format(founderData.deathDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الوفاة"}
                                 </Button>
                               </PopoverTrigger>
@@ -678,9 +699,9 @@ const FamilyCreator = () => {
                         )}
 
                         {/* Biography */}
-                        <div className="space-y-3 lg:col-span-2">
-                          <Label htmlFor="founderBio" className="text-lg font-semibold flex items-center gap-2">
-                            <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                        <div className="space-y-4 lg:col-span-2">
+                          <Label htmlFor="founderBio" className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-teal-500 rounded-full shadow-lg"></div>
                             السيرة الذاتية (اختياري)
                           </Label>
                           <Textarea
@@ -688,17 +709,17 @@ const FamilyCreator = () => {
                             placeholder="معلومات عن المؤسس، إنجازاته، مهنته، قصص مميزة، أو أي معلومات مهمة تود توثيقها..."
                             value={founderData.bio}
                             onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
-                            className="min-h-[140px] text-lg border-2 border-border/50 focus:border-secondary focus:ring-4 focus:ring-secondary/20 transition-all duration-300 bg-background/50"
+                            className="min-h-[160px] text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl"
                           />
                         </div>
 
                         {/* Enhanced Image Upload */}
-                        <div className="space-y-3 lg:col-span-2">
-                          <Label className="text-lg font-semibold flex items-center gap-2">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
+                        <div className="space-y-4 lg:col-span-2">
+                          <Label className="text-xl font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                            <div className="w-3 h-3 bg-amber-500 rounded-full shadow-lg"></div>
                             صورة المؤسس (اختياري)
                           </Label>
-                          <div className="flex items-center gap-6">
+                          <div className="flex items-center gap-8">
                             <input
                               type="file"
                               accept="image/*"
@@ -718,22 +739,26 @@ const FamilyCreator = () => {
                               id="founder-image"
                             />
                             <Label htmlFor="founder-image" className="cursor-pointer">
-                              <div className="group flex items-center gap-3 px-6 py-4 border-2 border-dashed border-accent/50 rounded-xl hover:bg-accent/10 hover:border-accent transition-all duration-300">
-                                <div className="w-10 h-10 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <Upload className="h-5 w-5 text-primary-foreground" />
+                              <div className="group flex items-center gap-4 px-8 py-6 border-2 border-dashed border-amber-300/50 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-500 transition-all duration-300 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm">
+                                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                  <Upload className="h-7 w-7 text-white" />
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-foreground">اختر صورة المؤسس</p>
-                                  <p className="text-sm text-muted-foreground">JPG, PNG أو GIF</p>
+                                  <p className="text-lg font-bold text-gray-700 dark:text-gray-300">اختر صورة المؤسس</p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">JPG, PNG أو GIF</p>
                                 </div>
                               </div>
                             </Label>
                             {founderData.croppedImage && (
                               <div className="relative group">
-                                <img src={founderData.croppedImage} alt="صورة المؤسس" className="w-20 h-20 rounded-xl object-cover border-2 border-accent shadow-lg group-hover:scale-105 transition-transform" />
+                                <img 
+                                  src={founderData.croppedImage} 
+                                  alt="صورة المؤسس" 
+                                  className="w-24 h-24 rounded-2xl object-cover border-4 border-amber-200 dark:border-amber-700 shadow-xl group-hover:scale-105 transition-transform" 
+                                />
                                 <button
                                   onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
-                                  className="absolute -top-2 -right-2 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                                  className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
                                 >
                                   <X className="h-4 w-4" />
                                 </button>
@@ -748,31 +773,39 @@ const FamilyCreator = () => {
 
                 {/* Enhanced Wives Section */}
                 <div className="relative">
-                  <Card className="border-0 shadow-2xl bg-gradient-to-br from-card/95 to-secondary/5 backdrop-blur-sm overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary via-accent to-primary"></div>
-                    <CardHeader className="text-center pb-8 border-b border-border/30 relative">
-                      <div className="absolute top-4 right-4 w-24 h-24 bg-gradient-to-br from-secondary/10 to-primary/10 rounded-full blur-xl opacity-40"></div>
-                      <CardTitle className="text-3xl font-bold flex items-center justify-center gap-4 relative z-10">
-                        <div className="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-xl flex items-center justify-center">
-                          <Heart className="h-6 w-6 text-primary-foreground" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 via-rose-500/10 to-amber-500/5 rounded-3xl blur-2xl"></div>
+                  
+                  <Card className="relative border-0 shadow-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl ring-1 ring-white/20 dark:ring-gray-500/20 overflow-hidden rounded-3xl">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500"></div>
+                    
+                    <CardHeader className="text-center pb-10 relative">
+                      <div className="absolute top-6 right-6 w-28 h-28 bg-gradient-to-br from-pink-500/10 to-amber-500/10 rounded-full blur-xl opacity-40"></div>
+                      
+                      <CardTitle className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-6 relative z-10 mb-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center shadow-xl">
+                          <Heart className="h-8 w-8 text-white" />
                         </div>
-                        الزوجات (اختياري)
+                        <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-amber-600 bg-clip-text text-transparent">
+                          الزوجات (اختياري)
+                        </span>
                       </CardTitle>
-                      <CardDescription className="text-lg mt-4 max-w-2xl mx-auto">
+                      
+                      <CardDescription className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                         أضف معلومات الزوجات إذا كان لدى المؤسس أكثر من زوجة لتوثيق كامل للعائلة
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-10">
+                    
+                    <CardContent className="p-10 md:p-16">
                       {wives.length > 0 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-10">
                           {wives.map((wife, index) => (
-                            <div key={wife.id} className="group p-6 bg-gradient-to-br from-secondary/10 to-accent/5 rounded-xl border border-border/30 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
-                              <div className="flex items-center justify-between mb-4">
-                                <h4 className="font-bold text-lg text-foreground group-hover:text-secondary transition-colors">{wife.name}</h4>
+                            <div key={wife.id} className="group p-8 bg-gradient-to-br from-rose-50/80 to-pink-50/80 dark:from-rose-900/20 dark:to-pink-900/20 rounded-2xl border border-rose-200/50 dark:border-rose-700/50 hover:border-rose-400/50 transition-all duration-300 hover:shadow-xl backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-6">
+                                <h4 className="font-bold text-xl text-gray-800 dark:text-gray-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">{wife.name}</h4>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="hover:bg-secondary/20">
-                                      <MoreVertical className="h-4 w-4" />
+                                    <Button variant="ghost" size="sm" className="hover:bg-rose-100 dark:hover:bg-rose-900/30 rounded-xl">
+                                      <MoreVertical className="h-5 w-5" />
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent>
@@ -787,12 +820,13 @@ const FamilyCreator = () => {
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
-                              <div className="space-y-2">
-                                <p className={`text-sm font-medium ${wife.isAlive ? 'text-green-600' : 'text-muted-foreground'}`}>
+                              <div className="space-y-3">
+                                <p className={`text-sm font-semibold px-3 py-1 rounded-full inline-block ${wife.isAlive ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400'}`}>
                                   {wife.isAlive ? "على قيد الحياة" : "متوفاة"}
                                 </p>
                                 {wife.birthDate && (
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-rose-400 rounded-full"></div>
                                     مولودة: {format(wife.birthDate, "dd/MM/yyyy", { locale: ar })}
                                   </p>
                                 )}
@@ -805,13 +839,13 @@ const FamilyCreator = () => {
                       <Button
                         onClick={() => setIsAddingWife(true)}
                         variant="outline"
-                        className="w-full h-16 border-2 border-dashed border-secondary/50 hover:bg-secondary/10 hover:border-secondary transition-all duration-300 group"
+                        className="w-full h-20 border-2 border-dashed border-rose-300/50 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:border-rose-500 transition-all duration-300 group rounded-2xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Plus className="h-5 w-5 text-primary-foreground" />
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                            <Plus className="h-6 w-6 text-white" />
                           </div>
-                          <span className="text-lg font-semibold">إضافة زوجة جديدة</span>
+                          <span className="text-xl font-bold text-gray-700 dark:text-gray-300">إضافة زوجة جديدة</span>
                         </div>
                       </Button>
                     </CardContent>
@@ -821,24 +855,24 @@ const FamilyCreator = () => {
             )}
 
             {/* Enhanced Navigation Buttons */}
-            <div className="flex justify-between items-center mt-16 gap-4">
+            <div className="flex justify-between items-center mt-20 gap-6">
               <Button
                 onClick={handlePrevStep}
                 variant="outline"
                 disabled={currentStep === 1}
-                className="h-14 px-8 text-lg border-2 hover:border-primary hover:bg-primary/10 transition-all duration-300 disabled:opacity-50"
+                className="h-16 px-10 text-lg border-2 border-gray-200/50 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 disabled:opacity-50 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
               >
-                <ArrowRight className="h-5 w-5 mr-3" />
+                <ArrowRight className="h-6 w-6 mr-3" />
                 السابق
               </Button>
               
               <Button
                 onClick={handleNextStep}
-                className="h-14 px-12 text-lg bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-xl"
+                className="h-16 px-16 text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-2xl text-white font-bold"
               >
                 {currentStep === 1 ? "التالي" : "إنشاء العائلة"}
-                {currentStep === 1 && <ArrowLeft className="h-5 w-5 ml-3" />}
-                {currentStep === 2 && <CheckCircle className="h-5 w-5 ml-3" />}
+                {currentStep === 1 && <ArrowLeft className="h-6 w-6 ml-3" />}
+                {currentStep === 2 && <CheckCircle className="h-6 w-6 ml-3" />}
               </Button>
             </div>
           </div>
