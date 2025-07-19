@@ -424,7 +424,7 @@ const FamilyCreator = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-3xl blur-3xl"></div>
             
             {/* Main Hero Container */}
-            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-3xl py-12 px-8 shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10">
+            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10">
               {/* Icon with Enhanced Design */}
               <div className="flex justify-center mb-8">
                 <div className="relative group">
