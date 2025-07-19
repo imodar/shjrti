@@ -5,10 +5,13 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Force scroll to top with a small delay to ensure it works after navigation
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 0);
+    // Disable browser's automatic scroll restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
+    // Force scroll to top immediately
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   return null;

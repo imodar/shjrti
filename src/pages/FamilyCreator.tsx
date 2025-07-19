@@ -94,11 +94,8 @@ const FamilyCreator = () => {
 
   const handlePrevStep = () => {
     if (currentStep === 1) {
-      navigate('/dashboard');
-      // Force scroll to top after navigation
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 100);
+      // Use replace to avoid history stack issues
+      navigate('/dashboard', { replace: true });
     } else if (currentStep === 2) {
       setCurrentStep(1);
     }
