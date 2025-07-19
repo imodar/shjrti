@@ -344,7 +344,7 @@ const Auth = () => {
           </div>
 
           {/* Main Content */}
-          <div className="relative z-10 flex items-center justify-center min-h-full p-8">
+          <div className="relative z-10 flex items-center justify-center min-h-full p-8 w-full mx-auto">
             <div className="text-center text-white space-y-8 max-w-lg font-arabic">
               {/* Luxury Logo */}
               <div className="relative group">
