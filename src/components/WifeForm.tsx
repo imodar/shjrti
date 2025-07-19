@@ -141,12 +141,6 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
                   مطلقة
                 </div>
               </SelectItem>
-              <SelectItem value="widowed" className="font-arabic">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-gray-500" />
-                  أرملة
-                </div>
-              </SelectItem>
             </SelectContent>
           </Select>
         </div>
