@@ -26,7 +26,7 @@ import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import Store from "./pages/Store";
-import AdminPanel from "./pages/AdminPanel";
+import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import RenewSubscription from "./pages/RenewSubscription";
 import NotFound from "./pages/NotFound";
 
@@ -112,7 +112,7 @@ const App = () => (
                 } />
                 <Route path="/admin" element={
                   <ProtectedRoute requireAdmin={true}>
-                    <AdminPanel />
+                    <EnhancedAdminPanel />
                   </ProtectedRoute>
                 } />
                 <Route path="/renew-subscription" element={
