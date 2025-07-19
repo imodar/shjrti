@@ -408,10 +408,10 @@ const FamilyCreator = () => {
   return (
     <>
       <GlobalHeader />
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-950 dark:via-blue-950 dark:to-purple-950 relative overflow-hidden">
         {/* Floating Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse"></div>
           <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
           <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
         </div>
@@ -421,7 +421,7 @@ const FamilyCreator = () => {
           <Heart className="h-10 w-10 text-pink-400 opacity-60" />
         </div>
         <div className="absolute bottom-40 left-20 animate-bounce">
-          <Users className="h-12 w-12 text-emerald-400 opacity-40" />
+          <Users className="h-12 w-12 text-blue-400 opacity-40" />
         </div>
         <div className="absolute top-1/2 left-10 animate-pulse">
           <Star className="h-8 w-8 text-yellow-400 opacity-60" />
