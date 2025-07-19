@@ -417,7 +417,7 @@ const FamilyCreator = () => {
         </div>
         
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="container mx-auto px-4 pt-2 relative z-10">
           {/* Hero Section with Dashboard Style */}
           {/* Header Section with Dashboard Style */}
           <div className="mb-8">
