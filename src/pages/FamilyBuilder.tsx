@@ -1541,16 +1541,12 @@ const FamilyBuilder = () => {
                     </div>
                   </div>
                   
-                  {/* Text Content */}
-                  <div className="text-right">
+                  <div className="text-center">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        إدارة أفراد العائلة
+                        عائلة {familyData?.name || 'غير محدد'}
                       </span>
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-                      أضف وعدل أفراد شجرة العائلة وتتبع تطور نسبك
-                    </p>
                   </div>
                 </div>
 
