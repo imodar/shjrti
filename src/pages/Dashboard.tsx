@@ -179,12 +179,17 @@ const Dashboard = () => {
 
   // Delete family tree
   const handleDeleteTree = async (treeId: string) => {
+    console.log('🗑️ Attempting to delete tree:', treeId);
+    console.log('👤 Current user ID:', user?.id);
+    
     try {
       const { error } = await supabase
         .from('families')
         .delete()
         .eq('id', treeId)
         .eq('creator_id', user?.id);
+
+      console.log('❌ Delete error:', error);
 
       if (error) throw error;
 
@@ -193,8 +198,9 @@ const Dashboard = () => {
         title: "تم الحذف",
         description: "تم حذف الشجرة بنجاح"
       });
+      console.log('✅ Tree deleted successfully');
     } catch (error) {
-      console.error('Error deleting tree:', error);
+      console.error('🚨 Error deleting tree:', error);
       toast({
         title: "خطأ",
         description: "حدث خطأ في حذف الشجرة",
