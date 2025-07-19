@@ -345,8 +345,8 @@ const PlanSelection = () => {
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 {currentLanguage === 'ar' 
-                  ? 'انضم إلى آلاف العائلات التي تحتفظ بتاريخها الرقمي معنا'
-                  : 'Join thousands of families preserving their digital heritage with us'
+                  ? 'انضم إلى آلاف العائلات حول العالم واحتفظ بقصص أجدادك للأجيال القادمة'
+                  : 'Join thousands of families worldwide and preserve your ancestors\' stories for future generations'
                 }
               </p>
             </div>
