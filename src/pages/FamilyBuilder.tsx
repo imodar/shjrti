@@ -330,7 +330,6 @@ const FamilyBuilder = () => {
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
-    maritalStatus?: string;
   }>>([]);
   const [husbands, setHusbands] = useState<Array<{
     id: string;
@@ -2512,16 +2511,12 @@ const FamilyBuilder = () => {
                 </div>
 
                 {formData.gender === "male" ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Left Column: Current Wives List */}
-                    <div className="space-y-4">
-                      <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
-                        <Users className="h-5 w-5 text-primary" />
-                        الزوجات المضافة ({wives.length})
-                      </Label>
-                      
-                      {wives.length > 0 ? (
-                        <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                  <div className="space-y-6">
+                    {/* Current Wives List */}
+                    {wives.length > 0 && (
+                      <div className="space-y-4">
+                        <Label className="text-lg font-semibold text-foreground">الزوجات المضافة ({wives.length})</Label>
+                        <div className="grid gap-4">
                           {wives.map((wife, index) => (
                             <div key={wife.id} className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-4 border border-primary/20">
                               <div className="flex items-center justify-between">
@@ -2534,7 +2529,6 @@ const FamilyBuilder = () => {
                                     <p className="text-sm text-muted-foreground">
                                       {wife.isAlive ? '🟢 على قيد الحياة' : '🔴 متوفاة'}
                                       {wife.birthDate && ` • وُلدت ${format(wife.birthDate, 'yyyy')}`}
-                                      {wife.maritalStatus && ` • ${wife.maritalStatus === 'married' ? 'متزوجة' : 'مطلقة'}`}
                                     </p>
                                   </div>
                                 </div>
@@ -2555,20 +2549,8 @@ const FamilyBuilder = () => {
                             </div>
                           ))}
                         </div>
-                      ) : (
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700">
-                          <Heart className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                          <p className="text-muted-foreground text-sm">لم يتم إضافة أي زوجات بعد</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Right Column: Add/Edit Wife Form */}
-                    <div className="space-y-4">
-                      <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
-                        <Plus className="h-5 w-5 text-primary" />
-                        {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
-                      </Label>
+                      </div>
+                    )}
 
                     {/* Add/Edit Wife Form - Only show if no existing wives or currently editing */}
                     {(!wives.some(w => w.id.toString().includes('existing-')) || editingWife) && (
@@ -2826,10 +2808,15 @@ const FamilyBuilder = () => {
                       />
                       </div>
                     )}
-                    </div>
-                  </div>
 
-                  
+                    {wives.length === 0 && (
+                      <div className="text-center py-8 bg-muted/30 rounded-xl border-2 border-dashed border-muted-foreground/30">
+                        <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">لم يتم إضافة أي زوجات بعد</p>
+                        <p className="text-sm text-muted-foreground mt-1">يمكنك تخطي هذه الخطوة والعودة لاحقاً</p>
+                      </div>
+                    )}
+                  </div>
                 ) : formData.gender === "female" ? (
                   <div className="space-y-6">
                     {/* Current Husbands List */}
