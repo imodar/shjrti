@@ -602,7 +602,7 @@ const FamilyCreator = () => {
                           {/* Modern Glassmorphism Container */}
                           <div className="relative max-w-2xl mx-auto p-12">
                             {/* Background Effects */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-teal-500/15 to-amber-500/10 backdrop-blur-2xl border border-white/20 dark:border-gray-700/20 rounded-3xl shadow-2xl"></div>
+                            <div className="absolute inset-0 backdrop-blur-2xl border border-white/20 dark:border-gray-700/20 rounded-3xl shadow-2xl"></div>
                             
                             
                             {/* Content */}
