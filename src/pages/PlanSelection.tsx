@@ -343,12 +343,35 @@ const PlanSelection = () => {
                   {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
                 </span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
                 {currentLanguage === 'ar' 
                   ? 'انضم إلى آلاف العائلات حول العالم واحتفظ بقصص أجدادك للأجيال القادمة'
                   : 'Join thousands of families worldwide and preserve your ancestors\' stories for future generations'
                 }
               </p>
+              
+              <div className="flex flex-wrap justify-center gap-4">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                  <Award className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {currentLanguage === 'ar' ? 'جودة عالية' : 'Premium Quality'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <Shield className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {currentLanguage === 'ar' ? 'أمان تام' : 'Secure & Safe'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                  <Zap className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {currentLanguage === 'ar' ? 'سهل الاستخدام' : 'Easy to Use'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -540,28 +563,6 @@ const PlanSelection = () => {
                   }
                 </p>
 
-                <div className="flex flex-wrap justify-center gap-4">
-                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                    <Award className="h-5 w-5" />
-                    <span className="text-sm font-medium">
-                      {currentLanguage === 'ar' ? 'جودة عالية' : 'Premium Quality'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                    <Shield className="h-5 w-5" />
-                    <span className="text-sm font-medium">
-                      {currentLanguage === 'ar' ? 'أمان تام' : 'Secure & Safe'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
-                    <Zap className="h-5 w-5" />
-                    <span className="text-sm font-medium">
-                      {currentLanguage === 'ar' ? 'سهل الاستخدام' : 'Easy to Use'}
-                    </span>
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>
