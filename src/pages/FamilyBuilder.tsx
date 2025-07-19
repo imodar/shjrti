@@ -1618,7 +1618,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
                       <Users className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Overview</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">نظرة عامة</span>
                   </div>
                   
                   <div 
@@ -1628,7 +1628,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <TreePine className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Tree View</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">مخطط الشجرة</span>
                   </div>
                   
                   <div 
@@ -1638,7 +1638,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Store className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Store</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">المتجر</span>
                   </div>
                   
                   <div 
@@ -1648,7 +1648,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Star className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Statistics</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">الإحصائات</span>
                   </div>
                 </div>
               </div>
