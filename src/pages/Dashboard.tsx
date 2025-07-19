@@ -515,17 +515,17 @@ const Dashboard = () => {
                 </div>
               </section>
             ) : (
-              <section className="py-8 relative mt-4">
+              <section className="py-4 relative mt-2">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Statistics Box */}
-                  <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-2xl p-4 mb-8 border border-emerald-200/50 dark:border-emerald-700/50">
-                    <div className="grid grid-cols-2 gap-8">
+                  <div className="w-full bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-xl p-3 mb-6 border border-emerald-200/50 dark:border-emerald-700/50">
+                    <div className="grid grid-cols-2 gap-6">
                       {/* Total Families */}
                       <div className="text-center">
-                        <div className="flex items-center justify-center mb-2">
-                          <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                        <div className="flex items-center justify-center mb-1">
+                          <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                        <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
                           {familyTrees.length} / {userSubscription?.max_trees || '∞'}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -535,10 +535,10 @@ const Dashboard = () => {
                       
                       {/* Total Members */}
                       <div className="text-center">
-                        <div className="flex items-center justify-center mb-2">
-                          <Users className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+                        <div className="flex items-center justify-center mb-1">
+                          <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                         </div>
-                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                        <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
                           {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
