@@ -161,7 +161,7 @@ export const GlobalHeader = () => {
                       <DropdownMenuSeparator className="bg-white/10" />
                       
                       {/* Enhanced Menu Items */}
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/30" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
                         <Link to="/dashboard" className="flex items-center gap-4 flex-row-reverse">
                           <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
                             <TreePine className="h-5 w-5 text-emerald-300" />
@@ -173,7 +173,7 @@ export const GlobalHeader = () => {
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-400/30" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
                         <Link to="/profile" className="flex items-center gap-4 flex-row-reverse">
                           <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-colors border border-teal-400/30">
                             <Settings className="h-5 w-5 text-teal-300" />
@@ -273,7 +273,7 @@ export const GlobalHeader = () => {
                     {languages.map((language) => (
                       <DropdownMenuItem 
                         key={language.code}
-                        className="group p-3 rounded-lg hover:bg-amber-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/20"
+                        className="group p-3 rounded-lg hover:bg-amber-400/5 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/15"
                         onClick={() => setLanguage(language.code)}
                       >
                         <div className="flex items-center justify-center w-full">
