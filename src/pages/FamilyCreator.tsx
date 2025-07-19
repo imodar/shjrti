@@ -15,7 +15,8 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { SharedFooter } from "@/components/SharedFooter";
+import { GlobalHeader } from "@/components/GlobalHeader";
+import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { supabase } from "@/integrations/supabase/client";
 import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
@@ -394,615 +395,365 @@ const FamilyCreator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
-      {/* Luxury Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/10 rounded-full blur-3xl animate-float opacity-60"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-tr from-cyan-400/15 via-teal-400/20 to-emerald-400/10 rounded-full blur-2xl animate-float-delayed opacity-40"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-teal-400/10 via-emerald-400/15 to-cyan-400/5 rounded-full blur-3xl animate-float-slow opacity-30"></div>
-      </div>
-      
-      {/* Luxury Header */}
-      <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-emerald-200/30 dark:border-emerald-700/30 sticky top-0 z-50">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-2 right-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
-          <div className="absolute top-6 right-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-4 right-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
-        </div>
-
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
-                  <TreePine className="h-7 w-7 text-white" />
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                  إنشاء شجرة العائلة
-                </h1>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <p className="text-muted-foreground font-medium">ابدأ رحلتك في بناء تاريخ عائلتك</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Luxury Progress Indicator */}
-            <div className="flex items-center gap-3">
-              <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all ${
-                currentStep >= 1 
-                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
-                  : 'bg-white/20 backdrop-blur-sm text-muted-foreground border border-emerald-200/30'
-              }`}>
-                1
-                {currentStep >= 1 && <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-2xl animate-pulse"></div>}
-              </div>
-              <div className={`w-8 h-1 rounded-full transition-all ${currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-emerald-200/30'}`}></div>
-              <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all ${
-                currentStep >= 2 
-                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
-                  : 'bg-white/20 backdrop-blur-sm text-muted-foreground border border-emerald-200/30'
-              }`}>
-                2
-                {currentStep >= 2 && <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-2xl animate-pulse"></div>}
-              </div>
-            </div>
-          </div>
+    <>
+      <GlobalHeader />
+      <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
+        {/* Luxury Background Elements */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-primary/10 via-secondary/8 to-accent/5 rounded-full blur-3xl animate-pulse opacity-60"></div>
+          <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-tr from-accent/8 via-secondary/10 to-primary/5 rounded-full blur-2xl animate-pulse opacity-40"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-secondary/5 via-primary/8 to-accent/3 rounded-full blur-3xl animate-pulse opacity-30"></div>
         </div>
         
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
-      </header>
-
-      {/* Main Content */}
-      <div className="relative z-10 overflow-hidden">{/* Background already handled in main div */}
-
-        <div className="container mx-auto px-6 py-8">
-          <div className="max-w-6xl mx-auto">
-            
-            {/* Page Title - Compact Header */}
-            <div className="text-center mb-8 relative">
-              
-              <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4 relative">
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
-                  ابدأ رحلة
-                </span>
-                <br />
-                <span className="text-foreground">تاريخ عائلتك</span>
-              </h1>
-              
-              <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                اصنع ذكريات تدوم للأبد واحفظ تاريخ عائلتك للأجيال القادمة
-              </p>
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-16 items-start">
-              
-              {/* Left Side - Interactive Form */}
-              <div className="order-2 lg:order-1 lg:col-span-2 space-y-8">
-                
-                {currentStep === 1 && (
-                  <div className="space-y-8">
-                    
-                    {/* Welcome Card */}
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
-                      <Card className="relative bg-card/80 backdrop-blur-xl border-border/50 rounded-3xl shadow-2xl overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
-                        <CardHeader className="pb-8 pt-10">
-                          <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
-                              <TreePine className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                              <CardTitle className="text-2xl font-bold text-foreground">معلومات العائلة</CardTitle>
-                              <CardDescription className="text-muted-foreground mt-1">
-                                الخطوة الأولى لبناء شجرة عائلتك
-                              </CardDescription>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-8 pb-10">
-                          
-                          {/* Family Name Input */}
-                          <div className="space-y-4">
-                            <Label htmlFor="family-name" className="text-lg font-medium text-foreground flex items-center gap-3">
-                              <div className="w-2 h-2 bg-primary rounded-full"></div>
-                              اسم العائلة
-                            </Label>
-                            <div className="relative group">
-                              <Input
-                                id="family-name"
-                                value={treeData.name}
-                                onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                                placeholder="مثال: عائلة الأحمد"
-                                className="h-14 text-lg bg-background border-2 border-input rounded-xl font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Family Description */}
-                          <div className="space-y-4">
-                            <Label htmlFor="family-description" className="text-lg font-medium text-foreground flex items-center gap-3">
-                              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-                              وصف العائلة (اختياري)
-                            </Label>
-                            <div className="relative group">
-                              <Textarea
-                                id="family-description"
-                                value={treeData.description}
-                                onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                                placeholder="اكتب وصفاً موجزاً عن تاريخ عائلتك..."
-                                className="min-h-[120px] text-base bg-background border-2 border-input rounded-xl resize-none font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-                                rows={4}
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            </div>
-                          </div>
-
-                          {/* Next Button - Enhanced */}
-                          <div className="pt-4">
-                            <Button 
-                              onClick={handleNextStep}
-                              className="w-full h-16 bg-gradient-to-r from-primary via-accent to-primary bg-size-200 hover:bg-pos-100 text-white font-semibold rounded-2xl text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 relative overflow-hidden group"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                              <div className="relative flex items-center justify-center gap-3">
-                                <span>المتابعة للخطوة التالية</span>
-                                <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
-                              </div>
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-                )}
-
-                {currentStep === 2 && (
-                  <div className="space-y-8">
-                    
-                    {/* Founder Form - Enhanced */}
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
-                      <Card className="relative bg-card/80 backdrop-blur-xl border-border/50 rounded-3xl shadow-2xl overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
-                        <CardHeader className="pb-8 pt-10">
-                          <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
-                              <Users className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                              <CardTitle className="text-2xl font-bold text-foreground">بيانات مؤسس الشجرة</CardTitle>
-                              <CardDescription className="text-muted-foreground mt-1">
-                                أدخل معلومات الشخص الذي ستبدأ منه الشجرة
-                              </CardDescription>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-6 pb-10">
-                          
-                          {/* Name, Gender & Birth Date Row */}
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            
-                            {/* Name */}
-                            <div className="space-y-3">
-                              <Label htmlFor="founder-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                                اسم المؤسس *
-                              </Label>
-                              <Input
-                                id="founder-name"
-                                value={founderData.name}
-                                onChange={(e) => setFounderData({...founderData, name: e.target.value})}
-                                placeholder="أدخل اسم المؤسس"
-                                className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-                              />
-                            </div>
-                            
-                            {/* Gender Selection */}
-                            <div className="space-y-3">
-                              <Label htmlFor="founder-gender" className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                                الجنس *
-                              </Label>
-                              <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                                <SelectTrigger className="h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
-                                  <SelectValue placeholder="اختر الجنس" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-border/50 bg-card/95 backdrop-blur-xl">
-                                  <SelectItem value="male" className="rounded-lg hover:bg-primary/10 focus:bg-primary/10">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                      ذكر
-                                    </div>
-                                  </SelectItem>
-                                  <SelectItem value="female" className="rounded-lg hover:bg-accent/10 focus:bg-accent/10">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-3 h-3 bg-pink-500 rounded-full"></div>
-                                      أنثى
-                                    </div>
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            
-                            {/* Birth Date */}
-                            <div className="space-y-3">
-                              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <CalendarIcon className="h-4 w-4 text-primary" />
-                                تاريخ الميلاد
-                              </Label>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-start text-right font-arabic",
-                                      !founderData.birthDate && "text-muted-foreground"
-                                    )}
-                                  >
-                                    <CalendarIcon className="ml-auto h-4 w-4" />
-                                    {founderData.birthDate ? (
-                                      format(founderData.birthDate, "PPP", { locale: ar })
-                                    ) : (
-                                      <span>اختر تاريخ الميلاد</span>
-                                    )}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                                  <Calendar
-                                    mode="single"
-                                    selected={founderData.birthDate}
-                                    onSelect={(date) => setFounderData({...founderData, birthDate: date})}
-                                    disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
-                                    initialFocus
-                                    className="p-3 pointer-events-auto"
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-                          </div>
-
-                          {/* Living Status & Death Date Row */}
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                              <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                              الحالة الحيوية
-                            </Label>
-                            <div className="grid grid-cols-3 gap-4">
-                              <Button
-                                type="button"
-                                variant={founderData.isAlive ? "default" : "outline"}
-                                onClick={() => setFounderData({...founderData, isAlive: true, deathDate: null})}
-                                className={cn(
-                                  "h-12 rounded-xl font-arabic transition-all duration-300",
-                                  founderData.isAlive 
-                                    ? "bg-primary text-white shadow-lg" 
-                                    : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                )}
-                              >
-                                <Heart className="h-4 w-4 ml-2" />
-                                على قيد الحياة
-                              </Button>
-                              <Button
-                                type="button"
-                                variant={!founderData.isAlive ? "default" : "outline"}
-                                onClick={() => setFounderData({...founderData, isAlive: false})}
-                                className={cn(
-                                  "h-12 rounded-xl font-arabic transition-all duration-300",
-                                  !founderData.isAlive 
-                                    ? "bg-destructive text-destructive-foreground shadow-lg" 
-                                    : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                )}
-                              >
-                                متوفى
-                              </Button>
-                              
-                              {/* Death Date - Only show if not alive */}
-                              {!founderData.isAlive && (
-                                <div className="relative">
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        className={cn(
-                                          "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
-                                          !founderData.deathDate && "text-muted-foreground"
-                                        )}
-                                      >
-                                        {founderData.deathDate ? (
-                                          format(founderData.deathDate, "yyyy", { locale: ar })
-                                        ) : (
-                                          <span>سنة الوفاة</span>
-                                        )}
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                                      <Calendar
-                                        mode="single"
-                                        selected={founderData.deathDate}
-                                        onSelect={(date) => setFounderData({...founderData, deathDate: date})}
-                                        disabled={(date) => 
-                                          date > new Date() || 
-                                          (founderData.birthDate && date < founderData.birthDate)
-                                        }
-                                        initialFocus
-                                        className="p-3 pointer-events-auto"
-                                      />
-                                    </PopoverContent>
-                                  </Popover>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Marriage Management */}
-                          {founderData.gender === 'male' && (
-                            <div className="space-y-3">
-                              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <Heart className="h-4 w-4 text-accent" />
-                                إدارة الزوجات
-                              </Label>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setShowWivesModal(true)}
-                                className="w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 font-arabic transition-all duration-300 flex items-center justify-between"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
-                                    <Users className="h-4 w-4 text-accent" />
-                                  </div>
-                                  <span>
-                                    {wives.length === 0 
-                                      ? 'إضافة الزوجات' 
-                                      : `الزوجات (${wives.length})`
-                                    }
-                                  </span>
-                                </div>
-                                <ArrowLeft className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          )}
-
-                          {/* Profile Image & Bio - Side by side */}
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            
-                            {/* Profile Image */}
-                            <div className="space-y-3">
-                              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <Upload className="h-4 w-4 text-accent" />
-                                صورة شخصية
-                              </Label>
-                              <div className="flex flex-col items-center gap-3">
-                                {founderData.croppedImage ? (
-                                  <div className="relative group">
-                                    <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg">
-                                      <img 
-                                        src={founderData.croppedImage} 
-                                        alt="معاينة الصورة" 
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </div>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="destructive"
-                                      onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
-                                      className="absolute -top-1 -right-1 w-6 h-6 rounded-full p-0"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div className="w-20 h-20 rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center text-muted-foreground hover:border-primary/50 transition-colors duration-300">
-                                    <Upload className="h-6 w-6" />
-                                  </div>
-                                )}
-                                
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => document.getElementById('founder-image-input')?.click()}
-                                  className="h-9 px-4 rounded-lg bg-muted/30 border-2 border-transparent hover:bg-background/60 font-arabic text-xs"
-                                >
-                                  <Upload className="h-3 w-3 ml-1" />
-                                  {founderData.croppedImage ? 'تغيير' : 'رفع'}
-                                </Button>
-                                
-                                <input
-                                  id="founder-image-input"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => {
-                                    if (e.target.files && e.target.files[0]) {
-                                      const file = e.target.files[0];
-                                      setFounderData({...founderData, image: file});
-                                      
-                                      const reader = new FileReader();
-                                      reader.onload = (event) => {
-                                        if (event.target?.result) {
-                                          setCropImage(event.target.result as string);
-                                          setShowCropModal(true);
-                                        }
-                                      };
-                                      reader.readAsDataURL(file);
-                                    }
-                                  }}
-                                  className="hidden"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Biography */}
-                            <div className="md:col-span-2 space-y-3">
-                              <Label htmlFor="founder-bio" className="text-sm font-medium text-foreground flex items-center gap-2">
-                                <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                                نبذة عن المؤسس (اختياري)
-                              </Label>
-                              <Textarea
-                                id="founder-bio"
-                                value={founderData.bio}
-                                onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
-                                placeholder="اكتب نبذة مختصرة عن حياة المؤسس..."
-                                className="min-h-[120px] text-sm bg-muted/30 border-2 border-transparent rounded-xl resize-none font-arabic transition-all duration-300 focus:border-primary/50 focus:bg-background/80 hover:bg-background/60"
-                                rows={4}
-                              />
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* Navigation - Enhanced */}
-                    <div className="flex gap-6">
-                      <Button
-                        variant="outline"
-                        onClick={handlePrevStep}
-                        className="flex-1 h-16 rounded-xl border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:bg-muted/50 hover:border-primary/30 transition-all duration-300"
-                      >
-                        <ArrowLeft className="h-5 w-5 ml-2" />
-                        السابق
-                      </Button>
-                      
-                      <Button
-                        onClick={handleNextStep}
-                        className="flex-1 h-16 bg-gradient-to-r from-primary via-accent to-primary bg-size-200 hover:bg-pos-100 text-white rounded-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-500 relative overflow-hidden group"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                        <div className="relative flex items-center justify-center gap-3">
-                          <CheckCircle className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                          <span>إنشاء الشجرة</span>
-                        </div>
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Right Side - Enhanced Welcome Section */}
-              <div className="order-1 lg:order-2 lg:col-span-1 text-center">
-                <div className="relative perspective-1000">
-                  
-                  {/* 3D Tree Icon Circle with Animation */}
-                  <div className="w-80 h-80 mx-auto mb-16 relative preserve-3d">
-                    {/* Background Glow Effects */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-secondary/30 rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute inset-4 bg-gradient-to-tr from-accent/40 via-primary/30 to-secondary/40 rounded-full blur-2xl animate-float"></div>
-                    
-                    {/* Main Circle */}
-                    <div className="relative w-full h-full bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center shadow-2xl transform rotate-y-12 hover:rotate-y-0 transition-transform duration-700 group">
-                      <div className="absolute inset-2 bg-gradient-to-tr from-white/10 to-white/5 rounded-full"></div>
-                      <TreePine className="h-32 w-32 text-white relative z-10 group-hover:scale-110 transition-transform duration-500" />
-                      
-                      {/* Floating Elements */}
-                      <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-lg animate-float">
-                        <span className="text-white text-sm">🌟</span>
-                      </div>
-                      <div className="absolute -bottom-6 -left-6 w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg animate-float-delayed">
-                        <Heart className="h-5 w-5 text-white" />
-                      </div>
-                      <div className="absolute top-1/2 -right-8 w-6 h-6 bg-primary rounded-full animate-float-slow opacity-80"></div>
-                    </div>
-                  </div>
-
-                  {/* Enhanced Welcome Content */}
-                  <div className="space-y-10">
-                    
-                    {/* Welcome Header */}
-                    <div className="relative">
-                      <div className="inline-flex items-center gap-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-lg border border-primary/20 rounded-full px-8 py-4 mb-8">
-                        <div className="w-10 h-10 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center animate-spin-slow">
-                          <span className="text-2xl">🌳</span>
-                        </div>
-                        <h2 className="text-2xl font-bold text-foreground">ابدأ رحلتك</h2>
-                      </div>
-                    </div>
-                    
-                    {/* Description */}
-                    <div className="relative">
-                      <p className="text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
-                        ستكون هذه بداية شجرة عائلتك الرقمية التي ستحتفظ بذكريات أجيال عديدة
-                      </p>
-                      
-                      {/* Decorative Lines */}
-                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-                      <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
-                    </div>
-                    
-                    {/* Feature Icons */}
-                    <div className="grid grid-cols-3 gap-8 pt-8">
-                      <div className="text-center group">
-                        <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                          <Users className="h-8 w-8 text-primary" />
-                        </div>
-                        <p className="text-sm text-muted-foreground font-medium">إضافة الأفراد</p>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="w-16 h-16 bg-gradient-to-br from-accent/20 to-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                          <Heart className="h-8 w-8 text-accent" />
-                        </div>
-                        <p className="text-sm text-muted-foreground font-medium">حفظ الذكريات</p>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                          <TreePine className="h-8 w-8 text-secondary" />
-                        </div>
-                        <p className="text-sm text-muted-foreground font-medium">بناء الشجرة</p>
-                      </div>
-                    </div>
-                  </div>
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-16 h-16 bg-gradient-to-br from-primary via-secondary to-accent rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                  <TreePine className="h-8 w-8 text-primary-foreground" />
                 </div>
               </div>
+            </div>
+            
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4">
+              إنشاء شجرة العائلة
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              ابدأ رحلتك في بناء تاريخ عائلتك وحفظ ذكرياتك للأجيال القادمة
+            </p>
+            
+            {/* Progress Indicator */}
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all ${
+                currentStep >= 1 
+                  ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg' 
+                  : 'bg-muted text-muted-foreground border border-border'
+              }`}>
+                1
+              </div>
+              <div className={`w-12 h-1 rounded-full transition-all ${currentStep >= 2 ? 'bg-gradient-to-r from-primary to-secondary' : 'bg-border'}`}></div>
+              <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all ${
+                currentStep >= 2 
+                  ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg' 
+                  : 'bg-muted text-muted-foreground border border-border'
+              }`}>
+                2
+              </div>
+            </div>
+          </div>
+
+          {/* Step Content */}
+          <div className="max-w-4xl mx-auto">
+            {currentStep === 1 && (
+              <Card className="border-0 shadow-2xl bg-card/95 backdrop-blur-sm">
+                <CardHeader className="text-center pb-8 border-b border-border/50">
+                  <CardTitle className="text-2xl font-bold flex items-center justify-center gap-3">
+                    <Users className="h-6 w-6 text-primary" />
+                    معلومات العائلة
+                  </CardTitle>
+                  <CardDescription className="text-base mt-2">
+                    أدخل المعلومات الأساسية لشجرة العائلة الجديدة
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-8 space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="familyName" className="text-base font-semibold">اسم العائلة *</Label>
+                    <Input
+                      id="familyName"
+                      placeholder="مثال: عائلة الأحمد"
+                      value={treeData.name}
+                      onChange={(e) => setTreeData({...treeData, name: e.target.value})}
+                      className="h-12 text-base border-2 focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="familyDescription" className="text-base font-semibold">وصف العائلة (اختياري)</Label>
+                    <Textarea
+                      id="familyDescription"
+                      placeholder="وصف مختصر عن تاريخ العائلة أو أي معلومات إضافية..."
+                      value={treeData.description}
+                      onChange={(e) => setTreeData({...treeData, description: e.target.value})}
+                      className="min-h-[120px] text-base border-2 focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {currentStep === 2 && (
+              <div className="space-y-8">
+                {/* Founder Information */}
+                <Card className="border-0 shadow-2xl bg-card/95 backdrop-blur-sm">
+                  <CardHeader className="text-center pb-6 border-b border-border/50">
+                    <CardTitle className="text-2xl font-bold flex items-center justify-center gap-3">
+                      <UserPlus className="h-6 w-6 text-primary" />
+                      معلومات مؤسس العائلة
+                    </CardTitle>
+                    <CardDescription className="text-base mt-2">
+                      أدخل معلومات الشخص الذي ستبدأ منه شجرة العائلة
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Name */}
+                      <div className="space-y-2">
+                        <Label htmlFor="founderName" className="text-base font-semibold">الاسم الكامل *</Label>
+                        <Input
+                          id="founderName"
+                          placeholder="الاسم الكامل للمؤسس"
+                          value={founderData.name}
+                          onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                          className="h-12 text-base border-2 focus:ring-2 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      {/* Gender */}
+                      <div className="space-y-2">
+                        <Label className="text-base font-semibold">الجنس *</Label>
+                        <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
+                          <SelectTrigger className="h-12 text-base border-2">
+                            <SelectValue placeholder="اختر الجنس" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="male">ذكر</SelectItem>
+                            <SelectItem value="female">أنثى</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Birth Date */}
+                      <div className="space-y-2">
+                        <Label className="text-base font-semibold">تاريخ الميلاد</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "h-12 text-base border-2 justify-start text-left font-normal w-full",
+                                !founderData.birthDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الميلاد"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={founderData.birthDate}
+                              onSelect={(date) => setFounderData({...founderData, birthDate: date})}
+                              locale={ar}
+                              initialFocus
+                              className="rounded-md border pointer-events-auto"
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Status */}
+                      <div className="space-y-2">
+                        <Label className="text-base font-semibold">الحالة</Label>
+                        <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
+                          <SelectTrigger className="h-12 text-base border-2">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="alive">على قيد الحياة</SelectItem>
+                            <SelectItem value="deceased">متوفى</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Death Date (if deceased) */}
+                      {!founderData.isAlive && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label className="text-base font-semibold">تاريخ الوفاة</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "h-12 text-base border-2 justify-start text-left font-normal w-full",
+                                  !founderData.deathDate && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {founderData.deathDate ? format(founderData.deathDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الوفاة"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={founderData.deathDate}
+                                onSelect={(date) => setFounderData({...founderData, deathDate: date})}
+                                locale={ar}
+                                initialFocus
+                                className="rounded-md border pointer-events-auto"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      )}
+
+                      {/* Biography */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="founderBio" className="text-base font-semibold">السيرة الذاتية (اختياري)</Label>
+                        <Textarea
+                          id="founderBio"
+                          placeholder="معلومات عن المؤسس، إنجازاته، مهنته، أو أي معلومات مهمة..."
+                          value={founderData.bio}
+                          onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
+                          className="min-h-[120px] text-base border-2 focus:ring-2 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      {/* Image Upload */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="text-base font-semibold">صورة المؤسس (اختياري)</Label>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setFounderData({...founderData, image: file});
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  setCropImage(e.target?.result as string);
+                                  setShowCropModal(true);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            className="hidden"
+                            id="founder-image"
+                          />
+                          <Label htmlFor="founder-image" className="cursor-pointer">
+                            <div className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-border rounded-lg hover:bg-accent/50 transition-colors">
+                              <Upload className="h-4 w-4" />
+                              <span>اختر صورة</span>
+                            </div>
+                          </Label>
+                          {founderData.croppedImage && (
+                            <div className="relative">
+                              <img src={founderData.croppedImage} alt="صورة المؤسس" className="w-16 h-16 rounded-lg object-cover border-2 border-border" />
+                              <button
+                                onClick={() => setFounderData({...founderData, croppedImage: null, image: null})}
+                                className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Wives Section */}
+                <Card className="border-0 shadow-2xl bg-card/95 backdrop-blur-sm">
+                  <CardHeader className="text-center pb-6 border-b border-border/50">
+                    <CardTitle className="text-2xl font-bold flex items-center justify-center gap-3">
+                      <Heart className="h-6 w-6 text-primary" />
+                      الزوجات (اختياري)
+                    </CardTitle>
+                    <CardDescription className="text-base mt-2">
+                      أضف معلومات الزوجات إذا كان لدى المؤسس أكثر من زوجة
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    {wives.length > 0 && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        {wives.map((wife, index) => (
+                          <div key={wife.id} className="p-4 bg-accent/50 rounded-lg border border-border">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-semibold text-foreground">{wife.name}</h4>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                  <DropdownMenuItem onClick={() => setEditingWife(wife)}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    تعديل
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => setWives(wives.filter(w => w.id !== wife.id))}>
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    حذف
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {wife.isAlive ? "على قيد الحياة" : "متوفاة"}
+                            </p>
+                            {wife.birthDate && (
+                              <p className="text-sm text-muted-foreground">
+                                مولودة: {format(wife.birthDate, "dd/MM/yyyy", { locale: ar })}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <Button
+                      onClick={() => setIsAddingWife(true)}
+                      variant="outline"
+                      className="w-full h-12 border-2 border-dashed hover:bg-accent/50"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      إضافة زوجة
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between items-center mt-12">
+              <Button
+                onClick={handlePrevStep}
+                variant="outline"
+                disabled={currentStep === 1}
+                className="h-12 px-8 text-base"
+              >
+                <ArrowRight className="h-4 w-4 mr-2" />
+                السابق
+              </Button>
+              
+              <Button
+                onClick={handleNextStep}
+                className="h-12 px-8 text-base bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+              >
+                {currentStep === 1 ? "التالي" : "إنشاء العائلة"}
+                {currentStep === 1 && <ArrowLeft className="h-4 w-4 ml-2" />}
+                {currentStep === 2 && <CheckCircle className="h-4 w-4 ml-2" />}
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Success Modal */}
-      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="max-w-md text-center">
-          <DialogHeader>
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-8 w-8 text-primary" />
-            </div>
-            <DialogTitle className="text-2xl font-bold">تم إنشاء الشجرة بنجاح!</DialogTitle>
-            <DialogDescription>
-              تم حفظ شجرة العائلة بنجاح. يمكنك الآن إضافة المزيد من الأفراد أو العودة للوحة التحكم.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={handleSkipTodashboard}>
-              العودة للوحة التحكم
-            </Button>
-            <Button onClick={handleAddMoreMembers} className="gap-2">
-              <UserPlus className="h-4 w-4" />
-              إضافة أفراد
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Image Crop Modal */}
+      {/* Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={setShowCropModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center">قص الصورة</DialogTitle>
-            <DialogDescription className="text-center">
-              اضبط الصورة كما تريد ثم اضغط حفظ
+            <DialogTitle>قص الصورة</DialogTitle>
+            <DialogDescription>
+              اسحب لتحريك الصورة أو استخدم عجلة الماوس للتكبير والتصغير
             </DialogDescription>
           </DialogHeader>
-          
-          {cropImage && (
-            <div className="relative h-96 w-full">
+          <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden">
+            {cropImage && (
               <Cropper
                 image={cropImage}
                 crop={crop}
@@ -1011,436 +762,84 @@ const FamilyCreator = () => {
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
-                cropShape="round"
-                showGrid={false}
               />
-            </div>
-          )}
-          
-          <DialogFooter className="flex gap-3 justify-center">
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setShowCropModal(false);
-                setCropImage(null);
-                setCrop({ x: 0, y: 0 });
-                setZoom(1);
-                setCroppedAreaPixels(null);
-              }}
-            >
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCropModal(false)}>
               إلغاء
             </Button>
             <Button onClick={handleCropSave}>
-              حفظ الصورة
+              حفظ
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Wives Management Modal - Creative Redesign */}
-      <Dialog open={showWivesModal} onOpenChange={setShowWivesModal}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden p-0 bg-gradient-to-br from-card/95 via-background/98 to-muted/95 backdrop-blur-2xl border-0 shadow-2xl">
-          {/* Header with Gradient Background */}
-          <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(var(--primary),0.1),transparent_70%)]"></div>
-            <DialogHeader className="relative p-8 pb-6">
-              <DialogTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent flex items-center justify-center gap-4">
-                <div className="relative">
-                  <Heart className="h-8 w-8 text-accent animate-pulse" />
-                  <div className="absolute inset-0 h-8 w-8 bg-accent/20 rounded-full blur-lg"></div>
-                </div>
-                إدارة الزوجات
-              </DialogTitle>
-              <DialogDescription className="text-center text-lg mt-3 text-muted-foreground/80">
-                أضف وأدر معلومات زوجات المؤسس بطريقة أنيقة ومنظمة
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          
-          {/* Main Content with Custom Scrollbar */}
-          <div className="px-8 pb-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div className="space-y-8">
-              {/* Existing Wives List with Enhanced Design */}
-              {wives.length > 0 && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
-                    <h3 className="text-xl font-bold text-foreground bg-background/80 px-4 py-2 rounded-full border border-border/50">
-                      الزوجات المضافة ({wives.length})
-                    </h3>
-                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
-                  </div>
-                  
-                  <div className="grid gap-6 md:grid-cols-2">
-                    {wives.map((wife, index) => (
-                      <div key={wife.id} className="relative group animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                        {/* Floating Glow Effect */}
-                        <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"></div>
-                        
-                        {/* Main Card */}
-                        <Card className="relative bg-gradient-to-br from-card/90 to-muted/50 backdrop-blur-xl border border-border/30 rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl">
-                          {/* Card Header with Number Badge */}
-                          <div className="absolute top-4 right-4 z-10">
-                            <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center shadow-lg">
-                              <span className="text-sm font-bold text-white">{index + 1}</span>
-                            </div>
-                          </div>
-                          
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-center gap-4 flex-1">
-                                {/* Wife Avatar */}
-                                <div className="relative">
-                                  <div className="w-16 h-16 bg-gradient-to-br from-accent/30 via-primary/20 to-secondary/30 rounded-2xl flex items-center justify-center border-2 border-primary/20 shadow-inner">
-                                    <Heart className="h-6 w-6 text-primary/70" />
-                                  </div>
-                                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full border-2 border-background flex items-center justify-center">
-                                    {wife.isAlive ? (
-                                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                                    ) : (
-                                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                {/* Wife Info */}
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-bold text-lg text-foreground mb-1 truncate">{wife.name}</h4>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className={cn(
-                                      "px-3 py-1 rounded-full text-xs font-medium",
-                                      wife.isAlive 
-                                        ? "bg-emerald-100 text-emerald-700 border border-emerald-200" 
-                                        : "bg-gray-100 text-gray-600 border border-gray-200"
-                                    )}>
-                                      {wife.isAlive ? 'على قيد الحياة' : 'متوفاة'}
-                                    </div>
-                                  </div>
-                                  
-                                  {wife.birthDate && (
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                      <CalendarIcon className="h-3 w-3" />
-                                      <span>ولدت في {format(wife.birthDate, "yyyy", { locale: ar })}</span>
-                                    </div>
-                                  )}
-                                  
-                                  {wife.deathDate && (
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                                      <CalendarIcon className="h-3 w-3" />
-                                      <span>توفيت في {format(wife.deathDate, "yyyy", { locale: ar })}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              {/* Action Menu */}
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-10 w-10 rounded-xl hover:bg-muted hover:scale-110 transition-all duration-200"
-                                  >
-                                    <MoreVertical className="h-4 w-4 text-muted-foreground" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48 bg-card/95 backdrop-blur-xl border-border/50">
-                                  <DropdownMenuItem 
-                                    onClick={() => setEditingWife(wife)}
-                                    className="flex items-center gap-3 rounded-lg hover:bg-primary/10 focus:bg-primary/10 cursor-pointer"
-                                  >
-                                    <Edit className="h-4 w-4 text-primary" />
-                                    <span>تعديل</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem 
-                                    onClick={() => setWives(wives.filter(w => w.id !== wife.id))}
-                                    className="flex items-center gap-3 rounded-lg hover:bg-destructive/10 focus:bg-destructive/10 cursor-pointer text-destructive"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                    <span>حذف</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Add New Wife Form with Enhanced Design */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
-                  <h3 className="text-xl font-bold text-foreground bg-background/80 px-4 py-2 rounded-full border border-border/50 flex items-center gap-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-accent via-primary to-secondary rounded-full flex items-center justify-center">
-                      <Plus className="h-3 w-3 text-white" />
-                    </div>
-                    إضافة زوجة جديدة
-                  </h3>
-                  <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent flex-1"></div>
-                </div>
-                
-                {/* Enhanced Form Card */}
-                <Card className="relative overflow-hidden bg-gradient-to-br from-muted/30 to-accent/5 border-2 border-dashed border-primary/30 rounded-2xl hover:border-primary/50 transition-all duration-300">
-                  {/* Animated Background Pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary),0.3),transparent_70%)] animate-pulse"></div>
-                  </div>
-                  
-                  <CardContent className="relative p-8">
-                    <WifeForm 
-                      ref={wifeFormRef}
-                      onAddWife={(wifeData) => {
-                        const newWife = {
-                          id: Math.random().toString(36).substr(2, 9),
-                          ...wifeData
-                        };
-                        setWives([...wives, newWife]);
-                        toast({
-                          title: "✨ تم إضافة الزوجة بنجاح",
-                          description: "تم حفظ معلومات الزوجة الجديدة في شجرة العائلة",
-                        });
-                      }}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-
-          {/* Enhanced Footer with Floating Design */}
-          <div className="relative p-6 bg-gradient-to-r from-background/80 via-card/90 to-background/80 backdrop-blur-xl border-t border-border/30">
-            <div className="flex justify-between items-center gap-4">
-              <Button
-                onClick={async () => {
-                  if (isAddingWife) return;
-                  setIsAddingWife(true);
-                  try {
-                    wifeFormRef.current?.handleSubmit();
-                  } finally {
-                    setTimeout(() => setIsAddingWife(false), 1000);
-                  }
-                }}
-                disabled={isAddingWife}
-                className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-primary text-white font-bold rounded-2xl px-8 py-3 h-auto shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                <div className="relative flex items-center gap-3">
-                  <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
-                    {isAddingWife ? (
-                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <Plus className="h-3 w-3" />
-                    )}
-                  </div>
-                  {isAddingWife ? 'جاري الإضافة...' : 'إضافة الزوجة'}
-                </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => setShowWivesModal(false)}
-                className="relative overflow-hidden border-2 border-border hover:border-primary/50 rounded-2xl px-8 py-3 h-auto font-semibold hover:bg-primary/5 transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <X className="h-4 w-4" />
-                  إغلاق
-                </div>
-              </Button>
-            </div>
+      {/* Add Wife Modal */}
+      <Dialog open={isAddingWife} onOpenChange={setIsAddingWife}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>إضافة زوجة جديدة</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-4">
+            <p className="text-muted-foreground">يمكنك إضافة الزوجات لاحقاً من خلال لوحة التحكم</p>
+            <Button onClick={() => setIsAddingWife(false)} className="w-full">
+              موافق
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Edit Wife Modal */}
-      <Dialog open={!!editingWife} onOpenChange={() => setEditingWife(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0 bg-gradient-to-br from-card/95 via-background/98 to-muted/95 backdrop-blur-2xl border-0 shadow-2xl">
-          {/* Header */}
-          <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10"></div>
-            <DialogHeader className="relative p-6 pb-4">
-              <DialogTitle className="text-center text-2xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent flex items-center justify-center gap-3">
-                <CalendarIcon className="h-6 w-6 text-accent" />
-                تعديل معلومات الزوجة
-              </DialogTitle>
-              <DialogDescription className="text-center text-muted-foreground mt-2">
-                قم بتعديل المعلومات المطلوبة
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          
-          {/* Edit Form */}
-          {editingWife && (
-            <div className="p-6 space-y-6">
-              {/* Name Field */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 bg-accent rounded-full"></div>
-                  اسم الزوجة *
-                </Label>
-                <Input
-                  value={editingWife.name}
-                  onChange={(e) => setEditingWife({...editingWife, name: e.target.value})}
-                  placeholder="أدخل اسم الزوجة"
-                  className="h-12 rounded-xl bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-                />
-              </div>
-
-              {/* Birth Date */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4 text-primary" />
-                  تاريخ الميلاد
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic",
-                        !editingWife.birthDate && "text-muted-foreground"
-                      )}
-                    >
-                      {editingWife.birthDate ? (
-                        format(editingWife.birthDate, "yyyy", { locale: ar })
-                      ) : (
-                        <span>السنة</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={editingWife.birthDate}
-                      onSelect={(date) => setEditingWife({...editingWife, birthDate: date})}
-                      disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Living Status & Death Date */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-accent" />
-                  الحالة الحيوية
-                </Label>
-                <div className="grid grid-cols-3 gap-4">
-                  <Button
-                    type="button"
-                    variant={editingWife.isAlive ? "default" : "outline"}
-                    onClick={() => setEditingWife({...editingWife, isAlive: true, deathDate: null})}
-                    className={cn(
-                      "h-12 rounded-xl font-arabic transition-all duration-300",
-                      editingWife.isAlive 
-                        ? "bg-primary text-white shadow-lg" 
-                        : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    )}
-                  >
-                    <Heart className="h-4 w-4 ml-2" />
-                    على قيد الحياة
-                  </Button>
-                  
-                  <Button
-                    type="button"
-                    variant={!editingWife.isAlive ? "default" : "outline"}
-                    onClick={() => setEditingWife({...editingWife, isAlive: false})}
-                    className={cn(
-                      "h-12 rounded-xl font-arabic transition-all duration-300",
-                      !editingWife.isAlive 
-                        ? "bg-destructive text-destructive-foreground shadow-lg" 
-                        : "bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    )}
-                  >
-                    متوفاة
-                  </Button>
-                  
-                  {/* Death Date - Only show if not alive */}
-                  {!editingWife.isAlive && (
-                    <div className="relative">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full h-12 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
-                              !editingWife.deathDate && "text-muted-foreground"
-                            )}
-                          >
-                            {editingWife.deathDate ? (
-                              format(editingWife.deathDate, "yyyy", { locale: ar })
-                            ) : (
-                              <span>سنة الوفاة</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={editingWife.deathDate}
-                            onSelect={(date) => setEditingWife({...editingWife, deathDate: date})}
-                            disabled={(date) => 
-                              date > new Date() || 
-                              (editingWife.birthDate && date < editingWife.birthDate)
-                            }
-                            initialFocus
-                            className="p-3 pointer-events-auto"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <div className="relative p-6 bg-gradient-to-r from-background/80 via-card/90 to-background/80 backdrop-blur-xl border-t border-border/30">
-            <div className="flex justify-between items-center gap-4">
-              <Button
-                onClick={() => {
-                  if (editingWife && editingWife.name.trim()) {
-                    setWives(wives.map(w => w.id === editingWife.id ? editingWife : w));
-                    setEditingWife(null);
-                    toast({
-                      title: "✨ تم تحديث معلومات الزوجة",
-                      description: "تم حفظ التعديلات بنجاح",
-                    });
-                  }
-                }}
-                disabled={!editingWife?.name.trim()}
-                className="bg-gradient-to-r from-primary via-accent to-primary text-white font-bold rounded-2xl px-8 py-3 h-auto shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
-              >
-                <div className="flex items-center gap-3">
-                  <CalendarIcon className="h-4 w-4" />
-                  حفظ التعديلات
-                </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => setEditingWife(null)}
-                className="border-2 border-border hover:border-primary/50 rounded-2xl px-8 py-3 h-auto font-semibold hover:bg-primary/5 transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <X className="h-4 w-4" />
-                  إلغاء
-                </div>
-              </Button>
-            </div>
+      <Dialog open={editingWife !== null} onOpenChange={() => setEditingWife(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>تعديل بيانات الزوجة</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-4">
+            <p className="text-muted-foreground">يمكنك تعديل البيانات لاحقاً من خلال لوحة التحكم</p>
+            <Button onClick={() => setEditingWife(null)} className="w-full">
+              موافق
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      <SharedFooter />
-    </div>
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="max-w-md text-center">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <DialogTitle className="text-2xl">تم إنشاء العائلة بنجاح!</DialogTitle>
+            <DialogDescription className="text-base mt-2">
+              تم حفظ بيانات شجرة العائلة بنجاح في قاعدة البيانات
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-3 mt-6">
+            <Button
+              onClick={handleSkipTodashboard}
+              variant="outline"
+              className="flex-1"
+            >
+              إنهاء
+            </Button>
+            <Button
+              onClick={handleAddMoreMembers}
+              className="flex-1 bg-gradient-to-r from-primary to-secondary"
+            >
+              إضافة المزيد
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <LuxuryFooter />
+    </>
   );
 };
 
