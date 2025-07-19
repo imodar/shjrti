@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Plus, Heart } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarIcon, Plus, Heart, Users } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ interface WifeFormProps {
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
+    maritalStatus: string;
   }) => void;
 }
 
@@ -28,7 +30,8 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
     name: "",
     isAlive: true,
     birthDate: null as Date | null,
-    deathDate: null as Date | null
+    deathDate: null as Date | null,
+    maritalStatus: "married" as string
   });
 
   const handleSubmit = () => {
@@ -41,7 +44,8 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
       name: "",
       isAlive: true,
       birthDate: null,
-      deathDate: null
+      deathDate: null,
+      maritalStatus: "married"
     });
   };
 
@@ -183,6 +187,27 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
             </div>
           )}
         </div>
+      </div>
+
+      {/* Marital Status Row */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+          <Users className="h-4 w-4 text-primary" />
+          الحالة الزوجية
+        </Label>
+        <Select 
+          value={formData.maritalStatus} 
+          onValueChange={(value) => setFormData({...formData, maritalStatus: value})}
+        >
+          <SelectTrigger className="h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
+            <SelectValue placeholder="اختر الحالة الزوجية" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="married">متزوجة</SelectItem>
+            <SelectItem value="divorced">مطلقة</SelectItem>
+            <SelectItem value="widowed">أرملة</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
     </div>

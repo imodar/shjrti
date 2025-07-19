@@ -415,6 +415,7 @@ export type Database = {
           husband_id: string
           id: string
           is_active: boolean | null
+          marital_status: string | null
           marriage_date: string | null
           updated_at: string
           wife_id: string
@@ -426,6 +427,7 @@ export type Database = {
           husband_id: string
           id?: string
           is_active?: boolean | null
+          marital_status?: string | null
           marriage_date?: string | null
           updated_at?: string
           wife_id: string
@@ -437,6 +439,7 @@ export type Database = {
           husband_id?: string
           id?: string
           is_active?: boolean | null
+          marital_status?: string | null
           marriage_date?: string | null
           updated_at?: string
           wife_id?: string

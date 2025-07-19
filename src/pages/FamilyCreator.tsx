@@ -58,6 +58,7 @@ const FamilyCreator = () => {
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
+    maritalStatus: string;
   }>>([]);
 
   const handleNextStep = () => {
@@ -999,16 +1000,26 @@ const FamilyCreator = () => {
                                         </DropdownMenuContent>
                                       </DropdownMenu>
                                     </div>
-                                    <div className="space-y-2">
-                                      <p className={`text-xs font-semibold px-2 py-1 rounded-full inline-block ${wife.isAlive ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400'}`}>
-                                        {wife.isAlive ? "على قيد الحياة" : "متوفاة"}
-                                      </p>
-                                      {wife.birthDate && (
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                                          <div className="w-1.5 h-1.5 bg-rose-400 rounded-full"></div>
-                                          مولودة: {format(wife.birthDate, "dd/MM/yyyy", { locale: ar })}
-                                        </p>
-                                      )}
+                                     <div className="space-y-2">
+                                       <div className="flex flex-wrap gap-2">
+                                         <p className={`text-xs font-semibold px-2 py-1 rounded-full inline-block ${wife.isAlive ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400'}`}>
+                                           {wife.isAlive ? "على قيد الحياة" : "متوفاة"}
+                                         </p>
+                                         <p className={`text-xs font-semibold px-2 py-1 rounded-full inline-block ${
+                                           wife.maritalStatus === 'married' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                                           wife.maritalStatus === 'divorced' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                                           'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                         }`}>
+                                           {wife.maritalStatus === 'married' ? 'متزوجة' : 
+                                            wife.maritalStatus === 'divorced' ? 'مطلقة' : 'أرملة'}
+                                         </p>
+                                       </div>
+                                       {wife.birthDate && (
+                                         <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                           <div className="w-1.5 h-1.5 bg-rose-400 rounded-full"></div>
+                                           مولودة: {format(wife.birthDate, "dd/MM/yyyy", { locale: ar })}
+                                         </p>
+                                       )}
                                     </div>
                                   </div>
                                 ))}
@@ -1097,16 +1108,42 @@ const FamilyCreator = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add Wife Modal */}
+      {/* Creative Add Wife Modal */}
       <Dialog open={isAddingWife} onOpenChange={setIsAddingWife}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl">إضافة زوجة جديدة</DialogTitle>
-            <DialogDescription>
-              أدخل معلومات الزوجة لإضافتها إلى شجرة العائلة
+        <DialogContent className="max-w-xl border-0 bg-gradient-to-br from-pink-50/90 via-rose-50/90 to-purple-50/90 dark:from-pink-950/90 dark:via-rose-950/90 dark:to-purple-950/90 backdrop-blur-xl shadow-2xl">
+          {/* Decorative Header */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500"></div>
+          
+          <DialogHeader className="text-center pb-4 relative">
+            {/* Floating Hearts Animation */}
+            <div className="absolute -top-2 -right-2 w-8 h-8 animate-pulse">
+              <Heart className="h-full w-full text-pink-400 opacity-60" />
+            </div>
+            <div className="absolute -top-1 -left-3 w-6 h-6 animate-bounce">
+              <Heart className="h-full w-full text-rose-400 opacity-40" />
+            </div>
+            
+            {/* Elegant Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/20 dark:border-gray-700/20">
+                  <Heart className="h-8 w-8 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                  <Plus className="h-3 w-3 text-white" />
+                </div>
+              </div>
+            </div>
+            
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 bg-clip-text text-transparent">
+              إضافة زوجة جديدة
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-300 mt-2">
+              أضف معلومات الزوجة لإدراجها في سجل العائلة
             </DialogDescription>
           </DialogHeader>
-          <div className="p-4">
+          
+          <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
             <WifeForm
               ref={wifeFormRef}
               onAddWife={(wifeData) => {
@@ -1115,30 +1152,34 @@ const FamilyCreator = () => {
                   name: wifeData.name,
                   isAlive: wifeData.isAlive,
                   birthDate: wifeData.birthDate,
-                  deathDate: wifeData.deathDate
+                  deathDate: wifeData.deathDate,
+                  maritalStatus: wifeData.maritalStatus
                 };
                 setWives([...wives, newWife]);
                 setIsAddingWife(false);
                 toast({
                   title: "تم إضافة الزوجة بنجاح",
-                  description: `تم إضافة ${wifeData.name} إلى قائمة الزوجات`
+                  description: `تم إضافة ${wifeData.name} إلى قائمة الزوجات`,
+                  duration: 3000
                 });
               }}
             />
           </div>
-          <DialogFooter className="flex gap-3">
+          
+          <DialogFooter className="flex gap-3 pt-4">
             <Button 
               variant="outline" 
               onClick={() => setIsAddingWife(false)}
-              className="flex-1"
+              className="flex-1 border-2 border-gray-300/50 hover:border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300"
             >
               إلغاء
             </Button>
             <Button 
               onClick={() => wifeFormRef.current?.handleSubmit()}
               disabled={!wifeFormRef.current?.isValid()}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              <Heart className="h-4 w-4 mr-2" />
               إضافة الزوجة
             </Button>
           </DialogFooter>
