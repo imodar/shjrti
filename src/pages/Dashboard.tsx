@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { Plus, Users, Calendar, Share2, Edit, Trash2, Crown, TrendingUp, Eye, Copy, CheckCircle, Sparkles, BarChart3, PieChart, Gift, Zap, Settings, User, LogOut, Bell } from "lucide-react";
+import { Plus, Users, Calendar, Share2, Edit, Trash2, Crown, TrendingUp, Eye, Copy, CheckCircle, Sparkles, BarChart3, PieChart, Gift, Zap, Settings, User, LogOut, Bell, Heart, Star, TreePine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Header from "@/components/Header";
@@ -18,7 +18,7 @@ import familySuccess from "@/assets/family-success.jpg";
 import futureFamily from "@/assets/future-family.jpg";
 import heritageTech from "@/assets/heritage-tech.jpg";
 import memoryPreservation from "@/assets/memory-preservation.jpg";
-import { SharedFooter } from "@/components/SharedFooter";
+import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -376,57 +376,58 @@ const Dashboard = () => {
         return <Gift className="h-4 w-4" />;
     }
   };
-  return <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
-      {/* Luxury Animated Background */}
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+      {/* Luxury Animated Background matching home page */}
       <div className="fixed inset-0 pointer-events-none">
         {/* Elegant Floating Orbs */}
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/10 rounded-full blur-3xl animate-float-slow opacity-60"></div>
-        <div className="absolute top-32 right-16 w-48 h-48 bg-gradient-to-br from-cyan-400/15 via-teal-400/20 to-emerald-400/10 rounded-full blur-2xl animate-float-delayed opacity-40"></div>
-        <div className="absolute bottom-20 left-1/4 w-96 h-96 bg-gradient-to-br from-teal-400/10 via-emerald-400/15 to-cyan-400/5 rounded-full blur-3xl animate-float opacity-30"></div>
-        <div className="absolute bottom-32 right-1/3 w-56 h-56 bg-gradient-to-br from-emerald-400/20 via-cyan-400/15 to-teal-400/10 rounded-full blur-2xl animate-float-slow opacity-50"></div>
+        <div className="absolute top-20 right-10 animate-pulse">
+          <Heart className="h-12 w-12 text-pink-400 opacity-60" />
+        </div>
+        <div className="absolute bottom-32 left-16 animate-bounce">
+          <Users className="h-16 w-16 text-emerald-400 opacity-40" />
+        </div>
+        <div className="absolute top-40 left-32 animate-pulse">
+          <Star className="h-8 w-8 text-yellow-400 opacity-60" />
+        </div>
         
-        {/* Sophisticated Geometric Elements */}
-        <div className="absolute top-1/3 left-1/2 w-3 h-24 bg-gradient-to-b from-emerald-500/30 via-teal-500/20 to-transparent rotate-12 animate-pulse"></div>
-        <div className="absolute top-1/4 right-1/4 w-20 h-3 bg-gradient-to-r from-cyan-500/30 via-teal-500/20 to-transparent rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/3 left-1/3 w-4 h-4 bg-teal-500/40 rotate-45 animate-spin-slow"></div>
+        {/* Luxury Background with Patterns */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(16,185,129,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_20%_50%,rgba(16,185,129,0.3),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.3),transparent_50%)]"></div>
         
-        {/* Luxurious Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-        
-        {/* Floating Particles */}
-        <div className="absolute top-1/4 left-3/4 w-2 h-2 bg-emerald-400/60 rounded-full animate-bounce" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-teal-400/80 rounded-full animate-ping" style={{animationDelay: '3s'}}></div>
-        <div className="absolute bottom-1/4 left-1/2 w-3 h-3 bg-cyan-400/50 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+        {/* Floating Decorations */}
+        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
       </div>
 
       <div className="relative z-10">
-        {/* Luxury Header */}
-        <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-emerald-200/30 dark:border-emerald-700/30 sticky top-0 z-50">
+        {/* Luxury Header matching home page style */}
+        <header className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900 border-b border-emerald-200/30 dark:border-emerald-700/30 sticky top-0 z-50">
           {/* Floating geometric shapes */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-2 right-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
             <div className="absolute top-6 right-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
             <div className="absolute top-4 right-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(16,185,129,0.15),transparent_50%)]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)]"></div>
           </div>
 
           <div className="container mx-auto px-6 py-6">
             <div className="flex items-center justify-between">
-              {/* Left side - Logo and Title */}
+              {/* Left side - Brand matching home page */}
               <div className="flex items-center gap-6">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                  <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
-                    <BarChart3 className="h-7 w-7 text-white" />
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-50"></div>
+                  <TreePine className="relative h-10 w-10 text-emerald-400" />
                 </div>
                 
                 <div className="space-y-1">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                     لوحة التحكم
                   </h1>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <p className="text-muted-foreground font-medium">إدارة أشجار عائلتك بسهولة</p>
+                    <Crown className="h-5 w-5 text-emerald-400" />
+                    <p className="text-gray-300 font-medium">إدارة تراثك الرقمي بأناقة</p>
                   </div>
                 </div>
               </div>
@@ -434,22 +435,30 @@ const Dashboard = () => {
               {/* Right side - Actions */}
               <div className="flex items-center gap-6">
                 {/* Navigation Pills */}
-                <div className="hidden md:flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-full p-1 border border-emerald-200/50 dark:border-emerald-700/50">
-                  <Button variant="ghost" size="sm" className="rounded-full px-4 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/30">
+                <div className="hidden md:flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full p-1 border border-emerald-200/30">
+                  <Button variant="ghost" size="sm" className="rounded-full px-4 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
                     الرئيسية
                   </Button>
-                  <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20" onClick={() => navigate("/family-builder")}>
+                  <Button variant="ghost" size="sm" className="rounded-full px-4 text-gray-300 hover:bg-white/20" onClick={() => navigate("/family-builder")}>
                     الأشجار
                   </Button>
-                  <Button variant="ghost" size="sm" className="rounded-full px-4 hover:bg-emerald-500/20" onClick={() => navigate("/profile")}>
+                  <Button variant="ghost" size="sm" className="rounded-full px-4 text-gray-300 hover:bg-white/20" onClick={() => navigate("/profile")}>
                     الملف الشخصي
                   </Button>
                 </div>
+                
+                {/* Create Tree Button */}
+                <Button 
+                  onClick={handleCreateTree} 
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl rounded-full px-6"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  إنشاء شجرة جديدة
+                </Button>
               </div>
             </div>
           </div>
 
-          {/* Bottom gradient line */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
         </header>
 
@@ -901,7 +910,7 @@ const Dashboard = () => {
         </DialogContent>
       </Dialog>
 
-      <SharedFooter />
+      <LuxuryFooter />
     </div>;
 };
 export default Dashboard;
