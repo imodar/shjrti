@@ -479,7 +479,7 @@ const Dashboard = () => {
                         </h3>
 
                         <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                          {t('first_tree_desc', 'لحظة واحدة تفصلك عن بدء رحلة حفظ تاريخ عائلتك. ابدأ الآن واصنع إرثاً رقمياً يدوم للأبد')}
+                          {t('first_tree_desc', 'بخطوات بسيطة ، ستبدأ رحلة حفظ تاريخ عائلتك ، إبدأ الآن واصنع إرثك الرقمي ليدوم للأبد')}
                         </p>
 
                         {/* Action Button */}
