@@ -269,11 +269,11 @@ export const GlobalHeader = () => {
                     sideOffset={8}
                   >
                     <DropdownMenuItem className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30">
-                      <div className="flex items-center gap-3 w-full">
+                      <div className="flex items-center gap-3 w-full flex-row-reverse justify-start">
+                        <span className="text-white font-medium">عربي</span>
                         <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-red-500 flex items-center justify-center text-xs font-bold text-white">
                           ع
                         </div>
-                        <span className="text-white font-medium">عربي</span>
                       </div>
                     </DropdownMenuItem>
                     
