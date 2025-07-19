@@ -575,27 +575,27 @@ const FamilyCreator = () => {
                         </div>
                       </div>
 
-                      {/* Right Side - Motivational Content with Enhanced Design */}
-                      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900">
-                        {/* Stunning background with multiple layers */}
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-400/20 via-pink-400/10 to-transparent"></div>
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-cyan-400/20 via-blue-400/10 to-transparent"></div>
+                      {/* Right Side - Motivational Content with Consistent Design */}
+                      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-teal-900 to-amber-900 dark:from-emerald-950 dark:via-teal-950 dark:to-amber-950">
+                        {/* Beautiful background with consistent colors */}
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-400/20 via-teal-400/10 to-transparent"></div>
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-teal-400/20 via-amber-400/10 to-transparent"></div>
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-400/10 via-transparent to-transparent"></div>
                         
-                        {/* Mesh gradient overlay */}
+                        {/* Mesh gradient overlay with page colors */}
                         <div className="absolute inset-0 opacity-30">
-                          <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-                          <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-                          <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+                          <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+                          <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-teal-500/30 to-amber-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+                          <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-gradient-to-br from-amber-500/30 to-emerald-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
                         </div>
 
-                        {/* Floating particles */}
+                        {/* Floating particles with consistent colors */}
                         <div className="absolute inset-0 overflow-hidden pointer-events-none">
                           <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/80 rounded-full animate-float-up"></div>
-                          <div className="absolute top-3/4 left-1/2 w-1 h-1 bg-purple-300/60 rounded-full animate-float-up animation-delay-1000"></div>
-                          <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-cyan-300/60 rounded-full animate-float-up animation-delay-2000"></div>
-                          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-pink-300/60 rounded-full animate-float-up animation-delay-3000"></div>
-                          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-yellow-300/60 rounded-full animate-float-up animation-delay-4000"></div>
+                          <div className="absolute top-3/4 left-1/2 w-1 h-1 bg-emerald-300/60 rounded-full animate-float-up animation-delay-1000"></div>
+                          <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-teal-300/60 rounded-full animate-float-up animation-delay-2000"></div>
+                          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-amber-300/60 rounded-full animate-float-up animation-delay-3000"></div>
+                          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-emerald-400/60 rounded-full animate-float-up animation-delay-4000"></div>
                         </div>
 
                         <div className="relative z-10 h-full flex flex-col justify-center">
