@@ -58,20 +58,20 @@ export const GlobalFooter = () => {
                 <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
               </h3>
               <div className="space-y-3">
-                {!user && (
-                  <Link to="/" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    <span>{t('footer_link_home', 'الرئيسية')}</span>
-                  </Link>
-                )}
+                <Link to="/" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <span>{t('footer_link_home', 'الرئيسية')}</span>
+                </Link>
                 <Link to="/dashboard" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   <span>{t('footer_link_dashboard', 'لوحة التحكم')}</span>
                 </Link>
-                <Link to="/auth" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  <span>{t('footer_link_auth', 'تسجيل الدخول')}</span>
-                </Link>
+                {!user && (
+                  <Link to="/auth" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <span>{t('footer_link_auth', 'تسجيل الدخول')}</span>
+                  </Link>
+                )}
               </div>
             </div>
             
