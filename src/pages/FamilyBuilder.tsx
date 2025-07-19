@@ -1550,23 +1550,44 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Left Side: Family Badge */}
+                {/* Navigation Icons */}
                 <div className="flex items-center gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105 flex items-center justify-center text-sm font-bold">
-                      <span className="relative z-10">{familyMembers.length}</span>
+                  <div className="flex flex-col items-center cursor-pointer group">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
+                      <Users className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">أفراد العائلة</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Overview</span>
                   </div>
                   
-                  <Button
-                    onClick={() => navigate("/dashboard")}
-                    variant="outline"
-                    className="border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 rounded-xl px-6"
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/family-tree-view')}
                   >
-                    <ArrowRight className="mr-2 h-4 w-4" />
-                    العودة للوحة التحكم
-                  </Button>
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <TreePine className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Tree View</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/store')}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <Store className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Store</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/family-statistics')}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <Star className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Statistics</span>
+                  </div>
                 </div>
               </div>
             </div>
