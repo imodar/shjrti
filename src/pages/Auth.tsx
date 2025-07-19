@@ -344,8 +344,8 @@ const Auth = () => {
           </div>
 
           {/* Main Content */}
-          <div className="relative z-10 flex items-center justify-center p-8">
-            <div className="text-center text-white space-y-8 max-w-lg">
+          <div className="relative z-10 flex items-center justify-center min-h-full p-8">
+            <div className="text-center text-white space-y-8 max-w-lg font-arabic">
               {/* Luxury Logo */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-amber-300/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300"></div>
