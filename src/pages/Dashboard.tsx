@@ -280,7 +280,7 @@ const Dashboard = () => {
           {userSubscription?.package_name && !userSubscription?.is_expired ? (
             <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
               <Crown className="h-4 w-4" />
-              <span className="text-sm font-bold">{userSubscription.package_name}</span>
+              <span className="text-sm font-bold">الباقة {userSubscription.package_name}</span>
             </div>
                           ) : !userSubscription?.package_name ? (
                             <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
