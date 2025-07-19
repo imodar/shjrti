@@ -1993,7 +1993,7 @@ const FamilyBuilder = () => {
 
       {/* Add/Edit Member Modal */}
       <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-white/20 dark:bg-gray-800/20 backdrop-blur-2xl border border-white/30 dark:border-gray-600/30 shadow-2xl rounded-3xl ring-1 ring-white/20 dark:ring-gray-500/20">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-2xl border border-white/30 dark:border-gray-600/30 shadow-2xl rounded-3xl ring-1 ring-white/20 dark:ring-gray-500/20">
           {/* Floating Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
             <div className="absolute top-10 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-full blur-xl animate-pulse"></div>
