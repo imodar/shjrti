@@ -359,262 +359,206 @@ const Dashboard = () => {
             ) : familyTrees.length === 0 ? (
               <section className="py-12 relative">
                 <div className="container mx-auto px-4 relative z-10">
-                  {/* Packages Section - Beautiful Header */}
+                  {/* Steps Section - Creative Design */}
                   <div className="text-center mb-16">
-                    <div className="mb-8">
-                      <div className="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-2xl mb-8 animate-pulse">
-                        <TreePine className="h-16 w-16 text-white" />
+                    <div className="mb-12">
+                      <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-2xl mb-8 relative">
+                        <TreePine className="h-12 w-12 text-white" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full animate-ping opacity-30"></div>
                       </div>
                     </div>
                     
-                    <h2 className="text-3xl md:text-5xl font-bold mb-6">
+                    <h2 className="text-4xl md:text-6xl font-bold mb-8">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                         {t('start_your_legacy', 'ابدأ إرثك العائلي')}
                       </span>
                     </h2>
                     
-                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-12">
+                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed mb-16">
                       {t('building_easy_desc', 'بناء شجرة عائلتك أمر بسيط وممتع! فقط ببضع خطوات ستحصل على شجرة رائعة تحفظ تاريخ عائلتك للأبد')}
                     </p>
 
-                    {/* Packages Grid - Beautiful Design */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
-                      {/* Free Package */}
-                      <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
-                        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 opacity-90"></div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-700 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
-                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                        
-                        <CardContent className="relative p-8 text-center">
-                          <div className="relative mb-6">
-                            <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
-                            <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500">
-                              <Shield className="h-8 w-8 text-white" />
-                            </div>
-                          </div>
-                          
-                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                            الباقة المجانية
-                          </h3>
-                          <div className="text-3xl font-bold text-gray-600 dark:text-gray-300 mb-4">
-                            مجاناً
-                          </div>
-                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6">
-                            <li>• شجرة عائلية واحدة</li>
-                            <li>• حتى 50 فرد</li>
-                            <li>• مميزات أساسية</li>
-                          </ul>
-                          <Link to="/family-builder?new=true">
-                            <Button className="w-full bg-gray-500 hover:bg-gray-600 text-white">
-                              <Plus className="h-4 w-4 ml-2" />
-                              ابدأ مجاناً
-                            </Button>
-                          </Link>
-                        </CardContent>
-                      </Card>
+                    {/* Creative Steps Design */}
+                    <div className="max-w-7xl mx-auto relative">
+                      {/* Background Decorative Elements */}
+                      <div className="absolute inset-0 overflow-hidden opacity-10">
+                        <div className="absolute top-20 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-20 right-10 w-40 h-40 bg-teal-500 rounded-full blur-3xl"></div>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-amber-500 rounded-full blur-3xl"></div>
+                      </div>
 
-                      {/* Premium Package */}
-                      <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4 ring-2 ring-emerald-400">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-emerald-950 dark:via-gray-900 dark:to-teal-950 opacity-90"></div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
-                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                        
-                        {/* Popular Badge */}
-                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
-                            الأكثر شعبية
+                      {/* Steps Container */}
+                      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+                        {/* Step 1 */}
+                        <div className="relative group">
+                          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+                            {/* Step Number */}
+                            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl shadow-xl mb-6 mx-auto relative">
+                              <span className="text-2xl font-bold text-white">1</span>
+                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-2xl animate-pulse opacity-50"></div>
+                            </div>
+                            
+                            {/* Icon */}
+                            <div className="flex items-center justify-center mb-6">
+                              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-full flex items-center justify-center">
+                                <Plus className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+                              </div>
+                            </div>
+                            
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                              {t('step1_title', 'إنشاء الشجرة')}
+                            </h3>
+                            
+                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                              {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً يعكس تاريخ عائلتك')}
+                            </p>
                           </div>
                         </div>
-                        
-                        <CardContent className="relative p-8 text-center">
-                          <div className="relative mb-6">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
-                            <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500">
-                              <Star className="h-8 w-8 text-white" />
-                            </div>
-                          </div>
-                          
-                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                            الباقة المميزة
-                          </h3>
-                          <div className="text-3xl font-bold text-emerald-600 mb-4">
-                            99 ريال <span className="text-sm text-gray-500">سنوياً</span>
-                          </div>
-                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6">
-                            <li>• 5 أشجار عائلية</li>
-                            <li>• حتى 500 فرد</li>
-                            <li>• جميع المميزات</li>
-                            <li>• دعم فني مميز</li>
-                          </ul>
-                          <Link to="/payments">
-                            <Button className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
-                              <Crown className="h-4 w-4 ml-2" />
-                              اختر هذه الباقة
-                            </Button>
-                          </Link>
-                        </CardContent>
-                      </Card>
 
-                      {/* Professional Package */}
-                      <Card className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:-translate-y-4">
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-amber-100 dark:from-purple-950 dark:via-gray-900 dark:to-amber-950 opacity-90"></div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-amber-500 to-purple-600 opacity-0 group-hover:opacity-20 rounded-2xl blur-xl transition-all duration-700"></div>
-                        <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-2xl"></div>
-                        
-                        <CardContent className="relative p-8 text-center">
-                          <div className="relative mb-6">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 scale-110"></div>
-                            <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-amber-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-125 transition-all duration-500">
-                              <Crown className="h-8 w-8 text-white" />
+                        {/* Connection Line 1 */}
+                        <div className="hidden lg:flex items-center justify-center relative">
+                          <div className="w-full h-0.5 bg-gradient-to-r from-emerald-300 to-teal-300 relative">
+                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-teal-400 rounded-full shadow-lg"></div>
+                            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-emerald-400 rounded-full animate-ping"></div>
+                          </div>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="relative group">
+                          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-amber-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+                            {/* Step Number */}
+                            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-amber-500 rounded-2xl shadow-xl mb-6 mx-auto relative">
+                              <span className="text-2xl font-bold text-white">2</span>
+                              <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-amber-400 rounded-2xl animate-pulse opacity-50"></div>
                             </div>
+                            
+                            {/* Icon */}
+                            <div className="flex items-center justify-center mb-6">
+                              <div className="w-20 h-20 bg-gradient-to-br from-teal-100 to-amber-100 dark:from-teal-900/30 dark:to-amber-900/30 rounded-full flex items-center justify-center">
+                                <Users className="h-10 w-10 text-teal-600 dark:text-teal-400" />
+                              </div>
+                            </div>
+                            
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                              {t('step2_title', 'إضافة الأفراد')}
+                            </h3>
+                            
+                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                              {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور لتكوين شجرة عائلية كاملة')}
+                            </p>
                           </div>
-                          
-                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                            الباقة الاحترافية
-                          </h3>
-                          <div className="text-3xl font-bold text-purple-600 mb-4">
-                            199 ريال <span className="text-sm text-gray-500">سنوياً</span>
+                        </div>
+
+                        {/* Connection Line 2 */}
+                        <div className="hidden lg:flex items-center justify-center relative">
+                          <div className="w-full h-0.5 bg-gradient-to-r from-teal-300 to-amber-300 relative">
+                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-amber-400 rounded-full shadow-lg"></div>
+                            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-teal-400 rounded-full animate-ping"></div>
                           </div>
-                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6">
-                            <li>• أشجار غير محدودة</li>
-                            <li>• أفراد غير محدودين</li>
-                            <li>• مميزات متقدمة</li>
-                            <li>• دعم ذو أولوية</li>
-                          </ul>
-                          <Link to="/payments">
-                            <Button className="w-full bg-gradient-to-r from-purple-500 to-amber-500 hover:from-purple-600 hover:to-amber-600 text-white">
-                              <Crown className="h-4 w-4 ml-2" />
-                              اختر هذه الباقة
-                            </Button>
-                          </Link>
-                        </CardContent>
-                      </Card>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="relative group">
+                          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+                            {/* Step Number */}
+                            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl shadow-xl mb-6 mx-auto relative">
+                              <span className="text-2xl font-bold text-white">3</span>
+                              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-400 rounded-2xl animate-pulse opacity-50"></div>
+                            </div>
+                            
+                            {/* Icon */}
+                            <div className="flex items-center justify-center mb-6">
+                              <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-full flex items-center justify-center">
+                                <Heart className="h-10 w-10 text-amber-600 dark:text-amber-400" />
+                              </div>
+                            </div>
+                            
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                              {t('step3_title', 'حفظ الذكريات')}
+                            </h3>
+                            
+                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                              {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة واستمتع بمشاركة تاريخك مع الأهل والأحباب')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Mobile Connection Lines */}
+                      <div className="lg:hidden flex flex-col items-center gap-8 mt-8">
+                        <div className="flex flex-col items-center">
+                          <div className="w-0.5 h-16 bg-gradient-to-b from-emerald-300 to-teal-300"></div>
+                          <div className="w-3 h-3 bg-teal-400 rounded-full animate-ping"></div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="w-0.5 h-16 bg-gradient-to-b from-teal-300 to-amber-300"></div>
+                          <div className="w-3 h-3 bg-amber-400 rounded-full animate-ping"></div>
+                        </div>
+                      </div>
                     </div>
-
-                    {/* Call to Action */}
-                    <Link to="/family-builder?new=true">
-                      <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-xl px-12 py-6 rounded-full shadow-2xl hover-scale">
-                        <Plus className="h-6 w-6 ml-3" />
-                        {t('build_first_tree', 'ابني شجرتك الأولى الآن')}
-                      </Button>
-                    </Link>
                   </div>
 
-                  {/* Simple Steps */}
-                  <div className="mt-16 text-center">
-                    <h3 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200">
-                      {t('just_three_steps', 'فقط ثلاث خطوات بسيطة')}
-                    </h3>
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
-                        <span className="text-lg text-gray-700 dark:text-gray-300">{t('step_1_simple', 'أضف اسمك')}</span>
-                      </div>
-                      <ArrowRight className="h-6 w-6 text-emerald-500 transform md:rotate-0 rotate-90" />
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div>
-                        <span className="text-lg text-gray-700 dark:text-gray-300">{t('step_2_simple', 'أضف أفراد العائلة')}</span>
-                      </div>
-                      <ArrowRight className="h-6 w-6 text-emerald-500 transform md:rotate-0 rotate-90" />
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
-                        <span className="text-lg text-gray-700 dark:text-gray-300">{t('step_3_simple', 'استمتع بالنتيجة')}</span>
+                  {/* Call to Action Section - Build First Tree */}
+                  <div className="max-w-4xl mx-auto mt-20">
+                    <div className="relative">
+                      {/* Glow Background */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-teal-600/30 to-amber-600/20 rounded-3xl blur-3xl"></div>
+                      
+                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-12 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
+                        {/* Icon */}
+                        <div className="flex items-center justify-center mb-8">
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
+                            <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl">
+                              <TreePine className="h-10 w-10 text-white" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <h3 className="text-3xl md:text-4xl font-bold mb-6">
+                          <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                            {t('build_first_tree', 'ابدأ بناء أول شجرة عائلية')}
+                          </span>
+                        </h3>
+
+                        <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                          {t('first_tree_desc', 'لحظة واحدة تفصلك عن بدء رحلة حفظ تاريخ عائلتك. ابدأ الآن واصنع إرثاً رقمياً يدوم للأبد')}
+                        </p>
+
+                        {/* Action Button */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                          <Button 
+                            onClick={handleCreateNewTree}
+                            className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-700 text-white border-0 rounded-2xl px-8 py-4 text-lg font-bold shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative flex items-center gap-3">
+                              <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+                              <span>{t('create_first_tree', 'إنشاء شجرتي الأولى')}</span>
+                              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                            </div>
+                          </Button>
+
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                            <span className="font-medium">{t('free_to_start', 'مجاني للبدء')}</span>
+                          </div>
+                        </div>
+
+                        {/* Decorative Elements */}
+                        <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full opacity-60 animate-bounce"></div>
+                        <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full opacity-60 animate-pulse"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </section>
             ) : (
-              // Show Existing Trees - Modern Design
               <section className="py-8 relative">
                 <div className="container mx-auto px-4 relative z-10">
-                  {/* Modern Header */}
-                  <div className="relative mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/10 to-amber-500/5 rounded-3xl blur-3xl"></div>
-                    <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-2xl border border-white/30 dark:border-gray-700/30 rounded-3xl p-4 shadow-2xl">
-                      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                        <div className="flex items-center gap-4">
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-lg opacity-30 animate-pulse"></div>
-                            <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-xl">
-                              <TreePine className="h-8 w-8 text-white" />
-                            </div>
-                          </div>
-                          <div>
-                            <h2 className="text-2xl lg:text-3xl font-bold mb-2">
-                              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                {t('your_family_trees', 'أشجارك العائلية')}
-                              </span>
-                            </h2>
-                            
-                            {/* Package Usage Stats - Single Row Design */}
-                            <div className="flex items-center gap-6 justify-center">
-                              {/* Trees Usage */}
-                              <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-700/40 rounded-2xl px-4 py-3 backdrop-blur-sm border border-emerald-200/30 dark:border-emerald-700/30">
-                                <div className="relative">
-                                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <TreePine className="h-5 w-5 text-white" />
-                                  </div>
-                                  {userSubscription?.max_trees && familyTrees.length >= userSubscription.max_trees && (
-                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center">
-                                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <div className="flex items-baseline gap-1">
-                                    <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{familyTrees.length}</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">من</span>
-                                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_trees || 1}</span>
-                                  </div>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {familyTrees.length === 1 ? 'شجرة' : 'أشجار'}
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* Separator */}
-                              <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
-
-                              {/* Members Usage */}
-                              <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-700/40 rounded-2xl px-4 py-3 backdrop-blur-sm border border-teal-200/30 dark:border-teal-700/30">
-                                <div className="relative">
-                                  <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <Users className="h-5 w-5 text-white" />
-                                  </div>
-                                  {userSubscription?.max_members && familyTrees.reduce((acc, tree) => acc + tree.members_count, 0) >= userSubscription.max_members && (
-                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center">
-                                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <div className="flex items-baseline gap-1">
-                                    <span className="text-xl font-bold text-teal-600 dark:text-teal-400">{familyTrees.reduce((acc, tree) => acc + tree.members_count, 0)}</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">من</span>
-                                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_members || 50}</span>
-                                  </div>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">فرد</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col items-end gap-3">
-                          <Button 
-                            size="lg" 
-                            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover-scale border-0"
-                            onClick={handleCreateNewTree}
-                          >
-                            <Plus className="h-5 w-5 ml-2" />
-                            {t('create_new_tree', 'إنشاء شجرة جديدة')}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Creative Trees Grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                     {familyTrees.map((tree, index) => (
