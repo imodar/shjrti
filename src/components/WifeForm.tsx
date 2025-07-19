@@ -113,6 +113,26 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
         </div>
       </div>
 
+      {/* Marital Status Row */}
+      <div className="space-y-2 w-1/3">
+        <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+          <Users className="h-4 w-4 text-primary" />
+          الحالة الزوجية
+        </Label>
+        <Select 
+          value={formData.maritalStatus} 
+          onValueChange={(value) => setFormData({...formData, maritalStatus: value})}
+        >
+          <SelectTrigger className="h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
+            <SelectValue placeholder="اختر الحالة الزوجية" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="married">متزوجة</SelectItem>
+            <SelectItem value="divorced">مطلقة</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Living Status and Death Date Row */}
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground flex items-center gap-2">
@@ -187,26 +207,6 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
             </div>
           )}
         </div>
-      </div>
-
-      {/* Marital Status Row */}
-      <div className="space-y-2 w-1/3">
-        <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Users className="h-4 w-4 text-primary" />
-          الحالة الزوجية
-        </Label>
-        <Select 
-          value={formData.maritalStatus} 
-          onValueChange={(value) => setFormData({...formData, maritalStatus: value})}
-        >
-          <SelectTrigger className="h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
-            <SelectValue placeholder="اختر الحالة الزوجية" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="married">متزوجة</SelectItem>
-            <SelectItem value="divorced">مطلقة</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
     </div>
