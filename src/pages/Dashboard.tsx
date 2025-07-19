@@ -461,7 +461,7 @@ const Dashboard = () => {
                       {/* Glow Background */}
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-teal-600/30 to-amber-600/20 rounded-3xl blur-3xl"></div>
                       
-                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-12 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
+                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
                         {/* Icon */}
                         <div className="flex items-center justify-center mb-8">
                           <div className="relative">
