@@ -1161,9 +1161,6 @@ const FamilyCreator = () => {
       </Dialog>
 
       
-      {/* Spacing before footer */}
-      <div className="h-16 bg-gradient-to-br from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/20 dark:via-teal-950/20 dark:to-amber-950/20"></div>
-      
       <LuxuryFooter />
     </>
   );
