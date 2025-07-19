@@ -357,7 +357,7 @@ const Dashboard = () => {
                 </div>
               </section>
             ) : familyTrees.length === 0 ? (
-              <section className="py-12 relative">
+              <section className="py-6 relative">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Header with Icon and Title on Same Line */}
                   <div className="text-center mb-12">
@@ -376,13 +376,16 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  {/* Simplified Steps in One Row */}
+                  {/* Simplified Steps in One Row with Connection Lines */}
                   <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                      {/* Connection Lines - Hidden on Mobile */}
+                      <div className="hidden md:block absolute top-6 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300"></div>
+                      
                       {/* Step 1 */}
-                      <div className="text-center group hover:scale-105 transition-transform duration-300">
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                      <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
+                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
                             <Plus className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="text-lg font-bold text-gray-800 dark:text-white">
@@ -392,12 +395,18 @@ const Dashboard = () => {
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
                           {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً')}
                         </p>
+                        {/* Arrow for desktop */}
+                        <div className="hidden md:block absolute -right-4 top-6 text-emerald-400">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </div>
                       </div>
 
                       {/* Step 2 */}
-                      <div className="text-center group hover:scale-105 transition-transform duration-300">
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center">
+                      <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
+                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
+                          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
                             <Users className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="text-lg font-bold text-gray-800 dark:text-white">
@@ -407,12 +416,18 @@ const Dashboard = () => {
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
                           {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور')}
                         </p>
+                        {/* Arrow for desktop */}
+                        <div className="hidden md:block absolute -right-4 top-6 text-teal-400">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </div>
                       </div>
 
                       {/* Step 3 */}
                       <div className="text-center group hover:scale-105 transition-transform duration-300">
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
+                          <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
                             <Heart className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="text-lg font-bold text-gray-800 dark:text-white">
@@ -422,6 +437,15 @@ const Dashboard = () => {
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
                           {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة')}
                         </p>
+                      </div>
+
+                      {/* Mobile Connection Lines */}
+                      <div className="md:hidden col-span-full flex justify-center items-center gap-4 mt-4">
+                        <div className="w-16 h-0.5 bg-gradient-to-r from-emerald-300 to-teal-300"></div>
+                        <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                        <div className="w-16 h-0.5 bg-gradient-to-r from-teal-300 to-amber-300"></div>
+                        <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                        <div className="w-16 h-0.5 bg-gradient-to-r from-amber-300 to-orange-300"></div>
                       </div>
                     </div>
                   </div>
