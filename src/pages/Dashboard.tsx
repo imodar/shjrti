@@ -197,9 +197,9 @@ const Dashboard = () => {
 
           <main className="relative z-10 pt-20">
             {/* Hero Section */}
-            <section className={`${familyTrees.length > 0 ? 'py-6' : 'py-12'} relative`}>
+            <section className={`${familyTrees.length > 0 ? 'py-4' : 'py-8'} relative`}>
               <div className="container mx-auto px-4 relative z-10">
-                <div className="mb-8 relative">
+                <div className="mb-6 relative">
                   {/* Main Content Container - Horizontal Rectangle */}
                   <div className="relative max-w-5xl mx-auto">
                     {/* Background Glow */}
@@ -237,9 +237,23 @@ const Dashboard = () => {
                         <div className="flex-1 text-center">
                           <div className="flex items-center justify-center gap-3 mb-3">
                             {familyTrees.length === 1 ? (
-                              <div className="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full">
-                                <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-6 py-3 rounded-full shadow-lg">
+                                  <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">لديك</span>
+                                    <span className="text-lg font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
+                                  </div>
+                                </div>
+                                {/* Package Name */}
+                                {userSubscription?.package_name && (
+                                  <div className="flex items-center gap-1 text-xs bg-gradient-to-r from-amber-500/10 to-orange-500/10 px-3 py-1 rounded-full border border-amber-200/50 dark:border-amber-700/50">
+                                    <Crown className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                    <span className="text-amber-700 dark:text-amber-300 font-medium">
+                                      {userSubscription.package_name}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             ) : (
                               <>
