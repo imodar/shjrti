@@ -388,29 +388,27 @@ const Dashboard = () => {
                       </div>
 
                       {/* Steps Container */}
-                      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+                      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6">
                         {/* Step 1 */}
                         <div className="relative group">
-                          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+                          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg group-hover:shadow-xl transition-all duration-300">
                             {/* Step Number */}
-                            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl shadow-xl mb-6 mx-auto relative">
-                              <span className="text-2xl font-bold text-white">1</span>
-                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-2xl animate-pulse opacity-50"></div>
+                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg mb-4 mx-auto">
+                              <span className="text-lg font-bold text-white">1</span>
                             </div>
                             
                             {/* Icon */}
-                            <div className="flex items-center justify-center mb-6">
-                              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-full flex items-center justify-center">
-                                <Plus className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+                            <div className="flex items-center justify-center mb-4">
+                              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                                <Plus className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                               </div>
                             </div>
                             
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 text-center">
                               {t('step1_title', 'إنشاء الشجرة')}
                             </h3>
                             
-                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
                               {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً يعكس تاريخ عائلتك')}
                             </p>
                           </div>
@@ -426,26 +424,24 @@ const Dashboard = () => {
 
                         {/* Step 2 */}
                         <div className="relative group">
-                          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-amber-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+                          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg group-hover:shadow-xl transition-all duration-300">
                             {/* Step Number */}
-                            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-amber-500 rounded-2xl shadow-xl mb-6 mx-auto relative">
-                              <span className="text-2xl font-bold text-white">2</span>
-                              <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-amber-400 rounded-2xl animate-pulse opacity-50"></div>
+                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg mb-4 mx-auto">
+                              <span className="text-lg font-bold text-white">2</span>
                             </div>
                             
                             {/* Icon */}
-                            <div className="flex items-center justify-center mb-6">
-                              <div className="w-20 h-20 bg-gradient-to-br from-teal-100 to-amber-100 dark:from-teal-900/30 dark:to-amber-900/30 rounded-full flex items-center justify-center">
-                                <Users className="h-10 w-10 text-teal-600 dark:text-teal-400" />
+                            <div className="flex items-center justify-center mb-4">
+                              <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/20 rounded-lg flex items-center justify-center">
+                                <Users className="h-6 w-6 text-teal-600 dark:text-teal-400" />
                               </div>
                             </div>
                             
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 text-center">
                               {t('step2_title', 'إضافة الأفراد')}
                             </h3>
                             
-                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
                               {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور لتكوين شجرة عائلية كاملة')}
                             </p>
                           </div>
@@ -461,26 +457,24 @@ const Dashboard = () => {
 
                         {/* Step 3 */}
                         <div className="relative group">
-                          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-gray-700/30 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+                          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg group-hover:shadow-xl transition-all duration-300">
                             {/* Step Number */}
-                            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl shadow-xl mb-6 mx-auto relative">
-                              <span className="text-2xl font-bold text-white">3</span>
-                              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-400 rounded-2xl animate-pulse opacity-50"></div>
+                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg mb-4 mx-auto">
+                              <span className="text-lg font-bold text-white">3</span>
                             </div>
                             
                             {/* Icon */}
-                            <div className="flex items-center justify-center mb-6">
-                              <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-full flex items-center justify-center">
-                                <Heart className="h-10 w-10 text-amber-600 dark:text-amber-400" />
+                            <div className="flex items-center justify-center mb-4">
+                              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
+                                <Heart className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                               </div>
                             </div>
                             
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 text-center">
                               {t('step3_title', 'حفظ الذكريات')}
                             </h3>
                             
-                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
                               {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة واستمتع بمشاركة تاريخك مع الأهل والأحباب')}
                             </p>
                           </div>
