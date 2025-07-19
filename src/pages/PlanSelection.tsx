@@ -192,9 +192,9 @@ const PlanSelection = () => {
 
   const getPackageGradient = (index: number) => {
     const gradients = [
-      "from-slate-500 via-slate-600 to-slate-700",
-      "from-emerald-500 via-emerald-600 to-teal-600", 
-      "from-purple-500 via-indigo-600 to-purple-700"
+      "from-muted to-muted/50",
+      "from-primary/20 to-primary/10", 
+      "from-accent/20 to-accent/10"
     ];
     return gradients[index % gradients.length];
   };
@@ -315,9 +315,9 @@ const PlanSelection = () => {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           <p className="text-muted-foreground animate-pulse">
             {currentLanguage === 'ar' ? "جاري تحميل الباقات..." : "Loading packages..."}
           </p>
@@ -327,7 +327,7 @@ const PlanSelection = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Logo Section */}
         <div className="text-center mb-12 relative">
@@ -339,7 +339,7 @@ const PlanSelection = () => {
             />
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="hero-gradient bg-clip-text text-transparent">
                   {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
                 </span>
               </h1>
@@ -351,21 +351,21 @@ const PlanSelection = () => {
               </p>
               
               <div className="flex flex-wrap justify-center gap-4">
-                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                <div className="flex items-center gap-2 text-primary">
                   <Award className="h-5 w-5" />
                   <span className="text-sm font-medium">
                     {currentLanguage === 'ar' ? 'جودة عالية' : 'Premium Quality'}
                   </span>
                 </div>
                 
-                <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                <div className="flex items-center gap-2 text-primary">
                   <Shield className="h-5 w-5" />
                   <span className="text-sm font-medium">
                     {currentLanguage === 'ar' ? 'أمان تام' : 'Secure & Safe'}
                   </span>
                 </div>
                 
-                <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                <div className="flex items-center gap-2 text-primary">
                   <Zap className="h-5 w-5" />
                   <span className="text-sm font-medium">
                     {currentLanguage === 'ar' ? 'سهل الاستخدام' : 'Easy to Use'}
