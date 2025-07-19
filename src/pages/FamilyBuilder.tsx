@@ -1833,7 +1833,7 @@ const FamilyBuilder = () => {
                                   <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
                                 </div>
                               ) : (
-                                <div className="flex items-center justify-center gap-2">
+                                <div>
                                   <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
                                     <Crown className="h-4 w-4 text-white" />
                                   </div>
