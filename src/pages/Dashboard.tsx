@@ -507,19 +507,6 @@ const Dashboard = () => {
                         </div>
                         
                         <div className="flex flex-col items-end gap-3">
-                          {/* Package Badge */}
-                          {userSubscription?.package_name ? (
-                            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
-                              <Crown className="h-4 w-4" />
-                              <span className="text-sm font-bold">{userSubscription.package_name}</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-full shadow-lg">
-                              <Gem className="h-4 w-4" />
-                              <span className="text-sm font-bold">باقة مجانية</span>
-                            </div>
-                          )}
-                          
                           <Link to="/family-builder?new=true">
                             <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover-scale border-0">
                               <Plus className="h-5 w-5 ml-2" />
