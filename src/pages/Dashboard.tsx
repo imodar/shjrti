@@ -379,8 +379,13 @@ const Dashboard = () => {
                   {/* Simplified Steps in One Row with Connection Lines */}
                   <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-                      {/* Connection Lines - Hidden on Mobile */}
-                      <div className="hidden md:block absolute top-6 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300"></div>
+                      {/* Connection Lines - Between Icons */}
+                      <div className="hidden md:block absolute top-4 inset-x-0 z-0">
+                        <div className="flex justify-between items-center max-w-2xl mx-auto px-16">
+                          <div className="w-32 h-0.5 bg-gradient-to-r from-emerald-300 to-teal-300"></div>
+                          <div className="w-32 h-0.5 bg-gradient-to-r from-teal-300 to-amber-300"></div>
+                        </div>
+                      </div>
                       
                       {/* Step 1 */}
                       <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
