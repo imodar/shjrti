@@ -25,6 +25,10 @@ interface PackageType {
   max_family_members: number | null;
   max_family_trees: number | null;
   display_order: number | null;
+  currency?: string;
+  created_at?: string;
+  updated_at?: string;
+  features?: any;
   is_active: boolean;
   is_featured: boolean;
 }
@@ -86,7 +90,15 @@ export default function EnhancedAdminPanel() {
         .order('display_order');
 
       if (error) throw error;
-      setPackages(data || []);
+      
+      // Transform data to include computed price and currency
+      const transformedPackages = (data || []).map(pkg => ({
+        ...pkg,
+        price: (pkg as any).price || pkg.price_usd || pkg.price_sar || 0,
+        currency: currentLanguage === 'ar' ? 'SAR' : 'USD'
+      }));
+      
+      setPackages(transformedPackages);
     } catch (error) {
       console.error('Error loading packages:', error);
     }

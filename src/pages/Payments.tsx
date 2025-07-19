@@ -211,10 +211,27 @@ export default function Payments() {
         throw new Error('Selected package not found');
       }
 
-      // Get current family or create family ID
+      // Get current family or create a new family first
       let familyId = currentFamily?.id;
       if (!familyId) {
-        familyId = crypto.randomUUID();
+        // Create a new family first
+        const { data: newFamily, error: familyError } = await supabase
+          .from('families')
+          .insert({
+            name: 'عائلة المستخدم',
+            creator_id: user.id,
+            subscription_status: 'pending'
+          })
+          .select()
+          .single();
+          
+        if (familyError) {
+          console.error('Error creating family:', familyError);
+          throw new Error('Failed to create family');
+        }
+        
+        familyId = newFamily.id;
+        setCurrentFamily(newFamily);
       }
 
       // Calculate amount based on current language

@@ -20,9 +20,12 @@ interface Package {
   max_family_trees: number;
   max_family_members: number;
   is_featured: boolean;
-  features: any;
-  display_order: number;
   currency: string;
+  created_at?: string;
+  updated_at?: string;
+  features?: any;
+  is_active?: boolean;
+  display_order?: number;
 }
 
 interface UserSubscription {
@@ -71,7 +74,14 @@ const PlanSelection = () => {
         return;
       }
 
-      setPackages(packagesData || []);
+      // Transform data to include computed price and currency
+      const transformedPackages = (packagesData || []).map(pkg => ({
+        ...pkg,
+        price: (pkg as any).price || pkg.price_usd || pkg.price_sar || 0,
+        currency: currentLanguage === 'ar' ? 'SAR' : 'USD'
+      }));
+      
+      setPackages(transformedPackages);
     } catch (error) {
       console.error('Error in fetchPackages:', error);
     } finally {
