@@ -717,21 +717,13 @@ export type Database = {
         Returns: undefined
       }
       create_invoice: {
-        Args:
-          | {
-              p_user_id: string
-              p_family_id: string
-              p_package_id: string
-              p_amount: number
-              p_currency?: string
-            }
-          | {
-              p_user_id: string
-              p_package_id: string
-              p_amount: number
-              p_currency?: string
-              p_family_id?: string
-            }
+        Args: {
+          p_user_id: string
+          p_package_id: string
+          p_amount: number
+          p_currency?: string
+          p_family_id?: string
+        }
         Returns: string
       }
       generate_invoice_number: {
