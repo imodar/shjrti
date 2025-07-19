@@ -26,7 +26,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -56,6 +56,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
@@ -514,10 +515,48 @@ const Dashboard = () => {
                 </div>
               </section>
             ) : (
-              <section className="py-8 relative">
+              <section className="py-8 relative mt-8">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Creative Trees Grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {/* Add New Family Tree Card */}
+                    <div className="group relative">
+                      {/* Floating Background Effect */}
+                      <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700 animate-pulse"></div>
+                      
+                      <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-2 border-dashed border-blue-300 dark:border-blue-600 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-3 rounded-3xl min-h-[300px] flex items-center justify-center cursor-pointer"
+                            onClick={() => navigate('/family-creator')}>
+                        {/* Dynamic Gradient Background */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-blue-50/60 to-purple-50/60 dark:from-gray-800/90 dark:via-blue-950/60 dark:to-purple-950/60"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-gray-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <CardContent className="relative z-10 p-8 text-center">
+                          <div className="flex flex-col items-center space-y-4">
+                            {/* Plus Icon with Animation */}
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                              <Plus className="h-8 w-8 text-white" />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                                إنشاء شجرة عائلة جديدة
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                ابدأ في بناء تاريخ عائلتك
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {/* Floating Mini Icons */}
+                          <div className="absolute top-4 left-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+                            <TreePine className="h-6 w-6 text-blue-400" />
+                          </div>
+                          <div className="absolute bottom-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+                            <Users className="h-5 w-5 text-purple-400" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
                     {familyTrees.map((tree, index) => (
                       <div key={tree.id} className="group relative">
                         {/* Floating Background Effect */}
