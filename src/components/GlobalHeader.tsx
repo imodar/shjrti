@@ -31,7 +31,7 @@ export const GlobalHeader = () => {
       
       <div className="relative z-10 border-b border-white/10">
         {/* Main Header Container */}
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-6 py-2">
           <div className="flex items-center justify-between">
             {/* Creative Logo Section */}
             <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
