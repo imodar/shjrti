@@ -359,138 +359,69 @@ const Dashboard = () => {
             ) : familyTrees.length === 0 ? (
               <section className="py-12 relative">
                 <div className="container mx-auto px-4 relative z-10">
-                  {/* Steps Section - Creative Design */}
-                  <div className="text-center mb-16">
-                    <div className="mb-12">
-                      <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-2xl mb-8 relative">
-                        <TreePine className="h-12 w-12 text-white" />
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full animate-ping opacity-30"></div>
+                  {/* Header with Icon and Title on Same Line */}
+                  <div className="text-center mb-12">
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                      <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full shadow-xl">
+                        <TreePine className="h-8 w-8 text-white" />
                       </div>
+                      <h2 className="text-3xl md:text-5xl font-bold">
+                        <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                          {t('start_your_legacy', 'ابدأ إرثك العائلي')}
+                        </span>
+                      </h2>
+                      <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+                        {t('building_easy_desc', 'بناء شجرة عائلتك أمر بسيط وممتع!')}
+                      </p>
                     </div>
-                    
-                    <h2 className="text-4xl md:text-6xl font-bold mb-8">
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        {t('start_your_legacy', 'ابدأ إرثك العائلي')}
-                      </span>
-                    </h2>
-                    
-                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed mb-16">
-                      {t('building_easy_desc', 'بناء شجرة عائلتك أمر بسيط وممتع! فقط ببضع خطوات ستحصل على شجرة رائعة تحفظ تاريخ عائلتك للأبد')}
-                    </p>
+                  </div>
 
-                    {/* Creative Steps Design */}
-                    <div className="max-w-7xl mx-auto relative">
-                      {/* Background Decorative Elements */}
-                      <div className="absolute inset-0 overflow-hidden opacity-10">
-                        <div className="absolute top-20 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-20 right-10 w-40 h-40 bg-teal-500 rounded-full blur-3xl"></div>
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-amber-500 rounded-full blur-3xl"></div>
+                  {/* Simplified Steps in One Row */}
+                  <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {/* Step 1 */}
+                      <div className="text-center group hover:scale-105 transition-transform duration-300">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                            <Plus className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                            {t('step1_title', 'إنشاء الشجرة')}
+                          </h3>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                          {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً')}
+                        </p>
                       </div>
 
-                      {/* Steps Container */}
-                      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6">
-                        {/* Step 1 */}
-                        <div className="relative group">
-                          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                            {/* Step Number */}
-                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg mb-4 mx-auto">
-                              <span className="text-lg font-bold text-white">1</span>
-                            </div>
-                            
-                            {/* Icon */}
-                            <div className="flex items-center justify-center mb-4">
-                              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                                <Plus className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                              </div>
-                            </div>
-                            
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 text-center">
-                              {t('step1_title', 'إنشاء الشجرة')}
-                            </h3>
-                            
-                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
-                              {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً يعكس تاريخ عائلتك')}
-                            </p>
+                      {/* Step 2 */}
+                      <div className="text-center group hover:scale-105 transition-transform duration-300">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center">
+                            <Users className="h-4 w-4 text-white" />
                           </div>
+                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                            {t('step2_title', 'إضافة الأفراد')}
+                          </h3>
                         </div>
-
-                        {/* Connection Line 1 */}
-                        <div className="hidden lg:flex items-center justify-center relative">
-                          <div className="w-full h-0.5 bg-gradient-to-r from-emerald-300 to-teal-300 relative">
-                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-teal-400 rounded-full shadow-lg"></div>
-                            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-emerald-400 rounded-full animate-ping"></div>
-                          </div>
-                        </div>
-
-                        {/* Step 2 */}
-                        <div className="relative group">
-                          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                            {/* Step Number */}
-                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg mb-4 mx-auto">
-                              <span className="text-lg font-bold text-white">2</span>
-                            </div>
-                            
-                            {/* Icon */}
-                            <div className="flex items-center justify-center mb-4">
-                              <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/20 rounded-lg flex items-center justify-center">
-                                <Users className="h-6 w-6 text-teal-600 dark:text-teal-400" />
-                              </div>
-                            </div>
-                            
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 text-center">
-                              {t('step2_title', 'إضافة الأفراد')}
-                            </h3>
-                            
-                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
-                              {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور لتكوين شجرة عائلية كاملة')}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Connection Line 2 */}
-                        <div className="hidden lg:flex items-center justify-center relative">
-                          <div className="w-full h-0.5 bg-gradient-to-r from-teal-300 to-amber-300 relative">
-                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-amber-400 rounded-full shadow-lg"></div>
-                            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-teal-400 rounded-full animate-ping"></div>
-                          </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        <div className="relative group">
-                          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                            {/* Step Number */}
-                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg mb-4 mx-auto">
-                              <span className="text-lg font-bold text-white">3</span>
-                            </div>
-                            
-                            {/* Icon */}
-                            <div className="flex items-center justify-center mb-4">
-                              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
-                                <Heart className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                              </div>
-                            </div>
-                            
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 text-center">
-                              {t('step3_title', 'حفظ الذكريات')}
-                            </h3>
-                            
-                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
-                              {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة واستمتع بمشاركة تاريخك مع الأهل والأحباب')}
-                            </p>
-                          </div>
-                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                          {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور')}
+                        </p>
                       </div>
 
-                      {/* Mobile Connection Lines */}
-                      <div className="lg:hidden flex flex-col items-center gap-8 mt-8">
-                        <div className="flex flex-col items-center">
-                          <div className="w-0.5 h-16 bg-gradient-to-b from-emerald-300 to-teal-300"></div>
-                          <div className="w-3 h-3 bg-teal-400 rounded-full animate-ping"></div>
+                      {/* Step 3 */}
+                      <div className="text-center group hover:scale-105 transition-transform duration-300">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                            <Heart className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                            {t('step3_title', 'حفظ الذكريات')}
+                          </h3>
                         </div>
-                        <div className="flex flex-col items-center">
-                          <div className="w-0.5 h-16 bg-gradient-to-b from-teal-300 to-amber-300"></div>
-                          <div className="w-3 h-3 bg-amber-400 rounded-full animate-ping"></div>
-                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                          {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة')}
+                        </p>
                       </div>
                     </div>
                   </div>
