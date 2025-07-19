@@ -43,6 +43,8 @@ interface UserSubscription {
   package_name?: string;
   status?: string;
   is_expired?: boolean;
+  max_trees?: number;
+  max_members?: number;
 }
 
 const Dashboard = () => {
@@ -96,12 +98,38 @@ const Dashboard = () => {
           setUserProfile(profile);
         }
 
-        // Fetch user subscription
+        // Fetch user subscription with package details
         const { data: subscription, error: subscriptionError } = await supabase
-          .rpc('get_user_subscription_details', { user_uuid: user.id });
+          .from('user_subscriptions')
+          .select(`
+            *,
+            packages (
+              name,
+              max_family_trees,
+              max_family_members
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .maybeSingle();
 
-        if (!subscriptionError && subscription && subscription.length > 0) {
-          setUserSubscription(subscription[0]);
+        if (!subscriptionError && subscription) {
+          setUserSubscription({
+            package_name: subscription.packages?.name,
+            status: subscription.status,
+            is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
+            max_trees: subscription.packages?.max_family_trees || 1,
+            max_members: subscription.packages?.max_family_members || 50
+          });
+        } else {
+          // Default free package limits
+          setUserSubscription({
+            package_name: null,
+            status: 'free',
+            is_expired: false,
+            max_trees: 1,
+            max_members: 50
+          });
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -412,18 +440,79 @@ const Dashboard = () => {
                                 {t('your_family_trees', 'أشجارك العائلية')}
                               </span>
                             </h2>
-                            <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                              <Users className="h-4 w-4" />
-                              {familyTrees.length} {t('trees', familyTrees.length === 1 ? 'شجرة' : 'أشجار')} • {familyTrees.reduce((acc, tree) => acc + tree.members_count, 0)} {t('total_members', 'فرد إجمالي')}
-                            </p>
+                            
+                            {/* Package Usage Stats */}
+                            <div className="flex flex-col sm:flex-row gap-4">
+                              {/* Trees Usage */}
+                              <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-700/40 rounded-2xl px-4 py-3 backdrop-blur-sm border border-emerald-200/30 dark:border-emerald-700/30">
+                                <div className="relative">
+                                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+                                    <TreePine className="h-6 w-6 text-white" />
+                                  </div>
+                                  {userSubscription?.max_trees && familyTrees.length >= userSubscription.max_trees && (
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
+                                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{familyTrees.length}</span>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">من</span>
+                                    <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_trees || 1}</span>
+                                  </div>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    {familyTrees.length === 1 ? 'شجرة' : 'أشجار'}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Members Usage */}
+                              <div className="flex items-center gap-3 bg-white/60 dark:bg-gray-700/40 rounded-2xl px-4 py-3 backdrop-blur-sm border border-teal-200/30 dark:border-teal-700/30">
+                                <div className="relative">
+                                  <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+                                    <Users className="h-6 w-6 text-white" />
+                                  </div>
+                                  {userSubscription?.max_members && familyTrees.reduce((acc, tree) => acc + tree.members_count, 0) >= userSubscription.max_members && (
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
+                                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-2xl font-bold text-teal-600 dark:text-teal-400">{familyTrees.reduce((acc, tree) => acc + tree.members_count, 0)}</span>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">من</span>
+                                    <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">{userSubscription?.max_members || 50}</span>
+                                  </div>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">فرد</p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <Link to="/family-builder?new=true">
-                          <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover-scale border-0">
-                            <Plus className="h-5 w-5 ml-2" />
-                            {t('create_new_tree', 'إنشاء شجرة جديدة')}
-                          </Button>
-                        </Link>
+                        
+                        <div className="flex flex-col items-end gap-3">
+                          {/* Package Badge */}
+                          {userSubscription?.package_name ? (
+                            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+                              <Crown className="h-4 w-4" />
+                              <span className="text-sm font-bold">{userSubscription.package_name}</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-full shadow-lg">
+                              <Gem className="h-4 w-4" />
+                              <span className="text-sm font-bold">باقة مجانية</span>
+                            </div>
+                          )}
+                          
+                          <Link to="/family-builder?new=true">
+                            <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover-scale border-0">
+                              <Plus className="h-5 w-5 ml-2" />
+                              {t('create_new_tree', 'إنشاء شجرة جديدة')}
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
