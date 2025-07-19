@@ -34,21 +34,28 @@ interface FamilyTree {
   updated_at: string;
 }
 
+interface UserProfile {
+  first_name?: string;
+  last_name?: string;
+}
+
 const Dashboard = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const { toast } = useToast();
   const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user's family trees
+  // Fetch user's data
   useEffect(() => {
-    const fetchFamilyTrees = async () => {
+    const fetchUserData = async () => {
       if (!user?.id) return;
       
       setLoading(true);
       try {
-        const { data: families, error } = await supabase
+        // Fetch family trees
+        const { data: families, error: familiesError } = await supabase
           .from('families')
           .select(`
             id,
@@ -59,7 +66,7 @@ const Dashboard = () => {
           `)
           .eq('creator_id', user.id);
 
-        if (error) throw error;
+        if (familiesError) throw familiesError;
 
         const treesData = families?.map(family => ({
           id: family.id,
@@ -70,8 +77,19 @@ const Dashboard = () => {
         })) || [];
 
         setFamilyTrees(treesData);
+
+        // Fetch user profile
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!profileError && profile) {
+          setUserProfile(profile);
+        }
       } catch (error) {
-        console.error('Error fetching family trees:', error);
+        console.error('Error fetching data:', error);
         toast({
           title: "خطأ",
           description: "حدث خطأ في تحميل البيانات",
@@ -82,7 +100,7 @@ const Dashboard = () => {
       }
     };
 
-    fetchFamilyTrees();
+    fetchUserData();
   }, [user?.id, toast]);
 
   // Delete family tree
@@ -136,7 +154,7 @@ const Dashboard = () => {
 
           <main className="relative z-10 pt-20">
             {/* Hero Section */}
-            <section className="py-12 relative">
+            <section className={`${familyTrees.length > 0 ? 'py-6' : 'py-12'} relative`}>
               <div className="container mx-auto px-4 relative z-10">
                 <div className="mb-8 relative">
                   {/* Main Content Container - Horizontal Rectangle */}
@@ -144,16 +162,16 @@ const Dashboard = () => {
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
                     
-                    <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-2xl p-6 shadow-xl">
+                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-2xl ${familyTrees.length > 0 ? 'p-4' : 'p-6'} shadow-xl`}>
                       <div className="flex items-center justify-between gap-8">
                         {/* Left: Avatar & Welcome */}
                         <div className="flex items-center gap-6">
                           {/* User Avatar */}
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                            <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30">
-                              <span className="text-xl font-bold text-white">
-                                {user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                            <div className={`relative ${familyTrees.length > 0 ? 'w-12 h-12' : 'w-16 h-16'} bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30`}>
+                              <span className={`${familyTrees.length > 0 ? 'text-lg' : 'text-xl'} font-bold text-white`}>
+                                {userProfile?.first_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                               </span>
                             </div>
                             {/* Status Indicator */}
@@ -167,9 +185,12 @@ const Dashboard = () => {
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                               {t('dashboard_welcome', 'أهلاً وسهلاً')}
                             </p>
-                            <h1 className="text-2xl md:text-3xl font-bold">
+                            <h1 className={`${familyTrees.length > 0 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-bold`}>
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                {user?.email?.split('@')[0] || t('dashboard_user', 'صديقي العزيز')}
+                                {userProfile?.first_name ? 
+                                  `${userProfile.first_name} ${userProfile.last_name || ''}`.trim() :
+                                  user?.email?.split('@')[0] || t('dashboard_user', 'صديقي العزيز')
+                                }
                               </span>
                             </h1>
                           </div>
@@ -186,12 +207,11 @@ const Dashboard = () => {
                               }
                             </span>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-300">
-                            {familyTrees.length === 0 
-                              ? t('no_trees_desc', 'ابدأ رحلتك في بناء إرثك العائلي الرقمي')
-                              : t('trees_count_desc', 'استمر في توثيق وتطوير تاريخ عائلتك')
-                            }
-                          </p>
+                          {familyTrees.length === 0 && (
+                            <p className="text-gray-600 dark:text-gray-300">
+                              {t('no_trees_desc', 'ابدأ رحلتك في بناء إرثك العائلي الرقمي')}
+                            </p>
+                          )}
                         </div>
 
                         {/* Right: Badge & Action */}
