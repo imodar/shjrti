@@ -266,7 +266,7 @@ export const GlobalHeader = () => {
                   </DropdownMenuTrigger>
                   
                   <DropdownMenuContent 
-                    className="w-40 mt-2 bg-gray-900/95 backdrop-blur-xl border-2 border-amber-400/30 shadow-2xl rounded-xl p-2" 
+                    className="w-40 mt-2 bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900 backdrop-blur-xl shadow-2xl rounded-xl p-2" 
                     align="end"
                     sideOffset={8}
                   >
