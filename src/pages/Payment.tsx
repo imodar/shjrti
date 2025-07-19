@@ -275,79 +275,129 @@ const Payment = () => {
         {/* Payment card with plan-selection styling */}
         <div className="max-w-2xl mx-auto">
           <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 shadow-xl transition-all duration-500 hover:shadow-2xl">
-            <CardHeader className="text-center pb-6">
+            <CardHeader className="text-center pb-4">
               {/* Icon with plan-selection-style gradient */}
-              <div className="relative mb-4">
+              <div className="relative mb-3">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30"></div>
-                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl">
-                  <CreditCard className="h-8 w-8 text-white" />
+                <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl">
+                  <CreditCard className="h-6 w-6 text-white" />
                 </div>
               </div>
               
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+              <CardTitle className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                 {currentLanguage === 'ar' ? 'تأكيد عملية الدفع' : 'Payment Confirmation'}
               </CardTitle>
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {/* Invoice Details with plan-selection styling */}
-              <div className="bg-gradient-to-br from-emerald-50/50 via-white/50 to-teal-50/50 dark:from-emerald-950/20 dark:via-gray-800/50 dark:to-teal-950/20 rounded-xl p-6 border border-emerald-200/30 dark:border-emerald-700/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                    <Receipt className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-semibold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    {currentLanguage === 'ar' ? 'تفاصيل الفاتورة' : 'Invoice Details'}
-                  </span>
-                </div>
+              {/* Main payment layout - split into left (summary) and right (payment methods) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between items-center py-2 border-b border-emerald-200/30 dark:border-emerald-700/30">
-                    <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'رقم الفاتورة:' : 'Invoice Number:'}</span>
-                    <span className="font-mono font-semibold">{invoice.invoice_number}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-emerald-200/30 dark:border-emerald-700/30">
-                    <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'الخطة:' : 'Plan:'}</span>
-                    <span className="font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{getLocalizedValue(package_.name)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-emerald-200/30 dark:border-emerald-700/30">
-                    <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'المبلغ:' : 'Amount:'}</span>
-                    <span className="font-bold text-xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{formatPrice(invoice.amount)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-emerald-200/30 dark:border-emerald-700/30">
-                    <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'تاريخ الاستحقاق:' : 'Due Date:'}</span>
-                    <span className="font-semibold">{new Date(invoice.due_date).toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US')}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'الحالة:' : 'Status:'}</span>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-orange-500" />
-                      <span className="text-orange-600 font-semibold">
-                        {currentLanguage === 'ar' ? 'في انتظار الدفع' : 'Pending Payment'}
+                {/* Left Side - Compact Invoice Summary */}
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-br from-emerald-50/50 via-white/50 to-teal-50/50 dark:from-emerald-950/20 dark:via-gray-800/50 dark:to-teal-950/20 rounded-xl p-4 border border-emerald-200/30 dark:border-emerald-700/30">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                        <Receipt className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                        {currentLanguage === 'ar' ? 'ملخص الطلب' : 'Order Summary'}
                       </span>
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'الخطة' : 'Plan'}</span>
+                        <span className="font-semibold">{getLocalizedValue(package_.name)}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600 dark:text-gray-300">{currentLanguage === 'ar' ? 'الفاتورة' : 'Invoice'}</span>
+                        <span className="font-mono text-xs">{invoice.invoice_number}</span>
+                      </div>
+                      
+                      <div className="border-t border-emerald-200/30 dark:border-emerald-700/30 pt-2 mt-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold">{currentLanguage === 'ar' ? 'المجموع' : 'Total'}</span>
+                          <span className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{formatPrice(invoice.amount)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-xs text-orange-600">
+                        <Clock className="h-3 w-3" />
+                        <span>{currentLanguage === 'ar' ? 'في انتظار الدفع' : 'Pending Payment'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment Note */}
+                  <div className="bg-gradient-to-br from-blue-50/70 via-white/50 to-indigo-50/70 dark:from-blue-950/20 dark:via-gray-800/50 dark:to-indigo-950/20 border border-blue-200/50 dark:border-blue-700/30 rounded-xl p-3">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-blue-800 dark:text-blue-200 text-xs leading-relaxed">
+                        {currentLanguage === 'ar' 
+                          ? 'سيتم تفعيل اشتراكك فور إتمام الدفع بنجاح'
+                          : 'Your subscription will be activated immediately after successful payment'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side - Payment Methods */}
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-br from-gray-50/50 via-white/50 to-slate-50/50 dark:from-gray-950/20 dark:via-gray-800/50 dark:to-slate-950/20 rounded-xl p-4 border border-gray-200/30 dark:border-gray-700/30">
+                    <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-gray-600" />
+                      {currentLanguage === 'ar' ? 'طرق الدفع' : 'Payment Methods'}
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {/* Credit Cards */}
+                      <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/30 dark:border-gray-600/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors cursor-pointer">
+                        <div className="flex gap-2">
+                          {/* Visa */}
+                          <div className="w-8 h-5 bg-blue-600 rounded flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">VISA</span>
+                          </div>
+                          {/* Mastercard */}
+                          <div className="w-8 h-5 bg-gradient-to-r from-red-500 to-orange-500 rounded flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">MC</span>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">{currentLanguage === 'ar' ? 'بطاقة ائتمان' : 'Credit Card'}</span>
+                      </div>
+
+                      {/* PayPal */}
+                      <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/30 dark:border-gray-600/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors cursor-pointer">
+                        <div className="w-8 h-5 bg-blue-500 rounded flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">PP</span>
+                        </div>
+                        <span className="text-sm font-medium">PayPal</span>
+                      </div>
+
+                      {/* Apple Pay */}
+                      <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/30 dark:border-gray-600/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors cursor-pointer">
+                        <div className="w-8 h-5 bg-black rounded flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">🍎</span>
+                        </div>
+                        <span className="text-sm font-medium">Apple Pay</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 p-2 bg-green-50/50 dark:bg-green-950/20 rounded-lg border border-green-200/30 dark:border-green-700/30">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-green-600" />
+                        <span className="text-xs text-green-700 dark:text-green-300 font-medium">
+                          {currentLanguage === 'ar' ? 'مدفوعات آمنة ومحمية' : 'Secure & Protected Payments'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Note with plan-selection styling */}
-              <div className="bg-gradient-to-br from-blue-50/70 via-white/50 to-indigo-50/70 dark:from-blue-950/20 dark:via-gray-800/50 dark:to-indigo-950/20 border border-blue-200/50 dark:border-blue-700/30 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
-                    {currentLanguage === 'ar' 
-                      ? 'سيتم تفعيل اشتراكك فور إتمام الدفع بنجاح. لن يتم خصم أي رسوم حتى تأكيد الدفع.'
-                      : 'Your subscription will be activated immediately after successful payment. No charges will be made until payment is confirmed.'
-                    }
-                  </p>
-                </div>
-              </div>
-
-              {/* Payment Button with plan-selection styling */}
+              {/* Payment Button */}
               <Button 
                 onClick={simulatePayment}
                 disabled={processing}
@@ -370,7 +420,7 @@ const Payment = () => {
                 )}
               </Button>
 
-              {/* Cancel Button with plan-selection styling */}
+              {/* Cancel Button */}
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/plan-selection')}
