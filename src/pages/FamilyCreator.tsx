@@ -603,30 +603,30 @@ const FamilyCreator = () => {
                             </div>
 
                             {/* Pure Creative Design - No Background */}
-                            <div className="relative max-w-2xl mx-auto text-center space-y-16 py-16">
+                            <div className="relative max-w-xl mx-auto text-center space-y-8 py-8">
                               
                               {/* Creative Icon Section */}
                               <div className="relative group">
                                 {/* Main Icon with Advanced Animation */}
-                                <div className="relative mx-auto w-32 h-32">
+                                <div className="relative mx-auto w-20 h-20">
                                   {/* Orbiting Rings */}
                                   <div className="absolute inset-0 border-2 border-emerald-300/20 rounded-full animate-spin-slow"></div>
-                                  <div className="absolute inset-4 border border-teal-300/30 rounded-full animate-reverse-spin"></div>
-                                  <div className="absolute inset-8 border border-amber-300/20 rounded-full animate-pulse"></div>
+                                  <div className="absolute inset-3 border border-teal-300/30 rounded-full animate-reverse-spin"></div>
+                                  <div className="absolute inset-6 border border-amber-300/20 rounded-full animate-pulse"></div>
                                   
                                   {/* Central Icon */}
-                                  <div className="absolute inset-10 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-all duration-700 group-hover:rotate-12">
-                                    <TreePine className="h-12 w-12 text-white drop-shadow-xl" />
+                                  <div className="absolute inset-7 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-all duration-700 group-hover:rotate-12">
+                                    <TreePine className="h-6 w-6 text-white drop-shadow-xl" />
                                   </div>
                                   
                                   {/* Glowing Effect */}
-                                  <div className="absolute inset-10 bg-gradient-to-br from-emerald-400/40 via-teal-400/40 to-amber-400/40 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-all duration-700"></div>
+                                  <div className="absolute inset-7 bg-gradient-to-br from-emerald-400/40 via-teal-400/40 to-amber-400/40 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-all duration-700"></div>
                                   
                                   {/* Floating Particles */}
-                                  <div className="absolute top-0 left-1/2 w-3 h-3 bg-emerald-400 rounded-full animate-bounce transform -translate-x-1/2 shadow-lg"></div>
-                                  <div className="absolute bottom-0 left-1/2 w-2.5 h-2.5 bg-teal-400 rounded-full animate-bounce delay-500 transform -translate-x-1/2 shadow-lg"></div>
-                                  <div className="absolute left-0 top-1/2 w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-1000 transform -translate-y-1/2 shadow-lg"></div>
-                                  <div className="absolute right-0 top-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-bounce delay-300 transform -translate-y-1/2 shadow-lg"></div>
+                                  <div className="absolute top-0 left-1/2 w-2 h-2 bg-emerald-400 rounded-full animate-bounce transform -translate-x-1/2 shadow-lg"></div>
+                                  <div className="absolute bottom-0 left-1/2 w-1.5 h-1.5 bg-teal-400 rounded-full animate-bounce delay-500 transform -translate-x-1/2 shadow-lg"></div>
+                                  <div className="absolute left-0 top-1/2 w-1 h-1 bg-amber-400 rounded-full animate-bounce delay-1000 transform -translate-y-1/2 shadow-lg"></div>
+                                  <div className="absolute right-0 top-1/2 w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce delay-300 transform -translate-y-1/2 shadow-lg"></div>
                                 </div>
                                 
                                 {/* Magical Sparkles */}
@@ -639,10 +639,10 @@ const FamilyCreator = () => {
                               </div>
 
                               {/* Elegant Typography Section */}
-                              <div className="space-y-8">
+                              <div className="space-y-4">
                                 <div className="space-y-6">
                                   {/* Main Title */}
-                                  <h3 className="text-6xl md:text-7xl font-bold leading-none">
+                                  <h3 className="text-3xl md:text-4xl font-bold leading-none">
                                     <span className="block bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent drop-shadow-sm">
                                       رحلة الذكريات
                                     </span>
@@ -650,7 +650,7 @@ const FamilyCreator = () => {
                                   
                                   {/* Subtitle */}
                                   <div className="relative">
-                                    <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 font-light leading-relaxed max-w-3xl mx-auto">
+                                    <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 font-light leading-relaxed max-w-2xl mx-auto">
                                       ابدأ في كتابة تاريخ عائلتك وصنع إرث يدوم للأبد
                                     </p>
                                     
@@ -669,7 +669,7 @@ const FamilyCreator = () => {
                               </div>
 
                               {/* Creative Feature Cards */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {[
                                   { 
                                     icon: Heart, 
@@ -697,19 +697,19 @@ const FamilyCreator = () => {
                                     {/* Floating Card */}
                                     <div className="relative transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
                                       {/* Card Container */}
-                                      <div className={`relative bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 dark:from-${item.color}-900/20 dark:to-${item.color}-800/20 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-all duration-500 border border-${item.color}-200/50 dark:border-${item.color}-300/20`}>
+                                      <div className={`relative bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 dark:from-${item.color}-900/20 dark:to-${item.color}-800/20 rounded-2xl p-4 shadow-lg group-hover:shadow-2xl transition-all duration-500 border border-${item.color}-200/50 dark:border-${item.color}-300/20`}>
                                         
                                         {/* Icon with Glow */}
-                                        <div className="relative mb-6">
-                                          <div className={`mx-auto w-16 h-16 bg-gradient-to-br from-${item.color}-400 to-${item.color}-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform duration-500`}>
-                                            <item.icon className="h-8 w-8 text-white drop-shadow-lg" />
+                                        <div className="relative mb-3">
+                                          <div className={`mx-auto w-12 h-12 bg-gradient-to-br from-${item.color}-400 to-${item.color}-600 rounded-xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform duration-500`}>
+                                            <item.icon className="h-6 w-6 text-white drop-shadow-lg" />
                                           </div>
                                           {/* Glow Effect */}
-                                          <div className={`absolute inset-0 bg-${item.color}-400/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500`}></div>
+                                          <div className={`absolute inset-0 bg-${item.color}-400/30 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500`}></div>
                                         </div>
                                         
                                         {/* Text Content */}
-                                        <div className="space-y-3">
+                                        <div className="space-y-2">
                                           <h4 className={`font-bold text-${item.color}-700 dark:text-${item.color}-300 text-xl leading-tight`}>
                                             {item.title}
                                           </h4>
