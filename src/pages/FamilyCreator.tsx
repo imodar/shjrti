@@ -419,45 +419,83 @@ const FamilyCreator = () => {
         {/* Main Content */}
         <div className="container mx-auto px-4 py-8 relative z-10">
           {/* Hero Section with Dashboard Style */}
-          {/* Simple Header Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                إنشاء شجرة العائلة
-              </span>
-            </h1>
+          {/* Header Section with Dashboard Style */}
+          <div className="mb-8">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-3xl blur-3xl"></div>
             
-            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-              ابدأ رحلتك في بناء تاريخ عائلتك وحفظ ذكرياتك للأجيال القادمة
-            </p>
-            
-            {/* Progress Indicator */}
-            <div className="flex items-center justify-center gap-4">
-              <div className="flex flex-col items-center">
-                <div className={`relative w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-500 ${
-                  currentStep >= 1 
-                    ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg' 
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-                }`}>
-                  1
+            {/* Main Container */}
+            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10">
+              <div className="flex items-center justify-between gap-8">
+                {/* Right: Icon and Status */}
+                <div className="flex items-center gap-4">
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur opacity-50 group-hover:opacity-80 transition-all duration-500 animate-pulse"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30 transform hover:scale-110 transition-all duration-300">
+                      <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
+                    </div>
+                    {/* Status Indicator */}
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Text Content */}
+                  <div className="text-right">
+                    <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        إنشاء شجرة العائلة
+                      </span>
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                      ابدأ رحلتك في بناء تاريخ عائلتك وحفظ ذكرياتك للأجيال القادمة
+                    </p>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">معلومات العائلة</span>
-              </div>
-              
-              <div className={`w-16 h-1 rounded-full transition-all duration-700 ${
-                currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-200 dark:bg-gray-700'
-              }`}></div>
-              
-              <div className="flex flex-col items-center">
-                <div className={`relative w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-500 ${
-                  currentStep >= 2 
-                    ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg' 
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-                }`}>
-                  2
+
+                {/* Left: Progress Steps */}
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
+                      currentStep >= 1 
+                        ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105' 
+                        : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border border-gray-200/50'
+                    }`}>
+                      <span className="relative z-10">1</span>
+                      {currentStep >= 1 && (
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur opacity-40 animate-pulse"></div>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">معلومات العائلة</span>
+                  </div>
+                  
+                  <div className={`w-8 h-2 rounded-full transition-all duration-700 ${
+                    currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-200/50 dark:bg-gray-700/50'
+                  }`}>
+                    {currentStep >= 2 && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur opacity-60 animate-pulse"></div>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
+                      currentStep >= 2 
+                        ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105' 
+                        : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border border-gray-200/50'
+                    }`}>
+                      <span className="relative z-10">2</span>
+                      {currentStep >= 2 && (
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur opacity-40 animate-pulse"></div>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">بيانات المؤسس</span>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">بيانات المؤسس</span>
               </div>
+
+              {/* Decorative Elements */}
+              <div className="absolute top-2 right-2 w-4 h-4 border-r border-t border-emerald-300/40 dark:border-emerald-700/40 rounded-tr"></div>
+              <div className="absolute bottom-2 left-2 w-4 h-4 border-l border-b border-emerald-300/40 dark:border-emerald-700/40 rounded-bl"></div>
             </div>
           </div>
 
