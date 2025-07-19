@@ -1830,14 +1830,7 @@ const FamilyBuilder = () => {
                                    </span>
                                   <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
                                 </div>
-                              ) : (
-                                <>
-                                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
-                                    <Crown className="h-4 w-4 text-white" />
-                                  </div>
-                                  <span className="font-bold text-primary text-lg">المؤسس</span>
-                                </>
-                              )}
+                              ) : null}
                         </div>
 
                         {/* Status Card with Animation */}
