@@ -498,7 +498,6 @@ export type Database = {
       packages: {
         Row: {
           created_at: string
-          currency: string | null
           description: string | null
           display_order: number | null
           features: Json | null
@@ -508,14 +507,12 @@ export type Database = {
           max_family_members: number | null
           max_family_trees: number | null
           name: string
-          price: number
           price_sar: number | null
           price_usd: number | null
           updated_at: string
         }
         Insert: {
           created_at?: string
-          currency?: string | null
           description?: string | null
           display_order?: number | null
           features?: Json | null
@@ -525,14 +522,12 @@ export type Database = {
           max_family_members?: number | null
           max_family_trees?: number | null
           name: string
-          price: number
           price_sar?: number | null
           price_usd?: number | null
           updated_at?: string
         }
         Update: {
           created_at?: string
-          currency?: string | null
           description?: string | null
           display_order?: number | null
           features?: Json | null
@@ -542,7 +537,6 @@ export type Database = {
           max_family_members?: number | null
           max_family_trees?: number | null
           name?: string
-          price?: number
           price_sar?: number | null
           price_usd?: number | null
           updated_at?: string
