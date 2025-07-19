@@ -725,8 +725,6 @@ const Auth = () => {
         </div>
       </div>
       
-      {/* Luxury Footer */}
-      <LuxuryFooter />
     </div>
   );
 };
