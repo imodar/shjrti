@@ -16,7 +16,7 @@ import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 export const GlobalHeader = () => {
   const { user, signOut } = useAuth();
-  const { t, direction } = useLanguage();
+  const { t, direction, setLanguage } = useLanguage();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -268,7 +268,10 @@ export const GlobalHeader = () => {
                     align="end"
                     sideOffset={8}
                   >
-                    <DropdownMenuItem className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30">
+                    <DropdownMenuItem 
+                      className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30"
+                      onClick={() => setLanguage('ar')}
+                    >
                       <div className="flex items-center gap-3 w-full flex-row-reverse justify-start">
                         <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-red-500 flex items-center justify-center text-xs font-bold text-white">
                           ع
@@ -277,7 +280,10 @@ export const GlobalHeader = () => {
                       </div>
                     </DropdownMenuItem>
                     
-                    <DropdownMenuItem className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30">
+                    <DropdownMenuItem 
+                      className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30"
+                      onClick={() => setLanguage('en')}
+                    >
                       <div className="flex items-center gap-3 w-full flex-row-reverse justify-start">
                         <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-red-500 flex items-center justify-center text-xs font-bold text-white">
                           EN
