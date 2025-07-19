@@ -1209,31 +1209,75 @@ const FamilyCreator = () => {
 
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="max-w-md text-center">
-          <DialogHeader>
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-8 w-8 text-white" />
+        <DialogContent className="max-w-lg border-0 bg-gradient-to-br from-emerald-50/90 via-green-50/90 to-teal-50/90 dark:from-emerald-950/90 dark:via-green-950/90 dark:to-teal-950/90 backdrop-blur-xl shadow-2xl">
+          {/* Decorative Header */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500"></div>
+          
+          <DialogHeader className="text-center pb-6 relative">
+            {/* Floating Success Animation */}
+            <div className="absolute -top-2 -right-2 w-6 h-6 animate-bounce">
+              <CheckCircle className="h-full w-full text-emerald-400 opacity-60" />
+            </div>
+            <div className="absolute -top-1 -left-3 w-4 h-4 animate-pulse">
+              <CheckCircle className="h-full w-full text-green-400 opacity-40" />
+            </div>
+            
+            {/* Success Icon with Animation */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/20 dark:border-gray-700/20 animate-scale-in">
+                  <CheckCircle className="h-10 w-10 text-white" />
+                </div>
+                {/* Ripple Effect */}
+                <div className="absolute inset-0 w-20 h-20 bg-emerald-400/30 rounded-full animate-ping"></div>
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center animate-bounce">
+                  <span className="text-white text-sm font-bold">✓</span>
+                </div>
               </div>
             </div>
-            <DialogTitle className="text-2xl">تم إنشاء العائلة بنجاح!</DialogTitle>
-            <DialogDescription className="text-base mt-2">
+            
+            <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent animate-fade-in">
+              🎉 تم إنشاء العائلة بنجاح!
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-300 mt-4 text-lg animate-fade-in">
               تم حفظ بيانات شجرة العائلة بنجاح في قاعدة البيانات
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-3 mt-6">
+          
+          {/* Main Question Section */}
+          <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30 mb-6">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-bold text-foreground">
+                هل ترغب بإضافة أفراد للأسرة الآن ام تخطي هذه الخطوة؟
+              </h3>
+              
+              <p className="text-sm text-muted-foreground bg-blue-50/50 dark:bg-blue-950/20 rounded-lg p-3 border border-blue-200/30 dark:border-blue-700/30">
+                علماً أنه يمكنك إضافتهم لاحقاً من خلال لوحة التحكم
+              </p>
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <DialogFooter className="flex gap-4 pt-4">
             <Button
               onClick={handleSkipTodashboard}
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-12 border-2 border-gray-300/50 hover:border-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all duration-300 text-lg"
             >
-              إنهاء
+              تخطي الآن
             </Button>
             <Button
               onClick={handleAddMoreMembers}
-              className="flex-1 bg-gradient-to-r from-primary to-secondary"
+              className="flex-1 h-12 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg text-lg font-semibold"
             >
-              إضافة المزيد
+              <Users className="h-5 w-5 mr-2" />
+              إضافة أفراد الآن
             </Button>
           </DialogFooter>
         </DialogContent>
