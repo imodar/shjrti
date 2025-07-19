@@ -440,7 +440,7 @@ const FamilyCreator = () => {
                 {/* Right Side: Icon + Title + Description */}
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
                       <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
                     </div>
                     {/* Status Indicator */}
@@ -452,7 +452,7 @@ const FamilyCreator = () => {
                   {/* Text Content */}
                   <div className="text-right">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                      <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                         إنشاء شجرة العائلة
                       </span>
                     </h1>
@@ -467,7 +467,7 @@ const FamilyCreator = () => {
                   <div className="flex flex-col items-center">
                     <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
                       currentStep >= 1 
-                        ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white shadow-lg scale-105' 
+                        ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105'
                         : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border border-gray-200/50'
                     }`}>
                       <span className="relative z-10">1</span>
@@ -476,13 +476,13 @@ const FamilyCreator = () => {
                   </div>
                   
                   <div className={`w-8 h-2 rounded-full transition-all duration-700 ${
-                    currentStep >= 2 ? 'bg-gradient-to-r from-blue-500 to-purple-500' : 'bg-gray-200/50 dark:bg-gray-700/50'
+                    currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-200/50 dark:bg-gray-700/50'
                   }`}></div>
                   
                   <div className="flex flex-col items-center">
                     <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
                       currentStep >= 2 
-                        ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white shadow-lg scale-105' 
+                        ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105' 
                         : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border border-gray-200/50'
                     }`}>
                       <span className="relative z-10">2</span>
