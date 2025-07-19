@@ -963,14 +963,15 @@ export default function EnhancedAdminPanel() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
-                    <Label className="font-medium text-gray-700">اللغة الافتراضية</Label>
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    <Label className="font-medium text-gray-700 flex-shrink-0">اللغة الافتراضية</Label>
+                    <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
                       <Switch
                         checked={editingLanguage.is_default}
                         onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_default: checked})}
+                        className="flex-shrink-0"
                       />
-                      <span className={`text-sm font-medium ${editingLanguage.is_default ? 'text-blue-600' : 'text-gray-500'}`}>
+                      <span className={`text-sm font-medium whitespace-nowrap ${editingLanguage.is_default ? 'text-blue-600' : 'text-gray-500'}`}>
                         {editingLanguage.is_default ? 'افتراضية' : 'عادية'}
                       </span>
                     </div>
