@@ -1663,52 +1663,6 @@ const FamilyBuilder = () => {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-8">
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">إجمالي الأفراد</p>
-                        <p className="text-3xl font-bold text-primary">{familyMembers.length}</p>
-                      </div>
-                      <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Users className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-accent/10 to-secondary/10 border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">الأجيال</p>
-                        <p className="text-3xl font-bold text-accent">{calculateGenerationCount()}</p>
-                      </div>
-                      <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <TreePine className="h-6 w-6 text-accent" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-secondary/10 to-primary/10 border-0 shadow-xl rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">آخر تحديث</p>
-                        <p className="text-3xl font-bold text-secondary">
-                          {familyData?.updated_at ? new Date(familyData.updated_at).toLocaleDateString('en-GB') : 'غير محدد'}
-                        </p>
-                      </div>
-                      <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Clock className="h-6 w-6 text-secondary" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
 
               {/* Search and Add Section */}
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
