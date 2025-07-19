@@ -599,135 +599,140 @@ const FamilyCreator = () => {
                         </div>
 
                         <div className="relative z-10 h-full flex flex-col justify-center">
-                          {/* Modern Glassmorphism Container */}
-                          <div className="relative max-w-2xl mx-auto p-12">
-                            {/* Background Effects */}
-                            <div className="absolute inset-0 backdrop-blur-2xl border border-white/20 dark:border-gray-700/20 rounded-3xl shadow-2xl"></div>
-                            
-                            
-                            {/* Content */}
-                            <div className="relative text-center space-y-10">
-                              {/* Sophisticated Icon Design */}
-                              <div className="relative mx-auto w-fit group">
-                                {/* Outer Ring */}
-                                <div className="absolute inset-0 w-40 h-40 mx-auto">
-                                  <div className="w-full h-full border-2 border-emerald-300/30 dark:border-emerald-400/30 rounded-full animate-spin-slow"></div>
-                                  <div className="absolute inset-2 border border-teal-300/20 dark:border-teal-400/20 rounded-full animate-reverse-spin"></div>
-                                </div>
-                                
-                                {/* Main Icon Container */}
-                                <div className="relative w-28 h-28 mx-auto">
-                                   {/* Neutral Background */}
-                                   <div className="absolute inset-0 bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700 rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-500"></div>
-                                   {/* Glass Effect */}
-                                   <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"></div>
-                                   {/* Icon */}
-                                   <div className="absolute inset-0 flex items-center justify-center">
-                                     <TreePine className="h-14 w-14 text-white drop-shadow-2xl" />
-                                   </div>
-                                   {/* Ambient Glow */}
-                                   <div className="absolute inset-0 bg-gradient-to-br from-gray-400/50 to-gray-500/50 rounded-2xl blur-2xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
-                                </div>
-                                
-                                {/* Orbiting Elements */}
-                                <div className="absolute inset-0 w-40 h-40 mx-auto">
-                                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-400 rounded-full shadow-lg animate-pulse"></div>
-                                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-500 rounded-full shadow-lg animate-pulse delay-700"></div>
-                                   <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-gray-600 rounded-full shadow-lg animate-pulse delay-1000"></div>
-                                   <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-gray-400 rounded-full shadow-lg animate-pulse delay-300"></div>
-                                </div>
-                              </div>
+                          {/* Ultra Modern Creative Container */}
+                          <div className="relative max-w-3xl mx-auto">
+                            {/* Floating Geometric Background */}
+                            <div className="absolute inset-0 overflow-hidden">
+                              {/* Hexagonal Grid Pattern */}
+                              <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/10 transform rotate-45 rounded-lg"></div>
+                              <div className="absolute top-32 right-16 w-16 h-16 border border-white/20 transform rotate-12 rounded-full"></div>
+                              <div className="absolute bottom-20 left-20 w-12 h-12 border border-white/15 transform -rotate-45 rounded-lg"></div>
+                              <div className="absolute bottom-40 right-12 w-8 h-8 bg-white/5 transform rotate-60 rounded-lg"></div>
                               
-                              {/* Typography - Modern Gradient Headlines */}
-                              <div className="space-y-6">
-                                <div className="text-center">
-                                  <h3 className="text-5xl md:text-6xl font-bold mb-4">
-                                     <span className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 bg-clip-text text-transparent drop-shadow-sm">
-                                       رحلة الإبداع
-                                     </span>
-                                   </h3>
-                                   <div className="relative">
-                                     <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 font-light leading-relaxed">
-                                       تبدأ بحلم واحد يصبح إرثاً خالداً
-                                     </p>
-                                     <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-700 rounded-full"></div>
+                              {/* Flowing Lines */}
+                              <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 400 600">
+                                <path d="M50,100 Q200,50 350,150 T400,300 Q200,350 50,250 T0,100" 
+                                      stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+                                <path d="M0,200 Q150,100 300,250 T450,400 Q250,450 100,350 T0,200" 
+                                      stroke="white" strokeWidth="0.5" fill="none" opacity="0.2"/>
+                              </svg>
+                            </div>
+
+                            {/* Main Content Grid */}
+                            <div className="relative grid grid-rows-3 gap-8 p-8">
+                              
+                              {/* Header Section - Minimalist & Bold */}
+                              <div className="text-center space-y-6">
+                                {/* Floating Icon with Orbit Animation */}
+                                <div className="relative mx-auto w-24 h-24 group">
+                                  {/* Orbital Rings */}
+                                  <div className="absolute inset-0 border border-white/20 rounded-full animate-spin-slow"></div>
+                                  <div className="absolute inset-2 border border-white/10 rounded-full animate-reverse-spin"></div>
+                                  
+                                  {/* Central Icon */}
+                                  <div className="absolute inset-4 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-xl rounded-full border border-white/30 flex items-center justify-center group-hover:scale-110 transition-all duration-500">
+                                    <TreePine className="h-8 w-8 text-white drop-shadow-2xl" />
                                   </div>
+                                  
+                                  {/* Glowing Dots */}
+                                  <div className="absolute top-0 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse transform -translate-x-1/2"></div>
+                                  <div className="absolute bottom-0 left-1/2 w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse delay-500 transform -translate-x-1/2"></div>
+                                </div>
+
+                                {/* Typography - Ultra Modern */}
+                                <div className="space-y-4">
+                                  <h3 className="text-4xl md:text-5xl font-black leading-none tracking-tight">
+                                    <span className="block text-white/90">رحلة</span>
+                                    <span className="block text-white/60 text-3xl md:text-4xl font-light">الإبداع</span>
+                                  </h3>
+                                  <div className="w-16 h-0.5 bg-white/40 mx-auto"></div>
+                                  <p className="text-lg text-white/70 font-light max-w-sm mx-auto leading-relaxed">
+                                    كل إرث عظيم يبدأ بخطوة واحدة جريئة
+                                  </p>
                                 </div>
                               </div>
 
-                              {/* Three Feature Cards in a Row */}
-                              <div className="grid grid-cols-3 gap-4">
+                              {/* Features Grid - Card System */}
+                              <div className="grid grid-cols-3 gap-6">
                                 {[
                                   { 
                                     icon: Heart, 
-                                    title: "ذكريات خالدة", 
-                                    desc: "احفظ قصص عائلتك للأبد"
+                                    title: "ذكريات", 
+                                    subtitle: "خالدة",
+                                    number: "01"
                                   },
                                   { 
                                     icon: Users, 
-                                    title: "روابط قوية", 
-                                    desc: "اربط بين الأجيال بطريقة مبتكرة"
+                                    title: "روابط", 
+                                    subtitle: "قوية",
+                                    number: "02"
                                   },
                                   { 
                                     icon: Star, 
-                                    title: "إرث مميز", 
-                                    desc: "اترك بصمة دائمة في التاريخ"
+                                    title: "إرث", 
+                                    subtitle: "مميز",
+                                    number: "03"
                                   }
                                 ].map((item, index) => (
-                                  <div key={index} className="group relative transform hover:scale-105 transition-all duration-500">
-                                    {/* Rectangular Card */}
-                                    <div className="relative bg-white/10 dark:bg-gray-800/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-lg p-4 shadow-2xl hover:shadow-3xl transition-all duration-500">
+                                  <div key={index} className="group relative">
+                                    {/* Card Container */}
+                                    <div className="relative h-32 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-500 hover:scale-105">
+                                      {/* Number Badge */}
+                                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 flex items-center justify-center">
+                                        <span className="text-xs font-bold text-white">{item.number}</span>
+                                      </div>
+                                      
                                       {/* Content */}
-                                      <div className="text-center space-y-3">
+                                      <div className="flex flex-col h-full justify-between">
                                         {/* Icon */}
-                                        <div className="mx-auto w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg flex items-center justify-center shadow-lg group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
-                                          <item.icon className="h-6 w-6 text-white drop-shadow-lg" />
+                                        <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                                          <item.icon className="h-4 w-4 text-white" />
                                         </div>
                                         
-                                        {/* Text Content */}
-                                        <div className="space-y-1">
-                                          <h4 className="font-bold text-gray-800 dark:text-white text-lg leading-tight">{item.title}</h4>
-                                          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{item.desc}</p>
+                                        {/* Text */}
+                                        <div className="text-right">
+                                          <div className="text-white font-bold text-sm leading-tight">{item.title}</div>
+                                          <div className="text-white/60 text-xs">{item.subtitle}</div>
                                         </div>
                                       </div>
+                                      
+                                      {/* Hover Effect Line */}
+                                      <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                                     </div>
                                   </div>
                                 ))}
                               </div>
 
-                              {/* Call to Action - Premium Design */}
-                              <div className="relative mt-12">
-                                {/* Background Effects */}
-                                <div className="absolute inset-0 backdrop-blur-2xl border border-white/20 dark:border-gray-700/20 rounded-3xl shadow-2xl"></div>
-                                
-                                {/* Content */}
-                                <div className="relative p-8 text-center space-y-6">
-                                  {/* Decorative Elements */}
-                                  <div className="flex justify-center">
-                                    <div className="relative">
-                                       <div className="w-24 h-2 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-700 rounded-full shadow-lg"></div>
-                                       <div className="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 rounded-full blur-sm opacity-60"></div>
+                              {/* Call to Action - Futuristic */}
+                              <div className="text-center space-y-6">
+                                {/* Status Indicator */}
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                  <span className="text-white/60 text-sm font-medium">جاهز للبدء</span>
+                                </div>
+
+                                {/* Main CTA */}
+                                <div className="relative">
+                                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300">
+                                    <div className="space-y-3">
+                                      <h4 className="text-xl font-bold text-white">
+                                        ابدأ رحلتك الآن
+                                      </h4>
+                                      <p className="text-white/70 text-sm">
+                                        انضم لآلاف العائلات الذين اختاروا حفظ تاريخهم
+                                      </p>
+                                      
+                                      {/* Progress Dots */}
+                                      <div className="flex justify-center gap-2 pt-2">
+                                        <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-pulse"></div>
+                                        <div className="w-1.5 h-1.5 bg-white/60 rounded-full animate-pulse delay-200"></div>
+                                        <div className="w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse delay-400"></div>
+                                      </div>
                                     </div>
                                   </div>
                                   
-                                  {/* Main Text */}
-                                  <div className="space-y-4">
-                                    <h4 className="text-3xl font-bold">
-                                       <span className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 bg-clip-text text-transparent">
-                                        🌟 ابدأ رحلتك الإبداعية 🌟
-                                      </span>
-                                    </h4>
-                                    <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto">
-                                      انضم لآلاف العائلات التي حفظت تاريخها وأنشأت إرثاً خالداً
-                                    </p>
-                                  </div>
-                                  
-                                  {/* Animated Indicators */}
-                                  <div className="flex justify-center gap-3">
-                                     <div className="w-3 h-3 bg-gray-500 rounded-full animate-pulse shadow-lg"></div>
-                                     <div className="w-3 h-3 bg-gray-600 rounded-full animate-pulse delay-300 shadow-lg"></div>
-                                     <div className="w-3 h-3 bg-gray-700 rounded-full animate-pulse delay-600 shadow-lg"></div>
-                                  </div>
+                                  {/* Glow Effect */}
+                                  <div className="absolute inset-0 bg-white/5 rounded-2xl blur-xl -z-10"></div>
                                 </div>
                               </div>
                             </div>
