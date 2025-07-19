@@ -242,15 +242,15 @@ const Dashboard = () => {
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
                     
-                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-2xl ${familyTrees.length > 0 ? 'p-3' : 'p-4'} shadow-xl`}>
+                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-2xl ${familyTrees.length > 0 ? 'p-2' : 'p-3'} shadow-xl`}>
                       <div className="flex items-center justify-between gap-8">
                         {/* Left: Avatar & Welcome */}
                         <div className="flex items-center gap-6">
                           {/* User Avatar */}
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                            <div className={`relative ${familyTrees.length > 0 ? 'w-12 h-12' : 'w-16 h-16'} bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30`}>
-                              <span className={`${familyTrees.length > 0 ? 'text-lg' : 'text-xl'} font-bold text-white`}>
+                            <div className={`relative ${familyTrees.length > 0 ? 'w-10 h-10' : 'w-14 h-14'} bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30`}>
+                              <span className={`${familyTrees.length > 0 ? 'text-base' : 'text-lg'} font-bold text-white`}>
                                 {userProfile?.first_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                               </span>
                             </div>
@@ -262,7 +262,7 @@ const Dashboard = () => {
                           
                           {/* Welcome Text */}
                           <div className="text-right">
-                            <h1 className={`${familyTrees.length > 0 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-bold`}>
+                            <h1 className={`${familyTrees.length > 0 ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'} font-bold`}>
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                 أهلاً {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
                               </span>
