@@ -428,77 +428,112 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  {/* Modern Trees Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {/* Creative Trees Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                     {familyTrees.map((tree, index) => (
-                      <Card key={tree.id} className="group relative overflow-hidden bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-3xl">
-                        {/* Gradient Background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-emerald-50/50 to-teal-50/50 dark:from-gray-800/80 dark:via-emerald-950/50 dark:to-teal-950/50"></div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-teal-500/0 to-amber-500/0 group-hover:from-emerald-500/10 group-hover:via-teal-500/10 group-hover:to-amber-500/10 transition-all duration-500"></div>
+                      <div key={tree.id} className="group relative">
+                        {/* Floating Background Effect */}
+                        <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700 animate-pulse"></div>
                         
-                        {/* Content */}
-                        <div className="relative">
-                          <CardHeader className="pb-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-center gap-4">
-                                <div className="relative">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur-md opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-                                  <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
-                                    <TreePine className="h-7 w-7 text-white" />
-                                  </div>
-                                </div>
-                                <div>
-                                  <CardTitle className="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 mb-1">
-                                    {tree.name}
-                                  </CardTitle>
-                                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <Calendar className="h-3.5 w-3.5" />
-                                    <span>{new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
-                                  </div>
+                        <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-3 rounded-3xl">
+                          {/* Dynamic Gradient Background */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-gray-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          
+                          {/* Decorative Corner Elements */}
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-400/20 to-transparent rounded-bl-3xl"></div>
+                          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-teal-400/20 to-transparent rounded-tr-3xl"></div>
+                          
+                          <CardHeader className="relative pb-6 pt-8">
+                            <div className="flex items-start justify-between mb-4">
+                              {/* Tree Icon with Animation */}
+                              <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-md opacity-50 group-hover:opacity-70 transition-opacity duration-300 animate-pulse"></div>
+                                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                                  <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
+                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full opacity-80 animate-ping"></div>
                                 </div>
                               </div>
-                              <Badge className="bg-emerald-100/80 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border-0 px-3 py-1 rounded-full text-xs font-medium">
-                                {tree.members_count} {t('member', 'فرد')}
-                              </Badge>
+                              
+                              {/* Member Count Badge */}
+                              <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-sm opacity-60"></div>
+                                <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-4 py-2 rounded-full text-sm font-bold shadow-xl backdrop-blur-sm">
+                                  <Users className="h-3.5 w-3.5 ml-1" />
+                                  {tree.members_count} فرد
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            {/* Tree Title */}
+                            <div className="relative">
+                              <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 mb-3 leading-tight">
+                                {tree.name}
+                              </CardTitle>
+                              
+                              {/* Creation Date */}
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <Calendar className="h-4 w-4" />
+                                <span className="font-medium">تم الإنشاء في {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
+                              </div>
                             </div>
                           </CardHeader>
                           
-                          <CardContent className="pt-0">
-                            {/* Last Update */}
-                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-6 bg-gray-50/50 dark:bg-gray-700/30 rounded-xl px-3 py-2">
-                              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                              <span className="font-medium">
-                                {t('last_update', 'آخر تحديث')}: {new Date(tree.updated_at).toLocaleDateString('en-GB')}
-                              </span>
+                          <CardContent className="relative pt-0 pb-8">
+                            {/* Stats Row */}
+                            <div className="bg-gradient-to-r from-gray-50/80 to-emerald-50/80 dark:from-gray-700/30 dark:to-emerald-900/30 rounded-2xl p-4 mb-6 backdrop-blur-sm">
+                              <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                                  <Star className="h-4 w-4 fill-current" />
+                                  <span className="font-semibold">آخر تحديث</span>
+                                </div>
+                                <span className="text-gray-600 dark:text-gray-300 font-medium">
+                                  {new Date(tree.updated_at).toLocaleDateString('en-GB')}
+                                </span>
+                              </div>
                             </div>
                             
-                            {/* Action Buttons */}
-                            <div className="grid grid-cols-3 gap-2">
-                              <Link to={`/family-tree-view?family=${tree.id}`} className="group/btn">
-                                <Button variant="outline" size="sm" className="w-full h-11 border-emerald-200/60 dark:border-emerald-700/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300 rounded-xl">
-                                  <Eye className="h-4 w-4 mb-1 group-hover/btn:scale-110 transition-transform duration-200" />
-                                  <span className="text-xs">{t('view', 'عرض')}</span>
-                                </Button>
-                              </Link>
-                              <Link to={`/family-overview?family=${tree.id}`} className="group/btn">
-                                <Button variant="outline" size="sm" className="w-full h-11 border-emerald-200/60 dark:border-emerald-700/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300 rounded-xl">
-                                  <Edit className="h-4 w-4 mb-1 group-hover/btn:scale-110 transition-transform duration-200" />
-                                  <span className="text-xs">{t('manage', 'إدارة')}</span>
-                                </Button>
-                              </Link>
+                            {/* Action Buttons - Creative Layout */}
+                            <div className="space-y-3">
+                              {/* Primary Actions */}
+                              <div className="grid grid-cols-2 gap-3">
+                                <Link to={`/family-tree-view?family=${tree.id}`} className="group/btn">
+                                  <Button className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
+                                    <Eye className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
+                                    <span className="font-semibold">عرض الشجرة</span>
+                                  </Button>
+                                </Link>
+                                <Link to={`/family-overview?family=${tree.id}`} className="group/btn">
+                                  <Button className="w-full h-12 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
+                                    <Edit className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
+                                    <span className="font-semibold">إدارة</span>
+                                  </Button>
+                                </Link>
+                              </div>
+                              
+                              {/* Secondary Action */}
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="w-full h-11 border-red-200/60 dark:border-red-700/40 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 hover:border-red-300 dark:hover:border-red-600 transition-all duration-300 rounded-xl group/btn"
+                                className="w-full h-10 border-red-200/60 dark:border-red-700/40 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 hover:border-red-300 dark:hover:border-red-600 transition-all duration-300 rounded-xl group/btn backdrop-blur-sm"
                                 onClick={() => handleDeleteTree(tree.id)}
                               >
-                                <Trash2 className="h-4 w-4 mb-1 group-hover/btn:scale-110 transition-transform duration-200" />
-                                <span className="text-xs">{t('delete', 'حذف')}</span>
+                                <Trash2 className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
+                                <span className="text-sm">حذف الشجرة</span>
                               </Button>
                             </div>
                           </CardContent>
-                        </div>
-                      </Card>
+                          
+                          {/* Floating Mini Icons */}
+                          <div className="absolute top-4 left-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+                            <Heart className="h-6 w-6 text-pink-400" />
+                          </div>
+                          <div className="absolute bottom-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+                            <Gem className="h-5 w-5 text-amber-400" />
+                          </div>
+                        </Card>
+                      </div>
                     ))}
                   </div>
                 </div>
