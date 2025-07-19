@@ -438,23 +438,23 @@ const FamilyCreator = () => {
   return (
     <>
       <GlobalHeader />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-950 dark:via-blue-950 dark:to-purple-950 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 relative overflow-hidden">
         {/* Floating Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-20 animate-pulse"></div>
           <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-20 animate-pulse"></div>
         </div>
 
         {/* Floating Animated Icons */}
         <div className="absolute top-32 right-20 animate-pulse">
-          <Heart className="h-10 w-10 text-pink-400 opacity-60" />
+          <Heart className="h-10 w-10 text-green-400 opacity-60" />
         </div>
         <div className="absolute bottom-40 left-20 animate-bounce">
-          <Users className="h-12 w-12 text-blue-400 opacity-40" />
+          <Users className="h-12 w-12 text-emerald-400 opacity-40" />
         </div>
         <div className="absolute top-1/2 left-10 animate-pulse">
-          <Star className="h-8 w-8 text-yellow-400 opacity-60" />
+          <Star className="h-8 w-8 text-green-400 opacity-60" />
         </div>
         
         {/* Main Content */}
@@ -1032,9 +1032,9 @@ const FamilyCreator = () => {
                                            {wife.isAlive ? "على قيد الحياة" : "متوفاة"}
                                          </p>
                                          <p className={`text-xs font-semibold px-2 py-1 rounded-full inline-block ${
-                                           wife.maritalStatus === 'married' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                                           wife.maritalStatus === 'divorced' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
-                                           'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                            wife.maritalStatus === 'married' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                                            wife.maritalStatus === 'divorced' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                                          }`}>
                                            {wife.maritalStatus === 'married' ? 'متزوجة' : 
                                             wife.maritalStatus === 'divorced' ? 'مطلقة' : 'أرملة'}
@@ -1136,9 +1136,9 @@ const FamilyCreator = () => {
 
       {/* Creative Add Wife Modal */}
       <Dialog open={isAddingWife} onOpenChange={setIsAddingWife}>
-        <DialogContent className="max-w-xl border-0 bg-gradient-to-br from-pink-50/90 via-rose-50/90 to-purple-50/90 dark:from-pink-950/90 dark:via-rose-950/90 dark:to-purple-950/90 backdrop-blur-xl shadow-2xl">
+        <DialogContent className="max-w-xl border-0 bg-gradient-to-br from-green-50/90 via-emerald-50/90 to-teal-50/90 dark:from-green-950/90 dark:via-emerald-950/90 dark:to-teal-950/90 backdrop-blur-xl shadow-2xl">
           {/* Decorative Header */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></div>
           
           <DialogHeader className="text-center pb-4 relative">
             {/* Floating Hearts Animation */}
@@ -1152,7 +1152,7 @@ const FamilyCreator = () => {
             {/* Elegant Icon */}
             <div className="flex justify-center mb-4">
               <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/20 dark:border-gray-700/20">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/20 dark:border-gray-700/20">
                   <Heart className="h-8 w-8 text-white" />
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
@@ -1161,7 +1161,7 @@ const FamilyCreator = () => {
               </div>
             </div>
             
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
               إضافة زوجة جديدة
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-300 mt-2">
@@ -1206,7 +1206,7 @@ const FamilyCreator = () => {
                   wifeFormRef.current?.handleSubmit();
                 }
               }}
-              className="flex-1 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
+              className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
             >
               <Heart className="h-4 w-4 mr-2" />
               إضافة الزوجة
@@ -1271,7 +1271,7 @@ const FamilyCreator = () => {
           <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30 mb-6">
             <div className="text-center space-y-4">
               <div className="flex justify-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
                   <Users className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -1280,7 +1280,7 @@ const FamilyCreator = () => {
                 هل ترغب بإضافة أفراد للأسرة الآن ام تخطي هذه الخطوة؟
               </h3>
               
-              <p className="text-sm text-muted-foreground bg-blue-50/50 dark:bg-blue-950/20 rounded-lg p-3 border border-blue-200/30 dark:border-blue-700/30">
+              <p className="text-sm text-muted-foreground bg-green-50/50 dark:bg-green-950/20 rounded-lg p-3 border border-green-200/30 dark:border-green-700/30">
                 علماً أنه يمكنك إضافتهم لاحقاً من خلال لوحة التحكم
               </p>
             </div>
