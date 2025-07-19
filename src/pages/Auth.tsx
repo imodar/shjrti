@@ -122,6 +122,7 @@ const Auth = () => {
           description: error.message,
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
 
@@ -135,13 +136,13 @@ const Auth = () => {
 
       // Show OTP screen
       setShowOTP(true);
+      setIsLoading(false);
     } catch (error: any) {
       toast({
         title: "خطأ",
         description: error.message || "حدث خطأ أثناء إنشاء الحساب",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
