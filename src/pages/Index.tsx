@@ -254,7 +254,7 @@ const Home2 = () => {
             alt={t('memory_section_image_alt', 'حفظ الذكريات')} 
             className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/80 to-amber-900/80"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-secondary/80 backdrop-blur-sm"></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
