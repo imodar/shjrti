@@ -213,7 +213,8 @@ const Auth = () => {
       setShowOTP(false);
       setPendingUserData(null);
       
-      window.location.href = "/dashboard";
+      // For new registration, redirect to plan selection
+      window.location.href = "/plan-selection";
     } catch (error: any) {
       toast({
         title: "خطأ",
