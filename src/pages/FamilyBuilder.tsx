@@ -2128,7 +2128,7 @@ const FamilyBuilder = () => {
                                       <span className="text-xl">❤️</span>
                                       <div className="flex flex-col items-start">
                                         <span className="font-medium">
-                                          {`${getFullName(marriage.husband)} + ${getFullName(marriage.wife)}`}
+                                          {`${getFullName(marriage.husband)} + ${marriage.wife?.name}`}
                                         </span>
                                         <span className="text-xs text-muted-foreground">عائلة</span>
                                       </div>
