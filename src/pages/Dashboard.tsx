@@ -814,63 +814,109 @@ const Dashboard = () => {
 
       {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent className="max-w-md mx-auto">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold text-red-600 dark:text-red-400 mb-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Trash2 className="h-6 w-6 text-red-500" />
-                <span>تأكيد الحذف</span>
-              </div>
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-lg mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-red-800/20 backdrop-blur-lg">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-4 left-4 w-16 h-16 bg-red-200/30 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-8 right-6 w-20 h-20 bg-rose-200/20 rounded-full animate-bounce delay-300"></div>
+            <div className="absolute top-1/2 right-4 w-12 h-12 bg-pink-200/25 rounded-full animate-pulse delay-700"></div>
+          </div>
           
-          <div className="text-center space-y-4">
-            <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 border border-red-200/50 dark:border-red-700/50">
-              <div className="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 mb-2">
-                <X className="h-5 w-5" />
-                <span className="font-semibold">تحذير</span>
+          {/* Main Content */}
+          <div className="relative z-10">
+            <DialogHeader>
+              <DialogTitle className="text-center mb-6">
+                {/* Animated Icon Container */}
+                <div className="relative flex items-center justify-center mb-4">
+                  <div className="relative">
+                    {/* Outer glow ring */}
+                    <div className="absolute inset-0 w-20 h-20 bg-red-500/20 rounded-full animate-ping"></div>
+                    {/* Inner pulsing circle */}
+                    <div className="relative w-16 h-16 bg-gradient-to-r from-red-500 to-rose-600 rounded-full flex items-center justify-center shadow-xl shadow-red-500/30 animate-pulse">
+                      <Trash2 className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Title with gradient text */}
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 bg-clip-text text-transparent">
+                  تأكيد الحذف
+                </h2>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="text-center space-y-6 px-2">
+              {/* Enhanced Warning Card */}
+              <div className="relative overflow-hidden bg-white/80 dark:bg-red-950/40 rounded-3xl p-6 border-2 border-red-200/50 dark:border-red-700/50 shadow-lg backdrop-blur-sm">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-rose-500 to-pink-500"></div>
+                
+                <div className="flex items-center justify-center gap-3 text-red-700 dark:text-red-300 mb-3">
+                  <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
+                    <X className="h-5 w-5 text-red-600" />
+                  </div>
+                  <span className="font-bold text-lg">تحذير خطير</span>
+                </div>
+                
+                <p className="text-sm text-red-600 dark:text-red-400 leading-relaxed font-medium">
+                  هذا الإجراء <span className="font-bold text-red-700 dark:text-red-300">لا يمكن التراجع عنه</span>. 
+                  سيتم حذف جميع بيانات الشجرة والذكريات المرتبطة بها نهائياً.
+                </p>
               </div>
-              <p className="text-sm text-red-600 dark:text-red-400">
-                هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بيانات الشجرة نهائياً.
-              </p>
-            </div>
 
-            <p className="text-gray-600 dark:text-gray-300">
-              لتأكيد الحذف، اكتب اسم الشجرة: <strong>"{deleteTreeName}"</strong>
-            </p>
+              {/* Tree Name Display */}
+              <div className="bg-white/60 dark:bg-gray-800/40 rounded-2xl p-4 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+                <p className="text-gray-700 dark:text-gray-300 mb-2">
+                  لتأكيد الحذف، اكتب اسم الشجرة بالضبط:
+                </p>
+                <div className="text-lg font-bold bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 dark:from-gray-200 dark:via-gray-300 dark:to-gray-400 bg-clip-text text-transparent px-4 py-2 bg-gray-100/50 dark:bg-gray-700/30 rounded-xl border border-gray-300/50 dark:border-gray-600/50">
+                  "{deleteTreeName}"
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmText" className="text-sm font-medium">
-                اكتب اسم الشجرة للتأكيد:
-              </Label>
-              <Input
-                id="confirmText"
-                value={deleteConfirmText}
-                onChange={(e) => setDeleteConfirmText(e.target.value)}
-                placeholder={deleteTreeName}
-                className="text-center"
-              />
-            </div>
+              {/* Input Field */}
+              <div className="space-y-3">
+                <Label htmlFor="confirmText" className="text-sm font-semibold text-gray-700 dark:text-gray-300 block">
+                  اكتب اسم الشجرة للتأكيد:
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmText"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder={deleteTreeName}
+                    className="text-center text-lg font-medium bg-white/80 dark:bg-gray-800/60 border-2 border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:border-red-400 dark:focus:border-red-500 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800/50 transition-all duration-300"
+                  />
+                  {deleteConfirmText.trim() === deleteTreeName.trim() && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-scale-in">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            <div className="flex gap-3 mt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setDeleteConfirmText("");
-                }}
-                className="flex-1"
-              >
-                إلغاء
-              </Button>
-              <Button 
-                onClick={handleConfirmDelete}
-                disabled={deleteConfirmText.trim() !== deleteTreeName.trim()}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Trash2 className="h-4 w-4 ml-2" />
-                حذف نهائي
-              </Button>
+              {/* Action Buttons */}
+              <div className="flex gap-4 mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeleteConfirmText("");
+                  }}
+                  className="flex-1 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 font-semibold"
+                >
+                  إلغاء
+                </Button>
+                <Button 
+                  onClick={handleConfirmDelete}
+                  disabled={deleteConfirmText.trim() !== deleteTreeName.trim()}
+                  className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-500 via-rose-500 to-red-600 hover:from-red-600 hover:via-rose-600 hover:to-red-700 text-white font-bold shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
+                >
+                  <Trash2 className="h-5 w-5 ml-2" />
+                  حذف نهائي
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
