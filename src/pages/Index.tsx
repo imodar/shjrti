@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, Play, Quote, Shield, Crown, Gem } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -16,7 +18,10 @@ import futureFamily from "@/assets/future-family.jpg";
 const Home2 = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [email, setEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useLanguage();
+  const { toast } = useToast();
 
   const testimonials = [
     {
@@ -68,6 +73,56 @@ const Home2 = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      toast({
+        title: t('newsletter_error_title', 'خطأ في البريد الإلكتروني'),
+        description: t('newsletter_error_invalid', 'يرجى إدخال بريد إلكتروني صحيح'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('newsletter_subscriptions')
+        .insert([{ email: email.toLowerCase() }])
+        .select();
+
+      if (error) {
+        // Check if it's a duplicate email error
+        if (error.code === '23505') {
+          toast({
+            title: t('newsletter_already_subscribed_title', 'مشترك بالفعل'),
+            description: t('newsletter_already_subscribed', 'أنت مشترك بالفعل في النشرة الإخبارية'),
+            variant: "default",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        setIsSubscribed(true);
+        toast({
+          title: t('newsletter_success_title', 'تم الاشتراك بنجاح'),
+          description: t('newsletter_success', 'شكراً لك! تم إضافتك إلى النشرة الإخبارية'),
+        });
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        title: t('newsletter_error_title', 'خطأ في العملية'),
+        description: t('newsletter_error_general', 'حدث خطأ، يرجى المحاولة مرة أخرى'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
@@ -468,39 +523,59 @@ const Home2 = () => {
             {/* Luxury Newsletter Form */}
             <div className="max-w-lg mx-auto">
               <div className="relative bg-white/10 backdrop-blur-xl p-6 rounded-3xl border border-white/20 shadow-2xl">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 relative">
-                    <Input
-                      type="email"
-                      placeholder={t('newsletter_email_placeholder', 'البريد الإلكتروني')}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder:text-white/70 rounded-xl h-12 text-right backdrop-blur-sm focus:bg-white/30 transition-all"
-                    />
+                {!isSubscribed ? (
+                  <form onSubmit={handleNewsletterSubmit}>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1 relative">
+                        <Input
+                          type="email"
+                          placeholder={t('newsletter_email_placeholder', 'البريد الإلكتروني')}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={isLoading}
+                          className="bg-white/20 border-white/30 text-white placeholder:text-white/70 rounded-xl h-12 text-right backdrop-blur-sm focus:bg-white/30 transition-all disabled:opacity-50"
+                          required
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        disabled={isLoading}
+                        className="bg-white text-emerald-600 hover:bg-gray-100 font-medium px-6 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span>{isLoading ? t('newsletter_loading', 'جاري الإرسال...') : t('newsletter_subscribe_button', 'اشتراك')}</span>
+                        <ArrowRight className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 rtl:rotate-180" />
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="inline-flex items-center gap-3 text-white text-lg font-medium">
+                      <Heart className="h-6 w-6 text-pink-300" />
+                      <span>{t('newsletter_thank_you', 'شكراً لك! تم تسجيلك بنجاح في النشرة الإخبارية')}</span>
+                      <Heart className="h-6 w-6 text-pink-300" />
+                    </div>
                   </div>
-                  <Button className="bg-white text-emerald-600 hover:bg-gray-100 font-medium px-6 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <span>{t('newsletter_subscribe_button', 'اشتراك')}</span>
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                  </Button>
-                </div>
+                )}
                 
                 {/* Trust Indicators */}
-                <div className="flex items-center justify-center gap-4 mt-4 text-white/80 text-sm">
-                  <div className="flex items-center gap-1">
-                    <Shield className="h-4 w-4" />
-                    <span>{t('newsletter_trust_1', 'آمن 100%')}</span>
+                {!isSubscribed && (
+                  <div className="flex items-center justify-center gap-4 mt-4 text-white/80 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Shield className="h-4 w-4" />
+                      <span>{t('newsletter_trust_1', 'آمن 100%')}</span>
+                    </div>
+                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                    <div className="flex items-center gap-1">
+                      <Heart className="h-4 w-4" />
+                      <span>{t('newsletter_trust_2', 'بدون إزعاج')}</span>
+                    </div>
+                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4" />
+                      <span>{t('newsletter_trust_3', 'محتوى حصري')}</span>
+                    </div>
                   </div>
-                  <div className="w-1 h-1 bg-white/50 rounded-full"></div>
-                  <div className="flex items-center gap-1">
-                    <Heart className="h-4 w-4" />
-                    <span>{t('newsletter_trust_2', 'بدون إزعاج')}</span>
-                  </div>
-                  <div className="w-1 h-1 bg-white/50 rounded-full"></div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4" />
-                    <span>{t('newsletter_trust_3', 'محتوى حصري')}</span>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
