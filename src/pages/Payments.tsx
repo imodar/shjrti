@@ -153,28 +153,25 @@ export default function Payments() {
     try {
       console.log('🔍 Loading user subscription for user:', user.id);
       
-      // Get user's family and current package
-      const { data: familyData, error: familyError } = await supabase
-        .from('families')
-        .select(`
-          *,
-          packages (*)
-        `)
-        .eq('creator_id', user.id)
+      // Get user's subscription directly from user_subscriptions table
+      const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from('user_subscriptions')
+        .select('package_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
         .maybeSingle();
 
-      if (familyError) throw familyError;
+      if (subscriptionError) throw subscriptionError;
 
-      console.log('📦 Family data:', familyData);
+      console.log('📦 Subscription data:', subscriptionData);
 
-      if (familyData) {
-        setCurrentFamily(familyData);
-        setCurrentPlan(familyData.package_id);
-        console.log('✅ Current plan set to:', familyData.package_id);
+      if (subscriptionData) {
+        setCurrentPlan(subscriptionData.package_id);
+        console.log('✅ Current plan set to:', subscriptionData.package_id);
       } else {
-        // No family found, user is on free plan
+        // No active subscription found, user is on free plan
         setCurrentPlan(null);
-        console.log('🆓 No family found, setting to free plan (null)');
+        console.log('🆓 No active subscription found, setting to free plan (null)');
       }
     } catch (error) {
       console.error('❌ Error loading user subscription:', error);
@@ -211,29 +208,6 @@ export default function Payments() {
         throw new Error('Selected package not found');
       }
 
-      // Get current family or create a new family first
-      let familyId = currentFamily?.id;
-      if (!familyId) {
-        // Create a new family first
-        const { data: newFamily, error: familyError } = await supabase
-          .from('families')
-          .insert({
-            name: 'عائلة المستخدم',
-            creator_id: user.id,
-            subscription_status: 'pending'
-          })
-          .select()
-          .single();
-          
-        if (familyError) {
-          console.error('Error creating family:', familyError);
-          throw new Error('Failed to create family');
-        }
-        
-        familyId = newFamily.id;
-        setCurrentFamily(newFamily);
-      }
-
       // Calculate amount based on current language
       const amount = currentLanguage === 'ar' 
         ? selectedPackage.price === "مجاني للأبد" ? 0 : parseFloat(selectedPackage.price)
@@ -241,13 +215,13 @@ export default function Payments() {
       
       const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
 
-      // Create invoice using the database function
+      // Create invoice for user subscription (no family needed)
       const { data: invoiceId, error: invoiceError } = await supabase.rpc('create_invoice', {
         p_user_id: user.id,
-        p_family_id: familyId,
         p_package_id: planId,
         p_amount: amount,
         p_currency: currency
+        // p_family_id is optional and defaults to null
       });
 
       if (invoiceError) {
