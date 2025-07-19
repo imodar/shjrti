@@ -303,7 +303,7 @@ const Home2 = () => {
       </section>
 
       {/* Luxury Testimonials Section */}
-      <section className="relative py-32 overflow-hidden">
+      <section className="relative py-16 overflow-hidden">
         {/* Luxury Background with Patterns */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-emerald-100 to-teal-100 dark:from-amber-900 dark:via-emerald-900 dark:to-teal-900"></div>
         <div className="absolute inset-0 opacity-30">
@@ -319,7 +319,7 @@ const Home2 = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           {/* Luxury Header */}
-          <div className="text-center mb-20">
+          <div className="text-center mb-12">
             <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
               <Heart className="h-4 w-4" />
               {t('testimonials_badge', 'شهادات حقيقية من عملائنا')}
@@ -347,7 +347,7 @@ const Home2 = () => {
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-3xl opacity-20 blur-lg"></div>
                 <div className="absolute inset-[1px] bg-white dark:bg-gray-800 rounded-3xl"></div>
 
-                <CardContent className="relative p-16 text-center">
+                <CardContent className="relative p-10 text-center">
                   {/* Luxury Quote Icon */}
                   <div className="relative mb-12">
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-30 scale-150"></div>
