@@ -138,28 +138,107 @@ const Dashboard = () => {
             {/* Hero Section */}
             <section className="py-12 relative">
               <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center mb-12">
-                  <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 text-sm mb-6 shadow-lg">
-                    <Sparkles className="h-4 w-4 ml-2" />
-                    {t('dashboard_welcome_badge', 'لوحة التحكم')}
-                  </Badge>
+                <div className="text-center mb-12 relative">
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4">
+                    <div className="w-32 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60"></div>
+                  </div>
                   
-                  <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                      {t('dashboard_welcome', 'أهلاً بك')}
-                    </span>
-                    <br />
-                    <span className="text-gray-800 dark:text-gray-200">
-                      {user?.email?.split('@')[0] || t('dashboard_user', 'صديقي العزيز')}
-                    </span>
-                  </h1>
-                  
-                  <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                    {familyTrees.length === 0 
-                      ? t('no_trees_desc', 'لم تقم ببناء أي شجرة عائلية بعد')
-                      : t('trees_count_desc', `لديك ${familyTrees.length} شجرة عائلية`)
-                    }
-                  </p>
+                  {/* Main Content Container */}
+                  <div className="relative max-w-4xl mx-auto">
+                    {/* Background Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-3xl blur-3xl"></div>
+                    
+                    <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-3xl p-12 shadow-2xl">
+                      {/* Floating Badge */}
+                      <div className="relative mb-8">
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-6">
+                          <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-4 text-base shadow-2xl animate-pulse">
+                            <Sparkles className="h-5 w-5 ml-3 animate-spin" />
+                            {t('dashboard_welcome_badge', 'لوحة التحكم')}
+                            <Sparkles className="h-5 w-5 mr-3 animate-spin" />
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      {/* Avatar & Name Section */}
+                      <div className="flex flex-col items-center mb-8">
+                        {/* User Avatar */}
+                        <div className="relative mb-6">
+                          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-xl opacity-40 animate-pulse scale-125"></div>
+                          <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/30 dark:border-gray-700/30">
+                            <span className="text-3xl font-bold text-white">
+                              {user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                            </span>
+                          </div>
+                          {/* Status Indicator */}
+                          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                            <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                          </div>
+                        </div>
+                        
+                        {/* Welcome Text */}
+                        <div className="text-center">
+                          <h1 className="text-3xl md:text-5xl font-bold mb-4">
+                            <span className="block text-xl md:text-2xl text-gray-600 dark:text-gray-400 font-normal mb-2">
+                              {t('dashboard_welcome', 'أهلاً وسهلاً')}
+                            </span>
+                            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                              {user?.email?.split('@')[0] || t('dashboard_user', 'صديقي العزيز')}
+                            </span>
+                          </h1>
+                        </div>
+                      </div>
+                      
+                      {/* Stats & Description */}
+                      <div className="space-y-6">
+                        {/* Tree Count with Icon */}
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 px-6 py-3 rounded-full border border-emerald-300/30 dark:border-emerald-700/30">
+                            <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
+                              {familyTrees.length === 0 
+                                ? t('no_trees', 'لا توجد أشجار بعد')
+                                : `${familyTrees.length} ${t('trees', familyTrees.length === 1 ? 'شجرة' : 'أشجار')}`
+                              }
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Main Description */}
+                        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                          {familyTrees.length === 0 
+                            ? t('no_trees_desc', 'ابدأ رحلتك في بناء إرثك العائلي الرقمي')
+                            : t('trees_count_desc', 'استمر في توثيق وتطوير تاريخ عائلتك')
+                          }
+                        </p>
+                        
+                        {/* Action Hint */}
+                        <div className="flex items-center justify-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                          <span>
+                            {familyTrees.length === 0 
+                              ? t('ready_to_start', 'جاهز للبدء؟')
+                              : t('manage_trees', 'إدارة أشجارك أدناه')
+                            }
+                          </span>
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Decorative Corner Elements */}
+                      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-emerald-300/40 dark:border-emerald-700/40"></div>
+                      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-emerald-300/40 dark:border-emerald-700/40"></div>
+                      
+                      {/* Background Pattern */}
+                      <div className="absolute inset-0 opacity-10 dark:opacity-5">
+                        <div className="absolute top-10 right-20 w-4 h-4 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <div className="absolute bottom-16 right-16 w-2 h-2 bg-teal-500 rounded-full animate-bounce"></div>
+                        <div className="absolute top-16 left-20 w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                        <div className="absolute bottom-20 left-12 w-2 h-2 bg-pink-500 rounded-full animate-bounce"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
