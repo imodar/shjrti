@@ -306,13 +306,13 @@ const PlanSelection = () => {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-primary/50 rounded-full animate-spin animate-reverse"></div>
+            <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-teal-500 rounded-full animate-spin animate-reverse"></div>
           </div>
-          <p className="text-muted-foreground animate-pulse text-lg font-medium">
+          <p className="text-gray-600 dark:text-gray-300 animate-pulse text-lg font-medium">
             {currentLanguage === 'ar' ? "جاري تحميل الباقات..." : "Loading packages..."}
           </p>
         </div>
@@ -321,50 +321,55 @@ const PlanSelection = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-background relative overflow-hidden">
-      {/* Background decorations matching home page */}
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+      {/* Background decorations matching dashboard */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 text-tree-primary/10 text-8xl animate-float">
-          <TreePine />
+        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+      </div>
+      
+      {/* Floating animated icons */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-32 right-20 animate-float">
+          <Heart className="h-10 w-10 text-pink-400 opacity-60" />
         </div>
-        <div className="absolute bottom-20 left-10 text-tree-secondary/20 text-6xl animate-float-delayed">
-          <Heart />
+        <div className="absolute bottom-40 left-20 animate-float-delayed">
+          <Users className="h-12 w-12 text-emerald-400 opacity-40" />
         </div>
-        <div className="absolute top-1/2 left-1/4 text-accent/5 text-4xl animate-float-slow">
-          <Star />
+        <div className="absolute top-1/2 left-10 animate-float-slow">
+          <Star className="h-8 w-8 text-yellow-400 opacity-60" />
         </div>
       </div>
       
       <div className="container mx-auto px-6 py-16 max-w-6xl relative z-10">
-        {/* Header section matching home style */}
+        {/* Header section matching dashboard style */}
         <div className="text-center mb-16 fade-in">
           <div className="flex flex-col items-center gap-8">
-            {/* Logo */}
+            {/* Logo with dashboard-style glow */}
             <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-teal-500/30 to-amber-500/20 rounded-3xl blur-2xl"></div>
               <img 
                 src={familyTreeLogo} 
                 alt="شجرتي" 
-                className="h-20 w-20 rounded-2xl tree-shadow hover:scale-105 transition-all duration-300"
+                className="h-20 w-20 rounded-2xl shadow-xl hover:scale-105 transition-all duration-300 relative z-10 ring-2 ring-white/20 dark:ring-gray-600/20"
               />
             </div>
             
-            {/* Title with matching gradient */}
+            {/* Title with dashboard gradient */}
             <div className="space-y-4">
-              <div className="flex items-center justify-center gap-2 text-accent font-medium mb-4">
-                <Star className="h-5 w-5 fill-current" />
+              <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-2 shadow-lg">
+                <Sparkles className="h-4 w-4 ml-2" />
                 {currentLanguage === 'ar' ? 'خطط مميزة لحفظ تراث عائلتك' : 'Premium Plans for Your Family Heritage'}
-              </div>
+              </Badge>
               
               <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-                {currentLanguage === 'ar' ? 'اختر' : 'Choose'}{" "}
-                <span className="text-transparent bg-clip-text hero-gradient">
-                  {currentLanguage === 'ar' ? 'خطتك' : 'Your Plan'}
+                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                  {currentLanguage === 'ar' ? 'اختر خطتك المثالية' : 'Choose Your Perfect Plan'}
                 </span>
-                <br />
-                {currentLanguage === 'ar' ? 'المثالية' : 'Perfect'}
               </h1>
               
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
                 {currentLanguage === 'ar' 
                   ? 'اختر الخطة التي تناسب احتياجاتك واحفظ تاريخ عائلتك بأفضل الطرق'
                   : 'Choose the plan that fits your needs and preserve your family history in the best way'
@@ -389,16 +394,16 @@ const PlanSelection = () => {
               <Card 
                 key={pkg.id} 
                 className={`
-                  relative h-full transition-all duration-500 hover:scale-105 hover:shadow-lg
-                  ${isFeatured ? 'ring-2 ring-primary/20 scale-105' : ''}
-                  ${currentPlan ? 'ring-2 ring-accent/50' : ''}
-                  bg-white/80 dark:bg-card/80 backdrop-blur-sm border border-border/50
+                  relative h-full transition-all duration-500 hover:scale-105 hover:shadow-xl
+                  ${isFeatured ? 'ring-2 ring-emerald-200 dark:ring-emerald-700 scale-105' : ''}
+                  ${currentPlan ? 'ring-2 ring-amber-200 dark:ring-amber-700' : ''}
+                  bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 shadow-xl
                 `}
               >
                 {/* Featured badge */}
                 {isFeatured && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                    <Badge className="hero-gradient text-white px-4 py-1.5 text-xs font-semibold">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg">
                       <Sparkles className="h-3 w-3 mr-1" />
                       {currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
                     </Badge>
@@ -408,7 +413,7 @@ const PlanSelection = () => {
                 {/* Current plan badge */}
                 {currentPlan && (
                   <div className="absolute -top-3 right-4 z-10">
-                    <Badge className="bg-accent text-accent-foreground px-3 py-1.5 text-xs">
+                    <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 text-xs shadow-lg">
                       <CheckCircle className="h-3 w-3 mr-1" />
                       {currentLanguage === 'ar' ? 'نشطة' : 'Active'}
                     </Badge>
@@ -416,12 +421,15 @@ const PlanSelection = () => {
                 )}
                 
                 <CardHeader className="text-center pb-4 pt-8">
-                  {/* Icon */}
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-all duration-300">
-                    <PackageIcon className="h-6 w-6 text-primary" />
+                  {/* Icon with dashboard-style gradient */}
+                  <div className="relative mb-4">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500"></div>
+                    <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-all duration-300">
+                      <PackageIcon className="h-6 w-6 text-white" />
+                    </div>
                   </div>
                   
-                  <CardTitle className="text-xl font-bold text-foreground mb-3">
+                  <CardTitle className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent mb-3">
                     {packageName}
                   </CardTitle>
                   
@@ -429,24 +437,24 @@ const PlanSelection = () => {
                   <div className="mb-4">
                     {packagePrice === 0 ? (
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">
+                        <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                           {currentLanguage === 'ar' ? 'مجاني' : 'Free'}
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
                           {currentLanguage === 'ar' ? 'للأبد' : 'Forever'}
                         </p>
                       </div>
                     ) : (
                       <div className="text-center">
                         <div className="flex items-baseline justify-center gap-1 mb-1">
-                          <span className="text-2xl font-bold text-primary">
+                          <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                             {formatPrice(packagePrice)}
                           </span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
                             {currentLanguage === 'ar' ? '/سنة' : '/year'}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
                           {currentLanguage === 'ar' 
                             ? `${Math.round(packagePrice / 12)} ريال شهرياً` 
                             : `$${Math.round(packagePrice / 12)} per month`
@@ -464,14 +472,14 @@ const PlanSelection = () => {
                       <div 
                         key={featureIndex}
                         className="flex items-center gap-2 text-sm"
-                      >
-                        <div className="w-4 h-4 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                          <CheckCircle className="h-2.5 w-2.5 text-primary" />
+                        >
+                          <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="h-2.5 w-2.5 text-white" />
+                          </div>
+                          <span className="text-gray-700 dark:text-gray-300 text-sm">
+                            {feature}
+                          </span>
                         </div>
-                        <span className="text-foreground text-sm">
-                          {feature}
-                        </span>
-                      </div>
                     ))}
                   </div>
                   
@@ -482,8 +490,8 @@ const PlanSelection = () => {
                     className={`
                       w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
                       ${buttonDisabled 
-                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                        : 'hero-gradient hover:shadow-lg text-white hover:scale-105'
+                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'
                       }
                     `}
                   >
@@ -500,23 +508,23 @@ const PlanSelection = () => {
           })}
         </div>
 
-        {/* Bottom stats section matching home style */}
+        {/* Bottom stats section matching dashboard style */}
         <div className="flex items-center justify-center gap-8 pt-16 fade-in">
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">+1000</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">+1000</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               {currentLanguage === 'ar' ? 'عائلة سعيدة' : 'Happy families'}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">+50k</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">+50k</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               {currentLanguage === 'ar' ? 'فرد محفوظ' : 'Members preserved'}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">99%</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">99%</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               {currentLanguage === 'ar' ? 'رضا المستخدمين' : 'User satisfaction'}
             </div>
           </div>
