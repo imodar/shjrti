@@ -151,6 +151,8 @@ export default function Payments() {
     if (!user) return;
     
     try {
+      console.log('🔍 Loading user subscription for user:', user.id);
+      
       // Get user's family and current package
       const { data: familyData, error: familyError } = await supabase
         .from('families')
@@ -163,15 +165,19 @@ export default function Payments() {
 
       if (familyError) throw familyError;
 
+      console.log('📦 Family data:', familyData);
+
       if (familyData) {
         setCurrentFamily(familyData);
         setCurrentPlan(familyData.package_id);
+        console.log('✅ Current plan set to:', familyData.package_id);
       } else {
         // No family found, user is on free plan
         setCurrentPlan(null);
+        console.log('🆓 No family found, setting to free plan (null)');
       }
     } catch (error) {
-      console.error('Error loading user subscription:', error);
+      console.error('❌ Error loading user subscription:', error);
       // Default to free plan on error
       setCurrentPlan(null);
     }
@@ -929,7 +935,19 @@ export default function Payments() {
                         
                         {/* Enhanced button with current plan styling and loading state */}
                         <Button 
-                          onClick={() => currentPlan !== plan.id && handlePlanSelect(plan.id)}
+                          onClick={() => {
+                            console.log('🔍 Plan comparison:', {
+                              planId: plan.id,
+                              currentPlan: currentPlan,
+                              isEqual: currentPlan === plan.id,
+                              currentPlanType: typeof currentPlan,
+                              planIdType: typeof plan.id
+                            });
+                            
+                            if (currentPlan !== plan.id) {
+                              handlePlanSelect(plan.id);
+                            }
+                          }}
                           className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 ${
                             currentPlan === plan.id 
                               ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed opacity-60' 
