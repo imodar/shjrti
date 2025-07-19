@@ -402,11 +402,6 @@ const PlanSelection = () => {
                   ${!isFeatured ? 'border-emerald-200/30 dark:border-emerald-700/30' : ''}
                 `}
               >
-                {/* Orange glow effect for featured package */}
-                {isFeatured && (
-                  <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 rounded-lg blur-lg opacity-30 animate-pulse"></div>
-                )}
-                
                 {/* Featured badge */}
                 {isFeatured && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
