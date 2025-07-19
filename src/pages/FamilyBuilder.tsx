@@ -2513,16 +2513,8 @@ const FamilyBuilder = () => {
 
                 {formData.gender === "male" ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Left Column: Add/Edit Wife Form */}
+                    {/* Left Column: Current Wives List */}
                     <div className="space-y-4">
-                      <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
-                        <Plus className="h-5 w-5 text-primary" />
-                        {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
-                      </Label>
-
-                    {/* Add/Edit Wife Form - Only show if no existing wives or currently editing */}
-                    {(!wives.some(w => w.id.toString().includes('existing-')) || editingWife) && (
-                      <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
                       <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
                         <Users className="h-5 w-5 text-primary" />
                         الزوجات المضافة ({wives.length})
