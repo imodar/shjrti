@@ -1607,6 +1607,57 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Sample Statistics Section */}
+              <div className="mt-6 pt-6 border-t border-white/20 dark:border-gray-600/20">
+                <div className="grid grid-cols-3 gap-6">
+                  {/* Members Available */}
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400 ml-2" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">الأعضاء المتاحة</span>
+                    </div>
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                      {familyMembers.length}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      من أصل {packageData?.max_family_members || 'غير محدود'}
+                    </div>
+                  </div>
+
+                  {/* Number of Generations */}
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Crown className="h-5 w-5 text-amber-600 dark:text-amber-400 ml-2" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">عدد الأجيال</span>
+                    </div>
+                    <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                      {calculateGenerationCount()}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">جيل</div>
+                  </div>
+
+                  {/* Last Modified Date */}
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Clock className="h-5 w-5 text-teal-600 dark:text-teal-400 ml-2" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">آخر تعديل</span>
+                    </div>
+                    <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                      {familyData?.updated_at 
+                        ? format(new Date(familyData.updated_at), 'd MMM', { locale: ar })
+                        : 'اليوم'
+                      }
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {familyData?.updated_at 
+                        ? format(new Date(familyData.updated_at), 'yyyy', { locale: ar })
+                        : '2025'
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
