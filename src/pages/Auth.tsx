@@ -533,7 +533,7 @@ const Auth = () => {
                 ) : (
                   /* Regular Auth Tabs */
                   <>
-                    <Tabs defaultValue="register" className="w-full">
+                    <Tabs defaultValue="login" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1 gap-1">
                         <TabsTrigger 
                           value="register" 
