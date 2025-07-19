@@ -570,15 +570,17 @@ const Dashboard = () => {
                       </div>
                       
                       {/* Total Members */}
-                      <div className="text-center">
-                        <div className="flex items-center justify-center mb-1">
+                      <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                        <div className="flex-shrink-0">
                           <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                         </div>
-                        <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                          {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          إجمالي الأفراد
+                        <div className="min-w-0 flex-1">
+                          <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                            {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            إجمالي الأفراد
+                          </div>
                         </div>
                       </div>
                     </div>
