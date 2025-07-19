@@ -1706,7 +1706,7 @@ const FamilyBuilder = () => {
                         handleAddNewMember();
                       }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
-                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Plus className="mr-2 h-5 w-5" />
                       إضافة فرد جديد
