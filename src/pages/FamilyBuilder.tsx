@@ -1818,7 +1818,7 @@ const FamilyBuilder = () => {
                         {/* Relation Card with Gradient */}
                         <div className="relative group/relation">
                           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/15 to-secondary/20 rounded-2xl blur-sm opacity-0 group-hover/relation:opacity-100 transition-opacity duration-500"></div>
-                          <div className="relative bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 shadow-inner">
+                          <div>
                             <div className="text-center">
                               {member.relatedPersonId ? (
                                 <div className="flex items-center justify-center gap-2">
