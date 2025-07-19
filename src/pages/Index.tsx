@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, Play, Quote, Shield, Crown, Gem } from "lucide-react";
+import { TreePine, Heart, Users, Star, Sparkles, Camera, Clock, Infinity, ArrowRight, ArrowLeft, Play, Quote, Shield, Crown, Gem } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -543,7 +543,8 @@ const Home2 = () => {
                         className="bg-white text-emerald-600 hover:bg-gray-100 font-medium px-6 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span>{isLoading ? t('newsletter_loading', 'جاري الإرسال...') : t('newsletter_subscribe_button', 'اشتراك')}</span>
-                        <ArrowRight className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 rtl:rotate-180" />
+                        <ArrowLeft className="h-4 w-4 ml-2 rtl:hidden" />
+                        <ArrowRight className="h-4 w-4 mr-2 ltr:hidden" />
                       </Button>
                     </div>
                   </form>
