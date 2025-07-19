@@ -2538,18 +2538,32 @@ const FamilyBuilder = () => {
                                     </p>
                                   </div>
                                 </div>
-                                {/* Only show delete button for new wives, not existing ones from database */}
+                                {/* Only show delete button for new wives, not existing ones from database, and not founder's wife */}
                                 {!wife.id.toString().includes('existing-') && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      setWives(wives.filter(w => w.id !== wife.id));
-                                    }}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
+                                  <>
+                                    {/* Check if this wife is married to the founder */}
+                                    {(() => {
+                                      const founderMember = familyMembers.find(member => member.isFounder);
+                                      const isFoundersWife = founderMember && wife.id.toString().includes('existing-') ? 
+                                        founderMember.spouseId === wife.id : false;
+                                      
+                                      // Don't show delete button for founder's wife
+                                      if (isFoundersWife) return null;
+                                      
+                                      return (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            setWives(wives.filter(w => w.id !== wife.id));
+                                          }}
+                                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      );
+                                    })()}
+                                  </>
                                 )}
                               </div>
                             </div>
