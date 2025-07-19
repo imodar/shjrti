@@ -61,8 +61,13 @@ const FamilyCreator = () => {
   }>>([]);
 
   const handleNextStep = () => {
+    console.log('handleNextStep called - currentStep:', currentStep);
+    console.log('treeData:', treeData);
+    console.log('founderData:', founderData);
+    
     if (currentStep === 1) {
       if (!treeData.name.trim()) {
+        console.log('Family name validation failed:', treeData.name);
         toast({
           title: "خطأ",
           description: "يرجى إدخال اسم العائلة",
@@ -70,9 +75,11 @@ const FamilyCreator = () => {
         });
         return;
       }
+      console.log('Moving to step 2');
       setCurrentStep(2);
     } else if (currentStep === 2) {
       if (!founderData.name.trim() || !founderData.gender) {
+        console.log('Founder data validation failed:', founderData);
         toast({
           title: "خطأ",
           description: "يرجى إكمال جميع البيانات المطلوبة للمؤسس",
@@ -80,6 +87,7 @@ const FamilyCreator = () => {
         });
         return;
       }
+      console.log('Creating family');
       handleCreateFamily();
     }
   };
