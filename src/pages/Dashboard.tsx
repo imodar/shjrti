@@ -638,7 +638,7 @@ const Dashboard = () => {
                         <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-gray-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         
-                        <CardContent className="relative z-10 p-6 text-center flex flex-col justify-center h-full">
+                        <CardContent className="relative z-10 p-8 text-center flex flex-col justify-center min-h-[400px]">
                           <div className="flex flex-col items-center space-y-4">
                             {/* Plus Icon with Animation */}
                             <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
