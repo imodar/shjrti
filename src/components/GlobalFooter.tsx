@@ -1,6 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { 
   TreePine, 
   Crown, 
@@ -9,12 +9,54 @@ import {
   Heart, 
   Users, 
   Star, 
-  Gem 
+  Gem,
+  Home,
+  BarChart3,
+  Settings,
+  CreditCard,
+  UserCircle,
+  Building2
 } from "lucide-react";
 
 export const GlobalFooter = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
+  const location = useLocation();
+
+  // Function to get page-specific icons
+  const getPageIcon = () => {
+    switch (location.pathname) {
+      case '/':
+        return Home;
+      case '/dashboard':
+      case '/dashboard-backup':
+        return BarChart3;
+      case '/family-creator':
+      case '/family-builder':
+      case '/family-tree-view':
+        return TreePine;
+      case '/family-statistics':
+        return BarChart3;
+      case '/profile':
+        return UserCircle;
+      case '/payments':
+      case '/payment':
+        return CreditCard;
+      case '/plan-selection':
+        return Crown;
+      case '/auth':
+        return Shield;
+      case '/admin-panel':
+      case '/enhanced-admin-panel':
+        return Settings;
+      case '/store':
+        return Building2;
+      default:
+        return TreePine;
+    }
+  };
+
+  const PageIcon = getPageIcon();
 
   return (
     <footer className="relative overflow-hidden">
@@ -36,7 +78,7 @@ export const GlobalFooter = () => {
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-50"></div>
-                  <TreePine className="relative h-10 w-10 text-emerald-400" />
+                  <PageIcon className="relative h-10 w-10 text-emerald-400" />
                 </div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                   {t('footer_brand_name', 'شجرة العائلة')}
@@ -59,16 +101,16 @@ export const GlobalFooter = () => {
               </h3>
               <div className="space-y-3">
                 <Link to="/" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <Home className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   <span>{t('footer_link_home', 'الرئيسية')}</span>
                 </Link>
                 <Link to="/dashboard" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <BarChart3 className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   <span>{t('footer_link_dashboard', 'لوحة التحكم')}</span>
                 </Link>
                 {!user && (
                   <Link to="/auth" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300">
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <UserCircle className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     <span>{t('footer_link_auth', 'تسجيل الدخول')}</span>
                   </Link>
                 )}
