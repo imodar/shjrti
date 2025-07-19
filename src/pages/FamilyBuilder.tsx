@@ -1524,6 +1524,23 @@ const FamilyBuilder = () => {
 
       {/* Main Content */}
       <div className="pt-24 relative z-10 min-h-screen">
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+        </div>
+
+        {/* Floating Animated Icons */}
+        <div className="absolute top-32 right-20 animate-float">
+          <Heart className="h-10 w-10 text-pink-400 opacity-60" />
+        </div>
+        <div className="absolute bottom-40 left-20 animate-float-delayed">
+          <Users className="h-12 w-12 text-emerald-400 opacity-40" />
+        </div>
+        <div className="absolute top-1/2 left-10 animate-float-slow">
+          <Star className="h-8 w-8 text-yellow-400 opacity-60" />
+        </div>
         <div className="max-w-7xl mx-auto px-6">
           {/* Header Box */}
           <div className="mb-8">
