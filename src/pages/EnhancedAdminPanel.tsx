@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, Languages, Globe, Plus, Edit, Trash2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -114,6 +115,7 @@ export default function EnhancedAdminPanel() {
     language_code: '',
     category: 'general'
   });
+  const [editingLanguage, setEditingLanguage] = useState<LanguageType | null>(null);
 
   const loadPackages = async () => {
     try {
@@ -339,6 +341,70 @@ export default function EnhancedAdminPanel() {
       toast({
         title: "خطأ",
         description: "فشل في تحديث اللغة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditLanguage = (language: LanguageType) => {
+    setEditingLanguage(language);
+  };
+
+  const handleUpdateLanguage = async () => {
+    if (!editingLanguage) return;
+
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .update({
+          code: editingLanguage.code,
+          name: editingLanguage.name,
+          direction: editingLanguage.direction,
+          currency: editingLanguage.currency,
+          is_active: editingLanguage.is_active,
+          is_default: editingLanguage.is_default
+        })
+        .eq('id', editingLanguage.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم تحديث اللغة بنجاح"
+      });
+
+      loadLanguages();
+      setEditingLanguage(null);
+    } catch (error) {
+      console.error('Error updating language:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث اللغة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteLanguage = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم حذف اللغة بنجاح"
+      });
+
+      loadLanguages();
+    } catch (error) {
+      console.error('Error deleting language:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حذف اللغة",
         variant: "destructive"
       });
     }
@@ -670,6 +736,23 @@ export default function EnhancedAdminPanel() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditLanguage(language)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            تعديل
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteLanguage(language.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            حذف
+                          </Button>
                           <Switch
                             checked={language.is_active}
                             onCheckedChange={() => handleToggleLanguage(language.id, language.is_active)}
@@ -808,6 +891,94 @@ export default function EnhancedAdminPanel() {
             </Card>
           </TabsContent>
         </Tabs>
+        
+        {/* Edit Language Dialog */}
+        <Dialog open={editingLanguage !== null} onOpenChange={() => setEditingLanguage(null)}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>تعديل اللغة</DialogTitle>
+              <DialogDescription>قم بتعديل تفاصيل اللغة المحددة</DialogDescription>
+            </DialogHeader>
+            {editingLanguage && (
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-code" className="text-right">كود اللغة</Label>
+                  <Input
+                    id="edit-code"
+                    value={editingLanguage.code}
+                    onChange={(e) => setEditingLanguage({...editingLanguage, code: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-name" className="text-right">اسم اللغة</Label>
+                  <Input
+                    id="edit-name"
+                    value={editingLanguage.name}
+                    onChange={(e) => setEditingLanguage({...editingLanguage, name: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-direction" className="text-right">اتجاه النص</Label>
+                  <Select
+                    value={editingLanguage.direction}
+                    onValueChange={(value) => setEditingLanguage({...editingLanguage, direction: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ltr">من اليسار لليمين (LTR)</SelectItem>
+                      <SelectItem value="rtl">من اليمين لليسار (RTL)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-currency" className="text-right">العملة</Label>
+                  <Select
+                    value={editingLanguage.currency}
+                    onValueChange={(value) => setEditingLanguage({...editingLanguage, currency: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">Dollar ($)</SelectItem>
+                      <SelectItem value="SAR">Riyal (ر.س)</SelectItem>
+                      <SelectItem value="EUR">Euro (€)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={editingLanguage.is_active}
+                      onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_active: checked})}
+                    />
+                    <Label>مفعلة</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={editingLanguage.is_default}
+                      onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_default: checked})}
+                    />
+                    <Label>افتراضية</Label>
+                  </div>
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button onClick={() => setEditingLanguage(null)} variant="outline">
+                إلغاء
+              </Button>
+              <Button onClick={handleUpdateLanguage}>
+                <Save className="h-4 w-4 mr-2" />
+                حفظ التغييرات
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
