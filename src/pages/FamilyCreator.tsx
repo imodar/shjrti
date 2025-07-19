@@ -576,86 +576,103 @@ const FamilyCreator = () => {
                       </div>
 
                       {/* Right Side - Motivational Content with Enhanced Design */}
-                      <div className="p-8 md:p-12 bg-gradient-to-bl from-emerald-500/10 via-teal-500/5 to-amber-500/10 dark:from-emerald-900/30 dark:via-teal-900/20 dark:to-amber-900/30 relative overflow-hidden flex flex-col justify-center">
-                        {/* Enhanced animated background elements */}
-                        <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-                          {/* Floating geometric shapes */}
-                          <div className="absolute top-6 left-6 w-24 h-24 bg-gradient-to-br from-emerald-400/40 via-teal-400/40 to-cyan-400/40 rounded-full animate-pulse shadow-2xl"></div>
-                          <div className="absolute top-16 right-16 w-16 h-16 bg-gradient-to-tr from-amber-400/40 to-orange-400/40 rotate-45 animate-spin" style={{animationDuration: '8s'}}></div>
-                          <div className="absolute bottom-20 right-8 w-20 h-20 bg-gradient-to-bl from-teal-400/40 to-emerald-400/40 rounded-full animate-bounce shadow-xl"></div>
-                          <div className="absolute bottom-8 left-16 w-12 h-12 bg-gradient-to-r from-rose-400/40 to-pink-400/40 rounded-lg rotate-12 animate-pulse delay-1000"></div>
-                          <div className="absolute top-1/2 left-4 w-8 h-8 bg-gradient-to-br from-violet-400/40 to-purple-400/40 rounded-full animate-ping delay-500"></div>
-                          <div className="absolute top-1/3 right-1/3 w-14 h-14 bg-gradient-to-bl from-lime-400/40 to-green-400/40 rotate-45 animate-pulse delay-700"></div>
-                          
-                          {/* Floating sparkles */}
-                          <div className="absolute top-12 left-1/2 w-2 h-2 bg-gradient-to-r from-yellow-400 to-amber-400 rounded-full animate-ping delay-300"></div>
-                          <div className="absolute top-1/4 right-12 w-1.5 h-1.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-ping delay-1500"></div>
-                          <div className="absolute bottom-1/3 left-8 w-2.5 h-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-ping delay-800"></div>
-                          <div className="absolute bottom-16 right-1/4 w-1 h-1 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-ping delay-1200"></div>
-                          
-                          {/* Floating lines */}
-                          <div className="absolute top-8 right-8 w-16 h-0.5 bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent rotate-45 animate-pulse"></div>
-                          <div className="absolute bottom-24 left-12 w-20 h-0.5 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent -rotate-12 animate-pulse delay-500"></div>
+                      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900">
+                        {/* Stunning background with multiple layers */}
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-400/20 via-pink-400/10 to-transparent"></div>
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-cyan-400/20 via-blue-400/10 to-transparent"></div>
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-400/10 via-transparent to-transparent"></div>
+                        
+                        {/* Mesh gradient overlay */}
+                        <div className="absolute inset-0 opacity-30">
+                          <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+                          <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+                          <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
                         </div>
 
-                        <div className="relative z-10 text-center lg:text-right space-y-8">
-                          {/* Main Icon with Enhanced Animation */}
-                          <div className="flex justify-center lg:justify-start mb-6">
-                            <div className="relative group">
-                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/30 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500 animate-pulse"></div>
-                              <div className="relative w-40 h-40 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl transform hover:scale-105 transition-all duration-300 border-4 border-white/30 dark:border-gray-700/30">
-                                <TreePine className="h-20 w-20 text-white drop-shadow-2xl" />
-                              </div>
-                              {/* Orbiting elements */}
-                              <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full border-2 border-white shadow-lg animate-bounce"></div>
-                              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full border-2 border-white shadow-lg animate-bounce delay-300"></div>
-                            </div>
-                          </div>
+                        {/* Floating particles */}
+                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/80 rounded-full animate-float-up"></div>
+                          <div className="absolute top-3/4 left-1/2 w-1 h-1 bg-purple-300/60 rounded-full animate-float-up animation-delay-1000"></div>
+                          <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-cyan-300/60 rounded-full animate-float-up animation-delay-2000"></div>
+                          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-pink-300/60 rounded-full animate-float-up animation-delay-3000"></div>
+                          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-yellow-300/60 rounded-full animate-float-up animation-delay-4000"></div>
+                        </div>
 
-                          <div className="space-y-6">
-                            <h3 className="text-4xl font-bold leading-tight">
-                              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                رحلة الألف ميل
-                              </span>
-                              <br />
-                              <span className="text-2xl text-gray-600 dark:text-gray-300 font-normal">
-                                تبدأ بخطوة واحدة
-                              </span>
-                            </h3>
-                            
-                            <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                              كل عائلة عظيمة لها بداية، وبدايتك تبدأ الآن من هنا.
-                            </p>
-                            
+                        <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center min-h-full">
+                          {/* Creative hero section */}
+                          <div className="text-center space-y-8">
+                            {/* Innovative icon design */}
+                            <div className="relative mx-auto w-fit">
+                              <div className="relative">
+                                {/* Main icon with glassmorphism effect */}
+                                <div className="relative w-32 h-32 mx-auto">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/20 rounded-3xl shadow-2xl"></div>
+                                  <div className="absolute inset-2 bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 rounded-2xl flex items-center justify-center shadow-inner">
+                                    <TreePine className="h-12 w-12 text-white drop-shadow-2xl" />
+                                  </div>
+                                </div>
+                                
+                                {/* Orbiting elements */}
+                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full shadow-lg animate-spin-slow"></div>
+                                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full shadow-lg animate-bounce"></div>
+                                <div className="absolute top-1/2 -right-6 w-4 h-4 bg-gradient-to-br from-purple-400 to-violet-400 rounded-full shadow-lg animate-pulse"></div>
+                                <div className="absolute top-1/2 -left-6 w-4 h-4 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-full shadow-lg animate-pulse animation-delay-1000"></div>
+                              </div>
+                            </div>
+
+                            {/* Dynamic typography with multiple effects */}
                             <div className="space-y-4">
-                              <div className="group flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:scale-105">
-                                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                  <Heart className="h-6 w-6 text-white" />
-                                </div>
-                                <div className="text-right">
-                                  <h4 className="font-bold text-gray-800 dark:text-gray-200">حفظ الذكريات</h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">للأجيال القادمة</p>
-                                </div>
-                              </div>
+                              <h3 className="text-4xl md:text-5xl font-black leading-tight">
+                                <span className="inline-block bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent animate-shimmer">
+                                  رحلة الإبداع
+                                </span>
+                                <br />
+                                <span className="text-2xl md:text-3xl bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent font-light">
+                                  تبدأ بحلم
+                                </span>
+                              </h3>
                               
-                              <div className="group flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:scale-105">
-                                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-amber-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                  <Users className="h-6 w-6 text-white" />
+                              <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-md mx-auto font-light">
+                                كل شجرة عائلة عظيمة بدأت بحلم شخص واحد. اليوم هو يومك لتحقيق هذا الحلم.
+                              </p>
+                            </div>
+
+                            {/* Interactive feature cards */}
+                            <div className="grid grid-cols-1 gap-4 mt-8">
+                              {[
+                                { icon: Heart, title: "ذكريات خالدة", desc: "احفظ قصص عائلتك", color: "from-pink-500 to-rose-500" },
+                                { icon: Users, title: "روابط قوية", desc: "اربط بين الأجيال", color: "from-blue-500 to-cyan-500" },
+                                { icon: Star, title: "إرث مميز", desc: "اترك بصمة دائمة", color: "from-yellow-500 to-orange-500" }
+                              ].map((item, index) => (
+                                <div key={index} className="group relative">
+                                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-2xl blur-sm group-hover:blur-none transition-all duration-300"></div>
+                                  <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                                    <div className="flex items-center gap-4 text-left">
+                                      <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform`}>
+                                        <item.icon className="h-6 w-6 text-white" />
+                                      </div>
+                                      <div className="flex-1">
+                                        <h4 className="font-bold text-white text-lg leading-tight">{item.title}</h4>
+                                        <p className="text-white/80 text-sm">{item.desc}</p>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="text-right">
-                                  <h4 className="font-bold text-gray-800 dark:text-gray-200">ربط الأجيال</h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">بقصص مشتركة</p>
+                              ))}
+                            </div>
+
+                            {/* Call to action with advanced styling */}
+                            <div className="mt-8 p-6 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl">
+                              <div className="text-center space-y-3">
+                                <div className="flex justify-center">
+                                  <div className="w-16 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full"></div>
                                 </div>
-                              </div>
-                              
-                              <div className="group flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:scale-105">
-                                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                  <Star className="h-6 w-6 text-white" />
-                                </div>
-                                <div className="text-right">
-                                  <h4 className="font-bold text-gray-800 dark:text-gray-200">إرث دائم</h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">يفتخر به الجميع</p>
-                                </div>
+                                <p className="text-white/90 font-medium text-lg">
+                                  🌟 ابدأ رحلتك اليوم 🌟
+                                </p>
+                                <p className="text-white/70 text-sm">
+                                  انضم لآلاف العائلات التي حفظت تاريخها معنا
+                                </p>
                               </div>
                             </div>
                           </div>
