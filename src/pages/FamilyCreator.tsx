@@ -577,11 +577,25 @@ const FamilyCreator = () => {
 
                       {/* Right Side - Motivational Content with Enhanced Design */}
                       <div className="p-8 md:p-12 bg-gradient-to-bl from-emerald-500/10 via-teal-500/5 to-amber-500/10 dark:from-emerald-900/30 dark:via-teal-900/20 dark:to-amber-900/30 relative overflow-hidden flex flex-col justify-center">
-                        {/* Animated background elements */}
-                        <div className="absolute top-0 left-0 w-full h-full opacity-30">
-                          <div className="absolute top-8 left-8 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full animate-pulse"></div>
-                          <div className="absolute bottom-12 right-12 w-24 h-24 bg-gradient-to-tl from-amber-400/20 to-emerald-400/20 rounded-full animate-pulse delay-1000"></div>
-                          <div className="absolute top-1/2 right-8 w-16 h-16 bg-gradient-to-r from-teal-400/20 to-amber-400/20 rounded-full animate-pulse delay-500"></div>
+                        {/* Enhanced animated background elements */}
+                        <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+                          {/* Floating geometric shapes */}
+                          <div className="absolute top-6 left-6 w-24 h-24 bg-gradient-to-br from-emerald-400/40 via-teal-400/40 to-cyan-400/40 rounded-full animate-pulse shadow-2xl"></div>
+                          <div className="absolute top-16 right-16 w-16 h-16 bg-gradient-to-tr from-amber-400/40 to-orange-400/40 rotate-45 animate-spin" style={{animationDuration: '8s'}}></div>
+                          <div className="absolute bottom-20 right-8 w-20 h-20 bg-gradient-to-bl from-teal-400/40 to-emerald-400/40 rounded-full animate-bounce shadow-xl"></div>
+                          <div className="absolute bottom-8 left-16 w-12 h-12 bg-gradient-to-r from-rose-400/40 to-pink-400/40 rounded-lg rotate-12 animate-pulse delay-1000"></div>
+                          <div className="absolute top-1/2 left-4 w-8 h-8 bg-gradient-to-br from-violet-400/40 to-purple-400/40 rounded-full animate-ping delay-500"></div>
+                          <div className="absolute top-1/3 right-1/3 w-14 h-14 bg-gradient-to-bl from-lime-400/40 to-green-400/40 rotate-45 animate-pulse delay-700"></div>
+                          
+                          {/* Floating sparkles */}
+                          <div className="absolute top-12 left-1/2 w-2 h-2 bg-gradient-to-r from-yellow-400 to-amber-400 rounded-full animate-ping delay-300"></div>
+                          <div className="absolute top-1/4 right-12 w-1.5 h-1.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-ping delay-1500"></div>
+                          <div className="absolute bottom-1/3 left-8 w-2.5 h-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-ping delay-800"></div>
+                          <div className="absolute bottom-16 right-1/4 w-1 h-1 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-ping delay-1200"></div>
+                          
+                          {/* Floating lines */}
+                          <div className="absolute top-8 right-8 w-16 h-0.5 bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent rotate-45 animate-pulse"></div>
+                          <div className="absolute bottom-24 left-12 w-20 h-0.5 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent -rotate-12 animate-pulse delay-500"></div>
                         </div>
 
                         <div className="relative z-10 text-center lg:text-right space-y-8">
