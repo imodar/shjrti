@@ -1160,6 +1160,10 @@ const FamilyCreator = () => {
         </DialogContent>
       </Dialog>
 
+      
+      {/* Spacing before footer */}
+      <div className="h-16"></div>
+      
       <LuxuryFooter />
     </>
   );
