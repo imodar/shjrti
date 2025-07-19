@@ -1606,49 +1606,6 @@ const FamilyBuilder = () => {
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Statistics</span>
                   </div>
                 </div>
-              
-              {/* Statistics Row */}
-              <div className="grid grid-cols-3 gap-6 mt-6 pt-4 border-t border-white/20 dark:border-gray-600/20">
-              
-              {/* Statistics Row */}
-              <div className="grid grid-cols-3 gap-6 mt-6 pt-4 border-t border-white/20 dark:border-gray-600/20">
-                {/* Members Available */}
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                    {familyMembers?.length || 0}
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-                    الأعضاء المتاحون
-                  </div>
-                </div>
-                
-                {/* Number of Generations */}
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
-                    {familyMembers ? Math.max(...familyMembers.map(member => {
-                      // Calculate generation depth based on family relationships
-                      let depth = 1;
-                      if (member.father_id || member.mother_id) depth++;
-                      return depth;
-                    })) : 1}
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-                    عدد الأجيال
-                  </div>
-                </div>
-                
-                {/* Last Modified Date */}
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                    {familyData?.updated_at ? 
-                      format(new Date(familyData.updated_at), 'dd/MM', { locale: ar }) 
-                      : '--'
-                    }
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-                    آخر تعديل
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -3282,8 +3239,6 @@ const FamilyBuilder = () => {
       </Dialog>
 
       <GlobalFooter />
-        </div>
-      </div>
     </div>
   );
 };
