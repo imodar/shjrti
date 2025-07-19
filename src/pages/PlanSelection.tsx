@@ -538,35 +538,6 @@ const PlanSelection = () => {
           })}
         </div>
 
-        {/* Creative CTA Section */}
-        <div className="mt-16 text-center">
-          <Card className="border-0 bg-gradient-to-r from-emerald-50 via-white to-purple-50 dark:from-emerald-950/30 dark:via-slate-800 dark:to-purple-950/30 shadow-xl">
-            <CardContent className="p-12">
-              <div className="max-w-3xl mx-auto">
-                <div className="flex justify-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-purple-600 rounded-2xl flex items-center justify-center animate-pulse">
-                    <Heart className="h-8 w-8 text-white" />
-                  </div>
-                </div>
-                
-                <h3 className="text-3xl font-bold text-foreground mb-4">
-                  {currentLanguage === 'ar' 
-                    ? 'ابدأ رحلتك في حفظ التاريخ'
-                    : 'Start Your Heritage Journey'
-                  }
-                </h3>
-                
-                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  {currentLanguage === 'ar' 
-                    ? 'انضم إلى آلاف العائلات حول العالم واحتفظ بقصص أجدادك للأجيال القادمة'
-                    : 'Join thousands of families worldwide and preserve your ancestors\' stories for future generations'
-                  }
-                </p>
-
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
