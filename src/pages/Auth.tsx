@@ -4,15 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TreePine, Mail, Lock, User, Phone, Heart, Users, Star, Sparkles, Crown, Gem, Check, ChevronsUpDown } from "lucide-react";
+import { TreePine, Mail, Lock, User, Phone, Heart, Users, Star, Sparkles, Crown, Gem } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LuxuryFooter } from "@/components/LuxuryFooter";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,25 +17,6 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [countryCode, setCountryCode] = useState("+966");
-  const [open, setOpen] = useState(false);
-
-  const countries = [
-    { value: "+966", label: "🇸🇦 السعودية", code: "+966" },
-    { value: "+971", label: "🇦🇪 الإمارات", code: "+971" },
-    { value: "+965", label: "🇰🇼 الكويت", code: "+965" },
-    { value: "+973", label: "🇧🇭 البحرين", code: "+973" },
-    { value: "+974", label: "🇶🇦 قطر", code: "+974" },
-    { value: "+968", label: "🇴🇲 عُمان", code: "+968" },
-    { value: "+962", label: "🇯🇴 الأردن", code: "+962" },
-    { value: "+961", label: "🇱🇧 لبنان", code: "+961" },
-    { value: "+20", label: "🇪🇬 مصر", code: "+20" },
-    { value: "+212", label: "🇲🇦 المغرب", code: "+212" },
-    { value: "+213", label: "🇩🇿 الجزائر", code: "+213" },
-    { value: "+216", label: "🇹🇳 تونس", code: "+216" },
-    { value: "+1", label: "🇺🇸 الولايات المتحدة", code: "+1" },
-    { value: "+44", label: "🇬🇧 المملكة المتحدة", code: "+44" },
-  ];
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -130,7 +108,7 @@ const Auth = () => {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
-            phone: `${countryCode} ${phone}`,
+            phone: phone,
           }
         }
       });
@@ -154,7 +132,6 @@ const Auth = () => {
       setPassword("");
       setFullName("");
       setPhone("");
-      setCountryCode("+966");
     } catch (error: any) {
       toast({
         title: "خطأ",
@@ -402,63 +379,17 @@ const Auth = () => {
 
                       <div className="space-y-2">
                         <Label htmlFor="phone">رقم الهاتف</Label>
-                        <div className="flex gap-2">
-                          <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={open}
-                                className="w-40 justify-between"
-                              >
-                                {countryCode
-                                  ? countries.find((country) => country.value === countryCode)?.code
-                                  : "كود الدولة"}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-60 p-0">
-                              <Command>
-                                <CommandInput placeholder="ابحث عن دولة..." />
-                                <CommandList>
-                                  <CommandEmpty>لا توجد دولة بهذا الاسم.</CommandEmpty>
-                                  <CommandGroup>
-                                    {countries.map((country) => (
-                                      <CommandItem
-                                        key={country.value}
-                                        value={country.label}
-                                        onSelect={(currentValue) => {
-                                          const selectedCountry = countries.find((c) => c.label === currentValue);
-                                          setCountryCode(selectedCountry?.value || "+966");
-                                          setOpen(false);
-                                        }}
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            countryCode === country.value ? "opacity-100" : "opacity-0"
-                                          )}
-                                        />
-                                        {country.label}
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                          <div className="relative flex-1">
-                            <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="phone"
-                              type="tel"
-                              placeholder="50 123 4567"
-                              className="pr-10"
-                              value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              required
-                            />
-                          </div>
+                        <div className="relative">
+                          <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+966 50 123 4567"
+                            className="pr-10"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                          />
                         </div>
                       </div>
 
