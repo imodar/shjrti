@@ -1523,7 +1523,7 @@ const FamilyBuilder = () => {
       <GlobalHeader />
 
       {/* Main Content */}
-      <div className="pt-8 relative z-10 min-h-screen">
+      <div className="pt-24 relative z-10 min-h-screen">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header Box */}
           <div className="mb-8">
