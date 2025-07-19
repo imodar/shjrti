@@ -1062,8 +1062,12 @@ const FamilyCreator = () => {
               </Button>
               
               <Button
-                onClick={handleNextStep}
-                className="h-16 px-16 text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-2xl text-white font-bold"
+                onClick={(e) => {
+                  console.log('Button clicked!', e);
+                  handleNextStep();
+                }}
+                className="h-16 px-16 text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-2xl text-white font-bold relative z-50 pointer-events-auto"
+                style={{ pointerEvents: 'auto' }}
               >
                 {currentStep === 1 ? "التالي" : "إنشاء العائلة"}
                 {currentStep === 1 && <ArrowLeft className="h-6 w-6 ml-3" />}
