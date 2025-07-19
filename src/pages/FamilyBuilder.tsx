@@ -1593,12 +1593,6 @@ const FamilyBuilder = () => {
             </div>
           </div>
           
-          {/* Family Name Heading */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              عائلة {familyData?.name || 'غير محدد'}
-            </h1>
-          </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8" style={{direction: 'rtl'}}>
             {/* Modern Tabs Navigation */}
