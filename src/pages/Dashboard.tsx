@@ -590,34 +590,36 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            {/* Action Buttons - Creative Layout */}
+                            {/* Action Buttons - Redesigned Layout */}
                             <div className="space-y-3">
-                              {/* Primary Actions */}
+                              {/* Primary Actions - Side by Side */}
                               <div className="grid grid-cols-2 gap-3">
+                                <Link to={`/family-overview?family=${tree.id}`} className="group/btn">
+                                  <Button className="w-full h-12 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
+                                    <Edit className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
+                                    <span className="font-semibold">إدارة الشجرة</span>
+                                  </Button>
+                                </Link>
                                 <Link to={`/family-tree-view?family=${tree.id}`} className="group/btn">
                                   <Button className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
                                     <Eye className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
                                     <span className="font-semibold">عرض الشجرة</span>
                                   </Button>
                                 </Link>
-                                <Link to={`/family-overview?family=${tree.id}`} className="group/btn">
-                                  <Button className="w-full h-12 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105">
-                                    <Edit className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
-                                    <span className="font-semibold">إدارة</span>
-                                  </Button>
-                                </Link>
                               </div>
                               
-                              {/* Secondary Action */}
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="w-full h-10 border-red-200/60 dark:border-red-700/40 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 hover:border-red-300 dark:hover:border-red-600 transition-all duration-300 rounded-xl group/btn backdrop-blur-sm"
-                                onClick={() => handleDeleteTree(tree.id)}
-                              >
-                                <Trash2 className="h-4 w-4 ml-2 group-hover/btn:scale-110 transition-transform duration-200" />
-                                <span className="text-sm">حذف الشجرة</span>
-                              </Button>
+                              {/* Secondary Action - Small Delete Button */}
+                              <div className="flex justify-center">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 px-4 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300 transition-all duration-300 rounded-lg group/btn text-xs"
+                                  onClick={() => handleDeleteTree(tree.id)}
+                                >
+                                  <Trash2 className="h-3 w-3 ml-1 group-hover/btn:scale-110 transition-transform duration-200" />
+                                  <span>حذف</span>
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                           
