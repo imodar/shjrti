@@ -2573,6 +2573,10 @@ const FamilyBuilder = () => {
                     {/* Add/Edit Wife Form - Only show if no existing wives or currently editing */}
                     {(!wives.some(w => w.id.toString().includes('existing-')) || editingWife) && (
                       <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
+                        <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                          {editingWife ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
+                          {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
+                        </h4>
                       
                       <div className="space-y-4">
                         {/* Name, Status and Birth Date Row */}
