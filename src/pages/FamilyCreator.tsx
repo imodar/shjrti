@@ -441,7 +441,7 @@ const FamilyCreator = () => {
                 {/* Right: Icon and Status */}
                 <div className="flex items-center gap-4">
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl blur opacity-50 group-hover:opacity-80 transition-all duration-500 animate-pulse"></div>
+                    {/* Removed the glowing green effect that was causing the issue */}
                     <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30 transform hover:scale-110 transition-all duration-300">
                       <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
                     </div>
