@@ -17,6 +17,7 @@ import {
   Shield,
   X
 } from "lucide-react";
+import { GlobalFooter } from "@/components/GlobalFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -676,6 +677,8 @@ const Dashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      <GlobalFooter />
     </div>
   );
 };
