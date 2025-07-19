@@ -796,8 +796,13 @@ const FamilyCreator = () => {
                                 <Input
                                   id="founderName"
                                   placeholder={`الاسم الأول فقط - عائلة ${treeData.name}`}
-                                  value={founderData.name}
-                                  onChange={(e) => setFounderData({...founderData, name: e.target.value})}
+                                  value={founderData.name ? `${founderData.name} ${treeData.name}` : ''}
+                                  onChange={(e) => {
+                                    const fullName = e.target.value;
+                                    // Extract first name by removing the family name from the end
+                                    const firstName = fullName.replace(` ${treeData.name}`, '').trim();
+                                    setFounderData({...founderData, name: firstName});
+                                  }}
                                   className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl"
                                 />
                               </div>
