@@ -72,19 +72,18 @@ const Auth = () => {
             description: "سنرسل لك رمز تحقق جديد",
           });
           
-          // Send OTP for verification
-          const { error: resendError } = await supabase.auth.resend({
-            type: 'signup',
+          // Send OTP code via email
+          const { error: otpError } = await supabase.auth.signInWithOtp({
             email: email,
             options: {
-              emailRedirectTo: `${window.location.origin}/`
+              shouldCreateUser: false,
             }
           });
 
-          if (resendError) {
+          if (otpError) {
             toast({
               title: "خطأ في الإرسال",
-              description: resendError.message,
+              description: otpError.message,
               variant: "destructive",
             });
           } else {
