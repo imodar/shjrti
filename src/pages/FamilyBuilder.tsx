@@ -1818,7 +1818,6 @@ const FamilyBuilder = () => {
                         {/* Relation Card with Gradient */}
                         <div className="relative group/relation">
                           
-                          <div>
                               {member.relatedPersonId ? (
                                 <div className="flex items-center justify-center gap-2">
                                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
@@ -1839,7 +1838,6 @@ const FamilyBuilder = () => {
                                   <span className="font-bold text-primary text-lg">المؤسس</span>
                                 </>
                               )}
-                          </div>
                         </div>
 
                         {/* Status Card with Animation */}
