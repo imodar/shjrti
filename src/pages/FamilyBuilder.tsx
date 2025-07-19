@@ -1525,6 +1525,57 @@ const FamilyBuilder = () => {
       {/* Main Content */}
       <div className="pt-8 relative z-10 min-h-screen">
         <div className="max-w-7xl mx-auto px-6">
+          {/* Header Box */}
+          <div className="mb-8">
+            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
+              <div className="flex items-center justify-between gap-8">
+                {/* Right Side: Icon + Title + Description */}
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                      <Users className="h-8 w-8 text-white drop-shadow-lg" />
+                    </div>
+                    {/* Status Indicator */}
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Text Content */}
+                  <div className="text-right">
+                    <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        إدارة أفراد العائلة
+                      </span>
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                      أضف وعدل أفراد شجرة العائلة وتتبع تطور نسبك
+                    </p>
+                  </div>
+                </div>
+
+                {/* Left Side: Family Badge */}
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105 flex items-center justify-center text-sm font-bold">
+                      <span className="relative z-10">{familyMembers.length}</span>
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">أفراد العائلة</span>
+                  </div>
+                  
+                  <Button
+                    onClick={() => navigate("/dashboard")}
+                    variant="outline"
+                    className="border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 rounded-xl px-6"
+                  >
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                    العودة للوحة التحكم
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           {/* Family Name Heading */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
