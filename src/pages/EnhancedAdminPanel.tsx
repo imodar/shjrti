@@ -354,6 +354,14 @@ export default function EnhancedAdminPanel() {
     if (!editingLanguage) return;
 
     try {
+      // إذا كانت اللغة ستصبح افتراضية، اجعل جميع اللغات الأخرى غير افتراضية
+      if (editingLanguage.is_default) {
+        await supabase
+          .from('languages')
+          .update({ is_default: false })
+          .neq('id', editingLanguage.id);
+      }
+
       const { error } = await supabase
         .from('languages')
         .update({
