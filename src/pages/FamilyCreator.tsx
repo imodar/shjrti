@@ -1099,16 +1099,49 @@ const FamilyCreator = () => {
 
       {/* Add Wife Modal */}
       <Dialog open={isAddingWife} onOpenChange={setIsAddingWife}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>إضافة زوجة جديدة</DialogTitle>
+            <DialogTitle className="text-xl">إضافة زوجة جديدة</DialogTitle>
+            <DialogDescription>
+              أدخل معلومات الزوجة لإضافتها إلى شجرة العائلة
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 p-4">
-            <p className="text-muted-foreground">يمكنك إضافة الزوجات لاحقاً من خلال لوحة التحكم</p>
-            <Button onClick={() => setIsAddingWife(false)} className="w-full">
-              موافق
-            </Button>
+          <div className="p-4">
+            <WifeForm
+              ref={wifeFormRef}
+              onAddWife={(wifeData) => {
+                const newWife = {
+                  id: crypto.randomUUID(),
+                  name: wifeData.name,
+                  isAlive: wifeData.isAlive,
+                  birthDate: wifeData.birthDate,
+                  deathDate: wifeData.deathDate
+                };
+                setWives([...wives, newWife]);
+                setIsAddingWife(false);
+                toast({
+                  title: "تم إضافة الزوجة بنجاح",
+                  description: `تم إضافة ${wifeData.name} إلى قائمة الزوجات`
+                });
+              }}
+            />
           </div>
+          <DialogFooter className="flex gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsAddingWife(false)}
+              className="flex-1"
+            >
+              إلغاء
+            </Button>
+            <Button 
+              onClick={() => wifeFormRef.current?.handleSubmit()}
+              disabled={!wifeFormRef.current?.isValid()}
+              className="flex-1"
+            >
+              إضافة الزوجة
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
