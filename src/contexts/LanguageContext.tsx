@@ -54,10 +54,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const currency = currentLang?.currency || 'USD';
 
   useEffect(() => {
-    loadLanguages();
-    // Load saved language from localStorage or use default
-    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
-    setCurrentLanguage(savedLanguage);
+    const initializeLanguage = async () => {
+      await loadLanguages();
+      // Load saved language from localStorage or use database default
+      const savedLanguage = localStorage.getItem('preferred-language');
+      if (savedLanguage) {
+        setCurrentLanguage(savedLanguage);
+      }
+      // If no saved language, the default will be set when languages are loaded
+    };
+    initializeLanguage();
   }, []);
 
   useEffect(() => {
@@ -79,6 +85,13 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
       if (error) throw error;
       setLanguages(data || []);
+      
+      // Set default language if no saved language preference exists
+      const savedLanguage = localStorage.getItem('preferred-language');
+      if (!savedLanguage && data && data.length > 0) {
+        const defaultLang = data.find(lang => lang.is_default) || data[0];
+        setCurrentLanguage(defaultLang.code);
+      }
     } catch (error) {
       console.error('Error loading languages:', error);
     }
