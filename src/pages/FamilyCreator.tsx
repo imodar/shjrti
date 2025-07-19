@@ -394,48 +394,71 @@ const FamilyCreator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
+      {/* Luxury Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/10 rounded-full blur-3xl animate-float opacity-60"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-tr from-cyan-400/15 via-teal-400/20 to-emerald-400/10 rounded-full blur-2xl animate-float-delayed opacity-40"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-teal-400/10 via-emerald-400/15 to-cyan-400/5 rounded-full blur-3xl animate-float-slow opacity-30"></div>
+      </div>
       
-      {/* Header - matching FamilyBuilder */}
-      <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-sm border-b">
-        <div className="container mx-auto px-4 lg:px-6 py-4">
+      {/* Luxury Header */}
+      <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-emerald-200/30 dark:border-emerald-700/30 sticky top-0 z-50">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-2 right-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-6 right-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-4 right-64 w-3 h-3 bg-cyan-400/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
+
+        <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
-                <TreePine className="h-5 w-5 text-white" />
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                  <TreePine className="h-7 w-7 text-white" />
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">إنشاء شجرة العائلة</h1>
-                <p className="text-sm text-muted-foreground">ابدأ رحلتك في بناء تاريخ عائلتك</p>
+              
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                  إنشاء شجرة العائلة
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <p className="text-muted-foreground font-medium">ابدأ رحلتك في بناء تاريخ عائلتك</p>
+                </div>
               </div>
             </div>
             
-            {/* Progress Indicator */}
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
-                currentStep >= 1 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+            {/* Luxury Progress Indicator */}
+            <div className="flex items-center gap-3">
+              <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all ${
+                currentStep >= 1 
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
+                  : 'bg-white/20 backdrop-blur-sm text-muted-foreground border border-emerald-200/30'
               }`}>
                 1
+                {currentStep >= 1 && <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-2xl animate-pulse"></div>}
               </div>
-              <div className={`w-6 h-0.5 ${currentStep >= 2 ? 'bg-primary' : 'bg-muted'}`}></div>
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
-                currentStep >= 2 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+              <div className={`w-8 h-1 rounded-full transition-all ${currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-emerald-200/30'}`}></div>
+              <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all ${
+                currentStep >= 2 
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
+                  : 'bg-white/20 backdrop-blur-sm text-muted-foreground border border-emerald-200/30'
               }`}>
                 2
+                {currentStep >= 2 && <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-2xl animate-pulse"></div>}
               </div>
             </div>
           </div>
         </div>
-      </div>
+        
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+      </header>
 
       {/* Main Content */}
-      <div className="relative overflow-hidden">
-        {/* Background Decoration */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/10 rounded-full blur-3xl animate-float-delayed"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-float-slow"></div>
-        </div>
+      <div className="relative z-10 overflow-hidden">{/* Background already handled in main div */}
 
         <div className="container mx-auto px-6 py-8">
           <div className="max-w-6xl mx-auto">

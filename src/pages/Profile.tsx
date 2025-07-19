@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import Footer from "@/components/Footer";
+import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -308,9 +308,9 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">جاري التحميل...</p>
         </div>
       </div>
@@ -318,17 +318,17 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
+      {/* Luxury Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/10 rounded-full blur-3xl animate-float opacity-60"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-tr from-cyan-400/15 via-teal-400/20 to-emerald-400/10 rounded-full blur-2xl animate-float-delayed opacity-40"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-teal-400/10 via-emerald-400/15 to-cyan-400/5 rounded-full blur-3xl animate-float-slow opacity-30"></div>
       </div>
 
       <div className="relative z-10">
         {/* Header */}
-        <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-gradient-to-r from-emerald-200/30 to-cyan-200/30 sticky top-0 z-50">
+        <header className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border-b border-emerald-200/30 dark:border-emerald-700/30 sticky top-0 z-50">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-2 right-10 w-6 h-6 bg-emerald-400/20 rounded-full animate-pulse"></div>
             <div className="absolute top-6 right-32 w-4 h-4 bg-teal-400/30 rotate-45 animate-pulse" style={{animationDelay: '1s'}}></div>
@@ -448,345 +448,229 @@ export default function Profile() {
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
         </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Card */}
-          <div className="lg:col-span-1">
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className="relative inline-block mb-4">
-                  <Avatar className="w-24 h-24 mx-auto">
-                    <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="text-2xl bg-emerald-100 text-emerald-600">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button 
-                    size="sm" 
-                    className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0 bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                </div>
-                <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                  {getDisplayName()}
-                </h3>
-                <p className="text-muted-foreground mb-4">{profileData.email}</p>
-                <div className="space-y-2">
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
-                    عضو منذ {profileData.joinDate}
-                  </Badge>
-                  {currentPackage && (
-                    <div className="mt-4 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <Crown className="h-4 w-4 text-yellow-600" />
-                        <span className="font-semibold text-yellow-800 dark:text-yellow-300">الباقة الحالية</span>
-                      </div>
-                      <p className="text-sm font-medium text-yellow-700 dark:text-yellow-400">{currentPackage.name}</p>
-                      {currentPackage.expires_at && (
-                        <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-1">
-                          تنتهي في: {new Date(currentPackage.expires_at).toLocaleDateString('ar-SA')}
-                        </p>
-                      )}
-                      <Badge 
-                        variant={currentPackage.status === 'active' ? 'default' : 'secondary'}
-                        className={`mt-2 ${currentPackage.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}
-                      >
-                        {currentPackage.status === 'active' ? 'نشط' : 'غير نشط'}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Stats */}
-            <Card className="mt-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-emerald-800 dark:text-emerald-200">إحصائيات سريعة</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">الأشجار المنشأة</span>
-                  <span className="font-medium">{stats.familiesCreated}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">إجمالي الأفراد</span>
-                  <span className="font-medium">{stats.totalMembers}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">آخر نشاط</span>
-                  <span className="font-medium">{stats.lastActivity}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Profile Information */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-emerald-800 dark:text-emerald-200">المعلومات الشخصية</CardTitle>
-                    <CardDescription>قم بتحديث معلوماتك الشخصية هنا</CardDescription>
-                  </div>
-                  {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)} variant="outline">
-                      <Edit className="h-4 w-4 mr-2" />
-                      تعديل
+        <div className="container mx-auto px-6 py-12 relative z-10">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* User Avatar & Overview */}
+            <div className="lg:col-span-1 space-y-6">
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
+                <CardHeader className="text-center pb-4">
+                  <div className="relative mx-auto">
+                    <Avatar className="w-32 h-32 ring-4 ring-emerald-500/30 ring-offset-4 ring-offset-background">
+                      <AvatarImage src="/placeholder.svg" />
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-4xl font-bold">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg"
+                    >
+                      <Camera className="h-4 w-4" />
                     </Button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button onClick={handleSave} size="sm" className="bg-emerald-600 hover:bg-emerald-700" disabled={saving}>
-                        <Save className="h-4 w-4 mr-2" />
-                        {saving ? "جاري الحفظ..." : "حفظ"}
-                      </Button>
-                      <Button onClick={handleCancel} size="sm" variant="outline" disabled={saving}>
-                        <X className="h-4 w-4 mr-2" />
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-200">{getDisplayName()}</CardTitle>
+                    <CardDescription className="text-emerald-600 dark:text-emerald-400">{profileData.email}</CardDescription>
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white">
+                      <Crown className="h-3 w-3 mr-1" />
+                      {currentPackage?.name || "الباقة المجانية"}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-emerald-600" />
+                        <span className="text-sm font-medium text-emerald-800 dark:text-emerald-200">تاريخ الانضمام</span>
+                      </div>
+                      <span className="text-sm text-emerald-700 dark:text-emerald-300">{profileData.joinDate}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Users className="h-5 w-5 text-teal-600" />
+                        <span className="text-sm font-medium text-teal-800 dark:text-teal-200">أشجار العائلة</span>
+                      </div>
+                      <span className="text-sm text-teal-700 dark:text-teal-300">{stats.familiesCreated}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Heart className="h-5 w-5 text-cyan-600" />
+                        <span className="text-sm font-medium text-cyan-800 dark:text-cyan-200">أفراد العائلة</span>
+                      </div>
+                      <span className="text-sm text-cyan-700 dark:text-cyan-300">{stats.totalMembers}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Profile Details & Edit Form */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-200">المعلومات الشخصية</CardTitle>
+                    <Button
+                      onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
+                      variant={isEditing ? "outline" : "default"}
+                      className={isEditing 
+                        ? "border-red-300 text-red-700 hover:bg-red-50" 
+                        : "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg"}
+                    >
+                      {isEditing ? (
+                        <>
+                          <X className="h-4 w-4 mr-2" />
+                          إلغاء
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="h-4 w-4 mr-2" />
+                          تعديل
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-emerald-800 dark:text-emerald-200 font-medium">الاسم الأول</Label>
+                      {isEditing ? (
+                        <Input
+                          id="firstName"
+                          value={profileData.firstName}
+                          onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+                        />
+                      ) : (
+                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
+                          <p className="text-emerald-800 dark:text-emerald-200">{profileData.firstName || "غير محدد"}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="text-emerald-800 dark:text-emerald-200 font-medium">اسم العائلة</Label>
+                      {isEditing ? (
+                        <Input
+                          id="lastName"
+                          value={profileData.lastName}
+                          onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+                        />
+                      ) : (
+                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
+                          <p className="text-emerald-800 dark:text-emerald-200">{profileData.lastName || "غير محدد"}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-emerald-800 dark:text-emerald-200 font-medium">البريد الإلكتروني</Label>
+                      {isEditing ? (
+                        <Input
+                          id="email"
+                          type="email"
+                          value={profileData.email}
+                          onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+                        />
+                      ) : (
+                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-emerald-600" />
+                            <p className="text-emerald-800 dark:text-emerald-200">{profileData.email}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-emerald-800 dark:text-emerald-200 font-medium">رقم الهاتف</Label>
+                      {isEditing ? (
+                        <Input
+                          id="phone"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+                          placeholder="05XXXXXXXX"
+                        />
+                      ) : (
+                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-emerald-600" />
+                            <p className="text-emerald-800 dark:text-emerald-200">{profileData.phone || "غير محدد"}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {isEditing && (
+                    <div className="flex justify-end gap-3 pt-4 border-t border-emerald-200/50">
+                      <Button
+                        variant="outline"
+                        onClick={handleCancel}
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                      >
                         إلغاء
                       </Button>
+                      <Button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg"
+                      >
+                        {saving ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                            جاري الحفظ...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4 mr-2" />
+                            حفظ التغييرات
+                          </>
+                        )}
+                      </Button>
                     </div>
                   )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="firstName">الاسم الأول</Label>
-                    <div className="relative">
-                      <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="firstName"
-                        value={profileData.firstName}
-                        onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
-                        disabled={!isEditing}
-                        className="pr-10"
-                        placeholder="الاسم الأول"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">الاسم الأخير</Label>
-                    <div className="relative">
-                      <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="lastName"
-                        value={profileData.lastName}
-                        onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
-                        disabled={!isEditing}
-                        className="pr-10"
-                        placeholder="الاسم الأخير"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="email">البريد الإلكتروني</Label>
-                    <div className="relative">
-                      <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        type="email"
-                        value={profileData.email}
-                        onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                        disabled={!isEditing}
-                        className="pr-10"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">رقم الهاتف</Label>
-                    <div className="relative">
-                      <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="phone"
-                        value={profileData.phone}
-                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                        disabled={!isEditing}
-                        className="pr-10"
-                        placeholder="رقم الهاتف"
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Account Settings */}
-                <div className="relative mt-8">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-200 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-800 rounded-xl p-[1px]">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl h-full w-full"></div>
-                  </div>
-                  
-                  <div className="relative bg-gradient-to-br from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl p-6 backdrop-blur-sm">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg blur-sm opacity-30"></div>
-                        <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-lg">
-                          <Edit className="h-5 w-5 text-white" />
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-xl bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent">
-                          إعدادات الحساب
-                        </h4>
-                        <p className="text-sm text-muted-foreground">إدارة حسابك وإعداداته المتقدمة</p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Link to="/change-password" className="group">
-                        <div className="relative overflow-hidden rounded-xl border border-emerald-200/50 dark:border-emerald-800/50 bg-white/50 dark:bg-gray-800/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-200/50 dark:hover:shadow-emerald-800/30 hover:-translate-y-1">
-                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/0 to-teal-100/0 group-hover:from-emerald-100/80 group-hover:to-teal-100/80 dark:group-hover:from-emerald-900/30 dark:group-hover:to-teal-900/30 transition-all duration-300"></div>
-                          <div className="relative flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 group-hover:scale-110 transition-transform duration-300">
-                              <Calendar className="h-4 w-4 text-white" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900 dark:text-gray-100">تغيير كلمة المرور</p>
-                              <p className="text-xs text-muted-foreground">تحديث كلمة المرور الخاصة بك</p>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                      
-                      <Link to="/payments" className="group">
-                        <div className="relative overflow-hidden rounded-xl border border-emerald-200/50 dark:border-emerald-800/50 bg-white/50 dark:bg-gray-800/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-200/50 dark:hover:shadow-emerald-800/30 hover:-translate-y-1">
-                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/0 to-teal-100/0 group-hover:from-emerald-100/80 group-hover:to-teal-100/80 dark:group-hover:from-emerald-900/30 dark:group-hover:to-teal-900/30 transition-all duration-300"></div>
-                          <div className="relative flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 group-hover:scale-110 transition-transform duration-300">
-                              <Mail className="h-4 w-4 text-white" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900 dark:text-gray-100">إدارة طرق الدفع</p>
-                              <p className="text-xs text-muted-foreground">إعداد وإدارة وسائل الدفع</p>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                    
-                    <div className="mt-6 pt-6 border-t border-red-200/50 dark:border-red-800/50">
-                      <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 rounded-xl p-4 border border-red-200/50 dark:border-red-800/50">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="p-1.5 rounded-lg bg-gradient-to-br from-red-500 to-red-600">
-                            <X className="h-4 w-4 text-white" />
-                          </div>
-                          <h5 className="font-semibold text-red-700 dark:text-red-300">المنطقة الخطرة</h5>
-                        </div>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              className="w-full justify-start border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300 transition-all duration-300"
-                            >
-                              <div className="flex items-center gap-2">
-                                <Trash2 className="h-4 w-4" />
-                                <span>حذف الحساب نهائياً</span>
-                              </div>
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl" dir="rtl">
-                            <div className="absolute inset-0 bg-gradient-to-br from-red-50/90 via-pink-50/90 to-orange-50/90 dark:from-red-950/30 dark:via-pink-950/30 dark:to-orange-950/30 rounded-lg"></div>
-                            
-                            <div className="relative">
-                              <DialogHeader className="text-center pb-6">
-                                <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-900/50 dark:to-pink-900/50 rounded-full flex items-center justify-center">
-                                  <div className="text-4xl animate-pulse">😢</div>
-                                </div>
-                                
-                                <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 dark:from-red-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
-                                  آسفون لرؤيتك تغادر...
-                                </DialogTitle>
-                                <DialogDescription className="text-lg text-gray-600 dark:text-gray-300">
-                                  نحن نفهم أن الأمور قد تتغير، لكننا سنفتقدك حقاً
-                                </DialogDescription>
-                              </DialogHeader>
+                </CardContent>
+              </Card>
 
-                              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 mb-6">
-                                <div className="flex items-start gap-4">
-                                  <div className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg">
-                                    <AlertTriangle className="h-6 w-6 text-white" />
-                                  </div>
-                                  <div>
-                                    <h3 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2 text-lg">
-                                      تحذير: هذا الإجراء لا يمكن التراجع عنه!
-                                    </h3>
-                                    <ul className="text-sm text-yellow-700 dark:text-yellow-400 space-y-2">
-                                      <li className="flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
-                                        سيتم حذف جميع أشجار العائلة الخاصة بك نهائياً
-                                      </li>
-                                      <li className="flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
-                                        ستفقد جميع البيانات والصور المحفوظة
-                                      </li>
-                                      <li className="flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
-                                        لن تتمكن من استرداد حسابك بعد الحذف
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                  <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                  <h3 className="font-semibold text-blue-800 dark:text-blue-300">ذكرياتك معنا</h3>
-                                </div>
-                                <div className="grid grid-cols-3 gap-4 text-center">
-                                  <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.familiesCreated}</div>
-                                    <div className="text-xs text-muted-foreground">أشجار منشأة</div>
-                                  </div>
-                                  <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.totalMembers}</div>
-                                    <div className="text-xs text-muted-foreground">فرد مضاف</div>
-                                  </div>
-                                  <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">15</div>
-                                    <div className="text-xs text-muted-foreground">يوم معنا</div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="mb-6">
-                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                                  للتأكيد، اكتب <span className="font-bold text-red-600 dark:text-red-400">"احذف حسابي"</span> في المربع أدناه:
-                                </Label>
-                                <Input 
-                                  placeholder="احذف حسابي"
-                                  className="text-center font-medium"
-                                />
-                              </div>
-
-                              <DialogFooter className="gap-3">
-                                <DialogTrigger asChild>
-                                  <Button variant="outline" className="flex-1">
-                                    إلغاء الأمر
-                                  </Button>
-                                </DialogTrigger>
-                                <Button 
-                                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  حذف الحساب نهائياً
-                                </Button>
-                              </DialogFooter>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </div>
+              {/* Quick Actions */}
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
+                <CardHeader>
+                  <CardTitle className="text-xl text-emerald-800 dark:text-emerald-200">الإجراءات السريعة</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link to="/change-password">
+                      <Button className="w-full justify-start bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg">
+                        <Settings className="h-4 w-4 mr-2" />
+                        تغيير كلمة المرور
+                      </Button>
+                    </Link>
+                    <Link to="/payments">
+                      <Button className="w-full justify-start bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 shadow-lg">
+                        <Crown className="h-4 w-4 mr-2" />
+                        إدارة الاشتراك
+                      </Button>
+                    </Link>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
-      
-      <Footer />
-      </div>
+
+      <LuxuryFooter />
     </div>
   );
 }
