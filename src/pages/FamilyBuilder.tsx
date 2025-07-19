@@ -1567,49 +1567,7 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Navigation Icons */}
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col items-center cursor-pointer group">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
-                      <Users className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Overview</span>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/family-tree-view')}
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                      <TreePine className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Tree View</span>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/store')}
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                      <Store className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Store</span>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/family-statistics')}
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                      <Star className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Statistics</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sample Statistics Section */}
-              <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
+                {/* Sample Statistics Section - Moved to Middle */}
                 <div className="flex justify-center items-center gap-8">
                   {/* Members Available */}
                   <div className="flex items-center gap-2">
@@ -1651,6 +1609,46 @@ const FamilyBuilder = () => {
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">آخر تعديل</div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Navigation Icons */}
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-center cursor-pointer group">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Overview</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/family-tree-view')}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <TreePine className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Tree View</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/store')}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <Store className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Store</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/family-statistics')}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <Star className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">Statistics</span>
                   </div>
                 </div>
               </div>
