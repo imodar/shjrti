@@ -2058,8 +2058,31 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Profile Photo and Family Selection Section */}
+                {/* Profile Photo and Family Relation Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Family Relation */}
+                  <div className="space-y-4">
+                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      صلة القرابة
+                    </Label>
+                    <Select 
+                      value={formData.relation} 
+                      onValueChange={(value) => setFormData({...formData, relation: value, relatedPersonId: ""})}
+                    >
+                      <SelectTrigger className="h-12 text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input">
+                        <SelectValue placeholder="اختر صلة القرابة" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                        <SelectItem value="founder" className="text-lg py-4 rounded-lg">👑 مؤسس العائلة</SelectItem>
+                        <SelectItem value="child" className="text-lg py-4 rounded-lg">👶 طفل</SelectItem>
+                        <SelectItem value="spouse" className="text-lg py-4 rounded-lg">💑 زوج/زوجة</SelectItem>
+                        <SelectItem value="sibling" className="text-lg py-4 rounded-lg">👥 أخ/أخت</SelectItem>
+                        <SelectItem value="parent" className="text-lg py-4 rounded-lg">👨‍👩‍👧‍👦 والد/والدة</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   {/* Profile Photo */}
                   <div className="space-y-4">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
