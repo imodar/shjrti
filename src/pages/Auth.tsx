@@ -65,11 +65,45 @@ const Auth = () => {
       });
 
       if (error) {
-        toast({
-          title: "خطأ في تسجيل الدخول",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Check if email is not confirmed
+        if (error.message.includes("Email not confirmed") || error.message.includes("not confirmed")) {
+          toast({
+            title: "البريد الإلكتروني غير مؤكد",
+            description: "سنرسل لك رمز تحقق جديد",
+          });
+          
+          // Send OTP for verification
+          const { error: resendError } = await supabase.auth.resend({
+            type: 'signup',
+            email: email,
+            options: {
+              emailRedirectTo: `${window.location.origin}/`
+            }
+          });
+
+          if (resendError) {
+            toast({
+              title: "خطأ في الإرسال",
+              description: resendError.message,
+              variant: "destructive",
+            });
+          } else {
+            // Store user data and show OTP screen
+            setPendingUserData({ email, password, fullName: "", phone: "" });
+            setShowOTP(true);
+            toast({
+              title: "تم إرسال رمز التحقق",
+              description: "يرجى إدخال الرمز المرسل إلى بريدك الإلكتروني",
+            });
+          }
+        } else {
+          toast({
+            title: "خطأ في تسجيل الدخول",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        setIsLoading(false);
         return;
       }
 
@@ -85,7 +119,6 @@ const Auth = () => {
         description: error.message || "حدث خطأ أثناء تسجيل الدخول",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
