@@ -235,7 +235,7 @@ const Payment = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-6 py-8 max-w-4xl relative z-10">
+      <div className="container mx-auto px-6 py-4 max-w-4xl relative z-10">
         {/* Header section matching plan-selection style */}
         <div className="text-center mb-12 fade-in">
           <div className="flex flex-col items-center gap-6">
