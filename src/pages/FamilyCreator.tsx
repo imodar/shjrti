@@ -1140,7 +1140,7 @@ const FamilyCreator = () => {
           {/* Decorative Header */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></div>
           
-          <DialogHeader className="text-center pb-4 relative">
+          <DialogHeader className="text-center pb-4 relative flex flex-col items-center justify-center">
             {/* Floating Hearts Animation */}
             <div className="absolute -top-2 -right-2 w-8 h-8 animate-pulse">
               <Heart className="h-full w-full text-pink-400 opacity-60" />
