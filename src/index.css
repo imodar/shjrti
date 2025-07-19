@@ -300,3 +300,19 @@ All colors MUST be HSL.
   background: linear-gradient(180deg, hsl(var(--primary) / 0.8), hsl(var(--accent) / 0.8));
   background-clip: content-box;
 }
+
+/* React Flow Custom Styles */
+.react-flow__node-familyMember,
+.react-flow__node-addMember {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  background: transparent !important;
+  border: none !important;
+}
