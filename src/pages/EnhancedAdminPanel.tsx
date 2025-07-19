@@ -950,20 +950,30 @@ export default function EnhancedAdminPanel() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={editingLanguage.is_active}
-                      onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_active: checked})}
-                    />
-                    <Label>مفعلة</Label>
+                <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border">
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <Label className="font-medium text-gray-700">حالة التفعيل</Label>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={editingLanguage.is_active}
+                        onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_active: checked})}
+                      />
+                      <span className={`text-sm font-medium ${editingLanguage.is_active ? 'text-green-600' : 'text-red-600'}`}>
+                        {editingLanguage.is_active ? 'مفعلة' : 'معطلة'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={editingLanguage.is_default}
-                      onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_default: checked})}
-                    />
-                    <Label>افتراضية</Label>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <Label className="font-medium text-gray-700">اللغة الافتراضية</Label>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={editingLanguage.is_default}
+                        onCheckedChange={(checked) => setEditingLanguage({...editingLanguage, is_default: checked})}
+                      />
+                      <span className={`text-sm font-medium ${editingLanguage.is_default ? 'text-blue-600' : 'text-gray-500'}`}>
+                        {editingLanguage.is_default ? 'افتراضية' : 'عادية'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
