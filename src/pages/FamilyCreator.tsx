@@ -617,24 +617,24 @@ const FamilyCreator = () => {
                                 
                                 {/* Main Icon Container */}
                                 <div className="relative w-28 h-28 mx-auto">
-                                  {/* Gradient Background */}
-                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-500"></div>
-                                  {/* Glass Effect */}
-                                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"></div>
-                                  {/* Icon */}
-                                  <div className="absolute inset-0 flex items-center justify-center">
-                                    <TreePine className="h-14 w-14 text-white drop-shadow-2xl" />
-                                  </div>
-                                  {/* Ambient Glow */}
-                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/50 to-teal-400/50 rounded-2xl blur-2xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
+                                   {/* Neutral Background */}
+                                   <div className="absolute inset-0 bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700 rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-500"></div>
+                                   {/* Glass Effect */}
+                                   <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"></div>
+                                   {/* Icon */}
+                                   <div className="absolute inset-0 flex items-center justify-center">
+                                     <TreePine className="h-14 w-14 text-white drop-shadow-2xl" />
+                                   </div>
+                                   {/* Ambient Glow */}
+                                   <div className="absolute inset-0 bg-gradient-to-br from-gray-400/50 to-gray-500/50 rounded-2xl blur-2xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
                                 </div>
                                 
                                 {/* Orbiting Elements */}
                                 <div className="absolute inset-0 w-40 h-40 mx-auto">
-                                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-emerald-400 rounded-full shadow-lg animate-pulse"></div>
-                                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-teal-400 rounded-full shadow-lg animate-pulse delay-700"></div>
-                                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-amber-400 rounded-full shadow-lg animate-pulse delay-1000"></div>
-                                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-rose-400 rounded-full shadow-lg animate-pulse delay-300"></div>
+                                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-400 rounded-full shadow-lg animate-pulse"></div>
+                                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-500 rounded-full shadow-lg animate-pulse delay-700"></div>
+                                   <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-gray-600 rounded-full shadow-lg animate-pulse delay-1000"></div>
+                                   <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-gray-400 rounded-full shadow-lg animate-pulse delay-300"></div>
                                 </div>
                               </div>
                               
@@ -642,65 +642,52 @@ const FamilyCreator = () => {
                               <div className="space-y-6">
                                 <div className="text-center">
                                   <h3 className="text-5xl md:text-6xl font-bold mb-4">
-                                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent drop-shadow-sm">
-                                      رحلة الإبداع
-                                    </span>
-                                  </h3>
-                                  <div className="relative">
-                                    <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 font-light leading-relaxed">
-                                      تبدأ بحلم واحد يصبح إرثاً خالداً
-                                    </p>
-                                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-full"></div>
+                                     <span className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 bg-clip-text text-transparent drop-shadow-sm">
+                                       رحلة الإبداع
+                                     </span>
+                                   </h3>
+                                   <div className="relative">
+                                     <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 font-light leading-relaxed">
+                                       تبدأ بحلم واحد يصبح إرثاً خالداً
+                                     </p>
+                                     <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-700 rounded-full"></div>
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Advanced Feature Cards */}
-                              <div className="space-y-6">
+                              {/* Three Feature Cards in a Row */}
+                              <div className="grid grid-cols-3 gap-4">
                                 {[
                                   { 
                                     icon: Heart, 
                                     title: "ذكريات خالدة", 
-                                    desc: "احفظ قصص عائلتك للأبد", 
-                                    gradient: "from-emerald-500 to-teal-500",
-                                    shadow: "shadow-emerald-500/25"
+                                    desc: "احفظ قصص عائلتك للأبد"
                                   },
                                   { 
                                     icon: Users, 
                                     title: "روابط قوية", 
-                                    desc: "اربط بين الأجيال بطريقة مبتكرة", 
-                                    gradient: "from-teal-500 to-amber-500",
-                                    shadow: "shadow-teal-500/25"
+                                    desc: "اربط بين الأجيال بطريقة مبتكرة"
                                   },
                                   { 
                                     icon: Star, 
                                     title: "إرث مميز", 
-                                    desc: "اترك بصمة دائمة في التاريخ", 
-                                    gradient: "from-amber-500 to-emerald-500",
-                                    shadow: "shadow-amber-500/25"
+                                    desc: "اترك بصمة دائمة في التاريخ"
                                   }
                                 ].map((item, index) => (
                                   <div key={index} className="group relative transform hover:scale-105 transition-all duration-500">
-                                    {/* Card Background with Glassmorphism */}
-                                    <div className="relative bg-white/10 dark:bg-gray-800/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500">
-                                      {/* Gradient Overlay */}
-                                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-amber-500/5 rounded-3xl"></div>
-                                      
+                                    {/* Rectangular Card */}
+                                    <div className="relative bg-white/10 dark:bg-gray-800/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-lg p-4 shadow-2xl hover:shadow-3xl transition-all duration-500">
                                       {/* Content */}
-                                      <div className="relative flex items-center gap-6 text-right">
-                                        {/* Icon with Advanced Design */}
-                                        <div className="relative">
-                                          <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-xl ${item.shadow} group-hover:rotate-12 group-hover:scale-110 transition-all duration-500`}>
-                                            <item.icon className="h-8 w-8 text-white drop-shadow-lg" />
-                                          </div>
-                                          {/* Glow Effect */}
-                                          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-500`}></div>
+                                      <div className="text-center space-y-3">
+                                        {/* Icon */}
+                                        <div className="mx-auto w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg flex items-center justify-center shadow-lg group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
+                                          <item.icon className="h-6 w-6 text-white drop-shadow-lg" />
                                         </div>
                                         
                                         {/* Text Content */}
-                                        <div className="flex-1 space-y-2">
-                                          <h4 className="font-bold text-gray-800 dark:text-white text-2xl leading-tight">{item.title}</h4>
-                                          <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">{item.desc}</p>
+                                        <div className="space-y-1">
+                                          <h4 className="font-bold text-gray-800 dark:text-white text-lg leading-tight">{item.title}</h4>
+                                          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{item.desc}</p>
                                         </div>
                                       </div>
                                     </div>
@@ -711,23 +698,22 @@ const FamilyCreator = () => {
                               {/* Call to Action - Premium Design */}
                               <div className="relative mt-12">
                                 {/* Background Effects */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/15 to-amber-500/10 backdrop-blur-2xl border border-emerald-300/30 dark:border-emerald-600/30 rounded-3xl shadow-2xl"></div>
-                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 via-transparent to-amber-400/5 rounded-3xl"></div>
+                                <div className="absolute inset-0 backdrop-blur-2xl border border-white/20 dark:border-gray-700/20 rounded-3xl shadow-2xl"></div>
                                 
                                 {/* Content */}
                                 <div className="relative p-8 text-center space-y-6">
                                   {/* Decorative Elements */}
                                   <div className="flex justify-center">
                                     <div className="relative">
-                                      <div className="w-24 h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-full shadow-lg"></div>
-                                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full blur-sm opacity-60"></div>
+                                       <div className="w-24 h-2 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-700 rounded-full shadow-lg"></div>
+                                       <div className="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 rounded-full blur-sm opacity-60"></div>
                                     </div>
                                   </div>
                                   
                                   {/* Main Text */}
                                   <div className="space-y-4">
                                     <h4 className="text-3xl font-bold">
-                                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                                       <span className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 bg-clip-text text-transparent">
                                         🌟 ابدأ رحلتك الإبداعية 🌟
                                       </span>
                                     </h4>
@@ -738,9 +724,9 @@ const FamilyCreator = () => {
                                   
                                   {/* Animated Indicators */}
                                   <div className="flex justify-center gap-3">
-                                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-lg"></div>
-                                    <div className="w-3 h-3 bg-teal-500 rounded-full animate-pulse delay-300 shadow-lg"></div>
-                                    <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse delay-600 shadow-lg"></div>
+                                     <div className="w-3 h-3 bg-gray-500 rounded-full animate-pulse shadow-lg"></div>
+                                     <div className="w-3 h-3 bg-gray-600 rounded-full animate-pulse delay-300 shadow-lg"></div>
+                                     <div className="w-3 h-3 bg-gray-700 rounded-full animate-pulse delay-600 shadow-lg"></div>
                                   </div>
                                 </div>
                               </div>
