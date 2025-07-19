@@ -258,6 +258,16 @@ const PlanSelection = () => {
       return;
     }
 
+    // Check if it's a free plan
+    const selectedPackage = packages.find(pkg => pkg.id === planId);
+    const packagePrice = selectedPackage ? getPackagePrice(selectedPackage) : 0;
+    
+    if (packagePrice === 0) {
+      // For free plans, redirect directly to dashboard
+      navigate("/dashboard");
+      return;
+    }
+
     const isExpired = userSubscription?.expires_at ? new Date(userSubscription.expires_at) < new Date() : true;
     
     if (isCurrentPackage(planId) && !isExpired) {
