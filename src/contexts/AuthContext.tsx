@@ -53,10 +53,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       await supabase.auth.signOut({ scope: 'global' });
-      window.location.href = '/auth';
+      window.location.href = '/';
     } catch (error) {
       console.error('Error signing out:', error);
-      window.location.href = '/auth';
+      window.location.href = '/';
     }
   };
 
