@@ -39,12 +39,19 @@ interface UserProfile {
   last_name?: string;
 }
 
+interface UserSubscription {
+  package_name?: string;
+  status?: string;
+  is_expired?: boolean;
+}
+
 const Dashboard = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const { toast } = useToast();
   const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch user's data
@@ -87,6 +94,14 @@ const Dashboard = () => {
 
         if (!profileError && profile) {
           setUserProfile(profile);
+        }
+
+        // Fetch user subscription
+        const { data: subscription, error: subscriptionError } = await supabase
+          .rpc('get_user_subscription_details', { user_uuid: user.id });
+
+        if (!subscriptionError && subscription && subscription.length > 0) {
+          setUserSubscription(subscription[0]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -182,15 +197,9 @@ const Dashboard = () => {
                           
                           {/* Welcome Text */}
                           <div className="text-right">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                              {t('dashboard_welcome', 'أهلاً وسهلاً')}
-                            </p>
                             <h1 className={`${familyTrees.length > 0 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-bold`}>
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                {userProfile?.first_name ? 
-                                  `${userProfile.first_name} ${userProfile.last_name || ''}`.trim() :
-                                  user?.email?.split('@')[0] || t('dashboard_user', 'صديقي العزيز')
-                                }
+                                أهلاً {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
                               </span>
                             </h1>
                           </div>
@@ -199,13 +208,22 @@ const Dashboard = () => {
                         {/* Center: Tree Count & Description */}
                         <div className="flex-1 text-center">
                           <div className="flex items-center justify-center gap-3 mb-3">
-                            <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
-                              {familyTrees.length === 0 
-                                ? t('no_trees', 'لا توجد أشجار بعد')
-                                : `${familyTrees.length} ${t('trees', familyTrees.length === 1 ? 'شجرة' : 'أشجار')}`
-                              }
-                            </span>
+                            {familyTrees.length === 1 ? (
+                              <div className="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full">
+                                <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
+                              </div>
+                            ) : (
+                              <>
+                                <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                                <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
+                                  {familyTrees.length === 0 
+                                    ? t('no_trees', 'لا توجد أشجار بعد')
+                                    : `${familyTrees.length} ${t('trees', 'أشجار')}`
+                                  }
+                                </span>
+                              </>
+                            )}
                           </div>
                           {familyTrees.length === 0 && (
                             <p className="text-gray-600 dark:text-gray-300">
@@ -214,12 +232,33 @@ const Dashboard = () => {
                           )}
                         </div>
 
-                        {/* Right: Badge & Action */}
+                        {/* Right: Badge & Subscription Status */}
                         <div className="flex flex-col items-center gap-3">
-                          <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 shadow-lg animate-pulse">
-                            <Sparkles className="h-4 w-4 ml-2" />
-                            {t('dashboard_welcome_badge', 'لوحة التحكم')}
-                          </Badge>
+                          {/* Subscription Status */}
+                          {userSubscription?.package_name && !userSubscription?.is_expired ? (
+                            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+                              <Crown className="h-4 w-4" />
+                              <span className="text-sm font-bold">مشترك مميز</span>
+                            </div>
+                          ) : !userSubscription?.package_name ? (
+                            <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
+                              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                                <Gem className="h-4 w-4" />
+                                <span className="text-sm font-medium">حساب مجاني</span>
+                              </div>
+                              <Link to="/plan-selection">
+                                <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-3 py-1 rounded-full border-0">
+                                  طوّر حسابك
+                                </Button>
+                              </Link>
+                            </div>
+                          ) : (
+                            <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 shadow-lg animate-pulse">
+                              <Sparkles className="h-4 w-4 ml-2" />
+                              {t('dashboard_welcome_badge', 'لوحة التحكم')}
+                            </Badge>
+                          )}
+                          
                           <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
                             <span>
