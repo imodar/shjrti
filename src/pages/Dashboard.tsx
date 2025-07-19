@@ -660,31 +660,64 @@ const Dashboard = () => {
                     
                     {/* Add New Family Tree Card - Always Last */}
                     <div className="group relative">
-                      <Card className="relative overflow-hidden bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1 rounded-3xl cursor-pointer"
-                            onClick={() => navigate('/family-creator')}>
+                      <Card 
+                        className={`relative overflow-hidden border-2 border-dashed rounded-3xl cursor-pointer transition-all duration-500 hover:-translate-y-1 ${
+                          familyTrees.length >= (userSubscription?.max_trees || 0)
+                            ? 'bg-red-50 dark:bg-red-950/20 border-red-300/50 dark:border-red-600/50 shadow-lg hover:shadow-xl'
+                            : 'bg-white dark:bg-gray-800 border-emerald-300/50 dark:border-emerald-600/50 shadow-lg hover:shadow-xl'
+                        }`}
+                        onClick={() => {
+                          if (familyTrees.length >= (userSubscription?.max_trees || 0)) {
+                            setShowUpgradeModal(true);
+                          } else {
+                            navigate('/family-creator');
+                          }
+                        }}>
                         <CardContent className="relative z-10 p-8 text-center flex flex-col justify-center min-h-[320px]">
                           <div className="flex flex-col items-center space-y-4">
                             {/* Plus Icon with Animation */}
-                            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                              <Plus className="h-8 w-8 text-white" />
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg ${
+                              familyTrees.length >= (userSubscription?.max_trees || 0)
+                                ? 'bg-gradient-to-br from-red-500 to-red-600'
+                                : 'bg-gradient-to-br from-emerald-500 to-teal-500'
+                            }`}>
+                              {familyTrees.length >= (userSubscription?.max_trees || 0) ? (
+                                <Star className="h-8 w-8 text-white" />
+                              ) : (
+                                <Plus className="h-8 w-8 text-white" />
+                              )}
                             </div>
                             
                             <div className="space-y-2">
                               <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                                إنشاء شجرة عائلة جديدة
+                                {familyTrees.length >= (userSubscription?.max_trees || 0)
+                                  ? 'ترقية الباقة مطلوبة'
+                                  : 'إنشاء شجرة عائلة جديدة'
+                                }
                               </h3>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
-                                ابدأ في بناء تاريخ عائلتك
+                                {familyTrees.length >= (userSubscription?.max_trees || 0)
+                                  ? 'لقد وصلت للحد المسموح من الأشجار'
+                                  : 'ابدأ في بناء تاريخ عائلتك'
+                                }
                               </p>
                             </div>
                           </div>
                           
                           {/* Floating Mini Icons */}
                           <div className="absolute top-4 left-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-                            <TreePine className="h-6 w-6 text-emerald-400" />
+                            <TreePine className={`h-6 w-6 ${
+                              familyTrees.length >= (userSubscription?.max_trees || 0)
+                                ? 'text-red-400'
+                                : 'text-emerald-400'
+                            }`} />
                           </div>
                           <div className="absolute bottom-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-                            <Users className="h-5 w-5 text-teal-400" />
+                            <Users className={`h-5 w-5 ${
+                              familyTrees.length >= (userSubscription?.max_trees || 0)
+                                ? 'text-red-400'
+                                : 'text-teal-400'
+                            }`} />
                           </div>
                         </CardContent>
                       </Card>
