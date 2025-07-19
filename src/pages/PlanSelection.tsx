@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, Crown, Shield, Lock, ArrowLeft, CheckCircle, Users, TreePine, Sparkles, Gem, ChevronRight, Zap, Heart, Award, TrendingUp, BarChart3, PieChart, Rocket, Infinity, Target } from "lucide-react";
+import { Star, Crown, Shield, Lock, ArrowLeft, CheckCircle, Users, TreePine, Sparkles, Gem, ChevronRight, ChevronLeft, Zap, Heart, Award, TrendingUp, BarChart3, PieChart, Rocket, Infinity, Target } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -43,7 +43,7 @@ interface UserStats {
 
 const PlanSelection = () => {
   const navigate = useNavigate();
-  const { currentLanguage, currency, formatPrice } = useLanguage();
+  const { currentLanguage, currency, formatPrice, direction } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -500,7 +500,9 @@ const PlanSelection = () => {
                     <span className="flex items-center gap-2">
                       {getButtonText(pkg)}
                       {!buttonDisabled && (
-                        <ChevronRight className="h-4 w-4" />
+                        direction === 'rtl' ? 
+                          <ChevronLeft className="h-4 w-4" /> : 
+                          <ChevronRight className="h-4 w-4" />
                       )}
                     </span>
                   </Button>
