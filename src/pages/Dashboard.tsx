@@ -234,7 +234,7 @@ const Dashboard = () => {
 
           <main className="relative z-10 pt-20">
             {/* Hero Section */}
-            <section className={`${familyTrees.length > 0 ? 'py-4' : 'py-8'} relative`}>
+            <section className={`${familyTrees.length > 0 ? 'py-2' : 'py-4'} relative`}>
               <div className="container mx-auto px-4 relative z-10">
                 <div className="mb-6 relative">
                   {/* Main Content Container - Horizontal Rectangle */}
@@ -242,7 +242,7 @@ const Dashboard = () => {
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
                     
-                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-2xl ${familyTrees.length > 0 ? 'p-4' : 'p-6'} shadow-xl`}>
+                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-2xl ${familyTrees.length > 0 ? 'p-3' : 'p-4'} shadow-xl`}>
                       <div className="flex items-center justify-between gap-8">
                         {/* Left: Avatar & Welcome */}
                         <div className="flex items-center gap-6">
