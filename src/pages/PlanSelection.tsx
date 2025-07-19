@@ -395,15 +395,22 @@ const PlanSelection = () => {
                 key={pkg.id} 
                 className={`
                   relative h-full transition-all duration-500 hover:scale-105 hover:shadow-xl
-                  ${isFeatured ? 'ring-2 ring-emerald-200 dark:ring-emerald-700 scale-105' : ''}
+                  ${isFeatured ? 'ring-4 ring-gradient-to-r ring-orange-400 border-orange-300 dark:border-orange-600 scale-105 shadow-orange-200/50 dark:shadow-orange-800/50' : ''}
                   ${currentPlan ? 'ring-2 ring-amber-200 dark:ring-amber-700' : ''}
-                  bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 shadow-xl
+                  ${isFeatured ? 'bg-gradient-to-br from-orange-50/80 via-white/70 to-amber-50/80 dark:from-orange-950/20 dark:via-gray-800/70 dark:to-amber-950/20' : 'bg-white/70 dark:bg-gray-800/70'}
+                  backdrop-blur-xl border shadow-xl
+                  ${!isFeatured ? 'border-emerald-200/30 dark:border-emerald-700/30' : ''}
                 `}
               >
+                {/* Orange glow effect for featured package */}
+                {isFeatured && (
+                  <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 rounded-lg blur-lg opacity-30 animate-pulse"></div>
+                )}
+                
                 {/* Featured badge */}
                 {isFeatured && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg">
+                    <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
                       <Sparkles className="h-3 w-3 mr-1" />
                       {currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
                     </Badge>
