@@ -1567,35 +1567,78 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Sample Statistics Section - Moved to Middle */}
-                <div className="flex justify-center items-center gap-8">
-                  {/* Members Available */}
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                        {familyMembers.length}
+                {/* Enhanced Statistics Section with Dashboard Style */}
+                <div className="flex justify-center items-center gap-6">
+                  {/* Total Members Card */}
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                    <div className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl px-6 py-4 shadow-lg group-hover:shadow-xl transition-all duration-300 ring-1 ring-emerald-300/20 dark:ring-emerald-700/20">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-md animate-pulse"></div>
+                          <Users className="relative h-8 w-8 text-emerald-600 dark:text-emerald-400 drop-shadow-lg" />
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
+                            {familyMembers.length}
+                          </div>
+                          <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 font-medium">إجمالي الأعضاء</div>
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">أعضاء</div>
                     </div>
                   </div>
 
-                  {/* Separator */}
-                  <div className="w-px h-8 bg-white/20 dark:bg-gray-600/20"></div>
+                  {/* Modern Separator */}
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-1 h-1 bg-gradient-to-b from-emerald-400 to-amber-400 rounded-full"></div>
+                    <div className="w-1 h-6 bg-gradient-to-b from-emerald-400/60 via-teal-400/60 to-amber-400/60 rounded-full"></div>
+                    <div className="w-1 h-1 bg-gradient-to-b from-emerald-400 to-amber-400 rounded-full"></div>
+                  </div>
 
-                  {/* Number of Generations */}
-                  <div className="flex items-center gap-2">
-                    <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-amber-600 dark:text-amber-400">
-                        {calculateGenerationCount()}
+                  {/* Generations Card */}
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                    <div className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-amber-200/50 dark:border-amber-700/50 rounded-2xl px-6 py-4 shadow-lg group-hover:shadow-xl transition-all duration-300 ring-1 ring-amber-300/20 dark:ring-amber-700/20">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-md animate-pulse"></div>
+                          <Crown className="relative h-8 w-8 text-amber-600 dark:text-amber-400 drop-shadow-lg" />
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+                            {calculateGenerationCount()}
+                          </div>
+                          <div className="text-xs text-amber-600/80 dark:text-amber-400/80 font-medium">عدد الأجيال</div>
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">أجيال</div>
                     </div>
                   </div>
 
-                  {/* Separator */}
-                  <div className="w-px h-8 bg-white/20 dark:bg-gray-600/20"></div>
+                  {/* Modern Separator */}
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-1 h-1 bg-gradient-to-b from-amber-400 to-rose-400 rounded-full"></div>
+                    <div className="w-1 h-6 bg-gradient-to-b from-amber-400/60 via-pink-400/60 to-rose-400/60 rounded-full"></div>
+                    <div className="w-1 h-1 bg-gradient-to-b from-amber-400 to-rose-400 rounded-full"></div>
+                  </div>
+
+                  {/* Marriages Card */}
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-rose-500/20 to-rose-600/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                    <div className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-rose-200/50 dark:border-rose-700/50 rounded-2xl px-6 py-4 shadow-lg group-hover:shadow-xl transition-all duration-300 ring-1 ring-rose-300/20 dark:ring-rose-700/20">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-rose-500/20 rounded-full blur-md animate-pulse"></div>
+                          <Heart className="relative h-8 w-8 text-rose-600 dark:text-rose-400 drop-shadow-lg" />
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xl font-bold bg-gradient-to-r from-rose-600 to-rose-800 bg-clip-text text-transparent">
+                            {familyMarriages.length}
+                          </div>
+                          <div className="text-xs text-rose-600/80 dark:text-rose-400/80 font-medium">الزيجات</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Last Modified Date */}
                   <div className="flex items-center gap-2">
