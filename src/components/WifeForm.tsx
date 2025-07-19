@@ -128,7 +128,7 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
             <SelectTrigger className="h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
               <SelectValue placeholder="اختر الحالة الزوجية" />
             </SelectTrigger>
-            <SelectContent className="z-50 bg-background border shadow-lg">
+            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
               <SelectItem value="married" className="font-arabic">
                 <div className="flex items-center gap-2">
                   <Heart className="h-4 w-4 text-green-500" />
@@ -139,6 +139,12 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-orange-500" />
                   مطلقة
+                </div>
+              </SelectItem>
+              <SelectItem value="widowed" className="font-arabic">
+                <div className="flex items-center gap-2">
+                  <Heart className="h-4 w-4 text-gray-500" />
+                  أرملة
                 </div>
               </SelectItem>
             </SelectContent>
