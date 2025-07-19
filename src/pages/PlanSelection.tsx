@@ -263,9 +263,53 @@ const PlanSelection = () => {
     const packagePrice = selectedPackage ? getPackagePrice(selectedPackage) : 0;
     
     if (packagePrice === 0) {
-      // For free plans, redirect directly to dashboard
-      navigate("/dashboard");
-      return;
+      // For free plans, create a subscription record directly
+      try {
+        const { error } = await supabase
+          .from('user_subscriptions')
+          .upsert({
+            user_id: user.id,
+            package_id: planId,
+            status: 'active',
+            started_at: new Date().toISOString(),
+            expires_at: null // Free plans don't expire
+          }, {
+            onConflict: 'user_id,status'
+          });
+
+        if (error) {
+          console.error('Error creating free subscription:', error);
+          toast({
+            title: currentLanguage === 'ar' ? "خطأ" : "Error",
+            description: currentLanguage === 'ar' 
+              ? "حدث خطأ في تفعيل الخطة المجانية" 
+              : "Error activating free plan",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: currentLanguage === 'ar' ? "تم بنجاح" : "Success",
+          description: currentLanguage === 'ar' 
+            ? "تم تفعيل الخطة المجانية بنجاح" 
+            : "Free plan activated successfully",
+        });
+
+        // Redirect to dashboard
+        navigate("/dashboard");
+        return;
+      } catch (error) {
+        console.error('Error in free plan activation:', error);
+        toast({
+          title: currentLanguage === 'ar' ? "خطأ" : "Error",
+          description: currentLanguage === 'ar' 
+            ? "حدث خطأ في تفعيل الخطة المجانية" 
+            : "Error activating free plan",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     const isExpired = userSubscription?.expires_at ? new Date(userSubscription.expires_at) < new Date() : true;
