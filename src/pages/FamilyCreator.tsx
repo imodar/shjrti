@@ -525,7 +525,7 @@ const FamilyCreator = () => {
           </div>
 
           {/* Enhanced Step Content with Dashboard Style */}
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto pb-8">
             {currentStep === 1 && (
               <div className="relative">
                 {/* Background Glow */}
