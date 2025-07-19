@@ -10,6 +10,7 @@ import {
   Eye,
   Trash2,
   ArrowRight,
+  ArrowLeft,
   Heart,
   Star,
   Gem,
@@ -474,7 +475,7 @@ const Dashboard = () => {
 
                         <h3 className="text-3xl md:text-4xl font-bold mb-6">
                           <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                            {t('build_first_tree', 'ابدأ بناء أول شجرة عائلية')}
+                            {t('build_first_tree', 'اصنع أول شجرة عائلية')}
                           </span>
                         </h3>
 
@@ -492,7 +493,7 @@ const Dashboard = () => {
                             <div className="relative flex items-center gap-3">
                               <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
                               <span>{t('create_first_tree', 'إنشاء شجرتي الأولى')}</span>
-                              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
                             </div>
                           </Button>
 
