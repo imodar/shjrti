@@ -7,6 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 
@@ -45,6 +46,7 @@ const PlanSelection = () => {
   const navigate = useNavigate();
   const { currentLanguage, currency, formatPrice, direction } = useLanguage();
   const { user, loading: authLoading } = useAuth();
+  const { refreshSubscription } = useSubscription();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [packages, setPackages] = useState<Package[]>([]);
@@ -296,6 +298,9 @@ const PlanSelection = () => {
             : "Free plan activated successfully",
         });
 
+        // Refresh subscription context
+        await refreshSubscription();
+        
         // Redirect to dashboard
         navigate("/dashboard");
         return;
