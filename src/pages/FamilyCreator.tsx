@@ -94,6 +94,7 @@ const FamilyCreator = () => {
 
   const handlePrevStep = () => {
     if (currentStep === 1) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       navigate('/dashboard');
     } else if (currentStep === 2) {
       setCurrentStep(1);
