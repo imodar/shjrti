@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkles, Mail, Home, Globe, ChevronDown, Crown, Menu, X } from "lucide-react";
+import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkles, Mail, Home, Globe, ChevronDown, Crown, Menu, X, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -20,6 +21,38 @@ export const GlobalHeader = () => {
   const { user, signOut } = useAuth();
   const { t, direction, setLanguage, languages, currentLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('admin_users')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+          return;
+        }
+
+        setIsAdmin(!!data && data.role === 'admin');
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -81,6 +114,17 @@ export const GlobalHeader = () => {
               {user ? (
                 // Authenticated User Section
                 <>
+                  {/* Admin Panel Link - Only show if user is admin */}
+                  {isAdmin && (
+                    <Link 
+                      to="/admin" 
+                      className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-amber-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-amber-400/30 group"
+                    >
+                      <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                      <span>{t('nav.admin', 'لوحة الإدارة')}</span>
+                    </Link>
+                  )}
+
                   {/* Dashboard Link */}
                   <Link 
                     to="/dashboard" 
