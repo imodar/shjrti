@@ -436,7 +436,7 @@ const FamilyCreator = () => {
             {/* Background Glow - Removed green overlay */}
             
             {/* Main Container */}
-            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10">
+            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
               <div className="flex items-center justify-between gap-8">
                 {/* Right: Icon and Status */}
                 <div className="flex items-center gap-4">
