@@ -542,7 +542,7 @@ const FamilyCreator = () => {
                               <div className="relative">
                                 <Input
                                   id="familyName"
-                                  placeholder="مثال: عائلة الأحمد"
+                                  placeholder="مثال : السعيد"
                                   value={treeData.name}
                                   onChange={(e) => setTreeData({...treeData, name: e.target.value})}
                                   className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
