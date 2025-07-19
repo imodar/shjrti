@@ -9,7 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, LucideIcon } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, Languages, Globe, Plus, Edit, Trash2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +45,23 @@ interface TranslationType {
 interface RelationshipTerm {
   key: string;
   label: string;
+}
+
+interface LanguageType {
+  id: string;
+  code: string;
+  name: string;
+  direction: string;
+  currency: string;
+  is_active: boolean;
+  is_default: boolean;
+}
+
+interface NewTranslation {
+  key: string;
+  value: string;
+  language_code: string;
+  category: string;
 }
 
 export default function EnhancedAdminPanel() {
@@ -81,6 +99,21 @@ export default function EnhancedAdminPanel() {
     { key: 'other', label: 'Other' },
   ]);
   const [translations, setTranslations] = useState<TranslationType[]>([]);
+  const [languages, setLanguages] = useState<LanguageType[]>([]);
+  const [newLanguage, setNewLanguage] = useState<Omit<LanguageType, 'id'>>({
+    code: '',
+    name: '',
+    direction: 'ltr',
+    currency: 'USD',
+    is_active: true,
+    is_default: false
+  });
+  const [newTranslation, setNewTranslation] = useState<NewTranslation>({
+    key: '',
+    value: '',
+    language_code: '',
+    category: 'general'
+  });
 
   const loadPackages = async () => {
     try {
@@ -117,9 +150,24 @@ export default function EnhancedAdminPanel() {
     }
   };
 
+  const loadLanguages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('languages')
+        .select('*')
+        .order('is_default', { ascending: false });
+
+      if (error) throw error;
+      setLanguages(data || []);
+    } catch (error) {
+      console.error('Error loading languages:', error);
+    }
+  };
+
   useEffect(() => {
     loadPackages();
     loadTranslations();
+    loadLanguages();
   }, []);
 
   const handleInputChange = (id: string, field: string, value: string | number | boolean) => {
@@ -238,6 +286,120 @@ export default function EnhancedAdminPanel() {
     return translation?.value || 'No translation available';
   };
 
+  // Language management functions
+  const handleAddLanguage = async () => {
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .insert([newLanguage]);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم إضافة اللغة بنجاح"
+      });
+
+      loadLanguages();
+      setNewLanguage({
+        code: '',
+        name: '',
+        direction: 'ltr',
+        currency: 'USD',
+        is_active: true,
+        is_default: false
+      });
+    } catch (error) {
+      console.error('Error adding language:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في إضافة اللغة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleToggleLanguage = async (id: string, is_active: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('languages')
+        .update({ is_active: !is_active })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم تحديث حالة اللغة"
+      });
+
+      loadLanguages();
+    } catch (error) {
+      console.error('Error updating language:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث اللغة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Translation management functions
+  const handleAddTranslation = async () => {
+    try {
+      const { error } = await supabase
+        .from('translations')
+        .insert([newTranslation]);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم إضافة الترجمة بنجاح"
+      });
+
+      loadTranslations();
+      setNewTranslation({
+        key: '',
+        value: '',
+        language_code: '',
+        category: 'general'
+      });
+    } catch (error) {
+      console.error('Error adding translation:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في إضافة الترجمة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteTranslation = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('translations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم حذف الترجمة بنجاح"
+      });
+
+      loadTranslations();
+    } catch (error) {
+      console.error('Error deleting translation:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حذف الترجمة",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
       <Toaster />
@@ -257,6 +419,10 @@ export default function EnhancedAdminPanel() {
             <TabsTrigger value="translations">
               <MessageSquare className="mr-2 h-4 w-4" />
               Translations
+            </TabsTrigger>
+            <TabsTrigger value="languages">
+              <Languages className="mr-2 h-4 w-4" />
+              Languages
             </TabsTrigger>
             <TabsTrigger value="settings">
               <Scale className="mr-2 h-4 w-4" />
@@ -395,6 +561,249 @@ export default function EnhancedAdminPanel() {
                     );
                   })}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Languages Management Tab */}
+          <TabsContent value="languages" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>إدارة اللغات</CardTitle>
+                <CardDescription>إضافة وإدارة اللغات المتاحة في الموقع</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Add New Language Form */}
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <h4 className="font-medium mb-3">إضافة لغة جديدة</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="language-code">كود اللغة</Label>
+                        <Input
+                          id="language-code"
+                          placeholder="ar, en, fr..."
+                          value={newLanguage.code}
+                          onChange={(e) => setNewLanguage({...newLanguage, code: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="language-name">اسم اللغة</Label>
+                        <Input
+                          id="language-name"
+                          placeholder="العربية, English..."
+                          value={newLanguage.name}
+                          onChange={(e) => setNewLanguage({...newLanguage, name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="language-direction">اتجاه النص</Label>
+                        <Select
+                          value={newLanguage.direction}
+                          onValueChange={(value) => setNewLanguage({...newLanguage, direction: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ltr">من اليسار لليمين (LTR)</SelectItem>
+                            <SelectItem value="rtl">من اليمين لليسار (RTL)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="language-currency">العملة</Label>
+                        <Select
+                          value={newLanguage.currency}
+                          onValueChange={(value) => setNewLanguage({...newLanguage, currency: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">Dollar ($)</SelectItem>
+                            <SelectItem value="SAR">Riyal (ر.س)</SelectItem>
+                            <SelectItem value="EUR">Euro (€)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-4">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={newLanguage.is_active}
+                          onCheckedChange={(checked) => setNewLanguage({...newLanguage, is_active: checked})}
+                        />
+                        <Label>مفعلة</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={newLanguage.is_default}
+                          onCheckedChange={(checked) => setNewLanguage({...newLanguage, is_default: checked})}
+                        />
+                        <Label>افتراضية</Label>
+                      </div>
+                    </div>
+                    <Button onClick={handleAddLanguage} className="mt-4">
+                      <Plus className="h-4 w-4 mr-2" />
+                      إضافة اللغة
+                    </Button>
+                  </div>
+
+                  {/* Existing Languages List */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">اللغات الموجودة</h4>
+                    {languages.map((language) => (
+                      <div key={language.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                              {language.code.toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-medium">{language.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {language.code} | {language.direction.toUpperCase()} | {language.currency}
+                                {language.is_default && <span className=" ml-2 text-green-600 font-medium">افتراضية</span>}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={language.is_active}
+                            onCheckedChange={() => handleToggleLanguage(language.id, language.is_active)}
+                          />
+                          <span className="text-sm">{language.is_active ? 'مفعلة' : 'معطلة'}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Translations Management Tab */}
+          <TabsContent value="translations" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>إدارة الترجمات</CardTitle>
+                <CardDescription>إضافة وإدارة ترجمات النصوص</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Add New Translation Form */}
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <h4 className="font-medium mb-3">إضافة ترجمة جديدة</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="translation-key">مفتاح الترجمة</Label>
+                        <Input
+                          id="translation-key"
+                          placeholder="home.welcome, button.save..."
+                          value={newTranslation.key}
+                          onChange={(e) => setNewTranslation({...newTranslation, key: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="translation-language">اللغة</Label>
+                        <Select
+                          value={newTranslation.language_code}
+                          onValueChange={(value) => setNewTranslation({...newTranslation, language_code: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="اختر اللغة" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {languages.map((lang) => (
+                              <SelectItem key={lang.id} value={lang.code}>
+                                {lang.name} ({lang.code})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="translation-category">الفئة</Label>
+                        <Select
+                          value={newTranslation.category}
+                          onValueChange={(value) => setNewTranslation({...newTranslation, category: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="general">عام</SelectItem>
+                            <SelectItem value="navigation">التنقل</SelectItem>
+                            <SelectItem value="buttons">الأزرار</SelectItem>
+                            <SelectItem value="forms">النماذج</SelectItem>
+                            <SelectItem value="messages">الرسائل</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-2">
+                        <Label htmlFor="translation-value">النص المترجم</Label>
+                        <Textarea
+                          id="translation-value"
+                          placeholder="أدخل النص المترجم..."
+                          value={newTranslation.value}
+                          onChange={(e) => setNewTranslation({...newTranslation, value: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <Button onClick={handleAddTranslation} className="mt-4">
+                      <Plus className="h-4 w-4 mr-2" />
+                      إضافة الترجمة
+                    </Button>
+                  </div>
+
+                  {/* Existing Translations List */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">الترجمات الموجودة</h4>
+                    <div className="max-h-96 overflow-y-auto space-y-2">
+                      {translations.map((translation) => (
+                        <div key={translation.id} className="flex items-start justify-between p-3 border rounded-lg text-sm">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
+                                {translation.key}
+                              </span>
+                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                {translation.language_code}
+                              </span>
+                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                {translation.category}
+                              </span>
+                            </div>
+                            <p className="text-gray-600">{translation.value}</p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteTranslation(translation.id)}
+                            className="ml-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Settings Tab - Placeholder */}
+          <TabsContent value="settings" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>إعدادات الموقع</CardTitle>
+                <CardDescription>إدارة إعدادات الموقع العامة</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">قريباً...</p>
               </CardContent>
             </Card>
           </TabsContent>
