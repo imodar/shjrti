@@ -16,7 +16,7 @@ import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 export const GlobalHeader = () => {
   const { user, signOut } = useAuth();
-  const { t, direction, setLanguage } = useLanguage();
+  const { t, direction, setLanguage, languages, currentLanguage } = useLanguage();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -257,7 +257,9 @@ export const GlobalHeader = () => {
                     >
                       <div className="flex items-center gap-2">
                         <Globe className="h-4 w-4 group-hover:rotate-12 transition-transform duration-300" />
-                        <span className="text-sm font-medium">{direction === 'rtl' ? 'عربي' : 'EN'}</span>
+                        <span className="text-sm font-medium">
+                          {languages.find(lang => lang.code === currentLanguage)?.name || currentLanguage.toUpperCase()}
+                        </span>
                         <ChevronDown className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
                       </div>
                     </Button>
@@ -268,29 +270,20 @@ export const GlobalHeader = () => {
                     align="end"
                     sideOffset={8}
                   >
-                    <DropdownMenuItem 
-                      className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30"
-                      onClick={() => setLanguage('ar')}
-                    >
-                      <div className="flex items-center gap-3 w-full flex-row-reverse justify-start">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-red-500 flex items-center justify-center text-xs font-bold text-white">
-                          ع
+                    {languages.map((language) => (
+                      <DropdownMenuItem 
+                        key={language.code}
+                        className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30"
+                        onClick={() => setLanguage(language.code)}
+                      >
+                        <div className="flex items-center gap-3 w-full flex-row-reverse justify-start">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white">
+                            {language.code.toUpperCase().slice(0, 2)}
+                          </div>
+                          <span className="text-white font-medium">{language.name}</span>
                         </div>
-                        <span className="text-white font-medium">عربي</span>
-                      </div>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      className="group p-3 rounded-lg hover:bg-amber-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/30"
-                      onClick={() => setLanguage('en')}
-                    >
-                      <div className="flex items-center gap-3 w-full flex-row-reverse justify-start">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-red-500 flex items-center justify-center text-xs font-bold text-white">
-                          EN
-                        </div>
-                        <span className="text-white font-medium">English</span>
-                      </div>
-                    </DropdownMenuItem>
+                      </DropdownMenuItem>
+                    ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
