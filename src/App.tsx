@@ -19,15 +19,12 @@ import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyOverview from "./pages/FamilyOverview";
 import FamilyTreeView from "./pages/FamilyTreeView";
 import FamilyStatistics from "./pages/FamilyStatistics";
-import FamilyBuilder2 from "./pages/FamilyBuilder2";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
-import Payments2 from "./pages/Payments2";
 import PlanSelection from "./pages/PlanSelection";
 import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
-import ViewTree from "./pages/ViewTree";
 import Store from "./pages/Store";
 import AdminPanel from "./pages/AdminPanel";
 import RenewSubscription from "./pages/RenewSubscription";
@@ -83,11 +80,6 @@ const App = () => (
                     <FamilyStatistics />
                   </ProtectedRoute>
                 } />
-                <Route path="/family-builder2" element={
-                  <ProtectedRoute requireActiveSubscription={true}>
-                    <FamilyBuilder2 />
-                  </ProtectedRoute>
-                } />
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
@@ -96,11 +88,6 @@ const App = () => (
                 <Route path="/payments" element={
                   <ProtectedRoute>
                     <Payments />
-                  </ProtectedRoute>
-                } />
-                <Route path="/payments2" element={
-                  <ProtectedRoute>
-                    <Payments2 />
                   </ProtectedRoute>
                 } />
                 <Route path="/plan-selection" element={
@@ -116,11 +103,6 @@ const App = () => (
                 <Route path="/change-password" element={
                   <ProtectedRoute>
                     <ChangePassword />
-                  </ProtectedRoute>
-                } />
-                <Route path="/view-tree" element={
-                  <ProtectedRoute>
-                    <ViewTree />
                   </ProtectedRoute>
                 } />
                 <Route path="/store" element={
