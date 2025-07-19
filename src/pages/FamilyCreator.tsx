@@ -512,7 +512,7 @@ const FamilyCreator = () => {
                   <CardContent className="p-0 overflow-hidden">
                     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
                       {/* Left Side - Form with Creative Design */}
-                      <div className="p-8 md:p-12 bg-gradient-to-br from-white/80 to-emerald-50/80 dark:from-gray-800/80 dark:to-emerald-900/20 relative overflow-hidden">
+                      <div className="p-4 md:p-6 bg-gradient-to-br from-white/80 to-emerald-50/80 dark:from-gray-800/80 dark:to-emerald-900/20 relative overflow-hidden">
                         {/* Floating decoration elements */}
                         <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-br from-emerald-200/30 to-teal-200/30 rounded-full blur-xl"></div>
                         <div className="absolute bottom-6 left-6 w-16 h-16 bg-gradient-to-tr from-amber-200/30 to-emerald-200/30 rounded-full blur-lg"></div>
