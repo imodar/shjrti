@@ -114,8 +114,19 @@ const Dashboard = () => {
           .maybeSingle();
 
         if (!subscriptionError && subscription) {
+          // Parse package name JSON
+          let packageDisplayName = 'باقة مجانية';
+          if (subscription.packages?.name) {
+            try {
+              const nameObj = JSON.parse(subscription.packages.name);
+              packageDisplayName = nameObj.ar || nameObj.en || 'باقة مجانية';
+            } catch (e) {
+              packageDisplayName = subscription.packages.name;
+            }
+          }
+          
           setUserSubscription({
-            package_name: subscription.packages?.name,
+            package_name: packageDisplayName,
             status: subscription.status,
             is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
             max_trees: subscription.packages?.max_family_trees || 1,
@@ -124,7 +135,7 @@ const Dashboard = () => {
         } else {
           // Default free package limits
           setUserSubscription({
-            package_name: null,
+            package_name: 'باقة مجانية',
             status: 'free',
             is_expired: false,
             max_trees: 1,
@@ -277,11 +288,11 @@ const Dashboard = () => {
                         {/* Right: Badge & Subscription Status */}
                         <div className="flex flex-col items-center gap-3">
                           {/* Subscription Status */}
-                          {userSubscription?.package_name && !userSubscription?.is_expired ? (
-                            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
-                              <Crown className="h-4 w-4" />
-                              <span className="text-sm font-bold">مشترك مميز</span>
-                            </div>
+          {userSubscription?.package_name && !userSubscription?.is_expired ? (
+            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+              <Crown className="h-4 w-4" />
+              <span className="text-sm font-bold">{userSubscription.package_name}</span>
+            </div>
                           ) : !userSubscription?.package_name ? (
                             <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
                               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
