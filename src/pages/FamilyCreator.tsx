@@ -807,109 +807,92 @@ const FamilyCreator = () => {
                                 />
                               </div>
 
-                              {/* Gender */}
-                              <div className="group">
-                                <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
-                                  الجنس *
-                                </Label>
-                                <Select value={founderData.gender} onValueChange={(value) => setFounderData({...founderData, gender: value})}>
-                                  <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
-                                    <SelectValue placeholder="اختر الجنس" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="male">ذكر</SelectItem>
-                                    <SelectItem value="female">أنثى</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                              {/* Compact Row - Birth Date, Status, Death Date */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                {/* Birth Date */}
+                                <div className="group">
+                                  <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                                    تاريخ الميلاد
+                                  </Label>
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        className={cn(
+                                          "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
+                                          !founderData.birthDate && "text-gray-500"
+                                        )}
+                                      >
+                                        <CalendarIcon className="ml-2 h-4 w-4" />
+                                        {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "تاريخ الميلاد"}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                      <Calendar
+                                        mode="single"
+                                        selected={founderData.birthDate}
+                                        onSelect={(date) => setFounderData({...founderData, birthDate: date})}
+                                        locale={ar}
+                                        initialFocus
+                                        className="rounded-md border pointer-events-auto"
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
+                                </div>
+
+                                {/* Status */}
+                                <div className="group">
+                                  <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    الحالة
+                                  </Label>
+                                  <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
+                                    <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="alive">على قيد الحياة</SelectItem>
+                                      <SelectItem value="deceased">متوفى</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                {/* Death Date (conditional) */}
+                                {!founderData.isAlive && (
+                                  <div className="group">
+                                    <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                      تاريخ الوفاة
+                                    </Label>
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          className={cn(
+                                            "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
+                                            !founderData.deathDate && "text-gray-500"
+                                          )}
+                                        >
+                                          <CalendarIcon className="ml-2 h-4 w-4" />
+                                          {founderData.deathDate ? format(founderData.deathDate, "dd/MM/yyyy", { locale: ar }) : "تاريخ الوفاة"}
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                          mode="single"
+                                          selected={founderData.deathDate}
+                                          onSelect={(date) => setFounderData({...founderData, deathDate: date})}
+                                          locale={ar}
+                                          initialFocus
+                                          className="rounded-md border pointer-events-auto"
+                                        />
+                                      </PopoverContent>
+                                    </Popover>
+                                  </div>
+                                )}
                               </div>
                             </div>
-
-                            {/* Middle Row - Dates and Status */}
-                            <div className="grid grid-cols-1 gap-4">
-                              {/* Birth Date */}
-                              <div className="group">
-                                <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                                  تاريخ الميلاد
-                                </Label>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      className={cn(
-                                        "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
-                                        !founderData.birthDate && "text-gray-500"
-                                      )}
-                                    >
-                                      <CalendarIcon className="ml-2 h-4 w-4" />
-                                      {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الميلاد"}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                      mode="single"
-                                      selected={founderData.birthDate}
-                                      onSelect={(date) => setFounderData({...founderData, birthDate: date})}
-                                      locale={ar}
-                                      initialFocus
-                                      className="rounded-md border pointer-events-auto"
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-
-                              {/* Status */}
-                              <div className="group">
-                                <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                  الحالة
-                                </Label>
-                                <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                                  <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="alive">على قيد الحياة</SelectItem>
-                                    <SelectItem value="deceased">متوفى</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-
-                            {/* Death Date (if deceased) */}
-                            {!founderData.isAlive && (
-                              <div className="group">
-                                <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                                  تاريخ الوفاة
-                                </Label>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      className={cn(
-                                        "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
-                                        !founderData.deathDate && "text-gray-500"
-                                      )}
-                                    >
-                                      <CalendarIcon className="ml-2 h-4 w-4" />
-                                      {founderData.deathDate ? format(founderData.deathDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الوفاة"}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                      mode="single"
-                                      selected={founderData.deathDate}
-                                      onSelect={(date) => setFounderData({...founderData, deathDate: date})}
-                                      locale={ar}
-                                      initialFocus
-                                      className="rounded-md border pointer-events-auto"
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-                            )}
 
                             {/* Image Upload - Compact Card */}
                             <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200/50 dark:border-amber-700/50">
