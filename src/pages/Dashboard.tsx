@@ -22,7 +22,9 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -62,6 +64,10 @@ const Dashboard = () => {
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTreeId, setDeleteTreeId] = useState<string | null>(null);
+  const [deleteTreeName, setDeleteTreeName] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   // Fetch user's data
   useEffect(() => {
@@ -181,33 +187,63 @@ const Dashboard = () => {
     }
   };
 
-  // Delete family tree
-  const handleDeleteTree = async (treeId: string) => {
-    console.log('🗑️ Attempting to delete tree:', treeId);
+  const handleDeleteTreeClick = (treeId: string, treeName: string) => {
+    setDeleteTreeId(treeId);
+    setDeleteTreeName(treeName);
+    setDeleteConfirmText("");
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTreeId || deleteConfirmText.trim() !== deleteTreeName.trim()) {
+      toast({
+        title: "خطأ في التأكيد",
+        description: "يجب كتابة اسم الشجرة بشكل صحيح للتأكيد",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    console.log('🗑️ Attempting to delete tree:', deleteTreeId);
     console.log('👤 Current user ID:', user?.id);
     
     try {
       const { error } = await supabase
         .from('families')
         .delete()
-        .eq('id', treeId)
+        .eq('id', deleteTreeId)
         .eq('creator_id', user?.id);
 
-      console.log('❌ Delete error:', error);
+      if (error) {
+        console.error('❌ Delete error:', error);
+        toast({
+          title: "خطأ في الحذف",
+          description: "حدث خطأ أثناء حذف شجرة العائلة",
+          variant: "destructive"
+        });
+        return;
+      }
 
-      if (error) throw error;
-
-      setFamilyTrees(prev => prev.filter(tree => tree.id !== treeId));
-      toast({
-        title: "تم الحذف",
-        description: "تم حذف الشجرة بنجاح"
-      });
       console.log('✅ Tree deleted successfully');
+      
+      // Remove from local state
+      setFamilyTrees(prev => prev.filter(tree => tree.id !== deleteTreeId));
+      
+      // Close modal and reset state
+      setShowDeleteModal(false);
+      setDeleteTreeId(null);
+      setDeleteTreeName("");
+      setDeleteConfirmText("");
+      
+      toast({
+        title: "تم الحذف بنجاح",
+        description: "تم حذف شجرة العائلة بنجاح"
+      });
     } catch (error) {
-      console.error('🚨 Error deleting tree:', error);
+      console.error('❌ Unexpected error during deletion:', error);
       toast({
         title: "خطأ",
-        description: "حدث خطأ في حذف الشجرة",
+        description: "حدث خطأ غير متوقع",
         variant: "destructive"
       });
     }
@@ -640,7 +676,7 @@ const Dashboard = () => {
                                 variant="ghost" 
                                 size="sm" 
                                 className="w-10 h-11 p-0 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-300 group/btn"
-                                onClick={() => handleDeleteTree(tree.id)}
+                                onClick={() => handleDeleteTreeClick(tree.id, tree.name)}
                               >
                                 <Trash2 className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-200" />
                               </Button>
@@ -771,6 +807,70 @@ const Dashboard = () => {
                   ترقية الباقة
                 </Button>
               </Link>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold text-red-600 dark:text-red-400 mb-4">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Trash2 className="h-6 w-6 text-red-500" />
+                <span>تأكيد الحذف</span>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-center space-y-4">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 border border-red-200/50 dark:border-red-700/50">
+              <div className="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 mb-2">
+                <X className="h-5 w-5" />
+                <span className="font-semibold">تحذير</span>
+              </div>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بيانات الشجرة نهائياً.
+              </p>
+            </div>
+
+            <p className="text-gray-600 dark:text-gray-300">
+              لتأكيد الحذف، اكتب اسم الشجرة: <strong>"{deleteTreeName}"</strong>
+            </p>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmText" className="text-sm font-medium">
+                اكتب اسم الشجرة للتأكيد:
+              </Label>
+              <Input
+                id="confirmText"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder={deleteTreeName}
+                className="text-center"
+              />
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteConfirmText("");
+                }}
+                className="flex-1"
+              >
+                إلغاء
+              </Button>
+              <Button 
+                onClick={handleConfirmDelete}
+                disabled={deleteConfirmText.trim() !== deleteTreeName.trim()}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="h-4 w-4 ml-2" />
+                حذف نهائي
+              </Button>
             </div>
           </div>
         </DialogContent>
