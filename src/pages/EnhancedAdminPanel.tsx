@@ -67,7 +67,7 @@ interface NewTranslation {
 
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
-  const { currentLanguage } = useLanguage();
+  const { currentLanguage, direction } = useLanguage();
   const [packages, setPackages] = useState<PackageType[]>([]);
   const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
@@ -467,31 +467,31 @@ export default function EnhancedAdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
+    <div className={`min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
       <Toaster />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Enhanced Admin Panel</h1>
+        <h1 className={`text-3xl font-bold mb-6 ${direction === 'rtl' ? 'text-right' : 'text-left'}`}>Enhanced Admin Panel</h1>
 
         <Tabs defaultValue="packages" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="packages">
-              <Package className="mr-2 h-4 w-4" />
+          <TabsList className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+            <TabsTrigger value="packages" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Package className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Packages
             </TabsTrigger>
-            <TabsTrigger value="relationships">
-              <Users className="mr-2 h-4 w-4" />
+            <TabsTrigger value="relationships" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Users className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Relationships
             </TabsTrigger>
-            <TabsTrigger value="translations">
-              <MessageSquare className="mr-2 h-4 w-4" />
+            <TabsTrigger value="translations" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <MessageSquare className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Translations
             </TabsTrigger>
-            <TabsTrigger value="languages">
-              <Languages className="mr-2 h-4 w-4" />
+            <TabsTrigger value="languages" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Languages className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Languages
             </TabsTrigger>
-            <TabsTrigger value="settings">
-              <Scale className="mr-2 h-4 w-4" />
+            <TabsTrigger value="settings" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Scale className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Settings
             </TabsTrigger>
           </TabsList>
@@ -710,8 +710,8 @@ export default function EnhancedAdminPanel() {
                         <Label>افتراضية</Label>
                       </div>
                     </div>
-                    <Button onClick={handleAddLanguage} className="mt-4">
-                      <Plus className="h-4 w-4 mr-2" />
+                    <Button onClick={handleAddLanguage} className={`mt-4 ${direction === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                      <Plus className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                       إضافة اللغة
                     </Button>
                   </div>
@@ -894,8 +894,8 @@ export default function EnhancedAdminPanel() {
         
         {/* Edit Language Dialog */}
         <Dialog open={editingLanguage !== null} onOpenChange={() => setEditingLanguage(null)}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
+          <DialogContent className={`sm:max-w-[425px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
+            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
               <DialogTitle>تعديل اللغة</DialogTitle>
               <DialogDescription>قم بتعديل تفاصيل اللغة المحددة</DialogDescription>
             </DialogHeader>
@@ -968,12 +968,12 @@ export default function EnhancedAdminPanel() {
                 </div>
               </div>
             )}
-            <DialogFooter>
+            <DialogFooter className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
               <Button onClick={() => setEditingLanguage(null)} variant="outline">
                 إلغاء
               </Button>
-              <Button onClick={handleUpdateLanguage}>
-                <Save className="h-4 w-4 mr-2" />
+              <Button onClick={handleUpdateLanguage} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+                <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                 حفظ التغييرات
               </Button>
             </DialogFooter>
