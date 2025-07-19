@@ -61,7 +61,7 @@ const FamilyCreator = () => {
     maritalStatus: string;
   }>>([]);
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     console.log('handleNextStep called - currentStep:', currentStep);
     console.log('treeData:', treeData);
     console.log('founderData:', founderData);
@@ -88,6 +88,29 @@ const FamilyCreator = () => {
         });
         return;
       }
+      
+      // Check family creation limits before creating
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        toast({
+          title: "خطأ في المصادقة",
+          description: "يرجى تسجيل الدخول أولاً",
+          variant: "destructive"
+        });
+        navigate('/dashboard');
+        return;
+      }
+
+      const canCreateFamily = await checkFamilyCreationLimits(user.id);
+      if (!canCreateFamily) {
+        // Redirect to dashboard after showing error
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
+        return;
+      }
+      
       console.log('Creating family');
       handleCreateFamily();
     }
