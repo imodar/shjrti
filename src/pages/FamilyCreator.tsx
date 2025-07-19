@@ -97,10 +97,6 @@ const FamilyCreator = () => {
       navigate('/dashboard');
     } else if (currentStep === 2) {
       setCurrentStep(1);
-      // منع الانتقال إلى أعلى الصفحة
-      setTimeout(() => {
-        window.scrollTo({ top: window.scrollY, behavior: 'auto' });
-      }, 0);
     }
   };
 
