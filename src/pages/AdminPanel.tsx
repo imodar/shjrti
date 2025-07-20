@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, BarChart3, Store, Trash2, Save, Plus } from "lucide-react";
+import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, BarChart3, Store, Trash2, Save, Plus, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -99,6 +99,7 @@ export default function AdminPanel() {
   });
   const [languages, setLanguages] = useState<any[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [editingPackageId, setEditingPackageId] = useState<string | null>(null);
   const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
     description: '',
@@ -381,6 +382,64 @@ export default function AdminPanel() {
       toast({
         title: "Error",
         description: "Failed to update packages. Please check the console for details.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Add individual package save function
+  const handleSavePackage = async (packageId: string) => {
+    try {
+      const pkg = packages.find(p => p.id === packageId);
+      if (!pkg) return;
+
+      // Prepare the update data with proper multilingual handling
+      const updateData = {
+        // Handle multilingual name - preserve JSON structure or convert string to JSON
+        name: typeof pkg.name === 'object' && pkg.name !== null 
+          ? pkg.name 
+          : (pkg.name || 'Package'),
+        
+        // Handle multilingual description - preserve JSON structure or convert string to JSON  
+        description: typeof pkg.description === 'object' && pkg.description !== null
+          ? pkg.description
+          : pkg.description,
+          
+        price: pkg.price || 0,
+        price_usd: pkg.price_usd || 0,
+        price_sar: pkg.price_sar || 0,
+        max_family_members: pkg.max_family_members || 100,
+        max_family_trees: pkg.max_family_trees || 1,
+        display_order: pkg.display_order || 0,
+        is_active: pkg.is_active,
+        is_featured: pkg.is_featured,
+        
+        // Handle multilingual features - preserve JSON structure
+        features: typeof pkg.features === 'object' && pkg.features !== null
+          ? pkg.features
+          : {}
+      };
+
+      const { error } = await supabase
+        .from('packages')
+        .update(updateData)
+        .eq('id', packageId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Package updated successfully"
+      });
+      
+      // Exit edit mode and reload packages
+      setEditingPackageId(null);
+      await loadPackages();
+    } catch (error) {
+      console.error('Error updating package:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update package. Please check the console for details.",
         variant: "destructive"
       });
     }
@@ -755,6 +814,15 @@ export default function AdminPanel() {
                                   checked={pkg.is_active}
                                   onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_active', checked)}
                                 />
+                                {editingPackageId === pkg.id ? (
+                                  <Button variant="outline" size="sm" onClick={() => handleSavePackage(pkg.id)}>
+                                    <Save className="h-4 w-4" />
+                                  </Button>
+                                ) : (
+                                  <Button variant="outline" size="sm" onClick={() => setEditingPackageId(pkg.id)}>
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                )}
                                 <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -769,6 +837,7 @@ export default function AdminPanel() {
                                   value={getLocalizedPackageField(pkg, 'name', selectedLanguage)}
                                   onChange={(e) => handleLocalizedPackageChange(pkg.id, 'name', selectedLanguage, e.target.value)}
                                   placeholder="Package Name"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                               <div className="space-y-2">
@@ -777,6 +846,7 @@ export default function AdminPanel() {
                                   value={getLocalizedPackageField(pkg, 'description', selectedLanguage)}
                                   onChange={(e) => handleLocalizedPackageChange(pkg.id, 'description', selectedLanguage, e.target.value)}
                                   placeholder="Package Description"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                               <div className="space-y-2">
@@ -786,6 +856,7 @@ export default function AdminPanel() {
                                   value={pkg.display_order || 0}
                                   onChange={(e) => handlePackageInputChange(pkg.id, 'display_order', Number(e.target.value))}
                                   placeholder="Display Order"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                             </div>
@@ -798,6 +869,7 @@ export default function AdminPanel() {
                                   value={pkg.price_usd || 0}
                                   onChange={(e) => handlePackageInputChange(pkg.id, 'price_usd', Number(e.target.value))}
                                   placeholder="0.00"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                               <div className="space-y-2">
@@ -807,6 +879,7 @@ export default function AdminPanel() {
                                   value={pkg.price_sar || 0}
                                   onChange={(e) => handlePackageInputChange(pkg.id, 'price_sar', Number(e.target.value))}
                                   placeholder="0.00"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                               <div className="space-y-2">
@@ -816,6 +889,7 @@ export default function AdminPanel() {
                                   value={pkg.max_family_members || 0}
                                   onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
                                   placeholder="100"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                               <div className="space-y-2">
@@ -825,6 +899,7 @@ export default function AdminPanel() {
                                   value={pkg.max_family_trees || 0}
                                   onChange={(e) => handlePackageInputChange(pkg.id, 'max_family_trees', Number(e.target.value))}
                                   placeholder="1"
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                               </div>
                             </div>
@@ -835,6 +910,7 @@ export default function AdminPanel() {
                                   id={`featured-${pkg.id}`}
                                   checked={pkg.is_featured}
                                   onCheckedChange={(checked) => handlePackageInputChange(pkg.id, 'is_featured', checked)}
+                                  disabled={editingPackageId !== pkg.id}
                                 />
                                 <Label htmlFor={`featured-${pkg.id}`} className="text-sm">Mark as Featured Package</Label>
                               </div>
