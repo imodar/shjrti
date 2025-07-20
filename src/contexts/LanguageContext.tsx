@@ -77,12 +77,30 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
   const loadLanguages = async () => {
     try {
-      const { data, error } = await supabase
-        .from('languages')
-        .select('*')
-        .eq('is_active', true)
-        .order('is_default', { ascending: false });
+      // Add retry logic for network issues
+      let retryCount = 0;
+      const maxRetries = 3;
+      let result;
+      
+      while (retryCount < maxRetries) {
+        try {
+          result = await supabase
+            .from('languages')
+            .select('*')
+            .eq('is_active', true)
+            .order('is_default', { ascending: false });
+          break; // Success, exit retry loop
+        } catch (networkError: any) {
+          retryCount++;
+          if (retryCount >= maxRetries) {
+            throw networkError; // Re-throw after max retries
+          }
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
 
+      const { data, error } = result;
       if (error) throw error;
       setLanguages(data || []);
       
@@ -94,16 +112,43 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       }
     } catch (error) {
       console.error('Error loading languages:', error);
+      // Fallback to default configuration if network fails
+      setLanguages([
+        { code: 'ar', name: 'العربية', direction: 'rtl', is_default: true, is_active: true, currency: 'SAR' },
+        { code: 'en', name: 'English', direction: 'ltr', is_default: false, is_active: true, currency: 'USD' }
+      ]);
+      const savedLanguage = localStorage.getItem('preferred-language');
+      if (!savedLanguage) {
+        setCurrentLanguage('ar'); // Default fallback
+      }
     }
   };
 
   const loadTranslations = async (languageCode: string) => {
     try {
-      const { data, error } = await supabase
-        .from('translations')
-        .select('key, value')
-        .eq('language_code', languageCode);
+      // Add retry logic for network issues
+      let retryCount = 0;
+      const maxRetries = 3;
+      let result;
+      
+      while (retryCount < maxRetries) {
+        try {
+          result = await supabase
+            .from('translations')
+            .select('key, value')
+            .eq('language_code', languageCode);
+          break; // Success, exit retry loop
+        } catch (networkError: any) {
+          retryCount++;
+          if (retryCount >= maxRetries) {
+            throw networkError; // Re-throw after max retries
+          }
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
 
+      const { data, error } = result;
       if (error) throw error;
       
       const translationMap: Record<string, string> = {};
