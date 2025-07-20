@@ -299,8 +299,8 @@ const FamilyBuilder = () => {
       } catch (error) {
         console.error('Error fetching family data:', error);
         toast({
-          title: "خطأ في تحميل البيانات",
-          description: "حدث خطأ أثناء تحميل بيانات العائلة",
+          title: t('family_builder.error_loading_data', 'خطأ في تحميل البيانات'),
+          description: t('family_builder.error_loading_desc', 'حدث خطأ أثناء تحميل بيانات العائلة'),
           variant: "destructive"
         });
       } finally {
@@ -750,14 +750,14 @@ const FamilyBuilder = () => {
         setZoom(1);
         setCroppedAreaPixels(null);
         toast({
-          title: "تم حفظ الصورة",
-          description: "تم قص الصورة وحفظها بنجاح"
+          title: t('family_builder.saved_image', 'تم حفظ الصورة'),
+          description: t('family_builder.image_saved_desc', 'تم قص الصورة وحفظها بنجاح')
         });
       } catch (e) {
         console.error(e);
         toast({
-          title: "خطأ في معالجة الصورة",
-          description: "حدث خطأ أثناء قص الصورة",
+          title: t('family_builder.error_processing_image', 'خطأ في معالجة الصورة'),
+          description: t('family_builder.error_processing_image_desc', 'حدث خطأ أثناء قص الصورة'),
           variant: "destructive"
         });
       }
@@ -774,8 +774,8 @@ const FamilyBuilder = () => {
     if (packageData && familyMembers.length >= packageData.max_family_members) {
       console.log('Member limit reached, showing toast');
       toast({
-        title: "تم الوصول للحد الأقصى",
-        description: `لا يمكن إضافة أعضاء جدد. الحد الأقصى المسموح: ${packageData.max_family_members} عضو`,
+        title: t('family_builder.max_limit_reached', 'تم الوصول للحد الأقصى'),
+        description: `${t('family_builder.max_limit_desc', 'لا يمكن إضافة أعضاء جدد. الحد الأقصى المسموح:')} ${packageData.max_family_members} ${t('family_builder.member', 'عضو')}`,
         variant: "destructive"
       });
       return;
@@ -904,8 +904,8 @@ const FamilyBuilder = () => {
     
     if (!formData.name || !formData.gender) {
       toast({
-        title: "خطأ",
-        description: "يرجى إكمال جميع الحقول المطلوبة (الاسم والجنس)",
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.complete_fields', 'يرجى إكمال جميع الحقول المطلوبة (الاسم والجنس)'),
         variant: "destructive"
       });
       return;
