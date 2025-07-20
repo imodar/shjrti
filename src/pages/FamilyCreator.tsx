@@ -877,10 +877,16 @@ const FamilyCreator = () => {
                         {/* Right Side - Founder Information */}
                         <div className="order-2 lg:order-1">
                           <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 border border-emerald-200/50 dark:border-emerald-700/50 mb-4">
-                            <h3 className="text-lg font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center gap-2">
+                            <h3 className="text-lg font-bold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2">
                               <UserPlus className="h-5 w-5" />
                               معلومات المؤسس
                             </h3>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 text-right">
+                              الشخص الأول الذي ستبدأ منه بناء شجرة العائلة
+                            </p>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 text-left">
+                              The first person from whom you will start building the family tree
+                            </p>
                           </div>
                           
                           <div className="space-y-6">
