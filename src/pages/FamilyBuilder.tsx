@@ -2031,7 +2031,7 @@ const FamilyBuilder = () => {
       <ModernFamilyMemberModal
         isOpen={showAddMember}
         onClose={() => setShowAddMember(false)}
-        onSave={handleSaveMember}
+        onSave={handleSaveMemberFromModal}
         familyMarriages={familyMarriages}
         selectedMember={selectedMember}
         getFullName={getFullName}
@@ -3176,8 +3176,6 @@ const FamilyBuilder = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Image Crop Modal */}
-      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
         <DialogContent className="sm:max-w-2xl bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-foreground">قص الصورة</DialogTitle>
