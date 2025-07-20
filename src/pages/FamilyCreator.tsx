@@ -1066,9 +1066,12 @@ const FamilyCreator = () => {
                                           </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                          <DropdownMenuItem onClick={() => setEditingWife(wife)}>
+                                          <DropdownMenuItem onClick={() => {
+                                            setEditingWife(wife);
+                                            setIsAddingWife(true);
+                                          }}>
                                             <Edit className="h-4 w-4 mr-2" />
-                                            تعديل
+                                            {t('edit', 'تعديل')}
                                           </DropdownMenuItem>
                                           <DropdownMenuItem onClick={() => setWives(wives.filter(w => w.id !== wife.id))}>
                                             <Trash2 className="h-4 w-4 mr-2" />
@@ -1214,32 +1217,56 @@ const FamilyCreator = () => {
             </div>
             
             <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              إضافة زوجة جديدة
+              {editingWife ? t('edit_wife', 'تعديل بيانات الزوجة') : t('add_new_wife', 'إضافة زوجة جديدة')}
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-300 mt-2">
-              أضف معلومات الزوجة لإدراجها في سجل العائلة
+              {editingWife ? t('edit_wife_desc', 'عدل معلومات الزوجة في سجل العائلة') : t('add_wife_desc', 'أضف معلومات الزوجة لإدراجها في سجل العائلة')}
             </DialogDescription>
           </DialogHeader>
           
           <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
             <WifeForm
               ref={wifeFormRef}
+              initialData={editingWife}
               onAddWife={(wifeData) => {
-                const newWife = {
-                  id: crypto.randomUUID(),
-                  name: wifeData.name,
-                  isAlive: wifeData.isAlive,
-                  birthDate: wifeData.birthDate,
-                  deathDate: wifeData.deathDate,
-                  maritalStatus: wifeData.maritalStatus
-                };
-                setWives([...wives, newWife]);
+                if (editingWife) {
+                  // Update existing wife
+                  setWives(wives.map(w => 
+                    w.id === editingWife.id 
+                      ? {
+                          ...w,
+                          name: wifeData.name,
+                          isAlive: wifeData.isAlive,
+                          birthDate: wifeData.birthDate,
+                          deathDate: wifeData.deathDate,
+                          maritalStatus: wifeData.maritalStatus
+                        }
+                      : w
+                  ));
+                  toast({
+                    title: t('wife_updated_success', 'تم تحديث بيانات الزوجة بنجاح'),
+                    description: t('wife_updated_desc', `تم تحديث بيانات ${wifeData.name}`),
+                    duration: 3000
+                  });
+                } else {
+                  // Add new wife
+                  const newWife = {
+                    id: crypto.randomUUID(),
+                    name: wifeData.name,
+                    isAlive: wifeData.isAlive,
+                    birthDate: wifeData.birthDate,
+                    deathDate: wifeData.deathDate,
+                    maritalStatus: wifeData.maritalStatus
+                  };
+                  setWives([...wives, newWife]);
+                  toast({
+                    title: t('wife_added_success', 'تم إضافة الزوجة بنجاح'),
+                    description: t('wife_added_desc', `تم إضافة ${wifeData.name} إلى قائمة الزوجات`),
+                    duration: 3000
+                  });
+                }
                 setIsAddingWife(false);
-                toast({
-                  title: "تم إضافة الزوجة بنجاح",
-                  description: `تم إضافة ${wifeData.name} إلى قائمة الزوجات`,
-                  duration: 3000
-                });
+                setEditingWife(null);
               }}
             />
           </div>
@@ -1247,10 +1274,13 @@ const FamilyCreator = () => {
           <DialogFooter className="flex gap-3 pt-4">
             <Button 
               variant="outline" 
-              onClick={() => setIsAddingWife(false)}
+              onClick={() => {
+                setIsAddingWife(false);
+                setEditingWife(null);
+              }}
               className="flex-1 border-2 border-gray-300/50 hover:border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300"
             >
-              إلغاء
+              {t('cancel', 'إلغاء')}
             </Button>
             <Button 
               onClick={() => {
@@ -1261,26 +1291,12 @@ const FamilyCreator = () => {
               className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
             >
               <Heart className="h-4 w-4 mr-2" />
-              إضافة الزوجة
+              {editingWife ? t('update_wife', 'تحديث بيانات الزوجة') : t('add_wife', 'إضافة الزوجة')}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Wife Modal */}
-      <Dialog open={editingWife !== null} onOpenChange={() => setEditingWife(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>تعديل بيانات الزوجة</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 p-4">
-            <p className="text-muted-foreground">يمكنك تعديل البيانات لاحقاً من خلال لوحة التحكم</p>
-            <Button onClick={() => setEditingWife(null)} className="w-full">
-              موافق
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>

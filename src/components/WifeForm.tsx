@@ -1,4 +1,4 @@
-import { useState, forwardRef, useImperativeHandle } from "react";
+import { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,14 @@ interface WifeFormProps {
     deathDate: Date | null;
     maritalStatus: string;
   }) => void;
+  initialData?: {
+    id: string;
+    name: string;
+    isAlive: boolean;
+    birthDate: Date | null;
+    deathDate: Date | null;
+    maritalStatus?: string;
+  } | null;
 }
 
 export interface WifeFormRef {
@@ -24,7 +32,7 @@ export interface WifeFormRef {
   handleSubmit: () => void;
 }
 
-const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => {
+const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialData }, ref) => {
   const [formData, setFormData] = useState({
     name: "",
     isAlive: true,
@@ -32,6 +40,28 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
     deathDate: null as Date | null,
     maritalStatus: "married" as string
   });
+
+  // Populate form when editing
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name,
+        isAlive: initialData.isAlive,
+        birthDate: initialData.birthDate,
+        deathDate: initialData.deathDate,
+        maritalStatus: initialData.maritalStatus || "married"
+      });
+    } else {
+      // Reset form when not editing
+      setFormData({
+        name: "",
+        isAlive: true,
+        birthDate: null,
+        deathDate: null,
+        maritalStatus: "married"
+      });
+    }
+  }, [initialData]);
 
   const handleSubmit = () => {
     if (!formData.name.trim()) {
