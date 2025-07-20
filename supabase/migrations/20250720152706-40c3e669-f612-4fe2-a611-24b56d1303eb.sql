@@ -1,0 +1,40 @@
+-- Add missing translation keys for filter options and other hardcoded text
+INSERT INTO public.translations (language_code, key, value, category) VALUES
+-- Arabic translations for filter options
+('ar', 'family_builder.show_all_members', 'عرض جميع الأعضاء', 'family'),
+('ar', 'family_builder.show_blood_relations', 'عرض الأقارب بالدم (نفس العائلة)', 'family'),
+('ar', 'family_builder.show_non_family', 'عرض جميع الأفراد خارج العائلة الأصلية', 'family'),
+('ar', 'family_builder.show_wives', 'عرض جميع الزوجات', 'family'),
+('ar', 'family_builder.show_husbands', 'عرض جميع الأزواج', 'family'),
+('ar', 'family_builder.show_blood_with_female_children', 'الأقارب بالدم وأطفال الإناث من نفس عائلة الأب', 'family'),
+('ar', 'family_builder.choose_display_type', 'اختر نوع العرض', 'family'),
+('ar', 'family_builder.tree_under_development', 'عرض الشجرة قيد التطوير', 'family'),
+('ar', 'family_builder.females', 'الإناث', 'family'),
+('ar', 'family_builder.manage_wives', 'إدارة الزوجات', 'family'),
+('ar', 'family_builder.manage_husbands', 'إدارة الأزواج', 'family'),
+('ar', 'family_builder.add_wives_info', 'أضف معلومات الزوجات لبناء العائلة', 'family'),
+('ar', 'family_builder.add_husbands_info', 'أضف معلومات الأزواج لبناء العائلة', 'family'),
+('ar', 'family_builder.added_wives', 'الزوجات المضافة', 'family'),
+('ar', 'family_builder.added_husbands', 'الأزواج المضافين', 'family'),
+('ar', 'family_builder.spouse_management_step', 'خطوة إدارة الأزواج', 'family'),
+('ar', 'family_builder.spouse_management_desc', 'يمكنك إضافة معلومات الزوج/الزوجة حسب الجنس المحدد', 'family'),
+
+-- English translations for filter options
+('en', 'family_builder.show_all_members', 'Show All Members', 'family'),
+('en', 'family_builder.show_blood_relations', 'Show Blood Relations (Same Family)', 'family'),
+('en', 'family_builder.show_non_family', 'Show All Non-Family Members', 'family'),
+('en', 'family_builder.show_wives', 'Show All Wives', 'family'),
+('en', 'family_builder.show_husbands', 'Show All Husbands', 'family'),
+('en', 'family_builder.show_blood_with_female_children', 'Blood Relations and Female Children from Same Father Family', 'family'),
+('en', 'family_builder.choose_display_type', 'Choose Display Type', 'family'),
+('en', 'family_builder.tree_under_development', 'Tree View Under Development', 'family'),
+('en', 'family_builder.females', 'Females', 'family'),
+('en', 'family_builder.manage_wives', 'Manage Wives', 'family'),
+('en', 'family_builder.manage_husbands', 'Manage Husbands', 'family'),
+('en', 'family_builder.add_wives_info', 'Add wives information to build the family', 'family'),
+('en', 'family_builder.add_husbands_info', 'Add husbands information to build the family', 'family'),
+('en', 'family_builder.added_wives', 'Added Wives', 'family'),
+('en', 'family_builder.added_husbands', 'Added Husbands', 'family'),
+('en', 'family_builder.spouse_management_step', 'Spouse Management Step', 'family'),
+('en', 'family_builder.spouse_management_desc', 'You can add spouse information based on the selected gender', 'family')
+ON CONFLICT (language_code, key) DO NOTHING;

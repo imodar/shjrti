@@ -356,12 +356,12 @@ const FamilyBuilder = () => {
 
   // Filter options
   const filterOptions = [
-    { value: "all", label: "عرض جميع الأعضاء" },
-    { value: "blood_relations", label: "عرض الأقارب بالدم (نفس العائلة)" },
-    { value: "non_family", label: "عرض جميع الأفراد خارج العائلة الأصلية" },
-    { value: "wives", label: "عرض جميع الزوجات" },
-    { value: "husbands", label: "عرض جميع الأزواج" },
-    { value: "blood_with_female_children", label: "الأقارب بالدم وأطفال الإناث من نفس عائلة الأب" }
+    { value: "all", label: t('family_builder.show_all_members', 'Show All Members') },
+    { value: "blood_relations", label: t('family_builder.show_blood_relations', 'Show Blood Relations (Same Family)') },
+    { value: "non_family", label: t('family_builder.show_non_family', 'Show All Non-Family Members') },
+    { value: "wives", label: t('family_builder.show_wives', 'Show All Wives') },
+    { value: "husbands", label: t('family_builder.show_husbands', 'Show All Husbands') },
+    { value: "blood_with_female_children", label: t('family_builder.show_blood_with_female_children', 'Blood Relations and Female Children from Same Father Family') }
   ];
 
   // Filter members based on search term and selected filter
@@ -1536,7 +1536,7 @@ const FamilyBuilder = () => {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
+    <div dir={direction} className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
       {/* Luxury Floating Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/10 rounded-full blur-3xl animate-float opacity-60"></div>
@@ -1705,7 +1705,7 @@ const FamilyBuilder = () => {
                 <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                   <Select value={selectedFilter} onValueChange={setSelectedFilter}>
                     <SelectTrigger className="w-full sm:w-48 lg:w-64 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
-                      <SelectValue placeholder="اختر نوع العرض" />
+                      <SelectValue placeholder={t('family_builder.choose_display_type', 'Choose Display Type')} />
                     </SelectTrigger>
                     <SelectContent>
                       {filterOptions.map((option) => (
@@ -1945,7 +1945,7 @@ const FamilyBuilder = () => {
                     <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
                       <TreePine className="h-16 w-16 text-primary" />
                     </div>
-                    <h3 className="text-2xl font-bold text-foreground mb-4">عرض الشجرة قيد التطوير</h3>
+                    <h3 className="text-2xl font-bold text-foreground mb-4">{t('family_builder.tree_under_development', 'Tree View Under Development')}</h3>
                     <p className="text-muted-foreground text-lg">{t('family_builder.coming_soon', 'سيتم إضافة عرض تفاعلي للشجرة قريباً')}</p>
                   </div>
                 </CardContent>
@@ -1995,7 +1995,7 @@ const FamilyBuilder = () => {
                         </Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span>الإناث</span>
+                        <span>{t('family_builder.females', 'Females')}</span>
                         <Badge className="bg-pink-500/20 text-pink-700">
                           {familyMembers.filter(m => m.gender === 'female').length}
                         </Badge>
@@ -2511,10 +2511,10 @@ const FamilyBuilder = () => {
               <div className="space-y-6">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-foreground mb-2">
-                    {formData.gender === "male" ? "إدارة الزوجات" : "إدارة الأزواج"}
+                    {formData.gender === "male" ? t('family_builder.manage_wives', 'Manage Wives') : t('family_builder.manage_husbands', 'Manage Husbands')}
                   </h3>
                   <p className="text-muted-foreground">
-                    {formData.gender === "male" ? "أضف معلومات الزوجات لبناء العائلة" : "أضف معلومات الأزواج لبناء العائلة"}
+                    {formData.gender === "male" ? t('family_builder.add_wives_info', 'Add wives information to build the family') : t('family_builder.add_husbands_info', 'Add husbands information to build the family')}
                   </p>
                 </div>
 
@@ -2524,7 +2524,7 @@ const FamilyBuilder = () => {
                     <div className="space-y-4">
                       <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
                         <Users className="h-5 w-5 text-primary" />
-                        الزوجات المضافة ({wives.length})
+                        {t('family_builder.added_wives', 'Added Wives')} ({wives.length})
                       </Label>
                       
                       {wives.length > 0 ? (
@@ -2838,7 +2838,7 @@ const FamilyBuilder = () => {
                     {/* Current Husbands List */}
                     {husbands.length > 0 && (
                       <div className="space-y-4">
-                        <Label className="text-lg font-semibold text-foreground">الأزواج المضافين ({husbands.length})</Label>
+                        <Label className="text-lg font-semibold text-foreground">{t('family_builder.added_husbands', 'Added Husbands')} ({husbands.length})</Label>
                         <div className="grid gap-4">
                           {husbands.map((husband, index) => (
                             <div key={husband.id} className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-4 border border-primary/20">
@@ -3145,8 +3145,8 @@ const FamilyBuilder = () => {
                 ) : (
                   <div className="text-center py-12 bg-muted/30 rounded-xl">
                     <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h4 className="text-lg font-semibold text-foreground mb-2">خطوة إدارة الأزواج</h4>
-                    <p className="text-muted-foreground">يمكنك إضافة معلومات الزوج/الزوجة حسب الجنس المحدد</p>
+                    <h4 className="text-lg font-semibold text-foreground mb-2">{t('family_builder.spouse_management_step', 'Spouse Management Step')}</h4>
+                    <p className="text-muted-foreground">{t('family_builder.spouse_management_desc', 'You can add spouse information based on the selected gender')}</p>
                   </div>
                 )}
               </div>
