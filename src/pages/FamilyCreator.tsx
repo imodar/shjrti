@@ -104,15 +104,7 @@ const FamilyCreator = () => {
         return;
       }
 
-      const canCreateFamily = await checkFamilyCreationLimits(user.id);
-      if (!canCreateFamily) {
-        // Redirect to dashboard after showing error
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 2000);
-        return;
-      }
-      
+      // No limits check here - will be checked in handleCreateFamily
       console.log('Creating family');
       handleCreateFamily();
     }
@@ -168,6 +160,7 @@ const FamilyCreator = () => {
         }
 
         // Use default package limits - only count non-archived families
+        console.log('📊 Using default package, checking families for user:', userId);
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select('id')
@@ -175,6 +168,7 @@ const FamilyCreator = () => {
           .eq('is_archived', false);
 
         if (familiesError) {
+          console.error('❌ Error fetching families:', familiesError);
           toast({
             title: "خطأ",
             description: "حدث خطأ في التحقق من حدود الباقة",
@@ -185,11 +179,27 @@ const FamilyCreator = () => {
 
         const currentFamilyCount = families?.length || 0;
         const maxFamilyTrees = defaultPackage.max_family_trees || 1;
+        
+        console.log('📈 Family counts:', { 
+          currentFamilyCount, 
+          maxFamilyTrees, 
+          familyIds: families?.map(f => f.id) 
+        });
 
         if (currentFamilyCount >= maxFamilyTrees) {
+          // Parse package name if it's JSON
+          let packageDisplayName = 'الأساسية';
+          try {
+            const nameObj = JSON.parse(defaultPackage.name);
+            packageDisplayName = nameObj.ar || nameObj.en || 'الأساسية';
+          } catch (e) {
+            packageDisplayName = defaultPackage.name || 'الأساسية';
+          }
+          
+          console.log('❌ Family limit exceeded:', { currentFamilyCount, maxFamilyTrees, packageDisplayName });
           toast({
             title: "تم الوصول للحد الأقصى",
-            description: `لقد وصلت للحد الأقصى من أشجار العائلة (${maxFamilyTrees}) في باقة ${defaultPackage.name}. يرجى ترقية باقتك لإنشاء المزيد من الأشجار.`,
+            description: `لقد وصلت للحد الأقصى من أشجار العائلة (${maxFamilyTrees}) في باقة ${packageDisplayName}. يرجى ترقية باقتك لإنشاء المزيد من الأشجار.`,
             variant: "destructive"
           });
           return false;
@@ -199,6 +209,7 @@ const FamilyCreator = () => {
       }
 
       // Get user's non-archived families count only
+      console.log('📊 User has subscription, checking families for user:', userId);
       const { data: families, error: familiesError } = await supabase
         .from('families')
         .select('id')
@@ -206,6 +217,7 @@ const FamilyCreator = () => {
         .eq('is_archived', false);
 
       if (familiesError) {
+        console.error('❌ Error fetching families:', familiesError);
         toast({
           title: "خطأ",
           description: "حدث خطأ في التحقق من حدود الباقة",
@@ -216,12 +228,28 @@ const FamilyCreator = () => {
 
       const currentFamilyCount = families?.length || 0;
       const maxFamilyTrees = subscription.packages?.max_family_trees || 1;
-      const packageName = subscription.packages?.name || 'الباقة الحالية';
+      
+      // Parse package name if it's JSON
+      let packageDisplayName = 'الباقة الحالية';
+      try {
+        const nameObj = JSON.parse(subscription.packages?.name || '{}');
+        packageDisplayName = nameObj.ar || nameObj.en || 'الباقة الحالية';
+      } catch (e) {
+        packageDisplayName = subscription.packages?.name || 'الباقة الحالية';
+      }
+
+      console.log('📈 Family counts with subscription:', { 
+        currentFamilyCount, 
+        maxFamilyTrees, 
+        packageDisplayName,
+        familyIds: families?.map(f => f.id) 
+      });
 
       if (currentFamilyCount >= maxFamilyTrees) {
+        console.log('❌ Family limit exceeded with subscription:', { currentFamilyCount, maxFamilyTrees, packageDisplayName });
         toast({
           title: "تم الوصول للحد الأقصى",
-          description: `لقد وصلت للحد الأقصى من أشجار العائلة (${maxFamilyTrees}) في ${packageName}. يرجى ترقية باقتك لإنشاء المزيد من الأشجار.`,
+          description: `لقد وصلت للحد الأقصى من أشجار العائلة (${maxFamilyTrees}) في ${packageDisplayName}. يرجى ترقية باقتك لإنشاء المزيد من الأشجار.`,
           variant: "destructive"
         });
         return false;
@@ -254,12 +282,20 @@ const FamilyCreator = () => {
       }
 
       // Check user's package limits before creating family
+      console.log('🔍 Checking family creation limits for user:', user.id);
       const canCreateFamily = await checkFamilyCreationLimits(user.id);
       if (!canCreateFamily) {
+        console.log('❌ Cannot create family - limits exceeded');
         return; // Error message is shown in the function
       }
+      console.log('✅ Can create family - proceeding with creation');
 
       // إنشاء العائلة
+      console.log('📝 Creating new family with data:', { 
+        name: treeData.name, 
+        description: treeData.description,
+        creator_id: user.id 
+      });
       const { data: family, error: familyError } = await supabase
         .from('families')
         .insert({
