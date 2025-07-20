@@ -69,8 +69,8 @@ const Auth = () => {
         // Check if email is not confirmed
         if (error.message.includes("Email not confirmed") || error.message.includes("not confirmed")) {
           toast({
-            title: "البريد الإلكتروني غير مؤكد",
-            description: "سنرسل لك رمز تحقق جديد",
+            title: t('email_not_confirmed', 'البريد الإلكتروني غير مؤكد'),
+            description: t('will_send_verification_code', 'سنرسل لك رمز تحقق جديد'),
           });
           
           // Send OTP code via email
@@ -83,7 +83,7 @@ const Auth = () => {
 
           if (otpError) {
             toast({
-              title: "خطأ في الإرسال",
+              title: t('sending_error', 'خطأ في الإرسال'),
               description: otpError.message,
               variant: "destructive",
             });
@@ -92,13 +92,13 @@ const Auth = () => {
             setPendingUserData({ email, password, fullName: "", phone: "" });
             setShowOTP(true);
             toast({
-              title: "تم إرسال رمز التحقق",
-              description: "يرجى إدخال الرمز المرسل إلى بريدك الإلكتروني",
+              title: t('verification_code_sent', 'تم إرسال رمز التحقق'),
+              description: t('enter_code_instruction', 'يرجى إدخال الرمز المرسل إلى بريدك الإلكتروني'),
             });
           }
         } else {
           toast({
-            title: "خطأ في تسجيل الدخول",
+            title: t('login_error', 'خطأ في تسجيل الدخول'),
             description: error.message,
             variant: "destructive",
           });
@@ -108,8 +108,8 @@ const Auth = () => {
       }
 
       toast({
-        title: "مرحباً بك",
-        description: "تم تسجيل الدخول بنجاح",
+        title: t('welcome', 'مرحباً بك'),
+        description: t('login_successful', 'تم تسجيل الدخول بنجاح'),
       });
 
       window.location.href = "/dashboard";
