@@ -848,22 +848,62 @@ const FamilyCreator = () => {
                                       <Button
                                         variant="outline"
                                         className={cn(
-                                          "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
-                                          !founderData.birthDate && "text-gray-500"
+                                          "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-between text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
+                                          !founderData.birthDate && "text-gray-500 dark:text-gray-400"
                                         )}
                                       >
-                                        <CalendarIcon className="ml-2 h-4 w-4" />
-                                        {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "تاريخ الميلاد"}
+                                        <span className="flex items-center gap-2">
+                                          <CalendarIcon className="h-4 w-4 text-amber-500" />
+                                          {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "اختر تاريخ الميلاد"}
+                                        </span>
+                                        {founderData.birthDate && (
+                                          <span className="text-xs text-gray-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-md">
+                                            {format(founderData.birthDate, "EEEE", { locale: ar })}
+                                          </span>
+                                        )}
                                       </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <PopoverContent className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50" align="start">
+                                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 p-4 rounded-t-lg border-b border-amber-200/50 dark:border-amber-700/50">
+                                        <h4 className="text-sm font-medium text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                                          <CalendarIcon className="h-4 w-4" />
+                                          اختر تاريخ الميلاد
+                                        </h4>
+                                        {founderData.birthDate && (
+                                          <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                                            {format(founderData.birthDate, "EEEE، dd MMMM yyyy", { locale: ar })}
+                                          </p>
+                                        )}
+                                      </div>
                                       <Calendar
                                         mode="single"
                                         selected={founderData.birthDate}
                                         onSelect={(date) => setFounderData({...founderData, birthDate: date})}
                                         locale={ar}
                                         initialFocus
-                                        className="rounded-md border pointer-events-auto"
+                                        className="rounded-md pointer-events-auto"
+                                        classNames={{
+                                          months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                                          month: "space-y-4",
+                                          caption: "flex justify-center pt-1 relative items-center",
+                                          caption_label: "text-sm font-medium text-amber-700 dark:text-amber-300",
+                                          nav: "space-x-1 flex items-center",
+                                          nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-md transition-colors",
+                                          nav_button_previous: "absolute left-1",
+                                          nav_button_next: "absolute right-1",
+                                          table: "w-full border-collapse space-y-1",
+                                          head_row: "flex",
+                                          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-amber-600 dark:text-amber-400",
+                                          row: "flex w-full mt-2",
+                                          cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+                                          day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-md transition-colors",
+                                          day_selected: "bg-amber-500 text-white hover:bg-amber-600 focus:bg-amber-600",
+                                          day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-semibold",
+                                          day_outside: "text-muted-foreground opacity-50",
+                                          day_disabled: "text-muted-foreground opacity-50 cursor-not-allowed",
+                                          day_hidden: "invisible",
+                                        }}
+                                        disabled={(date) => date > new Date()}
                                       />
                                     </PopoverContent>
                                   </Popover>
