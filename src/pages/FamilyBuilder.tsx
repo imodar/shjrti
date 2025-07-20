@@ -1671,8 +1671,8 @@ const FamilyBuilder = () => {
 
               {/* Search and Add Section */}
               <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-8">
-                {/* Search Bar - Right Side */}
-                <div className="relative w-full sm:max-w-md order-1 sm:order-2">
+                {/* Search Bar - Right Side in RTL */}
+                <div className="relative w-full sm:max-w-md">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="البحث في أفراد العائلة..."
@@ -1681,8 +1681,8 @@ const FamilyBuilder = () => {
                     className="pr-10 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm w-full"
                   />
                 </div>
-                {/* Controls Section - Left Side */}
-                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center order-2 sm:order-1">
+                {/* Controls Section - Left Side in RTL */}
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                   <Select value={selectedFilter} onValueChange={setSelectedFilter}>
                     <SelectTrigger className="w-full sm:w-48 lg:w-64 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
                       <SelectValue placeholder="اختر نوع العرض" />
