@@ -73,7 +73,7 @@ export function EnhancedDatePicker({
           )}
         </div>
         
-        <div className="[&_.rdp-caption_dropdowns_label]:hidden">
+        <div className="[&_.rdp-vhidden]:hidden">
           <Calendar
             mode="single"
             selected={value}
