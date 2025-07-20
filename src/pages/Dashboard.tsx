@@ -302,7 +302,7 @@ const Dashboard = () => {
                           
                           {/* Welcome Text */}
                           <div className="text-right">
-                            <h1 className={`${familyTrees.length > 0 ? 'text-base md:text-lg' : 'text-lg md:text-xl'} font-bold`}>
+                            <h1 className={`${familyTrees.length > 0 ? 'text-sm sm:text-base md:text-lg' : 'text-base sm:text-lg md:text-xl'} font-bold`}>
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                 أهلاً {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
                               </span>
@@ -317,14 +317,14 @@ const Dashboard = () => {
                               <div className="flex items-center gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-6 py-3 rounded-full shadow-lg">
                                 <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">لديك</span>
-                                  <span className="text-lg font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
+                                  <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">لديك</span>
+                                  <span className="text-sm sm:text-base md:text-lg font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
                                 </div>
                               </div>
                             ) : (
                               <>
                                 <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
+                                <span className="text-sm sm:text-base md:text-lg font-semibold text-emerald-700 dark:text-emerald-300">
                                   {familyTrees.length === 0 
                                     ? t('no_trees', 'لا توجد أشجار بعد')
                                     : `${familyTrees.length} ${t('trees', 'أشجار')}`
@@ -334,7 +334,7 @@ const Dashboard = () => {
                             )}
                           </div>
                           {familyTrees.length === 0 && (
-                            <p className="text-gray-600 dark:text-gray-300">
+                            <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300">
                               {t('no_trees_desc', 'ابدأ رحلتك في بناء إرثك العائلي الرقمي')}
                             </p>
                           )}
@@ -346,13 +346,13 @@ const Dashboard = () => {
           {userSubscription?.package_name && !userSubscription?.is_expired ? (
             <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
               <Crown className="h-4 w-4" />
-              <span className="text-sm font-bold">الباقة {userSubscription.package_name}</span>
+              <span className="text-xs sm:text-sm font-bold">الباقة {userSubscription.package_name}</span>
             </div>
                           ) : !userSubscription?.package_name ? (
                             <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
                               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                                 <Gem className="h-4 w-4" />
-                                <span className="text-sm font-medium">حساب مجاني</span>
+                                <span className="text-xs sm:text-sm font-medium">حساب مجاني</span>
                               </div>
                               <Link to="/plan-selection">
                                 <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-3 py-1 rounded-full border-0">
