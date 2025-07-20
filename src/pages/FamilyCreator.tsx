@@ -857,17 +857,41 @@ const FamilyCreator = () => {
                                       </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
+                                      <div className="p-3 border-b bg-amber-50 dark:bg-amber-950">
+                                        <p className="text-sm font-medium text-amber-700 dark:text-amber-300 text-center">
+                                          اختر تاريخ الميلاد
+                                        </p>
+                                      </div>
                                       <Calendar
                                         mode="single"
                                         selected={founderData.birthDate}
                                         onSelect={(date) => setFounderData({...founderData, birthDate: date})}
                                         locale={ar}
                                         initialFocus
-                                        className="rounded-md pointer-events-auto"
+                                        className="rounded-md pointer-events-auto p-3"
                                         disabled={(date) => date > new Date()}
                                         captionLayout="dropdown-buttons"
-                                        fromYear={1900}
+                                        fromYear={1700}
                                         toYear={new Date().getFullYear()}
+                                        classNames={{
+                                          months: "flex flex-col space-y-4",
+                                          month: "space-y-4",
+                                          caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
+                                          caption_dropdowns: "flex justify-center gap-2",
+                                          dropdown: "px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-800 min-w-[100px]",
+                                          caption_label: "hidden",
+                                          nav: "hidden",
+                                          table: "w-full border-collapse space-y-1 mt-4",
+                                          head_row: "flex",
+                                          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center",
+                                          row: "flex w-full mt-2",
+                                          cell: "h-9 w-9 text-center text-sm p-0 relative",
+                                          day: "h-9 w-9 p-0 font-normal hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-md transition-colors",
+                                          day_selected: "bg-amber-500 text-white hover:bg-amber-600",
+                                          day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-semibold",
+                                          day_outside: "text-muted-foreground opacity-50",
+                                          day_disabled: "text-muted-foreground opacity-50",
+                                        }}
                                       />
                                     </PopoverContent>
                                   </Popover>
