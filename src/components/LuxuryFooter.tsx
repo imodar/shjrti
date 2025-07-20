@@ -30,20 +30,20 @@ export function LuxuryFooter() {
 
       <div className="relative z-10">
         {/* Main Footer Content */}
-        <div className="container mx-auto px-4 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-12">
             {/* Brand Section */}
-            <div className="md:col-span-1 space-y-6">
+            <div className="sm:col-span-2 lg:col-span-1 space-y-4 sm:space-y-6">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-50"></div>
-                  <TreePine className="relative h-10 w-10 text-emerald-400" />
+                  <TreePine className="relative h-8 w-8 sm:h-10 sm:w-10 text-emerald-400" />
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                   {t('footer_brand_name', 'شجرة العائلة')}
                 </span>
               </div>
-              <p className="text-gray-300 text-lg leading-relaxed">
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
                 {t('footer_brand_description', 'نحفظ تراثك ونبني إرثك الرقمي للأجيال القادمة بأحدث التقنيات وأعلى معايير الجودة')}
               </p>
               <div className="flex items-center gap-3 text-emerald-400">
@@ -53,8 +53,8 @@ export function LuxuryFooter() {
             </div>
             
             {/* Quick Links */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold text-white relative">
+            <div className="space-y-4 sm:space-y-6">
+              <h3 className="text-lg sm:text-xl font-bold text-white relative">
                 {t('footer_quick_links_title', 'روابط سريعة')}
                 <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
               </h3>
@@ -79,8 +79,8 @@ export function LuxuryFooter() {
             </div>
             
             {/* Support */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold text-white relative">
+            <div className="space-y-4 sm:space-y-6">
+              <h3 className="text-lg sm:text-xl font-bold text-white relative">
                 {t('footer_support_title', 'الدعم والمساعدة')}
                 <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
               </h3>
@@ -101,8 +101,8 @@ export function LuxuryFooter() {
             </div>
             
             {/* Social & Contact */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold text-white relative">
+            <div className="space-y-4 sm:space-y-6 sm:col-span-2 lg:col-span-1">
+              <h3 className="text-lg sm:text-xl font-bold text-white relative">
                 {t('footer_contact_title', 'تواصل معنا')}
                 <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
               </h3>
@@ -129,12 +129,12 @@ export function LuxuryFooter() {
                   <Sparkles className="h-4 w-4 text-emerald-400" />
                   {t('footer_newsletter_title', 'النشرة الإخبارية')}
                 </h5>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input 
                     placeholder={t('footer_newsletter_placeholder', 'بريدك الإلكتروني')}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 backdrop-blur-sm"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 backdrop-blur-sm text-sm"
                   />
-                  <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-lg">
+                  <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-lg text-sm px-4 sm:px-6">
                     {t('footer_newsletter_subscribe', 'اشتراك')}
                   </Button>
                 </div>
@@ -157,12 +157,12 @@ export function LuxuryFooter() {
         
         {/* Luxury Bottom Bar */}
         <div className="border-t border-gray-700/50">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               <div className="flex items-center gap-4 text-gray-400">
-                <p>{t('footer_copyright', '© ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.')}</p>
+                <p className="text-xs sm:text-sm">{t('footer_copyright', '© ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.')}</p>
               </div>
-              <div className="flex items-center gap-6 text-gray-400 text-sm">
+              <div className="flex items-center gap-6 text-gray-400 text-xs sm:text-sm">
                 <span className="flex items-center gap-2">
                   <Gem className="h-4 w-4 text-emerald-400" />
                   {t('footer_made_with_love', 'صنع بحب في الشرق الأوسط')}
