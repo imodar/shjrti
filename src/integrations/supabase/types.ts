@@ -110,7 +110,6 @@ export type Database = {
           id: string
           is_archived: boolean | null
           name: string
-          package_id: string | null
           updated_at: string
         }
         Insert: {
@@ -121,7 +120,6 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name: string
-          package_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -132,18 +130,9 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name?: string
-          package_id?: string | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "families_package_id_fkey"
-            columns: ["package_id"]
-            isOneToOne: false
-            referencedRelation: "packages"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       family_members: {
         Row: {
