@@ -209,7 +209,7 @@ export const GlobalHeader = () => {
                       
                       {/* Enhanced Menu Items */}
                       <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
-                        <Link to="/dashboard" className="flex items-center gap-4 flex-row-reverse">
+                        <Link to="/dashboard" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
                             <TreePine className="h-5 w-5 text-emerald-300" />
                           </div>
@@ -221,7 +221,7 @@ export const GlobalHeader = () => {
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
-                        <Link to="/profile" className="flex items-center gap-4 flex-row-reverse">
+                        <Link to="/profile" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-colors border border-teal-400/30">
                             <Settings className="h-5 w-5 text-teal-300" />
                           </div>
@@ -233,7 +233,7 @@ export const GlobalHeader = () => {
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-4 rounded-xl hover:bg-amber-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/20" asChild>
-                        <Link to="/payments" className="flex items-center gap-4 flex-row-reverse">
+                        <Link to="/payments" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className="p-3 bg-amber-400/20 rounded-xl group-hover:bg-amber-400/30 transition-colors border border-amber-400/30">
                             <CreditCard className="h-5 w-5 text-amber-300" />
                           </div>
@@ -245,7 +245,7 @@ export const GlobalHeader = () => {
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/30">
-                         <div className="flex items-center gap-4 w-full flex-row-reverse">
+                         <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
                             <HelpCircle className="h-5 w-5 text-emerald-300" />
                           </div>
@@ -263,7 +263,7 @@ export const GlobalHeader = () => {
                         className="group p-4 rounded-xl hover:bg-red-500/20 transition-all duration-300 cursor-pointer text-red-400 focus:text-red-300 border border-transparent hover:border-red-500/30"
                         onClick={signOut}
                       >
-                        <div className="flex items-center gap-4 w-full flex-row-reverse">
+                        <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-colors border border-red-500/30">
                             <LogOut className="h-5 w-5 text-red-400" />
                           </div>
@@ -383,7 +383,7 @@ export const GlobalHeader = () => {
                   {/* Mobile Sheet Header */}
                   <div className="p-6 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-semibold text-white">القائمة</h2>
+                      <h2 className="text-lg font-semibold text-white">{t('nav.menu', 'القائمة')}</h2>
                       <Button 
                         variant="ghost" 
                         size="sm"
@@ -421,7 +421,7 @@ export const GlobalHeader = () => {
                         {/* Mobile Navigation Links */}
                         <Link 
                           to="/dashboard" 
-                          className="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-emerald-400/20 rounded-lg">
@@ -432,7 +432,7 @@ export const GlobalHeader = () => {
 
                         <Link 
                           to="/profile" 
-                          className="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-teal-400/20 rounded-lg">
