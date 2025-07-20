@@ -54,17 +54,31 @@ const Auth = () => {
 
     try {
       cleanupAuthState();
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // Continue even if this fails
+      
+      // Add retry logic for network issues
+      let retryCount = 0;
+      const maxRetries = 3;
+      let authResult;
+      
+      while (retryCount < maxRetries) {
+        try {
+          authResult = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          break; // Success, exit retry loop
+        } catch (networkError: any) {
+          retryCount++;
+          if (retryCount >= maxRetries) {
+            throw networkError; // Re-throw after max retries
+          }
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { data, error } = authResult;
+      
       if (error) {
         // Check if email is not confirmed
         if (error.message.includes("Email not confirmed") || error.message.includes("not confirmed")) {
@@ -114,9 +128,18 @@ const Auth = () => {
 
       window.location.href = "/dashboard";
     } catch (error: any) {
+      console.error('Login error:', error);
+      
+      // Provide specific error messages for network issues
+      let errorMessage = error.message || t('login_error_general', 'حدث خطأ أثناء تسجيل الدخول');
+      
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_CONNECTION_RESET')) {
+        errorMessage = t('network_error', 'مشكلة في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+      }
+      
       toast({
         title: t('error', 'خطأ'),
-        description: error.message || t('login_error_general', 'حدث خطأ أثناء تسجيل الدخول'),
+        description: errorMessage,
         variant: "destructive",
       });
       setIsLoading(false);
