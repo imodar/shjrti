@@ -689,7 +689,7 @@ const FamilyCreator = () => {
                           <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-emerald-400/60 rounded-full animate-float-up animation-delay-4000"></div>
                         </div>
 
-                        <div className="relative z-10 h-full flex flex-col justify-center">
+                        <div className="relative z-10 h-full flex flex-col justify-center hidden md:flex">
                           {/* Elegant Light Design Container */}
                           <div className="relative max-w-4xl mx-auto">
                             {/* Soft Floating Elements */}
