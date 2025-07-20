@@ -163,9 +163,18 @@ const FamilyCreator = () => {
         console.log('📊 Using default package, checking families for user:', userId);
         const { data: families, error: familiesError } = await supabase
           .from('families')
-          .select('id')
+          .select('id, name, is_archived, archived_at')
           .eq('creator_id', userId)
           .eq('is_archived', false);
+
+        // Also check all families to see what's happening
+        const { data: allFamilies } = await supabase
+          .from('families')
+          .select('id, name, is_archived, archived_at')
+          .eq('creator_id', userId);
+        
+        console.log('🔍 All families for user (default package):', allFamilies);
+        console.log('✅ Non-archived families for user (default package):', families);
 
         if (familiesError) {
           console.error('❌ Error fetching families:', familiesError);
@@ -212,9 +221,18 @@ const FamilyCreator = () => {
       console.log('📊 User has subscription, checking families for user:', userId);
       const { data: families, error: familiesError } = await supabase
         .from('families')
-        .select('id')
+        .select('id, name, is_archived, archived_at')
         .eq('creator_id', userId)
         .eq('is_archived', false);
+
+      // Also check all families to see what's happening
+      const { data: allFamilies } = await supabase
+        .from('families')
+        .select('id, name, is_archived, archived_at')
+        .eq('creator_id', userId);
+      
+      console.log('🔍 All families for user:', allFamilies);
+      console.log('✅ Non-archived families for user:', families);
 
       if (familiesError) {
         console.error('❌ Error fetching families:', familiesError);
