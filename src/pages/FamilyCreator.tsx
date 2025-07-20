@@ -990,7 +990,7 @@ const FamilyCreator = () => {
                         </div>
 
                         {/* Left Side - Wives Section */}
-                        <div className="order-1 lg:order-2">
+                        <div className="order-2 lg:order-2">
                           <div className="bg-gradient-to-br from-pink-50/50 to-rose-50/50 dark:from-pink-900/20 dark:to-rose-900/20 rounded-xl p-4 border border-pink-200/50 dark:border-pink-700/50 mb-4">
                             <h3 className="text-lg font-bold text-pink-700 dark:text-pink-300 mb-2 flex items-center gap-2">
                               <Heart className="h-5 w-5" />
