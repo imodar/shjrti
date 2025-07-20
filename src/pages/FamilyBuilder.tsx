@@ -532,7 +532,8 @@ const FamilyBuilder = () => {
           console.log(`Father ${father.name} is from original family:`, fatherIsFromFamily);
           
           if (fatherIsFromFamily) {
-            const result = `ابن ${father.name} الشيخ سعيد`;
+            const familyName = familyData?.name || "العائلة";
+            const result = `ابن ${father.name} ${familyName}`;
             console.log(`Male result for ${member.name}:`, result);
             return result;
           } else {
@@ -542,7 +543,7 @@ const FamilyBuilder = () => {
         }
       }
       if (member.isFounder) {
-        return "الشيخ سعيد"; // Add family name for founders like Amir
+        return familyData?.name || "العائلة"; // Add family name for founders
       }
     }
     
@@ -566,7 +567,8 @@ const FamilyBuilder = () => {
           }
           
           // Add family name
-          wifeInfo += ` الشيخ سعيد`;
+          const familyName = familyData?.name || "العائلة";
+          wifeInfo += ` ${familyName}`;
           
           const result = `زوج ${wifeInfo}`;
           console.log(`Husband result for ${member.name}:`, result);
@@ -581,13 +583,14 @@ const FamilyBuilder = () => {
         const father = familyMembers.find(m => m.id === member.fatherId);
         console.log(`Father found for ${member.name}:`, father);
         if (father) {
-          const result = `بنت ${father.name} الشيخ سعيد`;
+          const familyName = familyData?.name || "العائلة";
+          const result = `بنت ${father.name} ${familyName}`;
           console.log(`Female result for ${member.name}:`, result);
           return result;
         }
       }
       if (member.isFounder) {
-        return "الشيخ سعيد"; // Add family name for female founders
+        return familyData?.name || "العائلة"; // Add family name for female founders
       }
     }
     // For wives (married women who are not from the original family)
@@ -609,8 +612,9 @@ const FamilyBuilder = () => {
             }
           }
           
-          // Add family name - assuming "الشيخ سعيد" is the family name
-          husbandFullName += ` الشيخ سعيد`;
+          // Add family name from database
+          const familyName = familyData?.name || "العائلة";
+          husbandFullName += ` ${familyName}`;
           
           const result = `زوجة ${husbandFullName}`;
           console.log(`Wife result for ${member.name}:`, result);
