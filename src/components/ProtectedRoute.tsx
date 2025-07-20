@@ -20,11 +20,14 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(requireAdmin);
 
+  // Development mode bypass - allows access without authentication
+  const isDevelopment = import.meta.env.DEV;
+
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isDevelopment) {
       navigate('/auth');
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, isDevelopment]);
 
   useEffect(() => {
     if (requireAdmin && user) {
@@ -108,6 +111,12 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
         </div>
       </div>
     );
+  }
+
+  // In development mode, bypass all authentication checks
+  if (isDevelopment) {
+    console.log('ProtectedRoute: Development mode - bypassing authentication');
+    return <>{children}</>;
   }
 
   if (!user || (requireAdmin && !isAdmin)) {
