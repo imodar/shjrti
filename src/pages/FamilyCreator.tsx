@@ -852,35 +852,21 @@ const FamilyCreator = () => {
                                 </div>
 
                                 {/* Status */}
-                                 <div className="group">
-                                   <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                     {founderData.isAlive ? (
-                                       <Heart className="w-4 h-4 text-green-500 fill-current" />
-                                     ) : (
-                                       <Heart className="w-4 h-4 text-red-500 fill-current" />
-                                     )}
-                                     الحالة
-                                   </Label>
-                                   <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                                     <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl [&>span]:text-right [&>span]:flex [&>span]:items-center [&>span]:justify-end [&>span]:gap-2">
-                                       <SelectValue />
-                                     </SelectTrigger>
-                                     <SelectContent className="min-w-[200px]">
-                                       <SelectItem value="alive" className="flex items-center justify-between text-right cursor-pointer">
-                                         <div className="flex items-center gap-2 flex-row-reverse w-full">
-                                           <span>على قيد الحياة</span>
-                                           <Heart className="w-4 h-4 text-green-500 fill-current" />
-                                         </div>
-                                       </SelectItem>
-                                       <SelectItem value="deceased" className="flex items-center justify-between text-right cursor-pointer">
-                                         <div className="flex items-center gap-2 flex-row-reverse w-full">
-                                           <span>متوفى</span>
-                                           <Heart className="w-4 h-4 text-red-500 fill-current" />
-                                         </div>
-                                       </SelectItem>
-                                     </SelectContent>
-                                   </Select>
-                                 </div>
+                                <div className="group">
+                                  <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    الحالة
+                                  </Label>
+                                  <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
+                                    <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="alive">على قيد الحياة</SelectItem>
+                                      <SelectItem value="deceased">متوفى</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
 
                                 {/* Death Date (conditional) */}
                                 {!founderData.isAlive && (
