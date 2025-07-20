@@ -58,13 +58,33 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
 
   useEffect(() => {
     if (pkg) {
+      let processedFeatures = {};
+      
+      if (typeof pkg.features === 'string') {
+        try {
+          const parsed = JSON.parse(pkg.features || '{}');
+          processedFeatures = typeof parsed === 'object' && parsed !== null ? parsed : { en: [] };
+        } catch {
+          processedFeatures = { en: [] };
+        }
+      } else if (pkg.features && typeof pkg.features === 'object') {
+        processedFeatures = pkg.features;
+      } else {
+        processedFeatures = { en: [] };
+      }
+
+      // Ensure all feature values are arrays
+      Object.keys(processedFeatures).forEach(key => {
+        if (!Array.isArray(processedFeatures[key])) {
+          processedFeatures[key] = [];
+        }
+      });
+
       setFormData({
         ...pkg,
         name: typeof pkg.name === 'string' ? { en: pkg.name } : pkg.name || {},
         description: typeof pkg.description === 'string' ? { en: pkg.description } : pkg.description || {},
-        features: typeof pkg.features === 'string' 
-          ? { en: JSON.parse(pkg.features || '[]') } 
-          : pkg.features || {}
+        features: processedFeatures
       });
     }
   }, [pkg]);
@@ -157,9 +177,10 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="package-edit-description">
         <DialogHeader>
           <DialogTitle>Edit Package</DialogTitle>
+          <p id="package-edit-description" className="sr-only">Edit package details including name, description, pricing, and features in multiple languages</p>
         </DialogHeader>
 
         <Tabs defaultValue="basic" className="w-full">
