@@ -2240,13 +2240,7 @@ export default FamilyBuilder;
 
                 </div>
               </div>
-            )}
 
-            {/* Step 2: Additional Details */}
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">معلومات إضافية</h3>
                   <p className="text-muted-foreground">أضف التفاصيل الإضافية للشخص</p>
                 </div>
 
