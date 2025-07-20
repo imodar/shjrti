@@ -109,16 +109,16 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
               <SelectValue placeholder="اختر الحالة الزوجية" />
             </SelectTrigger>
             <SelectContent className="z-[100] bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 shadow-xl min-w-[200px]">
-              <SelectItem value="married" className="font-arabic text-right cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-3">
-                <div className="flex items-center gap-2 flex-row-reverse">
-                  <span>متزوجة</span>
+              <SelectItem value="married" className="font-arabic text-right cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-3 dir-rtl">
+                <div className="flex items-center gap-2 w-full justify-start dir-rtl">
                   <Heart className="h-4 w-4 text-green-500" />
+                  <span>متزوجة</span>
                 </div>
               </SelectItem>
-              <SelectItem value="divorced" className="font-arabic text-right cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-3">
-                <div className="flex items-center gap-2 flex-row-reverse">
-                  <span>مطلقة</span>
+              <SelectItem value="divorced" className="font-arabic text-right cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-3 dir-rtl">
+                <div className="flex items-center gap-2 w-full justify-start dir-rtl">
                   <Users className="h-4 w-4 text-orange-500" />
+                  <span>مطلقة</span>
                 </div>
               </SelectItem>
             </SelectContent>
