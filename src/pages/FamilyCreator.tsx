@@ -21,10 +21,12 @@ import { supabase } from "@/integrations/supabase/client";
 import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FamilyCreator = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isCreatingFamily, setIsCreatingFamily] = useState(false);
@@ -882,7 +884,7 @@ const FamilyCreator = () => {
                               معلومات المؤسس
                             </h3>
                             <p className="text-sm text-emerald-600 dark:text-emerald-400 text-right">
-                              الشخص الأول الذي ستبدأ منه بناء شجرة العائلة
+                              {t('founder_description', 'الشخص الأول الذي ستبدأ منه بناء شجرة العائلة')}
                             </p>
                           </div>
                           
