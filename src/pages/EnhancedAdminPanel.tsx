@@ -73,6 +73,7 @@ export default function EnhancedAdminPanel() {
   const { toast } = useToast();
   const { currentLanguage, direction } = useLanguage();
   const [packages, setPackages] = useState<PackageType[]>([]);
+  const [editingPackages, setEditingPackages] = useState<Set<string>>(new Set());
   const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
     description: '',
@@ -245,6 +246,52 @@ export default function EnhancedAdminPanel() {
       toast({
         title: "Error",
         description: "Failed to delete package",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditPackage = (packageId: string) => {
+    setEditingPackages(prev => new Set(prev).add(packageId));
+  };
+
+  const handleSavePackage = async (packageId: string) => {
+    try {
+      const pkg = packages.find(p => p.id === packageId);
+      if (!pkg) return;
+
+      const { error } = await supabase
+        .from('packages')
+        .update({
+          name: pkg.name || 'Package',
+          description: pkg.description,
+          price_usd: pkg.price_usd || 0,
+          price_sar: pkg.price_sar || 0,
+          max_family_members: pkg.max_family_members || 0,
+          max_family_trees: pkg.max_family_trees || 0,
+          display_order: pkg.display_order || 0,
+          is_active: pkg.is_active,
+          is_featured: pkg.is_featured
+        })
+        .eq('id', packageId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Package updated successfully"
+      });
+
+      setEditingPackages(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(packageId);
+        return newSet;
+      });
+    } catch (error) {
+      console.error('Error updating package:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update package",
         variant: "destructive"
       });
     }
@@ -556,46 +603,76 @@ export default function EnhancedAdminPanel() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {packages.map((pkg) => (
-                    <div key={pkg.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{getPackageTranslation(pkg.id, 'name')}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {getPackageTranslation(pkg.id, 'description')}
-                        </p>
+                  {packages.map((pkg) => {
+                    const isEditing = editingPackages.has(pkg.id);
+                    return (
+                      <div key={pkg.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="grid grid-cols-2 gap-2 mb-2">
+                            <Input
+                              type="text"
+                              placeholder="Package Name"
+                              value={pkg.name || ''}
+                              onChange={(e) => handleInputChange(pkg.id, 'name', e.target.value)}
+                              disabled={!isEditing}
+                              className="font-medium"
+                            />
+                            <Input
+                              type="text"
+                              placeholder="Description"
+                              value={pkg.description || ''}
+                              onChange={(e) => handleInputChange(pkg.id, 'description', e.target.value)}
+                              disabled={!isEditing}
+                              className="text-sm"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            type="number"
+                            placeholder="Price USD"
+                            value={pkg.price_usd || 0}
+                            onChange={(e) => handleInputChange(pkg.id, 'price_usd', Number(e.target.value))}
+                            disabled={!isEditing}
+                            className="w-24"
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Price SAR"
+                            value={pkg.price_sar || 0}
+                            onChange={(e) => handleInputChange(pkg.id, 'price_sar', Number(e.target.value))}
+                            disabled={!isEditing}
+                            className="w-24"
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Max Members"
+                            value={pkg.max_family_members || 0}
+                            onChange={(e) => handleInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
+                            disabled={!isEditing}
+                            className="w-24"
+                          />
+                          <Switch
+                            checked={pkg.is_active}
+                            onCheckedChange={(checked) => handleInputChange(pkg.id, 'is_active', checked)}
+                            disabled={!isEditing}
+                          />
+                          {isEditing ? (
+                            <Button variant="outline" size="sm" onClick={() => handleSavePackage(pkg.id)}>
+                              <Save className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <Button variant="outline" size="sm" onClick={() => handleEditPackage(pkg.id)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          type="number"
-                          placeholder="Price USD"
-                          value={pkg.price_usd || 0}
-                          onChange={(e) => handleInputChange(pkg.id, 'price_usd', Number(e.target.value))}
-                          className="w-24"
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Price SAR"
-                          value={pkg.price_sar || 0}
-                          onChange={(e) => handleInputChange(pkg.id, 'price_sar', Number(e.target.value))}
-                          className="w-24"
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Max Members"
-                          value={pkg.max_family_members || 0}
-                          onChange={(e) => handleInputChange(pkg.id, 'max_family_members', Number(e.target.value))}
-                          className="w-24"
-                        />
-                        <Switch
-                          checked={pkg.is_active}
-                          onCheckedChange={(checked) => handleInputChange(pkg.id, 'is_active', checked)}
-                        />
-                        <Button variant="outline" size="sm" onClick={() => handleDeletePackage(pkg.id)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <Button className="mt-4" onClick={handleBulkUpdate}>
                   Update All
