@@ -89,7 +89,7 @@ export function EnhancedDatePicker({
             month: "space-y-4",
             caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
             caption_dropdowns: "flex justify-center gap-3",
-            dropdown: "px-3 py-2 text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 [&>option]:text-right",
+            dropdown: "px-3 py-2 text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 [&>option]:text-right [&+span]:hidden",
             caption_label: "hidden",
             nav: "hidden",
             table: "w-full border-collapse space-y-1 mt-4",
