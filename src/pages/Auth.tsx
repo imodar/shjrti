@@ -115,8 +115,8 @@ const Auth = () => {
       window.location.href = "/dashboard";
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء تسجيل الدخول",
+        title: t('error', 'خطأ'),
+        description: error.message || t('login_error_general', 'حدث خطأ أثناء تسجيل الدخول'),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -151,7 +151,7 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "خطأ في إنشاء الحساب",
+          title: t('register_error', 'خطأ في إنشاء الحساب'),
           description: error.message,
           variant: "destructive",
         });
@@ -163,8 +163,8 @@ const Auth = () => {
       setPendingUserData({ email, password, fullName, phone });
       
       toast({
-        title: "تم إرسال رمز التحقق",
-        description: "يرجى التحقق من بريدك الإلكتروني وإدخال رمز التحقق",
+        title: t('verification_code_sent', 'تم إرسال رمز التحقق'),
+        description: t('enter_code_instruction', 'يرجى التحقق من بريدك الإلكتروني وإدخال رمز التحقق'),
       });
 
       // Show OTP screen
@@ -172,8 +172,8 @@ const Auth = () => {
       setIsLoading(false);
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء إنشاء الحساب",
+        title: t('error', 'خطأ'),
+        description: error.message || t('register_error_general', 'حدث خطأ أثناء إنشاء الحساب'),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -193,7 +193,7 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "خطأ في التحقق",
+          title: t('verification_error', 'خطأ في التحقق'),
           description: error.message,
           variant: "destructive",
         });
@@ -201,8 +201,8 @@ const Auth = () => {
       }
 
       toast({
-        title: "تم التحقق بنجاح",
-        description: "مرحباً بك في شجرتي",
+        title: t('verification_successful', 'تم التحقق بنجاح'),
+        description: t('welcome_to_my_tree', 'مرحباً بك في شجرتي'),
       });
 
       // Clear form and redirect
@@ -218,8 +218,8 @@ const Auth = () => {
       window.location.href = "/plan-selection";
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء التحقق",
+        title: t('error', 'خطأ'),
+        description: error.message || t('verification_error_general', 'حدث خطأ أثناء التحقق'),
         variant: "destructive",
       });
     } finally {
@@ -242,7 +242,7 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "خطأ في إعادة الإرسال",
+          title: t('resend_error', 'خطأ في إعادة الإرسال'),
           description: error.message,
           variant: "destructive",
         });
@@ -250,13 +250,13 @@ const Auth = () => {
       }
 
       toast({
-        title: "تم إعادة الإرسال",
-        description: "تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني",
+        title: t('resent_successfully', 'تم إعادة الإرسال'),
+        description: t('resent_description', 'تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني'),
       });
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء إعادة الإرسال",
+        title: t('error', 'خطأ'),
+        description: error.message || t('resend_error_general', 'حدث خطأ أثناء إعادة الإرسال'),
         variant: "destructive",
       });
     } finally {
@@ -284,15 +284,15 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "خطأ في تسجيل الدخول",
+          title: t('login_error', 'خطأ في تسجيل الدخول'),
           description: error.message,
           variant: "destructive",
         });
       }
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء تسجيل الدخول بـ Google",
+        title: t('error', 'خطأ'),
+        description: error.message || t('google_login_error', 'حدث خطأ أثناء تسجيل الدخول بـ Google'),
         variant: "destructive",
       });
     } finally {
