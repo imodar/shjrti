@@ -2,10 +2,9 @@ import { useState, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, Plus, Heart, Users } from "lucide-react";
+import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -83,33 +82,14 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
             <CalendarIcon className="h-4 w-4 text-primary" />
             تاريخ الميلاد
           </Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic text-xs",
-                  !formData.birthDate && "text-muted-foreground"
-                )}
-              >
-                {formData.birthDate ? (
-                  format(formData.birthDate, "yyyy", { locale: ar })
-                ) : (
-                  <span>السنة</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-              <Calendar
-                mode="single"
-                selected={formData.birthDate}
-                onSelect={(date) => setFormData({...formData, birthDate: date})}
-                disabled={(date) => date > new Date() || date < new Date("1800-01-01")}
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+          <EnhancedDatePicker
+            value={formData.birthDate}
+            onChange={(date) => setFormData({...formData, birthDate: date})}
+            placeholder="تاريخ الميلاد"
+            className="h-10 text-xs"
+            fromYear={1800}
+            disableFuture={true}
+          />
         </div>
       </div>
 
@@ -183,37 +163,14 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife }, ref) => 
           {/* Death Date - Only show if deceased */}
           {!formData.isAlive && (
             <div className="flex-1">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full h-10 rounded-lg bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 justify-center text-center font-arabic",
-                      !formData.deathDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="h-4 w-4 ml-2" />
-                    {formData.deathDate ? (
-                      format(formData.deathDate, "yyyy/MM/dd", { locale: ar })
-                    ) : (
-                      <span>تاريخ الوفاة</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-card/95 backdrop-blur-xl border-border/50" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={formData.deathDate}
-                    onSelect={(date) => setFormData({...formData, deathDate: date})}
-                    disabled={(date) => 
-                      date > new Date() || 
-                      (formData.birthDate && date < formData.birthDate)
-                    }
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <EnhancedDatePicker
+                value={formData.deathDate}
+                onChange={(date) => setFormData({...formData, deathDate: date})}
+                placeholder="تاريخ الوفاة"
+                className="h-10"
+                fromYear={1800}
+                disableFuture={true}
+              />
             </div>
           )}
         </div>
