@@ -76,7 +76,7 @@ const Dashboard = () => {
       
       setLoading(true);
       try {
-        // Fetch family trees
+        // Fetch active family trees only
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select(`
@@ -86,7 +86,8 @@ const Dashboard = () => {
             updated_at,
             family_tree_members(count)
           `)
-          .eq('creator_id', user.id);
+          .eq('creator_id', user.id)
+          .eq('subscription_status', 'active');
 
         if (familiesError) throw familiesError;
 
@@ -208,9 +209,10 @@ const Dashboard = () => {
     console.log('👤 Current user ID:', user?.id);
     
     try {
+      // Instead of deleting, update subscription_status to 'deleted'
       const { error } = await supabase
         .from('families')
-        .delete()
+        .update({ subscription_status: 'deleted' })
         .eq('id', deleteTreeId)
         .eq('creator_id', user?.id);
 
