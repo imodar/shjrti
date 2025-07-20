@@ -1698,17 +1698,6 @@ const FamilyBuilder = () => {
                   
                   {/* Badge and Add Button Section */}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-                    {packageData && (
-                      <Badge 
-                        variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
-                        className="px-3 py-2 text-xs sm:text-sm text-center whitespace-nowrap"
-                      >
-                        {familyMembers.length}/{packageData.max_family_members} أعضاء
-                        {familyMembers.length >= packageData.max_family_members && (
-                          <span className="hidden sm:inline"> (وصلت للحد الأقصى)</span>
-                        )}
-                      </Badge>
-                    )}
                     <Button
                       onClick={() => {
                         console.log('Add button clicked - Current members:', familyMembers.length, 'Package data:', packageData);
@@ -1720,6 +1709,17 @@ const FamilyBuilder = () => {
                       <Plus className="ml-2 h-4 w-4" />
                       <span className="text-xs sm:text-sm">إضافة فرد</span>
                     </Button>
+                    {packageData && (
+                      <Badge 
+                        variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
+                        className="px-3 py-2 text-xs sm:text-sm text-center whitespace-nowrap"
+                      >
+                        {familyMembers.length}/{packageData.max_family_members} أعضاء
+                        {familyMembers.length >= packageData.max_family_members && (
+                          <span className="hidden sm:inline"> (وصلت للحد الأقصى)</span>
+                        )}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>
