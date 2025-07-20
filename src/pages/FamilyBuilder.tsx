@@ -1549,13 +1549,13 @@ const FamilyBuilder = () => {
         <div className="max-w-7xl mx-auto px-6">
           {/* Header Box */}
           <div className="mb-8">
-            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
-              <div className="flex items-center justify-between gap-8">
+            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
                 {/* Right Side: Icon + Title + Description */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div className="relative">
-                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
-                      <Users className="h-8 w-8 text-white drop-shadow-lg" />
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                      <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" />
                     </div>
                     {/* Status Indicator */}
                     <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
@@ -1564,7 +1564,7 @@ const FamilyBuilder = () => {
                   </div>
                   
                   <div className="text-center">
-                    <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                         عائلة {familyData?.name || 'غير محدد'}
                       </span>
@@ -1572,13 +1572,13 @@ const FamilyBuilder = () => {
                   </div>
                 </div>
 
-                {/* Sample Statistics Section - Moved to Middle */}
-                <div className="flex justify-center items-center gap-8">
+                {/* Sample Statistics Section - Responsive */}
+                <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 overflow-x-auto pb-2 lg:pb-0">
                   {/* Members Available */}
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
                     <div className="text-center">
-                      <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
                         {familyMembers.length}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">أعضاء</div>
@@ -1586,13 +1586,13 @@ const FamilyBuilder = () => {
                   </div>
 
                   {/* Separator */}
-                  <div className="w-px h-8 bg-white/20 dark:bg-gray-600/20"></div>
+                  <div className="w-px h-6 sm:h-8 bg-white/20 dark:bg-gray-600/20"></div>
 
                   {/* Number of Generations */}
-                  <div className="flex items-center gap-2">
-                    <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600 dark:text-amber-400" />
                     <div className="text-center">
-                      <div className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-amber-600 dark:text-amber-400">
                         {calculateGenerationCount()}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">أجيال</div>
@@ -1600,13 +1600,13 @@ const FamilyBuilder = () => {
                   </div>
 
                   {/* Separator */}
-                  <div className="w-px h-8 bg-white/20 dark:bg-gray-600/20"></div>
+                  <div className="w-px h-6 sm:h-8 bg-white/20 dark:bg-gray-600/20"></div>
 
                   {/* Last Modified Date */}
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 dark:text-teal-400" />
                     <div className="text-center">
-                      <div className="text-lg font-bold text-teal-600 dark:text-teal-400">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-teal-600 dark:text-teal-400">
                         {familyData?.updated_at 
                           ? format(new Date(familyData.updated_at), 'd MMM', { locale: ar })
                           : 'اليوم'
