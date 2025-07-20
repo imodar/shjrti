@@ -189,14 +189,24 @@ const Dashboard = () => {
   };
 
   const handleDeleteTreeClick = (treeId: string, treeName: string) => {
+    console.log('🗑️ Delete button clicked for tree:', { treeId, treeName });
     setDeleteTreeId(treeId);
     setDeleteTreeName(treeName);
     setDeleteConfirmText("");
     setShowDeleteModal(true);
+    console.log('📝 Delete modal should now be visible');
   };
 
   const handleConfirmDelete = async () => {
+    console.log('🔄 handleConfirmDelete called with:', { 
+      deleteTreeId, 
+      deleteConfirmText: deleteConfirmText.trim(), 
+      deleteTreeName: deleteTreeName.trim(),
+      matches: deleteConfirmText.trim() === deleteTreeName.trim()
+    });
+    
     if (!deleteTreeId || deleteConfirmText.trim() !== deleteTreeName.trim()) {
+      console.log('❌ Validation failed in handleConfirmDelete');
       toast({
         title: "خطأ في التأكيد",
         description: "يجب كتابة اسم الشجرة بشكل صحيح للتأكيد",
