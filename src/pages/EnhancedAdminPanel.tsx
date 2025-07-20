@@ -65,6 +65,10 @@ interface NewTranslation {
   category: string;
 }
 
+interface EditingTranslation extends TranslationType {
+  isEditing?: boolean;
+}
+
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
   const { currentLanguage, direction } = useLanguage();
@@ -116,6 +120,7 @@ export default function EnhancedAdminPanel() {
     category: 'general'
   });
   const [editingLanguage, setEditingLanguage] = useState<LanguageType | null>(null);
+  const [editingTranslation, setEditingTranslation] = useState<EditingTranslation | null>(null);
 
   const loadPackages = async () => {
     try {
@@ -444,6 +449,43 @@ export default function EnhancedAdminPanel() {
       toast({
         title: "خطأ",
         description: "فشل في إضافة الترجمة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditTranslation = (translation: TranslationType) => {
+    setEditingTranslation(translation);
+  };
+
+  const handleUpdateTranslation = async () => {
+    if (!editingTranslation) return;
+
+    try {
+      const { error } = await supabase
+        .from('translations')
+        .update({
+          key: editingTranslation.key,
+          value: editingTranslation.value,
+          language_code: editingTranslation.language_code,
+          category: editingTranslation.category
+        })
+        .eq('id', editingTranslation.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم تحديث الترجمة بنجاح"
+      });
+
+      loadTranslations();
+      setEditingTranslation(null);
+    } catch (error) {
+      console.error('Error updating translation:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث الترجمة",
         variant: "destructive"
       });
     }
@@ -869,14 +911,23 @@ export default function EnhancedAdminPanel() {
                             </div>
                             <p className="text-gray-600">{translation.value}</p>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteTranslation(translation.id)}
-                            className="ml-2"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                           <div className="flex gap-2">
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => handleEditTranslation(translation)}
+                             >
+                               <Edit className="h-4 w-4" />
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => handleDeleteTranslation(translation.id)}
+                               className="text-red-600 hover:text-red-700"
+                             >
+                               <Trash2 className="h-4 w-4" />
+                             </Button>
+                           </div>
                         </div>
                       ))}
                     </div>
@@ -996,6 +1047,84 @@ export default function EnhancedAdminPanel() {
                 إلغاء
               </Button>
               <Button onClick={handleUpdateLanguage} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+                <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                حفظ التغييرات
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Translation Dialog */}
+        <Dialog open={editingTranslation !== null} onOpenChange={() => setEditingTranslation(null)}>
+          <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
+            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+              <DialogTitle>تعديل الترجمة</DialogTitle>
+              <DialogDescription>قم بتعديل تفاصيل الترجمة المحددة</DialogDescription>
+            </DialogHeader>
+            {editingTranslation && (
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-translation-key" className="text-right">مفتاح الترجمة</Label>
+                  <Input
+                    id="edit-translation-key"
+                    value={editingTranslation.key}
+                    onChange={(e) => setEditingTranslation({...editingTranslation, key: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-translation-language" className="text-right">اللغة</Label>
+                  <Select
+                    value={editingTranslation.language_code}
+                    onValueChange={(value) => setEditingTranslation({...editingTranslation, language_code: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {languages.map((lang) => (
+                        <SelectItem key={lang.id} value={lang.code}>
+                          {lang.name} ({lang.code})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-translation-category" className="text-right">الفئة</Label>
+                  <Select
+                    value={editingTranslation.category}
+                    onValueChange={(value) => setEditingTranslation({...editingTranslation, category: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">عام</SelectItem>
+                      <SelectItem value="navigation">التنقل</SelectItem>
+                      <SelectItem value="buttons">الأزرار</SelectItem>
+                      <SelectItem value="forms">النماذج</SelectItem>
+                      <SelectItem value="messages">الرسائل</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-translation-value" className="text-right">النص المترجم</Label>
+                  <Textarea
+                    id="edit-translation-value"
+                    value={editingTranslation.value}
+                    onChange={(e) => setEditingTranslation({...editingTranslation, value: e.target.value})}
+                    className="col-span-3"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+            <DialogFooter className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Button onClick={() => setEditingTranslation(null)} variant="outline">
+                إلغاء
+              </Button>
+              <Button onClick={handleUpdateTranslation} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
                 <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                 حفظ التغييرات
               </Button>
