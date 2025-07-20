@@ -455,7 +455,7 @@ const Dashboard = () => {
 
                   {/* Simplified Steps in One Row with Connection Lines */}
                   <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 relative px-2 sm:px-0">
                       {/* Connection Lines - Between Icons */}
                       <div className="hidden md:block absolute top-4 inset-x-0 z-0">
                         <div className="flex justify-between items-center max-w-2xl mx-auto px-16">
@@ -465,16 +465,16 @@ const Dashboard = () => {
                       </div>
                       
                       {/* Step 1 */}
-                      <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
-                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
-                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <Plus className="h-4 w-4 text-white" />
+                      <div className="text-center group hover:scale-105 transition-transform duration-300 relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-emerald-200/50 dark:border-emerald-700/50 shadow-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 mb-3 relative z-10">
+                          <div className="w-10 h-10 sm:w-8 sm:h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl sm:rounded-lg flex items-center justify-center shadow-lg mx-auto sm:mx-0">
+                            <Plus className="h-5 w-5 sm:h-4 sm:w-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                          <h3 className="text-lg sm:text-lg font-bold text-gray-800 dark:text-white">
                             {t('step1_title', 'إنشاء الشجرة')}
                           </h3>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                           {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً')}
                         </p>
                         {/* Arrow for desktop - RTL direction */}
@@ -486,37 +486,31 @@ const Dashboard = () => {
                       </div>
 
                       {/* Step 2 */}
-                      <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
-                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
-                          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <Users className="h-4 w-4 text-white" />
+                      <div className="text-center group hover:scale-105 transition-transform duration-300 relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-teal-200/50 dark:border-teal-700/50 shadow-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 mb-3 relative z-10">
+                          <div className="w-10 h-10 sm:w-8 sm:h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-xl sm:rounded-lg flex items-center justify-center shadow-lg mx-auto sm:mx-0">
+                            <Users className="h-5 w-5 sm:h-4 sm:w-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                          <h3 className="text-lg sm:text-lg font-bold text-gray-800 dark:text-white">
                             {t('step2_title', 'إضافة الأفراد')}
                           </h3>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                           {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور')}
                         </p>
-                        {/* Arrow for desktop - RTL direction */}
-                        <div className="hidden md:block absolute -left-4 top-6 text-teal-400">
-                          <svg className="w-4 h-4 rotate-180" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        </div>
                       </div>
 
                       {/* Step 3 */}
-                      <div className="text-center group hover:scale-105 transition-transform duration-300">
-                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
-                          <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <Heart className="h-4 w-4 text-white" />
+                      <div className="text-center group hover:scale-105 transition-transform duration-300 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 mb-3 relative z-10">
+                          <div className="w-10 h-10 sm:w-8 sm:h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl sm:rounded-lg flex items-center justify-center shadow-lg mx-auto sm:mx-0">
+                            <Heart className="h-5 w-5 sm:h-4 sm:w-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                          <h3 className="text-lg sm:text-lg font-bold text-gray-800 dark:text-white">
                             {t('step3_title', 'حفظ الذكريات')}
                           </h3>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                           {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة')}
                         </p>
                       </div>
@@ -533,43 +527,43 @@ const Dashboard = () => {
                   </div>
 
                   {/* Call to Action Section - Build First Tree */}
-                  <div className="max-w-4xl mx-auto mt-20">
+                  <div className="max-w-4xl mx-auto mt-12 sm:mt-20 px-2 sm:px-0">
                     <div className="relative">
                       {/* Glow Background */}
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-teal-600/30 to-amber-600/20 rounded-3xl blur-3xl"></div>
                       
-                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
+                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
                         {/* Icon */}
-                        <div className="flex items-center justify-center mb-8">
+                        <div className="flex items-center justify-center mb-6 sm:mb-8">
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
-                            <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl">
-                              <TreePine className="h-10 w-10 text-white" />
+                            <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl">
+                              <TreePine className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                             </div>
                           </div>
                         </div>
 
-                        <h3 className="text-3xl md:text-4xl font-bold mb-6">
+                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                           <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                             {t('build_first_tree', 'اصنع أول شجرة عائلية')}
                           </span>
                         </h3>
 
-                        <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
                           {t('first_tree_desc', 'بخطوات بسيطة ، ستبدأ رحلة حفظ تاريخ عائلتك ، إبدأ الآن واصنع إرثك الرقمي ليدوم للأبد')}
                         </p>
 
                         {/* Action Button */}
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                           <Button 
                             onClick={handleCreateNewTree}
-                            className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-700 text-white border-0 rounded-2xl px-8 py-4 text-lg font-bold shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105"
+                            className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-700 text-white border-0 rounded-xl sm:rounded-2xl px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 w-full sm:w-auto"
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative flex items-center gap-3">
-                              <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+                            <div className="relative flex items-center gap-2 sm:gap-3 justify-center">
+                              <Plus className="h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-90 transition-transform duration-300" />
                               <span>{t('create_first_tree', 'إنشاء شجرتي الأولى')}</span>
-                              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+                              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 group-hover:-translate-x-1 transition-transform duration-300" />
                             </div>
                           </Button>
 
