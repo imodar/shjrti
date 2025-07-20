@@ -2001,27 +2001,6 @@ const FamilyBuilder = () => {
               </div>
             </div>
 
-            {/* Progress Steps */}
-            <div className="flex items-center justify-start gap-4 mb-8 ml-4">
-              {[1, 2, 3].map((step) => (
-                <div key={step} className="flex items-center">
-                  <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
-                    currentStep >= step 
-                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
-                    {step}
-                  </div>
-                  {step < 3 && (
-                    <div className={cn(
-                      "w-16 h-1 rounded-full mx-2 transition-all duration-300",
-                      currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
-                    )}></div>
-                  )}
-                </div>
-              ))}
-            </div>
           </DialogHeader>
 
           <div className="overflow-y-auto max-h-[60vh] px-6">
