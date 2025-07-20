@@ -884,9 +884,6 @@ const FamilyCreator = () => {
                             <p className="text-sm text-emerald-600 dark:text-emerald-400 text-right">
                               الشخص الأول الذي ستبدأ منه بناء شجرة العائلة
                             </p>
-                            <p className="text-sm text-emerald-600 dark:text-emerald-400 text-left">
-                              The first person from whom you will start building the family tree
-                            </p>
                           </div>
                           
                           <div className="space-y-6">
