@@ -20,6 +20,7 @@ import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { supabase } from "@/integrations/supabase/client";
 import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
+import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 
 const FamilyCreator = () => {
   const navigate = useNavigate();
@@ -843,58 +844,11 @@ const FamilyCreator = () => {
                                     <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                                     تاريخ الميلاد
                                   </Label>
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        className={cn(
-                                          "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
-                                          !founderData.birthDate && "text-gray-500 dark:text-gray-400"
-                                        )}
-                                      >
-                                        <CalendarIcon className="ml-2 h-4 w-4 text-amber-500" />
-                                        {founderData.birthDate ? format(founderData.birthDate, "dd/MM/yyyy", { locale: ar }) : "تاريخ الميلاد"}
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                      <div className="p-3 border-b bg-amber-50 dark:bg-amber-950">
-                                        <p className="text-sm font-medium text-amber-700 dark:text-amber-300 text-center">
-                                          اختر تاريخ الميلاد
-                                        </p>
-                                      </div>
-                                      <Calendar
-                                        mode="single"
-                                        selected={founderData.birthDate}
-                                        onSelect={(date) => setFounderData({...founderData, birthDate: date})}
-                                        locale={ar}
-                                        initialFocus
-                                        className="rounded-md pointer-events-auto p-3"
-                                        disabled={(date) => date > new Date()}
-                                        captionLayout="dropdown-buttons"
-                                        fromYear={1700}
-                                        toYear={new Date().getFullYear()}
-                                        classNames={{
-                                          months: "flex flex-col space-y-4",
-                                          month: "space-y-4",
-                                          caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
-                                          caption_dropdowns: "flex justify-center gap-2",
-                                          dropdown: "px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-800 min-w-[100px]",
-                                          caption_label: "hidden",
-                                          nav: "hidden",
-                                          table: "w-full border-collapse space-y-1 mt-4",
-                                          head_row: "flex",
-                                          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center",
-                                          row: "flex w-full mt-2",
-                                          cell: "h-9 w-9 text-center text-sm p-0 relative",
-                                          day: "h-9 w-9 p-0 font-normal hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-md transition-colors",
-                                          day_selected: "bg-amber-500 text-white hover:bg-amber-600",
-                                          day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-semibold",
-                                          day_outside: "text-muted-foreground opacity-50",
-                                          day_disabled: "text-muted-foreground opacity-50",
-                                        }}
-                                      />
-                                    </PopoverContent>
-                                  </Popover>
+                                  <EnhancedDatePicker
+                                    value={founderData.birthDate}
+                                    onChange={(date) => setFounderData({...founderData, birthDate: date})}
+                                    placeholder="تاريخ الميلاد"
+                                  />
                                 </div>
 
                                 {/* Status */}
@@ -921,30 +875,13 @@ const FamilyCreator = () => {
                                       <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                                       تاريخ الوفاة
                                     </Label>
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <Button
-                                          variant="outline"
-                                          className={cn(
-                                            "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
-                                            !founderData.deathDate && "text-gray-500"
-                                          )}
-                                        >
-                                          <CalendarIcon className="ml-2 h-4 w-4" />
-                                          {founderData.deathDate ? format(founderData.deathDate, "dd/MM/yyyy", { locale: ar }) : "تاريخ الوفاة"}
-                                        </Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar
-                                          mode="single"
-                                          selected={founderData.deathDate}
-                                          onSelect={(date) => setFounderData({...founderData, deathDate: date})}
-                                          locale={ar}
-                                          initialFocus
-                                          className="rounded-md border pointer-events-auto"
-                                        />
-                                      </PopoverContent>
-                                    </Popover>
+                                    <EnhancedDatePicker
+                                      value={founderData.deathDate}
+                                      onChange={(date) => setFounderData({...founderData, deathDate: date})}
+                                      placeholder="تاريخ الوفاة"
+                                      className="hover:border-red-500 focus:ring-red-500/20"
+                                      disableFuture={true}
+                                    />
                                   </div>
                                 )}
                               </div>
