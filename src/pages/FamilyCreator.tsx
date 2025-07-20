@@ -852,21 +852,31 @@ const FamilyCreator = () => {
                                 </div>
 
                                 {/* Status */}
-                                <div className="group">
-                                  <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                    الحالة
-                                  </Label>
-                                  <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                                    <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="alive">على قيد الحياة</SelectItem>
-                                      <SelectItem value="deceased">متوفى</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                                 <div className="group">
+                                   <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                                     {founderData.isAlive ? (
+                                       <Heart className="w-4 h-4 text-green-500 fill-green-500" />
+                                     ) : (
+                                       <Heart className="w-4 h-4 text-red-500 fill-red-500" />
+                                     )}
+                                     الحالة
+                                   </Label>
+                                   <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
+                                     <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl text-right">
+                                       <SelectValue className="text-right" />
+                                     </SelectTrigger>
+                                     <SelectContent className="text-right">
+                                       <SelectItem value="alive" className="text-right flex items-center gap-2">
+                                         <Heart className="w-4 h-4 text-green-500 fill-green-500 mr-2" />
+                                         على قيد الحياة
+                                       </SelectItem>
+                                       <SelectItem value="deceased" className="text-right flex items-center gap-2">
+                                         <Heart className="w-4 h-4 text-red-500 fill-red-500 mr-2" />
+                                         متوفى
+                                       </SelectItem>
+                                     </SelectContent>
+                                   </Select>
+                                 </div>
 
                                 {/* Death Date (conditional) */}
                                 {!founderData.isAlive && (
