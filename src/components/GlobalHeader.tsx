@@ -103,7 +103,7 @@ export const GlobalHeader = () => {
                   {t('site.name', 'شجرة العائلة')}
                 </h1>
                 <p className="text-sm text-gray-300 font-medium bg-gradient-to-r from-gray-300 to-emerald-200 bg-clip-text text-transparent">
-                  منصة إدارة الأنساب
+                  {t('site.tagline', 'منصة إدارة الأنساب')}
                 </p>
               </div>
             </Link>
