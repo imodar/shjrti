@@ -272,6 +272,7 @@ const FamilyCreator = () => {
       if (familyError) throw familyError;
 
       // إضافة المنشئ كعضو في العائلة
+      console.log('Inserting family member for family:', family.id, 'user:', user.id);
       const { error: memberError } = await supabase
         .from('family_members')
         .insert({
@@ -280,9 +281,14 @@ const FamilyCreator = () => {
           role: 'creator'
         });
 
-      if (memberError) throw memberError;
+      if (memberError) {
+        console.error('Error inserting family member:', memberError);
+        throw memberError;
+      }
+      console.log('Family member inserted successfully');
 
       // إضافة المؤسس لشجرة العائلة
+      console.log('Inserting founder for family:', family.id);
       const { data: founder, error: founderError } = await supabase
         .from('family_tree_members')
         .insert({
@@ -300,7 +306,11 @@ const FamilyCreator = () => {
         .select()
         .single();
 
-      if (founderError) throw founderError;
+      if (founderError) {
+        console.error('Error inserting founder:', founderError);
+        throw founderError;
+      }
+      console.log('Founder inserted successfully:', founder);
 
       // إضافة الزوجات إلى شجرة العائلة وإنشاء سجلات الزواج
       for (const wife of wives) {
