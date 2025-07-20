@@ -353,7 +353,7 @@ const Auth = () => {
                 <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-2 border-2 border-white/30 inline-block shadow-2xl">
                   <img 
                     src={familyTreeLogo} 
-                    alt="شجرتي" 
+                    alt={t('my_tree', 'شجرتي')}
                     className="h-24 w-24 rounded-full group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
@@ -438,11 +438,11 @@ const Auth = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30"></div>
                 <img 
                   src={familyTreeLogo} 
-                  alt="شجرتي" 
+                  alt={t('my_tree', 'شجرتي')} 
                   className="relative h-16 w-16 rounded-full mx-auto mb-4 border-2 border-emerald-200"
                 />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">شجرتي</h1>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{t('my_tree', 'شجرتي')}</h1>
               <p className="text-muted-foreground">{t('discover_roots_platform', 'اكتشف جذورك مع أفضل منصة')}</p>
             </div>
 
