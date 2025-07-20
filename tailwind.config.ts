@@ -20,6 +20,7 @@ export default {
 		extend: {
 			fontFamily: {
 				arabic: ['Noto Sans Arabic', 'sans-serif'],
+				poppins: ['Poppins', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

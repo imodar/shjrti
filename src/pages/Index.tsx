@@ -21,7 +21,7 @@ const Home2 = () => {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useLanguage();
+  const { t, currentLanguage } = useLanguage();
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -128,7 +128,7 @@ const Home2 = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
+    <div className={`min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 ${currentLanguage === 'en' ? 'font-poppins' : ''}`}>
       <GlobalHeader />
 
       {/* Hero Section with Animated Elements */}
