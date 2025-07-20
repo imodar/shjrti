@@ -2002,7 +2002,7 @@ const FamilyBuilder = () => {
             </div>
 
             {/* Progress Steps */}
-            <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="flex items-center justify-start gap-4 mb-8 ml-4">
               {[1, 2, 3].map((step) => (
                 <div key={step} className="flex items-center">
                   <div className={cn(
