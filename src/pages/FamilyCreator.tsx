@@ -199,10 +199,14 @@ const FamilyCreator = () => {
           // Parse package name if it's JSON
           let packageDisplayName = 'الأساسية';
           try {
-            const nameObj = JSON.parse(defaultPackage.name);
+            // @ts-ignore - Handle JSONB format after migration
+            const nameData = defaultPackage.name;
+            const nameObj = typeof nameData === 'string' ? JSON.parse(nameData) : nameData;
             packageDisplayName = nameObj.ar || nameObj.en || 'الأساسية';
           } catch (e) {
-            packageDisplayName = defaultPackage.name || 'الأساسية';
+            // @ts-ignore - Handle mixed types
+            const nameData = defaultPackage.name;
+            packageDisplayName = typeof nameData === 'string' ? nameData : 'الأساسية';
           }
           
           console.log('❌ Family limit exceeded:', { currentFamilyCount, maxFamilyTrees, packageDisplayName });
@@ -250,10 +254,14 @@ const FamilyCreator = () => {
       // Parse package name if it's JSON
       let packageDisplayName = 'الباقة الحالية';
       try {
-        const nameObj = JSON.parse(subscription.packages?.name || '{}');
+        // @ts-ignore - Handle JSONB format after migration
+        const nameData = subscription.packages?.name;
+        const nameObj = typeof nameData === 'string' ? JSON.parse(nameData || '{}') : nameData || {};
         packageDisplayName = nameObj.ar || nameObj.en || 'الباقة الحالية';
       } catch (e) {
-        packageDisplayName = subscription.packages?.name || 'الباقة الحالية';
+        // @ts-ignore - Handle mixed types
+        const nameData = subscription.packages?.name;
+        packageDisplayName = typeof nameData === 'string' ? nameData : 'الباقة الحالية';
       }
 
       console.log('📈 Family counts with subscription:', { 

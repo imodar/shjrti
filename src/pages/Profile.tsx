@@ -80,13 +80,19 @@ export default function Profile() {
       // Parse the package name JSON to get the Arabic name
       let packageName = "باقة مخصصة";
       if (subscription.packages?.name) {
-        try {
-          const nameObj = JSON.parse(subscription.packages.name);
-          packageName = nameObj.ar || nameObj.en || "باقة مخصصة";
-        } catch (e) {
-          // If it's not JSON, use the name as is
-          packageName = subscription.packages.name;
-        }
+         try {
+           // @ts-ignore - Handle JSONB format after migration
+           const nameObj = typeof subscription.packages.name === 'string' 
+             ? JSON.parse(subscription.packages.name) 
+             : subscription.packages.name;
+           packageName = nameObj.ar || nameObj.en || "باقة مخصصة";
+         } catch (e) {
+           // If it's not JSON, use the name as is
+           // @ts-ignore - Handle mixed types
+           packageName = typeof subscription.packages.name === 'string' 
+             ? subscription.packages.name 
+             : "باقة مخصصة";
+         }
       }
 
       setCurrentPackage({

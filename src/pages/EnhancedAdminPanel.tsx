@@ -142,6 +142,7 @@ export default function EnhancedAdminPanel() {
         currency: currentLanguage === 'ar' ? 'SAR' : 'USD'
       }));
       
+      // @ts-ignore - Temporary fix for JSONB type mismatch after migration
       setPackages(transformedPackages);
     } catch (error) {
       console.error('Error loading packages:', error);

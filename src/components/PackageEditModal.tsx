@@ -14,8 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface Package {
   id: string;
-  name: string | Record<string, string>;
-  description: string | Record<string, string>;
+  name: any; // Can be string, object, or Json from Supabase
+  description: any; // Can be string, object, or Json from Supabase  
   price_usd: number;
   price_sar: number;
   max_family_members: number;
@@ -23,7 +23,7 @@ interface Package {
   display_order: number;
   is_active: boolean;
   is_featured: boolean;
-  features?: string | Record<string, string[]>;
+  features?: any; // Can be string, object, or Json from Supabase
 }
 
 interface PackageEditModalProps {
@@ -59,16 +59,45 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
   useEffect(() => {
     if (pkg) {
       let processedFeatures = {};
+      let processedName = {};
+      let processedDescription = {};
       
-      if (typeof pkg.features === 'string') {
+      // Handle name - it's now JSONB from database
+      if (typeof pkg.name === 'object' && pkg.name !== null) {
+        processedName = pkg.name;
+      } else if (typeof pkg.name === 'string') {
+        try {
+          processedName = JSON.parse(pkg.name);
+        } catch {
+          processedName = { en: pkg.name };
+        }
+      } else {
+        processedName = { en: '' };
+      }
+
+      // Handle description - it's now JSONB from database
+      if (typeof pkg.description === 'object' && pkg.description !== null) {
+        processedDescription = pkg.description;
+      } else if (typeof pkg.description === 'string') {
+        try {
+          processedDescription = JSON.parse(pkg.description);
+        } catch {
+          processedDescription = { en: pkg.description };
+        }
+      } else {
+        processedDescription = { en: '' };
+      }
+
+      // Handle features
+      if (typeof pkg.features === 'object' && pkg.features !== null) {
+        processedFeatures = pkg.features;
+      } else if (typeof pkg.features === 'string') {
         try {
           const parsed = JSON.parse(pkg.features || '{}');
           processedFeatures = typeof parsed === 'object' && parsed !== null ? parsed : { en: [] };
         } catch {
           processedFeatures = { en: [] };
         }
-      } else if (pkg.features && typeof pkg.features === 'object') {
-        processedFeatures = pkg.features;
       } else {
         processedFeatures = { en: [] };
       }
@@ -82,8 +111,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
 
       setFormData({
         ...pkg,
-        name: typeof pkg.name === 'string' ? { en: pkg.name } : pkg.name || {},
-        description: typeof pkg.description === 'string' ? { en: pkg.description } : pkg.description || {},
+        name: processedName,
+        description: processedDescription,
         features: processedFeatures
       });
     }
@@ -92,8 +121,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
   const handleSave = async () => {
     try {
       const updateData = {
-        name: JSON.stringify(formData.name),
-        description: JSON.stringify(formData.description),
+        name: formData.name,  // Send as object, not JSON string
+        description: formData.description,  // Send as object, not JSON string
         price_usd: formData.price_usd,
         price_sar: formData.price_sar,
         max_family_members: formData.max_family_members,
@@ -101,7 +130,7 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
         display_order: formData.display_order,
         is_active: formData.is_active,
         is_featured: formData.is_featured,
-        features: JSON.stringify(formData.features)
+        features: formData.features  // Send as object, not JSON string
       };
 
       const { error } = await supabase

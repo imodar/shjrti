@@ -131,12 +131,17 @@ const Dashboard = () => {
           // Parse package name JSON
           let packageDisplayName = t('dashboard.free_package', 'Free Package');
           if (subscription.packages?.name) {
-            try {
-              const nameObj = JSON.parse(subscription.packages.name);
-              packageDisplayName = nameObj.ar || nameObj.en || t('dashboard.free_package', 'Free Package');
-            } catch (e) {
-              packageDisplayName = subscription.packages.name;
-            }
+             try {
+               // Handle both string and object formats
+               const nameObj = typeof subscription.packages.name === 'string' 
+                 ? JSON.parse(subscription.packages.name)
+                 : subscription.packages.name;
+               packageDisplayName = nameObj.ar || nameObj.en || t('dashboard.free_package', 'Free Package');
+             } catch (e) {
+               packageDisplayName = typeof subscription.packages.name === 'string' 
+                 ? subscription.packages.name 
+                 : 'Free Package';
+             }
           }
           
           setUserSubscription({
