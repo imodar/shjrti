@@ -387,7 +387,7 @@ const Dashboard = () => {
                               </div>
                               <Link to="/plan-selection">
                                 <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full border-0">
-                                  طوّر حسابك
+                                  {t('upgrade_account', 'طوّر حسابك')}
                                 </Button>
                               </Link>
                             </div>

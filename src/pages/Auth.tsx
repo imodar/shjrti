@@ -8,7 +8,7 @@ import { TreePine, Mail, Lock, User, Phone, Heart, Users, Star, Sparkles, Crown,
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { LuxuryFooter } from "@/components/LuxuryFooter";
+import { useLanguage } from "@/contexts/LanguageContext";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 const Auth = () => {
@@ -22,6 +22,7 @@ const Auth = () => {
   const [pendingUserData, setPendingUserData] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Check if user is already logged in
