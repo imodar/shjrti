@@ -517,153 +517,162 @@ const FamilyBuilder = () => {
       gender: member.gender,
       fatherId: member.fatherId,
       motherId: member.motherId,
-      isFounder: member.isFounder
+      isFounder: member.isFounder,
+      relatedPersonId: member.relatedPersonId
     });
     console.log('Available family members:', familyMembers.map(m => ({ id: m.id, name: m.name })));
+    console.log('Available marriages:', familyMarriages);
     
-    // For males from the same family (have fatherId or are founders)
-    if (member.gender === 'male' && (member.fatherId || member.isFounder)) {
-      console.log(`${member.name} is male with fatherId or founder`);
-      if (member.fatherId) {
-        const father = familyMembers.find(m => m.id === member.fatherId);
-        console.log(`Father search result for ${member.name}:`, father);
-        if (father) {
-          // Check if father is from original family (has fatherId or is founder)
-          const fatherIsFromFamily = father.fatherId || father.isFounder;
-          console.log(`Father ${father.name} is from original family:`, fatherIsFromFamily);
-          
-          if (fatherIsFromFamily) {
-            const familyName = familyData?.name || "العائلة";
-            const result = `ابن ${father.name} ${familyName}`;
-            console.log(`Male result for ${member.name}:`, result);
-            return result;
-          } else {
-            console.log(`${member.name} father is not from original family, will check children case`);
-            // Don't return here, let it fall through to children case
-          }
-        } else {
-          console.log(`No father found for ${member.name} with fatherId: ${member.fatherId}`);
-        }
-      }
-      if (member.isFounder) {
-        return familyData?.name || "العائلة"; // Add family name for founders
-      }
-    }
-    
-    // For male spouses (married men who are not from the original family)
-    if (member.gender === 'male' && 
-        familyMarriages.some(marriage => marriage.husband?.id === member.id) &&
-        !member.fatherId && !member.motherId && !member.isFounder) {
-      console.log(`${member.name} is a husband from outside family`);
-      const marriage = familyMarriages.find(m => m.husband?.id === member.id);
-      if (marriage?.wife) {
-        const wife = familyMembers.find(w => w.id === marriage.wife.id);
-        if (wife) {
-          let wifeInfo = wife.name;
-          
-          // Add father's name if wife has fatherId
-          if (wife.fatherId) {
-            const wifeFather = familyMembers.find(f => f.id === wife.fatherId);
-            if (wifeFather) {
-              wifeInfo += ` بنت ${wifeFather.name}`;
-            }
-          }
-          
-          // Add family name
-          const familyName = familyData?.name || "العائلة";
-          wifeInfo += ` ${familyName}`;
-          
-          const result = `زوج ${wifeInfo}`;
-          console.log(`Husband result for ${member.name}:`, result);
-          return result;
-        }
-      }
-    }
-    // For females from the same family (have fatherId or are founders)
-    if (member.gender === 'female' && (member.fatherId || member.isFounder)) {
-      console.log(`${member.name} is female with fatherId or founder`);
-      if (member.fatherId) {
-        const father = familyMembers.find(m => m.id === member.fatherId);
-        console.log(`Father search result for ${member.name}:`, father);
-        if (father) {
-          const familyName = familyData?.name || "العائلة";
-          const result = `بنت ${father.name} ${familyName}`;
-          console.log(`Female result for ${member.name}:`, result);
-          return result;
-        } else {
-          console.log(`No father found for ${member.name} with fatherId: ${member.fatherId}`);
-        }
-      }
-      if (member.isFounder) {
-        return familyData?.name || "العائلة"; // Add family name for female founders
-      }
-    }
-    // For wives (married women who are not from the original family)
-    if (member.gender === 'female' && 
-        familyMarriages.some(marriage => marriage.wife?.id === member.id) &&
-        !member.fatherId && !member.motherId && !member.isFounder) {
-      console.log(`${member.name} is a wife from outside family`);
-      const marriage = familyMarriages.find(m => m.wife?.id === member.id);
-      if (marriage?.husband) {
-        const husband = familyMembers.find(h => h.id === marriage.husband.id);
-        if (husband) {
-          let husbandFullName = husband.name;
-          
-          // Add father's name if husband has fatherId
-          if (husband.fatherId) {
-            const husbandFather = familyMembers.find(f => f.id === husband.fatherId);
-            if (husbandFather) {
-              husbandFullName += ` ابن ${husbandFather.name}`;
-            }
-          }
-          
-          // Add family name from database
-          const familyName = familyData?.name || "العائلة";
-          husbandFullName += ` ${familyName}`;
-          
-          const result = `زوجة ${husbandFullName}`;
-          console.log(`Wife result for ${member.name}:`, result);
-          return result;
-        }
-      }
-    }
-    
-    // For children of daughters (have both father and mother, where father is not from original family)
-    if (member.fatherId && member.motherId) {
-      console.log(`${member.name} has both father and mother IDs`);
-      const father = familyMembers.find(m => m.id === member.fatherId);
-      const mother = familyMembers.find(m => m.id === member.motherId);
+    // Method 1: Check if this person is a child of a marriage using relatedPersonId
+    if (member.relatedPersonId) {
+      console.log(`${member.name} has relatedPersonId: ${member.relatedPersonId}`);
+      const parentMarriage = familyMarriages.find(marriage => marriage.id === member.relatedPersonId);
       
-      console.log(`For ${member.name} - Father:`, father, 'Mother:', mother);
-      
-      if (father && mother) {
-        // Check if father is non-blood (married into family) - no fatherId/motherId and not founder
-        const fatherIsNonBlood = !father.fatherId && !father.motherId && !father.isFounder;
-        // Check if mother is from original family - has fatherId or is founder
-        const motherIsFromFamily = mother.fatherId || mother.isFounder;
+      if (parentMarriage) {
+        console.log(`Found parent marriage for ${member.name}:`, parentMarriage);
         
-        console.log(`For ${member.name} - Father is non-blood:`, fatherIsNonBlood, 'Mother is from family:', motherIsFromFamily);
-          
-        if (fatherIsNonBlood && motherIsFromFamily) {
-          // Build mother's full info
-          let motherInfo = mother.name;
-          if (mother.fatherId) {
-            const motherFather = familyMembers.find(m => m.id === mother.fatherId);
-            console.log(`Mother's father for ${member.name}:`, motherFather);
-            if (motherFather) {
-              motherInfo += ` بنت ${motherFather.name}`;
-            }
+        const father = familyMembers.find(m => m.id === parentMarriage.husband?.id);
+        const mother = familyMembers.find(m => m.id === parentMarriage.wife?.id);
+        
+        if (father) {
+          const familyName = familyData?.name || "العائلة";
+          if (member.gender === 'male') {
+            const result = `ابن ${father.name} ${familyName}`;
+            console.log(`Male child result for ${member.name}:`, result);
+            return result;
+          } else if (member.gender === 'female') {
+            const result = `بنت ${father.name} ${familyName}`;
+            console.log(`Female child result for ${member.name}:`, result);
+            return result;
           }
-          motherInfo += ` الشيخ سعيد`;
+        }
+      } else {
+        console.log(`No marriage found for relatedPersonId: ${member.relatedPersonId}`);
+      }
+    }
+    
+    // Method 2: Check if this person is married (spouse)
+    const memberMarriage = familyMarriages.find(marriage => 
+      marriage.husband?.id === member.id || marriage.wife?.id === member.id
+    );
+    
+    if (memberMarriage) {
+      console.log(`Found marriage for ${member.name}:`, memberMarriage);
+      
+      // For husbands married into the family
+      if (member.gender === 'male' && memberMarriage.husband?.id === member.id) {
+        const wife = familyMembers.find(w => w.id === memberMarriage.wife?.id);
+        if (wife) {
+          // Check if wife is from the original family (founder or has parents)
+          const wifeIsFromFamily = wife.isFounder || wife.fatherId || wife.motherId || wife.relatedPersonId;
           
-          const result = `ابن ${father.name} - زوج ${motherInfo}`;
-          console.log(`Children result for ${member.name}:`, result);
-          return result;
+          if (wifeIsFromFamily) {
+            let wifeInfo = wife.name;
+            
+            // Try to find wife's father from marriages or father_id
+            if (wife.fatherId) {
+              const wifeFather = familyMembers.find(f => f.id === wife.fatherId);
+              if (wifeFather) {
+                wifeInfo += ` بنت ${wifeFather.name}`;
+              }
+            } else if (wife.relatedPersonId) {
+              // Find wife's parent marriage
+              const wifeParentMarriage = familyMarriages.find(m => m.id === wife.relatedPersonId);
+              if (wifeParentMarriage) {
+                const wifeFather = familyMembers.find(f => f.id === wifeParentMarriage.husband?.id);
+                if (wifeFather) {
+                  wifeInfo += ` بنت ${wifeFather.name}`;
+                }
+              }
+            }
+            
+            const familyName = familyData?.name || "العائلة";
+            wifeInfo += ` ${familyName}`;
+            
+            const result = `زوج ${wifeInfo}`;
+            console.log(`Husband result for ${member.name}:`, result);
+            return result;
+          }
+        }
+      }
+      
+      // For wives married into the family 
+      if (member.gender === 'female' && memberMarriage.wife?.id === member.id) {
+        const husband = familyMembers.find(h => h.id === memberMarriage.husband?.id);
+        if (husband) {
+          // Check if husband is from the original family
+          const husbandIsFromFamily = husband.isFounder || husband.fatherId || husband.motherId || husband.relatedPersonId;
+            
+          if (husbandIsFromFamily) {
+            let husbandInfo = husband.name;
+            
+            // Try to find husband's father
+            if (husband.fatherId) {
+              const husbandFather = familyMembers.find(f => f.id === husband.fatherId);
+              if (husbandFather) {
+                husbandInfo += ` ابن ${husbandFather.name}`;
+              }
+            } else if (husband.relatedPersonId) {
+              // Find husband's parent marriage
+              const husbandParentMarriage = familyMarriages.find(m => m.id === husband.relatedPersonId);
+              if (husbandParentMarriage) {
+                const husbandFather = familyMembers.find(f => f.id === husbandParentMarriage.husband?.id);
+                if (husbandFather) {
+                  husbandInfo += ` ابن ${husbandFather.name}`;
+                }
+              }
+            }
+            
+            const familyName = familyData?.name || "العائلة";
+            husbandInfo += ` ${familyName}`;
+            
+            const result = `زوجة ${husbandInfo}`;
+            console.log(`Wife result for ${member.name}:`, result);
+            return result;
+          }
         }
       }
     }
     
-    console.log(`No additional info for ${member.name}`);
+    // Method 3: Fallback to father_id/mother_id for legacy data
+    if (member.fatherId || member.motherId) {
+      console.log(`${member.name} has parent IDs - checking for parent marriage`);
+      
+      // Find the marriage where one parent is husband and other is wife
+      const parentMarriage = familyMarriages.find(marriage => {
+        const husbandMatches = marriage.husband?.id === member.fatherId;
+        const wifeMatches = marriage.wife?.id === member.motherId;
+        return husbandMatches || wifeMatches;
+      });
+      
+      if (parentMarriage) {
+        console.log(`Found parent marriage for ${member.name}:`, parentMarriage);
+        
+        const father = familyMembers.find(m => m.id === parentMarriage.husband?.id);
+        
+        if (father) {
+          const familyName = familyData?.name || "العائلة";
+          if (member.gender === 'male') {
+            const result = `ابن ${father.name} ${familyName}`;
+            console.log(`Male child result for ${member.name}:`, result);
+            return result;
+          } else if (member.gender === 'female') {
+            const result = `بنت ${father.name} ${familyName}`;
+            console.log(`Female child result for ${member.name}:`, result);
+            return result;
+          }
+        }
+      }
+    }
+    
+    // Method 4: If this person is a founder, show family name
+    if (member.isFounder) {
+      const result = familyData?.name || "العائلة";
+      console.log(`Founder result for ${member.name}:`, result);
+      return result;
+    }
+    
+    console.log(`No additional info determined for ${member.name}`);
     return null;
   };
 
