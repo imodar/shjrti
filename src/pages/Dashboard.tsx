@@ -76,7 +76,7 @@ const Dashboard = () => {
       
       setLoading(true);
       try {
-        // Fetch active family trees only
+        // Fetch non-archived family trees only
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select(`
@@ -87,7 +87,7 @@ const Dashboard = () => {
             family_tree_members(count)
           `)
           .eq('creator_id', user.id)
-          .eq('subscription_status', 'active');
+          .eq('is_archived', false);
 
         if (familiesError) throw familiesError;
 
@@ -209,10 +209,13 @@ const Dashboard = () => {
     console.log('👤 Current user ID:', user?.id);
     
     try {
-      // Instead of deleting, update subscription_status to 'deleted'
+      // Archive the tree instead of deleting it
       const { error } = await supabase
         .from('families')
-        .update({ subscription_status: 'deleted' })
+        .update({ 
+          is_archived: true, 
+          archived_at: new Date().toISOString() 
+        })
         .eq('id', deleteTreeId)
         .eq('creator_id', user?.id);
 

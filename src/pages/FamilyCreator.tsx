@@ -167,12 +167,12 @@ const FamilyCreator = () => {
           return false;
         }
 
-        // Use default package limits - only count active families
+        // Use default package limits - only count non-archived families
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select('id')
           .eq('creator_id', userId)
-          .eq('subscription_status', 'active');
+          .eq('is_archived', false);
 
         if (familiesError) {
           toast({
@@ -198,12 +198,12 @@ const FamilyCreator = () => {
         return true;
       }
 
-      // Get user's active families count only
+      // Get user's non-archived families count only
       const { data: families, error: familiesError } = await supabase
         .from('families')
         .select('id')
         .eq('creator_id', userId)
-        .eq('subscription_status', 'active');
+        .eq('is_archived', false);
 
       if (familiesError) {
         toast({
@@ -265,8 +265,7 @@ const FamilyCreator = () => {
         .insert({
           name: treeData.name,
           description: treeData.description,
-          creator_id: user.id,
-          subscription_status: 'active'
+          creator_id: user.id
         })
         .select()
         .single();

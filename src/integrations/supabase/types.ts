@@ -103,36 +103,36 @@ export type Database = {
       }
       families: {
         Row: {
+          archived_at: string | null
           created_at: string
           creator_id: string | null
           description: string | null
           id: string
+          is_archived: boolean | null
           name: string
           package_id: string | null
-          subscription_end_date: string | null
-          subscription_status: string | null
           updated_at: string
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string
           creator_id?: string | null
           description?: string | null
           id?: string
+          is_archived?: boolean | null
           name: string
           package_id?: string | null
-          subscription_end_date?: string | null
-          subscription_status?: string | null
           updated_at?: string
         }
         Update: {
+          archived_at?: string | null
           created_at?: string
           creator_id?: string | null
           description?: string | null
           id?: string
+          is_archived?: boolean | null
           name?: string
           package_id?: string | null
-          subscription_end_date?: string | null
-          subscription_status?: string | null
           updated_at?: string
         }
         Relationships: [

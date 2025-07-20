@@ -47,8 +47,8 @@ interface Family {
   id: string;
   name: string;
   creator_id: string | null;
-  subscription_status: string | null;
-  subscription_end_date: string | null;
+  is_archived: boolean;
+  archived_at: string | null;
   created_at: string;
 }
 
@@ -235,7 +235,7 @@ export default function AdminPanel() {
         supabase.from('families').select('id', { count: 'exact', head: true }),
         supabase.from('invoices').select('id', { count: 'exact', head: true }),
         supabase.from('store_orders').select('id', { count: 'exact', head: true }),
-        supabase.from('families').select('id', { count: 'exact', head: true }).eq('subscription_status', 'active'),
+        supabase.from('families').select('id', { count: 'exact', head: true }).eq('is_archived', false),
         supabase.from('invoices').select('amount').eq('status', 'paid')
       ]);
 
@@ -1085,16 +1085,16 @@ Feature 3`}
                         <TableCell>{family.name}</TableCell>
                         <TableCell>
                           <span className={`px-2 py-1 rounded text-sm ${
-                            family.subscription_status === 'active' 
+                            !family.is_archived 
                               ? 'bg-green-100 text-green-800' 
                               : 'bg-red-100 text-red-800'
                           }`}>
-                            {family.subscription_status || 'inactive'}
+                            {family.is_archived ? 'Archived' : 'Active'}
                           </span>
                         </TableCell>
                         <TableCell>
-                          {family.subscription_end_date 
-                            ? new Date(family.subscription_end_date).toLocaleDateString()
+                          {family.archived_at 
+                            ? new Date(family.archived_at).toLocaleDateString()
                             : 'N/A'
                           }
                         </TableCell>
