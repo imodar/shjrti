@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, Languages, Globe, Plus, Edit, Trash2, Save } from "lucide-react";
+import { PackageEditModal } from '@/components/PackageEditModal';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,6 +75,8 @@ export default function EnhancedAdminPanel() {
   const { currentLanguage, direction } = useLanguage();
   const [packages, setPackages] = useState<PackageType[]>([]);
   const [editingPackages, setEditingPackages] = useState<Set<string>>(new Set());
+  const [editingPackage, setEditingPackage] = useState<any>(null);
+  const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
   const [newPackage, setNewPackage] = useState<Omit<PackageType, 'id'>>({
     name: '',
     description: '',
@@ -251,8 +254,9 @@ export default function EnhancedAdminPanel() {
     }
   };
 
-  const handleEditPackage = (packageId: string) => {
-    setEditingPackages(prev => new Set(prev).add(packageId));
+  const handleEditPackage = (pkg: any) => {
+    setEditingPackage(pkg);
+    setIsPackageModalOpen(true);
   };
 
   const handleSavePackage = async (packageId: string) => {
@@ -662,7 +666,7 @@ export default function EnhancedAdminPanel() {
                               <Save className="h-4 w-4" />
                             </Button>
                           ) : (
-                            <Button variant="outline" size="sm" onClick={() => handleEditPackage(pkg.id)}>
+                            <Button variant="outline" size="sm" onClick={() => handleEditPackage(pkg)}>
                               <Edit className="h-4 w-4" />
                             </Button>
                           )}
@@ -1208,6 +1212,17 @@ export default function EnhancedAdminPanel() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Package Edit Modal */}
+        <PackageEditModal
+          package={editingPackage}
+          isOpen={isPackageModalOpen}
+          onClose={() => setIsPackageModalOpen(false)}
+          onSave={() => {
+            loadPackages();
+            setIsPackageModalOpen(false);
+          }}
+        />
       </div>
     </div>
   );
