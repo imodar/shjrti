@@ -27,6 +27,7 @@ const FamilyCreator = () => {
   const { toast } = useToast();
   const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isCreatingFamily, setIsCreatingFamily] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [showWivesModal, setShowWivesModal] = useState(false);
@@ -237,6 +238,7 @@ const FamilyCreator = () => {
   };
 
   const handleCreateFamily = async () => {
+    setIsCreatingFamily(true);
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -346,6 +348,8 @@ const FamilyCreator = () => {
         description: "حدث خطأ أثناء حفظ بيانات العائلة، يرجى المحاولة مرة أخرى",
         variant: "destructive"
       });
+    } finally {
+      setIsCreatingFamily(false);
     }
   };
 
@@ -1058,12 +1062,13 @@ const FamilyCreator = () => {
                   console.log('Button clicked!', e);
                   handleNextStep();
                 }}
-                className="h-10 sm:h-12 md:h-16 px-6 sm:px-10 md:px-16 text-sm sm:text-base md:text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-xl sm:rounded-2xl text-white font-bold relative z-50 pointer-events-auto"
+                disabled={isCreatingFamily}
+                className="h-10 sm:h-12 md:h-16 px-6 sm:px-10 md:px-16 text-sm sm:text-base md:text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-xl sm:rounded-2xl text-white font-bold relative z-50 pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{ pointerEvents: 'auto' }}
               >
-                {currentStep === 1 ? "التالي" : "إنشاء العائلة"}
+                {currentStep === 1 ? "التالي" : (isCreatingFamily ? "جاري إنشاء العائلة..." : "إنشاء العائلة")}
                 {currentStep === 1 && <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
-                {currentStep === 2 && <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
+                {currentStep === 2 && !isCreatingFamily && <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
               </Button>
             </div>
           </div>
