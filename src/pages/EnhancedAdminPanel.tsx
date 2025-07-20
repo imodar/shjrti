@@ -1217,10 +1217,18 @@ export default function EnhancedAdminPanel() {
         <PackageEditModal
           package={editingPackage}
           isOpen={isPackageModalOpen}
-          onClose={() => setIsPackageModalOpen(false)}
-          onSave={() => {
-            loadPackages();
+          onClose={() => {
             setIsPackageModalOpen(false);
+            setEditingPackage(null);
+          }}
+          onSave={async () => {
+            try {
+              await loadPackages();
+              setIsPackageModalOpen(false);
+              setEditingPackage(null);
+            } catch (error) {
+              console.error('Error reloading packages:', error);
+            }
           }}
         />
       </div>
