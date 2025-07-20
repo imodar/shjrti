@@ -167,11 +167,12 @@ const FamilyCreator = () => {
           return false;
         }
 
-        // Use default package limits
+        // Use default package limits - only count active families
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select('id')
-          .eq('creator_id', userId);
+          .eq('creator_id', userId)
+          .eq('subscription_status', 'active');
 
         if (familiesError) {
           toast({
@@ -197,11 +198,12 @@ const FamilyCreator = () => {
         return true;
       }
 
-      // Get user's families count
+      // Get user's active families count only
       const { data: families, error: familiesError } = await supabase
         .from('families')
         .select('id')
-        .eq('creator_id', userId);
+        .eq('creator_id', userId)
+        .eq('subscription_status', 'active');
 
       if (familiesError) {
         toast({
