@@ -2038,6 +2038,50 @@ const FamilyBuilder = () => {
       />
 
       {/* Image Crop Modal */}
+      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
+        <DialogContent className="sm:max-w-2xl bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-foreground">قص الصورة</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              اضبط الصورة كما تريد وانقر على حفظ
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {imageSrc && (
+              <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden">
+                <Cropper
+                  image={imageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+                  className="w-full h-full"
+                />
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex gap-3">
+            <Button variant="outline" onClick={() => setShowImageCrop(false)} className="rounded-xl">
+              إلغاء
+            </Button>
+            <Button onClick={handleCropSave} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
+              <Save className="mr-2 h-4 w-4" />
+              حفظ الصورة
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <GlobalFooter />
+    </div>
+  );
+};
+
+export default FamilyBuilder;
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
