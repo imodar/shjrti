@@ -283,14 +283,14 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
                     
                     <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl ${familyTrees.length > 0 ? 'py-1.5 px-2' : 'py-2 px-3'} shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10`}>
-                      <div className="flex items-center justify-between gap-8">
+                      <div className="flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
                         {/* Left: Avatar & Welcome */}
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                           {/* User Avatar */}
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
                             <div className={`relative ${familyTrees.length > 0 ? 'w-8 h-8' : 'w-12 h-12'} bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30`}>
-                              <span className={`${familyTrees.length > 0 ? 'text-sm' : 'text-base'} font-bold text-white`}>
+                              <span className={`${familyTrees.length > 0 ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'} font-bold text-white`}>
                                 {userProfile?.first_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                               </span>
                             </div>
@@ -302,7 +302,7 @@ const Dashboard = () => {
                           
                           {/* Welcome Text */}
                           <div className="text-right">
-                            <h1 className={`${familyTrees.length > 0 ? 'text-sm sm:text-base md:text-lg' : 'text-base sm:text-lg md:text-xl'} font-bold`}>
+                            <h1 className={`${familyTrees.length > 0 ? 'text-xs sm:text-sm md:text-base' : 'text-sm sm:text-base md:text-lg'} font-bold`}>
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                 أهلاً {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
                               </span>
@@ -312,19 +312,19 @@ const Dashboard = () => {
 
                         {/* Center: Tree Count & Description */}
                         <div className="flex-1 text-center">
-                          <div className="flex items-center justify-center gap-3 mb-3">
+                          <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
                             {familyTrees.length === 1 ? (
-                              <div className="flex items-center gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-6 py-3 rounded-full shadow-lg">
-                                <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">لديك</span>
-                                  <span className="text-sm sm:text-base md:text-lg font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
+                              <div className="flex items-center gap-1 sm:gap-2 md:gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full shadow-lg">
+                                <TreePine className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">لديك</span>
+                                  <span className="text-xs sm:text-sm md:text-base font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
                                 </div>
                               </div>
                             ) : (
                               <>
-                                <TreePine className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-sm sm:text-base md:text-lg font-semibold text-emerald-700 dark:text-emerald-300">
+                                <TreePine className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-emerald-600 dark:text-emerald-400" />
+                                <span className="text-xs sm:text-sm md:text-base font-semibold text-emerald-700 dark:text-emerald-300">
                                   {familyTrees.length === 0 
                                     ? t('no_trees', 'لا توجد أشجار بعد')
                                     : `${familyTrees.length} ${t('trees', 'أشجار')}`
@@ -334,28 +334,28 @@ const Dashboard = () => {
                             )}
                           </div>
                           {familyTrees.length === 0 && (
-                            <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300">
+                            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300">
                               {t('no_trees_desc', 'ابدأ رحلتك في بناء إرثك العائلي الرقمي')}
                             </p>
                           )}
                         </div>
 
                         {/* Right: Badge & Subscription Status */}
-                        <div className="flex flex-col items-center gap-3">
+                        <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
                           {/* Subscription Status */}
           {userSubscription?.package_name && !userSubscription?.is_expired ? (
-            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
-              <Crown className="h-4 w-4" />
-              <span className="text-xs sm:text-sm font-bold">الباقة {userSubscription.package_name}</span>
+            <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+              <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs font-bold">الباقة {userSubscription.package_name}</span>
             </div>
                           ) : !userSubscription?.package_name ? (
-                            <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
-                              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                                <Gem className="h-4 w-4" />
-                                <span className="text-xs sm:text-sm font-medium">حساب مجاني</span>
+                            <div className="flex flex-col items-center gap-1 sm:gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
+                              <div className="flex items-center gap-1 sm:gap-2 text-amber-600 dark:text-amber-400">
+                                <Gem className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="text-xs font-medium">حساب مجاني</span>
                               </div>
                               <Link to="/plan-selection">
-                                <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-3 py-1 rounded-full border-0">
+                                <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full border-0">
                                   طوّر حسابك
                                 </Button>
                               </Link>
