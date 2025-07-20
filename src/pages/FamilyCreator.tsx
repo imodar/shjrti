@@ -1074,13 +1074,13 @@ const FamilyCreator = () => {
             )}
 
             {/* Enhanced Navigation Buttons */}
-            <div className="flex justify-between items-center mt-8 gap-6">
+            <div className="flex justify-between items-center mt-6 sm:mt-8 gap-3 sm:gap-4 md:gap-6">
               <Button
                 onClick={handlePrevStep}
                 variant="outline"
-                className="h-16 px-10 text-lg border-2 border-gray-200/50 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
+                className="h-10 sm:h-12 md:h-16 px-4 sm:px-6 md:px-10 text-sm sm:text-base md:text-lg border-2 border-gray-200/50 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
               >
-                <ArrowRight className="h-6 w-6 mr-3" />
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" />
                 {currentStep === 1 ? "العودة للوحة التحكم" : "السابق"}
               </Button>
               
@@ -1089,12 +1089,12 @@ const FamilyCreator = () => {
                   console.log('Button clicked!', e);
                   handleNextStep();
                 }}
-                className="h-16 px-16 text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-2xl text-white font-bold relative z-50 pointer-events-auto"
+                className="h-10 sm:h-12 md:h-16 px-6 sm:px-10 md:px-16 text-sm sm:text-base md:text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-xl sm:rounded-2xl text-white font-bold relative z-50 pointer-events-auto"
                 style={{ pointerEvents: 'auto' }}
               >
                 {currentStep === 1 ? "التالي" : "إنشاء العائلة"}
-                {currentStep === 1 && <ArrowLeft className="h-6 w-6 ml-3" />}
-                {currentStep === 2 && <CheckCircle className="h-6 w-6 ml-3" />}
+                {currentStep === 1 && <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
+                {currentStep === 2 && <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
               </Button>
             </div>
           </div>
