@@ -366,23 +366,23 @@ const Auth = () => {
               <div className="space-y-4">
                 <h1 className="text-6xl font-bold leading-tight">
                   <span className="block bg-gradient-to-r from-white via-amber-200 to-white bg-clip-text text-transparent">
-                    مرحباً بك في
+                    {t('welcome_to', 'مرحباً بك في')}
                   </span>
                   <span className="block text-white font-black text-7xl">
-                    شجرتي
+                    {t('my_tree', 'شجرتي')}
                   </span>
                 </h1>
                 <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-white mx-auto rounded-full"></div>
               </div>
 
               {/* Luxury Description */}
-              <p className="text-xl opacity-95 leading-relaxed font-light">
-                ابدأ رحلتك الاستثنائية في اكتشاف جذورك وبناء إرث رقمي فاخر
-                <br />
-                <span className="text-amber-200 font-medium">
-                  مع أفضل منصة عربية لإنشاء أشجار العائلة
-                </span>
-              </p>
+               <p className="text-xl opacity-95 leading-relaxed font-light">
+                 {t('exceptional_journey', 'ابدأ رحلتك الاستثنائية في اكتشاف جذورك وبناء إرث رقمي فاخر')}
+                 <br />
+                 <span className="text-amber-200 font-medium">
+                   {t('best_arabic_platform', 'مع أفضل منصة عربية لإنشاء أشجار العائلة')}
+                 </span>
+               </p>
 
               {/* Luxury Statistics */}
               <div className="grid grid-cols-3 gap-4 pt-8">
