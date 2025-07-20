@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Check } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -26,7 +26,6 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
-import { ModernFamilyMemberModal } from "@/components/ModernFamilyMemberModal";
 
 
 const FamilyBuilder = () => {
@@ -331,6 +330,7 @@ const FamilyBuilder = () => {
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
+    maritalStatus?: string;
   }>>([]);
   const [husbands, setHusbands] = useState<Array<{
     id: string;
@@ -879,52 +879,6 @@ const FamilyBuilder = () => {
     
     setEditingWife(null); // Reset editing wife
     setEditingHusband(null); // Reset editing husband
-  };
-
-  const handleSaveMemberFromModal = async (memberData: any) => {
-    setIsSaving(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const finalMemberData = {
-        ...memberData,
-        family_id: familyData?.id,
-        created_by: user.id
-      };
-
-      if (selectedMember) {
-        const { error } = await supabase
-          .from('family_tree_members')
-          .update(finalMemberData)
-          .eq('id', selectedMember.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('family_tree_members')
-          .insert(finalMemberData);
-        if (error) throw error;
-      }
-
-      toast({
-        title: "تم الحفظ بنجاح",
-        description: selectedMember ? "تم تحديث بيانات العضو" : "تم إضافة العضو الجديد"
-      });
-
-      setShowAddMember(false);
-      setSelectedMember(null);
-      // Refresh data
-      window.location.reload();
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء الحفظ",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   const handleSaveMember = async () => {
@@ -1753,7 +1707,7 @@ const FamilyBuilder = () => {
                         handleAddNewMember();
                       }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
-                      className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Plus className="mr-2 h-5 w-5" />
                       إضافة فرد جديد
@@ -2028,60 +1982,51 @@ const FamilyBuilder = () => {
       </div>
 
       {/* Add/Edit Member Modal */}
-      <ModernFamilyMemberModal
-        isOpen={showAddMember}
-        onClose={() => setShowAddMember(false)}
-        onSave={handleSaveMemberFromModal}
-        familyMarriages={familyMarriages}
-        selectedMember={selectedMember}
-        getFullName={getFullName}
-      />
-
-      {/* Image Crop Modal */}
-      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
-        <DialogContent className="sm:max-w-2xl bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-foreground">قص الصورة</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              اضبط الصورة كما تريد وانقر على حفظ
-            </DialogDescription>
-          </DialogHeader>
+      <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">{/* Removed problematic positioning classes */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
           
-          <div className="space-y-4 py-4">
-            {imageSrc && (
-              <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
-                  className="w-full h-full"
-                />
+          <DialogHeader className="relative pt-4">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+                <UserPlus className="h-8 w-8 text-primary-foreground" />
               </div>
-            )}
-          </div>
+              <div>
+                <DialogTitle className="text-3xl font-bold text-foreground">
+                  {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground text-lg">
+                  {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
+                </DialogDescription>
+              </div>
+            </div>
 
-          <DialogFooter className="flex gap-3">
-            <Button variant="outline" onClick={() => setShowImageCrop(false)} className="rounded-xl">
-              إلغاء
-            </Button>
-            <Button onClick={handleCropSave} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl">
-              <Save className="mr-2 h-4 w-4" />
-              حفظ الصورة
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
+                    currentStep >= step 
+                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg" 
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    {step}
+                  </div>
+                  {step < 3 && (
+                    <div className={cn(
+                      "w-16 h-1 rounded-full mx-2 transition-all duration-300",
+                      currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
+                    )}></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </DialogHeader>
 
-      <GlobalFooter />
-    </div>
-  );
-};
-
-export default FamilyBuilder;
+          <div className="overflow-y-auto max-h-[60vh] px-6">
+            {/* Step 1: Basic Info */}
+            {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
@@ -2114,93 +2059,8 @@ export default FamilyBuilder;
                   </div>
                 </div>
 
-                {/* Profile Photo and Family Relation Section */}
+                {/* Profile Photo and Family Selection Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Family Selection */}
-                  <div className="space-y-4">
-                    <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      اختر العائلة المرتبطة
-                    </Label>
-                    <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full h-12 justify-between text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
-                            !formData.relatedPersonId && "text-muted-foreground"
-                          )}
-                        >
-                          {(() => {
-                            if (formData.relatedPersonId) {
-                              const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
-                              if (marriage) {
-                                return (
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-xl">❤️</span>
-                                    <div className="flex flex-col items-start">
-                                      <span className="font-medium">
-                                        {`${getFullName(marriage.husband)} + ${marriage.wife?.name}`}
-                                      </span>
-                                      <span className="text-xs text-muted-foreground">عائلة</span>
-                                    </div>
-                                  </div>
-                                );
-                              } else {
-                                return (
-                                  <div className="flex items-center gap-3 text-destructive">
-                                    <span className="text-xl">⚠️</span>
-                                    <span>العائلة المحددة غير موجودة</span>
-                                  </div>
-                                );
-                              }
-                            } else {
-                              return "ابحث واختر من قائمة العائلات";
-                            }
-                          })()}
-                          <Search className="h-4 w-4 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-80 p-0 bg-popover/95 backdrop-blur-xl border-0 shadow-2xl rounded-2xl">
-                        <Command className="bg-transparent">
-                          <CommandInput 
-                            placeholder="ابحث في العائلات..." 
-                            className="border-0 focus:ring-0 text-right"
-                          />
-                          <CommandList className="max-h-64">
-                            <CommandEmpty className="py-6 text-center text-muted-foreground">
-                              لا توجد عائلات متاحة
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {familyMarriages.map((marriage) => (
-                                <CommandItem
-                                  key={marriage.id}
-                                  value={`${getFullName(marriage.husband)} ${marriage.wife?.name}`}
-                                  onSelect={() => {
-                                    setFormData({...formData, relatedPersonId: marriage.id});
-                                    setShowRelatedPersonDropdown(false);
-                                  }}
-                                  className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-accent/50"
-                                >
-                                  <span className="text-xl">❤️</span>
-                                  <div className="flex-1">
-                                    <p className="font-medium">
-                                      {getFullName(marriage.husband)} + {marriage.wife?.name}
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">عائلة</p>
-                                  </div>
-                                  {formData.relatedPersonId === marriage.id && (
-                                    <Check className="h-4 w-4 text-primary" />
-                                  )}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
                   {/* Profile Photo */}
                   <div className="space-y-4">
                     <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
@@ -2238,9 +2098,108 @@ export default FamilyBuilder;
                     </div>
                   </div>
 
+                  {/* Family Selection - Hidden for founders */}
+                  {familyMarriages.length > 0 && formData.relation !== "founder" && (
+                    <div className="space-y-4">
+                      <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
+                        <Users className="h-4 w-4 text-primary" />
+                        اختر العائلة المرتبطة
+                      </Label>
+                      <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full h-12 justify-between text-lg border-2 border-primary/20 focus:border-primary rounded-xl bg-input",
+                              !formData.relatedPersonId && "text-muted-foreground"
+                            )}
+                          >
+                            {(() => {
+                              console.log('Family selection debug:');
+                              console.log('- formData.relatedPersonId:', formData.relatedPersonId);
+                              console.log('- available familyMarriages:', familyMarriages.map(m => ({id: m.id, husband: m.husband?.name, wife: m.wife?.name})));
+                              
+                              if (formData.relatedPersonId) {
+                                const marriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+                                console.log('- found marriage for relatedPersonId:', marriage);
+                                
+                                if (marriage) {
+                                  return (
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-xl">❤️</span>
+                                      <div className="flex flex-col items-start">
+                                        <span className="font-medium">
+                                          {`${getFullName(marriage.husband)} + ${marriage.wife?.name}`}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">عائلة</span>
+                                      </div>
+                                    </div>
+                                  );
+                                } else {
+                                  return (
+                                    <div className="flex items-center gap-3 text-destructive">
+                                      <span className="text-xl">⚠️</span>
+                                      <span>العائلة المحددة غير موجودة</span>
+                                    </div>
+                                  );
+                                }
+                              } else {
+                                return "ابحث واختر من قائمة العائلات";
+                              }
+                            })()}
+                            <Search className="h-4 w-4 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
+                          <Command>
+                            <CommandInput placeholder="ابحث عن عائلة..." className="h-12 text-lg" />
+                            <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
+                            <CommandList className="max-h-60">
+                              <CommandGroup>
+                                {familyMarriages.filter(marriage => 
+                                  marriage.husband?.id !== selectedMember?.id && 
+                                  marriage.wife?.id !== selectedMember?.id
+                                ).map((marriage) => (
+                                  <CommandItem
+                                    key={marriage.id}
+                                    value={`${marriage.husband?.name} ${marriage.wife?.name} عائلة`}
+                                    onSelect={() => {
+                                      setFormData({...formData, relatedPersonId: marriage.id});
+                                      setShowRelatedPersonDropdown(false);
+                                    }}
+                                    className="flex items-center gap-3 p-3 cursor-pointer"
+                                  >
+                                    <span className="text-2xl">❤️</span>
+                                     <div className="flex flex-col flex-1">
+                                       <span className="font-medium">
+                                         {getMarriageDisplayName(marriage)}
+                                       </span>
+                                       <span className="text-sm text-muted-foreground">عائلة</span>
+                                     </div>
+                                    {formData.relatedPersonId === marriage.id && (
+                                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                    )}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <p className="text-sm text-muted-foreground">
+                        اختر العائلة التي سينتمي إليها {formData.name}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
+            )}
 
+            {/* Step 2: Additional Details */}
+            {currentStep === 2 && (
+              <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">معلومات إضافية</h3>
                   <p className="text-muted-foreground">أضف التفاصيل الإضافية للشخص</p>
                 </div>
 
@@ -2553,12 +2512,16 @@ export default FamilyBuilder;
                 </div>
 
                 {formData.gender === "male" ? (
-                  <div className="space-y-6">
-                    {/* Current Wives List */}
-                    {wives.length > 0 && (
-                      <div className="space-y-4">
-                        <Label className="text-lg font-semibold text-foreground">الزوجات المضافة ({wives.length})</Label>
-                        <div className="grid gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left Column: Current Wives List */}
+                    <div className="space-y-4">
+                      <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <Users className="h-5 w-5 text-primary" />
+                        الزوجات المضافة ({wives.length})
+                      </Label>
+                      
+                      {wives.length > 0 ? (
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto">
                           {wives.map((wife, index) => (
                             <div key={wife.id} className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-4 border border-primary/20">
                               <div className="flex items-center justify-between">
@@ -2571,6 +2534,7 @@ export default FamilyBuilder;
                                     <p className="text-sm text-muted-foreground">
                                       {wife.isAlive ? '🟢 على قيد الحياة' : '🔴 متوفاة'}
                                       {wife.birthDate && ` • وُلدت ${format(wife.birthDate, 'yyyy')}`}
+                                      {wife.maritalStatus && ` • ${wife.maritalStatus === 'married' ? 'متزوجة' : 'مطلقة'}`}
                                     </p>
                                   </div>
                                 </div>
@@ -2591,16 +2555,24 @@ export default FamilyBuilder;
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700">
+                          <Heart className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                          <p className="text-muted-foreground text-sm">لم يتم إضافة أي زوجات بعد</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right Column: Add/Edit Wife Form */}
+                    <div className="space-y-4">
+                      <Label className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <Plus className="h-5 w-5 text-primary" />
+                        {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
+                      </Label>
 
                     {/* Add/Edit Wife Form - Only show if no existing wives or currently editing */}
                     {(!wives.some(w => w.id.toString().includes('existing-')) || editingWife) && (
                       <div className="bg-gradient-to-br from-card/50 to-accent/5 rounded-xl p-6 border border-primary/20">
-                        <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                          {editingWife ? <Edit className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
-                          {editingWife ? 'تعديل بيانات الزوجة' : 'إضافة زوجة جديدة'}
-                        </h4>
                       
                       <div className="space-y-4">
                         {/* Name, Status and Birth Date Row */}
@@ -2850,15 +2822,10 @@ export default FamilyBuilder;
                       />
                       </div>
                     )}
-
-                    {wives.length === 0 && (
-                      <div className="text-center py-8 bg-muted/30 rounded-xl border-2 border-dashed border-muted-foreground/30">
-                        <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">لم يتم إضافة أي زوجات بعد</p>
-                        <p className="text-sm text-muted-foreground mt-1">يمكنك تخطي هذه الخطوة والعودة لاحقاً</p>
-                      </div>
-                    )}
+                    </div>
                   </div>
+
+                  
                 ) : formData.gender === "female" ? (
                   <div className="space-y-6">
                     {/* Current Husbands List */}
@@ -3214,6 +3181,8 @@ export default FamilyBuilder;
         </DialogContent>
       </Dialog>
 
+      {/* Image Crop Modal */}
+      <Dialog open={showImageCrop} onOpenChange={setShowImageCrop}>
         <DialogContent className="sm:max-w-2xl bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-foreground">قص الصورة</DialogTitle>
