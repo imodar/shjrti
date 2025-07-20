@@ -443,7 +443,7 @@ export const GlobalHeader = () => {
 
                         <Link 
                           to="/payments" 
-                          className="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-amber-400/20 rounded-lg">
@@ -454,7 +454,7 @@ export const GlobalHeader = () => {
 
                         <a 
                           href="#contact" 
-                          className="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-teal-400/20 rounded-lg">
@@ -464,7 +464,7 @@ export const GlobalHeader = () => {
                         </a>
 
                         <button 
-                          className="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-emerald-400/20 rounded-lg">
@@ -476,7 +476,7 @@ export const GlobalHeader = () => {
                         {/* Mobile Logout */}
                         <div className="border-t border-white/10 pt-4 mt-4">
                           <button 
-                            className="flex items-center gap-4 p-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-300 w-full"
+                            className={`flex items-center gap-4 p-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-300 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                             onClick={() => {
                               setMobileMenuOpen(false);
                               signOut();
@@ -508,7 +508,7 @@ export const GlobalHeader = () => {
 
                         <a 
                           href="#contact" 
-                          className="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-teal-400/20 rounded-lg">
