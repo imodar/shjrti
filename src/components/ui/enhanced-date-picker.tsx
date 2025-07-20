@@ -73,37 +73,39 @@ export function EnhancedDatePicker({
           )}
         </div>
         
-        <Calendar
-          mode="single"
-          selected={value}
-          onSelect={handleSelect}
-          locale={ar}
-          initialFocus
-          className="rounded-md pointer-events-auto p-4"
-          disabled={disableFuture ? (date) => date > new Date() : undefined}
-          captionLayout="dropdown-buttons"
-          fromYear={fromYear}
-          toYear={toYear}
-          classNames={{
-            months: "flex flex-col space-y-4",
-            month: "space-y-4",
-            caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
-            caption_dropdowns: "flex justify-center gap-3",
-            dropdown: "px-3 py-2 text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 [&>option]:text-right [&+span]:hidden",
-            caption_label: "hidden",
-            nav: "hidden",
-            table: "w-full border-collapse space-y-1 mt-4",
-            head_row: "flex",
-            head_cell: "text-amber-600 dark:text-amber-400 rounded-md w-10 font-semibold text-xs text-center py-2",
-            row: "flex w-full mt-2",
-            cell: "h-10 w-10 text-center text-sm p-0 relative",
-            day: "h-10 w-10 p-0 font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-all duration-200 hover:scale-105",
-            day_selected: "bg-amber-500 text-white hover:bg-amber-600 shadow-lg transform scale-105",
-            day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold ring-2 ring-amber-300 dark:ring-amber-600",
-            day_outside: "text-gray-400 opacity-50",
-            day_disabled: "text-gray-300 opacity-30 cursor-not-allowed",
-          }}
-        />
+        <div className="[&_.rdp-caption_dropdowns_label]:hidden">
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={handleSelect}
+            locale={ar}
+            initialFocus
+            className="rounded-md pointer-events-auto p-4"
+            disabled={disableFuture ? (date) => date > new Date() : undefined}
+            captionLayout="dropdown-buttons"
+            fromYear={fromYear}
+            toYear={toYear}
+            classNames={{
+              months: "flex flex-col space-y-4",
+              month: "space-y-4",
+              caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
+              caption_dropdowns: "flex justify-center gap-3",
+              dropdown: "px-3 py-2 text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 [&>option]:text-right",
+              caption_label: "hidden",
+              nav: "hidden",
+              table: "w-full border-collapse space-y-1 mt-4",
+              head_row: "flex",
+              head_cell: "text-amber-600 dark:text-amber-400 rounded-md w-10 font-semibold text-xs text-center py-2",
+              row: "flex w-full mt-2",
+              cell: "h-10 w-10 text-center text-sm p-0 relative",
+              day: "h-10 w-10 p-0 font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-all duration-200 hover:scale-105",
+              day_selected: "bg-amber-500 text-white hover:bg-amber-600 shadow-lg transform scale-105",
+              day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold ring-2 ring-amber-300 dark:ring-amber-600",
+              day_outside: "text-gray-400 opacity-50",
+              day_disabled: "text-gray-300 opacity-30 cursor-not-allowed",
+            }}
+          />
+        </div>
         
         {/* Footer with close button */}
         <div className="p-3 border-t border-amber-200/50 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-950/50">
