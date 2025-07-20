@@ -56,7 +56,7 @@ interface UserSubscription {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
@@ -129,11 +129,11 @@ const Dashboard = () => {
 
         if (!subscriptionError && subscription) {
           // Parse package name JSON
-          let packageDisplayName = 'باقة مجانية';
+          let packageDisplayName = t('dashboard.free_package', 'Free Package');
           if (subscription.packages?.name) {
             try {
               const nameObj = JSON.parse(subscription.packages.name);
-              packageDisplayName = nameObj.ar || nameObj.en || 'باقة مجانية';
+              packageDisplayName = nameObj.ar || nameObj.en || t('dashboard.free_package', 'Free Package');
             } catch (e) {
               packageDisplayName = subscription.packages.name;
             }
@@ -149,7 +149,7 @@ const Dashboard = () => {
         } else {
           // Default free package limits
           setUserSubscription({
-            package_name: 'باقة مجانية',
+            package_name: t('dashboard.free_package', 'Free Package'),
             status: 'free',
             is_expired: false,
             max_trees: 1,
@@ -159,8 +159,8 @@ const Dashboard = () => {
       } catch (error) {
         console.error('Error fetching data:', error);
         toast({
-          title: "خطأ",
-          description: "حدث خطأ في تحميل البيانات",
+          title: t('dashboard.error', 'Error'),
+          description: t('dashboard.error_loading_data', 'Error occurred while loading data'),
           variant: "destructive"
         });
       } finally {
@@ -208,8 +208,8 @@ const Dashboard = () => {
     if (!deleteTreeId || deleteConfirmText.trim() !== deleteTreeName.trim()) {
       console.log('❌ Validation failed in handleConfirmDelete');
       toast({
-        title: "خطأ في التأكيد",
-        description: "يجب كتابة اسم الشجرة بشكل صحيح للتأكيد",
+        title: t('dashboard.confirmation_error', 'Confirmation Error'),
+        description: t('dashboard.tree_name_confirmation', 'Tree name must be typed correctly for confirmation'),
         variant: "destructive"
       });
       return;
@@ -238,8 +238,8 @@ const Dashboard = () => {
       if (error) {
         console.error('❌ Archive error details:', error);
         toast({
-          title: "خطأ في الحذف",
-          description: `حدث خطأ أثناء حذف شجرة العائلة: ${error.message}`,
+          title: t('dashboard.deletion_error', 'Deletion Error'),
+          description: `${t('dashboard.tree_deletion_error', 'Error occurred while deleting family tree')}: ${error.message}`,
           variant: "destructive"
         });
         return;
@@ -248,8 +248,8 @@ const Dashboard = () => {
       if (!data || data.length === 0) {
         console.error('❌ No rows were updated during archive operation');
         toast({
-          title: "خطأ في الحذف",
-          description: "لم يتم العثور على الشجرة أو ليس لديك صلاحية لحذفها",
+          title: t('dashboard.deletion_error', 'Deletion Error'),
+          description: t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it'),
           variant: "destructive"
         });
         return;
@@ -267,21 +267,21 @@ const Dashboard = () => {
       setDeleteConfirmText("");
       
       toast({
-        title: "تم الحذف بنجاح",
-        description: "تم حذف شجرة العائلة بنجاح"
+        title: t('dashboard.deletion_success', 'Deleted Successfully'),
+        description: t('dashboard.tree_deletion_success', 'Family tree deleted successfully')
       });
     } catch (error) {
       console.error('❌ Unexpected error during deletion:', error);
       toast({
-        title: "خطأ",
-        description: "حدث خطأ غير متوقع",
+        title: t('dashboard.error', 'Error'),
+        description: t('dashboard.unexpected_error', 'Unexpected error occurred'),
         variant: "destructive"
       });
     }
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" dir={direction}>
       <GlobalHeader />
       <SubscriptionGuard>
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
@@ -377,7 +377,7 @@ const Dashboard = () => {
           {userSubscription?.package_name && !userSubscription?.is_expired ? (
             <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full shadow-lg">
               <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-xs font-bold">الباقة {userSubscription.package_name}</span>
+              <span className="text-xs font-bold">{t('dashboard.package_prefix', 'Package')} {userSubscription.package_name}</span>
             </div>
                           ) : !userSubscription?.package_name ? (
                             <div className="flex flex-col items-center gap-1 sm:gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
@@ -595,7 +595,7 @@ const Dashboard = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between mb-1">
                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                              أشجار العائلة
+                              {t('dashboard.family_trees_section', 'Family Trees')}
                             </div>
                             <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
                               {familyTrees.length} / {userSubscription?.max_trees || '∞'}
@@ -681,7 +681,7 @@ const Dashboard = () => {
                                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-sm opacity-60"></div>
                                 <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-4 py-2 rounded-full text-sm font-bold shadow-xl backdrop-blur-sm">
                                   <Users className="h-3.5 w-3.5 ml-1" />
-                                  {tree.members_count} فرد
+                                  {tree.members_count} {t('members', 'فرد')}
                                 </Badge>
                               </div>
                             </div>
@@ -690,7 +690,7 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mr-20">
                               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                               <Calendar className="h-4 w-4" />
-                              <span className="font-medium">تم الإنشاء في {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
+                              <span className="font-medium">{t('dashboard.created_on', 'Created on')} {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
                             </div>
                           </CardHeader>
                           
@@ -782,14 +782,14 @@ const Dashboard = () => {
                             <div className="space-y-2">
                               <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
                                 {familyTrees.length >= (userSubscription?.max_trees || 0)
-                                  ? 'ترقية الباقة مطلوبة'
-                                  : 'إنشاء شجرة عائلة جديدة'
+                                  ? t('dashboard.upgrade_required', 'Package Upgrade Required')
+                                  : t('dashboard.create_new_tree', 'Create New Family Tree')
                                 }
                               </h3>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
                                 {familyTrees.length >= (userSubscription?.max_trees || 0)
-                                  ? 'لقد وصلت للحد المسموح من الأشجار'
-                                  : 'ابدأ في بناء تاريخ عائلتك'
+                                  ? t('dashboard.reached_tree_limit', 'You have reached the allowed tree limit')
+                                  : t('build_family_history', 'ابدأ في بناء تاريخ عائلتك')
                                 }
                               </p>
                             </div>
@@ -828,7 +828,7 @@ const Dashboard = () => {
             <DialogTitle className="text-center text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Crown className="h-6 w-6 text-amber-500" />
-                <span>ترقية الباقة مطلوبة</span>
+                <span>{t('dashboard.upgrade_required', 'Package Upgrade Required')}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
@@ -837,15 +837,15 @@ const Dashboard = () => {
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-200/50 dark:border-amber-700/50">
               <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300 mb-2">
                 <Shield className="h-5 w-5" />
-                <span className="font-semibold">حد الاستخدام</span>
+                <span className="font-semibold">{t('usage_limit', 'حد الاستخدام')}</span>
               </div>
               <p className="text-sm text-amber-600 dark:text-amber-400">
-                لقد وصلت للحد الأقصى المسموح في باقتك الحالية ({userSubscription?.max_trees || 1} شجرة)
+                {t('dashboard.upgrade_package_description', 'You have reached the maximum limit allowed in your current package')} ({userSubscription?.max_trees || 1} {t('dashboard.trees_suffix', 'tree')})
               </p>
             </div>
 
             <p className="text-gray-600 dark:text-gray-300">
-              لإنشاء المزيد من الأشجار العائلية، يمكنك ترقية باقتك للحصول على مميزات أكثر
+              {t('dashboard.upgrade_benefits', 'To create more family trees, you can upgrade your package to get more features')}
             </p>
 
             <div className="flex gap-3 mt-6">
@@ -859,7 +859,7 @@ const Dashboard = () => {
               <Link to="/plan-selection" className="flex-1">
                 <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
                   <Crown className="h-4 w-4 ml-2" />
-                  ترقية الباقة
+                  {t('dashboard.upgrade_package', 'Upgrade Package')}
                 </Button>
               </Link>
             </div>
@@ -909,19 +909,19 @@ const Dashboard = () => {
                   <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
                     <X className="h-5 w-5 text-red-600" />
                   </div>
-                  <span className="font-bold text-lg">تحذير خطير</span>
+                  <span className="font-bold text-lg">{t('serious_warning', 'تحذير خطير')}</span>
                 </div>
                 
                 <p className="text-sm text-red-600 dark:text-red-400 leading-relaxed font-medium">
-                  هذا الإجراء <span className="font-bold text-red-700 dark:text-red-300">لا يمكن التراجع عنه</span>. 
-                  سيتم حذف جميع بيانات الشجرة والذكريات المرتبطة بها نهائياً.
+                  {t('irreversible_action', 'هذا الإجراء')} <span className="font-bold text-red-700 dark:text-red-300">{t('cannot_be_undone', 'لا يمكن التراجع عنه')}</span>. 
+                  {t('dashboard.deletion_warning', 'All tree data and associated memories will be permanently deleted.')}
                 </p>
               </div>
 
               {/* Tree Name Display */}
               <div className="bg-white/60 dark:bg-gray-800/40 rounded-2xl p-4 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
                 <p className="text-gray-700 dark:text-gray-300 mb-2">
-                  لتأكيد الحذف، اكتب اسم الشجرة بالضبط:
+                  {t('dashboard.type_tree_name', 'To confirm deletion, type the tree name exactly:')}
                 </p>
                 <div className="text-lg font-bold bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 dark:from-gray-200 dark:via-gray-300 dark:to-gray-400 bg-clip-text text-transparent px-4 py-2 bg-gray-100/50 dark:bg-gray-700/30 rounded-xl border border-gray-300/50 dark:border-gray-600/50">
                   "{deleteTreeName}"
@@ -931,7 +931,7 @@ const Dashboard = () => {
               {/* Input Field */}
               <div className="space-y-3">
                 <Label htmlFor="confirmText" className="text-sm font-semibold text-gray-700 dark:text-gray-300 block">
-                  اكتب اسم الشجرة للتأكيد:
+                  {t('dashboard.confirm_tree_name', 'Type tree name to confirm:')}
                 </Label>
                 <div className="relative">
                   <Input
