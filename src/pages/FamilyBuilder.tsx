@@ -166,7 +166,7 @@ const FamilyBuilder = () => {
   };
 
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
   const { notifications, profile } = useDashboardData();
   
   // Package and subscription data
@@ -1529,7 +1529,7 @@ const FamilyBuilder = () => {
       <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-muted-foreground">جاري تحميل بيانات العائلة...</p>
+          <p className="text-muted-foreground">{t('family_builder.loading', 'جاري تحميل بيانات العائلة...')}</p>
         </div>
       </div>
     );
@@ -1586,7 +1586,7 @@ const FamilyBuilder = () => {
                   <div className="text-center">
                     <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        عائلة {familyData?.name || 'غير محدد'}
+                        {t('family_builder.family', 'عائلة')} {familyData?.name || t('family_builder.unspecified', 'غير محدد')}
                       </span>
                     </h1>
                   </div>
@@ -1632,7 +1632,7 @@ const FamilyBuilder = () => {
                           : 'اليوم'
                         }
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">آخر تعديل</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.last_modified', 'آخر تعديل')}</div>
                     </div>
                   </div>
                 </div>
@@ -1673,7 +1673,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Star className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">الإحصائات</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائات')}</span>
                   </div>
                 </div>
               </div>
@@ -1681,7 +1681,7 @@ const FamilyBuilder = () => {
           </div>
           
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8" style={{direction: 'rtl'}}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8" style={{direction: direction}}>
             {/* Modern Tabs Navigation */}
             <div className="flex justify-center relative">
             </div>
@@ -1695,7 +1695,7 @@ const FamilyBuilder = () => {
                 <div className="relative w-full sm:max-w-md">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="البحث في أفراد العائلة..."
+                    placeholder={t('family_builder.search_placeholder', 'البحث في أفراد العائلة...')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pr-10 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm w-full"
@@ -1727,7 +1727,7 @@ const FamilyBuilder = () => {
                       className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-3 sm:px-6 h-11 sm:h-12 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     >
                       <Plus className="ml-2 h-4 w-4" />
-                      <span className="text-xs sm:text-sm">إضافة فرد</span>
+                      <span className="text-xs sm:text-sm">{t('family_builder.add_member', 'إضافة فرد')}</span>
                     </Button>
                     {packageData && (
                       <Badge 
@@ -1793,7 +1793,7 @@ const FamilyBuilder = () => {
                                    ? "bg-blue-100 text-blue-700 shadow-blue-200/50" 
                                    : "bg-pink-100 text-pink-700 shadow-pink-200/50"
                                )}>
-                                 {member.gender === "male" ? "👨 ذكر" : "👩 أنثى"}
+                                 {member.gender === "male" ? `👨 ${t('family_builder.male', 'ذكر')}` : `👩 ${t('family_builder.female', 'أنثى')}`}
                                </Badge>
                              </div>
                              
@@ -1823,7 +1823,7 @@ const FamilyBuilder = () => {
                                 <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                                   <Edit className="h-4 w-4 text-primary" />
                                 </div>
-                                <span className="font-medium">تعديل البيانات</span>
+                                <span className="font-medium">{t('family_builder.edit_data', 'تعديل البيانات')}</span>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-white/10 my-1" />
                               {!member.isFounder && (
@@ -1834,7 +1834,7 @@ const FamilyBuilder = () => {
                                   <div className="w-8 h-8 bg-destructive/10 rounded-full flex items-center justify-center">
                                     <Trash2 className="h-4 w-4" />
                                   </div>
-                                  <span className="font-medium">حذف من العائلة</span>
+                                  <span className="font-medium">{t('family_builder.delete_from_family', 'حذف من العائلة')}</span>
                                 </DropdownMenuItem>
                               )}
                             </DropdownMenuContent>
@@ -1878,13 +1878,13 @@ const FamilyBuilder = () => {
                                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                     <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
                                   </div>
-                                  <span className="font-semibold">على قيد الحياة</span>
+                                  <span className="font-semibold">{t('family_builder.alive', 'على قيد الحياة')}</span>
                                   <Heart className="h-4 w-4 text-green-600 animate-pulse" />
                                 </>
                               ) : (
                                 <>
                                   <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                                  <span className="font-semibold">متوفى</span>
+                                  <span className="font-semibold">{t('family_builder.deceased', 'متوفى')}</span>
                                   <Skull className="h-4 w-4 text-gray-500" />
                                 </>
                               )}
@@ -1925,8 +1925,8 @@ const FamilyBuilder = () => {
                       <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Plus className="h-8 w-8 text-primary" />
                       </div>
-                      <h3 className="font-bold text-primary text-lg mb-2">إضافة فرد جديد</h3>
-                      <p className="text-muted-foreground text-center text-sm">انقر هنا لإضافة عضو جديد إلى شجرة العائلة</p>
+                      <h3 className="font-bold text-primary text-lg mb-2">{t('family_builder.add_new_member', 'إضافة فرد جديد')}</h3>
+                      <p className="text-muted-foreground text-center text-sm">{t('family_builder.click_to_add', 'انقر هنا لإضافة عضو جديد إلى شجرة العائلة')}</p>
                     </CardContent>
                   </Card>
                 )}
@@ -1937,8 +1937,8 @@ const FamilyBuilder = () => {
             <TabsContent value="tree-view" className="space-y-8">
               <Card className="bg-card/80 backdrop-blur-xl border-0 shadow-xl rounded-3xl overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-primary/20">
-                  <CardTitle className="text-center text-2xl text-foreground">شجرة العائلة</CardTitle>
-                  <CardDescription className="text-center text-muted-foreground">عرض تفاعلي لشجرة العائلة</CardDescription>
+                  <CardTitle className="text-center text-2xl text-foreground">{t('family_builder.family_tree', 'شجرة العائلة')}</CardTitle>
+                  <CardDescription className="text-center text-muted-foreground">{t('family_builder.interactive_view', 'عرض تفاعلي لشجرة العائلة')}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-12">
                   <div className="text-center">
@@ -1946,7 +1946,7 @@ const FamilyBuilder = () => {
                       <TreePine className="h-16 w-16 text-primary" />
                     </div>
                     <h3 className="text-2xl font-bold text-foreground mb-4">عرض الشجرة قيد التطوير</h3>
-                    <p className="text-muted-foreground text-lg">سيتم إضافة عرض تفاعلي للشجرة قريباً</p>
+                    <p className="text-muted-foreground text-lg">{t('family_builder.coming_soon', 'سيتم إضافة عرض تفاعلي للشجرة قريباً')}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -2021,10 +2021,10 @@ const FamilyBuilder = () => {
               </div>
               <div>
                 <DialogTitle className="text-3xl font-bold text-foreground">
-                  {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
+                  {selectedMember ? t('family_builder.edit_member', 'تعديل بيانات العضو') : t('family_builder.add_new_member', 'إضافة فرد جديد')}
                 </DialogTitle>
                 <DialogDescription className="text-muted-foreground text-lg">
-                  {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
+                  {selectedMember ? t('family_builder.edit_info', 'قم بتعديل معلومات العضو') : t('family_builder.add_info', 'أدخل معلومات الفرد الجديد')}
                 </DialogDescription>
               </div>
             </div>
@@ -2059,8 +2059,8 @@ const FamilyBuilder = () => {
                         <SelectValue placeholder="اختر الجنس" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
-                        <SelectItem value="male" className="text-lg py-4 rounded-lg">👨 ذكر</SelectItem>
-                        <SelectItem value="female" className="text-lg py-4 rounded-lg">👩 أنثى</SelectItem>
+                        <SelectItem value="male" className="text-lg py-4 rounded-lg">👨 {t('family_builder.male', 'ذكر')}</SelectItem>
+                        <SelectItem value="female" className="text-lg py-4 rounded-lg">👩 {t('family_builder.female', 'أنثى')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -2110,7 +2110,7 @@ const FamilyBuilder = () => {
                     <div className="space-y-4">
                       <Label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary" />
-                        اختر العائلة المرتبطة
+                        {t('family_builder.choose_family', 'اختر العائلة المرتبطة')}
                       </Label>
                       <Popover open={showRelatedPersonDropdown} onOpenChange={setShowRelatedPersonDropdown}>
                         <PopoverTrigger asChild>
@@ -2138,7 +2138,7 @@ const FamilyBuilder = () => {
                                         <span className="font-medium">
                                           {`${getFullName(marriage.husband)} + ${marriage.wife?.name}`}
                                         </span>
-                                        <span className="text-xs text-muted-foreground">عائلة</span>
+                                        <span className="text-xs text-muted-foreground">{t('family_builder.family', 'عائلة')}</span>
                                       </div>
                                     </div>
                                   );
@@ -2146,7 +2146,7 @@ const FamilyBuilder = () => {
                                   return (
                                     <div className="flex items-center gap-3 text-destructive">
                                       <span className="text-xl">⚠️</span>
-                                      <span>العائلة المحددة غير موجودة</span>
+                                      <span>{t('family_builder.selected_family_not_found', 'العائلة المحددة غير موجودة')}</span>
                                     </div>
                                   );
                                 }
@@ -2159,7 +2159,7 @@ const FamilyBuilder = () => {
                         </PopoverTrigger>
                         <PopoverContent className="w-[400px] p-0 bg-popover backdrop-blur-xl border-0 shadow-2xl rounded-xl">
                           <Command>
-                            <CommandInput placeholder="ابحث عن عائلة..." className="h-12 text-lg" />
+                            <CommandInput placeholder={t('family_builder.search_family', 'ابحث عن عائلة...')} className="h-12 text-lg" />
                             <CommandEmpty>لم يتم العثور على أي عائلة.</CommandEmpty>
                             <CommandList className="max-h-60">
                               <CommandGroup>
