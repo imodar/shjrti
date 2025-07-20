@@ -1670,9 +1670,9 @@ const FamilyBuilder = () => {
             <TabsContent value="overview" className="space-y-8">
 
               {/* Search and Add Section */}
-              <div className="flex flex-col gap-4 mb-8">
-                {/* Search Bar - Full Width on Mobile */}
-                <div className="relative w-full sm:max-w-md">
+              <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-8">
+                {/* Search Bar - Right Side */}
+                <div className="relative w-full sm:max-w-md order-1 sm:order-2">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="البحث في أفراد العائلة..."
@@ -1681,10 +1681,10 @@ const FamilyBuilder = () => {
                     className="pr-10 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm w-full"
                   />
                 </div>
-                {/* Controls Section - Responsive */}
-                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto">
+                {/* Controls Section - Left Side */}
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center order-2 sm:order-1">
                   <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                    <SelectTrigger className="w-full sm:w-64 lg:w-80 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
+                    <SelectTrigger className="w-full sm:w-48 lg:w-64 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
                       <SelectValue placeholder="اختر نوع العرض" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1701,11 +1701,11 @@ const FamilyBuilder = () => {
                     {packageData && (
                       <Badge 
                         variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
-                        className="px-3 py-2 text-sm text-center sm:text-right whitespace-nowrap"
+                        className="px-3 py-2 text-xs sm:text-sm text-center whitespace-nowrap"
                       >
-                        {familyMembers.length} / {packageData.max_family_members} أعضاء
+                        {familyMembers.length}/{packageData.max_family_members} أعضاء
                         {familyMembers.length >= packageData.max_family_members && (
-                          <span className="block sm:inline"> (تم الوصول للحد الأقصى)</span>
+                          <span className="hidden sm:inline"> (وصلت للحد الأقصى)</span>
                         )}
                       </Badge>
                     )}
@@ -1715,10 +1715,10 @@ const FamilyBuilder = () => {
                         handleAddNewMember();
                       }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
-                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-4 sm:px-8 h-11 sm:h-12 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-3 sm:px-6 h-11 sm:h-12 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     >
-                      <Plus className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                      <span className="text-sm sm:text-base">إضافة فرد جديد</span>
+                      <Plus className="ml-2 h-4 w-4" />
+                      <span className="text-xs sm:text-sm">إضافة فرد</span>
                     </Button>
                   </div>
                 </div>
