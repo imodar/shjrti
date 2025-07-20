@@ -22,7 +22,7 @@ const Auth = () => {
   const [pendingUserData, setPendingUserData] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -407,19 +407,19 @@ const Auth = () => {
               </div>
 
               {/* Luxury Features */}
-              <div className="space-y-4 pt-4">
-                <div className="flex items-center justify-center space-x-4 space-x-reverse">
-                  <div className="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg">
+              <div className={`space-y-4 ${direction === 'rtl' ? 'pt-4' : 'pt-4'}`}>
+                <div className={`flex items-center justify-center gap-4 ${direction === 'rtl' ? 'space-x-4 space-x-reverse' : 'space-x-4'}`}>
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
                     <Gem className="w-4 h-4 text-emerald-300" />
                     <span className="text-sm font-medium">{t('luxury_design', 'تصميم فاخر')}</span>
                   </div>
-                  <div className="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg">
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
                     <Crown className="w-4 h-4 text-amber-300" />
                     <span className="text-sm font-medium">{t('high_quality', 'جودة عالية')}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-center">
-                  <div className="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg">
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
                     <Star className="w-4 h-4 text-yellow-300" />
                     <span className="text-sm font-medium">{t('distinctive_experience', 'تجربة مميزة')}</span>
                   </div>
