@@ -89,8 +89,16 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   };
 
   useEffect(() => {
-    fetchSubscriptionDetails();
-  }, [user]);
+    // Only fetch subscription on user login, not on every user state change
+    if (user && !hasAttemptedFetch) {
+      fetchSubscriptionDetails();
+    } else if (!user) {
+      // Clear subscription when user logs out
+      setSubscription(null);
+      setLoading(false);
+      setHasAttemptedFetch(false);
+    }
+  }, [user, hasAttemptedFetch]);
 
   // Auto-refresh removed - only check subscription on login or manual refresh
 
