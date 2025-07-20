@@ -743,6 +743,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_user_family_ids: {
+        Args: { user_uuid: string }
+        Returns: {
+          family_id: string
+        }[]
+      }
       get_user_subscription_details: {
         Args: { user_uuid: string }
         Returns: {
