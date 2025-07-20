@@ -1670,20 +1670,21 @@ const FamilyBuilder = () => {
             <TabsContent value="overview" className="space-y-8">
 
               {/* Search and Add Section */}
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
-                <div className="relative flex-1 max-w-md">
+              <div className="flex flex-col gap-4 mb-8">
+                {/* Search Bar - Full Width on Mobile */}
+                <div className="relative w-full sm:max-w-md">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="البحث في أفراد العائلة..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pr-10 h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm"
+                    className="pr-10 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm w-full"
                   />
                 </div>
-                
-                <div className="flex gap-3 items-center">
+                {/* Controls Section - Responsive */}
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto">
                   <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                    <SelectTrigger className="w-80 h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
+                    <SelectTrigger className="w-full sm:w-64 lg:w-80 h-11 sm:h-12 rounded-xl border-primary/20 focus:border-primary bg-card/50 backdrop-blur-sm">
                       <SelectValue placeholder="اختر نوع العرض" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1695,14 +1696,17 @@ const FamilyBuilder = () => {
                     </SelectContent>
                   </Select>
                   
-                  <div className="flex items-center gap-3">
+                  {/* Badge and Add Button Section */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                     {packageData && (
                       <Badge 
                         variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
-                        className="px-3 py-1 text-sm"
+                        className="px-3 py-2 text-sm text-center sm:text-right whitespace-nowrap"
                       >
                         {familyMembers.length} / {packageData.max_family_members} أعضاء
-                        {familyMembers.length >= packageData.max_family_members && " (تم الوصول للحد الأقصى)"}
+                        {familyMembers.length >= packageData.max_family_members && (
+                          <span className="block sm:inline"> (تم الوصول للحد الأقصى)</span>
+                        )}
                       </Badge>
                     )}
                     <Button
@@ -1711,10 +1715,10 @@ const FamilyBuilder = () => {
                         handleAddNewMember();
                       }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
-                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-4 sm:px-8 h-11 sm:h-12 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                     >
-                      <Plus className="mr-2 h-5 w-5" />
-                      إضافة فرد جديد
+                      <Plus className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                      <span className="text-sm sm:text-base">إضافة فرد جديد</span>
                     </Button>
                   </div>
                 </div>
