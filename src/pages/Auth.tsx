@@ -443,7 +443,7 @@ const Auth = () => {
                 />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">شجرتي</h1>
-              <p className="text-muted-foreground">اكتشف جذورك مع أفضل منصة</p>
+              <p className="text-muted-foreground">{t('discover_roots_platform', 'اكتشف جذورك مع أفضل منصة')}</p>
             </div>
 
             <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-xl relative overflow-hidden">
@@ -454,13 +454,13 @@ const Auth = () => {
               <CardHeader className="text-center relative z-10">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Crown className="h-6 w-6 text-amber-500" />
-                  <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    انضم إلى شجرتي
+                 <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    {t('join_my_tree', 'انضم إلى شجرتي')}
                   </CardTitle>
                   <Crown className="h-6 w-6 text-amber-500" />
                 </div>
                 <CardDescription className="text-lg text-gray-600">
-                  ابدأ رحلتك الاستثنائية في بناء إرث عائلتك الرقمي
+                  {t('start_exceptional_journey', 'ابدأ رحلتك الاستثنائية في بناء إرث عائلتك الرقمي')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative z-10">
@@ -473,9 +473,9 @@ const Auth = () => {
                           <ShieldCheck className="w-8 h-8 text-white" />
                         </div>
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-800">تأكيد الحساب</h3>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('account_confirmation', 'تأكيد الحساب')}</h3>
                       <p className="text-gray-600">
-                        أدخل رمز التحقق المرسل إلى
+                        {t('enter_verification_code', 'أدخل رمز التحقق المرسل إلى')}
                         <br />
                         <span className="font-medium text-emerald-600">{pendingUserData?.email}</span>
                       </p>
@@ -483,13 +483,13 @@ const Auth = () => {
 
                     <form onSubmit={handleVerifyOTP} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="otpCode">رمز التحقق</Label>
+                        <Label htmlFor="otpCode">{t('verification_code', 'رمز التحقق')}</Label>
                         <div className="relative">
                           <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="otpCode"
                             type="text"
-                            placeholder="أدخل الرمز المكون من 6 أرقام"
+                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
                             className="pr-10 text-center text-lg tracking-wider"
                             value={otpCode}
                             onChange={(e) => setOtpCode(e.target.value)}
@@ -504,7 +504,7 @@ const Auth = () => {
                         className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                         disabled={isLoading || otpCode.length !== 6}
                       >
-                        {isLoading ? "جاري التحقق..." : "تأكيد الحساب"}
+                        {isLoading ? t('verifying', 'جاري التحقق...') : t('confirm_account', 'تأكيد الحساب')}
                         <ShieldCheck className="mr-2 h-4 w-4" />
                       </Button>
                     </form>
@@ -516,7 +516,7 @@ const Auth = () => {
                         className="w-full border-emerald-200 hover:bg-emerald-50"
                         disabled={isLoading}
                       >
-                        إعادة إرسال الرمز
+                        {t('resend_code', 'إعادة إرسال الرمز')}
                         <Mail className="mr-2 h-4 w-4" />
                       </Button>
 
@@ -527,7 +527,7 @@ const Auth = () => {
                         disabled={isLoading}
                       >
                         <ArrowLeft className="ml-2 h-4 w-4" />
-                        العودة إلى إنشاء الحساب
+                        {t('back_to_register', 'العودة إلى إنشاء الحساب')}
                       </Button>
                     </div>
                   </div>
@@ -540,13 +540,13 @@ const Auth = () => {
                           value="register" 
                           className="rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-200 data-[state=active]:hover:bg-emerald-600"
                         >
-                          إنشاء حساب
+                          {t('create_account', 'إنشاء حساب')}
                         </TabsTrigger>
                         <TabsTrigger 
                           value="login" 
                           className="rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-200 data-[state=active]:hover:bg-emerald-600"
                         >
-                          تسجيل الدخول
+                          {t('login', 'تسجيل الدخول')}
                         </TabsTrigger>
                       </TabsList>
 
@@ -554,12 +554,12 @@ const Auth = () => {
                       <TabsContent value="register" className="space-y-4">
                         <form onSubmit={handleRegister} className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="fullName">الاسم الكامل</Label>
+                            <Label htmlFor="fullName">{t('full_name', 'الاسم الكامل')}</Label>
                             <div className="relative">
                               <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
                                 id="fullName"
-                                placeholder="أدخل اسمك الكامل"
+                                placeholder={t('enter_full_name', 'أدخل اسمك الكامل')}
                                 className="pr-10"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
@@ -569,7 +569,7 @@ const Auth = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="email">البريد الإلكتروني</Label>
+                            <Label htmlFor="email">{t('email', 'البريد الإلكتروني')}</Label>
                             <div className="relative">
                               <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
