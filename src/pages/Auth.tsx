@@ -389,19 +389,19 @@ const Auth = () => {
                 <div className="group">
                   <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                     <div className="text-3xl font-bold group-hover:text-amber-200 transition-colors">+1000</div>
-                    <div className="text-sm opacity-80 mt-1">عائلة مميزة</div>
+                    <div className="text-sm opacity-80 mt-1">{t('distinguished_family', 'عائلة مميزة')}</div>
                   </div>
                 </div>
                 <div className="group">
                   <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                     <div className="text-3xl font-bold group-hover:text-emerald-200 transition-colors">+50k</div>
-                    <div className="text-sm opacity-80 mt-1">فرد محفوظ</div>
+                    <div className="text-sm opacity-80 mt-1">{t('preserved_member', 'فرد محفوظ')}</div>
                   </div>
                 </div>
                 <div className="group">
                   <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                     <div className="text-3xl font-bold group-hover:text-blue-200 transition-colors">100%</div>
-                    <div className="text-sm opacity-80 mt-1">آمان عالي</div>
+                    <div className="text-sm opacity-80 mt-1">{t('high_security', 'آمان عالي')}</div>
                   </div>
                 </div>
               </div>
@@ -411,17 +411,17 @@ const Auth = () => {
                 <div className="flex items-center justify-center space-x-4 space-x-reverse">
                   <div className="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg">
                     <Gem className="w-4 h-4 text-emerald-300" />
-                    <span className="text-sm font-medium">تصميم فاخر</span>
+                    <span className="text-sm font-medium">{t('luxury_design', 'تصميم فاخر')}</span>
                   </div>
                   <div className="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg">
                     <Crown className="w-4 h-4 text-amber-300" />
-                    <span className="text-sm font-medium">جودة عالية</span>
+                    <span className="text-sm font-medium">{t('high_quality', 'جودة عالية')}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-center">
                   <div className="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg">
                     <Star className="w-4 h-4 text-yellow-300" />
-                    <span className="text-sm font-medium">تجربة مميزة</span>
+                    <span className="text-sm font-medium">{t('distinctive_experience', 'تجربة مميزة')}</span>
                   </div>
                 </div>
               </div>
@@ -585,7 +585,7 @@ const Auth = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="phone">رقم الهاتف</Label>
+                            <Label htmlFor="phone">{t('phone_number', 'رقم الهاتف')}</Label>
                             <div className="relative">
                               <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
@@ -601,13 +601,13 @@ const Auth = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="password">كلمة المرور</Label>
+                            <Label htmlFor="password">{t('password', 'كلمة المرور')}</Label>
                             <div className="relative">
                               <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
                                 id="password"
                                 type="password"
-                                placeholder="أدخل كلمة مرور قوية"
+                                placeholder={t('enter_strong_password', 'أدخل كلمة مرور قوية')}
                                 className="pr-10"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -621,7 +621,7 @@ const Auth = () => {
                             className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                             disabled={isLoading}
                           >
-                            {isLoading ? "جاري إنشاء الحساب..." : "إنشاء حساب جديد"}
+                            {isLoading ? t('creating_account', 'جاري إنشاء الحساب...') : t('create_new_account', 'إنشاء حساب جديد')}
                             <TreePine className="mr-2 h-4 w-4" />
                           </Button>
                         </form>
@@ -631,7 +631,7 @@ const Auth = () => {
                       <TabsContent value="login" className="space-y-4">
                         <form onSubmit={handleLogin} className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="loginEmail">البريد الإلكتروني</Label>
+                            <Label htmlFor="loginEmail">{t('email', 'البريد الإلكتروني')}</Label>
                             <div className="relative">
                               <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
@@ -647,13 +647,13 @@ const Auth = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="loginPassword">كلمة المرور</Label>
+                            <Label htmlFor="loginPassword">{t('password', 'كلمة المرور')}</Label>
                             <div className="relative">
                               <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
                                 id="loginPassword"
                                 type="password"
-                                placeholder="أدخل كلمة المرور"
+                                placeholder={t('enter_password', 'أدخل كلمة المرور')}
                                 className="pr-10"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -664,7 +664,7 @@ const Auth = () => {
 
                           <div className="flex items-center justify-between text-sm">
                             <a href="#" className="text-primary hover:underline">
-                              نسيت كلمة المرور؟
+                              {t('forgot_password', 'نسيت كلمة المرور؟')}
                             </a>
                           </div>
 
@@ -673,7 +673,7 @@ const Auth = () => {
                             className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                             disabled={isLoading}
                           >
-                            {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+                            {isLoading ? t('logging_in', 'جاري تسجيل الدخول...') : t('login', 'تسجيل الدخول')}
                             <Sparkles className="mr-2 h-4 w-4" />
                           </Button>
                         </form>
@@ -687,7 +687,7 @@ const Auth = () => {
                           <span className="w-full border-t" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-background px-2 text-muted-foreground">أو</span>
+                          <span className="bg-background px-2 text-muted-foreground">{t('or', 'أو')}</span>
                         </div>
                       </div>
                       <Button
@@ -714,7 +714,7 @@ const Auth = () => {
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                           />
                         </svg>
-                        متابعة مع Google
+                        {t('continue_with_google', 'متابعة مع Google')}
                       </Button>
                     </div>
                   </>
@@ -729,7 +729,7 @@ const Auth = () => {
                 className="group inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-all duration-300 bg-white/50 backdrop-blur-sm rounded-full px-6 py-3 border border-emerald-200 hover:border-emerald-300 hover:shadow-lg"
               >
                 <TreePine className="h-4 w-4 group-hover:text-emerald-500 transition-colors" />
-                العودة إلى الصفحة الرئيسية
+                {t('back_to_home', 'العودة إلى الصفحة الرئيسية')}
               </Link>
             </div>
           </div>
