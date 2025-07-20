@@ -519,13 +519,14 @@ const FamilyBuilder = () => {
       motherId: member.motherId,
       isFounder: member.isFounder
     });
+    console.log('Available family members:', familyMembers.map(m => ({ id: m.id, name: m.name })));
     
     // For males from the same family (have fatherId or are founders)
     if (member.gender === 'male' && (member.fatherId || member.isFounder)) {
       console.log(`${member.name} is male with fatherId or founder`);
       if (member.fatherId) {
         const father = familyMembers.find(m => m.id === member.fatherId);
-        console.log(`Father found for ${member.name}:`, father);
+        console.log(`Father search result for ${member.name}:`, father);
         if (father) {
           // Check if father is from original family (has fatherId or is founder)
           const fatherIsFromFamily = father.fatherId || father.isFounder;
@@ -540,6 +541,8 @@ const FamilyBuilder = () => {
             console.log(`${member.name} father is not from original family, will check children case`);
             // Don't return here, let it fall through to children case
           }
+        } else {
+          console.log(`No father found for ${member.name} with fatherId: ${member.fatherId}`);
         }
       }
       if (member.isFounder) {
@@ -581,12 +584,14 @@ const FamilyBuilder = () => {
       console.log(`${member.name} is female with fatherId or founder`);
       if (member.fatherId) {
         const father = familyMembers.find(m => m.id === member.fatherId);
-        console.log(`Father found for ${member.name}:`, father);
+        console.log(`Father search result for ${member.name}:`, father);
         if (father) {
           const familyName = familyData?.name || "العائلة";
           const result = `بنت ${father.name} ${familyName}`;
           console.log(`Female result for ${member.name}:`, result);
           return result;
+        } else {
+          console.log(`No father found for ${member.name} with fatherId: ${member.fatherId}`);
         }
       }
       if (member.isFounder) {
@@ -1323,7 +1328,13 @@ const FamilyBuilder = () => {
           image: data.image_url || null
         };
 
-        setFamilyMembers([...familyMembers, newMember]);
+        console.log('Adding new member to family:', newMember);
+        console.log('Current family members before adding:', familyMembers.map(m => ({ id: m.id, name: m.name })));
+        setFamilyMembers(prevMembers => {
+          const updatedMembers = [...prevMembers, newMember];
+          console.log('Updated family members after adding:', updatedMembers.map(m => ({ id: m.id, name: m.name })));
+          return updatedMembers;
+        });
         toast({
           title: "تم الإضافة",
           description: `تم إضافة ${formData.name}${wives.length > 0 ? ` مع ${wives.length} زوجة` : ''}${husbands.length > 0 ? ` مع ${husbands.length} زوج` : ''} للعائلة`
