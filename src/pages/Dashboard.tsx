@@ -219,27 +219,43 @@ const Dashboard = () => {
     console.log('👤 Current user ID:', user?.id);
     
     try {
+      console.log('🗑️ Starting archive operation for tree:', deleteTreeId);
+      console.log('👤 User ID for archive operation:', user?.id);
+      
       // Archive the tree instead of deleting it
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('families')
         .update({ 
           is_archived: true, 
           archived_at: new Date().toISOString() 
         })
         .eq('id', deleteTreeId)
-        .eq('creator_id', user?.id);
+        .eq('creator_id', user?.id)
+        .select(); // Add select to see what was updated
 
+      console.log('📊 Archive operation result:', { data, error });
+      
       if (error) {
-        console.error('❌ Delete error:', error);
+        console.error('❌ Archive error details:', error);
         toast({
           title: "خطأ في الحذف",
-          description: "حدث خطأ أثناء حذف شجرة العائلة",
+          description: `حدث خطأ أثناء حذف شجرة العائلة: ${error.message}`,
           variant: "destructive"
         });
         return;
       }
 
-      console.log('✅ Tree deleted successfully');
+      if (!data || data.length === 0) {
+        console.error('❌ No rows were updated during archive operation');
+        toast({
+          title: "خطأ في الحذف",
+          description: "لم يتم العثور على الشجرة أو ليس لديك صلاحية لحذفها",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('✅ Tree archived successfully, updated rows:', data.length);
       
       // Remove from local state
       setFamilyTrees(prev => prev.filter(tree => tree.id !== deleteTreeId));
