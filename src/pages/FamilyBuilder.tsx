@@ -1987,18 +1987,18 @@ const FamilyBuilder = () => {
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
           
           <DialogHeader className="relative pt-4">
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <DialogTitle className="text-3xl font-bold text-foreground">
+                {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
+              </DialogTitle>
               <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
                 <UserPlus className="h-8 w-8 text-primary-foreground" />
               </div>
-              <div>
-                <DialogTitle className="text-3xl font-bold text-foreground">
-                  {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
-                </DialogTitle>
-                <DialogDescription className="text-muted-foreground text-lg">
-                  {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
-                </DialogDescription>
-              </div>
+            </div>
+            <div className="text-center mb-6">
+              <DialogDescription className="text-muted-foreground text-lg">
+                {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
+              </DialogDescription>
             </div>
 
             {/* Progress Steps */}
