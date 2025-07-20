@@ -591,8 +591,8 @@ const Dashboard = () => {
               <section className="py-4 relative mt-2">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Statistics Box */}
-                  <div className="w-full bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-xl p-3 mb-6 border border-emerald-200/50 dark:border-emerald-700/50">
-                    <div className="grid grid-cols-2 gap-6">
+                  <div className="w-full bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-xl p-2 sm:p-3 mb-4 sm:mb-6 border border-emerald-200/50 dark:border-emerald-700/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                       {/* Total Families */}
                       <div className="flex items-center space-x-3 rtl:space-x-reverse">
                         <div className="flex-shrink-0">
@@ -646,7 +646,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Creative Trees Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                     {familyTrees.map((tree, index) => (
                       <div key={tree.id} className="group relative">
                         {/* Floating Background Effect */}
@@ -661,48 +661,48 @@ const Dashboard = () => {
                           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-400/20 to-transparent rounded-bl-3xl"></div>
                           <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-teal-400/20 to-transparent rounded-tr-3xl"></div>
                           
-                          <CardHeader className="relative pb-6 pt-8">
-                            <div className="flex items-start justify-between mb-4">
+                          <CardHeader className="relative pb-4 sm:pb-6 pt-4 sm:pt-8 px-4 sm:px-6">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
                               {/* Tree Icon with Family Name */}
-                              <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4">
                                 <div className="relative">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-md opacity-50 group-hover:opacity-70 transition-opacity duration-300 animate-pulse"></div>
-                                  <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                    <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full opacity-80 animate-ping"></div>
+                                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl sm:rounded-2xl blur-md opacity-50 group-hover:opacity-70 transition-opacity duration-300 animate-pulse"></div>
+                                  <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                                    <TreePine className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" />
+                                    <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-amber-400 rounded-full opacity-80 animate-ping"></div>
                                   </div>
                                 </div>
                                 
                                 {/* Family Name Section */}
-                                <div className="flex flex-col">
+                                <div className="flex flex-col min-w-0 flex-1">
                                   <span className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">عائلة</span>
-                                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 leading-tight">
+                                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 leading-tight truncate">
                                     {tree.name}
                                   </h3>
                                 </div>
                               </div>
                               
                               {/* Member Count Badge */}
-                              <div className="relative">
+                              <div className="relative sm:self-start">
                                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-sm opacity-60"></div>
-                                <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-4 py-2 rounded-full text-sm font-bold shadow-xl backdrop-blur-sm">
-                                  <Users className="h-3.5 w-3.5 ml-1" />
+                                <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-xl backdrop-blur-sm whitespace-nowrap">
+                                  <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 ml-1" />
                                   {tree.members_count} {t('members', 'فرد')}
                                 </Badge>
                               </div>
                             </div>
                             
                             {/* Creation Date */}
-                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mr-20">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 ml-0 sm:mr-20">
                               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                              <Calendar className="h-4 w-4" />
+                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                               <span className="font-medium">{t('dashboard.created_on', 'Created on')} {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
                             </div>
                           </CardHeader>
                           
-                          <CardContent className="relative pt-0 pb-8">
+                          <CardContent className="relative pt-0 pb-4 sm:pb-8 px-4 sm:px-6">
                             {/* Stats Row */}
-                            <div className="bg-gradient-to-r from-gray-50/80 to-emerald-50/80 dark:from-gray-700/30 dark:to-emerald-900/30 rounded-2xl p-4 mb-6 backdrop-blur-sm">
+                            <div className="bg-gradient-to-r from-gray-50/80 to-emerald-50/80 dark:from-gray-700/30 dark:to-emerald-900/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 backdrop-blur-sm">
                               <div className="flex items-center justify-between text-sm">
                                 <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                                   <Star className="h-4 w-4 fill-current" />
@@ -714,20 +714,20 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            {/* Action Buttons - New Creative Design */}
-                            <div className="flex items-center justify-between gap-2">
+                            {/* Action Buttons - Mobile Optimized */}
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-2">
                               {/* Manage Button - Primary */}
                               <Link to={`/family-builder?family=${tree.id}`} className="flex-1 group/btn">
-                                <Button className="w-full h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
-                                  <Edit className="h-4 w-4 ml-2" />
+                                <Button className="w-full h-10 sm:h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02] text-sm sm:text-base">
+                                  <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-2" />
                                   <span className="font-medium">إدارة</span>
                                 </Button>
                               </Link>
                               
                               {/* View Button - Secondary */}
                               <Link to={`/family-tree-view?family=${tree.id}`} className="flex-1 group/btn">
-                                <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
-                                  <Eye className="h-4 w-4 ml-2" />
+                                <Button variant="outline" className="w-full h-10 sm:h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02] text-sm sm:text-base">
+                                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-2" />
                                   <span className="font-medium">عرض</span>
                                 </Button>
                               </Link>
