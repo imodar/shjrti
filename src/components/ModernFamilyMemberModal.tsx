@@ -45,24 +45,37 @@ export const ModernFamilyMemberModal = ({
 
   const [showRelatedPersonDropdown, setShowRelatedPersonDropdown] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name || !formData.gender) {
       return;
+    }
+
+    // Determine parent IDs based on selected family relation
+    let fatherId = null;
+    let motherId = null;
+    
+    if (formData.relatedPersonId) {
+      // Find the marriage to get parents
+      const selectedMarriage = familyMarriages.find(m => m.id === formData.relatedPersonId);
+      if (selectedMarriage) {
+        fatherId = selectedMarriage.husband?.id || null;
+        motherId = selectedMarriage.wife?.id || null;
+      }
     }
 
     const memberData = {
       name: formData.name,
       gender: formData.gender,
+      father_id: fatherId,
+      mother_id: motherId,
       birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
       is_alive: formData.isAlive,
       death_date: formData.deathDate?.toISOString().split('T')[0] || null,
       biography: formData.bio,
-      image_url: formData.croppedImage,
-      related_person_id: formData.relatedPersonId
+      image_url: formData.croppedImage
     };
 
     onSave(memberData);
-    onClose();
   };
 
   return (

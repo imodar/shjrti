@@ -26,6 +26,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
+import { ModernFamilyMemberModal } from "@/components/ModernFamilyMemberModal";
 
 
 const FamilyBuilder = () => {
@@ -878,6 +879,52 @@ const FamilyBuilder = () => {
     
     setEditingWife(null); // Reset editing wife
     setEditingHusband(null); // Reset editing husband
+  };
+
+  const handleSaveMemberFromModal = async (memberData: any) => {
+    setIsSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const finalMemberData = {
+        ...memberData,
+        family_id: familyData?.id,
+        created_by: user.id
+      };
+
+      if (selectedMember) {
+        const { error } = await supabase
+          .from('family_tree_members')
+          .update(finalMemberData)
+          .eq('id', selectedMember.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('family_tree_members')
+          .insert(finalMemberData);
+        if (error) throw error;
+      }
+
+      toast({
+        title: "تم الحفظ بنجاح",
+        description: selectedMember ? "تم تحديث بيانات العضو" : "تم إضافة العضو الجديد"
+      });
+
+      setShowAddMember(false);
+      setSelectedMember(null);
+      // Refresh data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء الحفظ",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSaveMember = async () => {
@@ -1981,51 +2028,16 @@ const FamilyBuilder = () => {
       </div>
 
       {/* Add/Edit Member Modal */}
-      <Dialog open={showAddMember} onOpenChange={setShowAddMember}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">{/* Removed problematic positioning classes */}
-          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-t-3xl"></div>
-          
-          <DialogHeader className="relative pt-4">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
-                <UserPlus className="h-8 w-8 text-primary-foreground" />
-              </div>
-              <div>
-                <DialogTitle className="text-3xl font-bold text-foreground">
-                  {selectedMember ? 'تعديل بيانات العضو' : 'إضافة فرد جديد'}
-                </DialogTitle>
-                <DialogDescription className="text-muted-foreground text-lg">
-                  {selectedMember ? 'قم بتعديل معلومات العضو' : 'أدخل معلومات الفرد الجديد'}
-                </DialogDescription>
-              </div>
-            </div>
+      <ModernFamilyMemberModal
+        isOpen={showAddMember}
+        onClose={() => setShowAddMember(false)}
+        onSave={handleSaveMember}
+        familyMarriages={familyMarriages}
+        selectedMember={selectedMember}
+        getFullName={getFullName}
+      />
 
-            {/* Progress Steps */}
-            <div className="flex items-center justify-center gap-4 mb-8">
-              {[1, 2, 3].map((step) => (
-                <div key={step} className="flex items-center">
-                  <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300",
-                    currentStep >= step 
-                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
-                    {step}
-                  </div>
-                  {step < 3 && (
-                    <div className={cn(
-                      "w-16 h-1 rounded-full mx-2 transition-all duration-300",
-                      currentStep > step ? "bg-gradient-to-r from-primary to-accent" : "bg-muted"
-                    )}></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </DialogHeader>
-
-          <div className="overflow-y-auto max-h-[60vh] px-6">
-            {/* Step 1: Basic Info */}
-            {currentStep === 1 && (
+      {/* Image Crop Modal */}
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
