@@ -335,7 +335,7 @@ const Dashboard = () => {
                           <div className="text-right">
                             <h1 className={`${familyTrees.length > 0 ? 'text-xs sm:text-sm md:text-base' : 'text-sm sm:text-base md:text-lg'} font-bold`}>
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                أهلاً {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
+                                {t('dashboard_welcome', 'أهلاً')} {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
                               </span>
                             </h1>
                           </div>
@@ -348,8 +348,8 @@ const Dashboard = () => {
                               <div className="flex items-center gap-1 sm:gap-2 md:gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full shadow-lg">
                                 <TreePine className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
                                 <div className="flex items-center gap-1 sm:gap-2">
-                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">لديك</span>
-                                  <span className="text-xs sm:text-sm md:text-base font-bold text-emerald-700 dark:text-emerald-300">شجرة واحدة</span>
+                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{t('dashboard_have', 'لديك')}</span>
+                                  <span className="text-xs sm:text-sm md:text-base font-bold text-emerald-700 dark:text-emerald-300">{t('dashboard_single_tree', 'شجرة واحدة')}</span>
                                 </div>
                               </div>
                             ) : (
@@ -383,7 +383,7 @@ const Dashboard = () => {
                             <div className="flex flex-col items-center gap-1 sm:gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
                               <div className="flex items-center gap-1 sm:gap-2 text-amber-600 dark:text-amber-400">
                                 <Gem className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="text-xs font-medium">حساب مجاني</span>
+                                <span className="text-xs font-medium">{t('free_account', 'حساب مجاني')}</span>
                               </div>
                               <Link to="/plan-selection">
                                 <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full border-0">
