@@ -817,26 +817,22 @@ const FamilyCreator = () => {
                                     (عائلة: {treeData.name})
                                   </span>
                                 </Label>
-                                <Input
-                                  id="founderName"
-                                  placeholder={`الاسم الأول فقط - عائلة ${treeData.name}`}
-                                  value={founderData.name ? `${founderData.name} ${treeData.name}` : ''}
-                                  onChange={(e) => {
-                                    const input = e.target.value;
-                                    const familyName = treeData.name;
-                                    
-                                    // Check if the input contains the family name at the end
-                                    if (input.endsWith(` ${familyName}`)) {
-                                      // Extract only the first name part (everything before the family name)
-                                      const firstName = input.substring(0, input.lastIndexOf(` ${familyName}`));
-                                      setFounderData({...founderData, name: firstName});
-                                    } else {
-                                      // User is typing the first name, save as is
-                                      setFounderData({...founderData, name: input});
-                                    }
-                                  }}
-                                  className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl"
-                                />
+                                <div className="relative">
+                                  <Input
+                                    id="founderName"
+                                    placeholder={`الاسم الأول فقط`}
+                                    value={founderData.name}
+                                    onChange={(e) => {
+                                      setFounderData({...founderData, name: e.target.value});
+                                    }}
+                                    className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl pl-4"
+                                  />
+                                  {founderData.name && (
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
+                                      {treeData.name}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
 
                               {/* Compact Row - Birth Date, Status, Death Date */}
