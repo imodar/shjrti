@@ -194,18 +194,41 @@ All colors MUST be HSL.
     justify-content: space-between;
   }
   
-  /* RTL Support for checkbox layouts */
+  /* RTL Support for checkbox layouts - more specific */
   [dir="rtl"] .checkbox-container {
     flex-direction: row-reverse;
   }
   
-  /* RTL Support for form controls with checkboxes */
+  /* RTL Support for any flex container with checkboxes - use more compatible selectors */
   [dir="rtl"] .flex.items-center.space-x-2 {
-    flex-direction: row-reverse;
+    flex-direction: row-reverse !important;
   }
   
   [dir="rtl"] .flex.items-center.space-x-4 {
-    flex-direction: row-reverse;
+    flex-direction: row-reverse !important;
+  }
+  
+  /* Override space-x-reverse when in RTL */
+  [dir="rtl"] .space-x-2.space-x-reverse {
+    flex-direction: row !important;
+  }
+  
+  /* Force RTL checkbox layout for all form controls */
+  [dir="rtl"] label + .flex.items-center,
+  [dir="rtl"] .flex.items-center label {
+    flex-direction: row-reverse !important;
+  }
+  
+  /* Additional specific rule for checkbox containers */
+  [dir="rtl"] .flex.items-center.space-x-2.space-x-reverse,
+  [dir="rtl"] .flex.items-center.space-x-2:not(.space-x-reverse) {
+    flex-direction: row-reverse !important;
+  }
+  
+  /* Ensure checkbox margin is correct in RTL */
+  [dir="rtl"] .space-x-2 > * + * {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
   }
 }
 
