@@ -687,29 +687,34 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                               </div>
                               
                               <div className="space-y-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-                                    الاسم *
-                                  </label>
-                                  <Input
-                                    value={newWife.name}
-                                    onChange={(e) => setNewWife({...newWife, name: e.target.value})}
-                                    className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50 text-base sm:text-lg lg:text-xl h-12 sm:h-14"
-                                    placeholder="اسم الزوجة"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-                                    تاريخ الميلاد
-                                  </label>
-                                  <div className="relative z-[10001]">
-                                    <EnhancedDatePicker
-                                      value={newWife.birthDate ? new Date(newWife.birthDate) : null}
-                                      onChange={(date) => setNewWife({...newWife, birthDate: date ? date.toISOString().split('T')[0] : ''})}
-                                      placeholder="اختر التاريخ"
-                                      className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
+                                {/* Name and Birth Date - Combined in one row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                  {/* Name - 2/3 width */}
+                                  <div className="sm:col-span-2">
+                                    <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                      الاسم *
+                                    </label>
+                                    <Input
+                                      value={newWife.name}
+                                      onChange={(e) => setNewWife({...newWife, name: e.target.value})}
+                                      className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50 text-base sm:text-lg lg:text-xl h-12 sm:h-14"
+                                      placeholder="اسم الزوجة"
                                     />
+                                  </div>
+
+                                  {/* Birth Date - 1/3 width */}
+                                  <div className="sm:col-span-1">
+                                    <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                      تاريخ الميلاد
+                                    </label>
+                                    <div className="relative z-[10001]">
+                                      <EnhancedDatePicker
+                                        value={newWife.birthDate ? new Date(newWife.birthDate) : null}
+                                        onChange={(date) => setNewWife({...newWife, birthDate: date ? date.toISOString().split('T')[0] : ''})}
+                                        placeholder="اختر التاريخ"
+                                        className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
 
