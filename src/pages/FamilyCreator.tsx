@@ -650,7 +650,7 @@ const FamilyCreator = () => {
                                   placeholder="مثال : السعيد"
                                   value={treeData.name}
                                   onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                                  className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                  className="h-14 text-lg placeholder:text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
                                 />
                                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
                                   <span className="text-white text-xs font-bold">1</span>
@@ -669,7 +669,7 @@ const FamilyCreator = () => {
                                   placeholder="شارك قصة عائلتك، تاريخها، أو أي تفاصيل مميزة تود الاحتفاظ بها..."
                                   value={treeData.description}
                                   onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                                  className="min-h-[120px] text-lg border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                  className="min-h-[120px] text-lg placeholder:text-lg border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
                                 />
                                 <div className="absolute right-4 top-4 w-6 h-6 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center">
                                   <span className="text-white text-xs font-bold">2</span>
