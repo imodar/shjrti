@@ -451,12 +451,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       علاقة القرابة
                     </Label>
                     <div className="relative z-[10001]">
-                      <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
+                      <Select value={memberData.selectedParent || "none"} onValueChange={(value) => setMemberData({...memberData, selectedParent: value === "none" ? null : value})}>
                         <SelectTrigger className="h-14 text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
                           <SelectValue placeholder="اختر أحد أفراد العائلة كوالد/والدة" />
                         </SelectTrigger>
                         <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                          <SelectItem value="" className="font-arabic text-lg">لا يوجد قرابة مباشرة</SelectItem>
+                          <SelectItem value="none" className="font-arabic text-lg">لا يوجد قرابة مباشرة</SelectItem>
                           {familyMembers.map((member) => (
                             <SelectItem key={member.id} value={member.id} className="font-arabic text-lg">
                               {member.name} ({member.gender === 'male' ? 'ذكر' : 'أنثى'})
