@@ -569,7 +569,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       {/* Marriage Status - Males */}
       {memberData.gender === "male" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <Heart className="h-4 w-4 text-primary" />
             <Label>هل الفرد متزوج؟</Label>
             <Switch
               checked={memberData.isMarried}
@@ -582,7 +583,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
           {memberData.isMarried && (
             <>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <Users className="h-4 w-4 text-primary" />
                 <Label>هل لديه أكثر من زوجة؟</Label>
                 <Switch
                   checked={memberData.hasMultipleWives}
@@ -598,11 +600,14 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               </div>
 
               {/* Wives Section */}
-              <div className="border rounded-lg p-4 bg-muted/30">
+              <div className="border rounded-lg p-4 bg-muted/30 border-primary/20">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-semibold">بيانات الزوجات</h4>
-                  <Button onClick={addWife} size="sm" className="gap-2">
-                    <Plus className="h-4 w-4" />
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <Users className="h-4 w-4 text-primary" />
+                    بيانات الزوجات
+                  </h4>
+                  <Button onClick={addWife} size="sm" className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
+                    <UserPlus className="h-4 w-4" />
                     إضافة زوجة
                   </Button>
                 </div>
@@ -610,8 +615,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 {wives.length === 0 && (
                   <div className="text-center py-4">
                     <p className="text-muted-foreground text-sm">لم يتم إضافة أي زوجة بعد</p>
-                    <Button onClick={addWife} size="sm" className="mt-2 gap-2">
-                      <Plus className="h-4 w-4" />
+                    <Button onClick={addWife} size="sm" className="mt-2 gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
+                      <UserPlus className="h-4 w-4" />
                       إضافة الزوجة الأولى
                     </Button>
                   </div>
@@ -636,7 +641,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor={`wife-name-${wife.id}`}>اسم الزوجة *</Label>
+                        <Label htmlFor={`wife-name-${wife.id}`} className="flex items-center gap-2">
+                          <TreePine className="h-3 w-3 text-primary" />
+                          اسم الزوجة *
+                        </Label>
                         <Input
                           id={`wife-name-${wife.id}`}
                           value={wife.name}
@@ -647,7 +655,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
 
                       <div>
-                        <Label>تاريخ الميلاد</Label>
+                        <Label className="flex items-center gap-2">
+                          <CalendarIcon className="h-3 w-3 text-primary" />
+                          تاريخ الميلاد
+                        </Label>
                         <div className="mt-1">
                           <EnhancedDatePicker
                             value={wife.birthDate || undefined}
@@ -664,6 +675,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label className="flex items-center gap-2">
+                          <Heart className="h-3 w-3 text-primary" />
                           على قيد الحياة
                           <Switch
                             checked={wife.isAlive}
@@ -673,8 +685,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
 
                       {!wife.isAlive && (
-                        <div>
-                          <Label>تاريخ الوفاة</Label>
+                          <div>
+                            <Label className="flex items-center gap-2">
+                              <X className="h-3 w-3 text-destructive" />
+                              تاريخ الوفاة
+                            </Label>
                           <div className="mt-1">
                             <EnhancedDatePicker
                               value={wife.deathDate || undefined}
@@ -729,7 +744,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       {/* Marriage Status - Females */}
       {memberData.gender === "female" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <Heart className="h-4 w-4 text-primary" />
             <Label>هل الفرد متزوجة؟</Label>
             <Switch
               checked={memberData.isMarried}
@@ -737,12 +753,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             />
           </div>
           {memberData.isMarried && (
-            <div className="border rounded-lg p-4 bg-muted/30">
+            <div className="border rounded-lg p-4 bg-muted/30 border-primary/20">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold">بيانات الزوج</h4>
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  بيانات الزوج
+                </h4>
                 {!husband && (
-                  <Button onClick={addHusband} size="sm" className="gap-2">
-                    <Plus className="h-4 w-4" />
+                  <Button onClick={addHusband} size="sm" className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
+                    <UserPlus className="h-4 w-4" />
                     إضافة بيانات الزوج
                   </Button>
                 )}
@@ -751,8 +770,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               {!husband ? (
                 <div className="text-center py-4">
                   <p className="text-muted-foreground text-sm">لم يتم إضافة بيانات الزوج بعد</p>
-                  <Button onClick={addHusband} size="sm" className="mt-2 gap-2">
-                    <Plus className="h-4 w-4" />
+                  <Button onClick={addHusband} size="sm" className="mt-2 gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground">
+                    <UserPlus className="h-4 w-4" />
                     إضافة بيانات الزوج
                   </Button>
                 </div>
@@ -772,8 +791,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="husband-name">اسم الزوج *</Label>
+                      <div>
+                        <Label htmlFor="husband-name" className="flex items-center gap-2">
+                          <TreePine className="h-3 w-3 text-primary" />
+                          اسم الزوج *
+                        </Label>
                       <Input
                         id="husband-name"
                         value={husband.name}
@@ -783,8 +805,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       />
                     </div>
 
-                    <div>
-                      <Label>تاريخ الميلاد</Label>
+                      <div>
+                        <Label className="flex items-center gap-2">
+                          <CalendarIcon className="h-3 w-3 text-primary" />
+                          تاريخ الميلاد
+                        </Label>
                       <div className="mt-1">
                         <EnhancedDatePicker
                           value={husband.birthDate || undefined}
@@ -801,6 +826,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label className="flex items-center gap-2">
+                        <Heart className="h-3 w-3 text-primary" />
                         على قيد الحياة
                         <Switch
                           checked={husband.isAlive}
@@ -810,8 +836,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     </div>
 
                     {!husband.isAlive && (
-                      <div>
-                        <Label>تاريخ الوفاة</Label>
+                        <div>
+                          <Label className="flex items-center gap-2">
+                            <X className="h-3 w-3 text-destructive" />
+                            تاريخ الوفاة
+                          </Label>
                         <div className="mt-1">
                           <EnhancedDatePicker
                             value={husband.deathDate || undefined}
