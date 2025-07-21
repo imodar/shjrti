@@ -285,187 +285,91 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           <div className="p-8 max-h-[60vh] overflow-y-auto">
             {step === 1 && (
               <div className="space-y-6">
-                {/* Name Field */}
-                <div className="group">
-                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                    الاسم الكامل
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      value={memberData.name}
-                      onChange={(e) => setMemberData({...memberData, name: e.target.value})}
-                      placeholder="أدخل الاسم الكامل"
-                      className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
-                    />
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                      <UserPlus className="h-3 w-3 text-white" />
+                {/* First Row: Name (1/2) + Birth Date (1/4) + Gender (1/4) */}
+                <div className="grid grid-cols-4 gap-4">
+                  {/* Name Field - 1/2 width */}
+                  <div className="col-span-2 group">
+                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      الاسم الأول
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        value={memberData.name}
+                        onChange={(e) => setMemberData({...memberData, name: e.target.value})}
+                        placeholder="أدخل الاسم الأول"
+                        className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                      />
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                        <UserPlus className="h-3 w-3 text-white" />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Gender Selection */}
-                <div className="group">
-                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                    الجنس
-                  </Label>
-                <div className="grid grid-cols-2 gap-4 relative z-10">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('Male button clicked');
-                      setMemberData({...memberData, gender: "male"});
-                    }}
-                    className={`p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer pointer-events-auto ${
-                      memberData.gender === "male"
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 ring-2 ring-blue-200'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50'
-                    }`}
-                  >
-                    <span className="text-lg font-medium pointer-events-none">ذكر</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('Female button clicked');
-                      setMemberData({...memberData, gender: "female"});
-                    }}
-                    className={`p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer pointer-events-auto ${
-                      memberData.gender === "female"
-                        ? 'border-pink-500 bg-pink-50 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 ring-2 ring-pink-200'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 hover:bg-pink-50/50'
-                    }`}
-                  >
-                    <span className="text-lg font-medium pointer-events-none">أنثى</span>
-                  </button>
-                  </div>
-                </div>
-
-                {/* Birth Date */}
-                <div className="group">
-                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                    تاريخ الميلاد
-                  </Label>
-                  <div className="relative z-[10001]">
-                    <EnhancedDatePicker
-                      value={memberData.birthDate}
-                      onChange={(date) => setMemberData({...memberData, birthDate: date})}
-                      placeholder="اختر تاريخ الميلاد"
-                      className="h-14 text-lg border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
-                    />
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                      <CalendarIcon className="h-3 w-3 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Life Status */}
-                <div className="group">
-                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                    الحالة الحيوية
-                  </Label>
-                  <div className="relative z-[10001]">
-                    <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
-                      <SelectTrigger className="h-14 text-lg border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
-                        <SelectValue placeholder="اختر الحالة الحيوية" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                        <SelectItem value="alive" className="font-arabic text-lg">على قيد الحياة</SelectItem>
-                        <SelectItem value="deceased" className="font-arabic text-lg">متوفى</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
-                      <Heart className="h-3 w-3 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Death Date (if deceased) */}
-                {!memberData.isAlive && (
+                  {/* Birth Date - 1/4 width */}
                   <div className="group">
                     <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                      <div className="w-3 h-3 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                      تاريخ الوفاة
+                      <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      تاريخ الميلاد
                     </Label>
                     <div className="relative z-[10001]">
                       <EnhancedDatePicker
-                        value={memberData.deathDate}
-                        onChange={(date) => setMemberData({...memberData, deathDate: date})}
-                        placeholder="اختر تاريخ الوفاة"
-                        className="h-14 text-lg border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                        value={memberData.birthDate}
+                        onChange={(date) => setMemberData({...memberData, birthDate: date})}
+                        placeholder="اختر التاريخ"
+                        className="h-14 text-sm border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10"
                       />
-                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
                         <CalendarIcon className="h-3 w-3 text-white" />
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Photo Upload */}
-                <div className="group">
-                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                    صورة شخصية (اختياري)
-                  </Label>
-                  <div className="flex items-center gap-4">
-                    {memberData.croppedImage && (
-                      <Avatar className="w-16 h-16">
-                        <AvatarImage src={memberData.croppedImage} />
-                        <AvatarFallback>{memberData.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                    )}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('member-image')?.click()}
-                      className="gap-2 h-14 px-6 border-2 border-orange-200/50 dark:border-orange-700/50 hover:border-orange-500 transition-all duration-300"
-                    >
-                      <Upload className="h-4 w-4" />
-                      {memberData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
-                    </Button>
-                    <input
-                      id="member-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setMemberData({...memberData, image: file});
-                          // Here you would handle image cropping
-                        }
-                      }}
-                      className="hidden"
-                    />
+                  {/* Gender Dropdown - 1/4 width */}
+                  <div className="group">
+                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      الجنس
+                    </Label>
+                    <div className="relative z-[10001]">
+                      <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
+                        <SelectTrigger className="h-14 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10">
+                          <SelectValue placeholder="اختر الجنس" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                          <SelectItem value="male" className="font-arabic text-lg">ذكر</SelectItem>
+                          <SelectItem value="female" className="font-arabic text-lg">أنثى</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                        <Users className="h-3 w-3 text-white" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Family Member Selection */}
-                {familyMembers.length > 0 && (
-                  <div className="group">
+                {/* Second Row: Relation (1/2) + Life Status (1/4) + Death Date (1/4) if deceased */}
+                <div className="grid grid-cols-4 gap-4">
+                  {/* Family Relation - 1/2 width */}
+                  <div className="col-span-2 group">
                     <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                       <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                      علاقة القرابة
+                      علاقة القرابة (العائلة)
                     </Label>
                     <div className="relative z-[10001]">
                       <Select value={memberData.selectedParent || "none"} onValueChange={(value) => setMemberData({...memberData, selectedParent: value === "none" ? null : value})}>
                         <SelectTrigger className="h-14 text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
-                          <SelectValue placeholder="اختر أحد أفراد العائلة كوالد/والدة" />
+                          <SelectValue placeholder="اختر علاقة القرابة مع العائلة" />
                         </SelectTrigger>
                         <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                          <SelectItem value="none" className="font-arabic text-lg">لا يوجد قرابة مباشرة</SelectItem>
-                          {familyMembers.map((member) => (
-                            <SelectItem key={member.id} value={member.id} className="font-arabic text-lg">
-                              {member.name} ({member.gender === 'male' ? 'ذكر' : 'أنثى'})
-                            </SelectItem>
-                          ))}
+                          <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
+                          <SelectItem value="father" className="font-arabic text-lg">والد</SelectItem>
+                          <SelectItem value="mother" className="font-arabic text-lg">والدة</SelectItem>
+                          <SelectItem value="son" className="font-arabic text-lg">ابن</SelectItem>
+                          <SelectItem value="daughter" className="font-arabic text-lg">ابنة</SelectItem>
+                          <SelectItem value="brother" className="font-arabic text-lg">أخ</SelectItem>
+                          <SelectItem value="sister" className="font-arabic text-lg">أخت</SelectItem>
+                          <SelectItem value="spouse" className="font-arabic text-lg">زوج/زوجة</SelectItem>
                         </SelectContent>
                       </Select>
                       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
@@ -473,21 +377,122 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Bio */}
-                <div className="group">
-                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                    نبذة شخصية (اختياري)
-                  </Label>
-                  <Textarea
-                    value={memberData.bio}
-                    onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
-                    placeholder="أضف نبذة شخصية عن الفرد..."
-                    rows={4}
-                    className="text-lg border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none"
-                  />
+                  {/* Life Status - 1/4 width */}
+                  <div className="group">
+                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      الحالة الحيوية
+                    </Label>
+                    <div className="relative z-[10001]">
+                      <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
+                        <SelectTrigger className="h-14 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10">
+                          <SelectValue placeholder="الحالة" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                          <SelectItem value="alive" className="font-arabic text-lg">على قيد الحياة</SelectItem>
+                          <SelectItem value="deceased" className="font-arabic text-lg">متوفى</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <Heart className="h-3 w-3 text-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Death Date (if deceased) - 1/4 width */}
+                  {!memberData.isAlive && (
+                    <div className="group">
+                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                        تاريخ الوفاة
+                      </Label>
+                      <div className="relative z-[10001]">
+                        <EnhancedDatePicker
+                          value={memberData.deathDate}
+                          onChange={(date) => setMemberData({...memberData, deathDate: date})}
+                          placeholder="تاريخ الوفاة"
+                          className="h-14 text-sm border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10"
+                        />
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
+                          <CalendarIcon className="h-3 w-3 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Third Row: Picture (1/2) + Description (1/2) */}
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Photo Upload - 1/2 width with new design */}
+                  <div className="group">
+                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      صورة شخصية (اختياري)
+                    </Label>
+                    <div className="border-2 border-dashed border-orange-200/50 dark:border-orange-700/50 rounded-xl p-6 bg-orange-50/30 dark:bg-orange-950/30 hover:border-orange-400 transition-all duration-300">
+                      <div className="flex flex-col items-center gap-4">
+                        {memberData.croppedImage ? (
+                          <div className="relative">
+                            <Avatar className="w-24 h-24 border-4 border-orange-200 shadow-lg">
+                              <AvatarImage src={memberData.croppedImage} />
+                              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-orange-400 to-amber-400 text-white">
+                                {memberData.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <button
+                              onClick={() => setMemberData({...memberData, image: null, croppedImage: null})}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="w-24 h-24 bg-gradient-to-br from-orange-200 to-amber-200 dark:from-orange-800 to-amber-800 rounded-full flex items-center justify-center">
+                            <Upload className="h-8 w-8 text-orange-600 dark:text-orange-300" />
+                          </div>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById('member-image')?.click()}
+                          className="gap-2 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300"
+                        >
+                          <Upload className="h-4 w-4" />
+                          {memberData.croppedImage ? 'تغيير الصورة' : 'اختيار صورة'}
+                        </Button>
+                        <input
+                          id="member-image"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setMemberData({...memberData, image: file});
+                              // Here you would handle image cropping
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        <p className="text-xs text-gray-500 text-center">JPG, PNG أو GIF (أقصى حجم 5MB)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bio - 1/2 width */}
+                  <div className="group">
+                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      نبذة شخصية (اختياري)
+                    </Label>
+                    <Textarea
+                      value={memberData.bio}
+                      onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
+                      placeholder="أضف نبذة شخصية عن الفرد..."
+                      rows={8}
+                      className="text-lg border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none h-full"
+                    />
+                  </div>
                 </div>
               </div>
             )}
