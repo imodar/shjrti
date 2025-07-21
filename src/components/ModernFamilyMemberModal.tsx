@@ -5,17 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarIcon, Upload, Search, Users, Plus, Trash2 } from "lucide-react";
+import { Upload, Search, Users, Plus, Trash2, ArrowRight, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
+import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 
 interface FamilyMember {
   id: string;
@@ -104,7 +101,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
   useEffect(() => {
     if (memberData.gender === "male") {
-      // البحث عن الآباء والأمهات للذكور
       const parents = marriages.map(marriage => ({
         id: `${marriage.husband_id}-${marriage.wife_id}`,
         display: `${marriage.husband?.name || 'غير معروف'} - وزوجته ${marriage.wife?.name || 'غير معروفة'}`,
@@ -116,7 +112,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       );
       setFilteredParents(parents);
     } else {
-      // البحث عن الآباء والأمهات للإناث (نفس النظام)
       const parents = marriages.map(marriage => ({
         id: `${marriage.husband_id}-${marriage.wife_id}`,
         display: `${marriage.husband?.name || 'غير معروف'} - وزوجته ${marriage.wife?.name || 'غير معروفة'}`,
@@ -132,7 +127,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
   const fetchFamilyData = async () => {
     try {
-      // جلب أعضاء العائلة
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
         .select('*')
@@ -141,7 +135,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       if (membersError) throw membersError;
       setFamilyMembers(members || []);
 
-      // جلب الزيجات
       const { data: marriageData, error: marriageError } = await supabase
         .from('marriages')
         .select(`
@@ -383,522 +376,540 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     onClose();
   };
 
-  return (
-    <>
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">إضافة فرد جديد للعائلة</DialogTitle>
-            <DialogDescription>
-              قم بإدخال بيانات الفرد الجديد وربطه بوالديه
-            </DialogDescription>
-          </DialogHeader>
+  const canProceedToStep2 = () => {
+    return memberData.name.trim() && memberData.selectedParent;
+  };
 
-          <div className="space-y-6">
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="member-name">اسم الفرد *</Label>
-                <Input
-                  id="member-name"
-                  value={memberData.name}
-                  onChange={(e) => setMemberData({...memberData, name: e.target.value})}
-                  placeholder="اسم الفرد"
-                  className="mt-2"
+  const renderStep1 = () => (
+    <div className="space-y-6">
+      {/* Basic Information */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="member-name">اسم الفرد *</Label>
+          <Input
+            id="member-name"
+            value={memberData.name}
+            onChange={(e) => setMemberData({...memberData, name: e.target.value})}
+            placeholder="اسم الفرد"
+            className="mt-2"
+          />
+        </div>
+        
+        <div>
+          <Label htmlFor="member-gender">الجنس *</Label>
+          <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
+            <SelectTrigger className="mt-2">
+              <SelectValue placeholder="اختر الجنس" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">ذكر</SelectItem>
+              <SelectItem value="female">أنثى</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Parent Selection */}
+      <div>
+        <Label htmlFor="parent-search">البحث عن الوالدين *</Label>
+        <div className="mt-2 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="parent-search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="ابحث عن الأب والأم..."
+              className="pl-10"
+            />
+          </div>
+          
+          <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
+            <SelectTrigger>
+              <SelectValue placeholder="اختر الوالدين" />
+            </SelectTrigger>
+            <SelectContent>
+              {filteredParents.map((parent) => (
+                <SelectItem key={parent.id} value={parent.id}>
+                  {parent.display}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Birth Date and Life Status */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label>تاريخ الميلاد</Label>
+          <div className="mt-2">
+            <EnhancedDatePicker
+              value={memberData.birthDate || undefined}
+              onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
+              placeholder="اختر التاريخ"
+              toYear={new Date().getFullYear()}
+              fromYear={1900}
+              disableFuture={true}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label className="flex items-center gap-2">
+            على قيد الحياة
+            <Switch
+              checked={memberData.isAlive}
+              onCheckedChange={(checked) => setMemberData({...memberData, isAlive: checked, deathDate: checked ? null : memberData.deathDate})}
+            />
+          </Label>
+        </div>
+      </div>
+
+      {/* Death Date */}
+      {!memberData.isAlive && (
+        <div>
+          <Label>تاريخ الوفاة</Label>
+          <div className="mt-2">
+            <EnhancedDatePicker
+              value={memberData.deathDate || undefined}
+              onChange={(date) => setMemberData({...memberData, deathDate: date || null})}
+              placeholder="اختر تاريخ الوفاة"
+              toYear={new Date().getFullYear()}
+              fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
+              disableFuture={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Biography */}
+      <div>
+        <Label htmlFor="member-bio">نبذة تعريفية</Label>
+        <Textarea
+          id="member-bio"
+          value={memberData.bio}
+          onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
+          placeholder="اكتب نبذة مختصرة عن الفرد..."
+          className="mt-2"
+          rows={3}
+        />
+      </div>
+
+      {/* Image Upload */}
+      <div>
+        <Label>صورة الفرد</Label>
+        <div className="mt-2 flex items-center gap-4">
+          {memberData.croppedImage && (
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={memberData.croppedImage} />
+              <AvatarFallback>{memberData.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => document.getElementById('member-image')?.click()}
+            className="gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            {memberData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
+          </Button>
+          <input
+            id="member-image"
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleImageUpload(e)}
+            className="hidden"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="space-y-6">
+      {/* Marriage Status - Males */}
+      {memberData.gender === "male" && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Label>هل الفرد متزوج؟</Label>
+            <Switch
+              checked={memberData.isMarried}
+              onCheckedChange={(checked) => {
+                setMemberData({...memberData, isMarried: checked, hasMultipleWives: false});
+                if (!checked) setWives([]);
+              }}
+            />
+          </div>
+
+          {memberData.isMarried && (
+            <>
+              <div className="flex items-center gap-2">
+                <Label>هل لديه أكثر من زوجة؟</Label>
+                <Switch
+                  checked={memberData.hasMultipleWives}
+                  onCheckedChange={(checked) => {
+                    setMemberData({...memberData, hasMultipleWives: checked});
+                    if (!checked && wives.length > 1) {
+                      setWives(wives.slice(0, 1));
+                    } else if (checked && wives.length === 0) {
+                      addWife();
+                    }
+                  }}
                 />
               </div>
-              
-              <div>
-                <Label htmlFor="member-gender">الجنس *</Label>
-                <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="اختر الجنس" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">ذكر</SelectItem>
-                    <SelectItem value="female">أنثى</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
 
-            {/* Parent Selection */}
-            <div>
-              <Label htmlFor="parent-search">البحث عن الوالدين *</Label>
-              <div className="mt-2 space-y-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="parent-search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="ابحث عن الأب والأم..."
-                    className="pl-10"
-                  />
+              {/* Wives Section */}
+              <div className="border rounded-lg p-4 bg-muted/30">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold">بيانات الزوجات</h4>
+                  <Button onClick={addWife} size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    إضافة زوجة
+                  </Button>
                 </div>
-                
-                <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر الوالدين" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredParents.map((parent) => (
-                      <SelectItem key={parent.id} value={parent.id}>
-                        {parent.display}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
 
-            {/* Birth Date */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label>تاريخ الميلاد</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full mt-2 justify-start text-left font-normal", !memberData.birthDate && "text-muted-foreground")}>
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {memberData.birthDate ? format(memberData.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
+                {wives.length === 0 && (
+                  <div className="text-center py-4">
+                    <p className="text-muted-foreground text-sm">لم يتم إضافة أي زوجة بعد</p>
+                    <Button onClick={addWife} size="sm" className="mt-2 gap-2">
+                      <Plus className="h-4 w-4" />
+                      إضافة الزوجة الأولى
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={memberData.birthDate || undefined}
-                      onSelect={(date) => setMemberData({...memberData, birthDate: date || null})}
-                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div>
-                <Label className="flex items-center gap-2">
-                  على قيد الحياة
-                  <Switch
-                    checked={memberData.isAlive}
-                    onCheckedChange={(checked) => setMemberData({...memberData, isAlive: checked, deathDate: checked ? null : memberData.deathDate})}
-                  />
-                </Label>
-              </div>
-            </div>
-
-            {/* Death Date */}
-            {!memberData.isAlive && (
-              <div>
-                <Label>تاريخ الوفاة</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full mt-2 justify-start text-left font-normal", !memberData.deathDate && "text-muted-foreground")}>
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {memberData.deathDate ? format(memberData.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={memberData.deathDate || undefined}
-                      onSelect={(date) => setMemberData({...memberData, deathDate: date || null})}
-                      disabled={(date) => date > new Date() || (memberData.birthDate && date < memberData.birthDate)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-
-            {/* Biography */}
-            <div>
-              <Label htmlFor="member-bio">نبذة تعريفية</Label>
-              <Textarea
-                id="member-bio"
-                value={memberData.bio}
-                onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
-                placeholder="اكتب نبذة مختصرة عن الفرد..."
-                className="mt-2"
-                rows={3}
-              />
-            </div>
-
-            {/* Image Upload */}
-            <div>
-              <Label>صورة الفرد</Label>
-              <div className="mt-2 flex items-center gap-4">
-                {memberData.croppedImage && (
-                  <Avatar className="w-20 h-20">
-                    <AvatarImage src={memberData.croppedImage} />
-                    <AvatarFallback>{memberData.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                  </div>
                 )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('member-image')?.click()}
-                  className="gap-2"
-                >
-                  <Upload className="h-4 w-4" />
-                  {memberData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
-                </Button>
-                <input
-                  id="member-image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e)}
-                  className="hidden"
-                />
+
+                {wives.map((wife, index) => (
+                  <div key={wife.id} className="p-4 border rounded-lg bg-card space-y-4 mb-4">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-medium">الزوجة {index + 1}</h5>
+                      {wives.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeWife(wife.id)}
+                          className="gap-2 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          حذف
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor={`wife-name-${wife.id}`}>اسم الزوجة *</Label>
+                        <Input
+                          id={`wife-name-${wife.id}`}
+                          value={wife.name}
+                          onChange={(e) => updateWife(wife.id, 'name', e.target.value)}
+                          placeholder="اسم الزوجة"
+                          className="mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>تاريخ الميلاد</Label>
+                        <div className="mt-1">
+                          <EnhancedDatePicker
+                            value={wife.birthDate || undefined}
+                            onChange={(date) => updateWife(wife.id, 'birthDate', date || null)}
+                            placeholder="اختر التاريخ"
+                            toYear={new Date().getFullYear()}
+                            fromYear={1900}
+                            disableFuture={true}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="flex items-center gap-2">
+                          على قيد الحياة
+                          <Switch
+                            checked={wife.isAlive}
+                            onCheckedChange={(checked) => updateWife(wife.id, 'isAlive', checked)}
+                          />
+                        </Label>
+                      </div>
+
+                      {!wife.isAlive && (
+                        <div>
+                          <Label>تاريخ الوفاة</Label>
+                          <div className="mt-1">
+                            <EnhancedDatePicker
+                              value={wife.deathDate || undefined}
+                              onChange={(date) => updateWife(wife.id, 'deathDate', date || null)}
+                              placeholder="اختر تاريخ الوفاة"
+                              toYear={new Date().getFullYear()}
+                              fromYear={wife.birthDate ? wife.birthDate.getFullYear() : 1900}
+                              disableFuture={true}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Wife Image */}
+                    <div>
+                      <Label>صورة الزوجة</Label>
+                      <div className="mt-2 flex items-center gap-4">
+                        {wife.croppedImage && (
+                          <Avatar className="w-16 h-16">
+                            <AvatarImage src={wife.croppedImage} />
+                            <AvatarFallback>{wife.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => document.getElementById(`wife-image-${wife.id}`)?.click()}
+                          className="gap-2"
+                        >
+                          <Upload className="h-3 w-3" />
+                          {wife.croppedImage ? 'تغيير' : 'رفع صورة'}
+                        </Button>
+                        <input
+                          id={`wife-image-${wife.id}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, index)}
+                          className="hidden"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            </>
+          )}
+        </div>
+      )}
 
-            {/* Marriage Status - only for males */}
-            {memberData.gender === "male" && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Label>هل الفرد متزوج؟</Label>
-                  <Switch
-                    checked={memberData.isMarried}
-                    onCheckedChange={(checked) => {
-                      setMemberData({...memberData, isMarried: checked, hasMultipleWives: false});
-                      if (!checked) setWives([]);
-                    }}
-                  />
+      {/* Marriage Status - Females */}
+      {memberData.gender === "female" && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Label>هل الفرد متزوجة؟</Label>
+            <Switch
+              checked={memberData.isMarried}
+              onCheckedChange={(checked) => setMemberData({...memberData, isMarried: checked})}
+            />
+          </div>
+          {memberData.isMarried && (
+            <div className="border rounded-lg p-4 bg-muted/30">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold">بيانات الزوج</h4>
+                {!husband && (
+                  <Button onClick={addHusband} size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    إضافة بيانات الزوج
+                  </Button>
+                )}
+              </div>
+
+              {!husband ? (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground text-sm">لم يتم إضافة بيانات الزوج بعد</p>
+                  <Button onClick={addHusband} size="sm" className="mt-2 gap-2">
+                    <Plus className="h-4 w-4" />
+                    إضافة بيانات الزوج
+                  </Button>
                 </div>
+              ) : (
+                <div className="p-4 border rounded-lg bg-card space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h5 className="font-medium">بيانات الزوج</h5>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setHusband(null)}
+                      className="gap-2 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      حذف
+                    </Button>
+                  </div>
 
-                {memberData.isMarried && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <Label>هل لديه أكثر من زوجة؟</Label>
-                      <Switch
-                        checked={memberData.hasMultipleWives}
-                        onCheckedChange={(checked) => {
-                          setMemberData({...memberData, hasMultipleWives: checked});
-                          if (!checked && wives.length > 1) {
-                            setWives(wives.slice(0, 1));
-                          } else if (checked && wives.length === 0) {
-                            addWife();
-                          }
-                        }}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="husband-name">اسم الزوج *</Label>
+                      <Input
+                        id="husband-name"
+                        value={husband.name}
+                        onChange={(e) => updateHusband('name', e.target.value)}
+                        placeholder="اسم الزوج"
+                        className="mt-1"
                       />
                     </div>
 
-                    {/* Wives Section */}
-                    <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-semibold">بيانات الزوجات</h4>
-                        <Button onClick={addWife} size="sm" className="gap-2">
-                          <Plus className="h-4 w-4" />
-                          إضافة زوجة
-                        </Button>
+                    <div>
+                      <Label>تاريخ الميلاد</Label>
+                      <div className="mt-1">
+                        <EnhancedDatePicker
+                          value={husband.birthDate || undefined}
+                          onChange={(date) => updateHusband('birthDate', date || null)}
+                          placeholder="اختر التاريخ"
+                          toYear={new Date().getFullYear()}
+                          fromYear={1900}
+                          disableFuture={true}
+                        />
                       </div>
-
-                      {wives.length === 0 && (
-                        <div className="text-center py-4">
-                          <p className="text-muted-foreground text-sm">لم يتم إضافة أي زوجة بعد</p>
-                          <Button onClick={addWife} size="sm" className="mt-2 gap-2">
-                            <Plus className="h-4 w-4" />
-                            إضافة الزوجة الأولى
-                          </Button>
-                        </div>
-                      )}
-
-                      {wives.map((wife, index) => (
-                        <div key={wife.id} className="p-4 border rounded-lg bg-white dark:bg-gray-900/50 space-y-4 mb-4">
-                          <div className="flex items-center justify-between">
-                            <h5 className="font-medium">الزوجة {index + 1}</h5>
-                            {wives.length > 1 && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeWife(wife.id)}
-                                className="gap-2 text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                                حذف
-                              </Button>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor={`wife-name-${wife.id}`}>اسم الزوجة *</Label>
-                              <Input
-                                id={`wife-name-${wife.id}`}
-                                value={wife.name}
-                                onChange={(e) => updateWife(wife.id, 'name', e.target.value)}
-                                placeholder="اسم الزوجة"
-                                className="mt-1"
-                              />
-                            </div>
-
-                            <div>
-                              <Label>تاريخ الميلاد</Label>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !wife.birthDate && "text-muted-foreground")}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {wife.birthDate ? format(wife.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar
-                                    mode="single"
-                                    selected={wife.birthDate || undefined}
-                                    onSelect={(date) => updateWife(wife.id, 'birthDate', date || null)}
-                                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                                    initialFocus
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label className="flex items-center gap-2">
-                                على قيد الحياة
-                                <Switch
-                                  checked={wife.isAlive}
-                                  onCheckedChange={(checked) => updateWife(wife.id, 'isAlive', checked)}
-                                />
-                              </Label>
-                            </div>
-
-                            {!wife.isAlive && (
-                              <div>
-                                <Label>تاريخ الوفاة</Label>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !wife.deathDate && "text-muted-foreground")}>
-                                      <CalendarIcon className="mr-2 h-4 w-4" />
-                                      {wife.deathDate ? format(wife.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                      mode="single"
-                                      selected={wife.deathDate || undefined}
-                                      onSelect={(date) => updateWife(wife.id, 'deathDate', date || null)}
-                                      disabled={(date) => date > new Date() || (wife.birthDate && date < wife.birthDate)}
-                                      initialFocus
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Wife Image */}
-                          <div>
-                            <Label>صورة الزوجة</Label>
-                            <div className="mt-2 flex items-center gap-4">
-                              {wife.croppedImage && (
-                                <Avatar className="w-16 h-16">
-                                  <AvatarImage src={wife.croppedImage} />
-                                  <AvatarFallback>{wife.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                              )}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => document.getElementById(`wife-image-${wife.id}`)?.click()}
-                                className="gap-2"
-                              >
-                                <Upload className="h-3 w-3" />
-                                {wife.croppedImage ? 'تغيير' : 'رفع صورة'}
-                              </Button>
-                              <input
-                                id={`wife-image-${wife.id}`}
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleImageUpload(e, index)}
-                                className="hidden"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
                     </div>
-                  </>
-                )}
-              </div>
-            )}
+                  </div>
 
-            {/* Female Marriage Status */}
-            {memberData.gender === "female" && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Label>هل الفرد متزوجة؟</Label>
-                  <Switch
-                    checked={memberData.isMarried}
-                    onCheckedChange={(checked) => setMemberData({...memberData, isMarried: checked})}
-                  />
-                </div>
-                {memberData.isMarried && (
-                  <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold">بيانات الزوج</h4>
-                      {!husband && (
-                        <Button onClick={addHusband} size="sm" className="gap-2">
-                          <Plus className="h-4 w-4" />
-                          إضافة بيانات الزوج
-                        </Button>
-                      )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        على قيد الحياة
+                        <Switch
+                          checked={husband.isAlive}
+                          onCheckedChange={(checked) => updateHusband('isAlive', checked)}
+                        />
+                      </Label>
                     </div>
 
-                    {!husband ? (
-                      <div className="text-center py-4">
-                        <p className="text-muted-foreground text-sm">لم يتم إضافة بيانات الزوج بعد</p>
-                        <Button onClick={addHusband} size="sm" className="mt-2 gap-2">
-                          <Plus className="h-4 w-4" />
-                          إضافة بيانات الزوج
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="p-4 border rounded-lg bg-white dark:bg-gray-900/50 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-medium">بيانات الزوج</h5>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setHusband(null)}
-                            className="gap-2 text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                            حذف
-                          </Button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="husband-name">اسم الزوج *</Label>
-                            <Input
-                              id="husband-name"
-                              value={husband.name}
-                              onChange={(e) => updateHusband('name', e.target.value)}
-                              placeholder="اسم الزوج"
-                              className="mt-1"
-                            />
-                          </div>
-
-                          <div>
-                            <Label>تاريخ الميلاد</Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !husband.birthDate && "text-muted-foreground")}>
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {husband.birthDate ? format(husband.birthDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={husband.birthDate || undefined}
-                                  onSelect={(date) => updateHusband('birthDate', date || null)}
-                                  disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label className="flex items-center gap-2">
-                              على قيد الحياة
-                              <Switch
-                                checked={husband.isAlive}
-                                onCheckedChange={(checked) => updateHusband('isAlive', checked)}
-                              />
-                            </Label>
-                          </div>
-
-                          {!husband.isAlive && (
-                            <div>
-                              <Label>تاريخ الوفاة</Label>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !husband.deathDate && "text-muted-foreground")}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {husband.deathDate ? format(husband.deathDate, "PPP", { locale: ar }) : "اختر التاريخ"}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar
-                                    mode="single"
-                                    selected={husband.deathDate || undefined}
-                                    onSelect={(date) => updateHusband('deathDate', date || null)}
-                                    disabled={(date) => date > new Date() || (husband.birthDate && date < husband.birthDate)}
-                                    initialFocus
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Husband Image */}
-                        <div>
-                          <Label>صورة الزوج</Label>
-                          <div className="mt-2 flex items-center gap-4">
-                            {husband.croppedImage && (
-                              <Avatar className="w-16 h-16">
-                                <AvatarImage src={husband.croppedImage} />
-                                <AvatarFallback>{husband.name.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                            )}
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => document.getElementById('husband-image')?.click()}
-                              className="gap-2"
-                            >
-                              <Upload className="h-3 w-3" />
-                              {husband.croppedImage ? 'تغيير' : 'رفع صورة'}
-                            </Button>
-                            <input
-                              id="husband-image"
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload(e, undefined, true)}
-                              className="hidden"
-                            />
-                          </div>
+                    {!husband.isAlive && (
+                      <div>
+                        <Label>تاريخ الوفاة</Label>
+                        <div className="mt-1">
+                          <EnhancedDatePicker
+                            value={husband.deathDate || undefined}
+                            onChange={(date) => updateHusband('deathDate', date || null)}
+                            placeholder="اختر تاريخ الوفاة"
+                            toYear={new Date().getFullYear()}
+                            fromYear={husband.birthDate ? husband.birthDate.getFullYear() : 1900}
+                            disableFuture={true}
+                          />
                         </div>
                       </div>
                     )}
                   </div>
-                )}
+
+                  {/* Husband Image */}
+                  <div>
+                    <Label>صورة الزوج</Label>
+                    <div className="mt-2 flex items-center gap-4">
+                      {husband.croppedImage && (
+                        <Avatar className="w-16 h-16">
+                          <AvatarImage src={husband.croppedImage} />
+                          <AvatarFallback>{husband.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById('husband-image')?.click()}
+                        className="gap-2"
+                      >
+                        <Upload className="h-3 w-3" />
+                        {husband.croppedImage ? 'تغيير' : 'رفع صورة'}
+                      </Button>
+                      <input
+                        id="husband-image"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, undefined, true)}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-tree-background to-muted/50 border-tree-primary/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-tree-primary">
+              إضافة فرد جديد للعائلة - الخطوة {step} من 2
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              {step === 1 ? "قم بإدخال البيانات الأساسية للفرد" : "قم بإدخال بيانات الزواج والعائلة"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="my-4">
+            <div className="flex items-center justify-center space-x-4 mb-6">
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
+                step >= 1 ? "bg-tree-primary text-white" : "bg-muted text-muted-foreground"
+              )}>
+                1
               </div>
-            )}
+              <div className={cn(
+                "h-0.5 w-12",
+                step >= 2 ? "bg-tree-primary" : "bg-muted"
+              )} />
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
+                step >= 2 ? "bg-tree-primary text-white" : "bg-muted text-muted-foreground"
+              )}>
+                2
+              </div>
+            </div>
+
+            {step === 1 ? renderStep1() : renderStep2()}
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={handleClose}>
-              إلغاء
-            </Button>
-            <Button onClick={handleSubmit} className="gap-2">
-              <Users className="h-4 w-4" />
-              إضافة الفرد
-            </Button>
+          <DialogFooter className="flex flex-row gap-2 justify-between">
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleClose}>
+                إلغاء
+              </Button>
+              {step === 2 && (
+                <Button variant="outline" onClick={() => setStep(1)} className="gap-2">
+                  <ArrowLeft className="h-4 w-4" />
+                  السابق
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              {step === 1 ? (
+                <Button 
+                  onClick={() => setStep(2)} 
+                  className="gap-2 bg-gradient-to-r from-tree-primary to-tree-accent hover:from-tree-primary/90 hover:to-tree-accent/90"
+                  disabled={!canProceedToStep2()}
+                >
+                  التالي
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleSubmit} 
+                  className="gap-2 bg-gradient-to-r from-tree-primary to-tree-accent hover:from-tree-primary/90 hover:to-tree-accent/90"
+                >
+                  <Users className="h-4 w-4" />
+                  إضافة الفرد
+                </Button>
+              )}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Image Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={setShowCropModal}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg bg-card border-tree-primary/20">
           <DialogHeader>
-            <DialogTitle>قص الصورة</DialogTitle>
+            <DialogTitle className="text-tree-primary">قص الصورة</DialogTitle>
             <DialogDescription>
               قم بتحديد الجزء المطلوب من الصورة
             </DialogDescription>
           </DialogHeader>
-          <div className="relative w-full h-64">
+          <div className="relative w-full h-64 bg-muted rounded-lg overflow-hidden">
             {cropImage && (
               <Cropper
                 image={cropImage}
@@ -915,7 +926,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             <Button variant="outline" onClick={() => setShowCropModal(false)}>
               إلغاء
             </Button>
-            <Button onClick={handleCropSave}>
+            <Button 
+              onClick={handleCropSave}
+              className="bg-gradient-to-r from-tree-primary to-tree-accent hover:from-tree-primary/90 hover:to-tree-accent/90"
+            >
               حفظ
             </Button>
           </DialogFooter>
