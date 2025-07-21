@@ -701,9 +701,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
                     إدارة الزوجات
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    إضافة الزوجات اختيارية
-                  </p>
                 </div>
 
                 <div className="space-y-6">
