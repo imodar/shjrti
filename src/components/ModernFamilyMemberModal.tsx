@@ -383,8 +383,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const renderStep1 = () => (
     <div className="space-y-6 p-6">
       {/* Basic Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="space-y-2 md:col-span-2">
           <Label htmlFor="member-name" className="text-sm font-medium text-foreground flex items-center gap-2">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
             اسم الفرد *
@@ -395,6 +395,22 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             onChange={(e) => setMemberData({...memberData, name: e.target.value})}
             placeholder="أدخل اسم الفرد"
             className="h-10 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-green-500" />
+            تاريخ الميلاد
+          </Label>
+          <EnhancedDatePicker
+            value={memberData.birthDate || undefined}
+            onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
+            placeholder="اختر تاريخ الميلاد"
+            toYear={new Date().getFullYear()}
+            fromYear={1900}
+            disableFuture={true}
+            className="h-10 text-sm rounded-lg"
           />
         </div>
         
@@ -444,23 +460,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         </Select>
       </div>
 
-      {/* Dates and Life Status */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 text-green-500" />
-            تاريخ الميلاد
-          </Label>
-          <EnhancedDatePicker
-            value={memberData.birthDate || undefined}
-            onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
-            placeholder="اختر تاريخ الميلاد"
-            toYear={new Date().getFullYear()}
-            fromYear={1900}
-            disableFuture={true}
-            className="h-10 text-sm rounded-lg"
-          />
-        </div>
+      {/* Life Status and Death Date */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground flex items-center gap-2">
