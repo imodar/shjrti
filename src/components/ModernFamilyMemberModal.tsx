@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, Search, Trash2 } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, Search, Trash2, Camera, User, Edit3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,6 +98,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
   const [wives, setWives] = useState<Wife[]>([]);
   const [husband, setHusband] = useState<Husband | null>(null);
+  const [newWife, setNewWife] = useState({
+    name: "",
+    birthDate: "",
+    isAlive: true,
+    deathDate: "",
+    imageUrl: ""
+  });
 
   console.log('🔥 ModernFamilyMemberModal render - isOpen:', isOpen, 'familyId:', familyId);
 
@@ -237,7 +244,63 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     });
     setWives([]);
     setHusband(null);
+    setNewWife({
+      name: "",
+      birthDate: "",
+      isAlive: true,
+      deathDate: "",
+      imageUrl: ""
+    });
     onClose();
+  };
+
+  const addWife = () => {
+    if (newWife.name.trim()) {
+      setWives([...wives, {
+        id: crypto.randomUUID(),
+        name: newWife.name,
+        birthDate: newWife.birthDate ? new Date(newWife.birthDate) : null,
+        isAlive: newWife.isAlive,
+        deathDate: newWife.deathDate ? new Date(newWife.deathDate) : null,
+        image: null,
+        croppedImage: newWife.imageUrl || null
+      }]);
+      setNewWife({
+        name: "",
+        birthDate: "",
+        isAlive: true,
+        deathDate: "",
+        imageUrl: ""
+      });
+    }
+  };
+
+  const removeWife = (index: number) => {
+    setWives(wives.filter((_, i) => i !== index));
+  };
+
+  const editWife = (index: number) => {
+    const wife = wives[index];
+    setNewWife({
+      name: wife.name,
+      birthDate: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : "",
+      isAlive: wife.isAlive,
+      deathDate: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : "",
+      imageUrl: wife.croppedImage || ""
+    });
+    removeWife(index);
+  };
+
+  const handleNewWifeImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setCropImage(imageUrl);
+      setIsMainPersonImage(false);
+      setIsHusbandImage(false);
+      setCurrentWifeIndex(-1); // Use -1 to indicate new wife
+      setShowCropModal(true);
+    }
   };
 
   // Helper function to create cropped image
@@ -658,217 +721,202 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 {memberData.isMarried && (
                   <div className="space-y-6">
                     {memberData.gender === "male" && (
-                      <>
-                        {/* Multiple Wives Toggle for Males */}
-                        <div className="flex items-center justify-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl">
-                          <Label htmlFor="multipleWives" className="text-lg font-medium">
-                            هل له أكثر من زوجة؟
-                          </Label>
-                          <Switch
-                            id="multipleWives"
-                            checked={memberData.hasMultipleWives}
-                            onCheckedChange={(checked) => {
-                              setMemberData({...memberData, hasMultipleWives: checked});
-                              if (checked && wives.length === 0) {
-                                setWives([{
-                                  id: crypto.randomUUID(),
-                                  name: "",
-                                  birthDate: null,
-                                  isAlive: true,
-                                  deathDate: null,
-                                  image: null,
-                                  croppedImage: null
-                                }]);
-                              }
-                            }}
-                          />
-                        </div>
-
-                        {/* Wives Management */}
-                        {memberData.hasMultipleWives && (
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200">الزوجات</h4>
-                              <Button
-                                type="button"
-                                onClick={() => setWives([...wives, {
-                                  id: crypto.randomUUID(),
-                                  name: "",
-                                  birthDate: null,
-                                  isAlive: true,
-                                  deathDate: null,
-                                  image: null,
-                                  croppedImage: null
-                                }])}
-                                className="gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg"
-                              >
-                                <Plus className="h-4 w-4" />
-                                إضافة زوجة
-                              </Button>
-                            </div>
-
-                            {wives.map((wife, index) => (
-                              <div key={wife.id} className="p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
-                                <div className="flex items-center justify-between mb-4">
-                                  <h5 className="text-md font-bold text-gray-700 dark:text-gray-300">
-                                    الزوجة {index + 1}
-                                  </h5>
-                                  {wives.length > 1 && (
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setWives(wives.filter((_, i) => i !== index))}
-                                      className="text-red-600 border-red-300 hover:bg-red-50"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  )}
+                      <div className="bg-secondary/30 rounded-lg p-4">
+                        <h3 className="text-lg font-semibold mb-4 text-primary">Marriage Information</h3>
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                          {/* Add Wife Section - Right */}
+                          <div className="lg:col-span-1">
+                            <div className="bg-background border border-border rounded-lg p-4">
+                              <h4 className="text-md font-medium text-foreground mb-4">Add Wife (Optional)</h4>
+                              
+                              <div className="space-y-3">
+                                <div>
+                                  <label className="block text-sm font-medium text-foreground mb-1">
+                                    Name *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={newWife.name}
+                                    onChange={(e) => setNewWife({...newWife, name: e.target.value})}
+                                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                                    placeholder="Wife's name"
+                                  />
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4">
-                                  {/* Wife Name */}
-                                  <div className="col-span-2">
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الاسم</Label>
-                                    <Input
-                                      value={wife.name}
-                                      onChange={(e) => {
-                                        const newWives = [...wives];
-                                        newWives[index].name = e.target.value;
-                                        setWives(newWives);
-                                      }}
-                                      placeholder="اسم الزوجة"
-                                      className="h-10 border-2 border-gray-200/50 focus:border-emerald-500"
+                                <div>
+                                  <label className="block text-sm font-medium text-foreground mb-1">
+                                    Birth Date
+                                  </label>
+                                  <input
+                                    type="date"
+                                    value={newWife.birthDate}
+                                    onChange={(e) => setNewWife({...newWife, birthDate: e.target.value})}
+                                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                                  />
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id="new-wife-alive"
+                                    checked={newWife.isAlive}
+                                    onChange={(e) => setNewWife({...newWife, isAlive: e.target.checked})}
+                                    className="w-4 h-4"
+                                  />
+                                  <label htmlFor="new-wife-alive" className="text-sm text-foreground">
+                                    Is Alive
+                                  </label>
+                                </div>
+
+                                {!newWife.isAlive && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                      Death Date
+                                    </label>
+                                    <input
+                                      type="date"
+                                      value={newWife.deathDate}
+                                      onChange={(e) => setNewWife({...newWife, deathDate: e.target.value})}
+                                      className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                                     />
                                   </div>
+                                )}
 
-                                  {/* Wife Birth Date */}
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الميلاد</Label>
-                                    <div className="relative z-[10001]">
-                                      <EnhancedDatePicker
-                                        value={wife.birthDate}
-                                        onChange={(date) => {
-                                          const newWives = [...wives];
-                                          newWives[index].birthDate = date;
-                                          setWives(newWives);
-                                        }}
-                                        placeholder="التاريخ"
-                                        className="h-10 text-sm border-2 border-gray-200/50 focus:border-emerald-500"
+                                <div>
+                                  <label className="block text-sm font-medium text-foreground mb-2">
+                                    Photo
+                                  </label>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleNewWifeImageSelect(e)}
+                                    className="hidden"
+                                    id="new-wife-image"
+                                  />
+                                  
+                                  {newWife.imageUrl ? (
+                                    <div className="flex items-center space-x-2">
+                                      <img
+                                        src={newWife.imageUrl}
+                                        alt="New Wife"
+                                        className="w-16 h-16 rounded-lg object-cover border border-border"
                                       />
-                                    </div>
-                                  </div>
-
-                                  {/* Wife Life Status */}
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة الحيوية</Label>
-                                    <div className="relative z-[10001]">
-                                      <Select 
-                                        value={wife.isAlive ? "alive" : "deceased"} 
-                                        onValueChange={(value) => {
-                                          const newWives = [...wives];
-                                          newWives[index].isAlive = value === "alive";
-                                          newWives[index].deathDate = value === "alive" ? null : newWives[index].deathDate;
-                                          setWives(newWives);
-                                        }}
-                                      >
-                                        <SelectTrigger className="h-10 border-2 border-gray-200/50 focus:border-emerald-500">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                          <SelectItem value="alive">على قيد الحياة</SelectItem>
-                                          <SelectItem value="deceased">متوفاة</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                  </div>
-
-                                  {/* Wife Death Date (if deceased) */}
-                                  {!wife.isAlive && (
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الوفاة</Label>
-                                      <div className="relative z-[10001]">
-                                        <EnhancedDatePicker
-                                          value={wife.deathDate}
-                                          onChange={(date) => {
-                                            const newWives = [...wives];
-                                            newWives[index].deathDate = date;
-                                            setWives(newWives);
-                                          }}
-                                          placeholder="تاريخ الوفاة"
-                                          className="h-10 text-sm border-2 border-gray-200/50 focus:border-emerald-500"
-                                        />
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* Wife Image */}
-                                  <div className="col-span-1">
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">صورة</Label>
-                                    <div className="border-2 border-dashed border-gray-200/50 rounded-lg p-2 bg-gray-50/30 hover:border-gray-400 transition-all">
-                                      <div className="flex flex-col items-center gap-1">
-                                        {wife.croppedImage ? (
-                                          <div className="relative">
-                                            <Avatar className="w-12 h-12 border-2 border-gray-200">
-                                              <AvatarImage src={wife.croppedImage} />
-                                              <AvatarFallback className="text-sm bg-gradient-to-br from-pink-400 to-purple-400 text-white">
-                                                {wife.name.charAt(0)}
-                                              </AvatarFallback>
-                                            </Avatar>
-                                            <button
-                                              onClick={() => {
-                                                const newWives = [...wives];
-                                                newWives[index].image = null;
-                                                newWives[index].croppedImage = null;
-                                                setWives(newWives);
-                                              }}
-                                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
-                                            >
-                                              <X className="h-2 w-2" />
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
-                                            <Upload className="h-4 w-4 text-gray-600" />
-                                          </div>
-                                        )}
+                                      <div className="flex flex-col space-y-1">
                                         <Button
                                           type="button"
                                           variant="outline"
                                           size="sm"
-                                          onClick={() => document.getElementById(`wife-image-${index}`)?.click()}
-                                          className="text-xs px-2 py-1 h-6 border-gray-300"
+                                          onClick={() => document.getElementById('new-wife-image')?.click()}
                                         >
-                                          {wife.croppedImage ? 'تغيير' : 'اختيار'}
+                                          Replace
                                         </Button>
-                                        <input
-                                          id={`wife-image-${index}`}
-                                          type="file"
-                                          accept="image/*"
-                                          onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                              const imageUrl = URL.createObjectURL(file);
-                                              setCropImage(imageUrl);
-                                              setCurrentWifeIndex(index);
-                                              setIsMainPersonImage(false);
-                                              setShowCropModal(true);
-                                              const newWives = [...wives];
-                                              newWives[index].image = file;
-                                              setWives(newWives);
-                                            }
-                                          }}
-                                          className="hidden"
-                                        />
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => setNewWife({...newWife, imageUrl: ''})}
+                                          className="text-destructive hover:text-destructive"
+                                        >
+                                          Remove
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <label
+                                      htmlFor="new-wife-image"
+                                      className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 bg-secondary/20"
+                                    >
+                                      <Camera className="w-5 h-5 text-muted-foreground mb-1" />
+                                      <span className="text-xs text-muted-foreground text-center">Add Photo</span>
+                                    </label>
+                                  )}
+                                </div>
+
+                                <Button
+                                  type="button"
+                                  onClick={addWife}
+                                  className="w-full"
+                                  size="sm"
+                                  disabled={!newWife.name.trim()}
+                                >
+                                  <Plus className="w-4 h-4 mr-1" />
+                                  Add Wife
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Wives List - Left */}
+                          <div className="lg:col-span-2">
+                            <h4 className="text-md font-medium text-foreground mb-4">Added Wives</h4>
+                            
+                            <div className="space-y-3 max-h-96 overflow-y-auto">
+                              {wives.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                  <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                                  <p>No wives added yet</p>
+                                </div>
+                              ) : (
+                                wives.map((wife, index) => (
+                                  <div key={index} className="border border-border rounded-lg p-4 bg-background/50">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex items-center space-x-3">
+                                        {wife.croppedImage ? (
+                                          <img
+                                            src={wife.croppedImage}
+                                            alt={wife.name}
+                                            className="w-12 h-12 rounded-full object-cover border border-border"
+                                          />
+                                        ) : (
+                                          <div className="w-12 h-12 rounded-full bg-secondary/50 flex items-center justify-center">
+                                            <User className="w-6 h-6 text-muted-foreground" />
+                                          </div>
+                                        )}
+                                        
+                                        <div>
+                                          <h5 className="font-medium text-foreground">{wife.name}</h5>
+                                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                            {wife.birthDate && (
+                                              <span>Born: {wife.birthDate.toLocaleDateString()}</span>
+                                            )}
+                                            {!wife.isAlive && wife.deathDate && (
+                                              <span>• Died: {wife.deathDate.toLocaleDateString()}</span>
+                                            )}
+                                            {!wife.isAlive && !wife.deathDate && (
+                                              <span>• Deceased</span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex space-x-1">
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => editWife(index)}
+                                        >
+                                          <Edit3 className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => removeWife(index)}
+                                          className="text-destructive hover:text-destructive"
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              </div>
-                            ))}
+                                ))
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </>
+                        </div>
+                      </div>
                     )}
 
                     {memberData.gender === "female" && (
@@ -1000,10 +1048,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
                       if (isMainPersonImage) {
                         setMemberData({...memberData, croppedImage});
-                      } else if (currentWifeIndex !== null) {
+                      } else if (currentWifeIndex !== null && currentWifeIndex >= 0) {
                         const newWives = [...wives];
                         newWives[currentWifeIndex].croppedImage = croppedImage;
                         setWives(newWives);
+                      } else if (currentWifeIndex === -1) {
+                        // Handle new wife image
+                        setNewWife({...newWife, imageUrl: croppedImage});
                       }
                       setShowCropModal(false);
                       setCropImage(null);
