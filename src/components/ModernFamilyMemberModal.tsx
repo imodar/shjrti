@@ -718,33 +718,38 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                   </div>
                                 </div>
 
-                                <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
-                                  <Switch
-                                    id="new-wife-alive"
-                                    checked={newWife.isAlive}
-                                    onCheckedChange={(checked) => setNewWife({...newWife, isAlive: checked})}
-                                    className="data-[state=checked]:bg-pink-500"
-                                  />
-                                  <label htmlFor="new-wife-alive" className="text-sm text-pink-700 dark:text-pink-300 font-medium">
-                                    على قيد الحياة
-                                  </label>
-                                </div>
-
-                                {!newWife.isAlive && (
-                                  <div className="animate-fade-in">
-                                    <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-                                      تاريخ الوفاة
+                                {/* Alive Status and Death Date - Combined in one row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  {/* Alive Status */}
+                                  <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
+                                    <Switch
+                                      id="new-wife-alive"
+                                      checked={newWife.isAlive}
+                                      onCheckedChange={(checked) => setNewWife({...newWife, isAlive: checked})}
+                                      className="data-[state=checked]:bg-pink-500"
+                                    />
+                                    <label htmlFor="new-wife-alive" className="text-sm text-pink-700 dark:text-pink-300 font-medium">
+                                      على قيد الحياة
                                     </label>
-                                    <div className="relative z-[10000]">
-                                      <EnhancedDatePicker
-                                        value={newWife.deathDate ? new Date(newWife.deathDate) : null}
-                                        onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
-                                        placeholder="اختر تاريخ الوفاة"
-                                        className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
-                                      />
-                                    </div>
                                   </div>
-                                )}
+
+                                  {/* Death Date (if deceased) */}
+                                  {!newWife.isAlive && (
+                                    <div className="animate-fade-in">
+                                      <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                        تاريخ الوفاة
+                                      </label>
+                                      <div className="relative z-[10000]">
+                                        <EnhancedDatePicker
+                                          value={newWife.deathDate ? new Date(newWife.deathDate) : null}
+                                          onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                          placeholder="اختر تاريخ الوفاة"
+                                          className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
 
                                 <div>
                                   <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
