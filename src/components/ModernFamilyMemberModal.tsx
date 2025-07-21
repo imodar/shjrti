@@ -132,8 +132,34 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         relatedPersonId: member.related_person_id,
       }));
 
+      // Fetch marriages data
+      const { data: marriagesData, error: marriagesError } = await supabase
+        .from('marriages')
+        .select(`
+          id,
+          husband_id,
+          wife_id,
+          marriage_date,
+          is_active,
+          husband:family_tree_members!marriages_husband_id_fkey(id, name),
+          wife:family_tree_members!marriages_wife_id_fkey(id, name)
+        `)
+        .eq('family_id', familyId)
+        .eq('is_active', true);
+
+      if (marriagesError) throw marriagesError;
+
+      // Transform marriages data
+      const transformedMarriages = (marriagesData || []).map(marriage => ({
+        id: marriage.id,
+        husband: { id: marriage.husband_id, name: marriage.husband?.name || "" },
+        wife: { id: marriage.wife_id, name: marriage.wife?.name || "" },
+        marriage_date: marriage.marriage_date,
+        is_active: marriage.is_active
+      }));
+
       setFamilyMembers(transformedMembers);
-      setMarriages([]); // Simplified for now
+      setMarriages(transformedMarriages);
 
     } catch (error) {
       console.error('Error fetching family data:', error);
@@ -363,13 +389,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         </SelectTrigger>
                         <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
                           <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
-                          <SelectItem value="father" className="font-arabic text-lg">والد</SelectItem>
-                          <SelectItem value="mother" className="font-arabic text-lg">والدة</SelectItem>
-                          <SelectItem value="son" className="font-arabic text-lg">ابن</SelectItem>
-                          <SelectItem value="daughter" className="font-arabic text-lg">ابنة</SelectItem>
-                          <SelectItem value="brother" className="font-arabic text-lg">أخ</SelectItem>
-                          <SelectItem value="sister" className="font-arabic text-lg">أخت</SelectItem>
-                          <SelectItem value="spouse" className="font-arabic text-lg">زوج/زوجة</SelectItem>
+                          {marriages.map((marriage) => (
+                            <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
+                              {marriage.husband.name} + العائلة & {marriage.wife.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
