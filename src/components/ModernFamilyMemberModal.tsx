@@ -881,10 +881,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           {/* Modern Header with Glass Effect */}
           <div className="relative bg-gradient-to-r from-primary via-primary/90 to-accent p-6 text-white overflow-hidden">
             {/* Animated Background Elements */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-white rounded-full animate-pulse"></div>
-              <div className="absolute top-1/2 -left-8 w-16 h-16 bg-white/30 rounded-full animate-bounce"></div>
-              <div className="absolute bottom-0 right-1/3 w-12 h-12 bg-white/20 rounded-full animate-ping"></div>
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
+              <div className="absolute top-1/2 -left-8 w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full animate-bounce"></div>
+              <div className="absolute bottom-0 right-1/3 w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full animate-ping"></div>
             </div>
             
             <DialogHeader className="relative z-10">
