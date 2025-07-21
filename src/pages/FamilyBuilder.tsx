@@ -783,7 +783,9 @@ const FamilyBuilder = () => {
     }
     
     console.log('Member limit check passed, opening modal');
+    console.log('About to setShowAddMember(true), current state:', showAddMember);
     setShowAddMember(true);
+    console.log('setShowAddMember(true) called');
   };
 
   // Handler for the modern modal submission
@@ -2121,7 +2123,10 @@ const FamilyBuilder = () => {
       {/* Modern Family Member Modal */}
       <ModernFamilyMemberModal
         isOpen={showAddMember}
-        onClose={() => setShowAddMember(false)}
+        onClose={() => {
+          console.log('Modal onClose called');
+          setShowAddMember(false);
+        }}
         onSubmit={handleModernModalSubmit}
         familyId={searchParams.get('family') || ''}
       />
