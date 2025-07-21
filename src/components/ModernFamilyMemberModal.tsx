@@ -441,9 +441,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 {/* Personal Information Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Name - Full width on mobile, half on desktop */}
-                    <div className="group">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* Name - 1/2 width on desktop */}
+                    <div className="group md:col-span-2">
                       <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الاسم الأول
@@ -461,7 +461,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
                     </div>
 
-                    {/* Gender */}
+                    {/* Gender - 1/4 width on desktop */}
                     <div className="group">
                       <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -482,14 +482,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Dates and Life Information Section */}
-                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Birth Date */}
+                    {/* Birth Date - 1/4 width on desktop */}
                     <div className="group">
                       <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -507,8 +501,43 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
 
-                    {/* Life Status */}
+                {/* Family Relationship and Life Status Section */}
+                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* Family Relationship - 1/2 width on desktop */}
+                    <div className="group md:col-span-2">
+                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                        علاقة القرابة (العائلة)
+                      </Label>
+                      <div className="relative z-[10001]">
+                        <Select value={memberData.selectedParent || "none"} onValueChange={(value) => setMemberData({...memberData, selectedParent: value === "none" ? null : value})}>
+                          <SelectTrigger className="h-14 text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                            <SelectValue placeholder="اختر علاقة القرابة مع العائلة" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                            <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
+                            {marriages.map((marriage) => (
+                              <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
+                                {marriage.husband.is_founder 
+                                  ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                  : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
+                                }
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                          <Users className="h-3 w-3 text-white" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Life Status - 1/4 width on desktop */}
                     <div className="group">
                       <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -530,7 +559,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
                     </div>
 
-                    {/* Death Date (if deceased) */}
+                    {/* Death Date (if deceased) - 1/4 width on desktop */}
                     {!memberData.isAlive && (
                       <div className="group">
                         <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
@@ -550,38 +579,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         </div>
                       </div>
                     )}
-                  </div>
-                </div>
-
-                {/* Family Relationship Section */}
-                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
-                  
-                  <div className="group">
-                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                      <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                      علاقة القرابة (العائلة)
-                    </Label>
-                    <div className="relative z-[10001]">
-                      <Select value={memberData.selectedParent || "none"} onValueChange={(value) => setMemberData({...memberData, selectedParent: value === "none" ? null : value})}>
-                        <SelectTrigger className="h-14 text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
-                          <SelectValue placeholder="اختر علاقة القرابة مع العائلة" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                          <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
-                          {marriages.map((marriage) => (
-                            <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
-                              {marriage.husband.is_founder 
-                                ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
-                              }
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                        <Users className="h-3 w-3 text-white" />
-                      </div>
-                    </div>
                   </div>
                 </div>
 
