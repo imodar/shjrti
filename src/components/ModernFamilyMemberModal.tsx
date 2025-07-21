@@ -442,65 +442,48 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30">
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                    {/* Name - Full width on mobile, 1/2 on tablet+ */}
-                    <div className="group sm:col-span-1 md:col-span-2">
-                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                        الاسم الأول
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          value={memberData.name}
-                          onChange={(e) => setMemberData({...memberData, name: e.target.value})}
-                          placeholder="أدخل الاسم الأول"
-                          className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                        />
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                          <UserPlus className="h-3 w-3 text-white" />
-                        </div>
-                      </div>
-                    </div>
+                     {/* Name and Birth Date - Combined in one row */}
+                     <div className="group sm:col-span-1 md:col-span-4">
+                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                         {/* Name - 2/3 width */}
+                         <div className="sm:col-span-2">
+                           <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
+                             <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                             الاسم الأول
+                           </Label>
+                           <div className="relative">
+                             <Input
+                               value={memberData.name}
+                               onChange={(e) => setMemberData({...memberData, name: e.target.value})}
+                               placeholder="أدخل الاسم الأول"
+                               className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                             />
+                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                               <UserPlus className="h-3 w-3 text-white" />
+                             </div>
+                           </div>
+                         </div>
 
-                    {/* Gender - 1/4 width on desktop */}
-                    <div className="group">
-                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                        <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                        الجنس
-                      </Label>
-                      <div className="relative z-[10001]">
-                        <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-                          <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
-                            <SelectValue placeholder="اختر الجنس" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                            <SelectItem value="male" className="font-arabic text-base sm:text-lg lg:text-xl">ذكر</SelectItem>
-                            <SelectItem value="female" className="font-arabic text-base sm:text-lg lg:text-xl">أنثى</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                          <Users className="h-3 w-3 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Birth Date - 1/4 width on desktop */}
-                    <div className="group">
-                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                        <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                        تاريخ الميلاد
-                      </Label>
-                      <div className="relative z-[10020]">
-                        <EnhancedDatePicker
-                          value={memberData.birthDate}
-                          onChange={(date) => setMemberData({...memberData, birthDate: date})}
-                          placeholder="اختر التاريخ"
-                          className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                        />
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                          <CalendarIcon className="h-3 w-3 text-white" />
-                        </div>
-                      </div>
-                    </div>
+                         {/* Birth Date - 1/3 width */}
+                         <div className="sm:col-span-1">
+                           <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
+                             <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                             تاريخ الميلاد
+                           </Label>
+                           <div className="relative z-[10020]">
+                             <EnhancedDatePicker
+                               value={memberData.birthDate}
+                               onChange={(date) => setMemberData({...memberData, birthDate: date})}
+                               placeholder="اختر التاريخ"
+                               className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                             />
+                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                               <CalendarIcon className="h-3 w-3 text-white" />
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
                   </div>
                 </div>
 
