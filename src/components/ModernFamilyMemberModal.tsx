@@ -987,9 +987,29 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   );
 
   console.log('ModernFamilyMemberModal render - isOpen:', isOpen, 'familyId:', familyId);
+  console.log('All variables check:', {
+    step,
+    memberData: memberData?.name,
+    familyMembers: familyMembers?.length,
+    marriages: marriages?.length,
+    wives: wives?.length,
+    husband: husband?.name,
+    isOpen,
+    familyId
+  });
 
   if (isOpen) {
     console.log('Modal should be visible now!');
+  }
+
+  // Safety check for all variables before render
+  if (!memberData || !wives || !husband) {
+    console.log('WARNING: Some variables are undefined!', {
+      memberData: !!memberData,
+      wives: !!wives,
+      husband: !!husband
+    });
+    return null;
   }
 
   return (
