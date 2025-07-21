@@ -193,6 +193,20 @@ All colors MUST be HSL.
   [dir="rtl"] .justify-between {
     justify-content: space-between;
   }
+  
+  /* RTL Support for checkbox layouts */
+  [dir="rtl"] .checkbox-container {
+    flex-direction: row-reverse;
+  }
+  
+  /* RTL Support for form controls with checkboxes */
+  [dir="rtl"] .flex.items-center.space-x-2 {
+    flex-direction: row-reverse;
+  }
+  
+  [dir="rtl"] .flex.items-center.space-x-4 {
+    flex-direction: row-reverse;
+  }
 }
 
 @layer components {
