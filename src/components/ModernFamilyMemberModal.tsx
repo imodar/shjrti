@@ -402,7 +402,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
                           {marriages.map((marriage) => (
                             <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
-                              {marriage.husband.name} + {familyName} & {marriage.wife.name}
+                              {marriage.husband.name} {familyName} & {marriage.wife.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
