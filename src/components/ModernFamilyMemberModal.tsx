@@ -988,10 +988,14 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
   console.log('ModernFamilyMemberModal render - isOpen:', isOpen, 'familyId:', familyId);
 
+  if (isOpen) {
+    console.log('Modal should be visible now!');
+  }
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 border-0 shadow-2xl rounded-2xl p-0 relative z-50">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-gray-900 border-2 border-red-500 shadow-2xl rounded-2xl p-0 relative z-[9999]">
           {/* Floating Background Elements - Same as FamilyCreator */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-20 animate-pulse"></div>

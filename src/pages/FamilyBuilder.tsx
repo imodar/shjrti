@@ -1831,7 +1831,8 @@ const FamilyBuilder = () => {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                     <Button
                       onClick={() => {
-                        console.log('Add button clicked - Current members:', familyMembers.length, 'Package data:', packageData);
+                        console.log('🔴 Add button clicked!');
+                        console.log('Current members:', familyMembers.length, 'Package data:', packageData);
                         handleAddNewMember();
                       }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
