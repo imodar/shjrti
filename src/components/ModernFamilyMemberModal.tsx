@@ -94,12 +94,33 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const [husband, setHusband] = useState<Husband | null>(null);
 
   useEffect(() => {
-    if (isOpen && familyId && familyId.trim() !== '') {
-      fetchFamilyData();
+    if (isOpen) {
+      // Only fetch family data if we have a valid familyId (existing family)
+      // For new families, we'll skip this step
+      if (familyId && familyId.trim() !== '') {
+        fetchFamilyData();
+      } else {
+        // For new families, start with empty data
+        setFamilyMembers([]);
+        setMarriages([]);
+        setFilteredParents([]);
+      }
     }
   }, [isOpen, familyId]);
 
   useEffect(() => {
+    // For new families without existing marriages, show a message
+    if (!familyId || familyId.trim() === '') {
+      setFilteredParents([{
+        id: 'new-family',
+        display: 'هذا فرد مؤسس للعائلة الجديدة',
+        fatherId: null,
+        motherId: null
+      }]);
+      return;
+    }
+
+    // For existing families, filter based on gender and marriages
     if (memberData.gender === "male") {
       const parents = marriages.map(marriage => ({
         id: `${marriage.husband_id}-${marriage.wife_id}`,
@@ -123,7 +144,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       );
       setFilteredParents(parents);
     }
-  }, [marriages, searchTerm, memberData.gender]);
+  }, [marriages, searchTerm, memberData.gender, familyId]);
 
   const fetchFamilyData = async () => {
     if (!familyId || familyId.trim() === '') {
@@ -319,7 +340,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       return;
     }
 
-    if (!memberData.selectedParent) {
+    if (!memberData.selectedParent && (!familyId || familyId.trim() === '')) {
+      // For new families, auto-select the founder option
+      setMemberData(prev => ({...prev, selectedParent: 'new-family'}));
+    } else if (!memberData.selectedParent && familyId && familyId.trim() !== '') {
       toast({
         title: "خطأ",
         description: "يرجى اختيار الوالدين",
