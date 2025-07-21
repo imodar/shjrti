@@ -877,7 +877,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 dark:bg-gray-900/95 border border-primary/20 shadow-xl rounded-2xl p-0 backdrop-blur-sm">
+        <DialogContent className="sm:max-w-md max-h-[75vh] overflow-hidden bg-gradient-to-br from-white/90 via-white/95 to-primary/5 dark:from-gray-900/90 dark:via-gray-900/95 dark:to-primary/10 border-2 border-primary/20 shadow-2xl rounded-3xl p-0 backdrop-blur-md transform transition-all duration-300">
           {/* Compact Creative Header */}
           <div className="relative bg-gradient-to-r from-primary to-accent p-4 text-white">
             {/* Subtle background pattern */}
