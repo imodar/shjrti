@@ -677,7 +677,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             )}
 
             {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-2">
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
                     بإمكانك إضافة زوجات ل {memberData.name}
