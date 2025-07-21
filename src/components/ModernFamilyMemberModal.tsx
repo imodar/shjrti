@@ -406,7 +406,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           <EnhancedDatePicker
             value={memberData.birthDate || undefined}
             onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
-            placeholder="اختر تاريخ الميلاد"
+            placeholder="اختر تاريخ"
             toYear={new Date().getFullYear()}
             fromYear={1900}
             disableFuture={true}
@@ -487,7 +487,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             <EnhancedDatePicker
               value={memberData.deathDate || undefined}
               onChange={(date) => setMemberData({...memberData, deathDate: date || null})}
-              placeholder="اختر تاريخ الوفاة"
+              placeholder="اختر تاريخ"
               toYear={new Date().getFullYear()}
               fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
               disableFuture={true}
