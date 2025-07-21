@@ -381,24 +381,24 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   };
 
   const renderStep1 = () => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Basic Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="member-name">اسم الفرد *</Label>
+          <Label htmlFor="member-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">اسم الفرد *</Label>
           <Input
             id="member-name"
             value={memberData.name}
             onChange={(e) => setMemberData({...memberData, name: e.target.value})}
             placeholder="اسم الفرد"
-            className="mt-2"
+            className="mt-1 h-9 text-sm"
           />
         </div>
         
         <div>
-          <Label htmlFor="member-gender">الجنس *</Label>
+          <Label htmlFor="member-gender" className="text-sm font-medium text-gray-700 dark:text-gray-300">الجنس *</Label>
           <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="اختر الجنس" />
             </SelectTrigger>
             <SelectContent>
@@ -411,21 +411,21 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
       {/* Parent Selection */}
       <div>
-        <Label htmlFor="parent-search">البحث عن الوالدين *</Label>
-        <div className="mt-2 space-y-3">
+        <Label htmlFor="parent-search" className="text-sm font-medium text-gray-700 dark:text-gray-300">البحث عن الوالدين *</Label>
+        <div className="mt-1 space-y-2">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="parent-search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="ابحث عن الأب والأم..."
-              className="pl-10"
+              className="pl-10 h-9 text-sm"
             />
           </div>
           
           <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
-            <SelectTrigger>
+            <SelectTrigger className="h-9 text-sm">
               <SelectValue placeholder="اختر الوالدين" />
             </SelectTrigger>
             <SelectContent>
@@ -440,10 +440,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       </div>
 
       {/* Birth Date and Life Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>تاريخ الميلاد</Label>
-          <div className="mt-2">
+          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ الميلاد</Label>
+          <div className="mt-1">
             <EnhancedDatePicker
               value={memberData.birthDate || undefined}
               onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
@@ -451,12 +451,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               toYear={new Date().getFullYear()}
               fromYear={1900}
               disableFuture={true}
+              className="h-9 text-sm"
             />
           </div>
         </div>
 
-        <div>
-          <Label className="flex items-center gap-2">
+        <div className="flex items-end">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             على قيد الحياة
             <Switch
               checked={memberData.isAlive}
@@ -468,40 +469,43 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
       {/* Death Date */}
       {!memberData.isAlive && (
-        <div>
-          <Label>تاريخ الوفاة</Label>
-          <div className="mt-2">
-            <EnhancedDatePicker
-              value={memberData.deathDate || undefined}
-              onChange={(date) => setMemberData({...memberData, deathDate: date || null})}
-              placeholder="اختر تاريخ الوفاة"
-              toYear={new Date().getFullYear()}
-              fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
-              disableFuture={true}
-            />
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ الوفاة</Label>
+            <div className="mt-1">
+              <EnhancedDatePicker
+                value={memberData.deathDate || undefined}
+                onChange={(date) => setMemberData({...memberData, deathDate: date || null})}
+                placeholder="اختر تاريخ الوفاة"
+                toYear={new Date().getFullYear()}
+                fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
+                disableFuture={true}
+                className="h-9 text-sm"
+              />
+            </div>
           </div>
         </div>
       )}
 
       {/* Biography */}
       <div>
-        <Label htmlFor="member-bio">نبذة تعريفية</Label>
+        <Label htmlFor="member-bio" className="text-sm font-medium text-gray-700 dark:text-gray-300">نبذة تعريفية</Label>
         <Textarea
           id="member-bio"
           value={memberData.bio}
           onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
           placeholder="اكتب نبذة مختصرة عن الفرد..."
-          className="mt-2"
-          rows={3}
+          className="mt-1 text-sm"
+          rows={2}
         />
       </div>
 
       {/* Image Upload */}
       <div>
-        <Label>صورة الفرد</Label>
-        <div className="mt-2 flex items-center gap-4">
+        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">صورة الفرد</Label>
+        <div className="mt-1 flex items-center gap-3">
           {memberData.croppedImage && (
-            <Avatar className="w-20 h-20">
+            <Avatar className="w-12 h-12">
               <AvatarImage src={memberData.croppedImage} />
               <AvatarFallback>{memberData.name.charAt(0)}</AvatarFallback>
             </Avatar>
@@ -509,11 +513,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           <Button
             type="button"
             variant="outline"
+            size="sm"
             onClick={() => document.getElementById('member-image')?.click()}
-            className="gap-2"
+            className="gap-2 h-8 text-sm"
           >
-            <Upload className="h-4 w-4" />
-            {memberData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
+            <Upload className="h-3 w-3" />
+            {memberData.croppedImage ? 'تغيير' : 'رفع صورة'}
           </Button>
           <input
             id="member-image"
@@ -830,46 +835,65 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-tree-background to-muted/50 border-tree-primary/20">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-tree-primary">
-              إضافة فرد جديد للعائلة - الخطوة {step} من 2
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              {step === 1 ? "قم بإدخال البيانات الأساسية للفرد" : "قم بإدخال بيانات الزواج والعائلة"}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-hidden bg-white dark:bg-gray-900 border shadow-2xl rounded-2xl p-0">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 p-6 text-white">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Users className="h-5 w-5" />
+                </div>
+                إضافة فرد جديد للعائلة
+              </DialogTitle>
+              <DialogDescription className="text-white/90 text-sm mt-2">
+                {step === 1 ? "البيانات الأساسية وتواريخ الميلاد والوفاة" : "معلومات الزواج والعائلة"}
+              </DialogDescription>
+            </DialogHeader>
 
-          <div className="my-4">
-            <div className="flex items-center justify-center space-x-4 mb-6">
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                step >= 1 ? "bg-tree-primary text-white" : "bg-muted text-muted-foreground"
-              )}>
-                1
-              </div>
-              <div className={cn(
-                "h-0.5 w-12",
-                step >= 2 ? "bg-tree-primary" : "bg-muted"
-              )} />
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                step >= 2 ? "bg-tree-primary text-white" : "bg-muted text-muted-foreground"
-              )}>
-                2
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center mt-6 mb-2">
+              <div className="flex items-center space-x-4">
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all",
+                  step >= 1 ? "bg-white text-emerald-600" : "bg-white/20 text-white/60"
+                )}>
+                  1
+                </div>
+                <div className={cn(
+                  "h-0.5 w-16 transition-all",
+                  step >= 2 ? "bg-white" : "bg-white/30"
+                )} />
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all",
+                  step >= 2 ? "bg-white text-emerald-600" : "bg-white/20 text-white/60"
+                )}>
+                  2
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 overflow-y-auto max-h-[50vh]">
 
             {step === 1 ? renderStep1() : renderStep2()}
           </div>
 
-          <DialogFooter className="flex flex-row gap-2 justify-between">
+          <DialogFooter className="border-t bg-gray-50 dark:bg-gray-800 p-4 flex flex-row gap-3 justify-between">
             <div className="flex gap-2">
-              <Button variant="outline" onClick={handleClose}>
+              <Button 
+                variant="outline" 
+                onClick={handleClose}
+                className="px-6"
+              >
                 إلغاء
               </Button>
               {step === 2 && (
-                <Button variant="outline" onClick={() => setStep(1)} className="gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setStep(1)} 
+                  className="gap-2 px-6"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   السابق
                 </Button>
@@ -880,7 +904,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               {step === 1 ? (
                 <Button 
                   onClick={() => setStep(2)} 
-                  className="gap-2 bg-gradient-to-r from-tree-primary to-tree-accent hover:from-tree-primary/90 hover:to-tree-accent/90"
+                  className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6"
                   disabled={!canProceedToStep2()}
                 >
                   التالي
@@ -889,7 +913,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               ) : (
                 <Button 
                   onClick={handleSubmit} 
-                  className="gap-2 bg-gradient-to-r from-tree-primary to-tree-accent hover:from-tree-primary/90 hover:to-tree-accent/90"
+                  className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6"
                 >
                   <Users className="h-4 w-4" />
                   إضافة الفرد
