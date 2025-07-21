@@ -381,193 +381,172 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   };
 
   const renderStep1 = () => (
-    <div className="space-y-4 p-2">
-      {/* Basic Information Card */}
-      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-primary/10 shadow-sm">
-        <h3 className="text-base font-semibold text-primary mb-3 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-          البيانات الأساسية
-        </h3>
+    <div className="space-y-6 p-6">
+      {/* Basic Information */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="member-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            اسم الفرد *
+          </Label>
+          <Input
+            id="member-name"
+            value={memberData.name}
+            onChange={(e) => setMemberData({...memberData, name: e.target.value})}
+            placeholder="أدخل اسم الفرد"
+            className="h-10 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
+          />
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="member-name" className="text-xs font-medium text-foreground flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
-              اسم الفرد *
-            </Label>
+        <div className="space-y-2">
+          <Label htmlFor="member-gender" className="text-sm font-medium text-foreground flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
+            الجنس *
+          </Label>
+          <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
+            <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
+              <SelectValue placeholder="اختر الجنس" />
+            </SelectTrigger>
+            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+              <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
+              <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Parent Selection */}
+      <div className="space-y-2">
+        <Label htmlFor="parent-search" className="text-sm font-medium text-foreground flex items-center gap-2">
+          <Search className="h-4 w-4 text-primary" />
+          البحث عن الوالدين *
+        </Label>
+        <div className="space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              id="member-name"
-              value={memberData.name}
-              onChange={(e) => setMemberData({...memberData, name: e.target.value})}
-              placeholder="أدخل اسم الفرد"
-              className="h-9 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
+              id="parent-search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="ابحث عن الأب والأم..."
+              className="pl-10 h-10 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
             />
           </div>
           
-          <div className="space-y-1.5">
-            <Label htmlFor="member-gender" className="text-xs font-medium text-foreground flex items-center gap-1.5">
-              <Users className="h-3 w-3 text-primary" />
-              الجنس *
-            </Label>
-            <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-              <SelectTrigger className="h-9 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
-                <SelectValue placeholder="اختر الجنس" />
-              </SelectTrigger>
-              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
-                <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
-                <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Parent Selection */}
-        <div className="mt-3 space-y-1.5">
-          <Label htmlFor="parent-search" className="text-xs font-medium text-foreground flex items-center gap-1.5">
-            <Search className="h-3 w-3 text-primary" />
-            البحث عن الوالدين *
-          </Label>
-          <div className="space-y-2">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="parent-search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="ابحث عن الأب والأم..."
-                className="pl-10 h-9 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
-              />
-            </div>
-            
-            <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
-              <SelectTrigger className="h-9 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
-                <SelectValue placeholder="اختر الوالدين" />
-              </SelectTrigger>
-              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
-                {filteredParents.map((parent) => (
-                  <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
-                    {parent.display}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
+            <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
+              <SelectValue placeholder="اختر الوالدين" />
+            </SelectTrigger>
+            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+              {filteredParents.map((parent) => (
+                <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
+                  {parent.display}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      {/* Dates and Life Status Card */}
-      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-primary/10 shadow-sm">
-        <h3 className="text-base font-semibold text-primary mb-3 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
-          التواريخ والحالة الحيوية
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-              <CalendarIcon className="h-3 w-3 text-green-500" />
-              تاريخ الميلاد
+      {/* Dates and Life Status */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-green-500" />
+            تاريخ الميلاد
+          </Label>
+          <EnhancedDatePicker
+            value={memberData.birthDate || undefined}
+            onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
+            placeholder="اختر تاريخ الميلاد"
+            toYear={new Date().getFullYear()}
+            fromYear={1900}
+            disableFuture={true}
+            className="h-10 text-sm rounded-lg"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <Heart className="h-4 w-4 text-accent" />
+            الحالة الحيوية
+          </Label>
+          <div className="flex items-center justify-center h-10 bg-background border border-input rounded-lg px-3">
+            <Label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+              على قيد الحياة
+              <Switch
+                checked={memberData.isAlive}
+                onCheckedChange={(checked) => setMemberData({...memberData, isAlive: checked, deathDate: checked ? null : memberData.deathDate})}
+              />
+            </Label>
+          </div>
+        </div>
+
+        {/* Death Date */}
+        {!memberData.isAlive && (
+          <div className="md:col-span-2 space-y-2">
+            <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+              <X className="h-4 w-4 text-red-500" />
+              تاريخ الوفاة
             </Label>
             <EnhancedDatePicker
-              value={memberData.birthDate || undefined}
-              onChange={(date) => setMemberData({...memberData, birthDate: date || null})}
-              placeholder="اختر تاريخ الميلاد"
+              value={memberData.deathDate || undefined}
+              onChange={(date) => setMemberData({...memberData, deathDate: date || null})}
+              placeholder="اختر تاريخ الوفاة"
               toYear={new Date().getFullYear()}
-              fromYear={1900}
+              fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
               disableFuture={true}
-              className="h-9 text-sm rounded-lg"
+              className="h-10 text-sm rounded-lg"
             />
           </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-              <Heart className="h-3 w-3 text-accent" />
-              الحالة الحيوية
-            </Label>
-            <div className="flex items-center justify-center h-9 bg-background border border-input rounded-lg px-3">
-              <Label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
-                على قيد الحياة
-                <Switch
-                  checked={memberData.isAlive}
-                  onCheckedChange={(checked) => setMemberData({...memberData, isAlive: checked, deathDate: checked ? null : memberData.deathDate})}
-                />
-              </Label>
-            </div>
-          </div>
-
-          {/* Death Date */}
-          {!memberData.isAlive && (
-            <div className="md:col-span-2 space-y-1.5">
-              <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                <X className="h-3 w-3 text-red-500" />
-                تاريخ الوفاة
-              </Label>
-              <EnhancedDatePicker
-                value={memberData.deathDate || undefined}
-                onChange={(date) => setMemberData({...memberData, deathDate: date || null})}
-                placeholder="اختر تاريخ الوفاة"
-                toYear={new Date().getFullYear()}
-                fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
-                disableFuture={true}
-                className="h-9 text-sm rounded-lg"
-              />
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Additional Information Card */}
-      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-primary/10 shadow-sm">
-        <h3 className="text-base font-semibold text-primary mb-3 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
-          معلومات إضافية
-        </h3>
-        
-        <div className="space-y-3">
-          {/* Biography */}
-          <div className="space-y-1.5">
-            <Label htmlFor="member-bio" className="text-xs font-medium text-foreground">نبذة تعريفية</Label>
-            <Textarea
-              id="member-bio"
-              value={memberData.bio}
-              onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
-              placeholder="اكتب نبذة مختصرة عن الفرد..."
-              className="min-h-16 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
-              rows={2}
-            />
-          </div>
+      {/* Additional Information */}
+      <div className="space-y-4">
+        {/* Biography */}
+        <div className="space-y-2">
+          <Label htmlFor="member-bio" className="text-sm font-medium text-foreground">نبذة تعريفية</Label>
+          <Textarea
+            id="member-bio"
+            value={memberData.bio}
+            onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
+            placeholder="اكتب نبذة مختصرة عن الفرد..."
+            className="min-h-20 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
+            rows={3}
+          />
+        </div>
 
-          {/* Image Upload */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-              <Upload className="h-3 w-3 text-primary" />
-              صورة الفرد
-            </Label>
-            <div className="flex items-center gap-3 p-3 bg-background border border-dashed border-input rounded-lg hover:border-primary/50 transition-colors">
-              {memberData.croppedImage && (
-                <Avatar className="w-12 h-12 border border-primary/20">
-                  <AvatarImage src={memberData.croppedImage} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs">{memberData.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-              )}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => document.getElementById('member-image')?.click()}
-                className="gap-1.5 h-8 text-xs rounded-md border hover:border-primary hover:bg-primary/5"
-              >
-                <Upload className="h-3 w-3" />
-                {memberData.croppedImage ? 'تغيير' : 'رفع صورة'}
-              </Button>
-              <input
-                id="member-image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e)}
-                className="hidden"
-              />
-            </div>
+        {/* Image Upload */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+            <Upload className="h-4 w-4 text-primary" />
+            صورة الفرد
+          </Label>
+          <div className="flex items-center gap-4 p-4 bg-background border border-dashed border-input rounded-lg hover:border-primary/50 transition-colors">
+            {memberData.croppedImage && (
+              <Avatar className="w-16 h-16 border border-primary/20">
+                <AvatarImage src={memberData.croppedImage} />
+                <AvatarFallback className="bg-primary/10 text-primary text-sm">{memberData.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => document.getElementById('member-image')?.click()}
+              className="gap-2 h-10 text-sm rounded-lg border hover:border-primary hover:bg-primary/5"
+            >
+              <Upload className="h-4 w-4" />
+              {memberData.croppedImage ? 'تغيير' : 'رفع صورة'}
+            </Button>
+            <input
+              id="member-image"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleImageUpload(e)}
+              className="hidden"
+            />
           </div>
         </div>
       </div>
