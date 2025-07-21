@@ -48,17 +48,17 @@ export function EnhancedDatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl",
+            "h-12 border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-right font-normal w-full hover:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl overflow-hidden text-ellipsis whitespace-nowrap px-10",
             !value && "text-gray-500 dark:text-gray-400",
             className
           )}
         >
-          <CalendarIcon className="ml-2 h-4 w-4 text-amber-500" />
-          {value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}
+          <CalendarIcon className="ml-2 h-4 w-4 text-amber-500 flex-shrink-0" />
+          <span className="truncate flex-1">{value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] sm:max-w-none sm:w-auto fixed sm:relative left-1/2 top-1/2 sm:left-auto sm:top-auto transform -translate-x-1/2 -translate-y-1/2 sm:transform-none" 
+        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2" 
         align="center" 
         sideOffset={0}
         avoidCollisions={false}
