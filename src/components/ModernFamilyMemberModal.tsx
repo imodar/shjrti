@@ -94,7 +94,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const [husband, setHusband] = useState<Husband | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && familyId && familyId.trim() !== '') {
       fetchFamilyData();
     }
   }, [isOpen, familyId]);
@@ -126,6 +126,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   }, [marriages, searchTerm, memberData.gender]);
 
   const fetchFamilyData = async () => {
+    if (!familyId || familyId.trim() === '') {
+      console.warn('Invalid familyId provided to fetchFamilyData:', familyId);
+      return;
+    }
+    
     try {
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
