@@ -705,69 +705,76 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                 <div className="space-y-6">
                   {memberData.gender === "male" && (
-                      <div className="bg-secondary/30 rounded-lg p-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                           {/* Add Wife Section - Right */}
                           <div className="lg:col-span-1">
-                            <div className="bg-background border border-border rounded-lg p-4">
-                              <h4 className="text-md font-medium text-foreground mb-4">Add Wife (Optional)</h4>
+                            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md">
+                              <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                  <Heart className="w-4 h-4 text-white" />
+                                </div>
+                                <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300">إضافة زوجة</h4>
+                              </div>
                               
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <div>
-                                  <label className="block text-sm font-medium text-foreground mb-1">
-                                    Name *
+                                  <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                    الاسم *
                                   </label>
-                                  <input
-                                    type="text"
+                                  <Input
                                     value={newWife.name}
                                     onChange={(e) => setNewWife({...newWife, name: e.target.value})}
-                                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
-                                    placeholder="Wife's name"
+                                    className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
+                                    placeholder="اسم الزوجة"
                                   />
                                 </div>
 
                                 <div>
-                                  <label className="block text-sm font-medium text-foreground mb-1">
-                                    Birth Date
+                                  <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                    تاريخ الميلاد
                                   </label>
-                                  <input
-                                    type="date"
-                                    value={newWife.birthDate}
-                                    onChange={(e) => setNewWife({...newWife, birthDate: e.target.value})}
-                                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
-                                  />
+                                  <div className="relative z-[10001]">
+                                    <EnhancedDatePicker
+                                      value={newWife.birthDate ? new Date(newWife.birthDate) : null}
+                                      onChange={(date) => setNewWife({...newWife, birthDate: date ? date.toISOString().split('T')[0] : ''})}
+                                      placeholder="اختر التاريخ"
+                                      className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
+                                    />
+                                  </div>
                                 </div>
 
-                                <div className="flex items-center space-x-2">
-                                  <input
-                                    type="checkbox"
+                                <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
+                                  <Switch
                                     id="new-wife-alive"
                                     checked={newWife.isAlive}
-                                    onChange={(e) => setNewWife({...newWife, isAlive: e.target.checked})}
-                                    className="w-4 h-4"
+                                    onCheckedChange={(checked) => setNewWife({...newWife, isAlive: checked})}
+                                    className="data-[state=checked]:bg-pink-500"
                                   />
-                                  <label htmlFor="new-wife-alive" className="text-sm text-foreground">
-                                    Is Alive
+                                  <label htmlFor="new-wife-alive" className="text-sm text-pink-700 dark:text-pink-300 font-medium">
+                                    على قيد الحياة
                                   </label>
                                 </div>
 
                                 {!newWife.isAlive && (
-                                  <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1">
-                                      Death Date
+                                  <div className="animate-fade-in">
+                                    <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                      تاريخ الوفاة
                                     </label>
-                                    <input
-                                      type="date"
-                                      value={newWife.deathDate}
-                                      onChange={(e) => setNewWife({...newWife, deathDate: e.target.value})}
-                                      className="w-full p-2 border border-border rounded-md bg-background text-foreground"
-                                    />
+                                    <div className="relative z-[10000]">
+                                      <EnhancedDatePicker
+                                        value={newWife.deathDate ? new Date(newWife.deathDate) : null}
+                                        onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                        placeholder="اختر تاريخ الوفاة"
+                                        className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
+                                      />
+                                    </div>
                                   </div>
                                 )}
 
                                 <div>
-                                  <label className="block text-sm font-medium text-foreground mb-2">
-                                    Photo
+                                  <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                    الصورة الشخصية
                                   </label>
                                   <input
                                     type="file"
@@ -778,39 +785,42 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                   />
                                   
                                   {newWife.imageUrl ? (
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
                                       <img
                                         src={newWife.imageUrl}
                                         alt="New Wife"
-                                        className="w-16 h-16 rounded-lg object-cover border border-border"
+                                        className="w-16 h-16 rounded-full object-cover border-2 border-pink-300"
                                       />
-                                      <div className="flex flex-col space-y-1">
+                                      <div className="flex flex-col space-y-2">
                                         <Button
                                           type="button"
                                           variant="outline"
                                           size="sm"
                                           onClick={() => document.getElementById('new-wife-image')?.click()}
+                                          className="border-pink-300 text-pink-600 hover:bg-pink-50"
                                         >
-                                          Replace
+                                          <Camera className="w-3 h-3 mr-1" />
+                                          تغيير
                                         </Button>
                                         <Button
                                           type="button"
                                           variant="outline"
                                           size="sm"
                                           onClick={() => setNewWife({...newWife, imageUrl: ''})}
-                                          className="text-destructive hover:text-destructive"
+                                          className="border-red-300 text-red-600 hover:bg-red-50"
                                         >
-                                          Remove
+                                          <X className="w-3 h-3 mr-1" />
+                                          إزالة
                                         </Button>
                                       </div>
                                     </div>
                                   ) : (
                                     <label
                                       htmlFor="new-wife-image"
-                                      className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 bg-secondary/20"
+                                      className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-pink-300 dark:border-pink-700 rounded-xl cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 dark:hover:bg-pink-900/20 transition-all duration-200 group"
                                     >
-                                      <Camera className="w-5 h-5 text-muted-foreground mb-1" />
-                                      <span className="text-xs text-muted-foreground text-center">Add Photo</span>
+                                      <Camera className="w-6 h-6 text-pink-400 group-hover:text-pink-500 mb-1" />
+                                      <span className="text-sm text-pink-600 dark:text-pink-400 text-center">إضافة صورة</span>
                                     </label>
                                   )}
                                 </div>
@@ -818,12 +828,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                 <Button
                                   type="button"
                                   onClick={addWife}
-                                  className="w-full"
-                                  size="sm"
+                                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-md"
+                                  size="lg"
                                   disabled={!newWife.name.trim()}
                                 >
-                                  <Plus className="w-4 h-4 mr-1" />
-                                  Add Wife
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  إضافة الزوجة
                                 </Button>
                               </div>
                             </div>
@@ -831,53 +841,76 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                           {/* Wives List - Left */}
                           <div className="lg:col-span-2">
-                            <h4 className="text-md font-medium text-foreground mb-4">Added Wives</h4>
+                            <div className="flex items-center gap-2 mb-6">
+                              <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <Users className="w-4 h-4 text-white" />
+                              </div>
+                              <h4 className="text-lg font-semibold text-rose-700 dark:text-rose-300">الزوجات المضافة</h4>
+                              {wives.length > 0 && (
+                                <span className="px-2 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-xs rounded-full font-medium">
+                                  {wives.length}
+                                </span>
+                              )}
+                            </div>
                             
-                            <div className="space-y-3 max-h-96 overflow-y-auto">
+                            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                               {wives.length === 0 ? (
-                                <div className="text-center py-8 text-muted-foreground">
-                                  <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                                  <p>No wives added yet</p>
+                                <div className="text-center py-12 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-pink-200/50 dark:border-pink-800/30">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Heart className="w-8 h-8 text-pink-400" />
+                                  </div>
+                                  <p className="text-pink-600 dark:text-pink-400 font-medium">لم يتم إضافة زوجات بعد</p>
+                                  <p className="text-pink-500 dark:text-pink-500 text-sm mt-1">استخدم النموذج على اليمين لإضافة زوجة</p>
                                 </div>
                               ) : (
                                 wives.map((wife, index) => (
-                                  <div key={index} className="border border-border rounded-lg p-4 bg-background/50">
+                                  <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
                                     <div className="flex items-start justify-between">
-                                      <div className="flex items-center space-x-3">
+                                      <div className="flex items-center space-x-4">
                                         {wife.croppedImage ? (
-                                          <img
-                                            src={wife.croppedImage}
-                                            alt={wife.name}
-                                            className="w-12 h-12 rounded-full object-cover border border-border"
-                                          />
+                                          <div className="relative">
+                                            <img
+                                              src={wife.croppedImage}
+                                              alt={wife.name}
+                                              className="w-14 h-14 rounded-full object-cover border-2 border-pink-300 shadow-sm"
+                                            />
+                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full border-2 border-white dark:border-gray-900"></div>
+                                          </div>
                                         ) : (
-                                          <div className="w-12 h-12 rounded-full bg-secondary/50 flex items-center justify-center">
-                                            <User className="w-6 h-6 text-muted-foreground" />
+                                          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/50 dark:to-rose-900/50 flex items-center justify-center border-2 border-pink-300 dark:border-pink-700">
+                                            <User className="w-7 h-7 text-pink-500" />
                                           </div>
                                         )}
                                         
-                                        <div>
-                                          <h5 className="font-medium text-foreground">{wife.name}</h5>
-                                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                        <div className="flex-1">
+                                          <h5 className="font-semibold text-gray-800 dark:text-gray-200 text-lg">{wife.name}</h5>
+                                          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
                                             {wife.birthDate && (
-                                              <span>Born: {wife.birthDate.toLocaleDateString()}</span>
+                                              <span className="px-2 py-1 bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-full text-xs">
+                                                المولد: {new Date(wife.birthDate).toLocaleDateString('ar')}
+                                              </span>
                                             )}
                                             {!wife.isAlive && wife.deathDate && (
-                                              <span>• Died: {wife.deathDate.toLocaleDateString()}</span>
+                                              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                                                الوفاة: {new Date(wife.deathDate).toLocaleDateString('ar')}
+                                              </span>
                                             )}
                                             {!wife.isAlive && !wife.deathDate && (
-                                              <span>• Deceased</span>
+                                              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                                                متوفية
+                                              </span>
                                             )}
                                           </div>
                                         </div>
                                       </div>
                                       
-                                      <div className="flex space-x-1">
+                                      <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <Button
                                           type="button"
                                           variant="outline"
                                           size="sm"
                                           onClick={() => editWife(index)}
+                                          className="border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400"
                                         >
                                           <Edit3 className="w-4 h-4" />
                                         </Button>
@@ -886,7 +919,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                           variant="outline"
                                           size="sm"
                                           onClick={() => removeWife(index)}
-                                          className="text-destructive hover:text-destructive"
+                                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                                         >
                                           <Trash2 className="w-4 h-4" />
                                         </Button>
