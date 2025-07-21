@@ -31,7 +31,7 @@ interface FamilyMember {
 
 interface Marriage {
   id: string;
-  husband: { id: string; name: string };
+  husband: { id: string; name: string; is_founder?: boolean; father_id?: string; father_name?: string };
   wife: { id: string; name: string };
   marriage_date: string | null;
   is_active: boolean;
@@ -152,7 +152,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           wife_id,
           marriage_date,
           is_active,
-          husband:family_tree_members!marriages_husband_id_fkey(id, name),
+          husband:family_tree_members!marriages_husband_id_fkey(id, name, is_founder, father_id),
           wife:family_tree_members!marriages_wife_id_fkey(id, name)
         `)
         .eq('family_id', familyId)
@@ -160,13 +160,31 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
       if (marriagesError) throw marriagesError;
 
-      // Transform marriages data
-      const transformedMarriages = (marriagesData || []).map(marriage => ({
-        id: marriage.id,
-        husband: { id: marriage.husband_id, name: marriage.husband?.name || "" },
-        wife: { id: marriage.wife_id, name: marriage.wife?.name || "" },
-        marriage_date: marriage.marriage_date,
-        is_active: marriage.is_active
+      // Transform marriages data and get father names for husbands
+      const transformedMarriages = await Promise.all((marriagesData || []).map(async (marriage) => {
+        let fatherName = "";
+        if (marriage.husband?.father_id && !marriage.husband?.is_founder) {
+          const { data: fatherData } = await supabase
+            .from('family_tree_members')
+            .select('name')
+            .eq('id', marriage.husband.father_id)
+            .single();
+          fatherName = fatherData?.name || "";
+        }
+
+        return {
+          id: marriage.id,
+          husband: { 
+            id: marriage.husband_id, 
+            name: marriage.husband?.name || "",
+            is_founder: marriage.husband?.is_founder || false,
+            father_id: marriage.husband?.father_id || null,
+            father_name: fatherName
+          },
+          wife: { id: marriage.wife_id, name: marriage.wife?.name || "" },
+          marriage_date: marriage.marriage_date,
+          is_active: marriage.is_active
+        };
       }));
 
       setFamilyMembers(transformedMembers);
@@ -402,7 +420,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
                           {marriages.map((marriage) => (
                             <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
-                              {marriage.husband.name} {familyName} & {marriage.wife.name}
+                              {marriage.husband.is_founder 
+                                ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
+                              }
                             </SelectItem>
                           ))}
                         </SelectContent>
