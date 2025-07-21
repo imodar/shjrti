@@ -404,7 +404,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               </div>
 
               {/* Left Side: Step Progress */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mr-8">
                 <div className="flex flex-col items-center">
                   <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
                     step >= 1 
