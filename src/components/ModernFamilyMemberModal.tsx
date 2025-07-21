@@ -392,12 +392,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 
                 {/* Text Content */}
                 <div className="text-right sm:text-right text-center">
-                  <h1 className="text-lg sm:text-xl md:text-3xl font-bold mb-1 sm:mb-2">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 font-arabic">
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                       إضافة فرد جديد للعائلة
                     </span>
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed font-arabic">
                     {step === 1 ? "املأ البيانات الأساسية للفرد الجديد" : "املأ تفاصيل الزواج والشراكة"}
                   </p>
                 </div>
@@ -444,7 +444,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                     {/* Name - Full width on mobile, 1/2 on tablet+ */}
                     <div className="group sm:col-span-1 md:col-span-2">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الاسم الأول
                       </Label>
@@ -463,18 +463,18 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Gender - 1/4 width on desktop */}
                     <div className="group">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الجنس
                       </Label>
                       <div className="relative z-[10001]">
                         <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-                          <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-lg border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                          <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
                             <SelectValue placeholder="اختر الجنس" />
                           </SelectTrigger>
                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                            <SelectItem value="male" className="font-arabic text-lg">ذكر</SelectItem>
-                            <SelectItem value="female" className="font-arabic text-lg">أنثى</SelectItem>
+                            <SelectItem value="male" className="font-arabic text-base sm:text-lg lg:text-xl">ذكر</SelectItem>
+                            <SelectItem value="female" className="font-arabic text-base sm:text-lg lg:text-xl">أنثى</SelectItem>
                           </SelectContent>
                         </Select>
                         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
@@ -485,7 +485,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Birth Date - 1/4 width on desktop */}
                     <div className="group">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         تاريخ الميلاد
                       </Label>
@@ -510,19 +510,19 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Family Relationship - 1/2 width on desktop */}
                     <div className="group md:col-span-2">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         علاقة القرابة (العائلة)
                       </Label>
                       <div className="relative z-[10001]">
                         <Select value={memberData.selectedParent || "none"} onValueChange={(value) => setMemberData({...memberData, selectedParent: value === "none" ? null : value})}>
-                          <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                          <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
                             <SelectValue placeholder="اختر علاقة القرابة مع العائلة" />
                           </SelectTrigger>
                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                            <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
+                            <SelectItem value="none" className="font-arabic text-base sm:text-lg lg:text-xl">مؤسس العائلة</SelectItem>
                             {marriages.map((marriage) => (
-                              <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
+                              <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-base sm:text-lg lg:text-xl">
                                 {marriage.husband.is_founder 
                                   ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
                                   : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
@@ -539,18 +539,18 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Life Status - 1/4 width on desktop */}
                     <div className="group">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الحالة الحيوية
                       </Label>
                       <div className="relative z-[10001]">
                         <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
-                          <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-lg border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                          <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
                             <SelectValue placeholder="الحالة" />
                           </SelectTrigger>
                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                            <SelectItem value="alive" className="font-arabic text-lg">على قيد الحياة</SelectItem>
-                            <SelectItem value="deceased" className="font-arabic text-lg">متوفى</SelectItem>
+                            <SelectItem value="alive" className="font-arabic text-base sm:text-lg lg:text-xl">على قيد الحياة</SelectItem>
+                            <SelectItem value="deceased" className="font-arabic text-base sm:text-lg lg:text-xl">متوفى</SelectItem>
                           </SelectContent>
                         </Select>
                         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
@@ -562,7 +562,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     {/* Death Date (if deceased) - 1/4 width on desktop */}
                     {!memberData.isAlive && (
                       <div className="group">
-                        <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                        <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                           <div className="w-3 h-3 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                           تاريخ الوفاة
                         </Label>
@@ -588,7 +588,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                     {/* Photo Upload */}
                     <div className="group">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         صورة شخصية
                       </Label>
@@ -660,7 +660,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Bio */}
                     <div className="lg:col-span-3 group">
-                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                         <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         نبذة شخصية
                       </Label>
@@ -668,7 +668,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         value={memberData.bio}
                         onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
                         placeholder="أضف نبذة شخصية عن الفرد..."
-                        className="text-lg border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none h-[180px]"
+                        className="text-base sm:text-lg lg:text-xl border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none h-[180px] font-arabic placeholder:text-sm sm:placeholder:text-base lg:placeholder:text-lg"
                       />
                     </div>
                   </div>
