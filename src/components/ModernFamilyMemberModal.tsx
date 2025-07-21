@@ -505,7 +505,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 </div>
 
                 {/* Family Relationship and Life Status Section */}
-                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl pb-6 px-6 border border-white/30 dark:border-gray-700/30">
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Family Relationship - 1/2 width on desktop */}
