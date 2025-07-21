@@ -347,7 +347,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       {/* Modal Backdrop */}
       <div className="fixed inset-0 z-[9998] bg-black/50 flex items-center justify-center p-4">
         {/* Modal Content */}
-        <div className="bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative">
+        <div className="bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 rounded-2xl shadow-2xl max-w-full sm:max-w-lg md:max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden relative mx-2 sm:mx-0">
           
           {/* Floating Background Elements - Fixed positioning to avoid scroll interference */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -376,13 +376,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </button>
           
           {/* Header Section */}
-          <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border-b border-white/40 dark:border-gray-600/40 py-6 px-8">
-            <div className="flex items-center justify-between gap-8 relative z-10">
+          <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border-b border-white/40 dark:border-gray-600/40 py-4 sm:py-6 px-4 sm:px-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8 relative z-10">
               {/* Right Side: Icon + Title + Description */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 order-2 sm:order-1">
                 <div className="relative">
-                  <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
-                    <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
+                  <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                    <TreePine className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" />
                   </div>
                   {/* Status Indicator */}
                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
@@ -391,8 +391,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 </div>
                 
                 {/* Text Content */}
-                <div className="text-right">
-                  <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                <div className="text-right sm:text-right text-center">
+                  <h1 className="text-lg sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                       إضافة فرد جديد للعائلة
                     </span>
@@ -404,7 +404,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               </div>
 
               {/* Left Side: Step Progress */}
-              <div className="flex items-center gap-4 mr-8">
+              <div className="flex items-center gap-2 sm:gap-4 mr-4 sm:mr-8 order-1 sm:order-2">
                 <div className="flex flex-col items-center">
                   <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
                     step >= 1 
@@ -435,17 +435,17 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Content Section */}
-          <div className="px-8 pb-8">
+          <div className="px-4 sm:px-8 pb-4 sm:pb-8">
             {step === 1 && (
               <div className="space-y-2">
                 {/* Personal Information Section */}
-                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30">
                   
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    {/* Name - 1/2 width on desktop */}
-                    <div className="group md:col-span-2">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                        <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    {/* Name - Full width on mobile, 1/2 on tablet+ */}
+                    <div className="group sm:col-span-1 md:col-span-2">
+                      <Label className="text-base sm:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الاسم الأول
                       </Label>
                       <div className="relative">
@@ -967,8 +967,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Footer */}
-          <div className="border-t border-white/40 dark:border-gray-600/40 p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
-            <div className="flex items-center justify-between gap-4">
+          <div className="border-t border-white/40 dark:border-gray-600/40 p-3 sm:p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               {step > 1 && (
                 <Button 
                   onClick={() => setStep(step - 1)}
