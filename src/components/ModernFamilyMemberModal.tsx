@@ -196,21 +196,21 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         {/* Modal Content */}
         <div className="bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative">
           
-          {/* Floating Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
+          {/* Floating Background Elements - Fixed positioning to avoid scroll interference */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-20 animate-pulse"></div>
             <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
             <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-20 animate-pulse"></div>
           </div>
 
-          {/* Floating Animated Icons */}
-          <div className="absolute top-8 right-8 animate-pulse">
+          {/* Floating Animated Icons - Fixed positioning */}
+          <div className="absolute top-8 right-8 animate-pulse pointer-events-none">
             <Heart className="h-8 w-8 text-green-400 opacity-60" />
           </div>
-          <div className="absolute bottom-8 left-8 animate-bounce">
+          <div className="absolute bottom-8 left-8 animate-bounce pointer-events-none">
             <Users className="h-10 w-10 text-emerald-400 opacity-40" />
           </div>
-          <div className="absolute top-1/2 left-4 animate-pulse">
+          <div className="absolute top-1/2 left-4 animate-pulse pointer-events-none">
             <TreePine className="h-6 w-6 text-green-400 opacity-60" />
           </div>
           
