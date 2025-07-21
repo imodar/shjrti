@@ -421,31 +421,27 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           <Search className="h-4 w-4 text-primary" />
           البحث عن الوالدين *
         </Label>
-        <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="parent-search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="ابحث عن الأب والأم..."
-              className="pl-10 h-10 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
-            />
-          </div>
-          
-          <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
-            <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
-              <SelectValue placeholder="اختر الوالدين" />
-            </SelectTrigger>
-            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
-              {filteredParents.map((parent) => (
-                <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
-                  {parent.display}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
+          <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
+            <SelectValue placeholder="ابحث واختر الوالدين..." />
+          </SelectTrigger>
+          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+            <div className="relative p-2">
+              <Search className="absolute left-5 top-5 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="ابحث عن الأب والأم..."
+                className="pl-10 h-10 text-sm rounded-lg bg-background border border-input"
+              />
+            </div>
+            {filteredParents.map((parent) => (
+              <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
+                {parent.display}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Dates and Life Status */}
