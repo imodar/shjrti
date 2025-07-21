@@ -445,7 +445,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       </div>
 
       {/* Dates and Life Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground flex items-center gap-2">
             <CalendarIcon className="h-4 w-4 text-green-500" />
@@ -480,7 +480,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
         {/* Death Date */}
         {!memberData.isAlive && (
-          <div className="md:col-span-2 space-y-2">
+          <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground flex items-center gap-2">
               <X className="h-4 w-4 text-red-500" />
               تاريخ الوفاة
