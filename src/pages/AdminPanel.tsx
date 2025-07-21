@@ -906,7 +906,7 @@ export default function AdminPanel() {
                             </div>
 
                             <div className="flex items-center space-x-4">
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-2 checkbox-container">
                                 <Checkbox
                                   id={`featured-${pkg.id}`}
                                   checked={pkg.is_featured}

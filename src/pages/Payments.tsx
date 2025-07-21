@@ -620,7 +620,7 @@ export default function Payments() {
                             <Input id="cardholder-name" placeholder="الاسم كما يظهر على البطاقة" className="bg-white dark:bg-gray-800" />
                           </div>
                           
-                          <div className="flex items-center space-x-2 space-x-reverse">
+                          <div className="flex items-center space-x-2 space-x-reverse checkbox-container">
                             <Checkbox id="make-default-card" />
                             <Label htmlFor="make-default-card" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                               جعل هذه البطاقة الافتراضية
@@ -646,7 +646,7 @@ export default function Payments() {
                             <Input id="paypal-email" type="email" placeholder="example@paypal.com" className="bg-white dark:bg-gray-800" />
                           </div>
                           
-                          <div className="flex items-center space-x-2 space-x-reverse">
+                          <div className="flex items-center space-x-2 space-x-reverse checkbox-container">
                             <Checkbox id="make-default-paypal" />
                             <Label htmlFor="make-default-paypal" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                               جعل PayPal طريقة الدفع الافتراضية
@@ -683,7 +683,7 @@ export default function Payments() {
                             <Input id="account-number" placeholder="SA03 8000 0000 6080 1016 7519" className="bg-white dark:bg-gray-800" />
                           </div>
                           
-                          <div className="flex items-center space-x-2 space-x-reverse">
+                          <div className="flex items-center space-x-2 space-x-reverse checkbox-container">
                             <Checkbox id="make-default-bank" />
                             <Label htmlFor="make-default-bank" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                               جعل هذا الحساب البنكي الافتراضي

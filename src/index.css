@@ -156,80 +156,30 @@ All colors MUST be HSL.
     margin-left: auto;
   }
   
-  /* RTL Support for flex justify - be more selective */
-  [dir="rtl"] .justify-start {
-    justify-content: flex-end;
-  }
-  
-  [dir="rtl"] .justify-end {
-    justify-content: flex-start;
-  }
-  
-  /* RTL Support for flex direction - only for specific cases */
-  [dir="rtl"] .rtl-reverse {
-    flex-direction: row-reverse;
-  }
-  
-  /* RTL Support for text alignment */
-  [dir="rtl"] .text-left {
-    text-align: right;
-  }
-  
-  [dir="rtl"] .text-right {
-    text-align: left;
-  }
-  
-  /* RTL specific spacing for navigation items */
-  [dir="rtl"] .nav-item {
-    flex-direction: row-reverse;
-  }
+  /* RTL Support - ONLY for specific elements that need it */
   
   /* RTL Support for dialog footers and button containers */
   [dir="rtl"] .dialog-footer {
     flex-direction: row-reverse;
   }
   
-  /* Preserve justify-between in RTL */
-  [dir="rtl"] .justify-between {
-    justify-content: space-between;
+  /* RTL Support for navigation items only */
+  [dir="rtl"] .nav-item {
+    flex-direction: row-reverse;
   }
   
-  /* RTL Support for checkbox layouts - more specific */
+  /* RTL Support ONLY for checkbox containers - very specific */
+  [dir="rtl"] .checkbox-wrapper,
   [dir="rtl"] .checkbox-container {
     flex-direction: row-reverse;
   }
   
-  /* RTL Support for any flex container with checkboxes - use more compatible selectors */
-  [dir="rtl"] .flex.items-center.space-x-2 {
-    flex-direction: row-reverse !important;
+  /* Preserve normal layout for everything else */
+  [dir="rtl"] .justify-between {
+    justify-content: space-between;
   }
   
-  [dir="rtl"] .flex.items-center.space-x-4 {
-    flex-direction: row-reverse !important;
-  }
-  
-  /* Override space-x-reverse when in RTL */
-  [dir="rtl"] .space-x-2.space-x-reverse {
-    flex-direction: row !important;
-  }
-  
-  /* Force RTL checkbox layout for all form controls */
-  [dir="rtl"] label + .flex.items-center,
-  [dir="rtl"] .flex.items-center label {
-    flex-direction: row-reverse !important;
-  }
-  
-  /* Additional specific rule for checkbox containers */
-  [dir="rtl"] .flex.items-center.space-x-2.space-x-reverse,
-  [dir="rtl"] .flex.items-center.space-x-2:not(.space-x-reverse) {
-    flex-direction: row-reverse !important;
-  }
-  
-  /* Ensure checkbox margin is correct in RTL */
-  [dir="rtl"] .space-x-2 > * + * {
-    margin-left: 0 !important;
-    margin-right: 0.5rem !important;
-  }
+  /* DO NOT reverse general flex containers */
 }
 
 @layer components {
