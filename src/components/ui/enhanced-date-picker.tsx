@@ -57,7 +57,7 @@ export function EnhancedDatePicker({
           {value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in" align="start">
+      <PopoverContent className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10010]" align="start">
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
           <div className="flex items-center justify-center gap-2">
