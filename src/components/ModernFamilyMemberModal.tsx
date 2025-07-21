@@ -435,7 +435,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Content Section */}
-          <div className="px-8 pb-8 max-h-[60vh] overflow-y-auto">
+          <div className="px-8 pb-8">
             {step === 1 && (
               <div className="space-y-2">
                 {/* Personal Information Section */}
