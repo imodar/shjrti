@@ -498,17 +498,17 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       </div>
 
       {/* Additional Information */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Biography */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:col-span-2">
           <Label htmlFor="member-bio" className="text-sm font-medium text-foreground">نبذة تعريفية</Label>
           <Textarea
             id="member-bio"
             value={memberData.bio}
             onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
             placeholder="اكتب نبذة مختصرة عن الفرد..."
-            className="min-h-20 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
-            rows={3}
+            className="min-h-32 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
+            rows={4}
           />
         </div>
 
@@ -518,23 +518,39 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             <Upload className="h-4 w-4 text-primary" />
             صورة الفرد
           </Label>
-          <div className="flex items-center gap-4 p-4 bg-background border border-dashed border-input rounded-lg hover:border-primary/50 transition-colors">
-            {memberData.croppedImage && (
-              <Avatar className="w-16 h-16 border border-primary/20">
-                <AvatarImage src={memberData.croppedImage} />
-                <AvatarFallback className="bg-primary/10 text-primary text-sm">{memberData.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => document.getElementById('member-image')?.click()}
-              className="gap-2 h-10 text-sm rounded-lg border hover:border-primary hover:bg-primary/5"
-            >
-              <Upload className="h-4 w-4" />
-              {memberData.croppedImage ? 'تغيير' : 'رفع صورة'}
-            </Button>
+          <div className="relative group">
+            <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/20 rounded-xl hover:border-primary/40 transition-all duration-300 hover:bg-gradient-to-br hover:from-primary/10 hover:to-accent/10 cursor-pointer min-h-32"
+                 onClick={() => document.getElementById('member-image')?.click()}>
+              {memberData.croppedImage ? (
+                <div className="flex flex-col items-center gap-3">
+                  <Avatar className="w-20 h-20 border-2 border-primary/30 shadow-lg">
+                    <AvatarImage src={memberData.croppedImage} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
+                      {memberData.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 h-8 text-xs rounded-lg border hover:border-primary hover:bg-primary/5"
+                  >
+                    <Upload className="h-3 w-3" />
+                    تغيير الصورة
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Upload className="h-8 w-8 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">رفع صورة</p>
+                    <p className="text-xs text-muted-foreground mt-1">اضغط لاختيار صورة</p>
+                  </div>
+                </div>
+              )}
+            </div>
             <input
               id="member-image"
               type="file"
