@@ -381,18 +381,18 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   };
 
   const renderStep1 = () => (
-    <div className="space-y-6 p-4">
+    <div className="space-y-4 p-2">
       {/* Basic Information Card */}
-      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-primary/10 shadow-lg">
-        <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <div className="w-2 h-2 bg-primary rounded-full"></div>
+      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-primary/10 shadow-sm">
+        <h3 className="text-base font-semibold text-primary mb-3 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
           البيانات الأساسية
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="member-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-              <div className="w-2 h-2 bg-accent rounded-full"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="member-name" className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
               اسم الفرد *
             </Label>
             <Input
@@ -400,52 +400,52 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               value={memberData.name}
               onChange={(e) => setMemberData({...memberData, name: e.target.value})}
               placeholder="أدخل اسم الفرد"
-              className="h-11 rounded-xl bg-background border-2 border-input transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+              className="h-9 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
             />
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="member-gender" className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Users className="h-4 w-4 text-primary" />
+          <div className="space-y-1.5">
+            <Label htmlFor="member-gender" className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <Users className="h-3 w-3 text-primary" />
               الجنس *
             </Label>
             <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-              <SelectTrigger className="h-11 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
+              <SelectTrigger className="h-9 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
                 <SelectValue placeholder="اختر الجنس" />
               </SelectTrigger>
               <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
-                <SelectItem value="male" className="font-arabic">ذكر</SelectItem>
-                <SelectItem value="female" className="font-arabic">أنثى</SelectItem>
+                <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
+                <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
         {/* Parent Selection */}
-        <div className="mt-4 space-y-2">
-          <Label htmlFor="parent-search" className="text-sm font-medium text-foreground flex items-center gap-2">
-            <Search className="h-4 w-4 text-primary" />
+        <div className="mt-3 space-y-1.5">
+          <Label htmlFor="parent-search" className="text-xs font-medium text-foreground flex items-center gap-1.5">
+            <Search className="h-3 w-3 text-primary" />
             البحث عن الوالدين *
           </Label>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 id="parent-search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="ابحث عن الأب والأم..."
-                className="pl-12 h-11 rounded-xl bg-background border-2 border-input transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+                className="pl-10 h-9 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
               />
             </div>
             
             <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
-              <SelectTrigger className="h-11 rounded-xl bg-background border-2 border-input hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300">
+              <SelectTrigger className="h-9 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
                 <SelectValue placeholder="اختر الوالدين" />
               </SelectTrigger>
               <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
                 {filteredParents.map((parent) => (
-                  <SelectItem key={parent.id} value={parent.id} className="font-arabic">
+                  <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
                     {parent.display}
                   </SelectItem>
                 ))}
@@ -456,16 +456,16 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       </div>
 
       {/* Dates and Life Status Card */}
-      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-primary/10 shadow-lg">
-        <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <div className="w-2 h-2 bg-accent rounded-full"></div>
+      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-primary/10 shadow-sm">
+        <h3 className="text-base font-semibold text-primary mb-3 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
           التواريخ والحالة الحيوية
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Plus className="h-4 w-4 text-green-500" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <CalendarIcon className="h-3 w-3 text-green-500" />
               تاريخ الميلاد
             </Label>
             <EnhancedDatePicker
@@ -475,17 +475,17 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               toYear={new Date().getFullYear()}
               fromYear={1900}
               disableFuture={true}
-              className="h-11 rounded-xl"
+              className="h-9 text-sm rounded-lg"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Users className="h-4 w-4 text-accent" />
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <Heart className="h-3 w-3 text-accent" />
               الحالة الحيوية
             </Label>
-            <div className="flex items-center justify-center h-11 bg-background border-2 border-input rounded-xl px-4">
-              <Label className="flex items-center gap-3 text-sm font-medium cursor-pointer">
+            <div className="flex items-center justify-center h-9 bg-background border border-input rounded-lg px-3">
+              <Label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
                 على قيد الحياة
                 <Switch
                   checked={memberData.isAlive}
@@ -497,9 +497,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
           {/* Death Date */}
           {!memberData.isAlive && (
-            <div className="md:col-span-2 space-y-2">
-              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                <X className="h-4 w-4 text-red-500" />
+            <div className="md:col-span-2 space-y-1.5">
+              <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                <X className="h-3 w-3 text-red-500" />
                 تاريخ الوفاة
               </Label>
               <EnhancedDatePicker
@@ -509,7 +509,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 toYear={new Date().getFullYear()}
                 fromYear={memberData.birthDate ? memberData.birthDate.getFullYear() : 1900}
                 disableFuture={true}
-                className="h-11 rounded-xl"
+                className="h-9 text-sm rounded-lg"
               />
             </div>
           )}
@@ -517,37 +517,37 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       </div>
 
       {/* Additional Information Card */}
-      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-primary/10 shadow-lg">
-        <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <div className="w-2 h-2 bg-accent rounded-full"></div>
+      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-primary/10 shadow-sm">
+        <h3 className="text-base font-semibold text-primary mb-3 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
           معلومات إضافية
         </h3>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Biography */}
-          <div className="space-y-2">
-            <Label htmlFor="member-bio" className="text-sm font-medium text-foreground">نبذة تعريفية</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="member-bio" className="text-xs font-medium text-foreground">نبذة تعريفية</Label>
             <Textarea
               id="member-bio"
               value={memberData.bio}
               onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
               placeholder="اكتب نبذة مختصرة عن الفرد..."
-              className="min-h-20 rounded-xl bg-background border-2 border-input transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
-              rows={3}
+              className="min-h-16 text-sm rounded-lg bg-background border border-input transition-all duration-300 focus:border-primary focus:ring-1 focus:ring-primary/20 hover:border-primary/50"
+              rows={2}
             />
           </div>
 
           {/* Image Upload */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Upload className="h-4 w-4 text-primary" />
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <Upload className="h-3 w-3 text-primary" />
               صورة الفرد
             </Label>
-            <div className="flex items-center gap-4 p-4 bg-background border-2 border-dashed border-input rounded-xl hover:border-primary/50 transition-colors">
+            <div className="flex items-center gap-3 p-3 bg-background border border-dashed border-input rounded-lg hover:border-primary/50 transition-colors">
               {memberData.croppedImage && (
-                <Avatar className="w-16 h-16 border-2 border-primary/20">
+                <Avatar className="w-12 h-12 border border-primary/20">
                   <AvatarImage src={memberData.croppedImage} />
-                  <AvatarFallback className="bg-primary/10 text-primary">{memberData.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs">{memberData.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               )}
               <Button
@@ -555,10 +555,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 variant="outline"
                 size="sm"
                 onClick={() => document.getElementById('member-image')?.click()}
-                className="gap-2 h-10 rounded-lg border-2 hover:border-primary hover:bg-primary/5"
+                className="gap-1.5 h-8 text-xs rounded-md border hover:border-primary hover:bg-primary/5"
               >
-                <Upload className="h-4 w-4" />
-                {memberData.croppedImage ? 'تغيير الصورة' : 'رفع صورة'}
+                <Upload className="h-3 w-3" />
+                {memberData.croppedImage ? 'تغيير' : 'رفع صورة'}
               </Button>
               <input
                 id="member-image"
@@ -877,57 +877,43 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-primary/5 via-white to-accent/5 dark:from-gray-900/95 dark:via-gray-900 dark:to-gray-800/95 border-2 border-primary/20 shadow-2xl rounded-3xl p-0 backdrop-blur-lg">
-          {/* Creative Header with Floating Elements */}
-          <div className="relative bg-gradient-to-r from-primary via-primary/90 to-accent p-8 text-white overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-4 right-8 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
-              <div className="absolute top-12 left-12 w-16 h-16 bg-accent/30 rounded-full blur-lg"></div>
-              <div className="absolute bottom-4 right-20 w-20 h-20 bg-white/10 rounded-full blur-lg"></div>
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 dark:bg-gray-900/95 border border-primary/20 shadow-xl rounded-2xl p-0 backdrop-blur-sm">
+          {/* Compact Creative Header */}
+          <div className="relative bg-gradient-to-r from-primary to-accent p-4 text-white">
+            {/* Subtle background pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-2 right-6 w-8 h-8 bg-white rounded-full blur-sm"></div>
+              <div className="absolute bottom-2 left-8 w-6 h-6 bg-white/50 rounded-full blur-sm"></div>
             </div>
             
             <DialogHeader className="relative z-10">
-              <DialogTitle className="text-2xl font-bold flex items-center gap-4 mb-3">
-                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
-                  <Users className="h-7 w-7 text-white" />
+              <DialogTitle className="text-lg font-bold flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Users className="h-4 w-4" />
                 </div>
-                <div>
-                  <div className="text-2xl">إضافة فرد جديد للعائلة</div>
-                  <div className="text-sm text-white/80 font-normal mt-1">
-                    {step === 1 ? "البيانات الأساسية والمعلومات الشخصية" : "معلومات الزواج والعلاقات العائلية"}
+                <div className="flex-1">
+                  <div className="text-lg">إضافة فرد جديد</div>
+                  <div className="text-xs text-white/70 font-normal">
+                    {step === 1 ? "البيانات الأساسية" : "معلومات الزواج"}
+                  </div>
+                </div>
+                {/* Compact Progress Indicator */}
+                <div className="flex gap-1">
+                  <div className={cn(
+                    "w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-all",
+                    step >= 1 ? "bg-white text-primary" : "bg-white/20 text-white/60"
+                  )}>
+                    1
+                  </div>
+                  <div className={cn(
+                    "w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-all",
+                    step >= 2 ? "bg-white text-primary" : "bg-white/20 text-white/60"
+                  )}>
+                    2
                   </div>
                 </div>
               </DialogTitle>
             </DialogHeader>
-
-            {/* Creative Progress Steps */}
-            <div className="flex items-center justify-center mt-8 mb-4">
-              <div className="flex items-center space-x-6">
-                <div className="flex flex-col items-center">
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all duration-300 shadow-lg",
-                    step >= 1 ? "bg-white text-primary scale-110" : "bg-white/20 text-white/60 scale-100"
-                  )}>
-                    1
-                  </div>
-                  <span className="text-xs mt-2 text-white/80">البيانات الأساسية</span>
-                </div>
-                <div className={cn(
-                  "h-1 w-20 rounded-full transition-all duration-500",
-                  step >= 2 ? "bg-white shadow-lg" : "bg-white/30"
-                )} />
-                <div className="flex flex-col items-center">
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold transition-all duration-300 shadow-lg",
-                    step >= 2 ? "bg-white text-primary scale-110" : "bg-white/20 text-white/60 scale-100"
-                  )}>
-                    2
-                  </div>
-                  <span className="text-xs mt-2 text-white/80">الزواج والعائلة</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Content */}
