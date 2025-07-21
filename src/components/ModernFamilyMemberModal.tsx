@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload, Search, Users, Plus, Trash2, ArrowRight, ArrowLeft, X, Heart, CalendarIcon } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, Search, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -386,7 +386,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="member-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <TreePine className="h-4 w-4 text-primary" />
             اسم الفرد *
           </Label>
           <Input
@@ -400,7 +400,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 text-green-500" />
+            <CalendarIcon className="h-4 w-4 text-primary" />
             تاريخ الميلاد
           </Label>
           <EnhancedDatePicker
@@ -463,7 +463,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-            <Heart className="h-4 w-4 text-accent" />
+            <Heart className="h-4 w-4 text-primary" />
             الحالة الحيوية
           </Label>
           <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
@@ -481,7 +481,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         {!memberData.isAlive && (
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-              <X className="h-4 w-4 text-red-500" />
+              <X className="h-4 w-4 text-destructive" />
               تاريخ الوفاة
             </Label>
             <EnhancedDatePicker
@@ -867,25 +867,25 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden bg-white dark:bg-gray-900 border-0 shadow-2xl rounded-2xl p-0">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden bg-background border-0 shadow-2xl rounded-2xl p-0">
           {/* Modern Header with Glass Effect */}
-          <div className="relative bg-gradient-to-r from-primary via-primary/90 to-accent p-6 text-white overflow-hidden">
+          <div className="relative bg-gradient-to-r from-primary via-primary/90 to-accent p-6 text-primary-foreground overflow-hidden">
             {/* Animated Background Elements */}
             <div className="absolute inset-0 opacity-20">
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-[#d97706] to-[#059669] rounded-full animate-pulse"></div>
-              <div className="absolute top-1/2 -left-8 w-16 h-16 bg-gradient-to-br from-[#059669] to-[#d97706] rounded-full animate-bounce"></div>
-              <div className="absolute bottom-0 right-1/3 w-12 h-12 bg-gradient-to-br from-[#d97706] to-[#059669] rounded-full animate-ping"></div>
+              <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full animate-pulse"></div>
+              <div className="absolute top-1/2 -left-8 w-16 h-16 bg-gradient-to-br from-accent to-primary rounded-full animate-bounce"></div>
+              <div className="absolute bottom-0 right-1/3 w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full animate-ping"></div>
             </div>
             
             <DialogHeader className="relative z-10">
               <DialogTitle className="text-xl font-bold flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/10">
-                    <Users className="h-6 w-6" />
+                  <div className="w-12 h-12 bg-primary-foreground/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-primary-foreground/10">
+                    <TreePine className="h-6 w-6" />
                   </div>
                   <div>
                     <div className="text-xl font-bold">إضافة فرد جديد</div>
-                    <div className="text-sm text-white/80 font-normal mt-1">
+                    <div className="text-sm text-primary-foreground/80 font-normal mt-1">
                       {step === 1 ? "البيانات الشخصية والعائلية" : "تفاصيل الزواج والأسرة"}
                     </div>
                   </div>
@@ -897,20 +897,20 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     <div className={cn(
                       "w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 border-2",
                       step >= 1 
-                        ? "bg-white text-primary border-white shadow-lg" 
-                        : "bg-white/10 text-white/60 border-white/20"
+                        ? "bg-primary-foreground text-primary border-primary-foreground shadow-lg" 
+                        : "bg-primary-foreground/10 text-primary-foreground/60 border-primary-foreground/20"
                     )}>
                       1
                     </div>
                     <div className={cn(
                       "w-8 h-1 rounded-full transition-all duration-300",
-                      step >= 2 ? "bg-white" : "bg-white/20"
+                      step >= 2 ? "bg-primary-foreground" : "bg-primary-foreground/20"
                     )}></div>
                     <div className={cn(
                       "w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 border-2",
                       step >= 2 
-                        ? "bg-white text-primary border-white shadow-lg" 
-                        : "bg-white/10 text-white/60 border-white/20"
+                        ? "bg-primary-foreground text-primary border-primary-foreground shadow-lg" 
+                        : "bg-primary-foreground/10 text-primary-foreground/60 border-primary-foreground/20"
                     )}>
                       2
                     </div>
@@ -926,7 +926,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             {step === 1 ? renderStep1() : renderStep2()}
           </div>
 
-          <DialogFooter className="border-t bg-gray-50 dark:bg-gray-800 p-4 flex flex-row gap-3 justify-between">
+          <DialogFooter className="border-t bg-muted/50 p-4 flex flex-row gap-3 justify-between">
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -951,7 +951,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               {step === 1 ? (
                 <Button 
                   onClick={() => setStep(2)} 
-                  className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6"
+                  className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-6"
                   disabled={!canProceedToStep2()}
                 >
                   التالي
@@ -960,9 +960,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               ) : (
                 <Button 
                   onClick={handleSubmit} 
-                  className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6"
+                  className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-6"
                 >
-                  <Users className="h-4 w-4" />
+                  <TreePine className="h-4 w-4" />
                   إضافة الفرد
                 </Button>
               )}
