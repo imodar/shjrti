@@ -80,6 +80,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [marriages, setMarriages] = useState<Marriage[]>([]);
   const [filteredParents, setFilteredParents] = useState<any[]>([]);
+  const [familyName, setFamilyName] = useState<string>("");
 
   const [memberData, setMemberData] = useState({
     name: "",
@@ -108,6 +109,16 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
   const fetchFamilyData = async () => {
     try {
+      // Fetch family name first
+      const { data: familyData, error: familyError } = await supabase
+        .from('families')
+        .select('name')
+        .eq('id', familyId)
+        .single();
+
+      if (familyError) throw familyError;
+      setFamilyName(familyData?.name || "");
+
       const { data: membersData, error: membersError } = await supabase
         .from('family_tree_members')
         .select('*')
@@ -391,7 +402,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           <SelectItem value="none" className="font-arabic text-lg">مؤسس العائلة</SelectItem>
                           {marriages.map((marriage) => (
                             <SelectItem key={marriage.id} value={marriage.id} className="font-arabic text-lg">
-                              {marriage.husband.name} + العائلة & {marriage.wife.name}
+                              {marriage.husband.name} + {familyName} & {marriage.wife.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
