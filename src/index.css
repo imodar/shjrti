@@ -156,22 +156,18 @@ All colors MUST be HSL.
     margin-left: auto;
   }
   
-  /* RTL Support for flex justify */
-  [dir="rtl"] .justify-end {
-    justify-content: flex-start;
-  }
-  
+  /* RTL Support for flex justify - be more selective */
   [dir="rtl"] .justify-start {
     justify-content: flex-end;
   }
   
-  /* RTL Support for flex direction */
-  [dir="rtl"] .flex-row {
-    flex-direction: row-reverse;
+  [dir="rtl"] .justify-end {
+    justify-content: flex-start;
   }
   
-  [dir="rtl"] .flex-row-reverse {
-    flex-direction: row;
+  /* RTL Support for flex direction - only for specific cases */
+  [dir="rtl"] .rtl-reverse {
+    flex-direction: row-reverse;
   }
   
   /* RTL Support for text alignment */
@@ -181,6 +177,21 @@ All colors MUST be HSL.
   
   [dir="rtl"] .text-right {
     text-align: left;
+  }
+  
+  /* RTL specific spacing for navigation items */
+  [dir="rtl"] .nav-item {
+    flex-direction: row-reverse;
+  }
+  
+  /* RTL Support for dialog footers and button containers */
+  [dir="rtl"] .dialog-footer {
+    flex-direction: row-reverse;
+  }
+  
+  /* Preserve justify-between in RTL */
+  [dir="rtl"] .justify-between {
+    justify-content: space-between;
   }
 }
 
