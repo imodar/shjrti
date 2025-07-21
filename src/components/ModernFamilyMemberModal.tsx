@@ -478,44 +478,45 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   )}
                 </div>
 
-                {/* Third Row: Picture (1/2) + Description (1/2) */}
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Photo Upload - 1/2 width with new design */}
+                {/* Third Row: Picture (1/3) + Description (2/3) */}
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Photo Upload - 1/3 width with smaller design */}
                   <div className="group">
-                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                      <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                      صورة شخصية (اختياري)
+                    <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                      <div className="w-2 h-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      صورة شخصية
                     </Label>
-                    <div className="border-2 border-dashed border-orange-200/50 dark:border-orange-700/50 rounded-xl p-6 bg-orange-50/30 dark:bg-orange-950/30 hover:border-orange-400 transition-all duration-300">
-                      <div className="flex flex-col items-center gap-4">
+                    <div className="border-2 border-dashed border-orange-200/50 dark:border-orange-700/50 rounded-lg p-3 bg-orange-50/30 dark:bg-orange-950/30 hover:border-orange-400 transition-all duration-300">
+                      <div className="flex flex-col items-center gap-2">
                         {memberData.croppedImage ? (
                           <div className="relative">
-                            <Avatar className="w-24 h-24 border-4 border-orange-200 shadow-lg">
+                            <Avatar className="w-16 h-16 border-2 border-orange-200 shadow-md">
                               <AvatarImage src={memberData.croppedImage} />
-                              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-orange-400 to-amber-400 text-white">
+                              <AvatarFallback className="text-lg font-bold bg-gradient-to-br from-orange-400 to-amber-400 text-white">
                                 {memberData.name.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
                             <button
                               onClick={() => setMemberData({...memberData, image: null, croppedImage: null})}
-                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                              className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
                             >
-                              <X className="h-3 w-3" />
+                              <X className="h-2 w-2" />
                             </button>
                           </div>
                         ) : (
-                          <div className="w-24 h-24 bg-gradient-to-br from-orange-200 to-amber-200 dark:from-orange-800 to-amber-800 rounded-full flex items-center justify-center">
-                            <Upload className="h-8 w-8 text-orange-600 dark:text-orange-300" />
+                          <div className="w-16 h-16 bg-gradient-to-br from-orange-200 to-amber-200 dark:from-orange-800 to-amber-800 rounded-full flex items-center justify-center">
+                            <Upload className="h-6 w-6 text-orange-600 dark:text-orange-300" />
                           </div>
                         )}
                         <Button
                           type="button"
                           variant="outline"
+                          size="sm"
                           onClick={() => document.getElementById('member-image')?.click()}
-                          className="gap-2 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300"
+                          className="gap-1 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300 text-xs"
                         >
-                          <Upload className="h-4 w-4" />
-                          {memberData.croppedImage ? 'تغيير الصورة' : 'اختيار صورة'}
+                          <Upload className="h-3 w-3" />
+                          {memberData.croppedImage ? 'تغيير' : 'اختيار'}
                         </Button>
                         <input
                           id="member-image"
@@ -524,29 +525,31 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
+                              const imageUrl = URL.createObjectURL(file);
+                              setCropImage(imageUrl);
+                              setIsMainPersonImage(true);
+                              setShowCropModal(true);
                               setMemberData({...memberData, image: file});
-                              // Here you would handle image cropping
                             }
                           }}
                           className="hidden"
                         />
-                        <p className="text-xs text-gray-500 text-center">JPG, PNG أو GIF (أقصى حجم 5MB)</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Bio - 1/2 width */}
-                  <div className="group">
-                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
-                      <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                      نبذة شخصية (اختياري)
+                  {/* Bio - 2/3 width */}
+                  <div className="col-span-2 group">
+                    <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
+                      <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      نبذة شخصية
                     </Label>
                     <Textarea
                       value={memberData.bio}
                       onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
                       placeholder="أضف نبذة شخصية عن الفرد..."
-                      rows={8}
-                      className="text-lg border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none h-full"
+                      rows={5}
+                      className="text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg resize-none h-full"
                     />
                   </div>
                 </div>
@@ -624,6 +627,98 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
         </div>
       </div>
+
+      {/* Crop Modal */}
+      {showCropModal && cropImage && (
+        <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold mb-4 text-center">قص الصورة</h3>
+            
+            <div className="relative w-full h-64 mb-4">
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={(croppedArea, croppedAreaPixels) => {
+                  setCroppedAreaPixels(croppedAreaPixels);
+                }}
+              />
+            </div>
+            
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCropModal(false);
+                  setCropImage(null);
+                  setIsMainPersonImage(false);
+                }}
+                className="flex-1"
+              >
+                إلغاء
+              </Button>
+              <Button
+                onClick={async () => {
+                  if (croppedAreaPixels && cropImage) {
+                    try {
+                      const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
+                      if (isMainPersonImage) {
+                        setMemberData({...memberData, croppedImage});
+                      }
+                      setShowCropModal(false);
+                      setCropImage(null);
+                      setIsMainPersonImage(false);
+                    } catch (error) {
+                      console.error('Error cropping image:', error);
+                    }
+                  }
+                }}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+              >
+                حفظ
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
+
+  // Helper function to create cropped image
+  const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        canvas.width = pixelCrop.width;
+        canvas.height = pixelCrop.height;
+
+        ctx.drawImage(
+          image,
+          pixelCrop.x,
+          pixelCrop.y,
+          pixelCrop.width,
+          pixelCrop.height,
+          0,
+          0,
+          pixelCrop.width,
+          pixelCrop.height
+        );
+
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      });
+      image.addEventListener('error', reject);
+      image.src = imageSrc;
+    });
+  };
 };
