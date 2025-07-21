@@ -904,13 +904,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                         </div>
                                       </div>
                                       
-                                      <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                      <div className="flex space-x-reverse space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <Button
                                           type="button"
                                           variant="outline"
                                           size="sm"
                                           onClick={() => editWife(index)}
-                                          className="border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400"
+                                          className="border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 bg-pink-50/50 dark:bg-pink-950/20"
                                         >
                                           <Edit3 className="w-4 h-4" />
                                         </Button>
@@ -919,7 +919,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                           variant="outline"
                                           size="sm"
                                           onClick={() => removeWife(index)}
-                                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 bg-red-50/50 dark:bg-red-950/20"
                                         >
                                           <Trash2 className="w-4 h-4" />
                                         </Button>
