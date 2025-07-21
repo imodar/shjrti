@@ -489,7 +489,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         تاريخ الميلاد
                       </Label>
-                      <div className="relative z-[10001]">
+                      <div className="relative z-[10020]">
                         <EnhancedDatePicker
                           value={memberData.birthDate}
                           onChange={(date) => setMemberData({...memberData, birthDate: date})}

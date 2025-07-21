@@ -42,7 +42,7 @@ export function EnhancedDatePicker({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -57,7 +57,13 @@ export function EnhancedDatePicker({
           {value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10010]" align="start">
+      <PopoverContent 
+        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] sm:max-w-none" 
+        align="start" 
+        sideOffset={5}
+        avoidCollisions={true}
+        side="bottom"
+      >
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
           <div className="flex items-center justify-center gap-2">
@@ -80,7 +86,7 @@ export function EnhancedDatePicker({
             onSelect={handleSelect}
             locale={ar}
             initialFocus
-            className="rounded-md pointer-events-auto p-4"
+            className="rounded-md pointer-events-auto p-2 sm:p-4 touch-manipulation"
             disabled={disableFuture ? (date) => date > new Date() : undefined}
             captionLayout="dropdown-buttons"
             fromYear={fromYear}
@@ -89,8 +95,8 @@ export function EnhancedDatePicker({
               months: "flex flex-col space-y-4",
               month: "space-y-4",
               caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
-              caption_dropdowns: "flex justify-center gap-3",
-              dropdown: "px-3 py-2 text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 [&>option]:text-right",
+              caption_dropdowns: "flex justify-center gap-2 sm:gap-3 flex-wrap",
+              dropdown: "px-2 sm:px-3 py-2 text-xs sm:text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[90px] sm:min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 cursor-pointer touch-manipulation appearance-none [&>option]:text-right [&>option]:cursor-pointer [&>option]:bg-white [&>option]:dark:bg-gray-800",
               caption_label: "hidden",
               nav: "hidden",
               table: "w-full border-collapse space-y-1 mt-4",
