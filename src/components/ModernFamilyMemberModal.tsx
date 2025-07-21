@@ -467,15 +467,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             <Heart className="h-4 w-4 text-accent" />
             الحالة الحيوية
           </Label>
-          <div className="flex items-center justify-center h-10 bg-background border border-input rounded-lg px-3">
-            <Label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
-              على قيد الحياة
-              <Switch
-                checked={memberData.isAlive}
-                onCheckedChange={(checked) => setMemberData({...memberData, isAlive: checked, deathDate: checked ? null : memberData.deathDate})}
-              />
-            </Label>
-          </div>
+          <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
+            <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
+              <SelectValue placeholder="اختر الحالة الحيوية" />
+            </SelectTrigger>
+            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+              <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+              <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Death Date */}
