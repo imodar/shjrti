@@ -877,39 +877,53 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md max-h-[75vh] overflow-hidden bg-gradient-to-br from-white/90 via-white/95 to-primary/5 dark:from-gray-900/90 dark:via-gray-900/95 dark:to-primary/10 border-2 border-primary/20 shadow-2xl rounded-3xl p-0 backdrop-blur-md transform transition-all duration-300">
-          {/* Compact Creative Header */}
-          <div className="relative bg-gradient-to-r from-primary to-accent p-4 text-white">
-            {/* Subtle background pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute top-2 right-6 w-8 h-8 bg-white rounded-full blur-sm"></div>
-              <div className="absolute bottom-2 left-8 w-6 h-6 bg-white/50 rounded-full blur-sm"></div>
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden bg-white dark:bg-gray-900 border-0 shadow-2xl rounded-2xl p-0">
+          {/* Modern Header with Glass Effect */}
+          <div className="relative bg-gradient-to-r from-primary via-primary/90 to-accent p-6 text-white overflow-hidden">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute -top-4 -right-4 w-20 h-20 bg-white rounded-full animate-pulse"></div>
+              <div className="absolute top-1/2 -left-8 w-16 h-16 bg-white/30 rounded-full animate-bounce"></div>
+              <div className="absolute bottom-0 right-1/3 w-12 h-12 bg-white/20 rounded-full animate-ping"></div>
             </div>
             
             <DialogHeader className="relative z-10">
-              <DialogTitle className="text-lg font-bold flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                  <Users className="h-4 w-4" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-lg">إضافة فرد جديد</div>
-                  <div className="text-xs text-white/70 font-normal">
-                    {step === 1 ? "البيانات الأساسية" : "معلومات الزواج"}
+              <DialogTitle className="text-xl font-bold flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+                    <Users className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold">إضافة فرد جديد</div>
+                    <div className="text-sm text-white/80 font-normal mt-1">
+                      {step === 1 ? "البيانات الشخصية والعائلية" : "تفاصيل الزواج والأسرة"}
+                    </div>
                   </div>
                 </div>
-                {/* Compact Progress Indicator */}
-                <div className="flex gap-1">
-                  <div className={cn(
-                    "w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-all",
-                    step >= 1 ? "bg-white text-primary" : "bg-white/20 text-white/60"
-                  )}>
-                    1
-                  </div>
-                  <div className={cn(
-                    "w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-all",
-                    step >= 2 ? "bg-white text-primary" : "bg-white/20 text-white/60"
-                  )}>
-                    2
+                
+                {/* Modern Progress Steps */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className={cn(
+                      "w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 border-2",
+                      step >= 1 
+                        ? "bg-white text-primary border-white shadow-lg" 
+                        : "bg-white/10 text-white/60 border-white/20"
+                    )}>
+                      1
+                    </div>
+                    <div className={cn(
+                      "w-8 h-1 rounded-full transition-all duration-300",
+                      step >= 2 ? "bg-white" : "bg-white/20"
+                    )}></div>
+                    <div className={cn(
+                      "w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 border-2",
+                      step >= 2 
+                        ? "bg-white text-primary border-white shadow-lg" 
+                        : "bg-white/10 text-white/60 border-white/20"
+                    )}>
+                      2
+                    </div>
                   </div>
                 </div>
               </DialogTitle>
