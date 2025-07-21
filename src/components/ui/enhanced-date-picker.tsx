@@ -58,11 +58,12 @@ export function EnhancedDatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] sm:max-w-none" 
-        align="start" 
-        sideOffset={5}
-        avoidCollisions={true}
-        side="bottom"
+        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] sm:max-w-none sm:w-auto fixed sm:relative left-1/2 top-1/2 sm:left-auto sm:top-auto transform -translate-x-1/2 -translate-y-1/2 sm:transform-none" 
+        align="center" 
+        sideOffset={0}
+        avoidCollisions={false}
+        side="top"
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
