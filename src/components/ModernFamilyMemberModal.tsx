@@ -967,7 +967,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Footer */}
-          <div className="border-t border-white/40 dark:border-gray-600/40 p-6 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
+          <div className="border-t border-white/40 dark:border-gray-600/40 p-4 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
             <div className="flex items-center justify-between gap-4">
               {step > 1 && (
                 <Button 
