@@ -706,8 +706,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 <div className="space-y-6">
                   {memberData.gender === "male" && (
                       <div className="bg-secondary/30 rounded-lg p-4">
-                        <h3 className="text-lg font-semibold mb-4 text-primary">Marriage Information</h3>
-                        
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                           {/* Add Wife Section - Right */}
                           <div className="lg:col-span-1">
