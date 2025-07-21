@@ -431,37 +431,35 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         </div>
       </div>
 
-      {/* Parent Selection */}
-      <div className="space-y-2">
-        <Label htmlFor="parent-search" className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Search className="h-4 w-4 text-primary" />
-          البحث عن الوالدين *
-        </Label>
-        <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
-          <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
-            <SelectValue placeholder="ابحث واختر الوالدين..." />
-          </SelectTrigger>
-          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
-            <div className="relative p-2">
-              <Search className="absolute left-5 top-5 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="ابحث عن الأب والأم..."
-                className="pl-10 h-10 text-sm rounded-lg bg-background border border-input"
-              />
-            </div>
-            {filteredParents.map((parent) => (
-              <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
-                {parent.display}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Life Status and Death Date */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Parent Selection and Life Status */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="parent-search" className="text-sm font-medium text-foreground flex items-center gap-2">
+            <Search className="h-4 w-4 text-primary" />
+            البحث عن الوالدين *
+          </Label>
+          <Select value={memberData.selectedParent || ""} onValueChange={(value) => setMemberData({...memberData, selectedParent: value})}>
+            <SelectTrigger className="h-10 text-sm rounded-lg bg-background border border-input hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300">
+              <SelectValue placeholder="ابحث واختر الوالدين..." />
+            </SelectTrigger>
+            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+              <div className="relative p-2">
+                <Search className="absolute left-5 top-5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="ابحث عن الأب والأم..."
+                  className="pl-10 h-10 text-sm rounded-lg bg-background border border-input"
+                />
+              </div>
+              {filteredParents.map((parent) => (
+                <SelectItem key={parent.id} value={parent.id} className="font-arabic text-sm">
+                  {parent.display}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground flex items-center gap-2">
