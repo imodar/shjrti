@@ -440,10 +440,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               <div className="space-y-8">
                 {/* Personal Information Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
-                    المعلومات الشخصية
-                  </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Name - Full width on mobile, half on desktop */}
@@ -491,10 +487,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                 {/* Dates and Life Information Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                    التواريخ والحالة الحيوية
-                  </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Birth Date */}
@@ -563,10 +555,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                 {/* Family Relationship Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
-                    علاقة القرابة
-                  </h3>
                   
                   <div className="group">
                     <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
@@ -599,10 +587,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                 {/* Media and Biography Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
-                    الصورة والنبذة الشخصية
-                  </h3>
                   
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                     {/* Photo Upload */}
@@ -1027,7 +1011,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       {showCropModal && cropImage && (
         <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full p-6">
-            <h3 className="text-lg font-bold mb-4 text-center">قص الصورة</h3>
+            
             
             <div className="relative w-full h-64 mb-4">
               <Cropper
