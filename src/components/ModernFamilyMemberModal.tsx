@@ -347,7 +347,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       {/* Modal Backdrop */}
       <div className="fixed inset-0 z-[9998] bg-black/50 flex items-center justify-center p-4">
         {/* Modal Content */}
-        <div className="bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 rounded-2xl shadow-2xl max-w-full sm:max-w-lg md:max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden relative mx-2 sm:mx-0">
+        <div className="font-arabic bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 dark:from-gray-950 dark:via-green-950 dark:to-emerald-950 rounded-2xl shadow-2xl max-w-full sm:max-w-lg md:max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col relative mx-2 sm:mx-0">
           
           {/* Floating Background Elements - Fixed positioning to avoid scroll interference */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -392,12 +392,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 
                 {/* Text Content */}
                 <div className="text-right sm:text-right text-center">
-                  <h1 className="text-lg sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
+                  <h1 className="text-lg sm:text-xl md:text-3xl font-bold mb-1 sm:mb-2">
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                       إضافة فرد جديد للعائلة
                     </span>
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed">
                     {step === 1 ? "املأ البيانات الأساسية للفرد الجديد" : "املأ تفاصيل الزواج والشراكة"}
                   </p>
                 </div>
@@ -435,7 +435,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Content Section */}
-          <div className="px-4 sm:px-8 pb-4 sm:pb-8">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 pb-4 sm:pb-8">
             {step === 1 && (
               <div className="space-y-2">
                 {/* Personal Information Section */}
@@ -444,7 +444,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                     {/* Name - Full width on mobile, 1/2 on tablet+ */}
                     <div className="group sm:col-span-1 md:col-span-2">
-                      <Label className="text-base sm:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الاسم الأول
                       </Label>
@@ -463,13 +463,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Gender - 1/4 width on desktop */}
                     <div className="group">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الجنس
                       </Label>
                       <div className="relative z-[10001]">
                         <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-                          <SelectTrigger className="h-14 text-lg border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                          <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-lg border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
                             <SelectValue placeholder="اختر الجنس" />
                           </SelectTrigger>
                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
@@ -485,7 +485,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Birth Date - 1/4 width on desktop */}
                     <div className="group">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         تاريخ الميلاد
                       </Label>
@@ -510,13 +510,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Family Relationship - 1/2 width on desktop */}
                     <div className="group md:col-span-2">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         علاقة القرابة (العائلة)
                       </Label>
                       <div className="relative z-[10001]">
                         <Select value={memberData.selectedParent || "none"} onValueChange={(value) => setMemberData({...memberData, selectedParent: value === "none" ? null : value})}>
-                          <SelectTrigger className="h-14 text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                          <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-lg border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
                             <SelectValue placeholder="اختر علاقة القرابة مع العائلة" />
                           </SelectTrigger>
                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
@@ -539,13 +539,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Life Status - 1/4 width on desktop */}
                     <div className="group">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         الحالة الحيوية
                       </Label>
                       <div className="relative z-[10001]">
                         <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
-                          <SelectTrigger className="h-14 text-lg border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
+                          <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-lg border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12">
                             <SelectValue placeholder="الحالة" />
                           </SelectTrigger>
                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
@@ -562,7 +562,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     {/* Death Date (if deceased) - 1/4 width on desktop */}
                     {!memberData.isAlive && (
                       <div className="group">
-                        <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                        <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                           <div className="w-3 h-3 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                           تاريخ الوفاة
                         </Label>
@@ -588,7 +588,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                     {/* Photo Upload */}
                     <div className="group">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         صورة شخصية
                       </Label>
@@ -660,7 +660,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Bio */}
                     <div className="lg:col-span-3 group">
-                      <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                      <Label className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         نبذة شخصية
                       </Label>
@@ -967,7 +967,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Footer */}
-          <div className="border-t border-white/40 dark:border-gray-600/40 p-3 sm:p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
+          <div className="flex-shrink-0 border-t border-white/40 dark:border-gray-600/40 p-3 sm:p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               {step > 1 && (
                 <Button 
