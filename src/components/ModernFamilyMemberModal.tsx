@@ -705,10 +705,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                 <div className="space-y-6">
                   {memberData.gender === "male" && (
-                      <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                          {/* Add Wife Section - Right */}
-                          <div className="lg:col-span-1">
+                      <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-4 md:p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                          {/* Add Wife Section - Half */}
+                          <div className="w-full">
                             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md">
                               <div className="flex items-center gap-2 mb-6">
                                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
@@ -839,8 +839,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                             </div>
                           </div>
 
-                          {/* Wives List - Left */}
-                          <div className="lg:col-span-2">
+                          {/* Wives List - Half */}
+                          <div className="w-full">
                             <div className="flex items-center gap-2 mb-6">
                               <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
                                 <Users className="w-4 h-4 text-white" />
