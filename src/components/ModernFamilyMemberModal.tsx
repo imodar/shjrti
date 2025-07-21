@@ -240,6 +240,41 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     onClose();
   };
 
+  // Helper function to create cropped image
+  const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        canvas.width = pixelCrop.width;
+        canvas.height = pixelCrop.height;
+
+        ctx.drawImage(
+          image,
+          pixelCrop.x,
+          pixelCrop.y,
+          pixelCrop.width,
+          pixelCrop.height,
+          0,
+          0,
+          pixelCrop.width,
+          pixelCrop.height
+        );
+
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      });
+      image.addEventListener('error', reject);
+      image.src = imageSrc;
+    });
+  };
+
   if (!isOpen) {
     return null;
   }
@@ -478,16 +513,16 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   )}
                 </div>
 
-                {/* Third Row: Picture (1/3) + Description (2/3) */}
-                <div className="grid grid-cols-3 gap-4">
-                  {/* Photo Upload - 1/3 width with smaller design */}
-                  <div className="group">
+                {/* Third Row: Picture (1/3) + Description (2/3) with matched heights */}
+                <div className="grid grid-cols-3 gap-4 items-start">
+                  {/* Photo Upload - 1/3 width with height matching desc box */}
+                  <div className="group h-full">
                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
                       <div className="w-2 h-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                       صورة شخصية
                     </Label>
-                    <div className="border-2 border-dashed border-orange-200/50 dark:border-orange-700/50 rounded-lg p-3 bg-orange-50/30 dark:bg-orange-950/30 hover:border-orange-400 transition-all duration-300">
-                      <div className="flex flex-col items-center gap-2">
+                    <div className="border-2 border-dashed border-orange-200/50 dark:border-orange-700/50 rounded-lg p-3 bg-orange-50/30 dark:bg-orange-950/30 hover:border-orange-400 transition-all duration-300 h-[140px] flex flex-col">
+                      <div className="flex flex-col items-center gap-2 flex-grow justify-center">
                         {memberData.croppedImage ? (
                           <div className="relative">
                             <Avatar className="w-16 h-16 border-2 border-orange-200 shadow-md">
@@ -508,16 +543,30 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                             <Upload className="h-6 w-6 text-orange-600 dark:text-orange-300" />
                           </div>
                         )}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => document.getElementById('member-image')?.click()}
-                          className="gap-1 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300 text-xs"
-                        >
-                          <Upload className="h-3 w-3" />
-                          {memberData.croppedImage ? 'تغيير' : 'اختيار'}
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => document.getElementById('member-image')?.click()}
+                            className="gap-1 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300 text-xs px-2 py-1 h-6"
+                          >
+                            <Upload className="h-3 w-3" />
+                            {memberData.croppedImage ? 'تغيير' : 'اختيار'}
+                          </Button>
+                          {memberData.croppedImage && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setMemberData({...memberData, image: null, croppedImage: null})}
+                              className="gap-1 border-2 border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 text-xs px-2 py-1 h-6"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              حذف
+                            </Button>
+                          )}
+                        </div>
                         <input
                           id="member-image"
                           type="file"
@@ -539,7 +588,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   </div>
 
                   {/* Bio - 2/3 width */}
-                  <div className="col-span-2 group">
+                  <div className="col-span-2 group h-full">
                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
                       <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                       نبذة شخصية
@@ -548,8 +597,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       value={memberData.bio}
                       onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
                       placeholder="أضف نبذة شخصية عن الفرد..."
-                      rows={5}
-                      className="text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg resize-none h-full"
+                      className="text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg resize-none h-[140px]"
                     />
                   </div>
                 </div>
@@ -686,39 +734,4 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       )}
     </>
   );
-
-  // Helper function to create cropped image
-  const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const image = new Image();
-      image.addEventListener('load', () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        if (!ctx) {
-          reject(new Error('Could not get canvas context'));
-          return;
-        }
-
-        canvas.width = pixelCrop.width;
-        canvas.height = pixelCrop.height;
-
-        ctx.drawImage(
-          image,
-          pixelCrop.x,
-          pixelCrop.y,
-          pixelCrop.width,
-          pixelCrop.height,
-          0,
-          0,
-          pixelCrop.width,
-          pixelCrop.height
-        );
-
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-      });
-      image.addEventListener('error', reject);
-      image.src = imageSrc;
-    });
-  };
 };
