@@ -1014,6 +1014,16 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
   return (
     <>
+      {/* Debug overlay to confirm modal is being rendered */}
+      {isOpen && (
+        <div className="fixed inset-0 z-[10000] bg-red-500/50 flex items-center justify-center">
+          <div className="bg-white p-4 rounded">
+            <p>MODAL DEBUG: Modal should be visible</p>
+            <p>isOpen: {String(isOpen)}</p>
+            <p>familyId: {familyId}</p>
+          </div>
+        </div>
+      )}
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-gray-900 border-2 border-red-500 shadow-2xl rounded-2xl p-0 relative z-[9999]">
           <DialogTitle className="sr-only">
