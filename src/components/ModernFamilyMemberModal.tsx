@@ -699,28 +699,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               <div className="space-y-6">
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                    تفاصيل الزواج والشراكة
+                    إدارة الزوجات
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    أضف معلومات الزواج إذا كان الفرد متزوجاً
+                    إضافة الزوجات اختيارية
                   </p>
                 </div>
 
-                {/* Marriage Status */}
-                <div className="flex items-center justify-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl">
-                  <Label htmlFor="married" className="text-lg font-medium">
-                    هل الفرد متزوج؟
-                  </Label>
-                  <Switch
-                    id="married"
-                    checked={memberData.isMarried}
-                    onCheckedChange={(checked) => setMemberData({...memberData, isMarried: checked})}
-                  />
-                </div>
-
-                {memberData.isMarried && (
-                  <div className="space-y-6">
-                    {memberData.gender === "male" && (
+                <div className="space-y-6">
+                  {memberData.gender === "male" && (
                       <div className="bg-secondary/30 rounded-lg p-4">
                         <h3 className="text-lg font-semibold mb-4 text-primary">Marriage Information</h3>
                         
@@ -966,7 +953,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
                     )}
                   </div>
-                )}
               </div>
             )}
           </div>
