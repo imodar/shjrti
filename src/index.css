@@ -316,3 +316,36 @@ All colors MUST be HSL.
   background: transparent !important;
   border: none !important;
 }
+
+/* Custom scrollbar for mobile touch optimization */
+.mobile-smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: scroll-position;
+}
+
+/* Hide scrollbar but keep functionality */
+.mobile-smooth-scroll::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+.mobile-smooth-scroll {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Smooth scrolling for all devices */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  .mobile-smooth-scroll {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}

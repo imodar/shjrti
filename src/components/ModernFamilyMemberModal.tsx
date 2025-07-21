@@ -435,7 +435,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Content Section */}
-          <div className="flex-1 overflow-y-auto px-4 sm:px-8 pb-4 sm:pb-8">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 pb-4 sm:pb-8 mobile-smooth-scroll">
             {step === 1 && (
               <div className="space-y-2">
                 {/* Personal Information Section */}
