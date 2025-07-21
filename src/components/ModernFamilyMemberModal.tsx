@@ -996,6 +996,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-gray-900 border-2 border-red-500 shadow-2xl rounded-2xl p-0 relative z-[9999]">
+          <DialogTitle className="sr-only">
+            إضافة فرد جديد
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            أدخل بيانات فرد جديد لإضافته إلى شجرة العائلة
+          </DialogDescription>
           {/* Floating Background Elements - Same as FamilyCreator */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-20 animate-pulse"></div>
