@@ -126,11 +126,6 @@ All colors MUST be HSL.
     text-align: right;
   }
 
-  [dir="rtl"] .space-x-2 > * + * {
-    margin-left: 0;
-    margin-right: 0.5rem;
-  }
-  
   /* Shine animation for buttons */
   @keyframes shine {
     0% { 
@@ -140,6 +135,12 @@ All colors MUST be HSL.
       transform: translateX(100%) translateY(100%) rotate(45deg);
     }
   }
+  /* RTL Support for spacing and alignment */
+  [dir="rtl"] .space-x-2 > * + * {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+  
   [dir="rtl"] .space-x-4 > * + * {
     margin-left: 0;
     margin-right: 1rem;
@@ -153,6 +154,33 @@ All colors MUST be HSL.
   [dir="rtl"] .mr-auto {
     margin-right: 0;
     margin-left: auto;
+  }
+  
+  /* RTL Support for flex justify */
+  [dir="rtl"] .justify-end {
+    justify-content: flex-start;
+  }
+  
+  [dir="rtl"] .justify-start {
+    justify-content: flex-end;
+  }
+  
+  /* RTL Support for flex direction */
+  [dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+  }
+  
+  [dir="rtl"] .flex-row-reverse {
+    flex-direction: row;
+  }
+  
+  /* RTL Support for text alignment */
+  [dir="rtl"] .text-left {
+    text-align: right;
+  }
+  
+  [dir="rtl"] .text-right {
+    text-align: left;
   }
 }
 

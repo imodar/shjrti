@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
@@ -42,13 +43,14 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
-        <AuthProvider>
-          <SubscriptionProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <ScrollToTop />
-              <Routes>
+        <DirectionWrapper>
+          <AuthProvider>
+            <SubscriptionProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ScrollToTop />
+                <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/home-backup" element={<IndexBackup />} />
                 <Route path="/auth" element={<Auth />} />
@@ -125,10 +127,11 @@ const App = () => (
                 <Route path="/terms" element={<Terms />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </SubscriptionProvider>
-        </AuthProvider>
+                </Routes>
+              </BrowserRouter>
+            </SubscriptionProvider>
+          </AuthProvider>
+        </DirectionWrapper>
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
