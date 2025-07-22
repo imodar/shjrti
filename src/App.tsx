@@ -24,6 +24,7 @@ import FamilyStatistics from "./pages/FamilyStatistics";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
 import PlanSelection from "./pages/PlanSelection";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
@@ -98,6 +99,11 @@ const App = () => (
                 <Route path="/plan-selection" element={
                   <ProtectedRoute>
                     <PlanSelection />
+                  </ProtectedRoute>
+                } />
+                <Route path="/payment-success" element={
+                  <ProtectedRoute>
+                    <PaymentSuccess />
                   </ProtectedRoute>
                 } />
                 <Route path="/payment" element={

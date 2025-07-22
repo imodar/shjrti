@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle, Sparkles, ChevronRight, ChevronLeft } from "lucide-react";
+import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle, Sparkles, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -37,6 +37,7 @@ export default function Payments() {
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
   const [processingInvoice, setProcessingInvoice] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState<string | null>(null);
 
   // Helper function to get localized package field
   const getLocalizedPackageField = (pkg: any, field: string, fallbackLang = 'en') => {
@@ -249,15 +250,44 @@ export default function Payments() {
           duration: 5000,
         });
       } else {
-        // For paid plans, redirect to payment page
-        navigate('/payment', {
-          state: {
-            planId: planId,
-            invoiceId: invoiceId,
-            amount: amount,
-            currency: currency
+        // For paid plans, process Stripe payment
+        setProcessingPayment(planId);
+        
+        try {
+          const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment', {
+            body: {
+              packageId: planId,
+              amount: amount,
+              currency: currency
+            }
+          });
+
+          if (paymentError) {
+            throw new Error(paymentError.message || 'Failed to create payment session');
           }
-        });
+
+          if (paymentData?.url) {
+            // Open Stripe checkout in a new tab
+            window.open(paymentData.url, '_blank');
+            
+            toast({
+              title: "تم توجيهك للدفع",
+              description: "سيتم فتح صفحة الدفع في نافذة جديدة",
+              duration: 3000,
+            });
+          } else {
+            throw new Error('No payment URL received');
+          }
+        } catch (paymentError) {
+          console.error('Payment error:', paymentError);
+          toast({
+            title: "خطأ في الدفع",
+            description: "فشل في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى.",
+            variant: "destructive",
+          });
+        } finally {
+          setProcessingPayment(null);
+        }
       }
     } catch (error) {
       console.error('Error processing plan selection:', error);
@@ -861,10 +891,10 @@ export default function Payments() {
                                 handlePlanSelect(plan.id);
                               }
                             }}
-                            disabled={currentPlanActive || (processingInvoice && selectedPlan === plan.id)}
+                            disabled={currentPlanActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id}
                             className={`
                               w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
-                              ${currentPlanActive || (processingInvoice && selectedPlan === plan.id)
+                              ${currentPlanActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                 : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'
                               }
@@ -875,13 +905,18 @@ export default function Payments() {
                                 'خطتك الحالية النشطة'
                               ) : processingInvoice && selectedPlan === plan.id ? (
                                 <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                  <Loader2 className="h-4 w-4 animate-spin" />
                                   جاري إنشاء الفاتورة...
+                                </>
+                              ) : processingPayment === plan.id ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  جاري تحضير الدفع...
                                 </>
                               ) : (
                                 <>
-                                  اختيار الخطة
-                                  <ChevronRight className="h-4 w-4" />
+                                  ادفع واشترك الآن
+                                  <CreditCard className="h-4 w-4" />
                                 </>
                               )}
                             </span>
