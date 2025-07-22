@@ -137,8 +137,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     // Find the parent marriage for this member
     let selectedParent = null;
     if (editMember.relatedPersonId) {
-      selectedParent = editMember.relatedPersonId;
-      console.log('🔥 Using relatedPersonId:', selectedParent);
+      // If relatedPersonId exists, find the marriage where the father is this person
+      const parentMarriage = marriages.find(m => m.husband?.id === editMember.relatedPersonId);
+      if (parentMarriage) {
+        selectedParent = parentMarriage.id;
+        console.log('🔥 Found parent marriage from relatedPersonId:', parentMarriage.id);
+      }
     } else if (editMember.fatherId && editMember.motherId) {
       // Try to find the marriage between the parents
       const parentMarriage = marriages.find(m => 
@@ -354,8 +358,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
         if (selectedMarriage) {
           fatherId = selectedMarriage.husband?.id || null;
           motherId = selectedMarriage.wife?.id || null;
-          relatedPersonId = selectedMarriage.id; // Store the marriage ID as related person ID
-          console.log('🔥 Setting parent IDs - Father:', fatherId, 'Mother:', motherId, 'RelatedPerson:', relatedPersonId);
+          // Set related_person_id to the father (primary family member)
+          relatedPersonId = selectedMarriage.husband?.id || null; 
+          console.log('🔥 Setting parent IDs - Father:', fatherId, 'Mother:', motherId, 'RelatedPerson (Father):', relatedPersonId);
         }
       }
       
@@ -364,7 +369,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
         maritalStatus: hasSpouses ? "married" : "single", // Set marital status based on spouses
         fatherId, // Set father ID from selected marriage
         motherId, // Set mother ID from selected marriage  
-        relatedPersonId, // Set related person ID to marriage ID
+        relatedPersonId, // Set related person ID to father ID (main family member)
         wives: memberData.gender === "male" ? wives : [], // Always include wives array for males
         husband: memberData.gender === "female" ? husband : null // Always include husband for females
       };
