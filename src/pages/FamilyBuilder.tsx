@@ -2364,28 +2364,100 @@ const FamilyBuilder = () => {
         editMember={selectedMember} // Pass the member being edited
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Information Modal - Creative Design */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <AlertDialogContent className="max-w-md font-arabic">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-right">
-              {deleteModalType === 'spouse' ? 'تحذير - حذف زوج/زوجة' : 'تحذير - حذف عضو من العائلة'}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-right whitespace-pre-line">
-              {deleteWarningMessage}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-row-reverse gap-2">
-            <AlertDialogCancel className="font-arabic">
-              إلغاء
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDelete}
-              className="bg-destructive hover:bg-destructive/90 font-arabic"
-            >
-              {deleteModalType === 'spouse' ? 'حذف الزوج/الزوجة' : 'حذف العضو وكل ما يتعلق به'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent className="max-w-lg font-arabic border-0 bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-red-950/20 dark:via-gray-900 dark:to-orange-950/20 shadow-2xl">
+          <div className="relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-red-100/50 to-transparent dark:from-red-900/20 rounded-full transform translate-x-16 -translate-y-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-100/50 to-transparent dark:from-orange-900/20 rounded-full transform -translate-x-12 translate-y-12"></div>
+            
+            <AlertDialogHeader className="relative z-10 pb-6">
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
+                    <Bell className="h-3 w-3 text-yellow-800" />
+                  </div>
+                </div>
+              </div>
+              
+              <AlertDialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent dark:from-red-400 dark:to-orange-400">
+                معلومات حول العضو
+              </AlertDialogTitle>
+              
+              {memberToDelete && (
+                <div className="text-center mt-2">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <Crown className="h-4 w-4 text-amber-500" />
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">{memberToDelete.name}</span>
+                  </div>
+                </div>
+              )}
+            </AlertDialogHeader>
+            
+            <div className="relative z-10 px-6 pb-6">
+              <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-inner">
+                {deleteModalType === 'spouse' ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-amber-700 dark:text-amber-300">
+                      <Heart className="h-5 w-5 flex-shrink-0" />
+                      <span className="font-medium">زوج/زوجة أحد أفراد العائلة</span>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      هذا الشخص مرتبط بالعائلة من خلال الزواج. لإزالته من شجرة العائلة، يجب أولاً تعديل بيانات الزوج/الزوجة وإلغاء الزواج من خلال تحرير ملف العضو الأساسي.
+                    </p>
+                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                      <Settings className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      <span className="text-sm text-amber-800 dark:text-amber-200">انتقل إلى تحرير بيانات الزوج/الزوجة</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-red-700 dark:text-red-300">
+                      <Users className="h-5 w-5 flex-shrink-0" />
+                      <span className="font-medium">عضو أساسي في العائلة</span>
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
+                      <p>حذف هذا العضو سيؤثر على العديد من البيانات المرتبطة:</p>
+                      <div className="space-y-2 text-sm">
+                        {getSpousesCount(memberToDelete?.id) > 0 && (
+                          <div className="flex items-center gap-2 p-2 bg-pink-50 dark:bg-pink-950/20 rounded-lg">
+                            <Heart className="h-4 w-4 text-pink-500" />
+                            <span>{getSpousesCount(memberToDelete?.id)} زوج/زوجة</span>
+                          </div>
+                        )}
+                        {getChildrenCount(memberToDelete?.id) > 0 && (
+                          <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                            <Baby className="h-4 w-4 text-blue-500" />
+                            <span>{getChildrenCount(memberToDelete?.id)} طفل/أطفال وجميع أحفادهم</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 p-2 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                          <FileText className="h-4 w-4 text-purple-500" />
+                          <span>جميع الزيجات والسجلات المرتبطة</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800/50">
+                      <p className="text-sm text-red-800 dark:text-red-200 font-medium">
+                        ⚠️ هذا الإجراء لا يمكن التراجع عنه
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <AlertDialogFooter className="relative z-10 pt-2 pb-6 flex justify-center">
+              <AlertDialogCancel className="px-8 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 font-arabic font-medium">
+                <X className="h-4 w-4 ml-2" />
+                إغلاق
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
