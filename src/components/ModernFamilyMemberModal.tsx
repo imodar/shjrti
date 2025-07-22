@@ -453,6 +453,32 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     }
   };
 
+  const addHusband = () => {
+    console.log('🔥 addHusband called, newWife:', newWife);
+    if (newWife.name.trim()) {
+      const husbandToAdd = {
+        id: crypto.randomUUID(),
+        name: newWife.name,
+        birthDate: newWife.birthDate ? new Date(newWife.birthDate) : null,
+        maritalStatus: newWife.maritalStatus,
+        isAlive: newWife.isAlive,
+        deathDate: newWife.deathDate ? new Date(newWife.deathDate) : null,
+        image: null,
+        croppedImage: newWife.imageUrl || null
+      };
+      console.log('🔥 Setting husband:', husbandToAdd);
+      setHusband(husbandToAdd);
+      setNewWife({
+        name: "",
+        birthDate: "",
+        maritalStatus: "married",
+        isAlive: true,
+        deathDate: "",
+        imageUrl: ""
+      });
+    }
+  };
+
   const removeWife = (index: number) => {
     setWives(wives.filter((_, i) => i !== index));
   };
@@ -1378,7 +1404,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                     type="button"
                                     onClick={() => {
                                       console.log('🔥 Add Husband button clicked!');
-                                      addWife();
+                                      addHusband();
                                     }}
                                    className="w-full bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white shadow-md"
                                    size="lg"
