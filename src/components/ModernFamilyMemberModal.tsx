@@ -85,6 +85,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const [marriages, setMarriages] = useState<Marriage[]>([]);
   const [filteredParents, setFilteredParents] = useState<any[]>([]);
   const [familyName, setFamilyName] = useState<string>("");
+  const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
 
   const [memberData, setMemberData] = useState({
     name: "",
@@ -530,7 +531,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                               علاقة القرابة (العائلة)
                             </Label>
                              <div className="relative z-[10001]">
-                               <Popover>
+                               <Popover open={relationshipPopoverOpen} onOpenChange={setRelationshipPopoverOpen}>
                                  <PopoverTrigger asChild>
                                    <Button
                                      variant="outline"
@@ -559,9 +560,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                        <CommandGroup>
                                          <CommandItem
                                            value="none"
-                                           onSelect={(value) => {
-                                             setMemberData({...memberData, selectedParent: null});
-                                           }}
+                                            onSelect={(value) => {
+                                              setMemberData({...memberData, selectedParent: null});
+                                              setRelationshipPopoverOpen(false);
+                                            }}
                                            className="font-arabic"
                                          >
                                            مؤسس العائلة
@@ -570,9 +572,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                            <CommandItem 
                                              key={marriage.id}
                                              value={marriage.id}
-                                             onSelect={(value) => {
-                                               setMemberData({...memberData, selectedParent: value});
-                                             }}
+                                              onSelect={(value) => {
+                                                setMemberData({...memberData, selectedParent: value});
+                                                setRelationshipPopoverOpen(false);
+                                              }}
                                              className="font-arabic whitespace-nowrap"
                                            >
                                              {marriage.husband.is_founder 
