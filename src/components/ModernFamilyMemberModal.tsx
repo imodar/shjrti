@@ -522,9 +522,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl pb-6 px-6 border border-white/30 dark:border-gray-700/30">
                   
                      <div className="space-y-4">
-                       {/* Marital Status, Life Status, Death Date and Relationship - All in one row */}
-                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          {/* Family Relationship - 1/4 width */}
+                        {/* Family Relationship, Life Status, Death Date - All in one row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           {/* Family Relationship - 1/2 width */}
                           <div className="group">
                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                               <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
