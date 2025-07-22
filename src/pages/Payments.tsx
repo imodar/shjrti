@@ -730,7 +730,7 @@ export default function Payments() {
                   <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
                 </div>
                 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                   {loading ? (
                     Array(3).fill(0).map((_, index) => (
                       <Card key={index} className="h-96 animate-pulse">
@@ -750,153 +750,104 @@ export default function Payments() {
                         </CardContent>
                       </Card>
                     ))
-                  ) : packages.map((pkg, index) => {
-                    const isCurrentPlan = pkg.id === currentPlan;
-                    const PackageIcon = pkg.icon;
-                    const isFeatured = pkg.popular;
-                    
-                    return (
-                      <Card 
-                        key={pkg.id}
-                        className={`
-                          relative h-full transition-all duration-500 hover:scale-105 hover:shadow-xl group
-                          ${isFeatured ? 'ring-4 ring-amber-400/50 border-amber-300 dark:border-amber-600 scale-105 shadow-amber-200/50 dark:shadow-amber-800/50' : ''}
-                          ${isCurrentPlan ? 'ring-2 ring-emerald-400/50 border-emerald-300 dark:border-emerald-600' : ''}
-                          ${isFeatured ? 'bg-gradient-to-br from-amber-50/90 via-white/80 to-orange-50/90 dark:from-amber-950/30 dark:via-gray-800/80 dark:to-orange-950/30' : 'bg-white/80 dark:bg-gray-800/80'}
-                          backdrop-blur-xl border shadow-xl
-                          ${!isFeatured ? 'border-white/40 dark:border-gray-600/40' : ''}
-                        `}
-                      >
-                        {/* Featured Badge */}
-                        {isFeatured && (
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
-                              <Star className="h-3 w-3 mr-1" />
-                              الأكثر شعبية
-                            </Badge>
-                          </div>
-                        )}
+                  ) : packages.map((plan, index) =>
+                    <Card 
+                      key={plan.id} 
+                      className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:scale-105 flex flex-col h-full transform hover:-translate-y-2 ${
+                        currentPlan === plan.id 
+                          ? 'ring-4 ring-emerald-500/50 shadow-2xl bg-gradient-to-br from-emerald-50/90 to-white dark:from-emerald-950/50 dark:to-gray-900' 
+                          : 'bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-900/90 dark:to-gray-800/90 hover:bg-gradient-to-br hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-950/30 dark:hover:to-teal-950/30'
+                      } ${
+                        plan.popular 
+                          ? 'border-2 border-emerald-400 shadow-lg shadow-emerald-500/25' 
+                          : 'border border-gray-200 dark:border-gray-700'
+                      }`}
+                      style={{animationDelay: `${index * 0.1}s`}}
+                    >
+                      {/* Floating decorative elements */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                        <div className="absolute top-4 right-4 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce"></div>
+                        <div className="absolute top-8 right-8 w-1 h-4 bg-teal-400/30 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        <div className="absolute bottom-8 left-4 w-3 h-3 bg-cyan-400/40 rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
+                      </div>
 
-                        {/* Current Plan Badge */}
-                        {isCurrentPlan && (
-                          <div className="absolute -top-3 right-4 z-10">
-                            <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs shadow-lg">
-                              <Crown className="h-3 w-3 mr-1" />
-                              نشط
-                            </Badge>
+                       {/* Featured badge with enhanced styling */}
+                       {plan.popular && (
+                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                           <div className="relative">
+                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur-sm animate-pulse"></div>
+                             <Badge className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1 text-sm font-bold shadow-lg animate-bounce">
+                               <Star className="h-3 w-3 mr-1 animate-spin" style={{animationDuration: '3s'}} />
+                               الباقة المميزة
+                             </Badge>
                           </div>
-                        )}
-
-                        <CardHeader className="text-center pb-4 pt-8">
-                          {/* Icon with Dashboard Style */}
-                          <div className="relative mb-4">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500"></div>
-                            <div className={`relative w-16 h-16 bg-gradient-to-br ${pkg.color === 'bg-gray-500' ? 'from-gray-500 to-slate-600' : pkg.color === 'bg-emerald-500' ? 'from-emerald-500 via-teal-500 to-emerald-600' : 'from-amber-500 via-orange-500 to-amber-600'} rounded-full flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-all duration-300`}>
-                              <PackageIcon className="h-8 w-8 text-white" />
+                        </div>
+                      )}
+                      
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                      
+                      <CardHeader className="text-center flex-shrink-0 relative z-10 pb-6">
+                        {/* Enhanced icon with multiple layers */}
+                        <div className="relative mx-auto mb-4">
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse"></div>
+                          <div className={`relative w-16 h-16 ${plan.color} rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500`}>
+                            <div className="absolute inset-2 bg-white/20 rounded-xl"></div>
+                            <plan.icon className="relative h-8 w-8 text-white z-10" />
+                          </div>
+                        </div>
+                        
+                        {/* Enhanced title */}
+                        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent group-hover:from-emerald-700 group-hover:to-teal-600 transition-all duration-500">
+                          {getLocalizedPackageField(plan, 'name') || plan.name || 'Unnamed Package'}
+                        </CardTitle>
+                        
+                        {/* Enhanced pricing */}
+                        <div className="mt-6 relative">
+                           <div className="flex items-center justify-center gap-1">
+                             <span className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                               {plan.price.includes('مجاني') ? plan.price : plan.price}
+                             </span>
+                             {!plan.price.includes('مجاني') && (
+                               <div className="text-right">
+                                 <span className="text-sm text-muted-foreground block">ريال</span>
+                                 <span className="text-xs text-muted-foreground">{plan.period}</span>
+                               </div>
+                             )}
+                           </div>
+                          {plan.id === 'premium' && (
+                            <div className="absolute -top-2 -right-2">
+                              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
                             </div>
-                          </div>
-
-                          <CardTitle className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent mb-3">
-                            {getLocalizedPackageField(pkg, 'name') || pkg.name}
-                          </CardTitle>
-
-                          {/* Pricing */}
-                          <div className="mb-4">
-                            {pkg.price === "مجاني للأبد" ? (
-                              <div className="text-center">
-                                <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-                                  مجاني
-                                </div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                  للأبد
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="text-center">
-                                <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                                  {formatPrice(parseFloat(pkg.price), currency)}
-                                  <span className="text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    /{pkg.period}
-                                  </span>
+                          )}
+                        </div>
+                      </CardHeader>
+                      
+                      <CardContent className="flex flex-col flex-grow relative z-10 px-6">
+                        {/* Enhanced features list */}
+                        <ul className="space-y-3 mb-8 flex-grow">
+                          {getLocalizedFeatures(plan).map((feature, featureIndex) => (
+                            <li 
+                              key={featureIndex} 
+                              className="flex items-start gap-3 text-sm group-hover:translate-x-1 transition-transform duration-300"
+                              style={{transitionDelay: `${featureIndex * 0.05}s`}}
+                            >
+                              <div className="flex-shrink-0 mt-1">
+                                <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-sm">
+                                  <div className="w-2 h-2 bg-white rounded-full"></div>
                                 </div>
                               </div>
-                            )}
-                          </div>
-
-                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-                            {getLocalizedPackageField(pkg, 'description') || ''}
-                          </p>
-                        </CardHeader>
-
-                        <CardContent className="pt-0 pb-8">
-                          {/* Features List */}
-                          <div className="space-y-3 mb-6">
-                            {getLocalizedFeatures(pkg).slice(0, 4).map((feature, idx) => (
-                              <div key={idx} className="flex items-center gap-3">
-                                <div className="w-5 h-5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                </div>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">{feature}</span>
-                              </div>
-                            ))}
-                            
-                            {/* Limits Display */}
-                            <div className="flex items-center gap-3">
-                              <div className="w-5 h-5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <TreePine className="w-3 h-3 text-white" />
-                              </div>
-                              <span className="text-sm text-gray-700 dark:text-gray-300">
-                                {pkg.maxTrees === -1 ? "أشجار غير محدودة" : `${pkg.maxTrees} أشجار عائلية`}
-                              </span>
-                            </div>
-                            
-                            <div className="flex items-center gap-3">
-                              <div className="w-5 h-5 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Users className="w-3 h-3 text-white" />
-                              </div>
-                              <span className="text-sm text-gray-700 dark:text-gray-300">
-                                {pkg.maxMembers === -1 ? "أفراد غير محدودين" : `${pkg.maxMembers} فرد`}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Action Button */}
-                          <Button
-                            onClick={() => handlePlanSelect(pkg.id)}
-                            disabled={processingInvoice && selectedPlan === pkg.id || isCurrentPlan}
-                            className={`
-                              w-full h-12 font-semibold transition-all duration-300 shadow-lg
-                              ${isCurrentPlan 
-                                ? 'bg-emerald-500 hover:bg-emerald-600 text-white cursor-default' 
-                                : isFeatured 
-                                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0'
-                                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0'
-                              }
-                            `}
-                          >
-                            {processingInvoice && selectedPlan === pkg.id ? (
-                              <div className="flex items-center gap-2">
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                جاري المعالجة...
-                              </div>
-                            ) : isCurrentPlan ? (
-                              <div className="flex items-center gap-2">
-                                <Crown className="h-4 w-4" />
-                                الخطة الحالية
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <Zap className="h-4 w-4" />
-                                {pkg.price === "مجاني للأبد" ? "البدء مجاناً" : "اختيار الخطة"}
-                              </div>
-                            )}
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                              <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        {/* Enhanced button with current plan styling and loading state */}
+                        <Button 
+                          onClick={() => {
+                            console.log('🔍 Plan comparison:', {
+                              planId: plan.id,
+                              currentPlan: currentPlan,
                               isEqual: currentPlan === plan.id,
                               currentPlanType: typeof currentPlan,
                               planIdType: typeof plan.id
