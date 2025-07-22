@@ -98,7 +98,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     image: null as File | null,
     croppedImage: null as string | null,
     selectedParent: null as string | null,
-    isMarried: false,
+    maritalStatus: "single" as string,
     hasMultipleWives: false
   });
 
@@ -232,8 +232,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     try {
       const submitData = {
         ...memberData,
-        wives: memberData.gender === "male" && memberData.isMarried ? wives : [],
-        husband: memberData.gender === "female" && memberData.isMarried ? husband : null
+        wives: memberData.gender === "male" && memberData.maritalStatus === "married" ? wives : [],
+        husband: memberData.gender === "female" && memberData.maritalStatus === "married" ? husband : null
       };
 
       console.log('🔥 Final submit data:', submitData);
@@ -258,7 +258,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       image: null,
       croppedImage: null,
       selectedParent: null,
-      isMarried: false,
+      maritalStatus: "single",
       hasMultipleWives: false
     });
     setWives([]);
