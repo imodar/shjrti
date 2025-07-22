@@ -213,6 +213,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   };
 
   const handleSubmit = async () => {
+    console.log('🔥 Modal handleSubmit called');
+    console.log('🔥 Member data:', memberData);
+    console.log('🔥 Wives:', wives);
+    console.log('🔥 Husband:', husband);
+    
     if (!memberData.name.trim()) {
       toast({
         title: "خطأ",
@@ -231,10 +236,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         husband: memberData.gender === "female" && memberData.isMarried ? husband : null
       };
 
+      console.log('🔥 Final submit data:', submitData);
       await onSubmit(submitData);
       handleClose();
     } catch (error) {
-      console.error('Error submitting member data:', error);
+      console.error('🔥 Error submitting member data:', error);
     } finally {
       setIsSubmitting(false);
     }
