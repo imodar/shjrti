@@ -976,7 +976,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                     <Heart className="w-8 h-8 text-pink-400" />
                                   </div>
                                   <p className="text-pink-600 dark:text-pink-400 font-medium">لم يتم إضافة زوجات بعد</p>
-                                  <p className="text-pink-500 dark:text-pink-500 text-sm mt-1">استخدم النموذج على اليمين لإضافة زوجة</p>
+                                  
                                 </div>
                               ) : (
                                 wives.map((wife, index) => (
