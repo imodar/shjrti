@@ -822,10 +822,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                    </div>
                                 </div>
 
-                                  {/* Marital Status and Life Status - Combined in one row */}
+                                  {/* Marital Status, Life Status and Death Date - Combined in one row */}
                                   <div className="space-y-4">
-                                    {/* Marital Status and Alive Status - Combined in one row */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {/* Marital Status, Alive Status and Death Date - Combined in one row */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                       {/* Marital Status */}
                                       <div>
                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
@@ -872,11 +872,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
 
-                                    {/* Death Date (if deceased) - Full width row */}
-                                    {!newWife.isAlive && (
-                                      <div className="animate-fade-in">
+                                      {/* Death Date */}
+                                      <div className={!newWife.isAlive ? "animate-fade-in" : "opacity-50"}>
                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                           <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                           تاريخ الوفاة
@@ -887,13 +885,14 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                             onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
                                             placeholder="اختر تاريخ الوفاة"
                                             className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                            disabled={newWife.isAlive}
                                           />
                                           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
                                             <CalendarIcon className="h-2 w-2 text-white" />
                                           </div>
                                         </div>
                                       </div>
-                                    )}
+                                    </div>
                                   </div>
 
                                 <div>
