@@ -1029,96 +1029,207 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     )}
 
 
-                    {/* Original Female Section (to be replaced by above) */}
+                    {/* Husband Section for Female Members - Sky Blue Theme */}
                     {memberData.gender === "female" && (
-                      <div className="p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
-                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">معلومات الزوج</h4>
-                         <div className="space-y-4">
-                           {/* Husband Name and Birth Date - Combined in one row */}
-                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                             {/* Husband Name - 2/3 width */}
-                             <div className="sm:col-span-2">
-                               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">اسم الزوج</Label>
-                               <Input
-                                 value={husband?.name || ""}
-                                 onChange={(e) => setHusband(husband ? {...husband, name: e.target.value} : {
-                                   id: crypto.randomUUID(),
-                                   name: e.target.value,
-                                   birthDate: null,
-                                   isAlive: true,
-                                   deathDate: null,
-                                   image: null,
-                                   croppedImage: null,
-                                   maritalStatus: "married"
-                                 })}
-                                 placeholder="اسم الزوج"
-                                 className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-gray-200/50 focus:border-emerald-500"
-                               />
-                             </div>
+                      <div className="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950/30 dark:to-blue-900/30 rounded-2xl p-4 md:p-6 border border-sky-200/50 dark:border-sky-800/30 shadow-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                          {/* Add Husband Section - 2/3 width */}
+                          <div className="w-full md:col-span-2">
+                            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-6 shadow-md">
+                              <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full flex items-center justify-center">
+                                  <Heart className="w-4 h-4 text-white" />
+                                </div>
+                                <h4 className="text-lg font-semibold text-sky-700 dark:text-sky-300">معلومات الزوج</h4>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                {/* Name and Birth Date - Combined in one row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                  {/* Name - 2/3 width */}
+                                   <div className="sm:col-span-2">
+                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                       <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                       اسم الزوج *
+                                     </Label>
+                                     <div className="relative">
+                                       <Input
+                                         value={husband?.name || ""}
+                                         onChange={(e) => setHusband(husband ? {...husband, name: e.target.value} : {
+                                           id: crypto.randomUUID(),
+                                           name: e.target.value,
+                                           birthDate: null,
+                                           isAlive: true,
+                                           deathDate: null,
+                                           image: null,
+                                           croppedImage: null,
+                                           maritalStatus: "married"
+                                         })}
+                                         className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                         placeholder="اسم الزوج"
+                                       />
+                                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-sky-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                         <Heart className="h-2 w-2 text-white" />
+                                       </div>
+                                     </div>
+                                   </div>
 
-                             {/* Husband Birth Date - 1/3 width */}
-                             <div>
-                               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الميلاد</Label>
-                               <div className="relative z-[10001]">
-                                 <EnhancedDatePicker
-                                   value={husband?.birthDate || null}
-                                   onChange={(date) => setHusband(husband ? {...husband, birthDate: date} : {
-                                     id: crypto.randomUUID(),
-                                     name: "",
-                                     birthDate: date,
-                                     isAlive: true,
-                                     deathDate: null,
-                                     image: null,
-                                     croppedImage: null,
-                                     maritalStatus: "married"
-                                   })}
-                                   placeholder="التاريخ"
-                                   className="h-10 text-sm border-2 border-gray-200/50 focus:border-emerald-500"
-                                 />
-                               </div>
-                             </div>
-                           </div>
+                                  {/* Birth Date - 1/3 width */}
+                                   <div className="sm:col-span-1">
+                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                       <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                       تاريخ الميلاد
+                                     </Label>
+                                     <div className="relative z-[10001]">
+                                       <EnhancedDatePicker
+                                         value={husband?.birthDate || null}
+                                         onChange={(date) => setHusband(husband ? {...husband, birthDate: date} : {
+                                           id: crypto.randomUUID(),
+                                           name: "",
+                                           birthDate: date,
+                                           isAlive: true,
+                                           deathDate: null,
+                                           image: null,
+                                           croppedImage: null,
+                                           maritalStatus: "married"
+                                         })}
+                                         placeholder="اختر التاريخ"
+                                         className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                       />
+                                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
+                                         <CalendarIcon className="h-2 w-2 text-white" />
+                                       </div>
+                                     </div>
+                                   </div>
+                                </div>
 
-                           {/* Marital Status - Full width row */}
-                           <div>
-                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة الاجتماعية</Label>
-                             <div className="relative z-[10001]">
-                               <Select value={husband?.maritalStatus || "married"} onValueChange={(value) => setHusband(husband ? {...husband, maritalStatus: value} : {
-                                 id: crypto.randomUUID(),
-                                 name: "",
-                                 birthDate: null,
-                                 isAlive: true,
-                                 deathDate: null,
-                                 image: null,
-                                 croppedImage: null,
-                                 maritalStatus: value
-                               })}>
-                                 <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-gray-200/50 focus:border-emerald-500">
-                                   <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                 </SelectTrigger>
-                                 <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                   <SelectItem value="single" className="font-arabic text-base sm:text-lg lg:text-xl">أعزب</SelectItem>
-                                   <SelectItem value="married" className="font-arabic text-base sm:text-lg lg:text-xl">متزوج</SelectItem>
-                                   <SelectItem value="divorced" className="font-arabic text-base sm:text-lg lg:text-xl">مطلق</SelectItem>
-                                   <SelectItem value="widowed" className="font-arabic text-base sm:text-lg lg:text-xl">أرمل</SelectItem>
-                                   <SelectItem value="engaged" className="font-arabic text-base sm:text-lg lg:text-xl">مخطوب</SelectItem>
-                                 </SelectContent>
-                               </Select>
-                             </div>
-                           </div>
+                                {/* Marital Status - Full width row */}
+                                <div>
+                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                    <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                    الحالة الاجتماعية
+                                  </Label>
+                                  <div className="relative z-[10001]">
+                                    <Select value={husband?.maritalStatus || "married"} onValueChange={(value) => setHusband(husband ? {...husband, maritalStatus: value} : {
+                                      id: crypto.randomUUID(),
+                                      name: "",
+                                      birthDate: null,
+                                      isAlive: true,
+                                      deathDate: null,
+                                      image: null,
+                                      croppedImage: null,
+                                      maritalStatus: value
+                                    })}>
+                                      <SelectTrigger className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic">
+                                        <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                        <SelectItem value="single" className="font-arabic text-sm">أعزب</SelectItem>
+                                        <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                        <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                        <SelectItem value="widowed" className="font-arabic text-sm">أرمل</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
-                           {/* Life Status and Death Date - Combined in one row */}
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                             {/* Life Status */}
-                             <div>
-                               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة الحيوية</Label>
-                               <div className="relative z-[10001]">
-                                 <Select value={husband?.isAlive ? "alive" : "deceased"} onValueChange={(value) => setHusband(husband ? {...husband, isAlive: value === "alive", deathDate: value === "alive" ? null : husband.deathDate} : {
-                                   id: crypto.randomUUID(),
-                                   name: "",
-                                   birthDate: null,
-                                   isAlive: value === "alive",
-                                   deathDate: null,
+                          {/* Husband Info Display - 1/3 width */}
+                          <div className="w-full md:col-span-1">
+                            <div className="flex items-center gap-2 mb-6">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                <Users className="w-4 h-4 text-white" />
+                              </div>
+                              <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300">بيانات الزوج</h4>
+                            </div>
+                            
+                            <div className="space-y-4">
+                              {!husband?.name ? (
+                                <div className="text-center py-8 px-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-sky-200/30 dark:border-sky-800/30">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Heart className="w-8 h-8 text-sky-400" />
+                                  </div>
+                                  <p className="text-sky-600 dark:text-sky-400 font-medium">لم يتم إدخال بيانات الزوج بعد</p>
+                                </div>
+                              ) : (
+                                <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-4 shadow-md">
+                                  <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center border-2 border-sky-300">
+                                      <Heart className="w-6 h-6 text-sky-400" />
+                                    </div>
+                                    <div className="flex-1">
+                                      <h5 className="font-semibold text-sky-700 dark:text-sky-300">{husband.name}</h5>
+                                      {husband.birthDate && (
+                                        <p className="text-sm text-sky-600 dark:text-sky-400">
+                                          {new Date(husband.birthDate).toLocaleDateString('ar-SA')}
+                                        </p>
+                                      )}
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-xs px-2 py-1 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400">
+                                          {husband.maritalStatus === "married" ? "متزوج" : 
+                                           husband.maritalStatus === "single" ? "أعزب" :
+                                           husband.maritalStatus === "divorced" ? "مطلق" : "أرمل"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex-shrink-0 border-t border-white/40 dark:border-gray-600/40 p-3 sm:p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl mt-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                {step > 1 && (
+                  <Button 
+                    onClick={() => setStep(step - 1)}
+                    variant="outline"
+                    className="gap-2 px-6 py-3 rounded-xl border-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    السابق
+                  </Button>
+                )}
+                
+                <div className="flex-1"></div>
+                
+                {step < 2 ? (
+                  <Button 
+                    onClick={() => setStep(2)}
+                    className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-xl shadow-lg transition-all duration-300"
+                  >
+                    التالي
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={async () => {
+                      await handleSubmit(memberData);
+                    }}
+                    className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+                  >
+                    حفظ
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
                                    image: null,
                                    croppedImage: null,
                                    maritalStatus: "married"
