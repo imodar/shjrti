@@ -904,7 +904,9 @@ const FamilyBuilder = () => {
       if (memberError) throw memberError;
 
       // Handle wives for male members
+      console.log('🔥 Checking wives for male member:', memberData.gender, memberData.wives?.length);
       if (memberData.gender === "male" && memberData.wives?.length > 0) {
+        console.log('🔥 Processing wives:', memberData.wives);
         for (const wife of memberData.wives) {
           if (wife.name.trim()) {
             const { data: insertedWife, error: wifeError } = await supabase
