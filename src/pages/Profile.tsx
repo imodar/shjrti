@@ -418,6 +418,100 @@ export default function Profile() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
+              {/* Stats and Quick Actions */}
+              <div className="space-y-6">
+                
+                {/* Account Stats */}
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <Users className="h-5 w-5 text-white" />
+                      </div>
+                      <CardTitle className="text-lg bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        إحصائيات الحساب
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200/50 dark:border-emerald-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">الأشجار المنشأة</p>
+                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.familiesCreated}</p>
+                          </div>
+                          <TreePine className="h-8 w-8 text-emerald-500" />
+                        </div>
+                      </div>
+                      
+                      <div className="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200/50 dark:border-teal-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">إجمالي الأفراد</p>
+                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.totalMembers}</p>
+                          </div>
+                          <Users className="h-8 w-8 text-teal-500" />
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">آخر نشاط</p>
+                            <p className="text-lg font-semibold text-amber-700 dark:text-amber-300">{stats.lastActivity}</p>
+                          </div>
+                          <Calendar className="h-8 w-8 text-amber-500" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <Settings className="h-5 w-5 text-white" />
+                      </div>
+                      <CardTitle className="text-lg bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                        إجراءات سريعة
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Link to="/dashboard">
+                      <Button className="w-full justify-start gap-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-700">
+                        <Heart className="h-4 w-4" />
+                        لوحة التحكم
+                      </Button>
+                    </Link>
+                    
+                    <Link to="/family-tree-view">
+                      <Button className="w-full justify-start gap-3 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 dark:bg-teal-950/30 dark:hover:bg-teal-950/50 dark:text-teal-300 dark:border-teal-700">
+                        <Users className="h-4 w-4" />
+                        عرض الأشجار
+                      </Button>
+                    </Link>
+                    
+                    <Link to="/payments">
+                      <Button className="w-full justify-start gap-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:hover:bg-amber-950/50 dark:text-amber-300 dark:border-amber-700">
+                        <Crown className="h-4 w-4" />
+                        إدارة الاشتراك
+                      </Button>
+                    </Link>
+                    
+                    <Link to="/change-password">
+                      <Button className="w-full justify-start gap-3 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 dark:bg-gray-800/50 dark:hover:bg-gray-800/70 dark:text-gray-300 dark:border-gray-600">
+                        <Shield className="h-4 w-4" />
+                        تغيير كلمة المرور
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
+
               {/* Personal Information Card */}
               <div className="lg:col-span-2">
                 <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
@@ -530,100 +624,6 @@ export default function Profile() {
                         </Button>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Stats and Quick Actions */}
-              <div className="space-y-6">
-                
-                {/* Account Stats */}
-                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Users className="h-5 w-5 text-white" />
-                      </div>
-                      <CardTitle className="text-lg bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        إحصائيات الحساب
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200/50 dark:border-emerald-700/50">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">الأشجار المنشأة</p>
-                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.familiesCreated}</p>
-                          </div>
-                          <TreePine className="h-8 w-8 text-emerald-500" />
-                        </div>
-                      </div>
-                      
-                      <div className="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200/50 dark:border-teal-700/50">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">إجمالي الأفراد</p>
-                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.totalMembers}</p>
-                          </div>
-                          <Users className="h-8 w-8 text-teal-500" />
-                        </div>
-                      </div>
-
-                      <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">آخر نشاط</p>
-                            <p className="text-lg font-semibold text-amber-700 dark:text-amber-300">{stats.lastActivity}</p>
-                          </div>
-                          <Calendar className="h-8 w-8 text-amber-500" />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Quick Actions */}
-                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Settings className="h-5 w-5 text-white" />
-                      </div>
-                      <CardTitle className="text-lg bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                        إجراءات سريعة
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Link to="/dashboard">
-                      <Button className="w-full justify-start gap-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-700">
-                        <Heart className="h-4 w-4" />
-                        لوحة التحكم
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/family-tree-view">
-                      <Button className="w-full justify-start gap-3 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 dark:bg-teal-950/30 dark:hover:bg-teal-950/50 dark:text-teal-300 dark:border-teal-700">
-                        <Users className="h-4 w-4" />
-                        عرض الأشجار
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/payments">
-                      <Button className="w-full justify-start gap-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:hover:bg-amber-950/50 dark:text-amber-300 dark:border-amber-700">
-                        <Crown className="h-4 w-4" />
-                        إدارة الاشتراك
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/change-password">
-                      <Button className="w-full justify-start gap-3 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 dark:bg-gray-800/50 dark:hover:bg-gray-800/70 dark:text-gray-300 dark:border-gray-600">
-                        <Shield className="h-4 w-4" />
-                        تغيير كلمة المرور
-                      </Button>
-                    </Link>
                   </CardContent>
                 </Card>
               </div>
