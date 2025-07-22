@@ -29,6 +29,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Terms from "./pages/Terms";
 import Store from "./pages/Store";
 import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
+import AdminBilling from "./pages/AdminBilling";
 import RenewSubscription from "./pages/RenewSubscription";
 import NotFound from "./pages/NotFound";
 
@@ -117,6 +118,11 @@ const App = () => (
                 <Route path="/admin" element={
                   <ProtectedRoute requireAdmin={true}>
                     <EnhancedAdminPanel />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/billing" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminBilling />
                   </ProtectedRoute>
                 } />
                 <Route path="/renew-subscription" element={

@@ -592,6 +592,10 @@ export default function EnhancedAdminPanel() {
               <Languages className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Languages
             </TabsTrigger>
+            <TabsTrigger value="billing" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <CreditCard className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+              الفوترة
+            </TabsTrigger>
             <TabsTrigger value="settings" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
               <Scale className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               Settings
@@ -1012,6 +1016,68 @@ export default function EnhancedAdminPanel() {
                            </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Billing Tab - Quick Links */}
+          <TabsContent value="billing" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>إدارة الفوترة والمدفوعات</CardTitle>
+                <CardDescription>إدارة شاملة للاشتراكات والفواتير والمدفوعات</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer" 
+                       onClick={() => window.open('/admin/billing', '_blank')}>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <CreditCard className="h-6 w-6 text-emerald-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">لوحة الفوترة الكاملة</h3>
+                        <p className="text-sm text-gray-600">إدارة شاملة للمدفوعات</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      عرض وإدارة جميع الفواتير والاشتراكات وإحصائيات الإيرادات
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50">
+                    <h4 className="font-medium mb-2">ملخص سريع</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>إجمالي الإيرادات</span>
+                        <span className="font-semibold">جاري التحميل...</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>الاشتراكات النشطة</span>
+                        <span className="font-semibold">جاري التحميل...</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>فواتير معلقة</span>
+                        <span className="font-semibold">جاري التحميل...</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50">
+                    <h4 className="font-medium mb-2">إجراءات سريعة</h4>
+                    <div className="space-y-2">
+                      <button className="w-full text-left text-sm p-2 hover:bg-white rounded transition-colors">
+                        → عرض الفواتير المعلقة
+                      </button>
+                      <button className="w-full text-left text-sm p-2 hover:bg-white rounded transition-colors">
+                        → تصدير تقرير مالي
+                      </button>
+                      <button className="w-full text-left text-sm p-2 hover:bg-white rounded transition-colors">
+                        → إدارة الاشتراكات
+                      </button>
                     </div>
                   </div>
                 </div>
