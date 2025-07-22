@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle } from "lucide-react";
+import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle, Sparkles, ChevronRight, ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -730,7 +730,7 @@ export default function Payments() {
                   <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 relative z-10 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                   {loading ? (
                     Array(3).fill(0).map((_, index) => (
                       <Card key={index} className="h-96 animate-pulse backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border-emerald-200/30 dark:border-emerald-700/30">
@@ -769,90 +769,85 @@ export default function Payments() {
                         {/* Featured badge */}
                         {isFeatured && (
                           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full blur-sm animate-pulse"></div>
-                              <Badge className="relative bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1 text-sm font-bold shadow-lg border-2 border-white/30">
-                                <Star className="h-3 w-3 mr-1 fill-current animate-spin" style={{animationDuration: '3s'}} />
-                                الباقة المميزة
-                              </Badge>
-                            </div>
+                            <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
+                              <Sparkles className="h-3 w-3 mr-1" />
+                              الأكثر شعبية
+                            </Badge>
                           </div>
                         )}
 
                         {/* Current plan badge */}
                         {currentPlanActive && (
-                          <div className="absolute top-4 right-4 z-10">
-                            <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3 py-1 text-xs font-bold shadow-lg">
-                              <Crown className="h-3 w-3 mr-1" />
-                              خطتك الحالية
+                          <div className="absolute -top-3 right-4 z-10">
+                            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 text-xs shadow-lg">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              نشطة
                             </Badge>
                           </div>
                         )}
-
-                        {/* Floating decorative elements */}
-                        <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                          <div className="absolute top-8 right-8 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce"></div>
-                          <div className="absolute bottom-12 left-6 w-1 h-1 bg-teal-400/60 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                          <div className="absolute top-1/2 left-4 w-1.5 h-1.5 bg-cyan-400/50 rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
-                        </div>
-
-                        {/* Gradient overlay on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                         
-                        <CardHeader className="text-center relative z-10 pb-4">
-                          {/* Enhanced icon with dashboard style */}
-                          <div className="relative mx-auto mb-6">
-                            <div className={`absolute inset-0 ${plan.color || 'bg-gradient-to-br from-emerald-500 to-teal-600'} rounded-2xl blur-lg opacity-30 hover:opacity-50 transition-opacity duration-500 animate-pulse`}></div>
-                            <div className={`relative w-16 h-16 ${plan.color || 'bg-gradient-to-br from-emerald-500 to-teal-600'} rounded-2xl flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-500 ring-4 ring-white/20 dark:ring-gray-600/20`}>
-                              <div className="absolute inset-2 bg-white/20 rounded-xl"></div>
-                              <plan.icon className="relative h-8 w-8 text-white z-10" />
+                        <CardHeader className="text-center pb-4 pt-8">
+                          {/* Icon with dashboard-style gradient */}
+                          <div className="relative mb-4">
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30 hover:opacity-50 transition-all duration-500"></div>
+                            <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl hover:scale-110 transition-all duration-300">
+                              <plan.icon className="h-6 w-6 text-white" />
                             </div>
                           </div>
                           
-                          {/* Enhanced title with gradient */}
-                          <CardTitle className="text-xl font-bold mb-4">
-                            <span className="bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent hover:from-emerald-700 hover:to-teal-600 transition-all duration-500">
-                              {getLocalizedPackageField(plan, 'name') || plan.name || 'Unnamed Package'}
-                            </span>
+                          <CardTitle className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent mb-3">
+                            {getLocalizedPackageField(plan, 'name') || plan.name || 'Unnamed Package'}
                           </CardTitle>
                           
-                          {/* Enhanced pricing display */}
+                          {/* Pricing */}
                           <div className="mb-4">
-                            <div className="flex items-baseline justify-center gap-1">
-                              <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                                {plan.price.includes('مجاني') ? plan.price : plan.price}
-                              </span>
-                              {!plan.price.includes('مجاني') && (
-                                <div className="text-right">
-                                  <span className="text-sm text-muted-foreground block leading-none">ريال</span>
-                                  <span className="text-xs text-muted-foreground leading-none">{plan.period}</span>
+                            {plan.price.includes('مجاني') ? (
+                              <div className="text-center">
+                                <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                                  مجاني
                                 </div>
-                              )}
-                            </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  للأبد
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="text-center">
+                                <div className="flex items-baseline justify-center gap-1 mb-1">
+                                  <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                                    {plan.price}
+                                  </span>
+                                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    ريال/سنة
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  {Math.round(parseFloat(plan.price) / 12)} ريال شهرياً
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </CardHeader>
                         
-                        <CardContent className="flex flex-col flex-grow relative z-10 px-6 pb-6">
-                          {/* Enhanced features list with gradient checkmarks */}
-                          <ul className="space-y-3 mb-6 flex-grow">
-                            {getLocalizedFeatures(plan).map((feature, featureIndex) => (
-                              <li 
-                                key={featureIndex} 
-                                className="flex items-start gap-3 text-sm hover:translate-x-1 transition-transform duration-300"
-                                style={{transitionDelay: `${featureIndex * 0.05}s`}}
+                        <CardContent className="px-6 pb-6">
+                          {/* Features list */}
+                          <div className="space-y-2 mb-6">
+                            {getLocalizedFeatures(plan).slice(0, 4).map((feature, featureIndex) => (
+                              <div 
+                                key={featureIndex}
+                                className="flex items-center gap-2 text-sm"
                               >
-                                <div className="flex-shrink-0 mt-0.5">
-                                  <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-sm ring-2 ring-emerald-100 dark:ring-emerald-900">
-                                    <CheckCircle className="w-3 h-3 text-white" />
-                                  </div>
+                                <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <CheckCircle className="h-2.5 w-2.5 text-white" />
                                 </div>
-                                <span className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">{feature}</span>
-                              </li>
+                                <span className="text-gray-700 dark:text-gray-300 text-sm">
+                                  {feature}
+                                </span>
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                           
-                          {/* Enhanced button with proper styling and loading states */}
-                          <Button 
+                          {/* CTA Button */}
+                          <Button
                             onClick={() => {
                               console.log('🔍 Plan comparison:', {
                                 planId: plan.id,
@@ -866,38 +861,32 @@ export default function Payments() {
                                 handlePlanSelect(plan.id);
                               }
                             }}
-                            className={`w-full h-12 text-base font-semibold transition-all duration-500 shadow-lg hover:shadow-xl ${
-                              currentPlanActive 
-                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white cursor-default ring-2 ring-amber-200' 
-                                : processingInvoice && selectedPlan === plan.id
-                                ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed'
-                                : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white hover:scale-105'
-                            }`} 
                             disabled={currentPlanActive || (processingInvoice && selectedPlan === plan.id)}
+                            className={`
+                              w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
+                              ${currentPlanActive || (processingInvoice && selectedPlan === plan.id)
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'
+                              }
+                            `}
                           >
-                            <div className="flex items-center justify-center gap-2">
+                            <span className="flex items-center gap-2">
                               {currentPlanActive ? (
-                                <>
-                                  <Crown className="h-5 w-5" />
-                                  <span>خطتك الحالية النشطة</span>
-                                </>
+                                'خطتك الحالية النشطة'
                               ) : processingInvoice && selectedPlan === plan.id ? (
                                 <>
-                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                  <span>جاري إنشاء الفاتورة...</span>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                  جاري إنشاء الفاتورة...
                                 </>
                               ) : (
                                 <>
-                                  <Zap className="h-5 w-5" />
-                                  <span>اختيار الخطة</span>
+                                  اختيار الخطة
+                                  <ChevronRight className="h-4 w-4" />
                                 </>
                               )}
-                            </div>
+                            </span>
                           </Button>
                         </CardContent>
-                        
-                        {/* Bottom glow effect */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-b-lg"></div>
                       </Card>
                     );
                   })}
