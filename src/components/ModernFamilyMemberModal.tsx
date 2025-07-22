@@ -1481,7 +1481,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 </Button>
               ) : (
                 <Button 
-                  onClick={handleSubmit} 
+                  onClick={() => {
+                    console.log('🔥 Submit button clicked!');
+                    console.log('🔥 isSubmitting:', isSubmitting);
+                    console.log('🔥 Current step:', step);
+                    console.log('🔥 Member data at click:', memberData);
+                    handleSubmit();
+                  }} 
                   disabled={isSubmitting}
                   className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
