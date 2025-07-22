@@ -48,13 +48,13 @@ export function EnhancedDatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-14 text-lg border-2 border-gray-200/50 dark:border-gray-700/50 justify-start text-left font-normal w-full hover:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pl-4 pr-12",
+            "h-14 text-lg border-2 border-gray-200/50 dark:border-gray-700/50 justify-end text-right font-normal w-full hover:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pl-12 pr-4",
             !value && "text-gray-500 dark:text-gray-400 placeholder:text-lg",
             className
           )}
         >
-          <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0 mr-2" />
-          <span className="text-lg">{value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}</span>
+          <span className="text-lg mr-2">{value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}</span>
+          <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
         </Button>
       </PopoverTrigger>
       <PopoverContent 
