@@ -120,12 +120,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     if (isOpen && familyId) {
       fetchFamilyData();
     }
-    
-    // Pre-populate form when editing
-    if (editMember && isOpen) {
+  }, [isOpen, familyId]);
+
+  // Separate useEffect for populating edit form when marriages data is available
+  useEffect(() => {
+    if (editMember && isOpen && marriages.length > 0) {
+      console.log('🔥 Populating edit form with marriages available');
       populateEditForm();
     }
-  }, [isOpen, familyId, editMember]);
+  }, [editMember, isOpen, marriages]);
 
   const populateEditForm = () => {
     if (!editMember) return;
