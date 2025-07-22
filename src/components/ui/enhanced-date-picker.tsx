@@ -54,7 +54,7 @@ export function EnhancedDatePicker({
           )}
         >
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
-          <span className="text-xs sm:text-sm ml-1 truncate">{value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}</span>
+          <span className="text-xs ml-1">{value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent 
