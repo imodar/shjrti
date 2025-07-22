@@ -35,7 +35,6 @@ interface Marriage {
   id: string;
   husband: { id: string; name: string; is_founder?: boolean; father_id?: string; father_name?: string };
   wife: { id: string; name: string };
-  marriage_date: string | null;
   is_active: boolean;
 }
 
@@ -165,7 +164,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           id,
           husband_id,
           wife_id,
-          marriage_date,
           is_active,
           husband:family_tree_members!marriages_husband_id_fkey(id, name, is_founder, father_id),
           wife:family_tree_members!marriages_wife_id_fkey(id, name)
@@ -197,7 +195,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
             father_name: fatherName
           },
           wife: { id: marriage.wife_id, name: marriage.wife?.name || "" },
-          marriage_date: marriage.marriage_date,
           is_active: marriage.is_active
         };
       }));

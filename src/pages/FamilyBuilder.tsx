@@ -284,7 +284,6 @@ const FamilyBuilder = () => {
               id,
               husband:family_tree_members!marriages_husband_id_fkey(id, name),
               wife:family_tree_members!marriages_wife_id_fkey(id, name),
-              marriage_date,
               is_active
             `)
             .eq('family_id', family.id)
@@ -1319,7 +1318,6 @@ const FamilyBuilder = () => {
               // Also add the marriage to familyMarriages array
               const newMarriage = {
                 id: marriageData.id,
-                marriage_date: marriageData.marriage_date,
                 is_active: marriageData.is_active,
                 husband: {
                   id: data.id,
@@ -1417,7 +1415,6 @@ const FamilyBuilder = () => {
             // Also add the marriage to familyMarriages array
             const newMarriage = {
               id: marriageData.id,
-              marriage_date: marriageData.marriage_date,
               is_active: marriageData.is_active,
               husband: {
                 id: husbandData.id,

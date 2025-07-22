@@ -83,8 +83,7 @@ const FamilyStatistics = () => {
             familyId: marriage.family_id,
             isActive: marriage.is_active,
             husband: transformedMembers.find(m => m.id === marriage.husband_id),
-            wife: transformedMembers.find(m => m.id === marriage.wife_id),
-            marriageDate: marriage.marriage_date
+            wife: transformedMembers.find(m => m.id === marriage.wife_id)
           })) || [];
 
           setFamilyMarriages(transformedMarriages);
