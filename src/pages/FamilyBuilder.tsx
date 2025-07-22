@@ -879,6 +879,11 @@ const FamilyBuilder = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Determine marital status based on spouses
+      const hasSpouses = (memberData.gender === "male" && memberData.wives?.length > 0) || 
+                        (memberData.gender === "female" && memberData.husband);
+      const maritalStatus = hasSpouses ? "married" : "single";
+
       // Insert main member
       const memberInsertData = {
         family_id: familyId,
@@ -892,6 +897,7 @@ const FamilyBuilder = () => {
         biography: memberData.bio || "",
         image_url: memberData.croppedImage,
         is_founder: false,
+        marital_status: maritalStatus, // Set marital status based on spouses
         created_by: user.id
       };
 
@@ -920,6 +926,7 @@ const FamilyBuilder = () => {
                 death_date: wife.deathDate,
                 image_url: wife.croppedImage,
                 is_founder: false,
+                marital_status: "married", // Set wife as married
                 created_by: user.id
               })
               .select()
@@ -957,6 +964,7 @@ const FamilyBuilder = () => {
               death_date: husband.deathDate,
               image_url: husband.croppedImage,
               is_founder: false,
+              marital_status: "married", // Set husband as married
               created_by: user.id
             })
             .select()

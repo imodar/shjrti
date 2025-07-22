@@ -217,8 +217,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     console.log('🔥 Member data:', memberData);
     console.log('🔥 Wives:', wives);
     console.log('🔥 Husband:', husband);
-    console.log('🔥 Marital status:', memberData.maritalStatus);
-    console.log('🔥 Gender:', memberData.gender);
     
     if (!memberData.name.trim()) {
       console.log('🔥 Name validation failed');
@@ -234,15 +232,21 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     setIsSubmitting(true);
     
     try {
+      // Determine marital status based on presence of spouses
+      const hasSpouses = (memberData.gender === "male" && wives.length > 0) || 
+                        (memberData.gender === "female" && husband);
+      
       const submitData = {
         ...memberData,
-        wives: memberData.gender === "male" && memberData.maritalStatus === "married" ? wives : [],
-        husband: memberData.gender === "female" && memberData.maritalStatus === "married" ? husband : null
+        maritalStatus: hasSpouses ? "married" : "single", // Set marital status based on spouses
+        wives: memberData.gender === "male" ? wives : [], // Always include wives array for males
+        husband: memberData.gender === "female" ? husband : null // Always include husband for females
       };
 
       console.log('🔥 Final submit data:', submitData);
-      console.log('🔥 Will include wives?', memberData.gender === "male" && memberData.maritalStatus === "married");
-      console.log('🔥 Wives array length:', wives.length);
+      console.log('🔥 Marital status set to:', submitData.maritalStatus);
+      console.log('🔥 Will include wives for male:', memberData.gender === "male", wives.length);
+      console.log('🔥 Will include husband for female:', memberData.gender === "female", !!husband);
       
       await onSubmit(submitData);
       console.log('🔥 onSubmit completed successfully');
