@@ -414,6 +414,13 @@ const FamilyBuilder = () => {
   }>>([]);
   // Filter state - single select dropdown
   const [selectedFilter, setSelectedFilter] = useState("all");
+  
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<any>(null);
+  const [deleteModalType, setDeleteModalType] = useState<'spouse' | 'bloodMember'>('spouse');
+  const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
+  
   const [formData, setFormData] = useState({
     name: "",
     relation: "",
@@ -1569,59 +1576,69 @@ const FamilyBuilder = () => {
   };
 
   const handleDeleteMember = async (id: string) => {
-    try {
-      const memberToDelete = familyMembers.find(member => member.id === id);
-      if (!memberToDelete) {
-        toast({
-          title: "خطأ",
-          description: "العضو غير موجود",
-          variant: "destructive"
-        });
-        return;
-      }
+    const memberToDelete = familyMembers.find(member => member.id === id);
+    if (!memberToDelete) {
+      toast({
+        title: "خطأ",
+        description: "العضو غير موجود",
+        variant: "destructive"
+      });
+      return;
+    }
 
-      // Check if member is a founder
-      if (memberToDelete.isFounder) {
-        toast({
-          title: "تحذير",
-          description: "لا يمكن حذف مؤسس العائلة",
-          variant: "destructive"
-        });
-        return;
-      }
+    // Check if member is a founder
+    if (memberToDelete.isFounder) {
+      toast({
+        title: "تحذير",
+        description: "لا يمكن حذف مؤسس العائلة",
+        variant: "destructive"
+      });
+      return;
+    }
 
-      // Check if this member is a spouse (married to someone but has no blood relation to family)
-      const isSpouse = checkIfMemberIsSpouse(memberToDelete);
+    // Set the member to delete
+    setMemberToDelete(memberToDelete);
+
+    // Check if this member is a spouse (married to someone but has no blood relation to family)
+    const isSpouse = checkIfMemberIsSpouse(memberToDelete);
+    
+    if (isSpouse) {
+      // Show modal for spouse deletion
+      setDeleteModalType('spouse');
+      setDeleteWarningMessage(
+        "هذا الشخص زوج/زوجة لأحد أفراد العائلة.\n" +
+        "لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج."
+      );
+    } else {
+      // This is a blood family member - show warning about cascading delete
+      const childrenCount = getChildrenCount(memberToDelete.id);
+      const spousesCount = getSpousesCount(memberToDelete.id);
       
-      if (isSpouse) {
-        // Show modal for spouse deletion
-        const confirmed = window.confirm(
-          "هذا الشخص زوج/زوجة لأحد أفراد العائلة.\n" +
-          "لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج.\n" +
-          "هل تريد المتابعة؟"
-        );
-        if (!confirmed) return;
-      } else {
-        // This is a blood family member - show warning about cascading delete
-        const childrenCount = getChildrenCount(memberToDelete.id);
-        const spousesCount = getSpousesCount(memberToDelete.id);
-        
-        let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
-        if (spousesCount > 0) {
-          warningMessage += `- ${spousesCount} زوج/زوجة\n`;
-        }
-        if (childrenCount > 0) {
-          warningMessage += `- ${childrenCount} طفل/أطفال وجميع أحفادهم\n`;
-        }
-        warningMessage += `- جميع الزيجات المرتبطة بهذا الشخص\n\nهل أنت متأكد من المتابعة؟`;
-        
-        const confirmed = window.confirm(warningMessage);
-        if (!confirmed) return;
+      let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
+      if (spousesCount > 0) {
+        warningMessage += `- ${spousesCount} زوج/زوجة\n`;
       }
+      if (childrenCount > 0) {
+        warningMessage += `- ${childrenCount} طفل/أطفال وجميع أحفادهم\n`;
+      }
+      warningMessage += `- جميع الزيجات المرتبطة بهذا الشخص`;
+      
+      setDeleteModalType('bloodMember');
+      setDeleteWarningMessage(warningMessage);
+    }
 
-      // Proceed with deletion
+    // Show the modal
+    setShowDeleteModal(true);
+  };
+
+  // Function to confirm and execute delete
+  const confirmDelete = async () => {
+    if (!memberToDelete) return;
+    
+    try {
       await performCascadingDelete(memberToDelete);
-
+      setShowDeleteModal(false);
+      setMemberToDelete(null);
     } catch (error) {
       console.error('Error deleting member:', error);
       toast({
@@ -2346,6 +2363,31 @@ const FamilyBuilder = () => {
         familyId={searchParams.get('family') || ''}
         editMember={selectedMember} // Pass the member being edited
       />
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <AlertDialogContent className="max-w-md font-arabic">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right">
+              {deleteModalType === 'spouse' ? 'تحذير - حذف زوج/زوجة' : 'تحذير - حذف عضو من العائلة'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-right whitespace-pre-line">
+              {deleteWarningMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogCancel className="font-arabic">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive hover:bg-destructive/90 font-arabic"
+            >
+              {deleteModalType === 'spouse' ? 'حذف الزوج/الزوجة' : 'حذف العضو وكل ما يتعلق به'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <GlobalFooter />
     </div>
