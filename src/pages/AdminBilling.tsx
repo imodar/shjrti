@@ -308,6 +308,41 @@ export default function AdminBilling() {
     }
   };
 
+  const handleEditSubscription = async (subscription: Subscription) => {
+    // For now, show a toast that this feature is coming soon
+    toast({
+      title: "قريباً",
+      description: "ميزة تعديل الاشتراكات ستكون متاحة قريباً",
+    });
+  };
+
+  const handleDeleteSubscription = async (subscriptionId: string) => {
+    if (!confirm('هل أنت متأكد من حذف هذا الاشتراك؟')) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_subscriptions')
+        .delete()
+        .eq('id', subscriptionId);
+
+      if (error) throw error;
+
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف الاشتراك بنجاح",
+      });
+
+      loadBillingData();
+    } catch (error) {
+      console.error('Error deleting subscription:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حذف الاشتراك",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filteredInvoices = invoices.filter(invoice => {
     const matchesSearch = 
       invoice.invoice_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -653,16 +688,24 @@ export default function AdminBilling() {
                               : 'غير محدد'
                             }
                           </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button size="sm" variant="outline">
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button size="sm" variant="destructive">
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                           <TableCell>
+                             <div className="flex items-center gap-2">
+                               <Button 
+                                 size="sm" 
+                                 variant="outline"
+                                 onClick={() => handleEditSubscription(subscription)}
+                               >
+                                 <Edit className="h-3 w-3" />
+                               </Button>
+                               <Button 
+                                 size="sm" 
+                                 variant="destructive"
+                                 onClick={() => handleDeleteSubscription(subscription.id)}
+                               >
+                                 <Trash2 className="h-3 w-3" />
+                               </Button>
+                             </div>
+                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
