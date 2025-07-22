@@ -900,6 +900,15 @@ const FamilyBuilder = () => {
                         (memberData.gender === "female" && memberData.husband);
       const maritalStatus = hasSpouses ? "married" : "single";
       
+      console.log('🔥 Member data received:', {
+        gender: memberData.gender,
+        name: memberData.name,
+        fatherId: memberData.fatherId,
+        motherId: memberData.motherId,
+        relatedPersonId: memberData.relatedPersonId,
+        wives: memberData.wives,
+        husband: memberData.husband
+      });
       console.log('🔥 Calculated marital status:', maritalStatus, 'hasSpouses:', hasSpouses);
 
       // Insert main member
@@ -1003,9 +1012,12 @@ const FamilyBuilder = () => {
       }
 
       // Handle husband for female members - only if not editing or if husband changed
+      console.log('🔥 Checking husband insertion for female member:', memberData.gender === "female", !!memberData.husband);
       if (memberData.gender === "female" && memberData.husband) {
         const husband = memberData.husband;
+        console.log('🔥 Husband data:', husband);
         if (husband.name.trim()) {
+          console.log('🔥 Husband name is valid, proceeding with insertion:', husband.name);
           // If editing, first remove existing marriages for this member
           if (selectedMember) {
             console.log('🔥 Editing mode - removing existing marriages for member:', selectedMember.id);
