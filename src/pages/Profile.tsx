@@ -619,24 +619,6 @@ export default function Profile() {
                     
                     <CardContent className="relative space-y-4 pb-8">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Link to="/dashboard" className="group">
-                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-700 border border-emerald-200/70 dark:from-emerald-950/40 dark:to-teal-950/40 dark:hover:from-emerald-950/60 dark:hover:to-teal-950/60 dark:text-emerald-300 dark:border-emerald-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
-                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                              <Heart className="h-4 w-4 text-white group-hover:animate-pulse" />
-                            </div>
-                            <span className="font-medium">لوحة التحكم</span>
-                          </Button>
-                        </Link>
-                        
-                        <Link to="/family-tree-view" className="group">
-                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-teal-50 to-cyan-50 hover:from-teal-100 hover:to-cyan-100 text-teal-700 border border-teal-200/70 dark:from-teal-950/40 dark:to-cyan-950/40 dark:hover:from-teal-950/60 dark:hover:to-cyan-950/60 dark:text-teal-300 dark:border-teal-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
-                            <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                              <Users className="h-4 w-4 text-white group-hover:animate-pulse" />
-                            </div>
-                            <span className="font-medium">عرض الأشجار</span>
-                          </Button>
-                        </Link>
-                        
                         <Link to="/payments" className="group">
                           <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-700 border border-amber-200/70 dark:from-amber-950/40 dark:to-orange-950/40 dark:hover:from-amber-950/60 dark:hover:to-orange-950/60 dark:text-amber-300 dark:border-amber-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
                             <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
