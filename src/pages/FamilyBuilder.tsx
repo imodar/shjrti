@@ -1018,6 +1018,7 @@ const FamilyBuilder = () => {
         console.log('🔥 Husband data:', husband);
         if (husband.name.trim()) {
           console.log('🔥 Husband name is valid, proceeding with insertion:', husband.name);
+          
           // If editing, first remove existing marriages for this member
           if (selectedMember) {
             console.log('🔥 Editing mode - removing existing marriages for member:', selectedMember.id);
@@ -1046,7 +1047,12 @@ const FamilyBuilder = () => {
             .select()
             .single();
 
-          if (husbandError) throw husbandError;
+          if (husbandError) {
+            console.error('🔥 Error inserting husband:', husbandError);
+            throw husbandError;
+          }
+
+          console.log('🔥 Husband inserted successfully:', husbandData);
 
           // Create marriage record
           const { error: marriageError } = await supabase
@@ -1055,10 +1061,16 @@ const FamilyBuilder = () => {
               family_id: familyId,
               husband_id: husbandData.id,
               wife_id: insertedMember.id,
-              is_active: true
+              is_active: true,
+              marital_status: 'married'
             });
 
-          if (marriageError) throw marriageError;
+          if (marriageError) {
+            console.error('🔥 Error creating marriage:', marriageError);
+            throw marriageError;
+          }
+
+          console.log('🔥 Marriage created successfully between:', husbandData.name, 'and', memberData.name);
         }
       }
 
