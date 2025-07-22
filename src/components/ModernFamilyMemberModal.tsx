@@ -87,6 +87,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   const [filteredParents, setFilteredParents] = useState<any[]>([]);
   const [familyName, setFamilyName] = useState<string>("");
   const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [memberData, setMemberData] = useState({
     name: "",
@@ -224,14 +225,22 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       return;
     }
 
-    const submitData = {
-      ...memberData,
-      wives: memberData.gender === "male" && memberData.isMarried ? wives : [],
-      husband: memberData.gender === "female" && memberData.isMarried ? husband : null
-    };
+    setIsSubmitting(true);
+    
+    try {
+      const submitData = {
+        ...memberData,
+        wives: memberData.gender === "male" && memberData.isMarried ? wives : [],
+        husband: memberData.gender === "female" && memberData.isMarried ? husband : null
+      };
 
-    onSubmit(submitData);
-    handleClose();
+      await onSubmit(submitData);
+      handleClose();
+    } catch (error) {
+      console.error('Error submitting member data:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -1470,10 +1479,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               ) : (
                 <Button 
                   onClick={handleSubmit} 
-                  className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-xl shadow-lg transition-all duration-300"
+                  disabled={isSubmitting}
+                  className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <TreePine className="h-4 w-4" />
-                  إضافة الفرد
+                  {isSubmitting ? `يتم الآن إضافة ${memberData.name} ..` : `إضافة ${memberData.name} للعائلة`}
                 </Button>
               )}
             </div>
