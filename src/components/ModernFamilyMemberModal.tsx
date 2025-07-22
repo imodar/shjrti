@@ -1030,7 +1030,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
 
                     {/* Original Female Section (to be replaced by above) */}
-                    {false && memberData.gender === "female" && (
+                    {memberData.gender === "female" && (
                       <div className="p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
                         <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">معلومات الزوج</h4>
                          <div className="space-y-4">
