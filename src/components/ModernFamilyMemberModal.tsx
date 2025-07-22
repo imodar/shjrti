@@ -1483,6 +1483,27 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                          type="button"
                                          variant="outline"
                                          size="sm"
+                                         onClick={() => {
+                                           // Set husband data to the form for editing
+                                           setNewWife({
+                                             name: husband.name,
+                                             birthDate: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : "",
+                                             maritalStatus: husband.maritalStatus || "married",
+                                             isAlive: husband.isAlive,
+                                             deathDate: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : "",
+                                             imageUrl: husband.croppedImage || ""
+                                           });
+                                           // Clear current husband to allow re-adding
+                                           setHusband(null);
+                                         }}
+                                         className="border-sky-300 text-sky-600 hover:bg-sky-50 hover:border-sky-400 bg-sky-50/50 dark:bg-sky-950/20"
+                                       >
+                                         <Edit3 className="w-4 h-4" />
+                                       </Button>
+                                       <Button
+                                         type="button"
+                                         variant="outline"
+                                         size="sm"
                                          onClick={() => setHusband(null)}
                                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 bg-red-50/50 dark:bg-red-950/20"
                                        >
