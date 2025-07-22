@@ -2414,11 +2414,30 @@ const FamilyBuilder = () => {
                             marriage.husband?.id === memberToDelete?.id || marriage.wife?.id === memberToDelete?.id
                           );
                           if (spouseMarriage) {
-                            // Return the name of the blood family member (not the spouse)
-                            const connectedMember = spouseMarriage.husband?.id === memberToDelete?.id 
-                              ? spouseMarriage.wife?.name 
-                              : spouseMarriage.husband?.name;
-                            return connectedMember || "العضو المرتبط";
+                            // Get the blood family member (not the spouse)
+                            const connectedMemberId = spouseMarriage.husband?.id === memberToDelete?.id 
+                              ? spouseMarriage.wife?.id 
+                              : spouseMarriage.husband?.id;
+                            
+                            const connectedMember = familyMembers.find(m => m.id === connectedMemberId);
+                            if (connectedMember) {
+                              let fullName = connectedMember.name;
+                              
+                              // Add father name if available
+                              if (connectedMember.fatherId) {
+                                const father = familyMembers.find(m => m.id === connectedMember.fatherId);
+                                if (father) {
+                                  fullName += ` ${father.name}`;
+                                }
+                              }
+                              
+                              // Add family name
+                              if (familyData?.name) {
+                                fullName += ` ${familyData.name}`;
+                              }
+                              
+                              return fullName;
+                            }
                           }
                           return "العضو المرتبط";
                         })()
