@@ -458,10 +458,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                          {/* Name - 2/3 width */}
                           <div className="sm:col-span-2">
-                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                             <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                             الاسم الأول
-                           </Label>
+                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                              <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                              الاسم الأول *
+                            </Label>
                            <div className="relative">
                              <Input
                                value={memberData.name}
@@ -495,10 +495,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                          </div>
                           {/* Gender - 1/4 width */}
                           <div className="sm:col-span-1">
-                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                              الجنس
-                            </Label>
+                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                               <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                               الجنس *
+                             </Label>
                             <div className="relative">
                               <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
                                 <SelectTrigger className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
@@ -527,10 +527,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             {/* Family Relationship - 1/2 width */}
                            <div className="group md:col-span-2">
-                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                              <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                              علاقة القرابة (العائلة)
-                            </Label>
+                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                               <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                               علاقة القرابة (العائلة) *
+                             </Label>
                              <div className="relative z-[10001]">
                                <Popover open={relationshipPopoverOpen} onOpenChange={setRelationshipPopoverOpen}>
                                  <PopoverTrigger asChild>
