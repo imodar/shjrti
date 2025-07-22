@@ -864,6 +864,7 @@ const FamilyBuilder = () => {
   const handleModernModalSubmit = async (memberData: any) => {
     try {
       console.log('Modern modal submit with data:', memberData);
+      console.log('Selected member for editing:', selectedMember);
       
       const familyId = searchParams.get('family');
       if (!familyId) {
@@ -891,6 +892,7 @@ const FamilyBuilder = () => {
         gender: memberData.gender,
         father_id: memberData.fatherId,
         mother_id: memberData.motherId,
+        related_person_id: memberData.relatedPersonId, // Set the related person ID
         birth_date: memberData.birthDate,
         is_alive: memberData.isAlive,
         death_date: memberData.deathDate,
@@ -901,11 +903,18 @@ const FamilyBuilder = () => {
         created_by: user.id
       };
 
-      const { data: insertedMember, error: memberError } = await supabase
-        .from('family_tree_members')
-        .insert(memberInsertData)
-        .select()
-        .single();
+      const { data: insertedMember, error: memberError } = selectedMember 
+        ? await supabase
+            .from('family_tree_members')
+            .update(memberInsertData)
+            .eq('id', selectedMember.id)
+            .select()
+            .single()
+        : await supabase
+            .from('family_tree_members')
+            .insert(memberInsertData)
+            .select()
+            .single();
 
       if (memberError) throw memberError;
 
@@ -990,8 +999,10 @@ const FamilyBuilder = () => {
       window.location.reload();
       
       toast({
-        title: "تم الإضافة بنجاح",
-        description: `تم إضافة ${memberData.name} للعائلة`
+        title: selectedMember ? "تم التحديث بنجاح" : "تم الإضافة بنجاح",
+        description: selectedMember 
+          ? `تم تحديث بيانات ${memberData.name}` 
+          : `تم إضافة ${memberData.name} للعائلة`
       });
 
     } catch (error) {
@@ -1005,98 +1016,9 @@ const FamilyBuilder = () => {
   };
 
   const handleEditMember = async (member: any) => {
+    console.log('Edit member called:', member);
     setSelectedMember(member);
-    setCurrentStep(1);
-    setShowAddMember(true);
-    
-    // Determine relation based on member properties
-    let relation = "";
-    if (member.isFounder) {
-      relation = "founder";
-    } else if (member.fatherId || member.motherId) {
-      relation = "child";
-    } else {
-      // Check if this member is married (husband or wife)
-      const marriage = familyMarriages.find(m => 
-        m.husband?.id === member.id || m.wife?.id === member.id
-      );
-      if (marriage) {
-        relation = member.gender === "male" ? "husband" : "wife";
-      }
-    }
-    
-    // Find the correct family relation for this member
-    let relatedPersonId = member.relatedPersonId || null;
-    
-    // If member has parents, find their marriage (the family this member belongs to)
-    if (member.fatherId && member.motherId) {
-      const parentMarriage = familyMarriages.find(m => 
-        (m.husband?.id === member.fatherId && m.wife?.id === member.motherId) ||
-        (m.husband?.id === member.motherId && m.wife?.id === member.fatherId)
-      );
-      if (parentMarriage) {
-        relatedPersonId = parentMarriage.id;
-      }
-    }
-    
-    setFormData({
-      name: member.name,
-      relation: relation,
-      relatedPersonId: relatedPersonId,
-      gender: member.gender,
-      birthDate: member.birthDate ? new Date(member.birthDate) : null,
-      isAlive: member.isAlive,
-      deathDate: member.deathDate ? new Date(member.deathDate) : null,
-      bio: member.bio || "",
-      image: null,
-      croppedImage: member.image
-    });
-    
-    // Load wives if this is a male member
-    if (member.gender === "male") {
-      console.log('Loading wives for male member:', member.id, member.name);
-      console.log('Available marriages:', familyMarriages);
-      const memberMarriages = familyMarriages.filter(m => m.husband?.id === member.id);
-      console.log('Member marriages:', memberMarriages);
-      
-      const memberWives = memberMarriages.map(marriage => {
-        const wife = familyMembers.find(fm => fm.id === marriage.wife?.id);
-        console.log('Found wife:', wife, 'for marriage:', marriage);
-        return {
-          id: `existing-${wife?.id || marriage.wife?.id}`, // Mark existing wives to prevent deletion
-          name: marriage.wife?.name || "",
-          isAlive: wife?.isAlive ?? true,
-          birthDate: wife?.birthDate ? new Date(wife.birthDate) : null,
-          deathDate: wife?.deathDate ? new Date(wife.deathDate) : null
-        };
-      }).filter(wife => wife.id); // Filter out any invalid wives
-      
-      console.log('Setting wives:', memberWives);
-      setWives(memberWives);
-      setHusbands([]); // Reset husbands for male members
-    } else if (member.gender === "female") {
-      // Load husbands if this is a female member
-      const memberMarriages = familyMarriages.filter(m => m.wife?.id === member.id);
-      const memberHusbands = memberMarriages.map(marriage => {
-        const husband = familyMembers.find(fm => fm.id === marriage.husband?.id);
-        return {
-          id: `existing-${husband?.id || marriage.husband?.id}`, // Mark existing husbands to prevent deletion
-          name: marriage.husband?.name || "",
-          isAlive: husband?.isAlive ?? true,
-          birthDate: husband?.birthDate ? new Date(husband.birthDate) : null,
-          deathDate: husband?.deathDate ? new Date(husband.deathDate) : null
-        };
-      }).filter(husband => husband.id); // Filter out any invalid husbands
-      
-      setHusbands(memberHusbands);
-      setWives([]);
-    } else {
-      setWives([]);
-      setHusbands([]);
-    }
-    
-    setEditingWife(null); // Reset editing wife
-    setEditingHusband(null); // Reset editing husband
+    setShowAddMember(true); // Open the modern modal for editing
   };
 
   const handleSaveMember = async () => {
@@ -2226,9 +2148,11 @@ const FamilyBuilder = () => {
         onClose={() => {
           console.log('Modal onClose called');
           setShowAddMember(false);
+          setSelectedMember(null); // Reset selected member when closing
         }}
         onSubmit={handleModernModalSubmit}
         familyId={searchParams.get('family') || ''}
+        editMember={selectedMember} // Pass the member being edited
       />
 
       <GlobalFooter />

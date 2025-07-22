@@ -66,9 +66,10 @@ interface ModernFamilyMemberModalProps {
   onClose: () => void;
   onSubmit: (memberData: any) => void;
   familyId: string;
+  editMember?: any; // Optional member to edit
 }
 
-export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }: ModernFamilyMemberModalProps) => {
+export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, editMember }: ModernFamilyMemberModalProps) => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,7 +120,81 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     if (isOpen && familyId) {
       fetchFamilyData();
     }
-  }, [isOpen, familyId]);
+    
+    // Pre-populate form when editing
+    if (editMember && isOpen) {
+      populateEditForm();
+    }
+  }, [isOpen, familyId, editMember]);
+
+  const populateEditForm = () => {
+    if (!editMember) return;
+    
+    // Find the parent marriage for this member
+    let selectedParent = null;
+    if (editMember.relatedPersonId) {
+      selectedParent = editMember.relatedPersonId;
+    } else if (editMember.fatherId && editMember.motherId) {
+      // Try to find the marriage between the parents
+      const parentMarriage = marriages.find(m => 
+        (m.husband?.id === editMember.fatherId && m.wife?.id === editMember.motherId) ||
+        (m.husband?.id === editMember.motherId && m.wife?.id === editMember.fatherId)
+      );
+      if (parentMarriage) {
+        selectedParent = parentMarriage.id;
+      }
+    }
+    
+    setMemberData({
+      name: editMember.name || "",
+      gender: editMember.gender || "male",
+      birthDate: editMember.birthDate ? new Date(editMember.birthDate) : null,
+      isAlive: editMember.isAlive ?? true,
+      deathDate: editMember.deathDate ? new Date(editMember.deathDate) : null,
+      bio: editMember.bio || "",
+      image: null,
+      croppedImage: editMember.image,
+      selectedParent: selectedParent,
+      maritalStatus: editMember.maritalStatus || "single",
+      hasMultipleWives: false
+    });
+    
+    // Load existing wives/husbands
+    if (editMember.gender === "male") {
+      const memberMarriages = marriages.filter(m => m.husband?.id === editMember.id);
+      const memberWives = memberMarriages.map(marriage => {
+        const wife = familyMembers.find(fm => fm.id === marriage.wife?.id);
+        return {
+          id: wife?.id || marriage.wife?.id,
+          name: marriage.wife?.name || "",
+          birthDate: wife?.birthDate ? new Date(wife.birthDate) : null,
+          maritalStatus: "married",
+          isAlive: wife?.isAlive ?? true,
+          deathDate: wife?.deathDate ? new Date(wife.deathDate) : null,
+          image: null,
+          imageUrl: wife?.image,
+          croppedImage: wife?.image
+        };
+      }).filter(wife => wife.id);
+      setWives(memberWives);
+    } else if (editMember.gender === "female") {
+      const memberMarriages = marriages.filter(m => m.wife?.id === editMember.id);
+      if (memberMarriages.length > 0) {
+        const marriage = memberMarriages[0]; // Take the first marriage
+        const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
+        setHusband({
+          id: husbandMember?.id || marriage.husband?.id,
+          name: marriage.husband?.name || "",
+          birthDate: husbandMember?.birthDate ? new Date(husbandMember.birthDate) : null,
+          maritalStatus: "married",
+          isAlive: husbandMember?.isAlive ?? true,
+          deathDate: husbandMember?.deathDate ? new Date(husbandMember.deathDate) : null,
+          image: null,
+          croppedImage: husbandMember?.image
+        });
+      }
+    }
+  };
 
   const fetchFamilyData = async () => {
     try {
@@ -202,6 +277,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       setFamilyMembers(transformedMembers);
       setMarriages(transformedMarriages);
 
+      // If we're editing and now have the data, populate the form
+      if (editMember && transformedMarriages.length > 0) {
+        setTimeout(populateEditForm, 100); // Small delay to ensure state is updated
+      }
+
     } catch (error) {
       console.error('Error fetching family data:', error);
       toast({
@@ -236,9 +316,26 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       const hasSpouses = (memberData.gender === "male" && wives.length > 0) || 
                         (memberData.gender === "female" && husband);
       
+      // Determine family relationship info based on selectedParent
+      let fatherId = null;
+      let motherId = null;
+      let relatedPersonId = null;
+      
+      if (memberData.selectedParent && memberData.selectedParent !== "none") {
+        const selectedMarriage = marriages.find(m => m.id === memberData.selectedParent);
+        if (selectedMarriage) {
+          fatherId = selectedMarriage.husband?.id || null;
+          motherId = selectedMarriage.wife?.id || null;
+          relatedPersonId = selectedMarriage.id; // Store the marriage ID as related person ID
+        }
+      }
+      
       const submitData = {
         ...memberData,
         maritalStatus: hasSpouses ? "married" : "single", // Set marital status based on spouses
+        fatherId, // Set father ID from selected marriage
+        motherId, // Set mother ID from selected marriage  
+        relatedPersonId, // Set related person ID to marriage ID
         wives: memberData.gender === "male" ? wives : [], // Always include wives array for males
         husband: memberData.gender === "female" ? husband : null // Always include husband for females
       };
