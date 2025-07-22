@@ -863,11 +863,14 @@ const FamilyBuilder = () => {
   // Handler for the modern modal submission
   const handleModernModalSubmit = async (memberData: any) => {
     try {
-      console.log('Modern modal submit with data:', memberData);
-      console.log('Selected member for editing:', selectedMember);
+      console.log('🔥 FamilyBuilder handleModernModalSubmit called with data:', memberData);
+      console.log('🔥 Selected member for editing:', selectedMember);
       
       const familyId = searchParams.get('family');
+      console.log('🔥 Family ID from URL:', familyId);
+      
       if (!familyId) {
+        console.log('🔥 Error: No family ID found');
         toast({
           title: "خطأ",
           description: "معرف العائلة مطلوب",
@@ -877,13 +880,20 @@ const FamilyBuilder = () => {
       }
 
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log('🔥 Current user:', user, 'Error:', userError);
+      
+      if (!user) {
+        console.log('🔥 Error: User not authenticated');
+        throw new Error('User not authenticated');
+      }
 
       // Determine marital status based on spouses
       const hasSpouses = (memberData.gender === "male" && memberData.wives?.length > 0) || 
                         (memberData.gender === "female" && memberData.husband);
       const maritalStatus = hasSpouses ? "married" : "single";
+      
+      console.log('🔥 Calculated marital status:', maritalStatus, 'hasSpouses:', hasSpouses);
 
       // Insert main member
       const memberInsertData = {
@@ -905,6 +915,8 @@ const FamilyBuilder = () => {
 
       console.log('🔥 Member insert data:', memberInsertData);
 
+      console.log('🔥 About to execute database operation...');
+      
       const { data: insertedMember, error: memberError } = selectedMember 
         ? await supabase
             .from('family_tree_members')
@@ -918,7 +930,16 @@ const FamilyBuilder = () => {
             .select()
             .single();
 
-      if (memberError) throw memberError;
+      console.log('🔥 Database operation result:');
+      console.log('🔥 - Data:', insertedMember);
+      console.log('🔥 - Error:', memberError);
+
+      if (memberError) {
+        console.log('🔥 Database error occurred:', memberError);
+        throw memberError;
+      }
+      
+      console.log('🔥 Member successfully created/updated:', insertedMember);
 
       // Handle wives for male members - only if not editing or if wives changed
       console.log('🔥 Checking wives for male member:', memberData.gender, memberData.wives?.length);
@@ -1038,6 +1059,8 @@ const FamilyBuilder = () => {
         }
       }
 
+      console.log('🔥 About to refresh data and show success message...');
+      
       // Refresh family data - trigger re-fetch by reloading the page
       window.location.reload();
       
@@ -1049,10 +1072,15 @@ const FamilyBuilder = () => {
       });
 
     } catch (error) {
-      console.error('Error adding member:', error);
+      console.error('🔥 Complete error details:', error);
+      console.error('🔥 Error message:', error?.message);
+      console.error('🔥 Error code:', error?.code);
+      console.error('🔥 Error details:', error?.details);
+      console.error('🔥 Error hint:', error?.hint);
+      
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء إضافة الفرد",
+        description: "حدث خطأ أثناء إضافة الفرد: " + (error?.message || 'خطأ غير معروف'),
         variant: "destructive"
       });
     }

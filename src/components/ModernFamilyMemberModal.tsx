@@ -379,11 +379,17 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
       console.log('🔥 Will include wives for male:', memberData.gender === "male", wives.length);
       console.log('🔥 Will include husband for female:', memberData.gender === "female", !!husband);
       
+      console.log('🔥 About to call onSubmit...');
       await onSubmit(submitData);
       console.log('🔥 onSubmit completed successfully');
       handleClose();
     } catch (error) {
       console.error('🔥 Error submitting member data:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء إضافة الفرد",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -1620,8 +1626,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
               
               {step < 2 ? (
                 <Button 
-                  onClick={() => setStep(2)}
-                  disabled={!memberData.name.trim() || !memberData.gender || memberData.selectedParent === undefined}
+                  onClick={() => {
+                    console.log('🔥 Next button clicked!');
+                    console.log('🔥 Current memberData:', memberData);
+                    console.log('🔥 selectedParent:', memberData.selectedParent);
+                    console.log('🔥 name:', memberData.name);
+                    console.log('🔥 gender:', memberData.gender);
+                    setStep(2);
+                  }}
+                  disabled={!memberData.name.trim() || !memberData.gender}
                   className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-emerald-500 disabled:hover:to-teal-500"
                 >
                   التالي
