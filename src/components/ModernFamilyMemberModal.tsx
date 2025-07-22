@@ -1178,7 +1178,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
           </div>
 
           {/* Footer */}
-          <div className="flex-shrink-0 border-t border-white/40 dark:border-gray-600/40 p-3 sm:p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl">
+          <div className="flex-shrink-0 border-t border-white/40 dark:border-gray-600/40 p-3 sm:p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl mt-4">{/* moved up with mt-4 */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               {step > 1 && (
                 <Button 
