@@ -1432,76 +1432,65 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                             </div>
                             
                             <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
-                              {wives.length === 0 ? (
+                              {!husband ? (
                                 <div className="text-center py-8 px-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-sky-200/30 dark:border-sky-800/30">
                                   <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Heart className="w-8 h-8 text-sky-400" />
                                   </div>
-                                  <p className="text-sky-600 dark:text-sky-400 font-medium">لم يتم إضافة أزواج بعد</p>
+                                  <p className="text-sky-600 dark:text-sky-400 font-medium">لم يتم إضافة زوج بعد</p>
                                 </div>
                               ) : (
-                                wives.map((wife, index) => (
-                                  <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
-                                    <div className="flex items-start justify-between">
-                                       <div className="flex items-center space-x-4">
-                                         {wife.croppedImage ? (
-                                           <div className="relative">
-                                             <img
-                                               src={wife.croppedImage}
-                                               alt={wife.name}
-                                               className="w-14 h-14 rounded-full object-cover border-2 border-sky-300 shadow-sm"
-                                             />
-                                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full border-2 border-white dark:border-gray-900"></div>
-                                           </div>
-                                         ) : (
-                                           <div className="w-14 h-14 rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/50 dark:to-blue-900/50 flex items-center justify-center border-2 border-sky-300 dark:border-sky-700">
-                                             <User className="w-7 h-7 text-sky-500" />
-                                           </div>
-                                         )}
-                                         <div className="flex-1">
-                                           <h5 className="font-semibold text-gray-800 dark:text-gray-200 text-lg">{wife.name}</h5>
-                                           <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                             {wife.birthDate && (
-                                               <span className="px-2 py-1 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full text-xs">
-                                                 المولد: {new Date(wife.birthDate).toLocaleDateString('ar')}
-                                               </span>
-                                             )}
-                                             {!wife.isAlive && wife.deathDate && (
-                                               <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs">
-                                                 الوفاة: {new Date(wife.deathDate).toLocaleDateString('ar')}
-                                               </span>
-                                             )}
-                                             {!wife.isAlive && !wife.deathDate && (
-                                               <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs">
-                                                 متوفى
-                                               </span>
-                                             )}
-                                           </div>
+                                <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
+                                  <div className="flex items-start justify-between">
+                                     <div className="flex items-center space-x-4">
+                                       {husband.croppedImage ? (
+                                         <div className="relative">
+                                           <img
+                                             src={husband.croppedImage}
+                                             alt={husband.name}
+                                             className="w-14 h-14 rounded-full object-cover border-2 border-sky-300 shadow-sm"
+                                           />
+                                           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full border-2 border-white dark:border-gray-900"></div>
                                          </div>
-                                      </div>
-                                       <div className="flex space-x-reverse space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                         <Button
-                                           type="button"
-                                           variant="outline"
-                                           size="sm"
-                                           onClick={() => editWife(index)}
-                                           className="border-sky-300 text-sky-600 hover:bg-sky-50 hover:border-sky-400 bg-sky-50/50 dark:bg-sky-950/20"
-                                         >
-                                           <Edit3 className="w-4 h-4" />
-                                         </Button>
-                                         <Button
-                                           type="button"
-                                           variant="outline"
-                                           size="sm"
-                                           onClick={() => removeWife(index)}
-                                           className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 bg-red-50/50 dark:bg-red-950/20"
-                                         >
-                                           <Trash2 className="w-4 h-4" />
-                                         </Button>
+                                       ) : (
+                                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/50 dark:to-blue-900/50 flex items-center justify-center border-2 border-sky-300 dark:border-sky-700">
+                                           <User className="w-7 h-7 text-sky-500" />
+                                         </div>
+                                       )}
+                                       <div className="flex-1">
+                                         <h5 className="font-semibold text-gray-800 dark:text-gray-200 text-lg">{husband.name}</h5>
+                                         <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                           {husband.birthDate && (
+                                             <span className="px-2 py-1 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full text-xs">
+                                               المولد: {new Date(husband.birthDate).toLocaleDateString('ar')}
+                                             </span>
+                                           )}
+                                           {!husband.isAlive && husband.deathDate && (
+                                             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                                               الوفاة: {new Date(husband.deathDate).toLocaleDateString('ar')}
+                                             </span>
+                                           )}
+                                           {!husband.isAlive && !husband.deathDate && (
+                                             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                                               متوفى
+                                             </span>
+                                           )}
+                                         </div>
                                        </div>
                                     </div>
+                                     <div className="flex space-x-reverse space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                       <Button
+                                         type="button"
+                                         variant="outline"
+                                         size="sm"
+                                         onClick={() => setHusband(null)}
+                                         className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 bg-red-50/50 dark:bg-red-950/20"
+                                       >
+                                         <Trash2 className="w-4 h-4" />
+                                       </Button>
+                                     </div>
                                   </div>
-                                ))
+                                </div>
                               )}
                             </div>
                           </div>
