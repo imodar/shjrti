@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+import { GlobalHeader } from "@/components/GlobalHeader";
 import DynamicHero from "@/components/DynamicHero";
 import Features from "@/components/Features";
 import DynamicPricing from "@/components/DynamicPricing";
@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <Header />
+      <GlobalHeader />
       <DynamicHero />
       <Features />
       <DynamicPricing />
