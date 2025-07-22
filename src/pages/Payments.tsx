@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem } from "lucide-react";
+import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -730,10 +730,10 @@ export default function Payments() {
                   <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 max-w-5xl mx-auto">
                   {loading ? (
                     Array(3).fill(0).map((_, index) => (
-                      <Card key={index} className="h-96 animate-pulse">
+                      <Card key={index} className="h-96 animate-pulse backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border-emerald-200/30 dark:border-emerald-700/30">
                         <CardContent className="p-6">
                           <div className="h-full flex flex-col justify-between">
                             <div className="space-y-4">
@@ -750,145 +750,157 @@ export default function Payments() {
                         </CardContent>
                       </Card>
                     ))
-                  ) : packages.map((plan, index) =>
-                    <Card 
-                      key={plan.id} 
-                      className={`group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:scale-105 flex flex-col h-full transform hover:-translate-y-2 ${
-                        currentPlan === plan.id 
-                          ? 'ring-4 ring-emerald-500/50 shadow-2xl bg-gradient-to-br from-emerald-50/90 to-white dark:from-emerald-950/50 dark:to-gray-900' 
-                          : 'bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-900/90 dark:to-gray-800/90 hover:bg-gradient-to-br hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-950/30 dark:hover:to-teal-950/30'
-                      } ${
-                        plan.popular 
-                          ? 'border-2 border-emerald-400 shadow-lg shadow-emerald-500/25' 
-                          : 'border border-gray-200 dark:border-gray-700'
-                      }`}
-                      style={{animationDelay: `${index * 0.1}s`}}
-                    >
-                      {/* Floating decorative elements */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                        <div className="absolute top-4 right-4 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-8 right-8 w-1 h-4 bg-teal-400/30 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                        <div className="absolute bottom-8 left-4 w-3 h-3 bg-cyan-400/40 rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
-                      </div>
-
-                       {/* Featured badge with enhanced styling */}
-                       {plan.popular && (
-                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                           <div className="relative">
-                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur-sm animate-pulse"></div>
-                             <Badge className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1 text-sm font-bold shadow-lg animate-bounce">
-                               <Star className="h-3 w-3 mr-1 animate-spin" style={{animationDuration: '3s'}} />
-                               الباقة المميزة
-                             </Badge>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Gradient overlay on hover */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                      
-                      <CardHeader className="text-center flex-shrink-0 relative z-10 pb-6">
-                        {/* Enhanced icon with multiple layers */}
-                        <div className="relative mx-auto mb-4">
-                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse"></div>
-                          <div className={`relative w-16 h-16 ${plan.color} rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500`}>
-                            <div className="absolute inset-2 bg-white/20 rounded-xl"></div>
-                            <plan.icon className="relative h-8 w-8 text-white z-10" />
-                          </div>
-                        </div>
-                        
-                        {/* Enhanced title */}
-                        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent group-hover:from-emerald-700 group-hover:to-teal-600 transition-all duration-500">
-                          {getLocalizedPackageField(plan, 'name') || plan.name || 'Unnamed Package'}
-                        </CardTitle>
-                        
-                        {/* Enhanced pricing */}
-                        <div className="mt-6 relative">
-                           <div className="flex items-center justify-center gap-1">
-                             <span className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                               {plan.price.includes('مجاني') ? plan.price : plan.price}
-                             </span>
-                             {!plan.price.includes('مجاني') && (
-                               <div className="text-right">
-                                 <span className="text-sm text-muted-foreground block">ريال</span>
-                                 <span className="text-xs text-muted-foreground">{plan.period}</span>
-                               </div>
-                             )}
-                           </div>
-                          {plan.id === 'premium' && (
-                            <div className="absolute -top-2 -right-2">
-                              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
+                  ) : packages.map((plan, index) => {
+                    const isFeatured = plan.popular;
+                    const currentPlanActive = currentPlan === plan.id;
+                    
+                    return (
+                      <Card 
+                        key={plan.id} 
+                        className={`
+                          relative h-full transition-all duration-500 hover:scale-105 hover:shadow-xl
+                          ${isFeatured ? 'ring-4 ring-gradient-to-r ring-orange-400 border-orange-300 dark:border-orange-600 scale-105 shadow-orange-200/50 dark:shadow-orange-800/50' : ''}
+                          ${currentPlanActive ? 'ring-2 ring-amber-200 dark:ring-amber-700' : ''}
+                          ${isFeatured ? 'bg-gradient-to-br from-orange-50/80 via-white/70 to-amber-50/80 dark:from-orange-950/20 dark:via-gray-800/70 dark:to-amber-950/20' : 'bg-white/70 dark:bg-gray-800/70'}
+                          backdrop-blur-xl border shadow-xl
+                          ${!isFeatured ? 'border-emerald-200/30 dark:border-emerald-700/30' : ''}
+                        `}
+                      >
+                        {/* Featured badge */}
+                        {isFeatured && (
+                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full blur-sm animate-pulse"></div>
+                              <Badge className="relative bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1 text-sm font-bold shadow-lg border-2 border-white/30">
+                                <Star className="h-3 w-3 mr-1 fill-current animate-spin" style={{animationDuration: '3s'}} />
+                                الباقة المميزة
+                              </Badge>
                             </div>
-                          )}
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent className="flex flex-col flex-grow relative z-10 px-6">
-                        {/* Enhanced features list */}
-                        <ul className="space-y-3 mb-8 flex-grow">
-                          {getLocalizedFeatures(plan).map((feature, featureIndex) => (
-                            <li 
-                              key={featureIndex} 
-                              className="flex items-start gap-3 text-sm group-hover:translate-x-1 transition-transform duration-300"
-                              style={{transitionDelay: `${featureIndex * 0.05}s`}}
-                            >
-                              <div className="flex-shrink-0 mt-1">
-                                <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-sm">
-                                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                                </div>
-                              </div>
-                              <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        
-                        {/* Enhanced button with current plan styling and loading state */}
-                        <Button 
-                          onClick={() => {
-                            console.log('🔍 Plan comparison:', {
-                              planId: plan.id,
-                              currentPlan: currentPlan,
-                              isEqual: currentPlan === plan.id,
-                              currentPlanType: typeof currentPlan,
-                              planIdType: typeof plan.id
-                            });
-                            
-                            if (currentPlan !== plan.id) {
-                              handlePlanSelect(plan.id);
-                            }
-                          }}
-                          className={`w-full mt-auto h-12 text-lg font-semibold transition-all duration-500 ${
-                            currentPlan === plan.id 
-                              ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed opacity-60' 
-                              : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105'
-                          }`} 
-                          disabled={currentPlan === plan.id || (processingInvoice && selectedPlan === plan.id)}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            {currentPlan === plan.id ? (
-                              <>
-                                <div className="w-2 h-2 bg-white rounded-full"></div>
-                                <span>خطتك الحالية النشطة</span>
-                              </>
-                            ) : processingInvoice && selectedPlan === plan.id ? (
-                              <>
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                <span>جاري إنشاء الفاتورة...</span>
-                              </>
-                            ) : (
-                              <>
-                                <Zap className="h-5 w-5 animate-pulse" />
-                                <span>اختيار الخطة</span>
-                              </>
-                            )}
                           </div>
-                        </Button>
-                      </CardContent>
-                      
-                      {/* Bottom glow effect */}
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    </Card>
-                  )}
+                        )}
+
+                        {/* Current plan badge */}
+                        {currentPlanActive && (
+                          <div className="absolute top-4 right-4 z-10">
+                            <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3 py-1 text-xs font-bold shadow-lg">
+                              <Crown className="h-3 w-3 mr-1" />
+                              خطتك الحالية
+                            </Badge>
+                          </div>
+                        )}
+
+                        {/* Floating decorative elements */}
+                        <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                          <div className="absolute top-8 right-8 w-2 h-2 bg-emerald-400/40 rounded-full animate-bounce"></div>
+                          <div className="absolute bottom-12 left-6 w-1 h-1 bg-teal-400/60 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                          <div className="absolute top-1/2 left-4 w-1.5 h-1.5 bg-cyan-400/50 rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
+                        </div>
+
+                        {/* Gradient overlay on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        
+                        <CardHeader className="text-center relative z-10 pb-4">
+                          {/* Enhanced icon with dashboard style */}
+                          <div className="relative mx-auto mb-6">
+                            <div className={`absolute inset-0 ${plan.color || 'bg-gradient-to-br from-emerald-500 to-teal-600'} rounded-2xl blur-lg opacity-30 hover:opacity-50 transition-opacity duration-500 animate-pulse`}></div>
+                            <div className={`relative w-16 h-16 ${plan.color || 'bg-gradient-to-br from-emerald-500 to-teal-600'} rounded-2xl flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-500 ring-4 ring-white/20 dark:ring-gray-600/20`}>
+                              <div className="absolute inset-2 bg-white/20 rounded-xl"></div>
+                              <plan.icon className="relative h-8 w-8 text-white z-10" />
+                            </div>
+                          </div>
+                          
+                          {/* Enhanced title with gradient */}
+                          <CardTitle className="text-xl font-bold mb-4">
+                            <span className="bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent hover:from-emerald-700 hover:to-teal-600 transition-all duration-500">
+                              {getLocalizedPackageField(plan, 'name') || plan.name || 'Unnamed Package'}
+                            </span>
+                          </CardTitle>
+                          
+                          {/* Enhanced pricing display */}
+                          <div className="mb-4">
+                            <div className="flex items-baseline justify-center gap-1">
+                              <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                                {plan.price.includes('مجاني') ? plan.price : plan.price}
+                              </span>
+                              {!plan.price.includes('مجاني') && (
+                                <div className="text-right">
+                                  <span className="text-sm text-muted-foreground block leading-none">ريال</span>
+                                  <span className="text-xs text-muted-foreground leading-none">{plan.period}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </CardHeader>
+                        
+                        <CardContent className="flex flex-col flex-grow relative z-10 px-6 pb-6">
+                          {/* Enhanced features list with gradient checkmarks */}
+                          <ul className="space-y-3 mb-6 flex-grow">
+                            {getLocalizedFeatures(plan).map((feature, featureIndex) => (
+                              <li 
+                                key={featureIndex} 
+                                className="flex items-start gap-3 text-sm hover:translate-x-1 transition-transform duration-300"
+                                style={{transitionDelay: `${featureIndex * 0.05}s`}}
+                              >
+                                <div className="flex-shrink-0 mt-0.5">
+                                  <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-sm ring-2 ring-emerald-100 dark:ring-emerald-900">
+                                    <CheckCircle className="w-3 h-3 text-white" />
+                                  </div>
+                                </div>
+                                <span className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          
+                          {/* Enhanced button with proper styling and loading states */}
+                          <Button 
+                            onClick={() => {
+                              console.log('🔍 Plan comparison:', {
+                                planId: plan.id,
+                                currentPlan: currentPlan,
+                                isEqual: currentPlan === plan.id,
+                                currentPlanType: typeof currentPlan,
+                                planIdType: typeof plan.id
+                              });
+                              
+                              if (currentPlan !== plan.id) {
+                                handlePlanSelect(plan.id);
+                              }
+                            }}
+                            className={`w-full h-12 text-base font-semibold transition-all duration-500 shadow-lg hover:shadow-xl ${
+                              currentPlanActive 
+                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white cursor-default ring-2 ring-amber-200' 
+                                : processingInvoice && selectedPlan === plan.id
+                                ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed'
+                                : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white hover:scale-105'
+                            }`} 
+                            disabled={currentPlanActive || (processingInvoice && selectedPlan === plan.id)}
+                          >
+                            <div className="flex items-center justify-center gap-2">
+                              {currentPlanActive ? (
+                                <>
+                                  <Crown className="h-5 w-5" />
+                                  <span>خطتك الحالية النشطة</span>
+                                </>
+                              ) : processingInvoice && selectedPlan === plan.id ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                  <span>جاري إنشاء الفاتورة...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Zap className="h-5 w-5" />
+                                  <span>اختيار الخطة</span>
+                                </>
+                              )}
+                            </div>
+                          </Button>
+                        </CardContent>
+                        
+                        {/* Bottom glow effect */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-b-lg"></div>
+                      </Card>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
