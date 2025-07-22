@@ -86,6 +86,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     name: "",
     gender: "male",
     birthDate: null as Date | null,
+    maritalStatus: "single",
     isAlive: true,
     deathDate: null as Date | null,
     bio: "",
@@ -233,6 +234,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       name: "",
       gender: "male",
       birthDate: null,
+      maritalStatus: "single",
       isAlive: true,
       deathDate: null,
       bio: "",
@@ -520,10 +522,35 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
                     </div>
 
-                    {/* Life Status and Death Date - Combined in one row */}
-                    <div className="group sm:col-span-1 md:col-span-2">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* Life Status */}
+                    {/* Marital Status, Life Status and Death Date - Combined in one row */}
+                    <div className="group sm:col-span-1 md:col-span-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {/* Marital Status - 1/3 width */}
+                        <div>
+                          <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
+                            <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                            الحالة الاجتماعية
+                          </Label>
+                          <div className="relative z-[10001]">
+                            <Select value={memberData.maritalStatus} onValueChange={(value) => setMemberData({...memberData, maritalStatus: value})}>
+                              <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                <SelectItem value="single" className="font-arabic text-base sm:text-lg lg:text-xl">أعزب</SelectItem>
+                                <SelectItem value="married" className="font-arabic text-base sm:text-lg lg:text-xl">متزوج</SelectItem>
+                                <SelectItem value="divorced" className="font-arabic text-base sm:text-lg lg:text-xl">مطلق</SelectItem>
+                                <SelectItem value="widowed" className="font-arabic text-base sm:text-lg lg:text-xl">أرمل</SelectItem>
+                                <SelectItem value="engaged" className="font-arabic text-base sm:text-lg lg:text-xl">مخطوب</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                              <Users className="h-3 w-3 text-white" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Life Status - 1/3 width */}
                         <div>
                           <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
                             <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -545,7 +572,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           </div>
                         </div>
 
-                        {/* Death Date (if deceased) */}
+                        {/* Death Date (if deceased) - 1/3 width */}
                         {!memberData.isAlive && (
                           <div>
                             <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
@@ -721,16 +748,21 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                 {/* Alive Status and Death Date - Combined in one row */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                   {/* Alive Status */}
-                                  <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
-                                    <Switch
-                                      id="new-wife-alive"
-                                      checked={newWife.isAlive}
-                                      onCheckedChange={(checked) => setNewWife({...newWife, isAlive: checked})}
-                                      className="data-[state=checked]:bg-pink-500"
-                                    />
-                                    <label htmlFor="new-wife-alive" className="text-sm text-pink-700 dark:text-pink-300 font-medium">
-                                      على قيد الحياة
+                                  <div>
+                                    <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
+                                      الحالة الحيوية
                                     </label>
+                                    <div className="relative z-[10001]">
+                                      <Select value={newWife.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewWife({...newWife, isAlive: value === "alive", deathDate: value === "alive" ? "" : newWife.deathDate})}>
+                                        <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50">
+                                          <SelectValue placeholder="الحالة" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                          <SelectItem value="alive" className="font-arabic text-base sm:text-lg lg:text-xl">على قيد الحياة</SelectItem>
+                                          <SelectItem value="deceased" className="font-arabic text-base sm:text-lg lg:text-xl">متوفى</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
                                   </div>
 
                                   {/* Death Date (if deceased) */}

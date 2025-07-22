@@ -180,6 +180,7 @@ export type Database = {
           image_url: string | null
           is_alive: boolean | null
           is_founder: boolean | null
+          marital_status: string | null
           mother_id: string | null
           name: string
           related_person_id: string | null
@@ -199,6 +200,7 @@ export type Database = {
           image_url?: string | null
           is_alive?: boolean | null
           is_founder?: boolean | null
+          marital_status?: string | null
           mother_id?: string | null
           name: string
           related_person_id?: string | null
@@ -218,6 +220,7 @@ export type Database = {
           image_url?: string | null
           is_alive?: boolean | null
           is_founder?: boolean | null
+          marital_status?: string | null
           mother_id?: string | null
           name?: string
           related_person_id?: string | null
