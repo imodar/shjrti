@@ -529,59 +529,63 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                               <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                               علاقة القرابة (العائلة)
                             </Label>
-                            <div className="relative z-[10001]">
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic w-full justify-between"
-                                  >
-                                    {memberData.selectedParent === null || memberData.selectedParent === "none" 
-                                      ? "مؤسس العائلة" 
-                                      : marriages.find(m => m.id === memberData.selectedParent)
-                                        ? (() => {
-                                            const marriage = marriages.find(m => m.id === memberData.selectedParent);
-                                            return marriage?.husband.is_founder 
-                                              ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                              : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
-                                          })()
-                                        : "اختر علاقة القرابة مع العائلة"
-                                    }
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-96 p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                  <Command>
-                                    <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
-                                    <CommandList>
-                                      <CommandEmpty className="font-arabic">لا توجد نتائج</CommandEmpty>
-                                      <CommandGroup>
-                                        <CommandItem
-                                          value="none"
-                                          onSelect={() => setMemberData({...memberData, selectedParent: null})}
-                                          className="font-arabic"
-                                        >
-                                          مؤسس العائلة
-                                        </CommandItem>
-                                        {marriages.map((marriage) => (
-                                          <CommandItem 
-                                            key={marriage.id}
-                                            value={marriage.id}
-                                            onSelect={() => setMemberData({...memberData, selectedParent: marriage.id})}
-                                            className="font-arabic"
-                                          >
-                                            {marriage.husband.is_founder 
-                                              ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                              : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`}
-                                          </CommandItem>
-                                        ))}
-                                      </CommandGroup>
-                                    </CommandList>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
+                             <div className="relative z-[10001]">
+                               <Popover>
+                                 <PopoverTrigger asChild>
+                                   <Button
+                                     variant="outline"
+                                     role="combobox"
+                                     className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic w-full justify-between"
+                                   >
+                                     {memberData.selectedParent === null || memberData.selectedParent === "none" 
+                                       ? "مؤسس العائلة" 
+                                       : marriages.find(m => m.id === memberData.selectedParent)
+                                         ? (() => {
+                                             const marriage = marriages.find(m => m.id === memberData.selectedParent);
+                                             return marriage?.husband.is_founder 
+                                               ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                               : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
+                                           })()
+                                         : "اختر علاقة القرابة مع العائلة"
+                                     }
+                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                   </Button>
+                                 </PopoverTrigger>
+                                 <PopoverContent className="min-w-fit max-w-md p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                   <Command>
+                                     <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
+                                     <CommandList>
+                                       <CommandEmpty className="font-arabic">لا توجد نتائج</CommandEmpty>
+                                       <CommandGroup>
+                                         <CommandItem
+                                           value="none"
+                                           onSelect={(value) => {
+                                             setMemberData({...memberData, selectedParent: null});
+                                           }}
+                                           className="font-arabic"
+                                         >
+                                           مؤسس العائلة
+                                         </CommandItem>
+                                         {marriages.map((marriage) => (
+                                           <CommandItem 
+                                             key={marriage.id}
+                                             value={marriage.id}
+                                             onSelect={(value) => {
+                                               setMemberData({...memberData, selectedParent: value});
+                                             }}
+                                             className="font-arabic whitespace-nowrap"
+                                           >
+                                             {marriage.husband.is_founder 
+                                               ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                               : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`}
+                                           </CommandItem>
+                                         ))}
+                                       </CommandGroup>
+                                     </CommandList>
+                                   </Command>
+                                 </PopoverContent>
+                               </Popover>
+                             </div>
                           </div>
                         {/* Marital Status - 1/4 width */}
                         <div className="group">
