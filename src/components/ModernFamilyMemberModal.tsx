@@ -660,8 +660,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                     {/* Photo Upload */}
                     <div className="group">
-                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                       <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                        <div className="w-2 h-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         صورة شخصية
                       </Label>
                       <div className="border-2 border-dashed border-orange-200/50 dark:border-orange-700/50 rounded-xl p-4 bg-orange-50/30 dark:bg-orange-950/30 hover:border-orange-400 transition-all duration-300 h-[180px] flex flex-col">
@@ -732,16 +732,16 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                     {/* Bio */}
                     <div className="lg:col-span-3 group">
-                      <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                        <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                         نبذة شخصية
                       </Label>
-                      <Textarea
-                        value={memberData.bio}
-                        onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
-                        placeholder="أضف نبذة شخصية عن الفرد..."
-                        className="text-base sm:text-lg lg:text-xl border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none h-[180px] font-arabic placeholder:text-sm sm:placeholder:text-base lg:placeholder:text-lg"
-                      />
+                       <Textarea
+                         value={memberData.bio}
+                         onChange={(e) => setMemberData({...memberData, bio: e.target.value})}
+                         placeholder="أضف نبذة شخصية عن الفرد..."
+                         className="text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none h-[180px] font-arabic"
+                       />
                     </div>
                   </div>
                 </div>
