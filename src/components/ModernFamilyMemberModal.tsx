@@ -217,8 +217,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
     console.log('🔥 Member data:', memberData);
     console.log('🔥 Wives:', wives);
     console.log('🔥 Husband:', husband);
+    console.log('🔥 Marital status:', memberData.maritalStatus);
+    console.log('🔥 Gender:', memberData.gender);
     
     if (!memberData.name.trim()) {
+      console.log('🔥 Name validation failed');
       toast({
         title: "خطأ",
         description: "يرجى إدخال اسم الفرد",
@@ -227,6 +230,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       return;
     }
 
+    console.log('🔥 Starting submission...');
     setIsSubmitting(true);
     
     try {
@@ -237,7 +241,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
       };
 
       console.log('🔥 Final submit data:', submitData);
+      console.log('🔥 Will include wives?', memberData.gender === "male" && memberData.maritalStatus === "married");
+      console.log('🔥 Wives array length:', wives.length);
+      
       await onSubmit(submitData);
+      console.log('🔥 onSubmit completed successfully');
       handleClose();
     } catch (error) {
       console.error('🔥 Error submitting member data:', error);
