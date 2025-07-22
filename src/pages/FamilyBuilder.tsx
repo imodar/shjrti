@@ -184,10 +184,9 @@ const FamilyBuilder = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch family data from database
-  useEffect(() => {
-    const fetchFamilyData = async () => {
-      try {
-        setLoading(true);
+  const fetchFamilyData = async () => {
+    try {
+      setLoading(true);
         
         // Get current user
         const { data: { user } } = await supabase.auth.getUser();
@@ -308,6 +307,80 @@ const FamilyBuilder = () => {
       }
     };
 
+    // Create a refresh function that doesn't show loading
+    const refreshFamilyData = async () => {
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+
+        console.log('Refreshing family data...');
+
+        // Fetch family info
+        const familyId = new URLSearchParams(window.location.search).get('family');
+        if (!familyId) throw new Error('Family ID not found in URL');
+
+        const { data: family, error: familyError } = await supabase
+          .from('families')
+          .select('*')
+          .eq('id', familyId)
+          .single();
+
+        if (familyError) throw familyError;
+        setFamilyData(family);
+
+        // Fetch family members
+        const { data: members, error: membersError } = await supabase
+          .from('family_tree_members')
+          .select('*')
+          .eq('family_id', family.id);
+
+        if (membersError) throw membersError;
+
+        const transformedMembers = members.map(member => ({
+          id: member.id,
+          name: member.name,
+          fatherId: member.father_id,
+          motherId: member.mother_id,
+          spouseId: member.spouse_id,
+          relatedPersonId: member.related_person_id,
+          isFounder: member.is_founder,
+          gender: member.gender,
+          birthDate: member.birth_date || "",
+          isAlive: member.is_alive,
+          deathDate: member.death_date || null,
+          image: member.image_url || null,
+          bio: member.biography || "",
+          relation: ""
+        }));
+
+        setFamilyMembers(transformedMembers);
+
+        // Get marriages to show as family units
+        const { data: marriages, error: marriagesError } = await supabase
+          .from('marriages')
+          .select(`
+            id,
+            husband:family_tree_members!marriages_husband_id_fkey(id, name),
+            wife:family_tree_members!marriages_wife_id_fkey(id, name),
+            is_active
+          `)
+          .eq('family_id', family.id)
+          .eq('is_active', true);
+
+        if (marriagesError) throw marriagesError;
+
+        if (marriages) {
+          setFamilyMarriages(marriages);
+        }
+
+        console.log('Family data refreshed successfully');
+      } catch (error) {
+        console.error('Error refreshing family data:', error);
+      }
+    };
+
+  useEffect(() => {
     fetchFamilyData();
   }, [toast]);
   
@@ -1040,6 +1113,13 @@ const FamilyBuilder = () => {
         }
       }
 
+      // Get current user ID
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('Authentication error:', authError);
+        throw new Error('User must be authenticated to add family members');
+      }
+
       const memberData = {
         family_id: familyData?.id,
         name: formData.name,
@@ -1052,7 +1132,7 @@ const FamilyBuilder = () => {
         death_date: formData.deathDate?.toISOString().split('T')[0] || null,
         biography: formData.bio,
         image_url: formData.croppedImage,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: user.id
       };
 
       console.log('Saving member data:', memberData);
@@ -1093,7 +1173,7 @@ const FamilyBuilder = () => {
                   birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
                   death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
                   is_alive: wife.isAlive,
-                  created_by: (await supabase.auth.getUser()).data.user?.id
+                  created_by: user.id
                 })
                 .select()
                 .single();
@@ -1243,7 +1323,7 @@ const FamilyBuilder = () => {
                   birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
                   death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
                   is_alive: wife.isAlive,
-                  created_by: (await supabase.auth.getUser()).data.user?.id
+                  created_by: user.id
                 })
                 .select()
                 .single();
@@ -1284,6 +1364,7 @@ const FamilyBuilder = () => {
                 console.error('Error updating husband spouse_id:', updateHusbandError);
                 throw updateHusbandError;
               }
+              console.log('Husband spouse_id updated successfully');
 
               const { error: updateWifeError } = await supabase
                 .from('family_tree_members')
@@ -1294,7 +1375,7 @@ const FamilyBuilder = () => {
                 console.error('Error updating wife spouse_id:', updateWifeError);
                 throw updateWifeError;
               }
-              console.log('Spouse IDs updated successfully');
+              console.log('Wife spouse_id updated successfully');
 
               // Add wife to local state
               const newWife = {
@@ -1353,7 +1434,7 @@ const FamilyBuilder = () => {
                 birth_date: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : null,
                 death_date: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
                 is_alive: husband.isAlive,
-                created_by: (await supabase.auth.getUser()).data.user?.id
+                created_by: user.id
               })
               .select()
               .single();
@@ -1456,6 +1537,10 @@ const FamilyBuilder = () => {
           title: "تم الإضافة",
           description: `تم إضافة ${formData.name}${wives.length > 0 ? ` مع ${wives.length} زوجة` : ''}${husbands.length > 0 ? ` مع ${husbands.length} زوج` : ''} للعائلة`
         });
+
+        // Refresh data from database to ensure UI reflects actual database state
+        console.log('Refreshing data from database after member addition...');
+        await refreshFamilyData();
       }
 
       setShowAddMember(false);
