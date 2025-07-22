@@ -418,7 +418,7 @@ export default function Profile() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
-              {/* Stats and Quick Actions */}
+              {/* Stats Section */}
               <div className="space-y-6">
                 
                 {/* Account Stats */}
@@ -467,53 +467,10 @@ export default function Profile() {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Quick Actions */}
-                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Settings className="h-5 w-5 text-white" />
-                      </div>
-                      <CardTitle className="text-lg bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                        إجراءات سريعة
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Link to="/dashboard">
-                      <Button className="w-full justify-start gap-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-700">
-                        <Heart className="h-4 w-4" />
-                        لوحة التحكم
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/family-tree-view">
-                      <Button className="w-full justify-start gap-3 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 dark:bg-teal-950/30 dark:hover:bg-teal-950/50 dark:text-teal-300 dark:border-teal-700">
-                        <Users className="h-4 w-4" />
-                        عرض الأشجار
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/payments">
-                      <Button className="w-full justify-start gap-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:hover:bg-amber-950/50 dark:text-amber-300 dark:border-amber-700">
-                        <Crown className="h-4 w-4" />
-                        إدارة الاشتراك
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/change-password">
-                      <Button className="w-full justify-start gap-3 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 dark:bg-gray-800/50 dark:hover:bg-gray-800/70 dark:text-gray-300 dark:border-gray-600">
-                        <Shield className="h-4 w-4" />
-                        تغيير كلمة المرور
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
               </div>
 
-              {/* Personal Information Card */}
-              <div className="lg:col-span-2">
+              {/* Personal Information and Quick Actions */}
+              <div className="lg:col-span-2 space-y-8">
                 <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
@@ -626,6 +583,85 @@ export default function Profile() {
                     )}
                   </CardContent>
                 </Card>
+                
+                {/* Quick Actions with Creative Design */}
+                <div className="relative">
+                  {/* Background Gradient Blur */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-pink-500/20 rounded-2xl blur-xl"></div>
+                  
+                  <Card className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-2xl overflow-hidden">
+                    {/* Decorative Header Background */}
+                    <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-r from-amber-400/20 via-orange-400/30 to-pink-400/20"></div>
+                    
+                    <CardHeader className="relative pb-6 pt-8">
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                          {/* Icon Glow Effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
+                          <div className="relative w-12 h-12 bg-gradient-to-br from-amber-500 via-orange-500 to-pink-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                            <Settings className="h-6 w-6 text-white animate-pulse" />
+                          </div>
+                        </div>
+                        <div>
+                          <CardTitle className="text-xl bg-gradient-to-r from-amber-600 via-orange-600 to-pink-600 bg-clip-text text-transparent font-bold">
+                            إجراءات سريعة
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            الوصول السريع للخدمات المهمة
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Decorative Corner Elements */}
+                      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-amber-300/50 dark:border-amber-700/50 rounded-tr-lg"></div>
+                      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-orange-300/50 dark:border-orange-700/50 rounded-bl-lg"></div>
+                    </CardHeader>
+                    
+                    <CardContent className="relative space-y-4 pb-8">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Link to="/dashboard" className="group">
+                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-700 border border-emerald-200/70 dark:from-emerald-950/40 dark:to-teal-950/40 dark:hover:from-emerald-950/60 dark:hover:to-teal-950/60 dark:text-emerald-300 dark:border-emerald-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
+                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                              <Heart className="h-4 w-4 text-white group-hover:animate-pulse" />
+                            </div>
+                            <span className="font-medium">لوحة التحكم</span>
+                          </Button>
+                        </Link>
+                        
+                        <Link to="/family-tree-view" className="group">
+                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-teal-50 to-cyan-50 hover:from-teal-100 hover:to-cyan-100 text-teal-700 border border-teal-200/70 dark:from-teal-950/40 dark:to-cyan-950/40 dark:hover:from-teal-950/60 dark:hover:to-cyan-950/60 dark:text-teal-300 dark:border-teal-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
+                            <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                              <Users className="h-4 w-4 text-white group-hover:animate-pulse" />
+                            </div>
+                            <span className="font-medium">عرض الأشجار</span>
+                          </Button>
+                        </Link>
+                        
+                        <Link to="/payments" className="group">
+                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-700 border border-amber-200/70 dark:from-amber-950/40 dark:to-orange-950/40 dark:hover:from-amber-950/60 dark:hover:to-orange-950/60 dark:text-amber-300 dark:border-amber-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
+                            <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                              <Crown className="h-4 w-4 text-white group-hover:animate-pulse" />
+                            </div>
+                            <span className="font-medium">إدارة الاشتراك</span>
+                          </Button>
+                        </Link>
+                        
+                        <Link to="/change-password" className="group">
+                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100 text-gray-700 border border-gray-200/70 dark:from-gray-800/60 dark:to-slate-800/60 dark:hover:from-gray-800/80 dark:hover:to-slate-800/80 dark:text-gray-300 dark:border-gray-600/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
+                            <div className="w-8 h-8 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
+                              <Shield className="h-4 w-4 text-white group-hover:animate-pulse" />
+                            </div>
+                            <span className="font-medium">تغيير كلمة المرور</span>
+                          </Button>
+                        </Link>
+                      </div>
+                      
+                      {/* Floating Decorative Elements */}
+                      <div className="absolute -top-2 right-8 w-4 h-4 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-60 animate-bounce"></div>
+                      <div className="absolute -bottom-1 left-12 w-3 h-3 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-50 animate-pulse"></div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
           </div>
