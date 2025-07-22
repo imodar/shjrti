@@ -560,10 +560,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                        <CommandGroup>
                                          <CommandItem
                                            value="none"
-                                            onSelect={(value) => {
-                                              setMemberData({...memberData, selectedParent: null});
-                                              setRelationshipPopoverOpen(false);
-                                            }}
+                                           onSelect={(value) => {
+                                             setMemberData({...memberData, selectedParent: null});
+                                             setRelationshipPopoverOpen(false);
+                                           }}
                                            className="font-arabic"
                                          >
                                            مؤسس العائلة
@@ -572,10 +572,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                            <CommandItem 
                                              key={marriage.id}
                                              value={marriage.id}
-                                              onSelect={(value) => {
-                                                setMemberData({...memberData, selectedParent: value});
-                                                setRelationshipPopoverOpen(false);
-                                              }}
+                                             onSelect={(value) => {
+                                               setMemberData({...memberData, selectedParent: value});
+                                               setRelationshipPopoverOpen(false);
+                                             }}
                                              className="font-arabic whitespace-nowrap"
                                            >
                                              {marriage.husband.is_founder 
@@ -588,6 +588,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                    </Command>
                                  </PopoverContent>
                                </Popover>
+                               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                 <Users className="h-2 w-2 text-white" />
+                               </div>
                              </div>
                           </div>
                         {/* Marital Status - 1/4 width */}
