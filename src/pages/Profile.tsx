@@ -383,17 +383,24 @@ export default function Profile() {
                     </div>
                   </div>
                   
-                  {/* Package Status */}
+                  {/* Package Status - Match Dashboard Logic */}
                   <div className="flex flex-col items-end gap-2">
-                    {currentPackage ? (
-                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+                    {currentPackage && currentPackage.name !== "الباقة المجانية" ? (
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-2 rounded-full shadow-lg">
                         <Crown className="h-4 w-4" />
                         <span className="text-sm font-bold">{currentPackage.name}</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full shadow-lg">
-                        <Gem className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                        <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">الباقة المجانية</span>
+                      <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl p-3 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
+                        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                          <Gem className="h-4 w-4" />
+                          <span className="text-sm font-medium">{currentPackage?.name || "الباقة المجانية"}</span>
+                        </div>
+                        <Link to="/plan-selection">
+                          <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 py-1 rounded-full border-0">
+                            طوّر حسابك
+                          </Button>
+                        </Link>
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
