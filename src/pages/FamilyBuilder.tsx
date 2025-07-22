@@ -958,35 +958,27 @@ const FamilyBuilder = () => {
         
         for (const wife of memberData.wives) {
           if (wife.name.trim()) {
-            // Check if this is an existing wife (has a real ID)
-            let wifeData;
-            if (wife.id && !wife.id.toString().startsWith('existing-') && !selectedMember) {
-              // This is an existing wife, don't create a new record
-              wifeData = { id: wife.id };
-            } else {
-              // Create new wife or update existing one
-              const wifeInsertData = {
-                family_id: familyId,
-                name: wife.name,
-                gender: "female",
-                birth_date: wife.birthDate,
-                is_alive: wife.isAlive,
-                death_date: wife.deathDate,
-                image_url: wife.croppedImage,
-                is_founder: false,
-                marital_status: "married", // Set wife as married
-                created_by: user.id
-              };
-              
-              const { data: insertedWife, error: wifeError } = await supabase
-                .from('family_tree_members')
-                .insert(wifeInsertData)
-                .select()
-                .single();
+            // Always create new wife records - don't reuse temporary IDs
+            const wifeInsertData = {
+              family_id: familyId,
+              name: wife.name,
+              gender: "female",
+              birth_date: wife.birthDate,
+              is_alive: wife.isAlive,
+              death_date: wife.deathDate,
+              image_url: wife.croppedImage,
+              is_founder: false,
+              marital_status: "married", // Set wife as married
+              created_by: user.id
+            };
+            
+            const { data: wifeData, error: wifeError } = await supabase
+              .from('family_tree_members')
+              .insert(wifeInsertData)
+              .select()
+              .single();
 
-              if (wifeError) throw wifeError;
-              wifeData = insertedWife;
-            }
+            if (wifeError) throw wifeError;
 
             // Create marriage record
             const { error: marriageError } = await supabase
@@ -1017,33 +1009,25 @@ const FamilyBuilder = () => {
             if (deleteError) console.error('Error deleting existing marriages:', deleteError);
           }
           
-          // Check if this is an existing husband
-          let husbandData;
-          if (husband.id && !selectedMember) {
-            // This is an existing husband, don't create a new record
-            husbandData = { id: husband.id };
-          } else {
-            // Create new husband
-            const { data: insertedHusband, error: husbandError } = await supabase
-              .from('family_tree_members')
-              .insert({
-                family_id: familyId,
-                name: husband.name,
-                gender: "male",
-                birth_date: husband.birthDate,
-                is_alive: husband.isAlive,
-                death_date: husband.deathDate,
-                image_url: husband.croppedImage,
-                is_founder: false,
-                marital_status: "married", // Set husband as married
-                created_by: user.id
-              })
-              .select()
-              .single();
+          // Always create new husband records - don't reuse temporary IDs
+          const { data: husbandData, error: husbandError } = await supabase
+            .from('family_tree_members')
+            .insert({
+              family_id: familyId,
+              name: husband.name,
+              gender: "male",
+              birth_date: husband.birthDate,
+              is_alive: husband.isAlive,
+              death_date: husband.deathDate,
+              image_url: husband.croppedImage,
+              is_founder: false,
+              marital_status: "married", // Set husband as married
+              created_by: user.id
+            })
+            .select()
+            .single();
 
-            if (husbandError) throw husbandError;
-            husbandData = insertedHusband;
-          }
+          if (husbandError) throw husbandError;
 
           // Create marriage record
           const { error: marriageError } = await supabase
