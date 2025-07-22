@@ -832,13 +832,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                             <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
                                               <SelectValue placeholder="اختر الحالة الاجتماعية" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                              <SelectItem value="single" className="font-arabic text-sm">أعزب</SelectItem>
-                                              <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
-                                              <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
-                                              <SelectItem value="widowed" className="font-arabic text-sm">أرمل</SelectItem>
-                                              <SelectItem value="engaged" className="font-arabic text-sm">مخطوب</SelectItem>
-                                            </SelectContent>
+                                             <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                               <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                               <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                             </SelectContent>
                                           </Select>
                                           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
                                             <Heart className="h-2 w-2 text-white" />
