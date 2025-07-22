@@ -822,36 +822,36 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                    </div>
                                 </div>
 
-                                 {/* Marital Status, Life Status and Death Date - Combined in rows */}
-                                 <div className="space-y-4">
-                                   {/* Marital Status - Full width row */}
-                                    <div>
-                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                        الحالة الاجتماعية
-                                      </Label>
-                                      <div className="relative z-[10001]">
-                                        <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
-                                          <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                            <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                          </SelectTrigger>
-                                          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                            <SelectItem value="single" className="font-arabic text-sm">أعزب</SelectItem>
-                                            <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
-                                            <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
-                                            <SelectItem value="widowed" className="font-arabic text-sm">أرمل</SelectItem>
-                                            <SelectItem value="engaged" className="font-arabic text-sm">مخطوب</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
-                                          <Heart className="h-2 w-2 text-white" />
+                                  {/* Marital Status and Life Status - Combined in one row */}
+                                  <div className="space-y-4">
+                                    {/* Marital Status and Alive Status - Combined in one row */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                      {/* Marital Status */}
+                                      <div>
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الاجتماعية
+                                        </Label>
+                                        <div className="relative z-[10001]">
+                                          <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
+                                            <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                              <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                              <SelectItem value="single" className="font-arabic text-sm">أعزب</SelectItem>
+                                              <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                              <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                              <SelectItem value="widowed" className="font-arabic text-sm">أرمل</SelectItem>
+                                              <SelectItem value="engaged" className="font-arabic text-sm">مخطوب</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-2 w-2 text-white" />
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
 
-                                   {/* Alive Status and Death Date - Combined in one row */}
-                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     {/* Alive Status */}
+                                      {/* Alive Status */}
                                       <div>
                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                           <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -872,29 +872,29 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                           </div>
                                         </div>
                                       </div>
+                                    </div>
 
-                                     {/* Death Date (if deceased) */}
-                                      {!newWife.isAlive && (
-                                        <div className="animate-fade-in">
-                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                            <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                            تاريخ الوفاة
-                                          </Label>
-                                          <div className="relative z-[10000]">
-                                            <EnhancedDatePicker
-                                              value={newWife.deathDate ? new Date(newWife.deathDate) : null}
-                                              onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
-                                              placeholder="اختر تاريخ الوفاة"
-                                              className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
-                                            />
-                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                              <CalendarIcon className="h-2 w-2 text-white" />
-                                            </div>
+                                    {/* Death Date (if deceased) - Full width row */}
+                                    {!newWife.isAlive && (
+                                      <div className="animate-fade-in">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          تاريخ الوفاة
+                                        </Label>
+                                        <div className="relative z-[10000]">
+                                          <EnhancedDatePicker
+                                            value={newWife.deathDate ? new Date(newWife.deathDate) : null}
+                                            onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                            placeholder="اختر تاريخ الوفاة"
+                                            className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                            <CalendarIcon className="h-2 w-2 text-white" />
                                           </div>
                                         </div>
-                                      )}
-                                   </div>
-                                 </div>
+                                      </div>
+                                    )}
+                                  </div>
 
                                 <div>
                                   <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
