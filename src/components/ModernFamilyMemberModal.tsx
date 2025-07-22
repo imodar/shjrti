@@ -907,28 +907,28 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                         alt="New Wife"
                                         className="w-16 h-16 rounded-full object-cover border-2 border-pink-300"
                                       />
-                                      <div className="flex flex-col space-y-2">
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => document.getElementById('new-wife-image')?.click()}
-                                          className="border-pink-300 text-pink-600 hover:bg-pink-50"
-                                        >
-                                          <Camera className="w-3 h-3 mr-1" />
-                                          تغيير
-                                        </Button>
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => setNewWife({...newWife, imageUrl: ''})}
-                                          className="border-red-300 text-red-600 hover:bg-red-50"
-                                        >
-                                          <X className="w-3 h-3 mr-1" />
-                                          إزالة
-                                        </Button>
-                                      </div>
+                                       <div className="flex flex-col space-y-1">
+                                         <Button
+                                           type="button"
+                                           variant="outline"
+                                           size="sm"
+                                           onClick={() => document.getElementById('new-wife-image')?.click()}
+                                           className="border-pink-300 text-pink-600 hover:bg-pink-50 h-7 text-xs px-2"
+                                         >
+                                           <Camera className="w-2 h-2 mr-1" />
+                                           تغيير
+                                         </Button>
+                                         <Button
+                                           type="button"
+                                           variant="outline"
+                                           size="sm"
+                                           onClick={() => setNewWife({...newWife, imageUrl: ''})}
+                                           className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
+                                         >
+                                           <X className="w-2 h-2 mr-1" />
+                                           إزالة
+                                         </Button>
+                                       </div>
                                     </div>
                                   ) : (
                                     <label
