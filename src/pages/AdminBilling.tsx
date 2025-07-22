@@ -382,9 +382,9 @@ export default function AdminBilling() {
   });
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
-        <GlobalHeader />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
@@ -396,10 +396,10 @@ export default function AdminBilling() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
       <GlobalHeader />
       
-      <div className="container mx-auto px-6 pt-24 pb-12">
+      <div className="container mx-auto px-6 pt-24 pb-12" dir="rtl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
