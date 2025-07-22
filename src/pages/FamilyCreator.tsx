@@ -893,28 +893,26 @@ const FamilyCreator = () => {
                             <div className="grid grid-cols-1 gap-4">
                               {/* Name */}
                               <div className="group">
-                                <Label htmlFor="founderName" className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                              <Label htmlFor="founderName" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                  <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                   الاسم الأول * 
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  <span className="text-sm text-gray-500 dark:text-gray-400">
                                     (عائلة: {treeData.name})
                                   </span>
                                 </Label>
                                 <div className="relative">
                                   <Input
                                     id="founderName"
-                                    placeholder={`الاسم الأول فقط`}
+                                    placeholder="الاسم الأول فقط"
                                     value={founderData.name}
                                     onChange={(e) => {
                                       setFounderData({...founderData, name: e.target.value});
                                     }}
-                                    className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl pl-4"
+                                    className="h-14 text-lg placeholder:text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
                                   />
-                                  {founderData.name && (
-                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
-                                      {treeData.name}
-                                    </div>
-                                  )}
+                                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                                    <span className="text-white text-xs font-bold">3</span>
+                                  </div>
                                 </div>
                               </div>
 
@@ -922,8 +920,8 @@ const FamilyCreator = () => {
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 {/* Birth Date */}
                                 <div className="group">
-                                  <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                     تاريخ الميلاد
                                   </Label>
                                   <EnhancedDatePicker
@@ -935,12 +933,12 @@ const FamilyCreator = () => {
 
                                 {/* Status */}
                                 <div className="group">
-                                  <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                    <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                     الحالة
                                   </Label>
                                   <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                                    <SelectTrigger className="h-12 border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl">
+                                    <SelectTrigger className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -953,8 +951,8 @@ const FamilyCreator = () => {
                                 {/* Death Date (conditional) */}
                                 {!founderData.isAlive && (
                                   <div className="group">
-                                    <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                      <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                       تاريخ الوفاة
                                     </Label>
                                     <EnhancedDatePicker
@@ -971,8 +969,8 @@ const FamilyCreator = () => {
 
                             {/* Image Upload - Compact Card */}
                             <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200/50 dark:border-amber-700/50">
-                              <Label className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3">
-                                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                              <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                <div className="w-3 h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                 صورة المؤسس (اختياري)
                               </Label>
                               <div className="flex items-center gap-4">
@@ -1025,8 +1023,8 @@ const FamilyCreator = () => {
 
                             {/* Biography - Compact Card */}
                             <div className="bg-gradient-to-br from-teal-50/50 to-cyan-50/50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 border border-teal-200/50 dark:border-teal-700/50">
-                              <Label htmlFor="founderBio" className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3">
-                                <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
+                              <Label htmlFor="founderBio" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                <div className="w-3 h-3 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                 السيرة الذاتية (اختياري)
                               </Label>
                               <Textarea
@@ -1034,7 +1032,7 @@ const FamilyCreator = () => {
                                 placeholder="معلومات عن المؤسس، إنجازاته، مهنته، قصص مميزة..."
                                 value={founderData.bio}
                                 onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
-                                className="min-h-[120px] border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-300 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl resize-none"
+                                className="min-h-[120px] text-lg placeholder:text-lg border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none"
                               />
                             </div>
                           </div>
