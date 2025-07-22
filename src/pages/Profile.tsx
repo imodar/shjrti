@@ -593,8 +593,8 @@ export default function Profile() {
                     {/* Decorative Header Background */}
                     <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-r from-amber-400/20 via-orange-400/30 to-pink-400/20"></div>
                     
-                    <CardHeader className="relative pb-6 pt-8">
-                      <div className="flex items-center gap-4">
+                     <CardHeader className="relative pb-4 pt-6">
+                       <div className="flex items-center gap-4">
                         <div className="relative">
                           {/* Icon Glow Effect */}
                           <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
