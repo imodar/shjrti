@@ -759,7 +759,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
               <div className="space-y-2">
 
                 <div className="space-y-6">
-                  {memberData.gender === "male" && (
+                  {memberData.gender === "male" && memberData.maritalStatus === "married" && (
                       <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-4 md:p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                           {/* Add Wife Section - 2/3 width */}
@@ -1051,7 +1051,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     )}
 
 
-                    {memberData.gender === "female" && (
+                    {memberData.gender === "female" && memberData.maritalStatus === "married" && (
                       <div className="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950/30 dark:to-blue-900/30 rounded-2xl p-4 md:p-6 border border-sky-200/50 dark:border-sky-800/30 shadow-lg">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                           {/* Add Husband Section - 2/3 width */}
