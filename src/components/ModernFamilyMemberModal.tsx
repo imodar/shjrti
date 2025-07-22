@@ -551,7 +551,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                <PopoverContent className="w-96 p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
                                   <Command>
                                     <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
                                     <CommandList>
