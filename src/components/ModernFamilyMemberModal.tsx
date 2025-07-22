@@ -738,9 +738,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                         : marriages.find(m => m.id === memberData.selectedParent)
                                           ? (() => {
                                               const marriage = marriages.find(m => m.id === memberData.selectedParent);
-                                              return marriage?.husband.is_founder 
-                                                ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                                : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
+                                               return marriage?.husband.is_founder 
+                                                 ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                                 : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
                                             })()
                                           : "اختر علاقة القرابة مع العائلة"
                                       }
@@ -768,9 +768,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                              }}
                                              className="font-arabic whitespace-nowrap"
                                            >
-                                             {marriage.husband.is_founder 
-                                               ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                               : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`}
+                                              {marriage.husband.is_founder 
+                                                ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                                : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`}
                                            </CommandItem>
                                          ))}
                                        </CommandGroup>
