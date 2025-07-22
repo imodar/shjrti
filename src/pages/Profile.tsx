@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { LuxuryFooter } from "@/components/LuxuryFooter";
+import { GlobalFooter } from "@/components/GlobalFooter";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -557,7 +557,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <LuxuryFooter />
+      <GlobalFooter />
     </div>
   );
 }
