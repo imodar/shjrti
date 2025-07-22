@@ -617,7 +617,7 @@ export default function Profile() {
                       <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-orange-300/50 dark:border-orange-700/50 rounded-bl-lg"></div>
                     </CardHeader>
                     
-                    <CardContent className="relative space-y-4 pb-8 pt-2">
+                    <CardContent className="relative space-y-4 pb-8 pt-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Link to="/payments" className="group">
                           <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-700 border border-amber-200/70 dark:from-amber-950/40 dark:to-orange-950/40 dark:hover:from-amber-950/60 dark:hover:to-orange-950/60 dark:text-amber-300 dark:border-amber-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
