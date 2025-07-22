@@ -451,13 +451,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30">
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                     {/* Name and Birth Date - Combined in one row */}
+                      {/* Name and Birth Date - Combined in one row */}
                      <div className="group sm:col-span-1 md:col-span-4">
                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                          {/* Name - 2/3 width */}
                          <div className="sm:col-span-2">
-                           <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                             <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                             <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                              الاسم الأول
                            </Label>
                            <div className="relative">
@@ -465,18 +465,18 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                value={memberData.name}
                                onChange={(e) => setMemberData({...memberData, name: e.target.value})}
                                placeholder="أدخل الاسم الأول"
-                               className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                               className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
                              />
-                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                               <UserPlus className="h-3 w-3 text-white" />
+                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                               <UserPlus className="h-2 w-2 text-white" />
                              </div>
                            </div>
                          </div>
 
                          {/* Birth Date - 1/3 width */}
                          <div className="sm:col-span-1">
-                           <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                             <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                             <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                              تاريخ الميلاد
                            </Label>
                            <div className="relative z-[10020]">
@@ -484,10 +484,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                value={memberData.birthDate}
                                onChange={(date) => setMemberData({...memberData, birthDate: date})}
                                placeholder="اختر التاريخ"
-                               className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                               className="h-9 text-sm border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
                              />
-                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                               <CalendarIcon className="h-3 w-3 text-white" />
+                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                               <CalendarIcon className="h-2 w-2 text-white" />
                              </div>
                            </div>
                          </div>
@@ -499,137 +499,161 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 {/* Family Relationship and Life Status Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl pb-6 px-6 border border-white/30 dark:border-gray-700/30">
                   
-                   <div className="space-y-6">
-                     {/* Family Relationship, Life Status and Death Date - All in one row */}
-                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                       {/* Family Relationship - 1/2 width */}
-                       <div className="group md:col-span-2">
-                         <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                           <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                           علاقة القرابة (العائلة)
-                         </Label>
+                    <div className="space-y-4">
+                      {/* Marital Status, Life Status and Death Date - All in one row with 1/3 width each */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Marital Status - 1/3 width */}
+                        <div className="group">
+                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                            <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                            الحالة الاجتماعية
+                          </Label>
                           <div className="relative z-[10001]">
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic w-full justify-between"
-                                >
-                                  {memberData.selectedParent === null || memberData.selectedParent === "none" 
-                                    ? "مؤسس العائلة" 
-                                    : marriages.find(m => m.id === memberData.selectedParent)
-                                      ? (() => {
-                                          const marriage = marriages.find(m => m.id === memberData.selectedParent);
-                                          return marriage?.husband.is_founder 
-                                            ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                            : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
-                                        })()
-                                      : "اختر علاقة القرابة مع العائلة"
-                                  }
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                <Command>
-                                  <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
-                                  <CommandList>
-                                    <CommandEmpty className="font-arabic">لا توجد نتائج</CommandEmpty>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="none"
-                                        onSelect={() => {
-                                          setMemberData({...memberData, selectedParent: null});
-                                        }}
-                                        className="font-arabic text-base sm:text-lg lg:text-xl"
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            (memberData.selectedParent === null || memberData.selectedParent === "none") ? "opacity-100" : "opacity-0"
-                                          )}
-                                        />
-                                        مؤسس العائلة
-                                      </CommandItem>
-                                      {marriages.map((marriage) => (
-                                        <CommandItem
-                                          key={marriage.id}
-                                          value={marriage.husband.is_founder 
-                                            ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                            : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
-                                          }
-                                          onSelect={() => {
-                                            setMemberData({...memberData, selectedParent: marriage.id});
-                                          }}
-                                          className="font-arabic text-base sm:text-lg lg:text-xl"
-                                        >
-                                          <Check
-                                            className={cn(
-                                              "mr-2 h-4 w-4",
-                                              memberData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
-                                            )}
-                                          />
-                                          {marriage.husband.is_founder 
-                                            ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                            : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
-                                          }
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                           <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                             <Users className="h-3 w-3 text-white" />
-                           </div>
-                         </div>
-                       </div>
+                            <Select>
+                              <SelectTrigger className="h-9 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                <SelectValue placeholder="الحالة" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                <SelectItem value="single" className="font-arabic text-sm">أعزب/عزباء</SelectItem>
+                                <SelectItem value="married" className="font-arabic text-sm">متزوج/متزوجة</SelectItem>
+                                <SelectItem value="divorced" className="font-arabic text-sm">مطلق/مطلقة</SelectItem>
+                                <SelectItem value="widowed" className="font-arabic text-sm">أرمل/أرملة</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                              <Heart className="h-2 w-2 text-white" />
+                            </div>
+                          </div>
+                        </div>
 
-                       {/* Life Status - 1/4 width */}
-                       <div className="group">
-                         <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                           <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                           الحالة الحيوية
-                         </Label>
+                        {/* Life Status - 1/3 width */}
+                        <div className="group">
+                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                            <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                            الحالة الحيوية
+                          </Label>
+                          <div className="relative z-[10001]">
+                            <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
+                              <SelectTrigger className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                <SelectValue placeholder="الحالة" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                              <Heart className="h-2 w-2 text-white" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Death Date (if deceased) - 1/3 width */}
+                        {!memberData.isAlive && (
+                          <div className="group">
+                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                              <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                              تاريخ الوفاة
+                            </Label>
+                            <div className="relative z-[10001]">
+                              <EnhancedDatePicker
+                                value={memberData.deathDate}
+                                onChange={(date) => setMemberData({...memberData, deathDate: date})}
+                                placeholder="تاريخ الوفاة"
+                                className="h-9 text-sm border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10"
+                              />
+                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
+                                <CalendarIcon className="h-2 w-2 text-white" />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Family Relationship - Full Width Row */}
+                      <div className="group">
+                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                          <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                          علاقة القرابة (العائلة)
+                        </Label>
                          <div className="relative z-[10001]">
-                           <Select value={memberData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setMemberData({...memberData, isAlive: value === "alive", deathDate: value === "alive" ? null : memberData.deathDate})}>
-                             <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
-                               <SelectValue placeholder="الحالة" />
-                             </SelectTrigger>
-                             <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                               <SelectItem value="alive" className="font-arabic text-base sm:text-lg lg:text-xl">على قيد الحياة</SelectItem>
-                               <SelectItem value="deceased" className="font-arabic text-base sm:text-lg lg:text-xl">متوفى</SelectItem>
-                             </SelectContent>
-                           </Select>
-                           <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
-                             <Heart className="h-3 w-3 text-white" />
-                           </div>
-                         </div>
-                       </div>
-
-                       {/* Death Date (if deceased) - 1/4 width */}
-                       {!memberData.isAlive && (
-                         <div className="group">
-                           <Label className="text-base sm:text-lg lg:text-xl font-bold flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 font-arabic">
-                             <div className="w-3 h-3 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                             تاريخ الوفاة
-                           </Label>
-                           <div className="relative z-[10001]">
-                             <EnhancedDatePicker
-                               value={memberData.deathDate}
-                               onChange={(date) => setMemberData({...memberData, deathDate: date})}
-                               placeholder="تاريخ الوفاة"
-                               className="h-14 text-base sm:text-lg lg:text-xl border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
-                             />
-                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
-                               <CalendarIcon className="h-3 w-3 text-white" />
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                     </div>
-                  </div>
+                           <Popover>
+                             <PopoverTrigger asChild>
+                               <Button
+                                 variant="outline"
+                                 role="combobox"
+                                 className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic w-full justify-between"
+                               >
+                                 {memberData.selectedParent === null || memberData.selectedParent === "none" 
+                                   ? "مؤسس العائلة" 
+                                   : marriages.find(m => m.id === memberData.selectedParent)
+                                     ? (() => {
+                                         const marriage = marriages.find(m => m.id === memberData.selectedParent);
+                                         return marriage?.husband.is_founder 
+                                           ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                           : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
+                                       })()
+                                     : "اختر علاقة القرابة مع العائلة"
+                                 }
+                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                               </Button>
+                             </PopoverTrigger>
+                             <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                               <Command>
+                                 <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
+                                 <CommandList>
+                                   <CommandEmpty className="font-arabic">لا توجد نتائج</CommandEmpty>
+                                   <CommandGroup>
+                                     <CommandItem
+                                       value="none"
+                                       onSelect={() => {
+                                         setMemberData({...memberData, selectedParent: null});
+                                       }}
+                                       className="font-arabic text-sm"
+                                     >
+                                       <Check
+                                         className={cn(
+                                           "mr-2 h-4 w-4",
+                                           (memberData.selectedParent === null || memberData.selectedParent === "none") ? "opacity-100" : "opacity-0"
+                                         )}
+                                       />
+                                       مؤسس العائلة
+                                     </CommandItem>
+                                     {marriages.map((marriage) => (
+                                       <CommandItem
+                                         key={marriage.id}
+                                         value={marriage.husband.is_founder 
+                                           ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                           : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
+                                         }
+                                         onSelect={() => {
+                                           setMemberData({...memberData, selectedParent: marriage.id});
+                                         }}
+                                         className="font-arabic text-sm"
+                                       >
+                                         <Check
+                                           className={cn(
+                                             "mr-2 h-4 w-4",
+                                             memberData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
+                                           )}
+                                         />
+                                         {marriage.husband.is_founder 
+                                           ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                           : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
+                                         }
+                                       </CommandItem>
+                                     ))}
+                                   </CommandGroup>
+                                 </CommandList>
+                               </Command>
+                             </PopoverContent>
+                           </Popover>
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <Users className="h-2 w-2 text-white" />
+                          </div>
+                        </div>
+                      </div>
+                   </div>
                 </div>
 
                 {/* Media and Biography Section */}
