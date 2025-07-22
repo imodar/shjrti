@@ -523,9 +523,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   
                      <div className="space-y-4">
                         {/* Family Relationship, Life Status, Death Date - All in one row */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           {/* Family Relationship - 1/2 width */}
-                          <div className="group">
+                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            {/* Family Relationship - 1/2 width */}
+                           <div className="group md:col-span-2">
                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                               <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                               علاقة القرابة (العائلة)
@@ -616,26 +616,25 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           </div>
                         </div>
 
-                        {/* Death Date (if deceased) - 1/4 width */}
-                        {!memberData.isAlive && (
-                          <div className="group">
-                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                              <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                              تاريخ الوفاة
-                            </Label>
-                            <div className="relative z-[10001]">
-                              <EnhancedDatePicker
-                                value={memberData.deathDate}
-                                onChange={(date) => setMemberData({...memberData, deathDate: date})}
-                                placeholder="تاريخ الوفاة"
-                                className="h-9 text-sm border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10"
-                              />
-                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
-                                <CalendarIcon className="h-2 w-2 text-white" />
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                         {/* Death Date - 1/4 width */}
+                         <div className="group">
+                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                             <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                             تاريخ الوفاة
+                           </Label>
+                           <div className="relative z-[10001]">
+                             <EnhancedDatePicker
+                               value={memberData.deathDate}
+                               onChange={(date) => setMemberData({...memberData, deathDate: date})}
+                               placeholder="تاريخ الوفاة"
+                               className="h-9 text-sm border-2 border-gray-200/50 dark:border-gray-700/50 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10"
+                               disabled={memberData.isAlive}
+                             />
+                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
+                               <CalendarIcon className="h-2 w-2 text-white" />
+                             </div>
+                           </div>
+                         </div>
                       </div>
 
                     </div>
