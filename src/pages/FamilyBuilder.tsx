@@ -1570,9 +1570,18 @@ const FamilyBuilder = () => {
 
   const handleDeleteMember = async (id: string) => {
     try {
-      // Check if member is a founder
       const memberToDelete = familyMembers.find(member => member.id === id);
-      if (memberToDelete?.isFounder) {
+      if (!memberToDelete) {
+        toast({
+          title: "خطأ",
+          description: "العضو غير موجود",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check if member is a founder
+      if (memberToDelete.isFounder) {
         toast({
           title: "تحذير",
           description: "لا يمكن حذف مؤسس العائلة",
@@ -1581,37 +1590,38 @@ const FamilyBuilder = () => {
         return;
       }
 
-      // First, delete any marriage records related to this member
-      const { error: marriageError } = await supabase
-        .from('marriages')
-        .delete()
-        .or(`husband_id.eq.${id},wife_id.eq.${id}`);
-
-      if (marriageError) {
-        console.error('Error deleting marriages:', marriageError);
-        throw marriageError;
+      // Check if this member is a spouse (married to someone but has no blood relation to family)
+      const isSpouse = checkIfMemberIsSpouse(memberToDelete);
+      
+      if (isSpouse) {
+        // Show modal for spouse deletion
+        const confirmed = window.confirm(
+          "هذا الشخص زوج/زوجة لأحد أفراد العائلة.\n" +
+          "لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج.\n" +
+          "هل تريد المتابعة؟"
+        );
+        if (!confirmed) return;
+      } else {
+        // This is a blood family member - show warning about cascading delete
+        const childrenCount = getChildrenCount(memberToDelete.id);
+        const spousesCount = getSpousesCount(memberToDelete.id);
+        
+        let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
+        if (spousesCount > 0) {
+          warningMessage += `- ${spousesCount} زوج/زوجة\n`;
+        }
+        if (childrenCount > 0) {
+          warningMessage += `- ${childrenCount} طفل/أطفال وجميع أحفادهم\n`;
+        }
+        warningMessage += `- جميع الزيجات المرتبطة بهذا الشخص\n\nهل أنت متأكد من المتابعة؟`;
+        
+        const confirmed = window.confirm(warningMessage);
+        if (!confirmed) return;
       }
 
-      // Then delete the member
-      const { error } = await supabase
-        .from('family_tree_members')
-        .delete()
-        .eq('id', id);
+      // Proceed with deletion
+      await performCascadingDelete(memberToDelete);
 
-      if (error) throw error;
-
-      // Update local state
-      setFamilyMembers(familyMembers.filter(member => member.id !== id));
-      
-      // Update marriages state to remove deleted member's marriages
-      setFamilyMarriages(familyMarriages.filter(marriage => 
-        marriage.husband?.id !== id && marriage.wife?.id !== id
-      ));
-
-      toast({
-        title: "تم الحذف",
-        description: "تم حذف العضو من شجرة العائلة"
-      });
     } catch (error) {
       console.error('Error deleting member:', error);
       toast({
@@ -1620,6 +1630,133 @@ const FamilyBuilder = () => {
         variant: "destructive"
       });
     }
+  };
+
+  // Helper function to check if member is a spouse (not blood relation)
+  const checkIfMemberIsSpouse = (member: any) => {
+    // A spouse is someone who:
+    // 1. Has no father_id and mother_id (not born into the family)
+    // 2. Is married to someone in the family
+    // 3. Is not a founder
+    return !member.fatherId && !member.motherId && !member.isFounder;
+  };
+
+  // Helper function to count children
+  const getChildrenCount = (parentId: string) => {
+    return familyMembers.filter(member => 
+      member.fatherId === parentId || member.motherId === parentId
+    ).length;
+  };
+
+  // Helper function to count spouses
+  const getSpousesCount = (memberId: string) => {
+    return familyMarriages.filter(marriage => 
+      marriage.husband?.id === memberId || marriage.wife?.id === memberId
+    ).length;
+  };
+
+  // Function to perform cascading delete
+  const performCascadingDelete = async (memberToDelete: any) => {
+    const membersToDelete = new Set<string>();
+    const marriagesToDelete = new Set<string>();
+
+    // Add the main member to delete list
+    membersToDelete.add(memberToDelete.id);
+
+    // Find all marriages of this member
+    const memberMarriages = familyMarriages.filter(marriage => 
+      marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id
+    );
+
+    // Add marriages to delete list
+    memberMarriages.forEach(marriage => {
+      marriagesToDelete.add(marriage.id);
+      
+      // If deleting a blood family member, also delete their spouses who are not blood relations
+      if (!checkIfMemberIsSpouse(memberToDelete)) {
+        const spouseId = marriage.husband?.id === memberToDelete.id ? 
+          marriage.wife?.id : marriage.husband?.id;
+        
+        if (spouseId) {
+          const spouse = familyMembers.find(m => m.id === spouseId);
+          if (spouse && checkIfMemberIsSpouse(spouse)) {
+            membersToDelete.add(spouseId);
+          }
+        }
+      }
+    });
+
+    // Recursively find all descendants
+    const findDescendants = (parentId: string) => {
+      const children = familyMembers.filter(member => 
+        member.fatherId === parentId || member.motherId === parentId
+      );
+      
+      children.forEach(child => {
+        membersToDelete.add(child.id);
+        
+        // Find marriages of this child
+        const childMarriages = familyMarriages.filter(marriage => 
+          marriage.husband?.id === child.id || marriage.wife?.id === child.id
+        );
+        
+        childMarriages.forEach(marriage => {
+          marriagesToDelete.add(marriage.id);
+          
+          // Add spouse if they're not blood relation
+          const spouseId = marriage.husband?.id === child.id ? 
+            marriage.wife?.id : marriage.husband?.id;
+          
+          if (spouseId) {
+            const spouse = familyMembers.find(m => m.id === spouseId);
+            if (spouse && checkIfMemberIsSpouse(spouse)) {
+              membersToDelete.add(spouseId);
+            }
+          }
+        });
+        
+        // Recursively find this child's descendants
+        findDescendants(child.id);
+      });
+    };
+
+    // Find all descendants of the member to delete
+    findDescendants(memberToDelete.id);
+
+    // Delete marriages first
+    if (marriagesToDelete.size > 0) {
+      const { error: marriageError } = await supabase
+        .from('marriages')
+        .delete()
+        .in('id', Array.from(marriagesToDelete));
+
+      if (marriageError) {
+        console.error('Error deleting marriages:', marriageError);
+        throw marriageError;
+      }
+    }
+
+    // Delete members
+    if (membersToDelete.size > 0) {
+      const { error: memberError } = await supabase
+        .from('family_tree_members')
+        .delete()
+        .in('id', Array.from(membersToDelete));
+
+      if (memberError) {
+        console.error('Error deleting members:', memberError);
+        throw memberError;
+      }
+    }
+
+    // Update local state
+    setFamilyMembers(familyMembers.filter(member => !membersToDelete.has(member.id)));
+    setFamilyMarriages(familyMarriages.filter(marriage => !marriagesToDelete.has(marriage.id)));
+
+    toast({
+      title: "تم الحذف",
+      description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} زواج من شجرة العائلة`
+    });
   };
 
   const getRelationIcon = (relation: string) => {
