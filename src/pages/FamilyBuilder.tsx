@@ -869,6 +869,7 @@ const FamilyBuilder = () => {
 
   // Handler for the modern modal submission
   const handleModernModalSubmit = async (memberData: any) => {
+    console.log('🔥 SUBMISSION STARTED - Member data:', memberData.name, memberData.gender);
     try {
       console.log('🔥 FamilyBuilder handleModernModalSubmit called with data:', memberData);
       console.log('🔥 Selected member for editing:', selectedMember);
