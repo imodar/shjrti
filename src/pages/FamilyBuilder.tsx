@@ -2451,11 +2451,13 @@ const FamilyBuilder = () => {
               </div>
             </div>
             
-            <AlertDialogFooter className="relative z-10 pt-2 pb-6 flex justify-center">
-              <AlertDialogCancel className="px-8 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 font-arabic font-medium">
-                <X className="h-4 w-4 ml-2" />
-                إغلاق
-              </AlertDialogCancel>
+            <AlertDialogFooter className="relative z-10 pt-2 pb-6 flex items-center justify-center w-full">
+              <div className="flex justify-center w-full">
+                <AlertDialogCancel className="px-8 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 font-arabic font-medium mx-auto">
+                  <X className="h-4 w-4 ml-2" />
+                  إغلاق
+                </AlertDialogCancel>
+              </div>
             </AlertDialogFooter>
           </div>
         </AlertDialogContent>
