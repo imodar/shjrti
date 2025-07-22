@@ -593,29 +593,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                </div>
                              </div>
                           </div>
-                        {/* Marital Status - 1/4 width */}
-                        <div className="group">
-                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                            <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                            الحالة الاجتماعية
-                          </Label>
-                          <div className="relative z-[10001]">
-                            <Select>
-                              <SelectTrigger className="h-9 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                <SelectValue placeholder="الحالة" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                <SelectItem value="single" className="font-arabic text-sm">أعزب/عزباء</SelectItem>
-                                <SelectItem value="married" className="font-arabic text-sm">متزوج/متزوجة</SelectItem>
-                                <SelectItem value="divorced" className="font-arabic text-sm">مطلق/مطلقة</SelectItem>
-                                <SelectItem value="widowed" className="font-arabic text-sm">أرمل/أرملة</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
-                              <Heart className="h-2 w-2 text-white" />
-                            </div>
-                          </div>
-                        </div>
 
                         {/* Life Status - 1/4 width */}
                         <div className="group">
