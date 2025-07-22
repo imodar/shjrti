@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown } from "lucide-react";
+import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown, Gem, TreePine, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -324,234 +324,302 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 relative overflow-hidden">
-      {/* Luxury Animated Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/10 rounded-full blur-3xl animate-float opacity-60"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-tr from-cyan-400/15 via-teal-400/20 to-emerald-400/10 rounded-full blur-2xl animate-float-delayed opacity-40"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-teal-400/10 via-emerald-400/15 to-cyan-400/5 rounded-full blur-3xl animate-float-slow opacity-30"></div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+      </div>
+
+      {/* Floating Animated Icons */}
+      <div className="absolute top-32 right-20 animate-float">
+        <Heart className="h-10 w-10 text-pink-400 opacity-60" />
+      </div>
+      <div className="absolute bottom-40 left-20 animate-float-delayed">
+        <Users className="h-12 w-12 text-emerald-400 opacity-40" />
+      </div>
+      <div className="absolute top-1/2 left-10 animate-float-slow">
+        <User className="h-8 w-8 text-yellow-400 opacity-60" />
       </div>
 
       <div className="relative z-10">
         <GlobalHeader />
 
         <div className="container mx-auto px-6 py-12 relative z-10">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="max-w-6xl mx-auto">
             
-            {/* User Avatar & Overview */}
-            <div className="lg:col-span-1 space-y-6">
-              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
-                <CardHeader className="text-center pb-4">
-                  <div className="relative mx-auto">
-                    <Avatar className="w-32 h-32 ring-4 ring-emerald-500/30 ring-offset-4 ring-offset-background">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-4xl font-bold">
-                        {getInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Button 
-                      size="icon" 
-                      variant="secondary" 
-                      className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg"
-                    >
-                      <Camera className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="mt-4 space-y-2">
-                    <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-200">{getDisplayName()}</CardTitle>
-                    <CardDescription className="text-emerald-600 dark:text-emerald-400">{profileData.email}</CardDescription>
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white">
-                      <Crown className="h-3 w-3 mr-1" />
-                      {currentPackage?.name || "الباقة المجانية"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-emerald-600" />
-                        <span className="text-sm font-medium text-emerald-800 dark:text-emerald-200">تاريخ الانضمام</span>
+            {/* Profile Header Section */}
+            <div className="mb-8 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
+              
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    {/* User Avatar */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+                      <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
+                        <span className="text-2xl font-bold text-white">
+                          {getInitials()}
+                        </span>
                       </div>
-                      <span className="text-sm text-emerald-700 dark:text-emerald-300">{profileData.joinDate}</span>
+                      <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Users className="h-5 w-5 text-teal-600" />
-                        <span className="text-sm font-medium text-teal-800 dark:text-teal-200">أشجار العائلة</span>
-                      </div>
-                      <span className="text-sm text-teal-700 dark:text-teal-300">{stats.familiesCreated}</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Heart className="h-5 w-5 text-cyan-600" />
-                        <span className="text-sm font-medium text-cyan-800 dark:text-cyan-200">أفراد العائلة</span>
-                      </div>
-                      <span className="text-sm text-cyan-700 dark:text-cyan-300">{stats.totalMembers}</span>
+                    
+                    {/* Welcome Text */}
+                    <div>
+                      <h1 className="text-3xl font-bold mb-2">
+                        <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                          الملف الشخصي
+                        </span>
+                      </h1>
+                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        إدارة معلوماتك الشخصية والحساب
+                      </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  
+                  {/* Package Status */}
+                  <div className="flex flex-col items-end gap-2">
+                    {currentPackage ? (
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+                        <Crown className="h-4 w-4" />
+                        <span className="text-sm font-bold">{currentPackage.name}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full shadow-lg">
+                        <Gem className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">الباقة المجانية</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
+                      <span>نشط منذ {profileData.joinDate}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
+                <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-emerald-300/40 dark:border-emerald-700/40"></div>
+              </div>
             </div>
 
-            {/* Profile Details & Edit Form */}
-            <div className="lg:col-span-2 space-y-6">
-              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-200">المعلومات الشخصية</CardTitle>
-                    <Button
-                      onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
-                      variant={isEditing ? "outline" : "default"}
-                      className={isEditing 
-                        ? "border-red-300 text-red-700 hover:bg-red-50" 
-                        : "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg"}
-                    >
-                      {isEditing ? (
-                        <>
-                          <X className="h-4 w-4 mr-2" />
-                          إلغاء
-                        </>
-                      ) : (
-                        <>
-                          <Edit className="h-4 w-4 mr-2" />
-                          تعديل
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-emerald-800 dark:text-emerald-200 font-medium">الاسم الأول</Label>
-                      {isEditing ? (
-                        <Input
-                          id="firstName"
-                          value={profileData.firstName}
-                          onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
-                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                        />
-                      ) : (
-                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
-                          <p className="text-emerald-800 dark:text-emerald-200">{profileData.firstName || "غير محدد"}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              {/* Personal Information Card */}
+              <div className="lg:col-span-2">
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
+                          <User className="h-5 w-5 text-white" />
                         </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName" className="text-emerald-800 dark:text-emerald-200 font-medium">اسم العائلة</Label>
-                      {isEditing ? (
-                        <Input
-                          id="lastName"
-                          value={profileData.lastName}
-                          onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
-                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                        />
-                      ) : (
-                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
-                          <p className="text-emerald-800 dark:text-emerald-200">{profileData.lastName || "غير محدد"}</p>
+                        <div>
+                          <CardTitle className="text-xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            المعلومات الشخصية
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            تحديث بياناتك الأساسية
+                          </p>
                         </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-emerald-800 dark:text-emerald-200 font-medium">البريد الإلكتروني</Label>
-                      {isEditing ? (
-                        <Input
-                          id="email"
-                          type="email"
-                          value={profileData.email}
-                          onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                        />
-                      ) : (
-                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-emerald-600" />
-                            <p className="text-emerald-800 dark:text-emerald-200">{profileData.email}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-emerald-800 dark:text-emerald-200 font-medium">رقم الهاتف</Label>
-                      {isEditing ? (
-                        <Input
-                          id="phone"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                          placeholder="05XXXXXXXX"
-                        />
-                      ) : (
-                        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg border border-emerald-200/50">
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-emerald-600" />
-                            <p className="text-emerald-800 dark:text-emerald-200">{profileData.phone || "غير محدد"}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {isEditing && (
-                    <div className="flex justify-end gap-3 pt-4 border-t border-emerald-200/50">
+                      </div>
+                      
                       <Button
+                        onClick={() => setIsEditing(!isEditing)}
                         variant="outline"
-                        onClick={handleCancel}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        size="sm"
+                        className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
                       >
-                        إلغاء
-                      </Button>
-                      <Button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg"
-                      >
-                        {saving ? (
+                        {isEditing ? (
                           <>
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                            جاري الحفظ...
+                            <X className="h-4 w-4" />
+                            إلغاء
                           </>
                         ) : (
                           <>
-                            <Save className="h-4 w-4 mr-2" />
-                            حفظ التغييرات
+                            <Edit className="h-4 w-4" />
+                            تعديل
                           </>
                         )}
                       </Button>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">الاسم الأول</Label>
+                        <Input
+                          value={profileData.firstName}
+                          onChange={(e) => setProfileData(prev => ({...prev, firstName: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder="اكتب اسمك الأول"
+                        />
+                      </div>
 
-              {/* Quick Actions */}
-              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
-                <CardHeader>
-                  <CardTitle className="text-xl text-emerald-800 dark:text-emerald-200">الإجراءات السريعة</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Link to="/change-password">
-                      <Button className="w-full justify-start bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg">
-                        <Settings className="h-4 w-4 mr-2" />
-                        تغيير كلمة المرور
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">اسم العائلة</Label>
+                        <Input
+                          value={profileData.lastName}
+                          onChange={(e) => setProfileData(prev => ({...prev, lastName: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder="اكتب اسم العائلة"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">البريد الإلكتروني</Label>
+                        <Input
+                          value={profileData.email}
+                          onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder="البريد الإلكتروني"
+                          type="email"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">رقم الهاتف</Label>
+                        <Input
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({...prev, phone: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder="رقم الهاتف (اختياري)"
+                          type="tel"
+                        />
+                      </div>
+                    </div>
+
+                    {isEditing && (
+                      <div className="flex gap-3 pt-4 border-t border-emerald-200/50 dark:border-emerald-700/50">
+                        <Button
+                          onClick={handleSave}
+                          disabled={saving}
+                          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 gap-2"
+                        >
+                          {saving ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4" />
+                          )}
+                          {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
+                        </Button>
+                        <Button
+                          onClick={handleCancel}
+                          variant="outline"
+                          className="border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800"
+                        >
+                          إلغاء
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Stats and Quick Actions */}
+              <div className="space-y-6">
+                
+                {/* Account Stats */}
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <Users className="h-5 w-5 text-white" />
+                      </div>
+                      <CardTitle className="text-lg bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        إحصائيات الحساب
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200/50 dark:border-emerald-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">الأشجار المنشأة</p>
+                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.familiesCreated}</p>
+                          </div>
+                          <TreePine className="h-8 w-8 text-emerald-500" />
+                        </div>
+                      </div>
+                      
+                      <div className="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200/50 dark:border-teal-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">إجمالي الأفراد</p>
+                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.totalMembers}</p>
+                          </div>
+                          <Users className="h-8 w-8 text-teal-500" />
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">آخر نشاط</p>
+                            <p className="text-lg font-semibold text-amber-700 dark:text-amber-300">{stats.lastActivity}</p>
+                          </div>
+                          <Calendar className="h-8 w-8 text-amber-500" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <Settings className="h-5 w-5 text-white" />
+                      </div>
+                      <CardTitle className="text-lg bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                        إجراءات سريعة
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Link to="/dashboard">
+                      <Button className="w-full justify-start gap-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-700">
+                        <Heart className="h-4 w-4" />
+                        لوحة التحكم
                       </Button>
                     </Link>
+                    
+                    <Link to="/family-tree-view">
+                      <Button className="w-full justify-start gap-3 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 dark:bg-teal-950/30 dark:hover:bg-teal-950/50 dark:text-teal-300 dark:border-teal-700">
+                        <Users className="h-4 w-4" />
+                        عرض الأشجار
+                      </Button>
+                    </Link>
+                    
                     <Link to="/payments">
-                      <Button className="w-full justify-start bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 shadow-lg">
-                        <Crown className="h-4 w-4 mr-2" />
+                      <Button className="w-full justify-start gap-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:hover:bg-amber-950/50 dark:text-amber-300 dark:border-amber-700">
+                        <Crown className="h-4 w-4" />
                         إدارة الاشتراك
                       </Button>
                     </Link>
-                  </div>
-                </CardContent>
-              </Card>
+                    
+                    <Link to="/change-password">
+                      <Button className="w-full justify-start gap-3 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 dark:bg-gray-800/50 dark:hover:bg-gray-800/70 dark:text-gray-300 dark:border-gray-600">
+                        <Shield className="h-4 w-4" />
+                        تغيير كلمة المرور
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
