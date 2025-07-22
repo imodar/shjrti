@@ -875,6 +875,10 @@ const FamilyBuilder = () => {
         return;
       }
 
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       // Insert main member
       const memberInsertData = {
         family_id: familyId,
@@ -887,7 +891,8 @@ const FamilyBuilder = () => {
         death_date: memberData.deathDate,
         biography: memberData.bio || "",
         image_url: memberData.croppedImage,
-        is_founder: false
+        is_founder: false,
+        created_by: user.id
       };
 
       const { data: insertedMember, error: memberError } = await supabase
@@ -912,7 +917,8 @@ const FamilyBuilder = () => {
                 is_alive: wife.isAlive,
                 death_date: wife.deathDate,
                 image_url: wife.croppedImage,
-                is_founder: false
+                is_founder: false,
+                created_by: user.id
               })
               .select()
               .single();
@@ -948,7 +954,8 @@ const FamilyBuilder = () => {
               is_alive: husband.isAlive,
               death_date: husband.deathDate,
               image_url: husband.croppedImage,
-              is_founder: false
+              is_founder: false,
+              created_by: user.id
             })
             .select()
             .single();
