@@ -283,8 +283,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
   };
 
   const addWife = () => {
+    console.log('🔥 addWife called, newWife:', newWife);
     if (newWife.name.trim()) {
-      setWives([...wives, {
+      const wifeToAdd = {
         id: crypto.randomUUID(),
         name: newWife.name,
         birthDate: newWife.birthDate ? new Date(newWife.birthDate) : null,
@@ -293,7 +294,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
         deathDate: newWife.deathDate ? new Date(newWife.deathDate) : null,
         image: null,
         croppedImage: newWife.imageUrl || null
-      }]);
+      };
+      console.log('🔥 Adding wife to array:', wifeToAdd);
+      setWives([...wives, wifeToAdd]);
+      console.log('🔥 Current wives array after adding:', [...wives, wifeToAdd]);
       setNewWife({
         name: "",
         birthDate: "",
@@ -936,7 +940,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
 
                                 <Button
                                   type="button"
-                                  onClick={addWife}
+                                  onClick={() => {
+                                    console.log('🔥 Add Wife button clicked!');
+                                    addWife();
+                                  }}
                                   className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-md"
                                   size="lg"
                                   disabled={!newWife.name.trim()}
@@ -1223,9 +1230,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                    )}
                                  </div>
 
-                                 <Button
-                                   type="button"
-                                   onClick={addWife}
+                                  <Button
+                                    type="button"
+                                    onClick={() => {
+                                      console.log('🔥 Add Husband button clicked!');
+                                      addWife();
+                                    }}
                                    className="w-full bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white shadow-md"
                                    size="lg"
                                    disabled={!newWife.name.trim()}
