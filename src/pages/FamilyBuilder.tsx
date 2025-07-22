@@ -910,6 +910,8 @@ const FamilyBuilder = () => {
         husband: memberData.husband
       });
       console.log('🔥 Calculated marital status:', maritalStatus, 'hasSpouses:', hasSpouses);
+      console.log('🔥 Current familyId:', familyId);
+      console.log('🔥 Current user:', user?.id);
 
       // Insert main member
       const memberInsertData = {
@@ -951,8 +953,18 @@ const FamilyBuilder = () => {
       console.log('🔥 - Error:', memberError);
 
       if (memberError) {
-        console.log('🔥 Database error occurred:', memberError);
+        console.error('🔥 Database insertion failed:');
+        console.error('🔥 - Error message:', memberError.message);
+        console.error('🔥 - Error code:', memberError.code);
+        console.error('🔥 - Error details:', memberError.details);
+        console.error('🔥 - Error hint:', memberError.hint);
+        console.error('🔥 - Full error object:', memberError);
         throw memberError;
+      }
+
+      if (!insertedMember) {
+        console.error('🔥 No data returned from database operation');
+        throw new Error('No data returned from database operation');
       }
       
       console.log('🔥 Member successfully created/updated:', insertedMember);
