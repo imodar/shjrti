@@ -939,7 +939,7 @@ const FamilyCreator = () => {
                                   </Label>
                                   <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
                                     <SelectTrigger className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl">
-                                      <SelectValue />
+                                      <SelectValue className="text-lg" />
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="alive">على قيد الحياة</SelectItem>
