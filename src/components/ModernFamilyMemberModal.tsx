@@ -502,7 +502,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                 <SelectTrigger className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
                                   <SelectValue placeholder="الجنس" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
                                   <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
                                   <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
                                 </SelectContent>
