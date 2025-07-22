@@ -474,7 +474,10 @@ export default function AdminBilling() {
                     <Receipt className="h-5 w-5" />
                     إدارة الفواتير
                   </CardTitle>
-                  <Button className="bg-gradient-to-r from-emerald-500 to-teal-500">
+                  <Button 
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500"
+                    onClick={() => setShowCreateInvoiceModal(true)}
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     فاتورة جديدة
                   </Button>
@@ -788,9 +791,175 @@ export default function AdminBilling() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Create Invoice Modal */}
+        <Dialog open={showCreateInvoiceModal} onOpenChange={setShowCreateInvoiceModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>إنشاء فاتورة جديدة</DialogTitle>
+              <DialogDescription>
+                إنشاء فاتورة جديدة لاشتراك المستخدم
+              </DialogDescription>
+            </DialogHeader>
+            
+            <CreateInvoiceForm 
+              onSuccess={() => {
+                setShowCreateInvoiceModal(false);
+                loadBillingData();
+                toast({
+                  title: "تم إنشاء الفاتورة",
+                  description: "تم إنشاء الفاتورة بنجاح",
+                });
+              }}
+              onCancel={() => setShowCreateInvoiceModal(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       
       <GlobalFooter />
+    </div>
+  );
+}
+
+// Create Invoice Form Component
+function CreateInvoiceForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: () => void }) {
+  const { toast } = useToast();
+  const [users, setUsers] = useState<any[]>([]);
+  const [packages, setPackages] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedPackage, setSelectedPackage] = useState("");
+  const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState("SAR");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const [usersRes, packagesRes] = await Promise.all([
+        supabase.from('profiles').select('user_id, email, first_name, last_name'),
+        supabase.from('packages').select('id, name, price_sar, price_usd').eq('is_active', true)
+      ]);
+      
+      setUsers(usersRes.data || []);
+      setPackages(packagesRes.data || []);
+    };
+    loadData();
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!selectedUser || !selectedPackage || !amount) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('create_invoice', {
+        p_user_id: selectedUser,
+        p_package_id: selectedPackage,
+        p_amount: parseFloat(amount),
+        p_currency: currency
+      });
+
+      if (error) throw error;
+      onSuccess();
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في إنشاء الفاتورة",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getLocalizedPackageName = (packageName: any) => {
+    if (typeof packageName === 'object' && packageName !== null) {
+      return packageName.ar || packageName.en || 'باقة غير محددة';
+    }
+    return packageName || 'باقة غير محددة';
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4">
+        <div>
+          <Label>المستخدم</Label>
+          <Select value={selectedUser} onValueChange={setSelectedUser}>
+            <SelectTrigger>
+              <SelectValue placeholder="اختر المستخدم" />
+            </SelectTrigger>
+            <SelectContent>
+              {users.map((user) => (
+                <SelectItem key={user.user_id} value={user.user_id}>
+                  {user.first_name} {user.last_name} - {user.email}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>الباقة</Label>
+          <Select value={selectedPackage} onValueChange={(value) => {
+            setSelectedPackage(value);
+            const pkg = packages.find(p => p.id === value);
+            if (pkg) {
+              setAmount(currency === 'SAR' ? pkg.price_sar : pkg.price_usd);
+            }
+          }}>
+            <SelectTrigger>
+              <SelectValue placeholder="اختر الباقة" />
+            </SelectTrigger>
+            <SelectContent>
+              {packages.map((pkg) => (
+                <SelectItem key={pkg.id} value={pkg.id}>
+                  {getLocalizedPackageName(pkg.name)} - {currency === 'SAR' ? pkg.price_sar : pkg.price_usd} {currency}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>المبلغ</Label>
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="المبلغ"
+            />
+          </div>
+          <div>
+            <Label>العملة</Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="SAR">ريال سعودي</SelectItem>
+                <SelectItem value="USD">دولار أمريكي</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel} disabled={loading}>
+          إلغاء
+        </Button>
+        <Button onClick={handleSubmit} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+          {loading ? "جاري الإنشاء..." : "إنشاء الفاتورة"}
+        </Button>
+      </DialogFooter>
     </div>
   );
 }
