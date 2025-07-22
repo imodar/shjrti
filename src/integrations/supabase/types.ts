@@ -402,37 +402,31 @@ export type Database = {
       marriages: {
         Row: {
           created_at: string
-          divorce_date: string | null
           family_id: string
           husband_id: string
           id: string
           is_active: boolean | null
           marital_status: string | null
-          marriage_date: string | null
           updated_at: string
           wife_id: string
         }
         Insert: {
           created_at?: string
-          divorce_date?: string | null
           family_id: string
           husband_id: string
           id?: string
           is_active?: boolean | null
           marital_status?: string | null
-          marriage_date?: string | null
           updated_at?: string
           wife_id: string
         }
         Update: {
           created_at?: string
-          divorce_date?: string | null
           family_id?: string
           husband_id?: string
           id?: string
           is_active?: boolean | null
           marital_status?: string | null
-          marriage_date?: string | null
           updated_at?: string
           wife_id?: string
         }
