@@ -499,10 +499,31 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                 {/* Family Relationship and Life Status Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl pb-6 px-6 border border-white/30 dark:border-gray-700/30">
                   
-                    <div className="space-y-4">
-                      {/* Marital Status, Life Status and Death Date - All in one row with 1/3 width each */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Marital Status - 1/3 width */}
+                     <div className="space-y-4">
+                       {/* Gender, Marital Status, Life Status and Death Date - All in one row with 1/4 width each */}
+                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                         {/* Gender - 1/4 width */}
+                         <div className="group">
+                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                             الجنس
+                           </Label>
+                           <div className="relative z-[10001]">
+                             <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
+                               <SelectTrigger className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                 <SelectValue placeholder="الجنس" />
+                               </SelectTrigger>
+                               <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                 <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
+                                 <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
+                               </SelectContent>
+                             </Select>
+                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                               <UserPlus className="h-2 w-2 text-white" />
+                             </div>
+                           </div>
+                         </div>
+                        {/* Marital Status - 1/4 width */}
                         <div className="group">
                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                             <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -526,7 +547,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           </div>
                         </div>
 
-                        {/* Life Status - 1/3 width */}
+                        {/* Life Status - 1/4 width */}
                         <div className="group">
                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                             <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -548,7 +569,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                           </div>
                         </div>
 
-                        {/* Death Date (if deceased) - 1/3 width */}
+                        {/* Death Date (if deceased) - 1/4 width */}
                         {!memberData.isAlive && (
                           <div className="group">
                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
