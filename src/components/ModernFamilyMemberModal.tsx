@@ -852,39 +852,47 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                                    {/* Alive Status and Death Date - Combined in one row */}
                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                      {/* Alive Status */}
-                                     <div>
-                                       <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-                                         الحالة الحيوية
-                                       </label>
-                                       <div className="relative z-[10001]">
-                                         <Select value={newWife.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewWife({...newWife, isAlive: value === "alive", deathDate: value === "alive" ? "" : newWife.deathDate})}>
-                                           <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50">
-                                             <SelectValue placeholder="الحالة" />
-                                           </SelectTrigger>
-                                           <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                             <SelectItem value="alive" className="font-arabic text-base sm:text-lg lg:text-xl">على قيد الحياة</SelectItem>
-                                             <SelectItem value="deceased" className="font-arabic text-base sm:text-lg lg:text-xl">متوفى</SelectItem>
-                                           </SelectContent>
-                                         </Select>
-                                       </div>
-                                     </div>
+                                      <div>
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الحيوية
+                                        </Label>
+                                        <div className="relative z-[10001]">
+                                          <Select value={newWife.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewWife({...newWife, isAlive: value === "alive", deathDate: value === "alive" ? "" : newWife.deathDate})}>
+                                            <SelectTrigger className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                              <SelectValue placeholder="الحالة" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                              <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                              <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-2 w-2 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
 
                                      {/* Death Date (if deceased) */}
-                                     {!newWife.isAlive && (
-                                       <div className="animate-fade-in">
-                                         <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-                                           تاريخ الوفاة
-                                         </label>
-                                         <div className="relative z-[10000]">
-                                           <EnhancedDatePicker
-                                             value={newWife.deathDate ? new Date(newWife.deathDate) : null}
-                                             onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
-                                             placeholder="اختر تاريخ الوفاة"
-                                             className="border-pink-200 dark:border-pink-800 focus:border-pink-400 focus:ring-pink-400 bg-white/50 dark:bg-gray-800/50"
-                                           />
-                                         </div>
-                                       </div>
-                                     )}
+                                      {!newWife.isAlive && (
+                                        <div className="animate-fade-in">
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                            تاريخ الوفاة
+                                          </Label>
+                                          <div className="relative z-[10000]">
+                                            <EnhancedDatePicker
+                                              value={newWife.deathDate ? new Date(newWife.deathDate) : null}
+                                              onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                              placeholder="اختر تاريخ الوفاة"
+                                              className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                            />
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                              <CalendarIcon className="h-2 w-2 text-white" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
                                    </div>
                                  </div>
 
