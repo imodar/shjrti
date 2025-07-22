@@ -452,10 +452,10 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                       {/* Name and Birth Date - Combined in one row */}
-                     <div className="group sm:col-span-1 md:col-span-4">
-                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="group sm:col-span-1 md:col-span-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                          {/* Name - 2/3 width */}
-                         <div className="sm:col-span-2">
+                          <div className="sm:col-span-2">
                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                              <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                              الاسم الأول
@@ -491,38 +491,98 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                              </div>
                            </div>
                          </div>
-                       </div>
-                     </div>
-                  </div>
-                </div>
+                          {/* Gender - 1/4 width */}
+                          <div className="sm:col-span-1">
+                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                              الجنس
+                            </Label>
+                            <div className="relative">
+                              <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
+                                <SelectTrigger className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                  <SelectValue placeholder="الجنس" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                  <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
+                                  <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                                <UserPlus className="h-2 w-2 text-white" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                 </div>
 
                 {/* Family Relationship and Life Status Section */}
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl pb-6 px-6 border border-white/30 dark:border-gray-700/30">
                   
                      <div className="space-y-4">
-                       {/* Gender, Marital Status, Life Status and Death Date - All in one row with 1/4 width each */}
+                       {/* Marital Status, Life Status, Death Date and Relationship - All in one row */}
                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                         {/* Gender - 1/4 width */}
-                         <div className="group">
-                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                             الجنس
-                           </Label>
-                           <div className="relative z-[10001]">
-                             <Select value={memberData.gender} onValueChange={(value) => setMemberData({...memberData, gender: value})}>
-                               <SelectTrigger className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                 <SelectValue placeholder="الجنس" />
-                               </SelectTrigger>
-                               <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                 <SelectItem value="male" className="font-arabic text-sm">ذكر</SelectItem>
-                                 <SelectItem value="female" className="font-arabic text-sm">أنثى</SelectItem>
-                               </SelectContent>
-                             </Select>
-                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                               <UserPlus className="h-2 w-2 text-white" />
-                             </div>
-                           </div>
-                         </div>
+                          {/* Family Relationship - 1/4 width */}
+                          <div className="group">
+                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                              <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                              علاقة القرابة (العائلة)
+                            </Label>
+                            <div className="relative z-[10001]">
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic w-full justify-between"
+                                  >
+                                    {memberData.selectedParent === null || memberData.selectedParent === "none" 
+                                      ? "مؤسس العائلة" 
+                                      : marriages.find(m => m.id === memberData.selectedParent)
+                                        ? (() => {
+                                            const marriage = marriages.find(m => m.id === memberData.selectedParent);
+                                            return marriage?.husband.is_founder 
+                                              ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                              : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
+                                          })()
+                                        : "اختر علاقة القرابة مع العائلة"
+                                    }
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                  <Command>
+                                    <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
+                                    <CommandList>
+                                      <CommandEmpty className="font-arabic">لا توجد نتائج</CommandEmpty>
+                                      <CommandGroup>
+                                        <CommandItem
+                                          value="none"
+                                          onSelect={() => setMemberData({...memberData, selectedParent: null})}
+                                          className="font-arabic"
+                                        >
+                                          مؤسس العائلة
+                                        </CommandItem>
+                                        {marriages.map((marriage) => (
+                                          <CommandItem 
+                                            key={marriage.id}
+                                            value={marriage.id}
+                                            onSelect={() => setMemberData({...memberData, selectedParent: marriage.id})}
+                                            className="font-arabic"
+                                          >
+                                            {marriage.husband.is_founder 
+                                              ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                              : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`}
+                                          </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                    </CommandList>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                          </div>
                         {/* Marital Status - 1/4 width */}
                         <div className="group">
                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
@@ -591,90 +651,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                         )}
                       </div>
 
-                      {/* Family Relationship - Full Width Row */}
-                      <div className="group">
-                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                          <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                          علاقة القرابة (العائلة)
-                        </Label>
-                         <div className="relative z-[10001]">
-                           <Popover>
-                             <PopoverTrigger asChild>
-                               <Button
-                                 variant="outline"
-                                 role="combobox"
-                                 className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic w-full justify-between"
-                               >
-                                 {memberData.selectedParent === null || memberData.selectedParent === "none" 
-                                   ? "مؤسس العائلة" 
-                                   : marriages.find(m => m.id === memberData.selectedParent)
-                                     ? (() => {
-                                         const marriage = marriages.find(m => m.id === memberData.selectedParent);
-                                         return marriage?.husband.is_founder 
-                                           ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                           : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
-                                       })()
-                                     : "اختر علاقة القرابة مع العائلة"
-                                 }
-                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                               </Button>
-                             </PopoverTrigger>
-                             <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                               <Command>
-                                 <CommandInput placeholder="ابحث عن علاقة القرابة..." className="font-arabic" />
-                                 <CommandList>
-                                   <CommandEmpty className="font-arabic">لا توجد نتائج</CommandEmpty>
-                                   <CommandGroup>
-                                     <CommandItem
-                                       value="none"
-                                       onSelect={() => {
-                                         setMemberData({...memberData, selectedParent: null});
-                                       }}
-                                       className="font-arabic text-sm"
-                                     >
-                                       <Check
-                                         className={cn(
-                                           "mr-2 h-4 w-4",
-                                           (memberData.selectedParent === null || memberData.selectedParent === "none") ? "opacity-100" : "opacity-0"
-                                         )}
-                                       />
-                                       مؤسس العائلة
-                                     </CommandItem>
-                                     {marriages.map((marriage) => (
-                                       <CommandItem
-                                         key={marriage.id}
-                                         value={marriage.husband.is_founder 
-                                           ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                           : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
-                                         }
-                                         onSelect={() => {
-                                           setMemberData({...memberData, selectedParent: marriage.id});
-                                         }}
-                                         className="font-arabic text-sm"
-                                       >
-                                         <Check
-                                           className={cn(
-                                             "mr-2 h-4 w-4",
-                                             memberData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
-                                           )}
-                                         />
-                                         {marriage.husband.is_founder 
-                                           ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                           : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`
-                                         }
-                                       </CommandItem>
-                                     ))}
-                                   </CommandGroup>
-                                 </CommandList>
-                               </Command>
-                             </PopoverContent>
-                           </Popover>
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                            <Users className="h-2 w-2 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                   </div>
+                    </div>
                 </div>
 
                 {/* Media and Biography Section */}
