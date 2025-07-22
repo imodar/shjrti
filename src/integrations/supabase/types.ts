@@ -253,7 +253,7 @@ export type Database = {
             foreignKeyName: "family_tree_members_related_person_id_fkey"
             columns: ["related_person_id"]
             isOneToOne: false
-            referencedRelation: "family_tree_members"
+            referencedRelation: "marriages"
             referencedColumns: ["id"]
           },
           {
