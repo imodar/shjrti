@@ -913,6 +913,10 @@ const FamilyBuilder = () => {
       console.log('🔥 Calculated marital status:', maritalStatus, 'hasSpouses:', hasSpouses);
       console.log('🔥 Current familyId:', familyId);
       console.log('🔥 Current user:', user?.id);
+      console.log('🔥 Husband data structure check:', typeof memberData.husband, memberData.husband);
+      if (memberData.husband) {
+        console.log('🔥 Husband name check:', memberData.husband.name, 'trimmed:', memberData.husband.name?.trim());
+      }
 
       // Insert main member
       const memberInsertData = {
