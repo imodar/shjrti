@@ -346,7 +346,7 @@ export default function Profile() {
       <div className="relative z-10">
         <GlobalHeader />
 
-        <div className="container mx-auto px-6 py-12 relative z-10">
+        <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
           <div className="max-w-6xl mx-auto">
             
             {/* Profile Header Section */}
