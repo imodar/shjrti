@@ -903,6 +903,8 @@ const FamilyBuilder = () => {
         created_by: user.id
       };
 
+      console.log('🔥 Member insert data:', memberInsertData);
+
       const { data: insertedMember, error: memberError } = selectedMember 
         ? await supabase
             .from('family_tree_members')
@@ -918,15 +920,31 @@ const FamilyBuilder = () => {
 
       if (memberError) throw memberError;
 
-      // Handle wives for male members
+      // Handle wives for male members - only if not editing or if wives changed
       console.log('🔥 Checking wives for male member:', memberData.gender, memberData.wives?.length);
       if (memberData.gender === "male" && memberData.wives?.length > 0) {
         console.log('🔥 Processing wives:', memberData.wives);
+        
+        // If editing, first remove existing marriages for this member
+        if (selectedMember) {
+          console.log('🔥 Editing mode - removing existing marriages for member:', selectedMember.id);
+          const { error: deleteError } = await supabase
+            .from('marriages')
+            .delete()
+            .eq('husband_id', selectedMember.id);
+          if (deleteError) console.error('Error deleting existing marriages:', deleteError);
+        }
+        
         for (const wife of memberData.wives) {
           if (wife.name.trim()) {
-            const { data: insertedWife, error: wifeError } = await supabase
-              .from('family_tree_members')
-              .insert({
+            // Check if this is an existing wife (has a real ID)
+            let wifeData;
+            if (wife.id && !wife.id.toString().startsWith('existing-') && !selectedMember) {
+              // This is an existing wife, don't create a new record
+              wifeData = { id: wife.id };
+            } else {
+              // Create new wife or update existing one
+              const wifeInsertData = {
                 family_id: familyId,
                 name: wife.name,
                 gender: "female",
@@ -937,11 +955,17 @@ const FamilyBuilder = () => {
                 is_founder: false,
                 marital_status: "married", // Set wife as married
                 created_by: user.id
-              })
-              .select()
-              .single();
+              };
+              
+              const { data: insertedWife, error: wifeError } = await supabase
+                .from('family_tree_members')
+                .insert(wifeInsertData)
+                .select()
+                .single();
 
-            if (wifeError) throw wifeError;
+              if (wifeError) throw wifeError;
+              wifeData = insertedWife;
+            }
 
             // Create marriage record
             const { error: marriageError } = await supabase
@@ -949,7 +973,7 @@ const FamilyBuilder = () => {
               .insert({
                 family_id: familyId,
                 husband_id: insertedMember.id,
-                wife_id: insertedWife.id,
+                wife_id: wifeData.id,
                 is_active: true
               });
 
@@ -958,35 +982,54 @@ const FamilyBuilder = () => {
         }
       }
 
-      // Handle husband for female members
+      // Handle husband for female members - only if not editing or if husband changed
       if (memberData.gender === "female" && memberData.husband) {
         const husband = memberData.husband;
         if (husband.name.trim()) {
-          const { data: insertedHusband, error: husbandError } = await supabase
-            .from('family_tree_members')
-            .insert({
-              family_id: familyId,
-              name: husband.name,
-              gender: "male",
-              birth_date: husband.birthDate,
-              is_alive: husband.isAlive,
-              death_date: husband.deathDate,
-              image_url: husband.croppedImage,
-              is_founder: false,
-              marital_status: "married", // Set husband as married
-              created_by: user.id
-            })
-            .select()
-            .single();
+          // If editing, first remove existing marriages for this member
+          if (selectedMember) {
+            console.log('🔥 Editing mode - removing existing marriages for member:', selectedMember.id);
+            const { error: deleteError } = await supabase
+              .from('marriages')
+              .delete()
+              .eq('wife_id', selectedMember.id);
+            if (deleteError) console.error('Error deleting existing marriages:', deleteError);
+          }
+          
+          // Check if this is an existing husband
+          let husbandData;
+          if (husband.id && !selectedMember) {
+            // This is an existing husband, don't create a new record
+            husbandData = { id: husband.id };
+          } else {
+            // Create new husband
+            const { data: insertedHusband, error: husbandError } = await supabase
+              .from('family_tree_members')
+              .insert({
+                family_id: familyId,
+                name: husband.name,
+                gender: "male",
+                birth_date: husband.birthDate,
+                is_alive: husband.isAlive,
+                death_date: husband.deathDate,
+                image_url: husband.croppedImage,
+                is_founder: false,
+                marital_status: "married", // Set husband as married
+                created_by: user.id
+              })
+              .select()
+              .single();
 
-          if (husbandError) throw husbandError;
+            if (husbandError) throw husbandError;
+            husbandData = insertedHusband;
+          }
 
           // Create marriage record
           const { error: marriageError } = await supabase
             .from('marriages')
             .insert({
               family_id: familyId,
-              husband_id: insertedHusband.id,
+              husband_id: husbandData.id,
               wife_id: insertedMember.id,
               is_active: true
             });

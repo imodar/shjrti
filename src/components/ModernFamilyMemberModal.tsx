@@ -130,10 +130,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
   const populateEditForm = () => {
     if (!editMember) return;
     
+    console.log('🔥 Populating edit form for member:', editMember);
+    console.log('🔥 Available marriages:', marriages);
+    console.log('🔥 Available family members:', familyMembers);
+    
     // Find the parent marriage for this member
     let selectedParent = null;
     if (editMember.relatedPersonId) {
       selectedParent = editMember.relatedPersonId;
+      console.log('🔥 Using relatedPersonId:', selectedParent);
     } else if (editMember.fatherId && editMember.motherId) {
       // Try to find the marriage between the parents
       const parentMarriage = marriages.find(m => 
@@ -142,8 +147,11 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
       );
       if (parentMarriage) {
         selectedParent = parentMarriage.id;
+        console.log('🔥 Found parent marriage:', parentMarriage.id);
       }
     }
+    
+    console.log('🔥 Selected parent for edit:', selectedParent);
     
     setMemberData({
       name: editMember.name || "",
@@ -161,9 +169,13 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     
     // Load existing wives/husbands
     if (editMember.gender === "male") {
+      console.log('🔥 Loading wives for male member:', editMember.id);
       const memberMarriages = marriages.filter(m => m.husband?.id === editMember.id);
+      console.log('🔥 Found member marriages:', memberMarriages);
+      
       const memberWives = memberMarriages.map(marriage => {
         const wife = familyMembers.find(fm => fm.id === marriage.wife?.id);
+        console.log('🔥 Processing wife from marriage:', marriage, 'found wife member:', wife);
         return {
           id: wife?.id || marriage.wife?.id,
           name: marriage.wife?.name || "",
@@ -176,13 +188,21 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
           croppedImage: wife?.image
         };
       }).filter(wife => wife.id);
+      
+      console.log('🔥 Setting wives for edit:', memberWives);
       setWives(memberWives);
+      setHusband(null);
     } else if (editMember.gender === "female") {
+      console.log('🔥 Loading husband for female member:', editMember.id);
       const memberMarriages = marriages.filter(m => m.wife?.id === editMember.id);
+      console.log('🔥 Found member marriages:', memberMarriages);
+      
       if (memberMarriages.length > 0) {
         const marriage = memberMarriages[0]; // Take the first marriage
         const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
-        setHusband({
+        console.log('🔥 Processing husband from marriage:', marriage, 'found husband member:', husbandMember);
+        
+        const husbandData = {
           id: husbandMember?.id || marriage.husband?.id,
           name: marriage.husband?.name || "",
           birthDate: husbandMember?.birthDate ? new Date(husbandMember.birthDate) : null,
@@ -191,8 +211,12 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
           deathDate: husbandMember?.deathDate ? new Date(husbandMember.deathDate) : null,
           image: null,
           croppedImage: husbandMember?.image
-        });
+        };
+        
+        console.log('🔥 Setting husband for edit:', husbandData);
+        setHusband(husbandData);
       }
+      setWives([]);
     }
   };
 
@@ -321,12 +345,17 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
       let motherId = null;
       let relatedPersonId = null;
       
+      console.log('🔥 selectedParent:', memberData.selectedParent);
+      console.log('🔥 Available marriages:', marriages);
+      
       if (memberData.selectedParent && memberData.selectedParent !== "none") {
         const selectedMarriage = marriages.find(m => m.id === memberData.selectedParent);
+        console.log('🔥 Found selected marriage:', selectedMarriage);
         if (selectedMarriage) {
           fatherId = selectedMarriage.husband?.id || null;
           motherId = selectedMarriage.wife?.id || null;
           relatedPersonId = selectedMarriage.id; // Store the marriage ID as related person ID
+          console.log('🔥 Setting parent IDs - Father:', fatherId, 'Mother:', motherId, 'RelatedPerson:', relatedPersonId);
         }
       }
       
