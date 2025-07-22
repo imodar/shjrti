@@ -110,13 +110,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const isExpired = loading ? false : (subscription?.is_expired ?? false);
   const daysUntilExpiry = subscription?.days_until_expiry ?? null;
   const showExpiryWarning = !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 7;
-  
-  console.log('SubscriptionContext State:', {
-    subscription,
-    isExpired,
-    loading,
-    daysUntilExpiry
-  });
 
   const value = {
     subscription,

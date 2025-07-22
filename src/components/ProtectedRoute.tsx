@@ -115,7 +115,6 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
 
   // In development mode, bypass all authentication checks
   if (isDevelopment) {
-    console.log('ProtectedRoute: Development mode - bypassing authentication');
     return <>{children}</>;
   }
 
@@ -129,6 +128,6 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     return null;
   }
 
-  console.log('ProtectedRoute: Access granted');
+  
   return <>{children}</>;
 }
