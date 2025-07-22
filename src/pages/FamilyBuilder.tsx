@@ -1889,7 +1889,7 @@ const FamilyBuilder = () => {
       <GlobalHeader />
 
       {/* Main Content */}
-      <div className="pt-24 relative z-10 min-h-screen">
+      <div className="pt-24 pb-16 relative z-10 min-h-screen">
         {/* Floating Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
