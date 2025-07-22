@@ -2407,7 +2407,22 @@ const FamilyBuilder = () => {
                       <span className="font-medium">زوج/زوجة أحد أفراد العائلة</span>
                     </div>
                     <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      هذا الشخص مرتبط بالعائلة من خلال الزواج. لإزالته من شجرة العائلة، يجب أولاً تعديل بيانات الزوج/الزوجة وإلغاء الزواج من خلال تحرير ملف العضو الأساسي.
+                      هذا الشخص مرتبط بالعائلة من خلال الزواج ، لإزالته من شجرة العائلة ، يجب تعديل بيانات {
+                        (() => {
+                          // Find the marriage of this spouse
+                          const spouseMarriage = familyMarriages.find(marriage => 
+                            marriage.husband?.id === memberToDelete?.id || marriage.wife?.id === memberToDelete?.id
+                          );
+                          if (spouseMarriage) {
+                            // Return the name of the blood family member (not the spouse)
+                            const connectedMember = spouseMarriage.husband?.id === memberToDelete?.id 
+                              ? spouseMarriage.wife?.name 
+                              : spouseMarriage.husband?.name;
+                            return connectedMember || "العضو المرتبط";
+                          }
+                          return "العضو المرتبط";
+                        })()
+                      }
                     </p>
                     <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800/50">
                       <Settings className="h-4 w-4 text-amber-600 dark:text-amber-400" />
