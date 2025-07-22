@@ -384,7 +384,7 @@ export default function Profile() {
                   </div>
                   
                   {/* Package Status - Match Dashboard Logic */}
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-start gap-2">
                     {currentPackage && currentPackage.name !== "الباقة المجانية" && currentPackage.status === "active" ? (
                       <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-2 rounded-full shadow-lg">
                         <Crown className="h-4 w-4" />
