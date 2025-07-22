@@ -47,6 +47,7 @@ interface Wife {
   isAlive: boolean;
   deathDate: Date | null;
   image: File | null;
+  imageUrl?: string;
   croppedImage: string | null;
 }
 
@@ -1027,7 +1028,287 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                       </div>
                     )}
 
+                    {/* Marriage Section - Conditional based on gender */}
+                    {memberData.gender === "male" && (
+                      <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-4 md:p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                          {/* Add Wife Section - 2/3 width */}
+                          <div className="w-full md:col-span-2">
+                            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md">
+                              <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                  <Heart className="w-4 h-4 text-white" />
+                                </div>
+                                <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300">إضافة زوجة</h4>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                {/* Name and Birth Date - Combined in one row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                  {/* Name - 2/3 width */}
+                                   <div className="sm:col-span-2">
+                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                       <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                       الاسم *
+                                     </Label>
+                                     <div className="relative">
+                                       <Input
+                                         value={newWife.name}
+                                         onChange={(e) => setNewWife({...newWife, name: e.target.value})}
+                                         className="h-9 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                         placeholder="اسم الزوجة"
+                                       />
+                                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                         <Heart className="h-2 w-2 text-white" />
+                                       </div>
+                                     </div>
+                                   </div>
+
+                                  {/* Birth Date - 1/3 width */}
+                                   <div className="sm:col-span-1">
+                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                       <div className="w-2 h-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                       تاريخ الميلاد
+                                     </Label>
+                                     <div className="relative z-[10001]">
+                                       <EnhancedDatePicker
+                                         value={newWife.birthDate ? new Date(newWife.birthDate) : null}
+                                         onChange={(date) => setNewWife({...newWife, birthDate: date ? date.toISOString().split('T')[0] : ''})}
+                                         placeholder="اختر التاريخ"
+                                         className="h-9 text-sm border-2 border-rose-200/50 dark:border-rose-700/50 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                       />
+                                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-rose-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                         <CalendarIcon className="h-2 w-2 text-white" />
+                                       </div>
+                                     </div>
+                                   </div>
+                                </div>
+
+                                <Button
+                                  type="button"
+                                  onClick={addWife}
+                                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-md"
+                                  size="lg"
+                                  disabled={!newWife.name.trim()}
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  إضافة الزوجة
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Wives List - 1/3 width */}
+                          <div className="w-full md:col-span-1">
+                            <div className="flex items-center gap-2 mb-6">
+                              <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <Users className="w-4 h-4 text-white" />
+                              </div>
+                              <h4 className="text-lg font-semibold text-rose-700 dark:text-rose-300">الزوجات المضافة</h4>
+                              {wives.length > 0 && (
+                                <span className="px-2 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-xs rounded-full font-medium">
+                                  {wives.length}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                              {wives.length === 0 ? (
+                                <div className="text-center py-8 px-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-pink-200/30 dark:border-pink-800/30">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Heart className="w-8 h-8 text-pink-400" />
+                                  </div>
+                                  <p className="text-pink-600 dark:text-pink-400 font-medium">لم يتم إضافة زوجات بعد</p>
+                                </div>
+                              ) : (
+                                wives.map((wife, index) => (
+                                  <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex items-center space-x-4">
+                                        {wife.imageUrl ? (
+                                          <img src={wife.imageUrl} alt={wife.name} className="w-12 h-12 rounded-full object-cover border-2 border-pink-300" />
+                                        ) : (
+                                          <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 rounded-full flex items-center justify-center border-2 border-pink-300">
+                                            <Heart className="w-6 h-6 text-pink-400" />
+                                          </div>
+                                        )}
+                                        <div className="flex-1">
+                                          <h5 className="font-semibold text-pink-700 dark:text-pink-300">{wife.name}</h5>
+                                          {wife.birthDate && (
+                                            <p className="text-sm text-pink-600 dark:text-pink-400">
+                                              {new Date(wife.birthDate).toLocaleDateString('ar-SA')}
+                                            </p>
+                                          )}
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <span className={`text-xs px-2 py-1 rounded-full ${
+                                              wife.isAlive 
+                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                                : 'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
+                                            }`}>
+                                              {wife.isAlive ? 'على قيد الحياة' : 'متوفى'}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeWife(index)}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {memberData.gender === "female" && (
+                      <div className="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950/30 dark:to-blue-900/30 rounded-2xl p-4 md:p-6 border border-sky-200/50 dark:border-sky-800/30 shadow-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                          {/* Add Husband Section - 2/3 width */}
+                          <div className="w-full md:col-span-2">
+                            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-6 shadow-md">
+                              <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full flex items-center justify-center">
+                                  <Heart className="w-4 h-4 text-white" />
+                                </div>
+                                <h4 className="text-lg font-semibold text-sky-700 dark:text-sky-300">إضافة زوج</h4>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                {/* Name and Birth Date - Combined in one row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                  {/* Name - 2/3 width */}
+                                   <div className="sm:col-span-2">
+                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                       <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                       الاسم *
+                                     </Label>
+                                     <div className="relative">
+                                       <Input
+                                         value={newWife.name}
+                                         onChange={(e) => setNewWife({...newWife, name: e.target.value})}
+                                         className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                         placeholder="اسم الزوج"
+                                       />
+                                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-sky-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                         <Heart className="h-2 w-2 text-white" />
+                                       </div>
+                                     </div>
+                                   </div>
+
+                                  {/* Birth Date - 1/3 width */}
+                                   <div className="sm:col-span-1">
+                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                       <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                       تاريخ الميلاد
+                                     </Label>
+                                     <div className="relative z-[10001]">
+                                       <EnhancedDatePicker
+                                         value={newWife.birthDate ? new Date(newWife.birthDate) : null}
+                                         onChange={(date) => setNewWife({...newWife, birthDate: date ? date.toISOString().split('T')[0] : ''})}
+                                         placeholder="اختر التاريخ"
+                                         className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                       />
+                                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
+                                         <CalendarIcon className="h-2 w-2 text-white" />
+                                       </div>
+                                     </div>
+                                   </div>
+                                </div>
+
+                                <Button
+                                  type="button"
+                                  onClick={addWife}
+                                  className="w-full bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white shadow-md"
+                                  size="lg"
+                                  disabled={!newWife.name.trim()}
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  إضافة الزوج
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Husbands List - 1/3 width */}
+                          <div className="w-full md:col-span-1">
+                            <div className="flex items-center gap-2 mb-6">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                <Users className="w-4 h-4 text-white" />
+                              </div>
+                              <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300">الأزواج المضافون</h4>
+                              {wives.length > 0 && (
+                                <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs rounded-full font-medium">
+                                  {wives.length}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                              {wives.length === 0 ? (
+                                <div className="text-center py-8 px-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-sky-200/30 dark:border-sky-800/30">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Heart className="w-8 h-8 text-sky-400" />
+                                  </div>
+                                  <p className="text-sky-600 dark:text-sky-400 font-medium">لم يتم إضافة أزواج بعد</p>
+                                </div>
+                              ) : (
+                                wives.map((wife, index) => (
+                                  <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex items-center space-x-4">
+                                        {wife.imageUrl ? (
+                                          <img src={wife.imageUrl} alt={wife.name} className="w-12 h-12 rounded-full object-cover border-2 border-sky-300" />
+                                        ) : (
+                                          <div className="w-12 h-12 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center border-2 border-sky-300">
+                                            <Heart className="w-6 h-6 text-sky-400" />
+                                          </div>
+                                        )}
+                                        <div className="flex-1">
+                                          <h5 className="font-semibold text-sky-700 dark:text-sky-300">{wife.name}</h5>
+                                          {wife.birthDate && (
+                                            <p className="text-sm text-sky-600 dark:text-sky-400">
+                                              {new Date(wife.birthDate).toLocaleDateString('ar-SA')}
+                                            </p>
+                                          )}
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <span className={`text-xs px-2 py-1 rounded-full ${
+                                              wife.isAlive 
+                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                                : 'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
+                                            }`}>
+                                              {wife.isAlive ? 'على قيد الحياة' : 'متوفى'}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeWife(index)}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Original Female Section (to be replaced by above) */}
+                    {false && memberData.gender === "female" && (
                       <div className="p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
                         <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">معلومات الزوج</h4>
                          <div className="space-y-4">
