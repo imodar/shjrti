@@ -408,7 +408,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId }:
                     </span>
                   </h1>
                   <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed font-arabic">
-                    {step === 1 ? "املأ البيانات الأساسية للفرد الجديد" : "املأ تفاصيل الزواج والشراكة"}
+                    {step === 1 ? "املأ البيانات الأساسية للفرد الجديد" : `املأ تفاصيل الزواج لـ ${memberData.name}`}
                   </p>
                 </div>
               </div>
