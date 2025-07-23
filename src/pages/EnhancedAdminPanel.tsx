@@ -10,13 +10,34 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, Languages, Globe, Plus, Edit, Trash2, Save } from "lucide-react";
+import { 
+  CircleUserRound, 
+  CreditCard, 
+  Users, 
+  Package, 
+  Router, 
+  MessageSquare, 
+  Scale, 
+  ShieldCheck, 
+  Trees, 
+  Languages, 
+  Globe, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Save,
+  RefreshCw,
+  Settings
+} from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GlobalHeader } from "@/components/GlobalHeader";
+import { GlobalFooter } from "@/components/GlobalFooter";
 
 interface PackageType {
   id: string;
@@ -177,9 +198,10 @@ export default function EnhancedAdminPanel() {
   };
 
   useEffect(() => {
-    loadPackages();
-    loadTranslations();
-    loadLanguages();
+    setLoading(true);
+    Promise.all([loadPackages(), loadTranslations(), loadLanguages()]).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   const handleInputChange = (id: string, field: string, value: string | number | boolean) => {
@@ -568,46 +590,84 @@ export default function EnhancedAdminPanel() {
     }
   };
 
-  return (
-    <div className={`min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-      <Toaster />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className={`text-3xl font-bold mb-6 ${direction === 'rtl' ? 'text-right' : 'text-left'}`}>Enhanced Admin Panel</h1>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+        <GlobalHeader />
+        <div className="container mx-auto px-6 pt-24 pb-12">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+        </div>
+        <GlobalFooter />
+      </div>
+    );
+  }
 
-        <Tabs defaultValue="packages" className="space-y-4">
-          <TabsList className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-            <TabsTrigger value="packages" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-              <Package className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-              Packages
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <GlobalHeader />
+      <Toaster />
+      
+      <div className="container mx-auto px-6 pt-24 pb-12" dir="rtl">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                <Settings className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  لوحة الإدارة المتقدمة
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300">
+                  إدارة شاملة للباقات واللغات والترجمات
+                </p>
+              </div>
+            </div>
+            
+            <Button onClick={() => { loadPackages(); loadTranslations(); loadLanguages(); }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              تحديث البيانات
+            </Button>
+          </div>
+        </div>
+
+        <Tabs defaultValue="packages" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+            <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Package className="ml-2 h-4 w-4" />
+              الباقات
             </TabsTrigger>
-            <TabsTrigger value="relationships" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-              <Users className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-              Relationships
+            <TabsTrigger value="relationships" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Users className="ml-2 h-4 w-4" />
+              العلاقات
             </TabsTrigger>
-            <TabsTrigger value="translations" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-              <MessageSquare className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-              Translations
+            <TabsTrigger value="translations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <MessageSquare className="ml-2 h-4 w-4" />
+              الترجمات
             </TabsTrigger>
-            <TabsTrigger value="languages" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-              <Languages className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-              Languages
+            <TabsTrigger value="languages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Languages className="ml-2 h-4 w-4" />
+              اللغات
             </TabsTrigger>
-            <TabsTrigger value="billing" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-              <CreditCard className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+            <TabsTrigger value="billing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <CreditCard className="ml-2 h-4 w-4" />
               الفوترة
             </TabsTrigger>
-            <TabsTrigger value="settings" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
-              <Scale className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-              Settings
+            <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Scale className="ml-2 h-4 w-4" />
+              الإعدادات
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="packages" className="space-y-6">
-            <Card>
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
               <CardHeader>
-                <CardTitle>Existing Packages</CardTitle>
+                <CardTitle className="text-xl font-bold text-emerald-600">الباقات الحالية</CardTitle>
                 <CardDescription>
-                  Manage existing subscription packages
+                  إدارة باقات الاشتراك الحالية
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -615,12 +675,12 @@ export default function EnhancedAdminPanel() {
                   {packages.map((pkg) => {
                     const isEditing = editingPackages.has(pkg.id);
                     return (
-                      <div key={pkg.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={pkg.id} className="flex items-center justify-between p-4 border border-emerald-200/30 dark:border-emerald-700/30 rounded-lg bg-white/50 dark:bg-gray-800/50">
                         <div className="flex-1">
                           <div className="grid grid-cols-2 gap-2 mb-2">
                             <Input
                               type="text"
-                              placeholder="Package Name"
+                              placeholder="اسم الباقة"
                               value={pkg.name || ''}
                               onChange={(e) => handleInputChange(pkg.id, 'name', e.target.value)}
                               disabled={!isEditing}
@@ -1299,6 +1359,7 @@ export default function EnhancedAdminPanel() {
           }}
         />
       </div>
+      <GlobalFooter />
     </div>
   );
 }
