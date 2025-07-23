@@ -615,7 +615,7 @@ const FamilyBuilder = () => {
         const mother = familyMembers.find(m => m.id === parentMarriage.wife?.id);
         
         if (father) {
-          const familyName = familyData?.name || "العائلة";
+          const familyName = familyData?.name || t('family_builder.family_name', 'العائلة');
           if (member.gender === 'male') {
             const result = `ابن ${father.name} ${familyName}`;
             console.log(`Male child result for ${member.name}:`, result);
@@ -666,7 +666,7 @@ const FamilyBuilder = () => {
               }
             }
             
-            const familyName = familyData?.name || "العائلة";
+            const familyName = familyData?.name || t('family_builder.family_name', 'العائلة');
             wifeInfo += ` ${familyName}`;
             
             const result = `زوج ${wifeInfo}`;
@@ -703,7 +703,7 @@ const FamilyBuilder = () => {
               }
             }
             
-            const familyName = familyData?.name || "العائلة";
+            const familyName = familyData?.name || t('family_builder.family_name', 'العائلة');
             husbandInfo += ` ${familyName}`;
             
             const result = `زوجة ${husbandInfo}`;
@@ -731,7 +731,7 @@ const FamilyBuilder = () => {
         const father = familyMembers.find(m => m.id === parentMarriage.husband?.id);
         
         if (father) {
-          const familyName = familyData?.name || "العائلة";
+          const familyName = familyData?.name || t('family_builder.family_name', 'العائلة');
           if (member.gender === 'male') {
             const result = `ابن ${father.name} ${familyName}`;
             console.log(`Male child result for ${member.name}:`, result);
@@ -747,7 +747,7 @@ const FamilyBuilder = () => {
     
     // Method 4: If this person is a founder, show family name
     if (member.isFounder) {
-      const result = familyData?.name || "العائلة";
+      const result = familyData?.name || t('family_builder.family_name', 'العائلة');
       console.log(`Founder result for ${member.name}:`, result);
       return result;
     }
@@ -880,8 +880,8 @@ const FamilyBuilder = () => {
       if (!familyId) {
         console.log('🔥 Error: No family ID found');
         toast({
-          title: "خطأ",
-          description: "معرف العائلة مطلوب",
+          title: t('family_builder.error', 'خطأ'),
+          description: t('family_builder.family_id_required', 'معرف العائلة مطلوب'),
           variant: "destructive"
         });
         return;
@@ -1097,10 +1097,10 @@ const FamilyBuilder = () => {
       window.location.reload();
       
       toast({
-        title: selectedMember ? "تم التحديث بنجاح" : "تم الإضافة بنجاح",
+        title: selectedMember ? t('family_builder.updated_successfully', 'تم التحديث بنجاح') : t('family_builder.added_successfully', 'تم الإضافة بنجاح'),
         description: selectedMember 
-          ? `تم تحديث بيانات ${memberData.name}` 
-          : `تم إضافة ${memberData.name} للعائلة`
+          ? `${t('family_builder.member_data_updated', 'تم تحديث بيانات')} ${memberData.name}` 
+          : `${t('family_builder.member_added_to_family', 'تم إضافة')} ${memberData.name} ${t('family_builder.to_family', 'للعائلة')}`
       });
 
     } catch (error) {
@@ -1111,8 +1111,8 @@ const FamilyBuilder = () => {
       console.error('🔥 Error hint:', error?.hint);
       
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء إضافة الفرد: " + (error?.message || 'خطأ غير معروف'),
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.error_adding_member', 'حدث خطأ أثناء إضافة الفرد') + ": " + (error?.message || t('family_builder.unknown_error', 'خطأ غير معروف')),
         variant: "destructive"
       });
     }
@@ -1307,8 +1307,8 @@ const FamilyBuilder = () => {
             } catch (wifeError) {
               console.error('Error adding wife:', wifeError);
               toast({
-                title: "خطأ في إضافة الزوجة",
-                description: `حدث خطأ أثناء إضافة الزوجة ${wife.name}`,
+                title: t('family_builder.error_adding_wife', 'خطأ في إضافة الزوجة'),
+                description: `${t('family_builder.error_adding_wife_desc', 'حدث خطأ أثناء إضافة الزوجة')} ${wife.name}`,
                 variant: "destructive"
               });
             }
@@ -1333,8 +1333,8 @@ const FamilyBuilder = () => {
         ));
 
         toast({
-          title: "تم التحديث",
-          description: "تم تحديث بيانات العضو بنجاح"
+          title: t('family_builder.updated', 'تم التحديث'),
+          description: t('family_builder.updated_desc', 'تم تحديث بيانات العضو بنجاح')
         });
       } else {
         // Create new member
@@ -1576,8 +1576,8 @@ const FamilyBuilder = () => {
           return updatedMembers;
         });
         toast({
-          title: "تم الإضافة",
-          description: `تم إضافة ${formData.name}${wives.length > 0 ? ` مع ${wives.length} زوجة` : ''}${husbands.length > 0 ? ` مع ${husbands.length} زوج` : ''} للعائلة`
+          title: t('family_builder.added', 'تم الإضافة'),
+          description: `${t('family_builder.added_desc', 'تم إضافة')} ${formData.name}${wives.length > 0 ? ` ${t('family_builder.with_wives', 'مع')} ${wives.length} ${t('family_builder.wife', 'زوجة')}` : ''}${husbands.length > 0 ? ` ${t('family_builder.with_husbands', 'مع')} ${husbands.length} ${t('family_builder.husband', 'زوج')}` : ''} ${t('family_builder.to_family', 'للعائلة')}`
         });
 
         // Refresh data from database to ensure UI reflects actual database state
@@ -1607,8 +1607,8 @@ const FamilyBuilder = () => {
     } catch (error) {
       console.error('Error saving member:', error);
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حفظ البيانات",
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.save_error', 'حدث خطأ أثناء حفظ البيانات'),
         variant: "destructive"
       });
     } finally {
@@ -1620,8 +1620,8 @@ const FamilyBuilder = () => {
     const memberToDelete = familyMembers.find(member => member.id === id);
     if (!memberToDelete) {
       toast({
-        title: "خطأ",
-        description: "العضو غير موجود",
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.member_not_found', 'العضو غير موجود'),
         variant: "destructive"
       });
       return;
@@ -1630,8 +1630,8 @@ const FamilyBuilder = () => {
     // Check if member is a founder
     if (memberToDelete.isFounder) {
       toast({
-        title: "تحذير",
-        description: "لا يمكن حذف مؤسس العائلة",
+        title: t('family_builder.warning', 'تحذير'),
+        description: t('family_builder.cannot_delete_founder', 'لا يمكن حذف مؤسس العائلة'),
         variant: "destructive"
       });
       return;
@@ -1647,8 +1647,8 @@ const FamilyBuilder = () => {
       // Show modal for spouse deletion
       setDeleteModalType('spouse');
       setDeleteWarningMessage(
-        "هذا الشخص زوج/زوجة لأحد أفراد العائلة.\n" +
-        "لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج."
+        t('family_builder.spouse_delete_warning_1', 'هذا الشخص زوج/زوجة لأحد أفراد العائلة.') + "\n" +
+        t('family_builder.spouse_delete_warning_2', 'لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج.')
       );
     } else {
       // This is a blood family member - show warning about cascading delete
@@ -1683,8 +1683,8 @@ const FamilyBuilder = () => {
     } catch (error) {
       console.error('Error deleting member:', error);
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حذف العضو",
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.delete_error', 'حدث خطأ أثناء حذف العضو'),
         variant: "destructive"
       });
     }
@@ -1812,8 +1812,8 @@ const FamilyBuilder = () => {
     setFamilyMarriages(familyMarriages.filter(marriage => !marriagesToDelete.has(marriage.id)));
 
     toast({
-      title: "تم الحذف",
-      description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} زواج من شجرة العائلة`
+      title: t('family_builder.deleted', 'تم الحذف'),
+      description: `${t('family_builder.deleted_desc', 'تم حذف')} ${membersToDelete.size} ${t('family_builder.member', 'عضو')} و ${marriagesToDelete.size} ${t('family_builder.marriage', 'زواج')} من شجرة العائلة`
     });
   };
 
@@ -1876,8 +1876,8 @@ const FamilyBuilder = () => {
   const nextStep = () => {
     if (currentStep === 1 && (!formData.name || !formData.gender)) {
       toast({
-        title: "معلومات ناقصة",
-        description: "يرجى إدخال الاسم واختيار الجنس",
+        title: t('family_builder.missing_info', 'معلومات ناقصة'),
+        description: t('family_builder.enter_name_gender', 'يرجى إدخال الاسم واختيار الجنس'),
         variant: "destructive"
       });
       return;
@@ -1886,8 +1886,8 @@ const FamilyBuilder = () => {
     // Validate family selection for step 1
     if (currentStep === 1 && formData.relation === "child" && !formData.relatedPersonId) {
       toast({
-        title: "معلومات ناقصة",
-        description: "يرجى اختيار العائلة المرتبطة للطفل",
+        title: t('family_builder.missing_info', 'معلومات ناقصة'),
+        description: t('family_builder.choose_related_family', 'يرجى اختيار العائلة المرتبطة للطفل'),
         variant: "destructive"
       });
       return;
@@ -1983,7 +1983,7 @@ const FamilyBuilder = () => {
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
                         {familyMembers.length}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">أعضاء</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.members_count', 'أعضاء')}</div>
                     </div>
                   </div>
 
@@ -1997,7 +1997,7 @@ const FamilyBuilder = () => {
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-amber-600 dark:text-amber-400">
                         {calculateGenerationCount()}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">أجيال</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.generations', 'أجيال')}</div>
                     </div>
                   </div>
 
@@ -2011,7 +2011,7 @@ const FamilyBuilder = () => {
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-teal-600 dark:text-teal-400">
                         {familyData?.updated_at 
                           ? format(new Date(familyData.updated_at), 'd MMM', { locale: ar })
-                          : 'اليوم'
+                          : t('family_builder.today', 'اليوم')
                         }
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.last_modified', 'آخر تعديل')}</div>
@@ -2025,7 +2025,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
                       <Users className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">نظرة عامة</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
                   </div>
                   
                   <div 
@@ -2035,7 +2035,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <TreePine className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">مخطط الشجرة</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
                   </div>
                   
                   <div 
@@ -2045,7 +2045,7 @@ const FamilyBuilder = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Store className="h-5 w-5" />
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">المتجر</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
                   </div>
                   
                   <div 
@@ -2117,9 +2117,9 @@ const FamilyBuilder = () => {
                         variant={familyMembers.length >= packageData.max_family_members ? "destructive" : "secondary"}
                         className="px-3 py-2 text-xs sm:text-sm text-center whitespace-nowrap"
                       >
-                        {familyMembers.length}/{packageData.max_family_members} أعضاء
+                        {familyMembers.length}/{packageData.max_family_members} {t('family_builder.members_count', 'أعضاء')}
                         {familyMembers.length >= packageData.max_family_members && (
-                          <span className="hidden sm:inline"> (وصلت للحد الأقصى)</span>
+                          <span className="hidden sm:inline"> ({t('family_builder.max_reached', 'وصلت للحد الأقصى')})</span>
                         )}
                       </Badge>
                     )}
@@ -2239,7 +2239,7 @@ const FamilyBuilder = () => {
                                    <span className="font-bold text-primary">
                                      {(() => {
                                        const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
-                                       return relatedPerson ? getFullName(relatedPerson) : "غير محدد";
+                                       return relatedPerson ? getFullName(relatedPerson) : t('family_builder.unspecified', 'غير محدد');
                                      })()}
                                    </span>
                                   <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
@@ -2482,7 +2482,7 @@ const FamilyBuilder = () => {
                               return fullName;
                             }
                           }
-                          return "العضو المرتبط";
+                          return t('family_builder.related_member', 'العضو المرتبط');
                         })()
                       }
                      </p>
