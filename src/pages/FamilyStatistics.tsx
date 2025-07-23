@@ -153,9 +153,6 @@ const FamilyStatistics = () => {
               generationMap.set(member.id, parentGeneration + 1);
               changed = true;
             }
-          } else {
-            generationMap.set(member.id, 1);
-            changed = true;
           }
         }
       });
