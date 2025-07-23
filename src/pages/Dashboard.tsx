@@ -626,7 +626,7 @@ const Dashboard = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between mb-1">
                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                              إجمالي الأفراد
+                              {t('total_members', 'إجمالي الأفراد')}
                             </div>
                             <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
                               {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
@@ -706,7 +706,7 @@ const Dashboard = () => {
                               <div className="flex items-center justify-between text-sm">
                                 <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                                   <Star className="h-4 w-4 fill-current" />
-                                  <span className="font-semibold">آخر تحديث</span>
+                                  <span className="font-semibold">{t('last_update', 'آخر تحديث')}</span>
                                 </div>
                                 <span className="text-gray-600 dark:text-gray-300 font-medium">
                                   {new Date(tree.updated_at).toLocaleDateString('en-GB')}
@@ -720,7 +720,7 @@ const Dashboard = () => {
                               <Link to={`/family-builder?family=${tree.id}`} className="flex-1 group/btn">
                                 <Button className="w-full h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Edit className="h-4 w-4 ml-2" />
-                                  <span className="font-medium">إدارة</span>
+                                  <span className="font-medium">{t('manage', 'إدارة')}</span>
                                 </Button>
                               </Link>
                               
@@ -728,7 +728,7 @@ const Dashboard = () => {
                               <Link to={`/family-tree-view?family=${tree.id}`} className="flex-1 group/btn">
                                 <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Eye className="h-4 w-4 ml-2" />
-                                  <span className="font-medium">عرض</span>
+                                  <span className="font-medium">{t('view', 'عرض')}</span>
                                 </Button>
                               </Link>
                               
