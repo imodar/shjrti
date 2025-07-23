@@ -123,9 +123,9 @@ const FamilyStatistics = () => {
   const getGenerationStats = () => {
     const generationMap = new Map();
     
-    // Start with founders as generation 1
+    // Start ONLY with explicitly marked founders as generation 1
     familyMembers.forEach(member => {
-      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+      if (member.isFounder) {
         generationMap.set(member.id, 1);
       }
     });
