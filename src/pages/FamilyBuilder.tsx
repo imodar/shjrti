@@ -2202,12 +2202,14 @@ const FamilyBuilder = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52 bg-card/95 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl">
-                              <DropdownMenuItem onClick={() => handleEditMember(member)} className="gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors">
-                                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                  <Edit className="h-4 w-4 text-primary" />
-                                </div>
-                                <span className="font-medium">{t('family_builder.edit_data', 'تعديل البيانات')}</span>
-                              </DropdownMenuItem>
+                              {!member.spouseId && (
+                                <DropdownMenuItem onClick={() => handleEditMember(member)} className="gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors">
+                                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <Edit className="h-4 w-4 text-primary" />
+                                  </div>
+                                  <span className="font-medium">{t('family_builder.edit_data', 'تعديل البيانات')}</span>
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuSeparator className="bg-white/10 my-1" />
                               {!member.isFounder && (
                                 <DropdownMenuItem 
