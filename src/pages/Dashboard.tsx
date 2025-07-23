@@ -318,9 +318,9 @@ const Dashboard = () => {
             {/* Hero Section */}
             <section className={`${familyTrees.length > 0 ? 'py-2' : 'py-4'} relative`}>
               <div className="container mx-auto px-4 relative z-10">
-                <div className="mb-2 relative">
-                  {/* Main Content Container - Horizontal Rectangle */}
-                  <div className="relative max-w-5xl mx-auto">
+                  <div className="mb-2 relative">
+                    {/* Main Content Container - Horizontal Rectangle */}
+                    <div className="relative max-w-6xl mx-auto">
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
                     
