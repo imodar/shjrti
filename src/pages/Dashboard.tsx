@@ -47,7 +47,7 @@ interface UserProfile {
 }
 
 interface UserSubscription {
-  package_name?: string;
+  package_name?: any; // Can be string or object
   status?: string;
   is_expired?: boolean;
   max_trees?: number;
@@ -140,16 +140,16 @@ const Dashboard = () => {
                const nameObj = typeof subscription.packages.name === 'string' 
                  ? JSON.parse(subscription.packages.name)
                  : subscription.packages.name;
-               packageDisplayName = nameObj.ar || nameObj.en || t('dashboard.free_package', 'Free Package');
+               packageDisplayName = nameObj[currentLanguage] || nameObj.ar || nameObj.en || t('dashboard.free_package', 'Free Package');
              } catch (e) {
                packageDisplayName = typeof subscription.packages.name === 'string' 
                  ? subscription.packages.name 
-                 : 'Free Package';
+                 : t('dashboard.free_package', 'Free Package');
              }
           }
           
-          setUserSubscription({
-            package_name: packageDisplayName,
+           setUserSubscription({
+             package_name: subscription.packages?.name,
             status: subscription.status,
             is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
             max_trees: subscription.packages?.max_family_trees || 1,
@@ -390,12 +390,13 @@ const Dashboard = () => {
               <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
                <span className="text-xs font-bold">{t('dashboard.package_prefix', 'Package')} {(() => {
                  try {
-                   const packageName = typeof userSubscription.package_name === 'string' 
-                     ? JSON.parse(userSubscription.package_name) 
-                     : userSubscription.package_name;
-                   return packageName?.[currentLanguage] || packageName;
+                   const packageName = userSubscription.package_name;
+                   if (typeof packageName === 'object' && packageName !== null) {
+                     return packageName[currentLanguage] || packageName['ar'] || packageName['en'] || t('basic_plan', 'Basic');
+                   }
+                   return packageName || t('basic_plan', 'Basic');
                  } catch {
-                   return userSubscription.package_name;
+                   return t('basic_plan', 'Basic');
                  }
                })()}</span>
             </div>
@@ -405,12 +406,13 @@ const Dashboard = () => {
                                 <Gem className="h-3 w-3 sm:h-4 sm:w-4" />
                                  <span className="text-xs font-medium">{(() => {
                                    try {
-                                     const packageName = typeof userSubscription?.package_name === 'string' 
-                                       ? JSON.parse(userSubscription.package_name) 
-                                       : userSubscription?.package_name;
-                                     return packageName?.[currentLanguage] || packageName || t('basic_plan', 'Basic');
+                                     const packageName = userSubscription?.package_name;
+                                     if (typeof packageName === 'object' && packageName !== null) {
+                                       return packageName[currentLanguage] || packageName['ar'] || packageName['en'] || t('basic_plan', 'Basic');
+                                     }
+                                     return packageName || t('basic_plan', 'Basic');
                                    } catch {
-                                     return userSubscription?.package_name || t('basic_plan', 'Basic');
+                                     return t('basic_plan', 'Basic');
                                    }
                                  })()}</span>
                               </div>
@@ -693,7 +695,7 @@ const Dashboard = () => {
                                 
                                 {/* Family Name Section */}
                                 <div className="flex flex-col">
-                                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">عائلة</span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">{t('family_word', 'عائلة')}</span>
                                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 leading-tight">
                                     {tree.name}
                                   </h3>
@@ -705,7 +707,7 @@ const Dashboard = () => {
                                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-sm opacity-60"></div>
                                 <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-4 py-2 rounded-full text-sm font-bold shadow-xl backdrop-blur-sm">
                                   <Users className="h-3.5 w-3.5 ml-1" />
-                                  {tree.members_count} {t('members', 'فرد')}
+                                  {tree.members_count} {tree.members_count === 1 ? t('member_count', 'فرد') : t('members_count', 'أفراد')}
                                 </Badge>
                               </div>
                             </div>
@@ -714,7 +716,7 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mr-20">
                               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                               <Calendar className="h-4 w-4" />
-                              <span className="font-medium">{t('dashboard.created_on', 'Created on')} {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
+                              <span className="font-medium">{t('created_on_prefix', 'Created on')} {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
                             </div>
                           </CardHeader>
                           
@@ -878,7 +880,7 @@ const Dashboard = () => {
                 onClick={() => setShowUpgradeModal(false)}
                 className="flex-1"
               >
-                إلغاء
+                 {t('cancel', 'إلغاء')}
               </Button>
               <Link to="/plan-selection" className="flex-1">
                 <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
@@ -919,7 +921,7 @@ const Dashboard = () => {
                 
                 {/* Title with gradient text */}
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 bg-clip-text text-transparent">
-                  تأكيد الحذف
+                  {t('confirm_deletion', 'تأكيد الحذف')}
                 </h2>
               </DialogTitle>
             </DialogHeader>
@@ -933,12 +935,12 @@ const Dashboard = () => {
                   <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
                     <X className="h-5 w-5 text-red-600" />
                   </div>
-                  <span className="font-bold text-lg">{t('serious_warning', 'تحذير خطير')}</span>
+                   <span className="font-bold text-lg">{t('serious_warning', 'تحذير خطير')}</span>
                 </div>
                 
                 <p className="text-sm text-red-600 dark:text-red-400 leading-relaxed font-medium">
-                  {t('irreversible_action', 'هذا الإجراء')} <span className="font-bold text-red-700 dark:text-red-300">{t('cannot_be_undone', 'لا يمكن التراجع عنه')}</span>. 
-                  {t('dashboard.deletion_warning', 'All tree data and associated memories will be permanently deleted.')}
+                   {t('irreversible_action', 'هذا الإجراء')} <span className="font-bold text-red-700 dark:text-red-300">{t('cannot_be_undone', 'لا يمكن التراجع عنه')}</span>. 
+                   {t('dashboard.deletion_warning', 'All tree data and associated memories will be permanently deleted.')}
                 </p>
               </div>
 
@@ -985,7 +987,7 @@ const Dashboard = () => {
                   }}
                   className="flex-1 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 font-semibold"
                 >
-                  إلغاء
+                   {t('cancel', 'إلغاء')}
                 </Button>
                 <Button 
                   onClick={handleConfirmDelete}
@@ -993,7 +995,7 @@ const Dashboard = () => {
                   className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-500 via-rose-500 to-red-600 hover:from-red-600 hover:via-rose-600 hover:to-red-700 text-white font-bold shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
                 >
                   <Trash2 className="h-5 w-5 ml-2" />
-                  حذف نهائي
+                  {t('final_delete', 'حذف نهائي')}
                 </Button>
               </div>
             </div>

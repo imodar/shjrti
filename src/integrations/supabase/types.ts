@@ -750,7 +750,7 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: {
           subscription_id: string
-          package_name: string
+          package_name: Json
           status: string
           expires_at: string
           days_until_expiry: number

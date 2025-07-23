@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface SubscriptionDetails {
   subscription_id: string | null;
-  package_name: string | null;
+  package_name: any;
   status: string | null;
   expires_at: string | null;
   days_until_expiry: number | null;
