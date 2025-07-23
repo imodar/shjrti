@@ -324,7 +324,7 @@ const Dashboard = () => {
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
                     
-                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl ${familyTrees.length > 0 ? 'py-1 px-2' : 'py-1.5 px-3'} shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10`}>
+                    <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl ${familyTrees.length > 0 ? 'py-0.5 px-2' : 'py-1 px-3'} shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10`}>
                       <div className="flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
                         {/* Left: Avatar & Welcome */}
                         <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
