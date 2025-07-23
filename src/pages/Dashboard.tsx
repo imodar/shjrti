@@ -58,7 +58,7 @@ interface UserSubscription {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { t, direction } = useLanguage();
+  const { t, direction, currentLanguage } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
@@ -388,13 +388,13 @@ const Dashboard = () => {
           {userSubscription?.package_name && !userSubscription?.is_expired && (userSubscription?.price_sar > 0 || userSubscription?.price_usd > 0) ? (
             <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full shadow-lg">
               <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-xs font-bold">{t('dashboard.package_prefix', 'Package')} {userSubscription.package_name}</span>
+              <span className="text-xs font-bold">{t('dashboard.package_prefix', 'Package')} {userSubscription.package_name?.[currentLanguage] || userSubscription.package_name}</span>
             </div>
                           ) : (
                             <div className="flex flex-col items-center gap-1 sm:gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
                               <div className="flex items-center gap-1 sm:gap-2 text-amber-600 dark:text-amber-400">
                                 <Gem className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="text-xs font-medium">{userSubscription?.package_name || t('basic_plan', 'Basic')}</span>
+                                <span className="text-xs font-medium">{userSubscription?.package_name?.[currentLanguage] || userSubscription?.package_name || t('basic_plan', 'Basic')}</span>
                               </div>
                               <Link to="/plan-selection">
                                 <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full border-0">
