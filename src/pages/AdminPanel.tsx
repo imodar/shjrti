@@ -9,11 +9,32 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CircleUserRound, CreditCard, Users, Package, Router, MessageSquare, Scale, ShieldCheck, Trees, BarChart3, Store, Trash2, Save, Plus, Edit } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  CircleUserRound, 
+  CreditCard, 
+  Users, 
+  Package, 
+  Router, 
+  MessageSquare, 
+  Scale, 
+  ShieldCheck, 
+  Trees, 
+  BarChart3, 
+  Store, 
+  Trash2, 
+  Save, 
+  Plus, 
+  Edit,
+  RefreshCw,
+  Settings
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GlobalHeader } from "@/components/GlobalHeader";
+import { GlobalFooter } from "@/components/GlobalFooter";
 
 interface PackageType {
   id: string;
@@ -633,99 +654,167 @@ export default function AdminPanel() {
     return localizedName || 'Unnamed Package';
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10">
-      <Toaster />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+        <GlobalHeader />
+        <div className="container mx-auto px-6 pt-24 pb-12">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+        </div>
+        <GlobalFooter />
+      </div>
+    );
+  }
 
-        <Tabs defaultValue="dashboard" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="dashboard">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Dashboard
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <GlobalHeader />
+      <Toaster />
+      
+      <div className="container mx-auto px-6 pt-24 pb-12" dir="rtl">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                <Settings className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  لوحة الإدارة
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300">
+                  إدارة شاملة لجميع عناصر النظام
+                </p>
+              </div>
+            </div>
+            
+            <Button onClick={loadAllData} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              تحديث البيانات
+            </Button>
+          </div>
+        </div>
+
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-7 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+            <TabsTrigger value="dashboard" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <BarChart3 className="ml-2 h-4 w-4" />
+              لوحة المعلومات
             </TabsTrigger>
-            <TabsTrigger value="users">
-              <CircleUserRound className="mr-2 h-4 w-4" />
-              Users
+            <TabsTrigger value="users" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <CircleUserRound className="ml-2 h-4 w-4" />
+              المستخدمون
             </TabsTrigger>
-            <TabsTrigger value="packages">
-              <Package className="mr-2 h-4 w-4" />
-              Packages
+            <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Package className="ml-2 h-4 w-4" />
+              الباقات
             </TabsTrigger>
-            <TabsTrigger value="families">
-              <Trees className="mr-2 h-4 w-4" />
-              Families
+            <TabsTrigger value="families" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Trees className="ml-2 h-4 w-4" />
+              العائلات
             </TabsTrigger>
-            <TabsTrigger value="invoices">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Invoices
+            <TabsTrigger value="invoices" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <CreditCard className="ml-2 h-4 w-4" />
+              الفواتير
             </TabsTrigger>
-            <TabsTrigger value="orders">
-              <Store className="mr-2 h-4 w-4" />
-              Orders
+            <TabsTrigger value="orders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Store className="ml-2 h-4 w-4" />
+              الطلبات
             </TabsTrigger>
-            <TabsTrigger value="content">
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Content
+            <TabsTrigger value="content" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <MessageSquare className="ml-2 h-4 w-4" />
+              المحتوى
             </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                  <CircleUserRound className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalUsers}</div>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي المستخدمين</p>
+                      <p className="text-2xl font-bold text-emerald-600">{stats.totalUsers}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                      <CircleUserRound className="h-6 w-6 text-emerald-600" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Families</CardTitle>
-                  <Trees className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalFamilies}</div>
+
+              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-blue-200/30 dark:border-blue-700/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي العائلات</p>
+                      <p className="text-2xl font-bold text-blue-600">{stats.totalFamilies}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                      <Trees className="h-6 w-6 text-blue-600" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
-                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
+
+              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">الاشتراكات النشطة</p>
+                      <p className="text-2xl font-bold text-purple-600">{stats.activeSubscriptions}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                      <ShieldCheck className="h-6 w-6 text-purple-600" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
-                  <CreditCard className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalInvoices}</div>
+
+              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-orange-200/30 dark:border-orange-700/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي الفواتير</p>
+                      <p className="text-2xl font-bold text-orange-600">{stats.totalInvoices}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                      <CreditCard className="h-6 w-6 text-orange-600" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                  <Store className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalOrders}</div>
+
+              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-teal-200/30 dark:border-teal-700/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي الطلبات</p>
+                      <p className="text-2xl font-bold text-teal-600">{stats.totalOrders}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/20 rounded-lg flex items-center justify-center">
+                      <Store className="h-6 w-6 text-teal-600" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                  <Scale className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{formatPrice(stats.totalRevenue)}</div>
+
+              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-green-200/30 dark:border-green-700/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي الإيرادات</p>
+                      <p className="text-2xl font-bold text-green-600">{formatPrice(stats.totalRevenue)}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                      <Scale className="h-6 w-6 text-green-600" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -733,32 +822,34 @@ export default function AdminPanel() {
 
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-6">
-            <Card>
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
               <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Manage user accounts and profiles</CardDescription>
+                <CardTitle className="text-xl font-bold text-emerald-600">إدارة المستخدمين</CardTitle>
+                <CardDescription>إدارة حسابات المستخدمين والملفات الشخصية</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Created At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{`${user.first_name || ''} ${user.last_name || ''}`.trim() || 'N/A'}</TableCell>
-                        <TableCell>{user.phone || 'N/A'}</TableCell>
-                        <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                <div className="rounded-lg border border-emerald-200/30 dark:border-emerald-700/30 overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-emerald-50/50 dark:bg-emerald-900/20">
+                        <TableHead className="text-right">البريد الإلكتروني</TableHead>
+                        <TableHead className="text-right">الاسم</TableHead>
+                        <TableHead className="text-right">الهاتف</TableHead>
+                        <TableHead className="text-right">تاريخ الإنشاء</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id} className="hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10">
+                          <TableCell className="text-right">{user.email}</TableCell>
+                          <TableCell className="text-right">{`${user.first_name || ''} ${user.last_name || ''}`.trim() || 'غير محدد'}</TableCell>
+                          <TableCell className="text-right">{user.phone || 'غير محدد'}</TableCell>
+                          <TableCell className="text-right">{new Date(user.created_at).toLocaleDateString('ar-SA')}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1318,6 +1409,7 @@ Feature 3`}
           </TabsContent>
         </Tabs>
       </div>
+      <GlobalFooter />
     </div>
   );
 }
