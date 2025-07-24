@@ -663,7 +663,7 @@ const FamilyTreeView = () => {
                 </div>
               </TabsContent>
 
-              {/* Diagram Tree View */}
+              {/* Diagram Tree View - Enhanced for Cousin Visualization */}
               <TabsContent value="diagram">
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
                   <div 
@@ -671,122 +671,121 @@ const FamilyTreeView = () => {
                     style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
                   >
                     {familyTree.length > 0 ? (
-                      <div className="relative min-h-[700px] flex flex-col items-center pt-8">
-                        {familyTree.map(([generation, familyUnits], genIndex) => (
-                          <div key={generation} className="relative mb-20">
-                            {/* Generation Members */}
-                            <div className="space-y-12">
-                              {familyUnits.map((siblingGroup, groupIndex) => (
-                                <div key={groupIndex} className="flex justify-center items-start gap-16 mb-12">
-                                  {/* Connection line from parent for each sibling group */}
-                                  <div className="relative flex gap-8">
-                                    {siblingGroup.map((unit: FamilyUnit) => {
-                                      if (unit.type === 'married' && unit.members.length === 2) {
-                                        const [member, spouse] = unit.members;
-                                        // Show married couple
-                                        return (
-                                          <div key={unit.id} className="relative">
-                                            <div className="flex items-center justify-center w-80 h-40 rounded-full border-4 border-emerald-400/60 bg-gradient-to-r from-emerald-100/80 to-teal-100/80 dark:from-emerald-900/40 dark:to-teal-900/40 backdrop-blur-xl shadow-2xl">
-                                              <div className="flex items-center gap-6">
-                                                <div className="text-center">
-                                                  <Avatar className="h-20 w-20 mx-auto mb-3 ring-4 ring-emerald-300/50">
-                                                    {member.image_url ? (
-                                                      <AvatarImage src={member.image_url} alt={member.name} />
-                                                    ) : (
-                                                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xl font-bold">
-                                                        {member.name.slice(0, 2)}
-                                                      </AvatarFallback>
-                                                    )}
-                                                  </Avatar>
-                                                  <h3 className="font-bold text-sm text-emerald-700 dark:text-emerald-300">{member.name}</h3>
-                                                </div>
-                                                <div className="text-3xl text-pink-500 animate-pulse">💕</div>
-                                                <div className="text-center">
-                                                  <Avatar className="h-20 w-20 mx-auto mb-3 ring-4 ring-teal-300/50">
-                                                    {spouse.image_url ? (
-                                                      <AvatarImage src={spouse.image_url} alt={spouse.name} />
-                                                    ) : (
-                                                      <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-500 text-white text-xl font-bold">
-                                                        {spouse.name.slice(0, 2)}
-                                                      </AvatarFallback>
-                                                    )}
-                                                  </Avatar>
-                                                  <h3 className="font-bold text-sm text-teal-700 dark:text-teal-300">{spouse.name}</h3>
+                      <div className="relative min-h-[700px] flex flex-col items-center pt-8 space-y-24">
+                        {familyTree.map(([generation, siblingGroups], genIndex) => (
+                          <div key={generation} className="relative w-full">
+                            {/* Generation Header */}
+                            <div className="text-center mb-16">
+                              <div className="relative inline-block">
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-xl"></div>
+                                <Badge className="relative text-lg px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg border-0">
+                                  <Crown className="h-5 w-5 mr-2" />
+                                  الجيل {generation}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            {/* All Cousin Groups in Same Row */}
+                            <div className="flex justify-center items-start gap-20 flex-wrap min-w-max">
+                              {siblingGroups.map((siblingGroup, groupIndex) => (
+                                <div key={groupIndex} className="relative">
+                                  {/* Family Group Container */}
+                                  <div className="relative bg-gradient-to-br from-white/40 to-emerald-50/40 dark:from-gray-800/40 dark:to-emerald-900/40 backdrop-blur-sm rounded-2xl p-6 border-2 border-emerald-200/50 dark:border-emerald-600/50 shadow-lg">
+                                    {/* Family Group Label */}
+                                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                      <Badge className="bg-gradient-to-r from-emerald-400 to-teal-400 text-white text-xs px-3 py-1 shadow-md">
+                                        عائلة {groupIndex + 1}
+                                      </Badge>
+                                    </div>
+
+                                    {/* Connection Line from Parent */}
+                                    {generation > 1 && (
+                                      <div className="absolute -top-12 left-1/2 w-1 h-8 bg-gradient-to-b from-emerald-400 to-transparent rounded-full transform -translate-x-1/2"></div>
+                                    )}
+
+                                    {/* Siblings Row */}
+                                    <div className="flex gap-8 items-center justify-center pt-4">
+                                      {siblingGroup.map((unit: FamilyUnit, unitIndex) => (
+                                        <div key={unit.id} className="relative">
+                                          {unit.type === 'married' && unit.members.length === 2 ? (
+                                            // Married Couple Display
+                                            <div className="relative">
+                                              <div className="flex items-center justify-center w-72 h-36 rounded-2xl border-3 border-pink-300/60 bg-gradient-to-r from-pink-100/80 to-rose-100/80 dark:from-pink-900/40 dark:to-rose-900/40 backdrop-blur-xl shadow-2xl">
+                                                <div className="flex items-center gap-4">
+                                                  <div className="text-center">
+                                                    <Avatar className="h-16 w-16 mx-auto mb-2 ring-3 ring-pink-300/50">
+                                                      {unit.members[0].image_url ? (
+                                                        <AvatarImage src={unit.members[0].image_url} alt={unit.members[0].name} />
+                                                      ) : (
+                                                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-lg font-bold">
+                                                          {unit.members[0].name.slice(0, 2)}
+                                                        </AvatarFallback>
+                                                      )}
+                                                    </Avatar>
+                                                    <h3 className="font-bold text-xs text-emerald-700 dark:text-emerald-300">{unit.members[0].name}</h3>
+                                                  </div>
+                                                  <Heart className="h-6 w-6 text-pink-500" />
+                                                  <div className="text-center">
+                                                    <Avatar className="h-16 w-16 mx-auto mb-2 ring-3 ring-teal-300/50">
+                                                      {unit.members[1].image_url ? (
+                                                        <AvatarImage src={unit.members[1].image_url} alt={unit.members[1].name} />
+                                                      ) : (
+                                                        <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-500 text-white text-lg font-bold">
+                                                          {unit.members[1].name.slice(0, 2)}
+                                                        </AvatarFallback>
+                                                      )}
+                                                    </Avatar>
+                                                    <h3 className="font-bold text-xs text-teal-700 dark:text-teal-300">{unit.members[1].name}</h3>
+                                                  </div>
                                                 </div>
                                               </div>
                                             </div>
-
-                                            {/* Connection lines for children */}
-                                            {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
-                                              <>
-                                                {/* Vertical line down */}
-                                                <div 
-                                                  className="absolute w-2 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                                  style={{ 
-                                                    top: '100%', 
-                                                    left: '50%',
-                                                    height: '50px',
-                                                    transform: 'translateX(-50%)'
-                                                  }}
-                                                ></div>
-                                                
-                                                {/* Horizontal line for children */}
-                                                {unit.childUnits.length > 1 && (
-                                                  <div 
-                                                    className="absolute h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                                    style={{ 
-                                                      top: 'calc(100% + 50px)', 
-                                                      left: `calc(50% - ${(unit.childUnits.length - 1) * 80}px)`, 
-                                                      width: `${(unit.childUnits.length - 1) * 160}px` 
-                                                    }}
-                                                  ></div>
-                                                )}
-                                              </>
-                                            )}
-                                          </div>
-                                        );
-                                      } else {
-                                        // Show single member
-                                        const member = unit.members[0];
-                                        return (
-                                          <div key={unit.id} className="relative text-center">
-                                            <Card className={`p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl ${member.gender === 'female' ? 'border-teal-200/30 dark:border-teal-700/30' : 'border-emerald-200/30 dark:border-emerald-700/30'} min-w-[160px] shadow-xl hover:shadow-2xl transition-all duration-300 group`}>
-                                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/50 to-teal-100/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                              <div className="relative">
-                                                <Avatar className="h-16 w-16 mx-auto mb-3 ring-4 ring-emerald-200/50 dark:ring-emerald-700/50">
-                                                  {member.image_url ? (
-                                                    <AvatarImage src={member.image_url} alt={member.name} />
-                                                  ) : (
-                                                    <AvatarFallback className={`bg-gradient-to-br ${member.gender === 'female' ? 'from-teal-500 to-emerald-500' : 'from-emerald-500 to-teal-500'} text-white font-bold`}>
-                                                      {member.name.slice(0, 2)}
-                                                    </AvatarFallback>
-                                                  )}
-                                                </Avatar>
-                                                <h3 className="font-bold text-emerald-700 dark:text-emerald-300">{member.name}</h3>
-                                                <Badge variant="outline" className="text-xs mt-2 bg-white/50 dark:bg-gray-800/50">
-                                                  {member.gender === 'male' ? 'ذكر' : 'أنثى'}
-                                                </Badge>
-                                                {member.biography && (
-                                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{member.biography}</p>
-                                                )}
+                                          ) : (
+                                            // Single Person Display
+                                            <div className="relative">
+                                              <div className="flex items-center justify-center w-40 h-36 rounded-2xl border-3 border-accent/60 bg-gradient-to-br from-accent/20 to-secondary/20 backdrop-blur-xl shadow-2xl">
+                                                <div className="text-center">
+                                                  <Avatar className="h-20 w-20 mx-auto mb-3 ring-3 ring-accent/50">
+                                                    {unit.members[0].image_url ? (
+                                                      <AvatarImage src={unit.members[0].image_url} alt={unit.members[0].name} />
+                                                    ) : (
+                                                      <AvatarFallback className="bg-gradient-to-br from-accent to-secondary text-white text-xl font-bold">
+                                                        {unit.members[0].name.slice(0, 2)}
+                                                      </AvatarFallback>
+                                                    )}
+                                                  </Avatar>
+                                                  <h3 className="font-bold text-sm text-accent dark:text-accent">{unit.members[0].name}</h3>
+                                                  <Badge variant="outline" className="text-xs mt-1">
+                                                    {unit.members[0].gender === 'male' ? 'ذكر' : 'أنثى'}
+                                                  </Badge>
+                                                </div>
                                               </div>
-                                            </Card>
+                                            </div>
+                                          )}
 
-                                            {/* Connection line to children */}
-                                            {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
-                                              <div 
-                                                className="absolute left-1/2 transform -translate-x-1/2 w-2 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                                style={{ top: '100%' }}
-                                              ></div>
-                                            )}
-                                          </div>
-                                        );
-                                      }
-                                    })}
+                                          {/* Horizontal Connector Between Siblings */}
+                                          {unitIndex < siblingGroup.length - 1 && (
+                                            <div className="absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-emerald-400 to-emerald-300 transform -translate-y-1/2"></div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
                                   </div>
+
+                                  {/* Connector Between Family Groups */}
+                                  {groupIndex < siblingGroups.length - 1 && (
+                                    <div className="absolute top-1/2 -right-10 w-20 h-1 bg-gradient-to-r from-teal-300 via-emerald-300 to-teal-300 rounded-full transform -translate-y-1/2 opacity-60"></div>
+                                  )}
                                 </div>
                               ))}
                             </div>
+
+                            {/* Connection to Next Generation */}
+                            {genIndex < familyTree.length - 1 && (
+                              <div className="flex justify-center mt-16">
+                                <div className="w-2 h-20 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"></div>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -797,20 +796,20 @@ const FamilyTreeView = () => {
                           
                           <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-12 px-8 shadow-xl">
                             <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                              <TreePine className="h-12 w-12 text-white" />
+                              <Sparkles className="h-12 w-12 text-white" />
                             </div>
                             <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">
                               لا توجد شجرة عائلة بعد
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 mb-8">
-                              ابدأ ببناء شجرة عائلتك بإضافة أول عضو
+                              ابدأ ببناء شجرة عائلتك لرؤية العرض التخطيطي الجميل!
                             </p>
                             <Button
-                              onClick={() => navigate('/dashboard')}
+                              onClick={() => navigate('/family-builder')}
                               className="gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg"
                             >
-                              <Users className="h-5 w-5" />
-                              إدارة الأعضاء
+                              <Sparkles className="h-5 w-5" />
+                              بناء العائلة
                             </Button>
                           </div>
                         </div>
@@ -819,7 +818,28 @@ const FamilyTreeView = () => {
                   </div>
                 </div>
               </TabsContent>
+
             </Tabs>
+
+            {/* Action Buttons */}
+            <div className="mt-12 flex justify-center gap-6">
+              <Button
+                onClick={() => navigate('/dashboard')}
+                variant="outline"
+                className="gap-3 bg-white/60 hover:bg-white/80 border-emerald-200 text-emerald-600 dark:bg-gray-800/60 dark:hover:bg-gray-800/80 dark:border-emerald-700 dark:text-emerald-400"
+              >
+                <Users className="h-5 w-5" />
+                إدارة الأعضاء
+              </Button>
+              <Button
+                onClick={() => navigate('/family-statistics')}
+                variant="outline"
+                className="gap-3 bg-white/60 hover:bg-white/80 border-teal-200 text-teal-600 dark:bg-gray-800/60 dark:hover:bg-gray-800/80 dark:border-teal-700 dark:text-teal-400"
+              >
+                <BarChart3 className="h-5 w-5" />
+                إحصائيات العائلة
+              </Button>
+            </div>
           </div>
         </section>
       </main>
