@@ -20,26 +20,24 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(requireAdmin);
 
-  // Development mode bypass - allows access without authentication
-  const isDevelopment = import.meta.env.DEV;
-
+  // Remove dangerous development mode bypass for security
+  // Instead of bypassing auth completely, use proper development configuration
+  
   useEffect(() => {
-    if (!loading && !user && !isDevelopment) {
+    if (!loading && !user) {
       navigate('/auth');
     }
-  }, [user, loading, navigate, isDevelopment]);
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     if (requireAdmin && user) {
       const checkAdminStatus = async () => {
         try {
+          // Use the secure admin function to prevent RLS issues
           const { data, error } = await supabase
-            .from('admin_users')
-            .select('role')
-            .eq('user_id', user.id)
-            .single();
+            .rpc('is_admin_secure', { user_uuid: user.id });
 
-          if (error && error.code !== 'PGRST116') {
+          if (error) {
             console.error('Error checking admin status:', error);
             toast({
               title: "خطأ",
@@ -111,11 +109,6 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
         </div>
       </div>
     );
-  }
-
-  // In development mode, bypass all authentication checks
-  if (isDevelopment) {
-    return <>{children}</>;
   }
 
   if (!user || (requireAdmin && !isAdmin)) {

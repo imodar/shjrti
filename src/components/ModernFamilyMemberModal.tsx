@@ -12,6 +12,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { sanitizeInput, validateName, sanitizeFormData } from "@/lib/security";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 
@@ -329,14 +330,29 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     console.log('🔥 Wives:', wives);
     console.log('🔥 Husband:', husband);
     
-    if (!memberData.name.trim()) {
+    // Validate and sanitize name input
+    const sanitizedName = sanitizeInput(memberData.name);
+    if (!sanitizedName.trim() || !validateName(sanitizedName)) {
       console.log('🔥 Name validation failed');
       toast({
         title: "خطأ",
-        description: "يرجى إدخال اسم الفرد",
+        description: "يرجى إدخال اسم صحيح للفرد (الاسم يجب أن يحتوي على حرفين على الأقل)",
         variant: "destructive"
       });
       return;
+    }
+
+    // Validate biography if provided
+    if (memberData.bio && memberData.bio.trim()) {
+      const sanitizedBio = sanitizeInput(memberData.bio);
+      if (sanitizedBio.length > 1000) {
+        toast({
+          title: "خطأ",
+          description: "السيرة الذاتية يجب أن تكون أقل من 1000 حرف",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     console.log('🔥 Starting submission...');
@@ -367,15 +383,26 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
         }
       }
       
-      const submitData = {
+      // Sanitize all form data before submission
+      const sanitizedData = sanitizeFormData({
         ...memberData,
+        name: sanitizedName,
+        bio: memberData.bio ? sanitizeInput(memberData.bio) : "",
         maritalStatus: hasSpouses ? "married" : "single", // Set marital status based on spouses
         fatherId, // Set father ID from selected marriage
         motherId, // Set mother ID from selected marriage  
         relatedPersonId, // Set related person ID to marriage ID (which marriage this person comes from)
-        wives: memberData.gender === "male" ? wives : [], // Always include wives array for males
-        husband: memberData.gender === "female" ? husband : null // Always include husband for females
-      };
+        wives: memberData.gender === "male" ? wives.map(wife => ({
+          ...wife,
+          name: sanitizeInput(wife.name || "")
+        })) : [], // Always include wives array for males
+        husband: memberData.gender === "female" && husband ? {
+          ...husband,
+          name: sanitizeInput(husband.name || "")
+        } : null // Always include husband for females
+      });
+
+      const submitData = sanitizedData;
 
       console.log('🔥 Final submit data:', submitData);
       console.log('🔥 Marital status set to:', submitData.maritalStatus);

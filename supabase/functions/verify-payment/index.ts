@@ -2,14 +2,41 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
+// Secure CORS configuration - restrict origins in production
+const getAllowedOrigins = () => {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  const projectRef = supabaseUrl.split("//")[1]?.split(".")[0];
+  
+  return [
+    "http://localhost:3000",
+    "http://localhost:5173", 
+    "https://localhost:3000",
+    "https://localhost:5173",
+    `https://${projectRef}.lovableproject.com`,
+    // Add your production domain here
+  ];
+};
+
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "*", // Will be replaced with specific origin
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
 serve(async (req) => {
+  // Secure CORS handling with origin validation
+  const origin = req.headers.get("origin");
+  const allowedOrigins = getAllowedOrigins();
+  const isAllowedOrigin = !origin || allowedOrigins.includes(origin);
+  
+  const secureHeaders = {
+    ...corsHeaders,
+    "Access-Control-Allow-Origin": isAllowedOrigin ? (origin || "*") : "null",
+  };
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: secureHeaders });
   }
 
   try {
@@ -45,7 +72,7 @@ serve(async (req) => {
         payment_status: 'paid',
         message: 'Payment completed successfully and subscription upgraded'
       }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...secureHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     } else {
@@ -54,14 +81,23 @@ serve(async (req) => {
         payment_status: session.payment_status,
         message: 'Payment not completed yet'
       }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...secureHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
   } catch (error) {
-    console.error('Payment verification error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Log full error details for debugging without exposing to client
+    console.error('Payment verification error:', {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Return sanitized error message to client
+    const userMessage = 'An error occurred while verifying payment. Please contact support if payment was deducted.';
+      
+    return new Response(JSON.stringify({ error: userMessage }), {
+      headers: { ...secureHeaders, "Content-Type": "application/json" },
       status: 500,
     });
   }
