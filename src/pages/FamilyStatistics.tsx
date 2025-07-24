@@ -203,7 +203,7 @@ const FamilyStatistics = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
             <p className="text-emerald-600 mr-4">جاري تحميل الإحصائيات...</p>
@@ -239,7 +239,7 @@ const FamilyStatistics = () => {
       <main className="relative z-10 pt-20">
         {/* Hero Section */}
         <section className="py-8 relative">
-          <div className="container mx-auto px-6 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
             {/* Header Card */}
             <div className="relative max-w-5xl mx-auto mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
@@ -296,72 +296,72 @@ const FamilyStatistics = () => {
 
             {/* Statistics Content */}
             {stats.totalMembers > 0 ? (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {/* Overview Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي الأعضاء</p>
-                          <p className="text-2xl font-bold text-emerald-600">{stats.totalMembers}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">إجمالي الأعضاء</p>
+                          <p className="text-xl sm:text-2xl font-bold text-emerald-600">{stats.totalMembers}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             {stats.maleMembers} ذكر و {stats.femaleMembers} أنثى
                           </p>
                         </div>
-                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                          <Users className="h-6 w-6 text-emerald-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                          <Users className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-blue-200/30 dark:border-blue-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">عدد الأجيال</p>
-                          <p className="text-2xl font-bold text-blue-600">{generationCount}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">عدد الأجيال</p>
+                          <p className="text-xl sm:text-2xl font-bold text-blue-600">{generationCount}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             من المؤسسين إلى الجيل الحالي
                           </p>
                         </div>
-                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                          <TrendingUp className="h-6 w-6 text-blue-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-green-200/30 dark:border-green-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">على قيد الحياة</p>
-                          <p className="text-2xl font-bold text-green-600">{stats.livingMembers}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">على قيد الحياة</p>
+                          <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.livingMembers}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             {Math.round((stats.livingMembers / stats.totalMembers) * 100)}% من الإجمالي
                           </p>
                         </div>
-                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                          <Heart className="h-6 w-6 text-green-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                          <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-pink-200/30 dark:border-pink-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">الزيجات</p>
-                          <p className="text-2xl font-bold text-pink-600">{stats.totalMarriages}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">الزيجات</p>
+                          <p className="text-xl sm:text-2xl font-bold text-pink-600">{stats.totalMarriages}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             زيجة مسجلة في الشجرة
                           </p>
                         </div>
-                        <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/20 rounded-lg flex items-center justify-center">
-                          <Heart className="h-6 w-6 text-pink-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pink-100 dark:bg-pink-900/20 rounded-lg flex items-center justify-center">
+                          <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-pink-600" />
                         </div>
                       </div>
                     </CardContent>
@@ -370,37 +370,37 @@ const FamilyStatistics = () => {
 
                 {/* Generation Distribution */}
                 <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 shadow-xl">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-emerald-600">
-                      <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                        <Baby className="h-5 w-5" />
+                  <CardHeader className="pb-4 sm:pb-6">
+                    <CardTitle className="flex items-center gap-2 sm:gap-3 text-emerald-600 text-lg sm:text-xl">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                        <Baby className="h-4 w-4 sm:h-5 sm:w-5" />
                       </div>
                       توزيع الأجيال
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs sm:text-sm">
                       عدد الأعضاء في كل جيل من أجيال العائلة
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
+                  <CardContent className="pt-0">
+                    <div className="space-y-3 sm:space-y-4">
                       {stats.generations.map(([generation, count]) => (
                         <div key={generation} className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <Badge variant="outline" className="min-w-[80px] justify-center bg-emerald-50 text-emerald-600 border-emerald-200">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <Badge variant="outline" className="min-w-[70px] sm:min-w-[80px] justify-center bg-emerald-50 text-emerald-600 border-emerald-200 text-xs sm:text-sm">
                                 الجيل {generation}
                               </Badge>
-                              <span className="text-sm text-gray-600 dark:text-gray-300">
+                              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                                 {count} {count === 1 ? 'عضو' : 'أعضاء'}
                               </span>
                             </div>
-                            <span className="text-sm font-medium text-emerald-600">
+                            <span className="text-xs sm:text-sm font-medium text-emerald-600">
                               {Math.round((count / stats.totalMembers) * 100)}%
                             </span>
                           </div>
                           <Progress 
                             value={(count / stats.totalMembers) * 100} 
-                            className="h-3 bg-emerald-100 dark:bg-emerald-900/20"
+                            className="h-2 sm:h-3 bg-emerald-100 dark:bg-emerald-900/20"
                           />
                         </div>
                       ))}
@@ -409,60 +409,60 @@ const FamilyStatistics = () => {
                 </Card>
 
                 {/* Gender and Life Status Distribution */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-blue-200/30 dark:border-blue-700/30 shadow-xl">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-3 text-blue-600">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                          <Users className="h-5 w-5" />
+                    <CardHeader className="pb-4 sm:pb-6">
+                      <CardTitle className="flex items-center gap-2 sm:gap-3 text-blue-600 text-lg sm:text-xl">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                         </div>
                         التوزيع حسب الجنس
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
+                    <CardContent className="pt-0">
+                      <div className="space-y-3 sm:space-y-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-blue-600">الذكور</span>
-                            <span className="text-sm font-medium">{stats.maleMembers} ({Math.round((stats.maleMembers / stats.totalMembers) * 100)}%)</span>
+                            <span className="text-xs sm:text-sm font-medium text-blue-600">الذكور</span>
+                            <span className="text-xs sm:text-sm font-medium">{stats.maleMembers} ({Math.round((stats.maleMembers / stats.totalMembers) * 100)}%)</span>
                           </div>
-                          <Progress value={(stats.maleMembers / stats.totalMembers) * 100} className="h-3 bg-blue-100 dark:bg-blue-900/20" />
+                          <Progress value={(stats.maleMembers / stats.totalMembers) * 100} className="h-2 sm:h-3 bg-blue-100 dark:bg-blue-900/20" />
                         </div>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-pink-600">الإناث</span>
-                            <span className="text-sm font-medium">{stats.femaleMembers} ({Math.round((stats.femaleMembers / stats.totalMembers) * 100)}%)</span>
+                            <span className="text-xs sm:text-sm font-medium text-pink-600">الإناث</span>
+                            <span className="text-xs sm:text-sm font-medium">{stats.femaleMembers} ({Math.round((stats.femaleMembers / stats.totalMembers) * 100)}%)</span>
                           </div>
-                          <Progress value={(stats.femaleMembers / stats.totalMembers) * 100} className="h-3 bg-pink-100 dark:bg-pink-900/20" />
+                          <Progress value={(stats.femaleMembers / stats.totalMembers) * 100} className="h-2 sm:h-3 bg-pink-100 dark:bg-pink-900/20" />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-xl">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-3 text-purple-600">
-                        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
-                          <Calendar className="h-5 w-5" />
+                    <CardHeader className="pb-4 sm:pb-6">
+                      <CardTitle className="flex items-center gap-2 sm:gap-3 text-purple-600 text-lg sm:text-xl">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
                         </div>
                         حالة الحياة
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
+                    <CardContent className="pt-0">
+                      <div className="space-y-3 sm:space-y-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-green-600">على قيد الحياة</span>
-                            <span className="text-sm font-medium">{stats.livingMembers} ({Math.round((stats.livingMembers / stats.totalMembers) * 100)}%)</span>
+                            <span className="text-xs sm:text-sm font-medium text-green-600">على قيد الحياة</span>
+                            <span className="text-xs sm:text-sm font-medium">{stats.livingMembers} ({Math.round((stats.livingMembers / stats.totalMembers) * 100)}%)</span>
                           </div>
-                          <Progress value={(stats.livingMembers / stats.totalMembers) * 100} className="h-3 bg-green-100 dark:bg-green-900/20" />
+                          <Progress value={(stats.livingMembers / stats.totalMembers) * 100} className="h-2 sm:h-3 bg-green-100 dark:bg-green-900/20" />
                         </div>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-600">متوفى</span>
-                            <span className="text-sm font-medium">{stats.deceasedMembers} ({Math.round((stats.deceasedMembers / stats.totalMembers) * 100)}%)</span>
+                            <span className="text-xs sm:text-sm font-medium text-gray-600">متوفى</span>
+                            <span className="text-xs sm:text-sm font-medium">{stats.deceasedMembers} ({Math.round((stats.deceasedMembers / stats.totalMembers) * 100)}%)</span>
                           </div>
-                          <Progress value={(stats.deceasedMembers / stats.totalMembers) * 100} className="h-3 bg-gray-100 dark:bg-gray-900/20" />
+                          <Progress value={(stats.deceasedMembers / stats.totalMembers) * 100} className="h-2 sm:h-3 bg-gray-100 dark:bg-gray-900/20" />
                         </div>
                       </div>
                     </CardContent>
@@ -470,51 +470,51 @@ const FamilyStatistics = () => {
                 </div>
 
                 {/* Additional Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-yellow-200/30 dark:border-yellow-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">المؤسسون</p>
-                          <p className="text-2xl font-bold text-yellow-600">{stats.founders}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">المؤسسون</p>
+                          <p className="text-xl sm:text-2xl font-bold text-yellow-600">{stats.founders}</p>
                           <p className="text-xs text-gray-500 mt-1">مؤسسي العائلة</p>
                         </div>
-                        <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
-                          <Crown className="h-6 w-6 text-yellow-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
+                          <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-teal-200/30 dark:border-teal-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">معدل النمو</p>
-                          <p className="text-2xl font-bold text-teal-600">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">معدل النمو</p>
+                          <p className="text-xl sm:text-2xl font-bold text-teal-600">
                             {generationCount > 1 ? Math.round(stats.totalMembers / generationCount) : stats.totalMembers}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">عضو لكل جيل</p>
                         </div>
-                        <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/20 rounded-lg flex items-center justify-center">
-                          <TrendingUp className="h-6 w-6 text-teal-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-teal-100 dark:bg-teal-900/20 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-teal-600" />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-rose-200/30 dark:border-rose-700/30 shadow-xl">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">نسبة الزواج</p>
-                          <p className="text-2xl font-bold text-rose-600">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">نسبة الزواج</p>
+                          <p className="text-xl sm:text-2xl font-bold text-rose-600">
                             {stats.totalMembers > 0 ? Math.round((stats.totalMarriages / stats.totalMembers) * 100) : 0}%
                           </p>
                           <p className="text-xs text-gray-500 mt-1">من الأعضاء متزوجون</p>
                         </div>
-                        <div className="w-12 h-12 bg-rose-100 dark:bg-rose-900/20 rounded-lg flex items-center justify-center">
-                          <Heart className="h-6 w-6 text-rose-600" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-rose-100 dark:bg-rose-900/20 rounded-lg flex items-center justify-center">
+                          <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-rose-600" />
                         </div>
                       </div>
                     </CardContent>
