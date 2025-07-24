@@ -9,28 +9,24 @@ export function DirectionWrapper({ children }: DirectionWrapperProps) {
   const { direction, currentLanguage } = useLanguage();
 
   useEffect(() => {
-    // Apply direction and language to document element
-    document.documentElement.dir = direction;
-    document.documentElement.lang = currentLanguage;
+    // Only update if values actually changed to prevent unnecessary DOM manipulation
+    const currentDir = document.documentElement.dir;
+    const currentLang = document.documentElement.lang;
     
-    // Debug logging
-    console.log('RTL Direction applied:', direction, 'Language:', currentLanguage);
-    console.log('Document dir attribute:', document.documentElement.dir);
-    
-    // Apply font class for Arabic
-    if (direction === 'rtl') {
-      document.documentElement.classList.add('font-arabic');
-      document.body.classList.add('rtl-layout');
-    } else {
-      document.documentElement.classList.remove('font-arabic');
-      document.body.classList.remove('rtl-layout');
+    if (currentDir !== direction || currentLang !== currentLanguage) {
+      // Apply direction and language to document element
+      document.documentElement.dir = direction;
+      document.documentElement.lang = currentLanguage;
+      
+      // Apply font class for Arabic
+      if (direction === 'rtl') {
+        document.documentElement.classList.add('font-arabic');
+        document.body.classList.add('rtl-layout');
+      } else {
+        document.documentElement.classList.remove('font-arabic');
+        document.body.classList.remove('rtl-layout');
+      }
     }
-    
-    return () => {
-      // Cleanup on unmount
-      document.documentElement.classList.remove('font-arabic');
-      document.body.classList.remove('rtl-layout');
-    };
   }, [direction, currentLanguage]);
 
   return <>{children}</>;

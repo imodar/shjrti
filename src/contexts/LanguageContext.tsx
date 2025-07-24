@@ -44,24 +44,26 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
-  const [currentLanguage, setCurrentLanguage] = useState<string>('en');
+  // Initialize with saved language or default to Arabic (matching HTML)
+  const getInitialLanguage = () => {
+    const saved = localStorage.getItem('preferred-language');
+    return saved || 'ar'; // Default to Arabic to match index.html
+  };
+
+  const [currentLanguage, setCurrentLanguage] = useState<string>(getInitialLanguage());
   const [languages, setLanguages] = useState<Language[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const currentLang = languages.find(lang => lang.code === currentLanguage);
-  const direction = (currentLang?.direction as 'ltr' | 'rtl') || 'ltr';
-  const currency = currentLang?.currency || 'USD';
+  const direction = (currentLang?.direction as 'ltr' | 'rtl') || (currentLanguage === 'ar' ? 'rtl' : 'ltr');
+  const currency = currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD');
 
   useEffect(() => {
     const initializeLanguage = async () => {
       await loadLanguages();
-      // Load saved language from localStorage or use database default
-      const savedLanguage = localStorage.getItem('preferred-language');
-      if (savedLanguage) {
-        setCurrentLanguage(savedLanguage);
-      }
-      // If no saved language, the default will be set when languages are loaded
+      // Language is already set from getInitialLanguage, no need to change it again
+      // unless database has different settings
     };
     initializeLanguage();
   }, []);
