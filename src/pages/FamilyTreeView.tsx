@@ -496,8 +496,8 @@ const FamilyTreeView = () => {
             <div className="relative max-w-5xl mx-auto mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
               
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex items-center justify-between">
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:py-6 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   {/* Left: Back Button */}
                   <Button
                     variant="ghost"
@@ -524,7 +524,7 @@ const FamilyTreeView = () => {
                   </div>
 
                   {/* Right: Zoom Controls & Action Buttons */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
                     <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
                       <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                         <ZoomOut className="h-4 w-4" />
@@ -540,22 +540,28 @@ const FamilyTreeView = () => {
                       </Button>
                     </div>
                     
-                    <Button
-                      onClick={() => navigate('/dashboard')}
-                      variant="outline"
-                      className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
-                    >
-                      <Users className="h-4 w-4" />
-                      إدارة الأعضاء
-                    </Button>
-                    <Button
-                      onClick={() => navigate('/family-statistics')}
-                      variant="outline"
-                      className="gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20"
-                    >
-                      <BarChart3 className="h-4 w-4" />
-                      الإحصائيات
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                      <Button
+                        onClick={() => navigate('/dashboard')}
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                      >
+                        <Users className="h-4 w-4" />
+                        <span className="hidden sm:inline">إدارة الأعضاء</span>
+                        <span className="sm:hidden">الأعضاء</span>
+                      </Button>
+                      <Button
+                        onClick={() => navigate('/family-statistics')}
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20"
+                      >
+                        <BarChart3 className="h-4 w-4" />
+                        <span className="hidden sm:inline">الإحصائيات</span>
+                        <span className="sm:hidden">الإحصائيات</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
