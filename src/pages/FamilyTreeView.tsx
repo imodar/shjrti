@@ -250,7 +250,7 @@ const FamilyTreeView = () => {
     console.log('Generation assignment completed after', iterations, 'iterations');
   };
 
-  // Group siblings together by their common parent
+  // Group siblings together by their common parent for proper cousin visualization
   const groupSiblingsByParent = (familyUnits: FamilyUnit[]): FamilyUnit[][] => {
     const parentGroups = new Map<string, FamilyUnit[]>();
     const orphanUnits: FamilyUnit[] = [];
@@ -272,6 +272,39 @@ const FamilyTreeView = () => {
       result.push(orphanUnits);
     }
     return result;
+  };
+
+  // Render a group of siblings with proper spacing and connection lines
+  const renderSiblingGroup = (siblingGroup: FamilyUnit[], groupIndex: number) => {
+    return (
+      <div key={groupIndex} className="relative flex flex-col items-center mx-8">
+        {/* Connection line from parent */}
+        <div className="absolute -top-6 left-1/2 w-px h-6 bg-gradient-to-b from-emerald-400 to-transparent"></div>
+        
+        {/* Sibling group container */}
+        <div className="relative bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-lg p-4 border border-emerald-200/30 dark:border-emerald-600/30">
+          <div className="flex gap-6 justify-center items-center">
+            {siblingGroup.map((unit, unitIndex) => (
+              <div key={unit.id} className="relative">
+                {renderFamilyUnit(unit)}
+                
+                {/* Connection line between siblings (horizontal) */}
+                {unitIndex < siblingGroup.length - 1 && (
+                  <div className="absolute top-1/2 -right-3 w-6 h-px bg-gradient-to-r from-emerald-400 to-emerald-300"></div>
+                )}
+              </div>
+            ))}
+          </div>
+          
+          {/* Family group label */}
+          <div className="text-center mt-2">
+            <Badge variant="outline" className="text-xs bg-emerald-50/50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-600">
+              مجموعة أسرية {groupIndex + 1}
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderFamilyUnit = (unit: FamilyUnit) => {
@@ -389,7 +422,7 @@ const FamilyTreeView = () => {
     );
   }
 
-  // Generate family tree structure using family units
+  // Generate family tree structure using family units with proper cousin grouping
   const generateFamilyTree = () => {
     console.log('Generating family tree with members:', familyMembers.length);
     
@@ -401,19 +434,27 @@ const FamilyTreeView = () => {
     // Assign generations to units
     assignGenerationsToUnits(units);
     
-    // Group units by generation
-    const generations = new Map<number, FamilyUnit[]>();
+    // Group units by generation with sibling grouping
+    const generations = new Map<number, FamilyUnit[][]>();
+    const generationUnits = new Map<number, FamilyUnit[]>();
+    
     units.forEach(unit => {
       if (unit.generation > 0) {
-        if (!generations.has(unit.generation)) {
-          generations.set(unit.generation, []);
+        if (!generationUnits.has(unit.generation)) {
+          generationUnits.set(unit.generation, []);
         }
-        generations.get(unit.generation)!.push(unit);
+        generationUnits.get(unit.generation)!.push(unit);
       }
     });
 
+    // For each generation, group siblings together
+    generationUnits.forEach((units, generation) => {
+      const siblingGroups = groupSiblingsByParent(units);
+      generations.set(generation, siblingGroups);
+    });
+
     const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
-    console.log('Final family tree structure:', result);
+    console.log('Final family tree structure with sibling groups:', result);
     return result;
   };
 
@@ -561,26 +602,11 @@ const FamilyTreeView = () => {
                                   </div>
                                 </div>
 
-                                {/* Family Units in this generation */}
-                                <div className="space-y-8 mb-12">
-                                  {(() => {
-                                    // Group siblings by their common parent
-                                    const siblingGroups = groupSiblingsByParent(familyUnits);
-                                    
-                                    return siblingGroups.map((siblingGroup, groupIndex) => (
-                                      <div key={groupIndex} className="flex flex-wrap justify-center gap-6">
-                                        {/* Visual bracket/connection indicator for siblings */}
-                                        {siblingGroup.length > 1 && (
-                                          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex items-center">
-                                            <div className="text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-700">
-                                              إخوة وأخوات
-                                            </div>
-                                          </div>
-                                        )}
-                                        {siblingGroup.map((unit: FamilyUnit) => renderFamilyUnit(unit))}
-                                      </div>
-                                    ));
-                                  })()}
+                                 {/* Family Units in this generation - Now using sibling groups */}
+                                <div className="flex justify-center gap-16 mb-12 overflow-x-auto">
+                                  {familyUnits.map((siblingGroup, groupIndex) => (
+                                    renderSiblingGroup(siblingGroup, groupIndex)
+                                  ))}
                                 </div>
 
                                 {/* Connection Line to next generation */}
@@ -650,12 +676,10 @@ const FamilyTreeView = () => {
                           <div key={generation} className="relative mb-20">
                             {/* Generation Members */}
                             <div className="space-y-12">
-                              {(() => {
-                                // Group siblings by their common parent for diagram view as well
-                                const siblingGroups = groupSiblingsByParent(familyUnits);
-                                
-                                return siblingGroups.map((siblingGroup, groupIndex) => (
-                                  <div key={groupIndex} className="flex justify-center items-start gap-16">
+                              {familyUnits.map((siblingGroup, groupIndex) => (
+                                <div key={groupIndex} className="flex justify-center items-start gap-16 mb-12">
+                                  {/* Connection line from parent for each sibling group */}
+                                  <div className="relative flex gap-8">
                                     {siblingGroup.map((unit: FamilyUnit) => {
                                       if (unit.type === 'married' && unit.members.length === 2) {
                                         const [member, spouse] = unit.members;
@@ -760,8 +784,8 @@ const FamilyTreeView = () => {
                                       }
                                     })}
                                   </div>
-                                ));
-                              })()}
+                                </div>
+                              ))}
                             </div>
                           </div>
                         ))}
