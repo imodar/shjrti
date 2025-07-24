@@ -761,6 +761,10 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: boolean
       }
+      is_admin_secure: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
       is_subscription_expired: {
         Args: { user_uuid: string }
         Returns: boolean
