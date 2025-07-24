@@ -574,7 +574,7 @@ const FamilyTreeView = () => {
                 </TabsTrigger>
               </TabsList>
               
-              {/* Traditional Tree View */}
+              {/* Traditional Tree View - Hierarchical Style */}
               <TabsContent value="traditional">
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
                   <div 
@@ -589,7 +589,7 @@ const FamilyTreeView = () => {
                         console.log('Should show tree structure');
                         return (
                           <div className="space-y-16">
-                            {familyTree.map(([generation, familyUnits]) => (
+                            {familyTree.map(([generation, siblingGroups]) => (
                               <div key={generation} className="text-center">
                                 {/* Generation Header */}
                                 <div className="mb-10">
@@ -602,10 +602,38 @@ const FamilyTreeView = () => {
                                   </div>
                                 </div>
 
-                                 {/* Family Units in this generation - Now using sibling groups */}
+                                {/* Traditional hierarchical display */}
                                 <div className="flex justify-center gap-16 mb-12 overflow-x-auto">
-                                  {familyUnits.map((siblingGroup, groupIndex) => (
-                                    renderSiblingGroup(siblingGroup, groupIndex)
+                                  {siblingGroups.map((siblingGroup, groupIndex) => (
+                                    <div key={groupIndex} className="relative flex flex-col items-center">
+                                      {/* Connection line from parent */}
+                                      {generation > 1 && (
+                                        <div className="absolute -top-6 left-1/2 w-px h-6 bg-gradient-to-b from-emerald-400 to-transparent transform -translate-x-1/2"></div>
+                                      )}
+                                      
+                                      {/* Sibling group container */}
+                                      <div className="relative bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-lg p-4 border border-emerald-200/30 dark:border-emerald-600/30">
+                                        <div className="flex gap-6 justify-center items-center flex-wrap">
+                                          {siblingGroup.map((unit, unitIndex) => (
+                                            <div key={unit.id} className="relative">
+                                              {renderFamilyUnit(unit)}
+                                              
+                                              {/* Connection line between siblings (horizontal) */}
+                                              {unitIndex < siblingGroup.length - 1 && (
+                                                <div className="absolute top-1/2 -right-3 w-6 h-px bg-gradient-to-r from-emerald-400 to-emerald-300 transform -translate-y-1/2"></div>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                        
+                                        {/* Family group label */}
+                                        <div className="text-center mt-2">
+                                          <Badge variant="outline" className="text-xs bg-emerald-50/50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-600">
+                                            مجموعة أسرية {groupIndex + 1}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                    </div>
                                   ))}
                                 </div>
 
