@@ -124,47 +124,198 @@ const FamilyTreeView = () => {
     }
   };
 
-  // Helper functions to organize family data
-  const getFounders = () => {
-    return familyMembers.filter(member => member.is_founder);
-  };
+  // Family Units - Core logic for tree structure
+  interface FamilyUnit {
+    id: string;
+    type: 'married' | 'single';
+    members: any[];
+    generation: number;
+    parentUnitId?: string;
+    childUnits: string[];
+  }
 
-  const getChildrenOf = (parentId: string) => {
-    return familyMembers.filter(member => 
-      member.father_id === parentId || member.mother_id === parentId
-    );
-  };
+  const createFamilyUnits = (): Map<string, FamilyUnit> => {
+    const units = new Map<string, FamilyUnit>();
+    const processedMembers = new Set<string>();
 
-  const getSpouseOf = (memberId: string) => {
-    return familyMembers.find(member => member.spouse_id === memberId);
-  };
+    console.log('Creating family units from members:', familyMembers.length);
 
-  const getGeneration = (member: any, visited = new Set()): number => {
-    if (visited.has(member.id)) return 0;
-    visited.add(member.id);
-    
-    if (member.is_founder) return 1;
-    
-    const father = familyMembers.find(m => m.id === member.father_id);
-    const mother = familyMembers.find(m => m.id === member.mother_id);
-    
-    let maxParentGeneration = 0;
-    if (father) maxParentGeneration = Math.max(maxParentGeneration, getGeneration(father, visited));
-    if (mother) maxParentGeneration = Math.max(maxParentGeneration, getGeneration(mother, visited));
-    
-    return maxParentGeneration + 1;
-  };
-
-  const organizeByGenerations = () => {
-    const generations: { [key: number]: any[] } = {};
-    
-    familyMembers.forEach(member => {
-      const gen = getGeneration(member);
-      if (!generations[gen]) generations[gen] = [];
-      generations[gen].push(member);
+    // Step 1: Create units for married couples
+    familyMarriages.forEach(marriage => {
+      if (marriage.is_active) {
+        const husband = familyMembers.find(m => m.id === marriage.husband_id);
+        const wife = familyMembers.find(m => m.id === marriage.wife_id);
+        
+        if (husband && wife) {
+          const unitId = `married_${marriage.id}`;
+          units.set(unitId, {
+            id: unitId,
+            type: 'married',
+            members: [husband, wife],
+            generation: 0,
+            childUnits: []
+          });
+          
+          processedMembers.add(husband.id);
+          processedMembers.add(wife.id);
+          console.log(`Created married unit: ${husband.name} & ${wife.name}`);
+        }
+      }
     });
-    
-    return generations;
+
+    // Step 2: Create units for single members
+    familyMembers.forEach(member => {
+      if (!processedMembers.has(member.id)) {
+        const unitId = `single_${member.id}`;
+        units.set(unitId, {
+          id: unitId,
+          type: 'single',
+          members: [member],
+          generation: 0,
+          childUnits: []
+        });
+        console.log(`Created single unit: ${member.name}`);
+      }
+    });
+
+    console.log('Created units:', units.size);
+    return units;
+  };
+
+  const getUnitByMemberId = (memberId: string, units: Map<string, FamilyUnit>): FamilyUnit | undefined => {
+    for (const unit of units.values()) {
+      if (unit.members.some(m => m.id === memberId)) {
+        return unit;
+      }
+    }
+    return undefined;
+  };
+
+  const assignGenerationsToUnits = (units: Map<string, FamilyUnit>) => {
+    console.log('Assigning generations to units...');
+
+    // Step 1: Find founder units (units containing founders)
+    const founderUnits: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (unit.members.some(m => m.is_founder)) {
+        unit.generation = 1;
+        founderUnits.push(unitId);
+        console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation 1 (founder unit)`);
+      }
+    });
+
+    // Step 2: Establish parent-child relationships between units
+    units.forEach((unit, unitId) => {
+      unit.members.forEach(member => {
+        if (member.father_id || member.mother_id) {
+          // Find parent unit
+          const fatherId = member.father_id;
+          const motherId = member.mother_id;
+          
+          const parentUnit = fatherId ? getUnitByMemberId(fatherId, units) : 
+                           motherId ? getUnitByMemberId(motherId, units) : undefined;
+          
+          if (parentUnit && parentUnit.id !== unitId) {
+            unit.parentUnitId = parentUnit.id;
+            if (!parentUnit.childUnits.includes(unitId)) {
+              parentUnit.childUnits.push(unitId);
+            }
+            console.log(`Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
+          }
+        }
+      });
+    });
+
+    // Step 3: Assign generations based on parent-child relationships
+    let changed = true;
+    let iterations = 0;
+    const maxIterations = 20;
+
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+
+      units.forEach((unit, unitId) => {
+        if (unit.generation === 0 && unit.parentUnitId) {
+          const parentUnit = units.get(unit.parentUnitId);
+          if (parentUnit && parentUnit.generation > 0) {
+            unit.generation = parentUnit.generation + 1;
+            console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${unit.generation}`);
+            changed = true;
+          }
+        }
+      });
+    }
+
+    console.log('Generation assignment completed after', iterations, 'iterations');
+  };
+
+  const renderFamilyUnit = (unit: FamilyUnit) => {
+    if (unit.type === 'married' && unit.members.length === 2) {
+      const [husband, wife] = unit.members;
+      return (
+        <div key={unit.id} className="text-center">
+          <Card className="p-4 bg-card/80 backdrop-blur-sm border-primary/20 min-w-[200px]">
+            <div className="flex items-center justify-center gap-4 mb-2">
+              <div className="text-center">
+                <Avatar className="h-12 w-12 mx-auto mb-1">
+                  {husband.image_url ? (
+                    <AvatarImage src={husband.image_url} alt={husband.name} />
+                  ) : (
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-blue-600/20">
+                      {husband.name.slice(0, 2)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <p className="text-sm font-medium">{husband.name}</p>
+              </div>
+              <Heart className="h-6 w-6 text-pink-500 mx-2" />
+              <div className="text-center">
+                <Avatar className="h-12 w-12 mx-auto mb-1">
+                  {wife.image_url ? (
+                    <AvatarImage src={wife.image_url} alt={wife.name} />
+                  ) : (
+                    <AvatarFallback className="bg-gradient-to-br from-pink-500/20 to-pink-600/20">
+                      {wife.name.slice(0, 2)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <p className="text-sm font-medium">{wife.name}</p>
+              </div>
+            </div>
+            <Badge variant="outline" className="text-xs">
+              عائلة متزوجة
+            </Badge>
+          </Card>
+        </div>
+      );
+    } else {
+      const member = unit.members[0];
+      return (
+        <div key={unit.id} className="text-center">
+          <Card className={`p-4 bg-card/80 backdrop-blur-sm border-accent/20 min-w-[140px]`}>
+            <Avatar className="h-14 w-14 mx-auto mb-2">
+              {member.image_url ? (
+                <AvatarImage src={member.image_url} alt={member.name} />
+              ) : (
+                <AvatarFallback className={`bg-gradient-to-br from-accent/20 to-accent/40`}>
+                  {member.name.slice(0, 2)}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <h3 className="font-semibold">{member.name}</h3>
+            <Badge variant="outline" className="text-xs mt-1">
+              {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+            </Badge>
+            {member.birth_date && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {new Date(member.birth_date).getFullYear()}
+              </p>
+            )}
+          </Card>
+        </div>
+      );
+    }
   };
 
   const renderMember = (member: any, showRelation = false) => {
@@ -214,101 +365,31 @@ const FamilyTreeView = () => {
     );
   }
 
-  // Generate family tree structure by generations
+  // Generate family tree structure using family units
   const generateFamilyTree = () => {
     console.log('Generating family tree with members:', familyMembers.length);
     
     if (familyMembers.length === 0) return [];
     
-    const generationMap = new Map();
+    // Create family units
+    const units = createFamilyUnits();
     
-    // STEP 1: Only actual founders (is_founder = true) start as generation 1
-    familyMembers.forEach(member => {
-      if (member.is_founder) {
-        generationMap.set(member.id, 1);
-        console.log(`Setting ${member.name} as generation 1 (founder: ${member.is_founder})`);
-      }
-    });
+    // Assign generations to units
+    assignGenerationsToUnits(units);
     
-    console.log('Initial founders:', Array.from(generationMap.entries()));
-    
-    // STEP 2: Assign spouses of founders to generation 1
-    familyMarriages.forEach(marriage => {
-      const husbandGeneration = generationMap.get(marriage.husband_id);
-      const wifeGeneration = generationMap.get(marriage.wife_id);
-      
-      if (husbandGeneration && !wifeGeneration) {
-        generationMap.set(marriage.wife_id, husbandGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
-      } else if (wifeGeneration && !husbandGeneration) {
-        generationMap.set(marriage.husband_id, wifeGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
-      }
-    });
-    
-    // STEP 3: Recursively assign generations based on parent-child relationships
-    let changed = true;
-    let maxIterations = 50;
-    let iterations = 0;
-    
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      
-      familyMembers.forEach(member => {
-        if (!generationMap.has(member.id)) {
-          if (member.father_id || member.mother_id) {
-            const fatherGeneration = member.father_id ? generationMap.get(member.father_id) : undefined;
-            const motherGeneration = member.mother_id ? generationMap.get(member.mother_id) : undefined;
-            
-            if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-              const parentGeneration = Math.max(
-                fatherGeneration || 0, 
-                motherGeneration || 0
-              );
-              generationMap.set(member.id, parentGeneration + 1);
-              console.log(`Setting ${member.name} as generation ${parentGeneration + 1} (child of parents)`);
-              changed = true;
-            }
-          }
+    // Group units by generation
+    const generations = new Map<number, FamilyUnit[]>();
+    units.forEach(unit => {
+      if (unit.generation > 0) {
+        if (!generations.has(unit.generation)) {
+          generations.set(unit.generation, []);
         }
-      });
-    }
-    
-    // STEP 4: Assign spouses of all members to same generation  
-    familyMarriages.forEach(marriage => {
-      const husbandGeneration = generationMap.get(marriage.husband_id);
-      const wifeGeneration = generationMap.get(marriage.wife_id);
-      
-      if (husbandGeneration && !wifeGeneration) {
-        generationMap.set(marriage.wife_id, husbandGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.wife_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as husband: ${husbandGeneration}`);
-      } else if (wifeGeneration && !husbandGeneration) {
-        generationMap.set(marriage.husband_id, wifeGeneration);
-        const spouse = familyMembers.find(m => m.id === marriage.husband_id);
-        console.log(`Setting spouse ${spouse?.name} to same generation as wife: ${wifeGeneration}`);
-      }
-    });
-
-    console.log('Generation map after assignments:', Array.from(generationMap.entries()));
-
-    // Group by generation
-    const generations = new Map();
-    generationMap.forEach((generation, memberId) => {
-      if (!generations.has(generation)) {
-        generations.set(generation, []);
-      }
-      const member = familyMembers.find(m => m.id === memberId);
-      if (member) {
-        generations.get(generation).push(member);
+        generations.get(unit.generation)!.push(unit);
       }
     });
 
     const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
-    console.log('Final generations structure:', result);
+    console.log('Final family tree structure:', result);
     return result;
   };
 
@@ -373,7 +454,7 @@ const FamilyTreeView = () => {
                       </h1>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300">
-                      عرض تفاعلي وجميل لشجرة عائلتك - {familyTree.length} أجيال
+                      عرض تفاعلي وجميل لشجرة عائلتك - {familyTree.length} عائلة
                     </p>
                   </div>
 
@@ -443,7 +524,7 @@ const FamilyTreeView = () => {
                         console.log('Should show tree structure');
                         return (
                           <div className="space-y-16">
-                            {familyTree.map(([generation, members]) => (
+                            {familyTree.map(([generation, familyUnits]) => (
                               <div key={generation} className="text-center">
                                 {/* Generation Header */}
                                 <div className="mb-10">
@@ -456,115 +537,9 @@ const FamilyTreeView = () => {
                                   </div>
                                 </div>
 
-                                {/* Members in this generation */}
+                                {/* Family Units in this generation */}
                                 <div className="flex flex-wrap justify-center gap-10 mb-12">
-                                  {(() => {
-                                    const displayedMembers = new Set();
-                                    const memberElements = [];
-
-                                    members.forEach((member: any) => {
-                                      // Skip if this member was already displayed as a spouse
-                                      if (displayedMembers.has(member.id)) {
-                                        return;
-                                      }
-
-                                      // Find spouse for this member
-                                      const marriage = familyMarriages.find(m => 
-                                        m.husband_id === member.id || m.wife_id === member.id
-                                      );
-                                      const spouse = marriage ? 
-                                        familyMembers.find(m => m.id === (marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id)) : null;
-
-                                      // Mark both member and spouse as displayed
-                                      displayedMembers.add(member.id);
-                                      if (spouse) {
-                                        displayedMembers.add(spouse.id);
-                                      }
-
-                                      memberElements.push(
-                                        <div key={member.id} className="flex items-center gap-6">
-                                          {/* Member Card */}
-                                          <Card className="relative p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 hover:shadow-2xl transition-all duration-500 min-w-[220px] group">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/50 to-teal-100/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                            <div className="relative flex items-center gap-4">
-                                              <Avatar className="h-16 w-16 ring-4 ring-emerald-200/50 dark:ring-emerald-700/50">
-                                                <AvatarImage src={member.image_url} />
-                                                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-lg font-bold">
-                                                  {member.name.slice(0, 2)}
-                                                </AvatarFallback>
-                                              </Avatar>
-                                              <div className="text-right flex-1">
-                                                <h3 className="font-bold text-lg text-emerald-700 dark:text-emerald-300">{member.name}</h3>
-                                                <div className="flex gap-2 mt-2 justify-end">
-                                                  {member.is_founder && (
-                                                    <Badge className="text-xs bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0">
-                                                      <Crown className="h-3 w-3 mr-1" />
-                                                      مؤسس
-                                                    </Badge>
-                                                  )}
-                                                  <Badge variant={member.gender === "male" ? "default" : "secondary"} className="text-xs">
-                                                    {member.gender === "male" ? "ذكر" : "أنثى"}
-                                                  </Badge>
-                                                </div>
-                                                {member.birth_date && (
-                                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center justify-end">
-                                                    <Calendar className="h-3 w-3 mr-1" />
-                                                    {new Date(member.birth_date).getFullYear()}
-                                                  </p>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </Card>
-
-                                          {/* Marriage Line and Spouse */}
-                                          {spouse && (
-                                            <>
-                                              <div className="flex items-center gap-2">
-                                                <div className="w-12 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
-                                                <Heart className="h-6 w-6 text-pink-500 animate-pulse" />
-                                                <div className="w-12 h-1 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"></div>
-                                              </div>
-                                              
-                                              {/* Spouse Card */}
-                                              <Card className="relative p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-teal-200/30 dark:border-teal-700/30 hover:shadow-2xl transition-all duration-500 min-w-[220px] group">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-teal-100/50 to-emerald-100/50 dark:from-teal-900/20 dark:to-emerald-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                                <div className="relative flex items-center gap-4">
-                                                  <Avatar className="h-16 w-16 ring-4 ring-teal-200/50 dark:ring-teal-700/50">
-                                                    <AvatarImage src={spouse.image_url} />
-                                                    <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-500 text-white text-lg font-bold">
-                                                      {spouse.name.slice(0, 2)}
-                                                    </AvatarFallback>
-                                                  </Avatar>
-                                                  <div className="text-right flex-1">
-                                                    <h3 className="font-bold text-lg text-teal-700 dark:text-teal-300">{spouse.name}</h3>
-                                                    <div className="flex gap-2 mt-2 justify-end">
-                                                      {spouse.is_founder && (
-                                                        <Badge className="text-xs bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0">
-                                                          <Crown className="h-3 w-3 mr-1" />
-                                                          مؤسس
-                                                        </Badge>
-                                                      )}
-                                                      <Badge variant={spouse.gender === "male" ? "default" : "secondary"} className="text-xs">
-                                                        {spouse.gender === "male" ? "ذكر" : "أنثى"}
-                                                      </Badge>
-                                                    </div>
-                                                    {spouse.birth_date && (
-                                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center justify-end">
-                                                        <Calendar className="h-3 w-3 mr-1" />
-                                                        {new Date(spouse.birth_date).getFullYear()}
-                                                      </p>
-                                                    )}
-                                                  </div>
-                                                </div>
-                                              </Card>
-                                            </>
-                                          )}
-                                        </div>
-                                      );
-                                    });
-
-                                    return memberElements;
-                                  })()}
+                                  {familyUnits.map((unit: FamilyUnit) => renderFamilyUnit(unit))}
                                 </div>
 
                                 {/* Connection Line to next generation */}
@@ -630,7 +605,7 @@ const FamilyTreeView = () => {
                   >
                     {familyTree.length > 0 ? (
                       <div className="relative min-h-[700px] flex flex-col items-center pt-8">
-                        {familyTree.map(([generation, members], genIndex) => (
+                        {familyTree.map(([generation, familyUnits], genIndex) => (
                           <div key={generation} className="relative mb-20">
                             {/* Generation Members */}
                             <div className="flex justify-center items-start gap-16">
@@ -638,25 +613,12 @@ const FamilyTreeView = () => {
                                 const displayedMembers = new Set();
                                 const memberElements = [];
 
-                                members.forEach((member: any) => {
-                                  if (displayedMembers.has(member.id)) return;
-
-                                  // Find spouse for this member
-                                  const marriage = familyMarriages.find(m => 
-                                    m.husband_id === member.id || m.wife_id === member.id
-                                  );
-                                  const spouse = marriage ? 
-                                    (marriage.husband_id === member.id ? 
-                                      familyMembers.find(m => m.id === marriage.wife_id) : 
-                                      familyMembers.find(m => m.id === marriage.husband_id)) : null;
-
-                                  displayedMembers.add(member.id);
-                                  if (spouse) displayedMembers.add(spouse.id);
-
-                                  if (generation === 1 && spouse) {
-                                    // For generation 1 (founders), show them as a couple
+                                familyUnits.forEach((unit: FamilyUnit) => {
+                                  if (unit.type === 'married' && unit.members.length === 2) {
+                                    const [member, spouse] = unit.members;
+                                    // Show married couple
                                     memberElements.push(
-                                      <div key={member.id} className="relative">
+                                      <div key={unit.id} className="relative">
                                         <div className="flex items-center justify-center w-80 h-40 rounded-full border-4 border-emerald-400/60 bg-gradient-to-r from-emerald-100/80 to-teal-100/80 dark:from-emerald-900/40 dark:to-teal-900/40 backdrop-blur-xl shadow-2xl">
                                           <div className="flex items-center gap-6">
                                             <div className="text-center">
@@ -687,8 +649,8 @@ const FamilyTreeView = () => {
                                           </div>
                                         </div>
 
-                                        {/* Connection lines for children - Enhanced */}
-                                        {genIndex < familyTree.length - 1 && (
+                                        {/* Connection lines for children */}
+                                        {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
                                           <>
                                             {/* Vertical line down */}
                                             <div 
@@ -702,48 +664,25 @@ const FamilyTreeView = () => {
                                             ></div>
                                             
                                             {/* Horizontal line for children */}
-                                            {(() => {
-                                              const children = familyMembers.filter(child => 
-                                                child.father_id === member.id || child.mother_id === member.id ||
-                                                child.father_id === spouse.id || child.mother_id === spouse.id
-                                              );
-                                              
-                                              if (children.length > 1) {
-                                                const lineWidth = Math.max(200, (children.length - 1) * 160);
-                                                return (
-                                                  <>
-                                                    <div 
-                                                      className="absolute h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                                      style={{ 
-                                                        top: 'calc(100% + 50px)', 
-                                                        left: `calc(50% - ${lineWidth/2}px)`, 
-                                                        width: `${lineWidth}px` 
-                                                      }}
-                                                    ></div>
-                                                    {children.map((child, childIndex) => (
-                                                      <div 
-                                                        key={child.id}
-                                                        className="absolute w-2 h-50 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full shadow-lg"
-                                                        style={{ 
-                                                          top: 'calc(100% + 50px)', 
-                                                          left: `calc(50% + ${(childIndex - (children.length-1)/2) * 160}px)`,
-                                                          transform: 'translateX(-50%)'
-                                                        }}
-                                                      ></div>
-                                                    ))}
-                                                  </>
-                                                );
-                                              }
-                                              return null;
-                                            })()}
+                                            {unit.childUnits.length > 1 && (
+                                              <div 
+                                                className="absolute h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
+                                                style={{ 
+                                                  top: 'calc(100% + 50px)', 
+                                                  left: `calc(50% - ${(unit.childUnits.length - 1) * 80}px)`, 
+                                                  width: `${(unit.childUnits.length - 1) * 160}px` 
+                                                }}
+                                              ></div>
+                                            )}
                                           </>
                                         )}
                                       </div>
                                     );
                                   } else {
-                                    // For other generations, show individual cards
+                                    // Show single member
+                                    const member = unit.members[0];
                                     memberElements.push(
-                                      <div key={member.id} className="relative text-center">
+                                      <div key={unit.id} className="relative text-center">
                                         <Card className={`p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl ${member.gender === 'female' ? 'border-teal-200/30 dark:border-teal-700/30' : 'border-emerald-200/30 dark:border-emerald-700/30'} min-w-[160px] shadow-xl hover:shadow-2xl transition-all duration-300 group`}>
                                           <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/50 to-teal-100/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                           <div className="relative">
@@ -767,21 +706,11 @@ const FamilyTreeView = () => {
                                         </Card>
 
                                         {/* Connection line to children */}
-                                        {genIndex < familyTree.length - 1 && (
-                                          (() => {
-                                            const children = familyMembers.filter(child => 
-                                              child.father_id === member.id || child.mother_id === member.id
-                                            );
-                                            if (children.length > 0) {
-                                              return (
-                                                <div 
-                                                  className="absolute left-1/2 transform -translate-x-1/2 w-2 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                                  style={{ top: '100%' }}
-                                                ></div>
-                                              );
-                                            }
-                                            return null;
-                                          })()
+                                        {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
+                                          <div 
+                                            className="absolute left-1/2 transform -translate-x-1/2 w-2 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
+                                            style={{ top: '100%' }}
+                                          ></div>
                                         )}
                                       </div>
                                     );
