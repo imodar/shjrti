@@ -250,6 +250,30 @@ const FamilyTreeView = () => {
     console.log('Generation assignment completed after', iterations, 'iterations');
   };
 
+  // Group siblings together by their common parent
+  const groupSiblingsByParent = (familyUnits: FamilyUnit[]): FamilyUnit[][] => {
+    const parentGroups = new Map<string, FamilyUnit[]>();
+    const orphanUnits: FamilyUnit[] = [];
+
+    familyUnits.forEach(unit => {
+      if (unit.parentUnitId) {
+        if (!parentGroups.has(unit.parentUnitId)) {
+          parentGroups.set(unit.parentUnitId, []);
+        }
+        parentGroups.get(unit.parentUnitId)!.push(unit);
+      } else {
+        orphanUnits.push(unit);
+      }
+    });
+
+    // Return grouped siblings and orphan units
+    const result = Array.from(parentGroups.values());
+    if (orphanUnits.length > 0) {
+      result.push(orphanUnits);
+    }
+    return result;
+  };
+
   const renderFamilyUnit = (unit: FamilyUnit) => {
     if (unit.type === 'married' && unit.members.length === 2) {
       const [husband, wife] = unit.members;
@@ -538,8 +562,25 @@ const FamilyTreeView = () => {
                                 </div>
 
                                 {/* Family Units in this generation */}
-                                <div className="flex flex-wrap justify-center gap-10 mb-12">
-                                  {familyUnits.map((unit: FamilyUnit) => renderFamilyUnit(unit))}
+                                <div className="space-y-8 mb-12">
+                                  {(() => {
+                                    // Group siblings by their common parent
+                                    const siblingGroups = groupSiblingsByParent(familyUnits);
+                                    
+                                    return siblingGroups.map((siblingGroup, groupIndex) => (
+                                      <div key={groupIndex} className="flex flex-wrap justify-center gap-6">
+                                        {/* Visual bracket/connection indicator for siblings */}
+                                        {siblingGroup.length > 1 && (
+                                          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex items-center">
+                                            <div className="text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-700">
+                                              إخوة وأخوات
+                                            </div>
+                                          </div>
+                                        )}
+                                        {siblingGroup.map((unit: FamilyUnit) => renderFamilyUnit(unit))}
+                                      </div>
+                                    ));
+                                  })()}
                                 </div>
 
                                 {/* Connection Line to next generation */}
@@ -608,116 +649,118 @@ const FamilyTreeView = () => {
                         {familyTree.map(([generation, familyUnits], genIndex) => (
                           <div key={generation} className="relative mb-20">
                             {/* Generation Members */}
-                            <div className="flex justify-center items-start gap-16">
+                            <div className="space-y-12">
                               {(() => {
-                                const displayedMembers = new Set();
-                                const memberElements = [];
+                                // Group siblings by their common parent for diagram view as well
+                                const siblingGroups = groupSiblingsByParent(familyUnits);
+                                
+                                return siblingGroups.map((siblingGroup, groupIndex) => (
+                                  <div key={groupIndex} className="flex justify-center items-start gap-16">
+                                    {siblingGroup.map((unit: FamilyUnit) => {
+                                      if (unit.type === 'married' && unit.members.length === 2) {
+                                        const [member, spouse] = unit.members;
+                                        // Show married couple
+                                        return (
+                                          <div key={unit.id} className="relative">
+                                            <div className="flex items-center justify-center w-80 h-40 rounded-full border-4 border-emerald-400/60 bg-gradient-to-r from-emerald-100/80 to-teal-100/80 dark:from-emerald-900/40 dark:to-teal-900/40 backdrop-blur-xl shadow-2xl">
+                                              <div className="flex items-center gap-6">
+                                                <div className="text-center">
+                                                  <Avatar className="h-20 w-20 mx-auto mb-3 ring-4 ring-emerald-300/50">
+                                                    {member.image_url ? (
+                                                      <AvatarImage src={member.image_url} alt={member.name} />
+                                                    ) : (
+                                                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xl font-bold">
+                                                        {member.name.slice(0, 2)}
+                                                      </AvatarFallback>
+                                                    )}
+                                                  </Avatar>
+                                                  <h3 className="font-bold text-sm text-emerald-700 dark:text-emerald-300">{member.name}</h3>
+                                                </div>
+                                                <div className="text-3xl text-pink-500 animate-pulse">💕</div>
+                                                <div className="text-center">
+                                                  <Avatar className="h-20 w-20 mx-auto mb-3 ring-4 ring-teal-300/50">
+                                                    {spouse.image_url ? (
+                                                      <AvatarImage src={spouse.image_url} alt={spouse.name} />
+                                                    ) : (
+                                                      <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-500 text-white text-xl font-bold">
+                                                        {spouse.name.slice(0, 2)}
+                                                      </AvatarFallback>
+                                                    )}
+                                                  </Avatar>
+                                                  <h3 className="font-bold text-sm text-teal-700 dark:text-teal-300">{spouse.name}</h3>
+                                                </div>
+                                              </div>
+                                            </div>
 
-                                familyUnits.forEach((unit: FamilyUnit) => {
-                                  if (unit.type === 'married' && unit.members.length === 2) {
-                                    const [member, spouse] = unit.members;
-                                    // Show married couple
-                                    memberElements.push(
-                                      <div key={unit.id} className="relative">
-                                        <div className="flex items-center justify-center w-80 h-40 rounded-full border-4 border-emerald-400/60 bg-gradient-to-r from-emerald-100/80 to-teal-100/80 dark:from-emerald-900/40 dark:to-teal-900/40 backdrop-blur-xl shadow-2xl">
-                                          <div className="flex items-center gap-6">
-                                            <div className="text-center">
-                                              <Avatar className="h-20 w-20 mx-auto mb-3 ring-4 ring-emerald-300/50">
-                                                {member.image_url ? (
-                                                  <AvatarImage src={member.image_url} alt={member.name} />
-                                                ) : (
-                                                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xl font-bold">
-                                                    {member.name.slice(0, 2)}
-                                                  </AvatarFallback>
+                                            {/* Connection lines for children */}
+                                            {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
+                                              <>
+                                                {/* Vertical line down */}
+                                                <div 
+                                                  className="absolute w-2 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
+                                                  style={{ 
+                                                    top: '100%', 
+                                                    left: '50%',
+                                                    height: '50px',
+                                                    transform: 'translateX(-50%)'
+                                                  }}
+                                                ></div>
+                                                
+                                                {/* Horizontal line for children */}
+                                                {unit.childUnits.length > 1 && (
+                                                  <div 
+                                                    className="absolute h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
+                                                    style={{ 
+                                                      top: 'calc(100% + 50px)', 
+                                                      left: `calc(50% - ${(unit.childUnits.length - 1) * 80}px)`, 
+                                                      width: `${(unit.childUnits.length - 1) * 160}px` 
+                                                    }}
+                                                  ></div>
                                                 )}
-                                              </Avatar>
-                                              <h3 className="font-bold text-sm text-emerald-700 dark:text-emerald-300">{member.name}</h3>
-                                            </div>
-                                            <div className="text-3xl text-pink-500 animate-pulse">💕</div>
-                                            <div className="text-center">
-                                              <Avatar className="h-20 w-20 mx-auto mb-3 ring-4 ring-teal-300/50">
-                                                {spouse.image_url ? (
-                                                  <AvatarImage src={spouse.image_url} alt={spouse.name} />
-                                                ) : (
-                                                  <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-500 text-white text-xl font-bold">
-                                                    {spouse.name.slice(0, 2)}
-                                                  </AvatarFallback>
-                                                )}
-                                              </Avatar>
-                                              <h3 className="font-bold text-sm text-teal-700 dark:text-teal-300">{spouse.name}</h3>
-                                            </div>
+                                              </>
+                                            )}
                                           </div>
-                                        </div>
+                                        );
+                                      } else {
+                                        // Show single member
+                                        const member = unit.members[0];
+                                        return (
+                                          <div key={unit.id} className="relative text-center">
+                                            <Card className={`p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl ${member.gender === 'female' ? 'border-teal-200/30 dark:border-teal-700/30' : 'border-emerald-200/30 dark:border-emerald-700/30'} min-w-[160px] shadow-xl hover:shadow-2xl transition-all duration-300 group`}>
+                                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/50 to-teal-100/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                              <div className="relative">
+                                                <Avatar className="h-16 w-16 mx-auto mb-3 ring-4 ring-emerald-200/50 dark:ring-emerald-700/50">
+                                                  {member.image_url ? (
+                                                    <AvatarImage src={member.image_url} alt={member.name} />
+                                                  ) : (
+                                                    <AvatarFallback className={`bg-gradient-to-br ${member.gender === 'female' ? 'from-teal-500 to-emerald-500' : 'from-emerald-500 to-teal-500'} text-white font-bold`}>
+                                                      {member.name.slice(0, 2)}
+                                                    </AvatarFallback>
+                                                  )}
+                                                </Avatar>
+                                                <h3 className="font-bold text-emerald-700 dark:text-emerald-300">{member.name}</h3>
+                                                <Badge variant="outline" className="text-xs mt-2 bg-white/50 dark:bg-gray-800/50">
+                                                  {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+                                                </Badge>
+                                                {member.biography && (
+                                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{member.biography}</p>
+                                                )}
+                                              </div>
+                                            </Card>
 
-                                        {/* Connection lines for children */}
-                                        {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
-                                          <>
-                                            {/* Vertical line down */}
-                                            <div 
-                                              className="absolute w-2 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                              style={{ 
-                                                top: '100%', 
-                                                left: '50%',
-                                                height: '50px',
-                                                transform: 'translateX(-50%)'
-                                              }}
-                                            ></div>
-                                            
-                                            {/* Horizontal line for children */}
-                                            {unit.childUnits.length > 1 && (
+                                            {/* Connection line to children */}
+                                            {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
                                               <div 
-                                                className="absolute h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                                style={{ 
-                                                  top: 'calc(100% + 50px)', 
-                                                  left: `calc(50% - ${(unit.childUnits.length - 1) * 80}px)`, 
-                                                  width: `${(unit.childUnits.length - 1) * 160}px` 
-                                                }}
+                                                className="absolute left-1/2 transform -translate-x-1/2 w-2 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
+                                                style={{ top: '100%' }}
                                               ></div>
                                             )}
-                                          </>
-                                        )}
-                                      </div>
-                                    );
-                                  } else {
-                                    // Show single member
-                                    const member = unit.members[0];
-                                    memberElements.push(
-                                      <div key={unit.id} className="relative text-center">
-                                        <Card className={`p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl ${member.gender === 'female' ? 'border-teal-200/30 dark:border-teal-700/30' : 'border-emerald-200/30 dark:border-emerald-700/30'} min-w-[160px] shadow-xl hover:shadow-2xl transition-all duration-300 group`}>
-                                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/50 to-teal-100/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                          <div className="relative">
-                                            <Avatar className="h-16 w-16 mx-auto mb-3 ring-4 ring-emerald-200/50 dark:ring-emerald-700/50">
-                                              {member.image_url ? (
-                                                <AvatarImage src={member.image_url} alt={member.name} />
-                                              ) : (
-                                                <AvatarFallback className={`bg-gradient-to-br ${member.gender === 'female' ? 'from-teal-500 to-emerald-500' : 'from-emerald-500 to-teal-500'} text-white font-bold`}>
-                                                  {member.name.slice(0, 2)}
-                                                </AvatarFallback>
-                                              )}
-                                            </Avatar>
-                                            <h3 className="font-bold text-emerald-700 dark:text-emerald-300">{member.name}</h3>
-                                            <Badge variant="outline" className="text-xs mt-2 bg-white/50 dark:bg-gray-800/50">
-                                              {member.gender === 'male' ? 'ذكر' : 'أنثى'}
-                                            </Badge>
-                                            {member.biography && (
-                                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{member.biography}</p>
-                                            )}
                                           </div>
-                                        </Card>
-
-                                        {/* Connection line to children */}
-                                        {genIndex < familyTree.length - 1 && unit.childUnits.length > 0 && (
-                                          <div 
-                                            className="absolute left-1/2 transform -translate-x-1/2 w-2 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                                            style={{ top: '100%' }}
-                                          ></div>
-                                        )}
-                                      </div>
-                                    );
-                                  }
-                                });
-
-                                return memberElements;
+                                        );
+                                      }
+                                    })}
+                                  </div>
+                                ));
                               })()}
                             </div>
                           </div>
