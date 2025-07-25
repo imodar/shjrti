@@ -244,39 +244,41 @@ const FamilyStatistics = () => {
             <div className="relative max-w-5xl mx-auto mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
               
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex items-center justify-between">
-                  {/* Left: Back Button */}
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/dashboard')}
-                    className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    العودة للوحة الإدارة
-                  </Button>
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:py-6 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-0 sm:justify-between">
+                  {/* Back Button */}
+                  <div className="w-full sm:w-auto order-1 sm:order-1">
+                    <Button
+                      variant="ghost"
+                      onClick={() => navigate('/dashboard')}
+                      className="w-full sm:w-auto text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      العودة للوحة الإدارة
+                    </Button>
+                  </div>
 
-                  {/* Center: Title */}
-                  <div className="text-center">
+                  {/* Title */}
+                  <div className="text-center order-2 sm:order-2">
                     <div className="flex items-center justify-center gap-3 mb-2">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-                        <BarChart3 className="h-6 w-6 text-white" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
+                        <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                       </div>
-                      <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                         إحصائيات العائلة
                       </h1>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                       تحليل شامل وتفصيلي لبيانات شجرة العائلة
                     </p>
                   </div>
 
-                  {/* Right: Action Buttons */}
-                  <div className="flex items-center gap-3">
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto order-3 sm:order-3">
                     <Button
                       onClick={() => navigate('/dashboard')}
                       variant="outline"
-                      className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                      className="w-full sm:w-auto gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
                     >
                       <Users className="h-4 w-4" />
                       إدارة الأعضاء
@@ -284,7 +286,7 @@ const FamilyStatistics = () => {
                     <Button
                       onClick={() => navigate('/family-tree-view')}
                       variant="outline"
-                      className="gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20"
+                      className="w-full sm:w-auto gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20"
                     >
                       <TreePine className="h-4 w-4" />
                       عرض الشجرة
