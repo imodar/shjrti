@@ -683,10 +683,12 @@ export default function EnhancedAdminPanel() {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      // Delete from auth.users will cascade to profiles
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "نجح",
