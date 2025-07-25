@@ -740,6 +740,21 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_all_users_for_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          email_confirmed_at: string
+          phone: string
+          created_at: string
+          updated_at: string
+          profile_id: string
+          first_name: string
+          last_name: string
+          profile_phone: string
+        }[]
+      }
       get_user_family_ids: {
         Args: { user_uuid: string }
         Returns: {

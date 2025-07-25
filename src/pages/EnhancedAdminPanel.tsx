@@ -93,13 +93,15 @@ interface EditingTranslation extends TranslationType {
 
 interface UserProfile {
   id: string;
-  user_id: string;
   email: string;
-  first_name: string | null;
-  last_name: string | null;
+  email_confirmed_at: string | null;
   phone: string | null;
   created_at: string;
   updated_at: string;
+  profile_id: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  profile_phone: string | null;
 }
 
 interface UserSubscription {
@@ -227,10 +229,7 @@ export default function EnhancedAdminPanel() {
 
   const loadUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_all_users_for_admin');
 
       if (error) throw error;
       setUsers(data || []);
@@ -651,7 +650,7 @@ export default function EnhancedAdminPanel() {
 
   // User management functions
   const handleUpdateUser = async () => {
-    if (!editingUser) return;
+    if (!editingUser || !editingUser.profile_id) return;
 
     try {
       const { error } = await supabase
@@ -659,9 +658,9 @@ export default function EnhancedAdminPanel() {
         .update({
           first_name: editingUser.first_name,
           last_name: editingUser.last_name,
-          phone: editingUser.phone
+          phone: editingUser.profile_phone
         })
-        .eq('id', editingUser.id);
+        .eq('id', editingUser.profile_id);
 
       if (error) throw error;
 
@@ -684,10 +683,8 @@ export default function EnhancedAdminPanel() {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('user_id', userId);
+      // Delete from auth.users will cascade to profiles
+      const { error } = await supabase.auth.admin.deleteUser(userId);
 
       if (error) throw error;
 
@@ -709,6 +706,10 @@ export default function EnhancedAdminPanel() {
 
   const getUserSubscription = (userId: string) => {
     return userSubscriptions.find(sub => sub.user_id === userId && sub.status === 'active');
+  };
+
+  const isUserEmailConfirmed = (user: UserProfile) => {
+    return user.email_confirmed_at !== null;
   };
 
   if (loading) {
@@ -920,7 +921,7 @@ export default function EnhancedAdminPanel() {
               <CardContent>
                 <div className="space-y-4">
                   {users.map((user) => {
-                    const subscription = getUserSubscription(user.user_id);
+                    const subscription = getUserSubscription(user.id);
                     return (
                       <div key={user.id} className="flex items-center justify-between p-4 border border-emerald-200/30 dark:border-emerald-700/30 rounded-lg bg-white/50 dark:bg-gray-800/50">
                         <div className="flex-1 grid grid-cols-4 gap-4">
@@ -972,7 +973,7 @@ export default function EnhancedAdminPanel() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => handleDeleteUser(user.user_id)}
+                              onClick={() => handleDeleteUser(user.id)}
                               className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -984,7 +985,7 @@ export default function EnhancedAdminPanel() {
                   })}
                   {users.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
-                      لا يوجد مستخدمين مسجلين حتى الآن
+                    لا يوجد مستخدمين مسجلين حتى الآن
                     </div>
                   )}
                 </div>
@@ -1580,10 +1581,24 @@ export default function EnhancedAdminPanel() {
                   <Label htmlFor="edit-phone" className="text-right">رقم الهاتف</Label>
                   <Input
                     id="edit-phone"
-                    value={editingUser.phone || ''}
-                    onChange={(e) => setEditingUser({...editingUser, phone: e.target.value})}
+                    value={editingUser.profile_phone || editingUser.phone || ''}
+                    onChange={(e) => setEditingUser({...editingUser, profile_phone: e.target.value})}
                     className="col-span-3"
                   />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right">حالة التفعيل</Label>
+                  <div className="col-span-3">
+                    {editingUser.email_confirmed_at ? (
+                      <Badge className="bg-green-100 text-green-800 border-green-200">
+                        مفعل
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                        غير مفعل
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
