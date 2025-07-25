@@ -51,7 +51,66 @@ serve(async (req) => {
     if (!userId) throw new Error("User ID is required");
     logStep("User ID received", { userId });
 
-    // Delete the user using admin client
+    // Delete all related data first to avoid foreign key constraints
+    logStep("Starting cascade delete of user data");
+
+    // 1. Delete family tree members created by this user
+    await supabaseAdmin
+      .from('family_tree_members')
+      .delete()
+      .eq('created_by', userId);
+    logStep("Deleted family tree members");
+
+    // 2. Delete family members where user is a member
+    await supabaseAdmin
+      .from('family_members')
+      .delete()
+      .eq('user_id', userId);
+    logStep("Deleted family memberships");
+
+    // 3. Delete families created by this user (this will cascade to related data)
+    await supabaseAdmin
+      .from('families')
+      .delete()
+      .eq('creator_id', userId);
+    logStep("Deleted families");
+
+    // 4. Delete user subscriptions
+    await supabaseAdmin
+      .from('user_subscriptions')
+      .delete()
+      .eq('user_id', userId);
+    logStep("Deleted subscriptions");
+
+    // 5. Delete notifications
+    await supabaseAdmin
+      .from('notifications')
+      .delete()
+      .eq('user_id', userId);
+    logStep("Deleted notifications");
+
+    // 6. Delete invoices
+    await supabaseAdmin
+      .from('invoices')
+      .delete()
+      .eq('user_id', userId);
+    logStep("Deleted invoices");
+
+    // 7. Delete store orders
+    await supabaseAdmin
+      .from('store_orders')
+      .delete()
+      .eq('user_id', userId);
+    logStep("Deleted store orders");
+
+    // 8. Delete profile
+    await supabaseAdmin
+      .from('profiles')
+      .delete()
+      .eq('user_id', userId);
+    logStep("Deleted profile");
+
+    // Finally, delete the user from auth
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
     if (deleteError) throw new Error(`Failed to delete user: ${deleteError.message}`);
 

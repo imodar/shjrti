@@ -176,6 +176,7 @@ export default function EnhancedAdminPanel() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null);
 
   const loadPackages = async () => {
     try {
@@ -681,10 +682,12 @@ export default function EnhancedAdminPanel() {
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+
     try {
       const { data, error } = await supabase.functions.invoke('delete-user', {
-        body: { userId }
+        body: { userId: deletingUser.id }
       });
 
       if (error) throw error;
@@ -692,10 +695,12 @@ export default function EnhancedAdminPanel() {
 
       toast({
         title: "نجح",
-        description: "تم حذف المستخدم بنجاح"
+        description: "تم حذف المستخدم وجميع بياناته بنجاح"
       });
 
       loadUsers();
+      loadUserSubscriptions();
+      setDeletingUser(null);
     } catch (error) {
       console.error('Error deleting user:', error);
       toast({
@@ -975,7 +980,7 @@ export default function EnhancedAdminPanel() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => handleDeleteUser(user.id)}
+                              onClick={() => setDeletingUser(user)}
                               className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -1538,6 +1543,46 @@ export default function EnhancedAdminPanel() {
               <Button onClick={handleUpdateTranslation} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
                 <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                 حفظ التغييرات
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete User Confirmation Dialog */}
+        <Dialog open={deletingUser !== null} onOpenChange={() => setDeletingUser(null)}>
+          <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
+            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+              <DialogTitle className="text-red-600">تأكيد حذف المستخدم</DialogTitle>
+              <DialogDescription className="text-red-500">
+                تحذير: هذا الإجراء لا يمكن التراجع عنه
+              </DialogDescription>
+            </DialogHeader>
+            {deletingUser && (
+              <div className="py-4">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <h4 className="font-semibold text-red-800 mb-2">ستؤدي هذه العملية إلى حذف:</h4>
+                  <ul className="text-sm text-red-700 space-y-1 mr-4">
+                    <li>• بيانات المستخدم الشخصية</li>
+                    <li>• جميع العائلات التي أنشأها</li>
+                    <li>• جميع أفراد العائلة في عائلاته</li>
+                    <li>• اشتراكاته وفواتيره</li>
+                    <li>• إشعاراته وطلباته</li>
+                  </ul>
+                </div>
+                <div className="border rounded-lg p-3 bg-gray-50">
+                  <p className="text-sm text-gray-600">المستخدم المراد حذفه:</p>
+                  <p className="font-semibold">{deletingUser.email}</p>
+                  <p className="text-sm">{deletingUser.first_name} {deletingUser.last_name}</p>
+                </div>
+              </div>
+            )}
+            <DialogFooter className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Button onClick={() => setDeletingUser(null)} variant="outline">
+                إلغاء
+              </Button>
+              <Button onClick={handleDeleteUser} variant="destructive" className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+                <Trash2 className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                نعم، احذف المستخدم
               </Button>
             </DialogFooter>
           </DialogContent>
