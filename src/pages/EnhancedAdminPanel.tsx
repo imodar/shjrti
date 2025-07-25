@@ -91,6 +91,31 @@ interface EditingTranslation extends TranslationType {
   isEditing?: boolean;
 }
 
+interface UserProfile {
+  id: string;
+  user_id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  phone: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserSubscription {
+  id: string;
+  user_id: string;
+  package_id: string;
+  status: string;
+  started_at: string;
+  expires_at: string | null;
+  package?: {
+    name: any;
+    price_usd: number;
+    price_sar: number;
+  };
+}
+
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
   const { currentLanguage, direction } = useLanguage();
@@ -146,6 +171,9 @@ export default function EnhancedAdminPanel() {
   });
   const [editingLanguage, setEditingLanguage] = useState<LanguageType | null>(null);
   const [editingTranslation, setEditingTranslation] = useState<EditingTranslation | null>(null);
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
 
   const loadPackages = async () => {
     try {
@@ -197,9 +225,40 @@ export default function EnhancedAdminPanel() {
     }
   };
 
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
+  };
+
+  const loadUserSubscriptions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select(`
+          *,
+          package:packages(name, price_usd, price_sar)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUserSubscriptions(data || []);
+    } catch (error) {
+      console.error('Error loading user subscriptions:', error);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
-    Promise.all([loadPackages(), loadTranslations(), loadLanguages()]).finally(() => {
+    Promise.all([loadPackages(), loadTranslations(), loadLanguages(), loadUsers(), loadUserSubscriptions()]).finally(() => {
       setLoading(false);
     });
   }, []);
@@ -590,6 +649,68 @@ export default function EnhancedAdminPanel() {
     }
   };
 
+  // User management functions
+  const handleUpdateUser = async () => {
+    if (!editingUser) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: editingUser.first_name,
+          last_name: editingUser.last_name,
+          phone: editingUser.phone
+        })
+        .eq('id', editingUser.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم تحديث بيانات المستخدم بنجاح"
+      });
+
+      loadUsers();
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث بيانات المستخدم",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجح",
+        description: "تم حذف المستخدم بنجاح"
+      });
+
+      loadUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حذف المستخدم",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getUserSubscription = (userId: string) => {
+    return userSubscriptions.find(sub => sub.user_id === userId && sub.status === 'active');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
@@ -627,7 +748,7 @@ export default function EnhancedAdminPanel() {
               </div>
             </div>
             
-            <Button onClick={() => { loadPackages(); loadTranslations(); loadLanguages(); }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+            <Button onClick={() => { loadPackages(); loadTranslations(); loadLanguages(); loadUsers(); loadUserSubscriptions(); }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               تحديث البيانات
             </Button>
@@ -635,14 +756,14 @@ export default function EnhancedAdminPanel() {
         </div>
 
         <Tabs defaultValue="packages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+          <TabsList className="grid w-full grid-cols-5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
             <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Package className="ml-2 h-4 w-4" />
               الباقات
             </TabsTrigger>
-            <TabsTrigger value="relationships" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Users className="ml-2 h-4 w-4" />
-              العلاقات
+            <TabsTrigger value="users" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <CircleUserRound className="ml-2 h-4 w-4" />
+              المستخدمين
             </TabsTrigger>
             <TabsTrigger value="translations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <MessageSquare className="ml-2 h-4 w-4" />
@@ -651,10 +772,6 @@ export default function EnhancedAdminPanel() {
             <TabsTrigger value="languages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Languages className="ml-2 h-4 w-4" />
               اللغات
-            </TabsTrigger>
-            <TabsTrigger value="billing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <CreditCard className="ml-2 h-4 w-4" />
-              الفوترة
             </TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Scale className="ml-2 h-4 w-4" />
@@ -791,8 +908,91 @@ export default function EnhancedAdminPanel() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-emerald-600">إدارة المستخدمين</CardTitle>
+                <CardDescription>
+                  عرض وإدارة جميع المستخدمين المشتركين في الموقع
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {users.map((user) => {
+                    const subscription = getUserSubscription(user.user_id);
+                    return (
+                      <div key={user.id} className="flex items-center justify-between p-4 border border-emerald-200/30 dark:border-emerald-700/30 rounded-lg bg-white/50 dark:bg-gray-800/50">
+                        <div className="flex-1 grid grid-cols-4 gap-4">
+                          <div>
+                            <p className="font-medium text-emerald-700">{user.email}</p>
+                            <p className="text-sm text-gray-500">البريد الإلكتروني</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">{user.first_name || 'غير محدد'}</p>
+                            <p className="text-sm text-gray-500">الاسم الأول</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">{user.last_name || 'غير محدد'}</p>
+                            <p className="text-sm text-gray-500">الاسم الأخير</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">{user.phone || 'غير محدد'}</p>
+                            <p className="text-sm text-gray-500">رقم الهاتف</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-center min-w-[120px]">
+                            {subscription ? (
+                              <div>
+                                <Badge className="bg-green-100 text-green-800 border-green-200">
+                                  نشط
+                                </Badge>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {typeof subscription.package?.name === 'object' && subscription.package?.name?.ar 
+                                    ? subscription.package.name.ar 
+                                    : 'باقة غير معروفة'}
+                                </p>
+                              </div>
+                            ) : (
+                              <Badge className="bg-red-100 text-red-800 border-red-200">
+                                لا يوجد اشتراك
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => setEditingUser(user)}
+                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleDeleteUser(user.user_id)}
+                              className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {users.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      لا يوجد مستخدمين مسجلين حتى الآن
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         
-          <TabsContent value="relationships" className="space-y-6">
+          <TabsContent value="relationships" className="space-y-6 hidden">
             <Card>
               <CardHeader>
                 <CardTitle>Family Relationship Terms</CardTitle>
@@ -1333,6 +1533,65 @@ export default function EnhancedAdminPanel() {
                 إلغاء
               </Button>
               <Button onClick={handleUpdateTranslation} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+                <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                حفظ التغييرات
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit User Dialog */}
+        <Dialog open={editingUser !== null} onOpenChange={() => setEditingUser(null)}>
+          <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
+            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+              <DialogTitle>تعديل بيانات المستخدم</DialogTitle>
+              <DialogDescription>قم بتعديل بيانات المستخدم المحددة</DialogDescription>
+            </DialogHeader>
+            {editingUser && (
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-email" className="text-right">البريد الإلكتروني</Label>
+                  <Input
+                    id="edit-email"
+                    value={editingUser.email}
+                    disabled
+                    className="col-span-3 bg-gray-100"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-first-name" className="text-right">الاسم الأول</Label>
+                  <Input
+                    id="edit-first-name"
+                    value={editingUser.first_name || ''}
+                    onChange={(e) => setEditingUser({...editingUser, first_name: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-last-name" className="text-right">الاسم الأخير</Label>
+                  <Input
+                    id="edit-last-name"
+                    value={editingUser.last_name || ''}
+                    onChange={(e) => setEditingUser({...editingUser, last_name: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-phone" className="text-right">رقم الهاتف</Label>
+                  <Input
+                    id="edit-phone"
+                    value={editingUser.phone || ''}
+                    onChange={(e) => setEditingUser({...editingUser, phone: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+            )}
+            <DialogFooter className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Button onClick={() => setEditingUser(null)} variant="outline">
+                إلغاء
+              </Button>
+              <Button onClick={handleUpdateUser} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
                 <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                 حفظ التغييرات
               </Button>
