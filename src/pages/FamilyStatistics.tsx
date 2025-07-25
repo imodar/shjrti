@@ -249,12 +249,12 @@ const FamilyStatistics = () => {
                   {/* Back Button */}
                   <div className="w-full sm:w-auto order-1 sm:order-1">
                     <Button
-                      variant="ghost"
-                      onClick={() => navigate('/dashboard')}
-                      className="w-full sm:w-auto text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                      variant="outline"
+                      onClick={() => navigate('/family-builder')}
+                      className="w-full sm:w-auto group bg-white/20 dark:bg-gray-700/20 border-emerald-300/50 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-900/30 dark:border-emerald-600/30 transition-all duration-300 shadow-sm hover:shadow-md"
                     >
-                      <ArrowLeft className="h-4 w-4 mr-2" />
-                      العودة للوحة الإدارة
+                      <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
+                      العودة الى أفراد العائلة
                     </Button>
                   </div>
 
