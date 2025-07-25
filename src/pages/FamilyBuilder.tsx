@@ -918,7 +918,7 @@ const FamilyBuilder = () => {
         console.log('🔥 Husband name check:', memberData.husband.name, 'trimmed:', memberData.husband.name?.trim());
       }
 
-      // Insert main member
+      // Insert main member - with proper date handling
       const memberInsertData = {
         family_id: familyId,
         name: memberData.name,
@@ -926,9 +926,9 @@ const FamilyBuilder = () => {
         father_id: memberData.fatherId,
         mother_id: memberData.motherId,
         related_person_id: memberData.relatedPersonId, // Set the related person ID
-        birth_date: memberData.birthDate,
+        birth_date: memberData.birthDate ? (memberData.birthDate instanceof Date ? memberData.birthDate.toISOString().split('T')[0] : memberData.birthDate) : null,
         is_alive: memberData.isAlive,
-        death_date: memberData.deathDate,
+        death_date: memberData.deathDate ? (memberData.deathDate instanceof Date ? memberData.deathDate.toISOString().split('T')[0] : memberData.deathDate) : null,
         biography: memberData.bio || "",
         image_url: memberData.croppedImage,
         is_founder: false,
@@ -996,9 +996,9 @@ const FamilyBuilder = () => {
               family_id: familyId,
               name: wife.name,
               gender: "female",
-              birth_date: wife.birthDate,
+              birth_date: wife.birthDate ? (wife.birthDate instanceof Date ? wife.birthDate.toISOString().split('T')[0] : wife.birthDate) : null,
               is_alive: wife.isAlive,
-              death_date: wife.deathDate,
+              death_date: wife.deathDate ? (wife.deathDate instanceof Date ? wife.deathDate.toISOString().split('T')[0] : wife.deathDate) : null,
               image_url: wife.croppedImage,
               is_founder: false,
               marital_status: "married", // Set wife as married
@@ -1053,9 +1053,9 @@ const FamilyBuilder = () => {
               family_id: familyId,
               name: husband.name,
               gender: "male",
-              birth_date: husband.birthDate,
+              birth_date: husband.birthDate ? (husband.birthDate instanceof Date ? husband.birthDate.toISOString().split('T')[0] : husband.birthDate) : null,
               is_alive: husband.isAlive,
-              death_date: husband.deathDate,
+              death_date: husband.deathDate ? (husband.deathDate instanceof Date ? husband.deathDate.toISOString().split('T')[0] : husband.deathDate) : null,
               image_url: husband.croppedImage,
               is_founder: false,
               marital_status: "married", // Set husband as married
