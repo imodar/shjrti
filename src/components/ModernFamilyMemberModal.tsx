@@ -1679,6 +1679,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               {step > 1 && (
                 <Button 
+                  type="button"
                   onClick={() => setStep(step - 1)}
                   variant="outline"
                   className="gap-2 px-6 py-3 rounded-xl border-2 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -1692,6 +1693,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
               
               {step < 2 ? (
                 <Button 
+                  type="button"
                   onClick={() => {
                     console.log('🔥 Next button clicked!');
                     console.log('🔥 Current memberData:', memberData);
@@ -1708,6 +1710,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                 </Button>
               ) : (
                 <Button 
+                  type="button"
                   onClick={() => {
                     console.log('🔥 Submit button clicked!');
                     console.log('🔥 isSubmitting:', isSubmitting);
