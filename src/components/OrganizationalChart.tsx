@@ -182,6 +182,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const renderConnections = () => {
     const connections: JSX.Element[] = [];
     
+    // Group children by parent
+    const childrenByParent = new Map<string, FamilyUnit[]>();
+    
     generations.forEach((gen, genIndex) => {
       if (genIndex === 0) return; // Skip founder generation
       
@@ -190,56 +193,104 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       units.forEach(unit => {
         if (!unit.parentUnitId) return;
         
-        const parentPosition = positions[unit.parentUnitId];
-        const childPosition = positions[unit.id];
-        
-        if (!parentPosition || !childPosition) return;
-        
-        // Calculate line positions
-        const startX = parentPosition.x;
-        const startY = parentPosition.y + 120; // Below parent box
-        const endX = childPosition.x;
-        const endY = childPosition.y - 6; // Above child box
-        
-        const midY = (startY + endY) / 2;
+        if (!childrenByParent.has(unit.parentUnitId)) {
+          childrenByParent.set(unit.parentUnitId, []);
+        }
+        childrenByParent.get(unit.parentUnitId)!.push(unit);
+      });
+    });
+    
+    // Draw connections for each parent
+    childrenByParent.forEach((children, parentId) => {
+      const parentPosition = positions[parentId];
+      if (!parentPosition || children.length === 0) return;
+      
+      // Calculate connection points
+      const parentBottomY = parentPosition.y + 140; // Below parent box
+      const distributionY = parentBottomY + 30; // Horizontal distribution line
+      
+      if (children.length === 1) {
+        // Direct connection for single child
+        const child = children[0];
+        const childPosition = positions[child.id];
+        if (!childPosition) return;
         
         connections.push(
-          <g key={`connection-${unit.id}`}>
-            {/* Vertical line from parent */}
+          <g key={`single-connection-${child.id}`}>
+            {/* Vertical line from parent to child */}
             <line
-              x1={startX}
-              y1={startY}
-              x2={startX}
-              y2={midY}
+              x1={parentPosition.x}
+              y1={parentBottomY}
+              x2={parentPosition.x}
+              y2={distributionY}
               stroke="rgb(52, 211, 153)"
               strokeWidth="2"
-              className="drop-shadow-sm"
             />
-            
-            {/* Horizontal connecting line */}
             <line
-              x1={startX}
-              y1={midY}
-              x2={endX}
-              y2={midY}
+              x1={parentPosition.x}
+              y1={distributionY}
+              x2={childPosition.x}
+              y2={distributionY}
               stroke="rgb(52, 211, 153)"
               strokeWidth="2"
-              className="drop-shadow-sm"
             />
-            
-            {/* Vertical line to child */}
             <line
-              x1={endX}
-              y1={midY}
-              x2={endX}
-              y2={endY}
+              x1={childPosition.x}
+              y1={distributionY}
+              x2={childPosition.x}
+              y2={childPosition.y - 6}
               stroke="rgb(52, 211, 153)"
               strokeWidth="2"
-              className="drop-shadow-sm"
             />
           </g>
         );
-      });
+      } else {
+        // Multiple children - org chart style
+        const leftmostX = Math.min(...children.map(child => positions[child.id]?.x || 0));
+        const rightmostX = Math.max(...children.map(child => positions[child.id]?.x || 0));
+        
+        connections.push(
+          <g key={`multi-connection-${parentId}`}>
+            {/* Vertical line from parent down */}
+            <line
+              x1={parentPosition.x}
+              y1={parentBottomY}
+              x2={parentPosition.x}
+              y2={distributionY}
+              stroke="rgb(52, 211, 153)"
+              strokeWidth="2"
+            />
+            
+            {/* Horizontal distribution line */}
+            <line
+              x1={leftmostX}
+              y1={distributionY}
+              x2={rightmostX}
+              y2={distributionY}
+              stroke="rgb(52, 211, 153)"
+              strokeWidth="2"
+            />
+            
+            {/* Vertical lines to each child */}
+            {children.map(child => {
+              const childPosition = positions[child.id];
+              if (!childPosition) return null;
+              
+              return (
+                <line
+                  key={`child-line-${child.id}`}
+                  x1={childPosition.x}
+                  y1={distributionY}
+                  x2={childPosition.x}
+                  y2={childPosition.y - 6}
+                  stroke="rgb(52, 211, 153)"
+                  strokeWidth="2"
+                />
+              );
+            })}
+          </g>
+        );
+      }
     });
     
     return connections;
