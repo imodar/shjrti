@@ -48,9 +48,21 @@ export const sanitizeFormData = (formData: Record<string, any>): Record<string, 
   for (const [key, value] of Object.entries(formData)) {
     if (typeof value === 'string') {
       sanitized[key] = sanitizeInput(value);
+    } else if (value === null || value === undefined) {
+      sanitized[key] = null;
     } else if (typeof value === 'object' && value !== null) {
-      // Recursively sanitize nested objects
-      sanitized[key] = sanitizeFormData(value);
+      // Handle date fields specially
+      if (key === 'birthDate' || key === 'deathDate') {
+        sanitized[key] = value && typeof value === 'string' && value.trim() ? value : null;
+      } else if (Array.isArray(value)) {
+        // Handle arrays
+        sanitized[key] = value.map(item => 
+          typeof item === 'object' && item !== null ? sanitizeFormData(item) : item
+        );
+      } else {
+        // Recursively sanitize nested objects
+        sanitized[key] = sanitizeFormData(value);
+      }
     } else {
       sanitized[key] = value;
     }
