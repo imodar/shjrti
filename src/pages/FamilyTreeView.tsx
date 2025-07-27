@@ -275,7 +275,23 @@ const FamilyTreeView = () => {
   };
 
   // Render a group of siblings with proper spacing and connection lines
-  const renderSiblingGroup = (siblingGroup: FamilyUnit[], groupIndex: number) => {
+  const renderSiblingGroup = (siblingGroup: FamilyUnit[], groupIndex: number, allUnits: Map<string, FamilyUnit>) => {
+    // Get the parent family name based on the first unit's parent
+    const getParentFamilyName = () => {
+      if (siblingGroup.length > 0 && siblingGroup[0].parentUnitId) {
+        const parentUnit = allUnits.get(siblingGroup[0].parentUnitId);
+        if (parentUnit) {
+          if (parentUnit.type === 'married' && parentUnit.members.length === 2) {
+            const [husband, wife] = parentUnit.members;
+            return `عائلة ${husband.name}`;
+          } else if (parentUnit.members.length === 1) {
+            return `عائلة ${parentUnit.members[0].name}`;
+          }
+        }
+      }
+      return `مجموعة أسرية ${groupIndex + 1}`;
+    };
+
     return (
       <div key={groupIndex} className="relative flex flex-col items-center mx-8">
         {/* Connection line from parent */}
@@ -299,7 +315,7 @@ const FamilyTreeView = () => {
           {/* Family group label */}
           <div className="text-center mt-2">
             <Badge variant="outline" className="text-xs bg-emerald-50/50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-600">
-              مجموعة أسرية {groupIndex + 1}
+              {getParentFamilyName()}
             </Badge>
           </div>
         </div>
@@ -426,7 +442,7 @@ const FamilyTreeView = () => {
   const generateFamilyTree = () => {
     console.log('Generating family tree with members:', familyMembers.length);
     
-    if (familyMembers.length === 0) return [];
+    if (familyMembers.length === 0) return { tree: [], units: new Map() };
     
     // Create family units
     const units = createFamilyUnits();
@@ -455,10 +471,12 @@ const FamilyTreeView = () => {
 
     const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
     console.log('Final family tree structure with sibling groups:', result);
-    return result;
+    return { tree: result, units };
   };
 
-  const familyTree = generateFamilyTree();
+  const familyTreeData = generateFamilyTree();
+  const familyTree = familyTreeData.tree;
+  const familyUnits = familyTreeData.units;
   console.log('Family tree for rendering:', familyTree);
   console.log('Family tree length:', familyTree.length);
 
@@ -632,19 +650,33 @@ const FamilyTreeView = () => {
                                           ))}
                                         </div>
                                         
-                                        {/* Family group label */}
-                                        <div className="text-center mt-2">
-                                          <Badge variant="outline" className="text-xs bg-emerald-50/50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-600">
-                                            مجموعة أسرية {groupIndex + 1}
-                                          </Badge>
-                                        </div>
+                                         {/* Family group label */}
+                                         <div className="text-center mt-2">
+                                           <Badge variant="outline" className="text-xs bg-emerald-50/50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-600">
+                                             {(() => {
+                                               // Get parent family name based on the first unit's parent
+                                               if (siblingGroup.length > 0 && siblingGroup[0].parentUnitId) {
+                                                 const parentUnit = familyUnits.get(siblingGroup[0].parentUnitId);
+                                                 if (parentUnit) {
+                                                   if (parentUnit.type === 'married' && parentUnit.members.length === 2) {
+                                                     const [husband, wife] = parentUnit.members;
+                                                     return `عائلة ${husband.name}`;
+                                                   } else if (parentUnit.members.length === 1) {
+                                                     return `عائلة ${parentUnit.members[0].name}`;
+                                                   }
+                                                 }
+                                               }
+                                               return `مجموعة أسرية ${groupIndex + 1}`;
+                                             })()}
+                                           </Badge>
+                                         </div>
                                       </div>
                                     </div>
                                   ))}
                                 </div>
 
-                                {/* Connection Line to next generation */}
-                                {generation < Math.max(...familyTree.map(([gen]) => gen)) && (
+                                 {/* Connection Line to next generation */}
+                                 {generation < Math.max(...familyTree.map(([gen, _]) => gen)) && (
                                   <div className="flex justify-center">
                                     <div className="w-1 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"></div>
                                   </div>
@@ -725,12 +757,26 @@ const FamilyTreeView = () => {
                                 <div key={groupIndex} className="relative">
                                   {/* Family Group Container */}
                                   <div className="relative bg-gradient-to-br from-white/40 to-emerald-50/40 dark:from-gray-800/40 dark:to-emerald-900/40 backdrop-blur-sm rounded-2xl p-6 border-2 border-emerald-200/50 dark:border-emerald-600/50 shadow-lg">
-                                    {/* Family Group Label */}
-                                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                      <Badge className="bg-gradient-to-r from-emerald-400 to-teal-400 text-white text-xs px-3 py-1 shadow-md">
-                                        عائلة {groupIndex + 1}
-                                      </Badge>
-                                    </div>
+                                     {/* Family Group Label */}
+                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                       <Badge className="bg-gradient-to-r from-emerald-400 to-teal-400 text-white text-xs px-3 py-1 shadow-md">
+                                         {(() => {
+                                           // Get parent family name based on the first unit's parent
+                                           if (siblingGroup.length > 0 && siblingGroup[0].parentUnitId) {
+                                             const parentUnit = familyUnits.get(siblingGroup[0].parentUnitId);
+                                             if (parentUnit) {
+                                               if (parentUnit.type === 'married' && parentUnit.members.length === 2) {
+                                                 const [husband, wife] = parentUnit.members;
+                                                 return `عائلة ${husband.name}`;
+                                               } else if (parentUnit.members.length === 1) {
+                                                 return `عائلة ${parentUnit.members[0].name}`;
+                                               }
+                                             }
+                                           }
+                                           return `عائلة ${groupIndex + 1}`;
+                                         })()}
+                                       </Badge>
+                                     </div>
 
                                     {/* Connection Line from Parent */}
                                     {generation > 1 && (
