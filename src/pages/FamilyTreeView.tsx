@@ -23,6 +23,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { supabase } from "@/integrations/supabase/client";
 
 const FamilyTreeView = () => {
@@ -598,134 +599,13 @@ const FamilyTreeView = () => {
                 </TabsTrigger>
               </TabsList>
               
-              {/* Traditional Tree View - Hierarchical Style */}
+              {/* Traditional Tree View - Organizational Chart Style */}
               <TabsContent value="traditional">
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
-                  <div 
-                    className="transition-transform duration-300"
-                    style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-                  >
-                    {(() => {
-                      console.log('Rendering check - familyTree.length:', familyTree.length);
-                      console.log('familyTree content:', familyTree);
-                      
-                      if (familyTree.length > 0) {
-                        console.log('Should show tree structure');
-                        return (
-                          <div className="space-y-16">
-                            {familyTree.map(([generation, siblingGroups]) => (
-                              <div key={generation} className="text-center">
-                                {/* Generation Header */}
-                                <div className="mb-10">
-                                  <div className="relative inline-block">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-xl"></div>
-                                    <Badge className="relative text-lg px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg border-0">
-                                      <Crown className="h-5 w-5 mr-2" />
-                                      الجيل {generation}
-                                    </Badge>
-                                  </div>
-                                </div>
-
-                                {/* Traditional hierarchical display */}
-                                <div className="flex justify-center gap-16 mb-12 overflow-x-auto">
-                                  {siblingGroups.map((siblingGroup, groupIndex) => (
-                                    <div key={groupIndex} className="relative flex flex-col items-center">
-                                      {/* Connection line from parent */}
-                                      {generation > 1 && (
-                                        <div className="absolute -top-6 left-1/2 w-px h-6 bg-gradient-to-b from-emerald-400 to-transparent transform -translate-x-1/2"></div>
-                                      )}
-                                      
-                                      {/* Sibling group container */}
-                                      <div className="relative bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-lg p-4 border border-emerald-200/30 dark:border-emerald-600/30">
-                                        <div className="flex gap-6 justify-center items-center flex-wrap">
-                                          {siblingGroup.map((unit, unitIndex) => (
-                                            <div key={unit.id} className="relative">
-                                              {renderFamilyUnit(unit)}
-                                              
-                                              {/* Connection line between siblings (horizontal) */}
-                                              {unitIndex < siblingGroup.length - 1 && (
-                                                <div className="absolute top-1/2 -right-3 w-6 h-px bg-gradient-to-r from-emerald-400 to-emerald-300 transform -translate-y-1/2"></div>
-                                              )}
-                                            </div>
-                                          ))}
-                                        </div>
-                                        
-                                         {/* Family group label */}
-                                         <div className="text-center mt-2">
-                                           <Badge variant="outline" className="text-xs bg-emerald-50/50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-600">
-                                             {(() => {
-                                               // Get parent family name based on the first unit's parent
-                                               if (siblingGroup.length > 0 && siblingGroup[0].parentUnitId) {
-                                                 const parentUnit = familyUnits.get(siblingGroup[0].parentUnitId);
-                                                 if (parentUnit) {
-                                                   if (parentUnit.type === 'married' && parentUnit.members.length === 2) {
-                                                     const [husband, wife] = parentUnit.members;
-                                                     return `عائلة ${husband.name}`;
-                                                   } else if (parentUnit.members.length === 1) {
-                                                     return `عائلة ${parentUnit.members[0].name}`;
-                                                   }
-                                                 }
-                                               }
-                                               return `مجموعة أسرية ${groupIndex + 1}`;
-                                             })()}
-                                           </Badge>
-                                         </div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                 {/* Connection Line to next generation */}
-                                 {generation < Math.max(...familyTree.map(([gen, _]) => gen)) && (
-                                  <div className="flex justify-center">
-                                    <div className="w-1 h-16 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"></div>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      } else {
-                        console.log('Should show empty state');
-                        return (
-                          <div className="text-center py-24">
-                            <div className="relative max-w-md mx-auto">
-                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
-                              
-                              <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-12 px-8 shadow-xl">
-                                <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                                  <TreePine className="h-12 w-12 text-white" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">
-                                  لا توجد شجرة عائلة بعد
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300 mb-8">
-                                  لم يتم إنشاء أي عائلة أو إضافة أعضاء بعد. ابدأ ببناء شجرة عائلتك الآن!
-                                </p>
-                                <div className="flex gap-4 justify-center">
-                                  <Button
-                                    onClick={() => navigate('/dashboard')}
-                                    className="gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg"
-                                  >
-                                    <Users className="h-5 w-5" />
-                                    إدارة الأعضاء
-                                  </Button>
-                                  <Button
-                                    onClick={() => navigate('/family-builder')}
-                                    variant="outline"
-                                    className="gap-3 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
-                                  >
-                                    <TreePine className="h-5 w-5" />
-                                    بناء العائلة
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }
-                    })()}
-                  </div>
+                  <OrganizationalChart 
+                    familyUnits={familyUnits} 
+                    zoomLevel={zoomLevel} 
+                  />
                 </div>
               </TabsContent>
 
