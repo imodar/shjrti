@@ -205,7 +205,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const parentPosition = positions[parentId];
       if (!parentPosition || children.length === 0) return;
       
-      // Calculate connection points
+      // Calculate connection points - adjust for SVG coordinate system
+      const parentCenterX = chartWidth / 2 + parentPosition.x;
       const parentBottomY = parentPosition.y + 140; // Below parent box
       const distributionY = parentBottomY + 30; // Horizontal distribution line
       
@@ -215,49 +216,55 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         const childPosition = positions[child.id];
         if (!childPosition) return;
         
+        const childCenterX = chartWidth / 2 + childPosition.x;
+        const childTopY = childPosition.y - 6;
+        
         connections.push(
           <g key={`single-connection-${child.id}`}>
-            {/* Vertical line from parent to child */}
+            {/* Vertical line from parent down */}
             <line
-              x1={parentPosition.x}
+              x1={parentCenterX}
               y1={parentBottomY}
-              x2={parentPosition.x}
+              x2={parentCenterX}
               y2={distributionY}
-              stroke="rgb(52, 211, 153)"
+              stroke="hsl(var(--primary))"
               strokeWidth="2"
             />
+            {/* Horizontal line to child */}
             <line
-              x1={parentPosition.x}
+              x1={parentCenterX}
               y1={distributionY}
-              x2={childPosition.x}
+              x2={childCenterX}
               y2={distributionY}
-              stroke="rgb(52, 211, 153)"
+              stroke="hsl(var(--primary))"
               strokeWidth="2"
             />
+            {/* Vertical line down to child */}
             <line
-              x1={childPosition.x}
+              x1={childCenterX}
               y1={distributionY}
-              x2={childPosition.x}
-              y2={childPosition.y - 6}
-              stroke="rgb(52, 211, 153)"
+              x2={childCenterX}
+              y2={childTopY}
+              stroke="hsl(var(--primary))"
               strokeWidth="2"
             />
           </g>
         );
       } else {
         // Multiple children - org chart style
-        const leftmostX = Math.min(...children.map(child => positions[child.id]?.x || 0));
-        const rightmostX = Math.max(...children.map(child => positions[child.id]?.x || 0));
+        const childPositions = children.map(child => positions[child.id]).filter(Boolean);
+        const leftmostX = Math.min(...childPositions.map(pos => chartWidth / 2 + pos!.x));
+        const rightmostX = Math.max(...childPositions.map(pos => chartWidth / 2 + pos!.x));
         
         connections.push(
           <g key={`multi-connection-${parentId}`}>
             {/* Vertical line from parent down */}
             <line
-              x1={parentPosition.x}
+              x1={parentCenterX}
               y1={parentBottomY}
-              x2={parentPosition.x}
+              x2={parentCenterX}
               y2={distributionY}
-              stroke="rgb(52, 211, 153)"
+              stroke="hsl(var(--primary))"
               strokeWidth="2"
             />
             
@@ -267,7 +274,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y1={distributionY}
               x2={rightmostX}
               y2={distributionY}
-              stroke="rgb(52, 211, 153)"
+              stroke="hsl(var(--primary))"
               strokeWidth="2"
             />
             
@@ -276,14 +283,17 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               const childPosition = positions[child.id];
               if (!childPosition) return null;
               
+              const childCenterX = chartWidth / 2 + childPosition.x;
+              const childTopY = childPosition.y - 6;
+              
               return (
                 <line
                   key={`child-line-${child.id}`}
-                  x1={childPosition.x}
+                  x1={childCenterX}
                   y1={distributionY}
-                  x2={childPosition.x}
-                  y2={childPosition.y - 6}
-                  stroke="rgb(52, 211, 153)"
+                  x2={childCenterX}
+                  y2={childTopY}
+                  stroke="hsl(var(--primary))"
                   strokeWidth="2"
                 />
               );
