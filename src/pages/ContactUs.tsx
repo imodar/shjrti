@@ -106,7 +106,7 @@ const ContactUs: React.FC = () => {
       <GlobalHeader />
       
       {/* Immersive Hero Section */}
-      <section className="flex items-center justify-center relative overflow-hidden pt-32 pb-8">
+      <section className="flex items-center justify-center relative overflow-hidden pt-32 pb-4">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-transparent to-amber-900/20"></div>
         
         {/* Interactive Floating Orbs */}
