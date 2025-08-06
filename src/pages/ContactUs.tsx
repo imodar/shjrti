@@ -82,7 +82,20 @@ const ContactUs: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/50 to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+      {/* Floating Elements */}
+      <div className="absolute top-20 right-10 animate-pulse">
+        <Heart className="h-12 w-12 text-pink-400 opacity-60" />
+      </div>
+      <div className="absolute bottom-32 left-16 animate-bounce">
+        <Users className="h-16 w-16 text-emerald-400 opacity-40" />
+      </div>
+      <div className="absolute top-40 left-32 animate-pulse">
+        <Mail className="h-8 w-8 text-yellow-400 opacity-60" />
+      </div>
+      <div className="absolute bottom-60 right-32 animate-pulse delay-1000">
+        <Phone className="h-10 w-10 text-teal-400 opacity-50" />
+      </div>
       <GlobalHeader />
       
       {/* Hero Section */}
