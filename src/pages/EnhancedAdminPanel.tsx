@@ -197,6 +197,10 @@ export default function EnhancedAdminPanel() {
   const [statusDialog, setStatusDialog] = useState<{isOpen: boolean, user: UserProfile | null}>({isOpen: false, user: null});
   const [newUserStatus, setNewUserStatus] = useState<'active' | 'pending' | 'suspended' | 'inactive'>('active');
   const [statusReason, setStatusReason] = useState('');
+  
+  // Extended user editing state
+  const [editingUserStatus, setEditingUserStatus] = useState<'active' | 'pending' | 'suspended' | 'inactive'>('active');
+  const [editingStatusReason, setEditingStatusReason] = useState('');
 
   const loadPackages = async () => {
     try {
@@ -770,7 +774,8 @@ export default function EnhancedAdminPanel() {
     if (!editingUser || !editingUser.profile_id) return;
 
     try {
-      const { error } = await supabase
+      // Update profile information
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           first_name: editingUser.first_name,
@@ -779,11 +784,20 @@ export default function EnhancedAdminPanel() {
         })
         .eq('id', editingUser.profile_id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Update user status if changed
+      const { error: statusError } = await supabase.rpc('update_user_status', {
+        target_user_id: editingUser.id,
+        new_status: editingUser.user_status,
+        status_reason: editingUser.status_reason || null
+      });
+
+      if (statusError) throw statusError;
 
       toast({
         title: "نجح",
-        description: "تم تحديث بيانات المستخدم بنجاح"
+        description: "تم تحديث جميع بيانات المستخدم بنجاح"
       });
 
       loadUsers();
@@ -1137,7 +1151,11 @@ export default function EnhancedAdminPanel() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => setEditingUser(user)}
+                              onClick={() => {
+                                setEditingUser(user);
+                                setEditingUserStatus(user.user_status);
+                                setEditingStatusReason(user.status_reason || '');
+                              }}
                               className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
                             >
                               <Edit className="h-4 w-4" />
@@ -1815,66 +1833,230 @@ export default function EnhancedAdminPanel() {
           </DialogContent>
         </Dialog>
 
-        {/* Edit User Dialog */}
+        {/* Comprehensive Edit User Dialog */}
         <Dialog open={editingUser !== null} onOpenChange={() => setEditingUser(null)}>
-          <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
+          <DialogContent className={`sm:max-w-[700px] max-h-[90vh] overflow-y-auto ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
             <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
-              <DialogTitle>تعديل بيانات المستخدم</DialogTitle>
-              <DialogDescription>قم بتعديل بيانات المستخدم المحددة</DialogDescription>
+              <DialogTitle>إدارة المستخدم - تحكم شامل</DialogTitle>
+              <DialogDescription>تحرير جميع بيانات المستخدم وحالاته واشتراكه</DialogDescription>
             </DialogHeader>
             {editingUser && (
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-email" className="text-right">البريد الإلكتروني</Label>
-                  <Input
-                    id="edit-email"
-                    value={editingUser.email}
-                    disabled
-                    className="col-span-3 bg-gray-100"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-first-name" className="text-right">الاسم الأول</Label>
-                  <Input
-                    id="edit-first-name"
-                    value={editingUser.first_name || ''}
-                    onChange={(e) => setEditingUser({...editingUser, first_name: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-last-name" className="text-right">الاسم الأخير</Label>
-                  <Input
-                    id="edit-last-name"
-                    value={editingUser.last_name || ''}
-                    onChange={(e) => setEditingUser({...editingUser, last_name: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-phone" className="text-right">رقم الهاتف</Label>
-                  <Input
-                    id="edit-phone"
-                    value={editingUser.profile_phone || editingUser.phone || ''}
-                    onChange={(e) => setEditingUser({...editingUser, profile_phone: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right">حالة التفعيل</Label>
-                  <div className="col-span-3">
-                    {editingUser.email_confirmed_at ? (
-                      <Badge className="bg-green-100 text-green-800 border-green-200">
-                        مفعل
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                        غير مفعل
-                      </Badge>
-                    )}
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="basic">البيانات الأساسية</TabsTrigger>
+                  <TabsTrigger value="status">الحالة والصلاحيات</TabsTrigger>
+                  <TabsTrigger value="subscription">الاشتراك</TabsTrigger>
+                </TabsList>
+                
+                {/* Basic Information Tab */}
+                <TabsContent value="basic" className="space-y-4">
+                  <div className="grid gap-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="edit-email" className="text-right">البريد الإلكتروني</Label>
+                      <Input
+                        id="edit-email"
+                        value={editingUser.email}
+                        disabled
+                        className="col-span-3 bg-gray-100"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="edit-first-name" className="text-right">الاسم الأول</Label>
+                      <Input
+                        id="edit-first-name"
+                        value={editingUser.first_name || ''}
+                        onChange={(e) => setEditingUser({...editingUser, first_name: e.target.value})}
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="edit-last-name" className="text-right">الاسم الأخير</Label>
+                      <Input
+                        id="edit-last-name"
+                        value={editingUser.last_name || ''}
+                        onChange={(e) => setEditingUser({...editingUser, last_name: e.target.value})}
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="edit-phone" className="text-right">رقم الهاتف</Label>
+                      <Input
+                        id="edit-phone"
+                        value={editingUser.profile_phone || editingUser.phone || ''}
+                        onChange={(e) => setEditingUser({...editingUser, profile_phone: e.target.value})}
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label className="text-right">تاريخ التسجيل</Label>
+                      <div className="col-span-3">
+                        <p className="text-sm text-gray-600">
+                          {new Date(editingUser.created_at).toLocaleDateString('ar-EG', {
+                            year: 'numeric', month: 'long', day: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </TabsContent>
+
+                {/* Status and Permissions Tab */}
+                <TabsContent value="status" className="space-y-4">
+                  <div className="grid gap-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label className="text-right">حالة التفعيل</Label>
+                      <div className="col-span-3">
+                        {editingUser.email_confirmed_at ? (
+                          <Badge className="bg-green-100 text-green-800 border-green-200">
+                            مفعل منذ {new Date(editingUser.email_confirmed_at).toLocaleDateString('ar-EG')}
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                            غير مفعل - يحتاج تأكيد الإيميل
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="edit-user-status" className="text-right">حالة المستخدم</Label>
+                      <div className="col-span-3">
+                        <Select 
+                          value={editingUser.user_status} 
+                          onValueChange={(value: 'active' | 'pending' | 'suspended' | 'inactive') => {
+                            setEditingUser({...editingUser, user_status: value});
+                            setEditingUserStatus(value);
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">فعال - يمكنه استخدام جميع الميزات</SelectItem>
+                            <SelectItem value="pending">بانتظار التفعيل - حساب جديد</SelectItem>
+                            <SelectItem value="suspended">موقف من الإدمن - لا يمكنه الدخول</SelectItem>
+                            <SelectItem value="inactive">غير مفعل - حساب معطل</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="edit-status-reason" className="text-right">سبب الحالة</Label>
+                      <Textarea
+                        id="edit-status-reason"
+                        placeholder="أدخل سبب تغيير الحالة..."
+                        value={editingUser.status_reason || ''}
+                        onChange={(e) => {
+                          setEditingUser({...editingUser, status_reason: e.target.value});
+                          setEditingStatusReason(e.target.value);
+                        }}
+                        className="col-span-3 min-h-[60px]"
+                      />
+                    </div>
+
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">معلومات الحالة:</h4>
+                      <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                        <li>• <strong>فعال:</strong> يمكن للمستخدم الدخول واستخدام جميع الميزات</li>
+                        <li>• <strong>بانتظار التفعيل:</strong> حساب جديد يحتاج تأكيد الإيميل</li>
+                        <li>• <strong>موقف:</strong> تم إيقاف المستخدم من قبل الإدارة</li>
+                        <li>• <strong>غير مفعل:</strong> حساب معطل ولا يمكن استخدامه</li>
+                      </ul>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Subscription Tab */}
+                <TabsContent value="subscription" className="space-y-4">
+                  <div className="grid gap-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label className="text-right">حالة الاشتراك</Label>
+                      <div className="col-span-3">
+                        {editingUser.subscription_status === 'active' ? (
+                          <Badge className="bg-green-100 text-green-800 border-green-200">
+                            اشتراك نشط
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-red-100 text-red-800 border-red-200">
+                            لا يوجد اشتراك
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {editingUser.subscription_status === 'active' && (
+                      <>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label className="text-right">نوع الباقة</Label>
+                          <div className="col-span-3">
+                            <p className="font-medium">
+                              {typeof editingUser.subscription_package_name === 'object' && editingUser.subscription_package_name?.ar 
+                                ? editingUser.subscription_package_name.ar 
+                                : 'باقة غير معروفة'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label className="text-right">تاريخ انتهاء الاشتراك</Label>
+                          <div className="col-span-3">
+                            <p className="text-sm">
+                              {editingUser.subscription_expires_at 
+                                ? new Date(editingUser.subscription_expires_at).toLocaleDateString('ar-EG', {
+                                    year: 'numeric', month: 'long', day: 'numeric'
+                                  })
+                                : 'غير محدد'}
+                            </p>
+                            {editingUser.subscription_expires_at && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                {(() => {
+                                  const expiryDate = new Date(editingUser.subscription_expires_at);
+                                  const today = new Date();
+                                  const diffTime = expiryDate.getTime() - today.getTime();
+                                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                  
+                                  if (diffDays > 0) {
+                                    return `باقي ${diffDays} يوم`;
+                                  } else if (diffDays === 0) {
+                                    return 'ينتهي اليوم';
+                                  } else {
+                                    return `انتهى منذ ${Math.abs(diffDays)} يوم`;
+                                  }
+                                })()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="p-4 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">إدارة الاشتراك:</h4>
+                      <div className="space-y-2">
+                        {editingUser.subscription_status === 'active' ? (
+                          <div className="flex gap-2 flex-wrap">
+                            <Button variant="outline" size="sm" className="text-orange-600 border-orange-200 hover:bg-orange-50">
+                              تمديد الاشتراك
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                              تغيير الباقة
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+                              إلغاء الاشتراك
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button variant="outline" size="sm" className="text-green-600 border-green-200 hover:bg-green-50">
+                            إنشاء اشتراك جديد
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             )}
             <DialogFooter className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
               <Button onClick={() => setEditingUser(null)} variant="outline">
