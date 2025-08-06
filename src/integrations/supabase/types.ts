@@ -559,6 +559,45 @@ export type Database = {
         }
         Relationships: []
       }
+      pages: {
+        Row: {
+          content: Json
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean
+          meta_description: Json | null
+          meta_keywords: Json | null
+          slug: string
+          title: Json
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean
+          meta_description?: Json | null
+          meta_keywords?: Json | null
+          slug: string
+          title?: Json
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean
+          meta_description?: Json | null
+          meta_keywords?: Json | null
+          slug?: string
+          title?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

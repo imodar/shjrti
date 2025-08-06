@@ -27,7 +27,8 @@ import {
   Plus, 
   Edit,
   RefreshCw,
-  Settings
+  Settings,
+  FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -35,6 +36,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import PageEditor from "@/components/PageEditor";
 
 interface PackageType {
   id: string;
@@ -724,9 +726,9 @@ export default function AdminPanel() {
               <Store className="ml-2 h-4 w-4" />
               الطلبات
             </TabsTrigger>
-            <TabsTrigger value="content" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <MessageSquare className="ml-2 h-4 w-4" />
-              المحتوى
+            <TabsTrigger value="pages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <FileText className="ml-2 h-4 w-4" />
+              إدارة الصفحات
             </TabsTrigger>
           </TabsList>
 
@@ -1391,19 +1393,15 @@ Feature 3`}
             </Card>
           </TabsContent>
 
-          {/* Content Tab */}
-          <TabsContent value="content" className="space-y-6">
-            <Card>
+          {/* Pages Tab */}
+          <TabsContent value="pages" className="space-y-6">
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
               <CardHeader>
-                <CardTitle>Content Management</CardTitle>
-                <CardDescription>Manage website content and translations</CardDescription>
+                <CardTitle>إدارة الصفحات</CardTitle>
+                <CardDescription>إدارة محتوى الصفحات الثابتة مثل الشروط والأحكام وسياسة الخصوصية</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <MessageSquare className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Content Management</h3>
-                  <p className="text-muted-foreground">Content management features will be implemented here.</p>
-                </div>
+                <PageEditor />
               </CardContent>
             </Card>
           </TabsContent>
