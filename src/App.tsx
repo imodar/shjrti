@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ScrollToTop from "@/components/ScrollToTop";
+import CustomScriptInjector from "@/components/CustomScriptInjector";
 import Index from "./pages/Index";
 import IndexBackup from "./pages/IndexBackup";
 import Auth from "./pages/Auth";
@@ -54,6 +55,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <ScrollToTop />
+                <CustomScriptInjector />
                 <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/home-backup" element={<IndexBackup />} />

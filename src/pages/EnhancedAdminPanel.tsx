@@ -31,7 +31,8 @@ import {
   RefreshCw,
   Settings,
   FileText,
-  Mail
+  Mail,
+  Code
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import PageEditor from '@/components/PageEditor';
@@ -181,6 +182,10 @@ export default function EnhancedAdminPanel() {
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null);
+  
+  // Custom JavaScript management state
+  const [customJavaScript, setCustomJavaScript] = useState('');
+  const [savingJavaScript, setSavingJavaScript] = useState(false);
 
   const loadPackages = async () => {
     try {
@@ -260,9 +265,61 @@ export default function EnhancedAdminPanel() {
     }
   };
 
+  // Load custom JavaScript from admin settings
+  const loadCustomJavaScript = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('admin_settings')
+        .select('setting_value')
+        .eq('setting_key', 'custom_javascript')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      const settingValue = data?.setting_value as { code?: string } | null;
+      if (settingValue?.code) {
+        setCustomJavaScript(settingValue.code);
+      }
+    } catch (error) {
+      console.error('Error loading custom JavaScript:', error);
+    }
+  };
+
+  // Save custom JavaScript to admin settings
+  const saveCustomJavaScript = async () => {
+    setSavingJavaScript(true);
+    try {
+      const { error } = await supabase
+        .from('admin_settings')
+        .upsert({
+          setting_key: 'custom_javascript',
+          setting_value: { code: customJavaScript },
+          description: 'Custom JavaScript code to be injected in the head section'
+        }, {
+          onConflict: 'setting_key'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "تم الحفظ",
+        description: "تم حفظ كود الجافاسكريبت بنجاح"
+      });
+    } catch (error) {
+      console.error('Error saving custom JavaScript:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حفظ كود الجافاسكريبت",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingJavaScript(false);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
-    Promise.all([loadPackages(), loadTranslations(), loadLanguages(), loadUsers(), loadUserSubscriptions()]).finally(() => {
+    Promise.all([loadPackages(), loadTranslations(), loadLanguages(), loadUsers(), loadUserSubscriptions(), loadCustomJavaScript()]).finally(() => {
       setLoading(false);
     });
   }, []);
@@ -760,7 +817,7 @@ export default function EnhancedAdminPanel() {
               </div>
             </div>
             
-            <Button onClick={() => { loadPackages(); loadTranslations(); loadLanguages(); loadUsers(); loadUserSubscriptions(); }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+            <Button onClick={() => { loadPackages(); loadTranslations(); loadLanguages(); loadUsers(); loadUserSubscriptions(); loadCustomJavaScript(); }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               تحديث البيانات
             </Button>
@@ -1375,15 +1432,67 @@ export default function EnhancedAdminPanel() {
             <ContactSubmissions />
           </TabsContent>
 
-          {/* Settings Tab - Placeholder */}
+          {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
-            <Card>
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
               <CardHeader>
-                <CardTitle>إعدادات الموقع</CardTitle>
-                <CardDescription>إدارة إعدادات الموقع العامة</CardDescription>
+                <CardTitle className="flex items-center gap-2 text-xl font-bold text-emerald-600">
+                  <Code className="h-5 w-5" />
+                  إدارة كود الجافاسكريبت المخصص
+                </CardTitle>
+                <CardDescription>
+                  إضافة كود جافاسكريبت مخصص مثل Google Analytics، Facebook Pixel، وأدوات التتبع الأخرى
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">قريباً...</p>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="customJs">كود الجافاسكريبت</Label>
+                  <Textarea
+                    id="customJs"
+                    placeholder="أدخل كود الجافاسكريبت هنا...
+مثال:
+<!-- Google Analytics -->
+<script async src='https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID'></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GA_TRACKING_ID');
+</script>"
+                    value={customJavaScript}
+                    onChange={(e) => setCustomJavaScript(e.target.value)}
+                    className="min-h-[300px] font-mono text-sm"
+                  />
+                </div>
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                  <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">تنبيه أمني:</h4>
+                  <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                    <li>• تأكد من مصدر الكود قبل إضافته</li>
+                    <li>• لا تضع كود من مصادر غير موثوقة</li>
+                    <li>• سيتم إدراج الكود في منطقة head لجميع الصفحات</li>
+                  </ul>
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={saveCustomJavaScript} 
+                    disabled={savingJavaScript}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500"
+                  >
+                    {savingJavaScript ? (
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    حفظ الكود
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setCustomJavaScript('')}
+                    disabled={savingJavaScript}
+                  >
+                    مسح الكود
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
