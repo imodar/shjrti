@@ -18,6 +18,7 @@ interface SubscriptionContextType {
   isExpired: boolean;
   daysUntilExpiry: number | null;
   refreshSubscription: () => Promise<void>;
+  clearSubscriptionCache: () => void;
   showExpiryWarning: boolean;
   hasAIFeatures: boolean;
 }
@@ -27,34 +28,80 @@ const SubscriptionContext = createContext<SubscriptionContextType | undefined>(u
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<SubscriptionDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
+  const [loading, setLoading] = useState(false); // Start with false, only load when needed
+  const [lastFetchedUserId, setLastFetchedUserId] = useState<string | null>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  const fetchSubscriptionDetails = async () => {
+  // Load subscription from cache first
+  const loadSubscriptionFromCache = (userId: string) => {
+    try {
+      const cached = localStorage.getItem(`subscription_${userId}`);
+      if (cached) {
+        const cachedData = JSON.parse(cached);
+        // Check if cache is less than 1 hour old
+        if (Date.now() - cachedData.timestamp < 3600000) {
+          console.log('Loading subscription from cache:', cachedData.data);
+          setSubscription(cachedData.data);
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading subscription from cache:', error);
+    }
+    return false;
+  };
+
+  // Save subscription to cache
+  const saveSubscriptionToCache = (userId: string, data: SubscriptionDetails) => {
+    try {
+      localStorage.setItem(`subscription_${userId}`, JSON.stringify({
+        data,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.error('Error saving subscription to cache:', error);
+    }
+  };
+
+  const fetchSubscriptionDetails = async (forceRefresh = false) => {
     if (!user) {
       setSubscription(null);
       setLoading(false);
-      setHasAttemptedFetch(true);
+      setHasInitialized(true);
+      return;
+    }
+
+    // Don't fetch if we already have data for this user and it's not a forced refresh
+    if (!forceRefresh && lastFetchedUserId === user.id && subscription) {
+      console.log('Subscription already loaded for this user, skipping fetch');
+      setLoading(false);
+      setHasInitialized(true);
+      return;
+    }
+
+    // Try loading from cache first (unless force refresh)
+    if (!forceRefresh && loadSubscriptionFromCache(user.id)) {
+      setLastFetchedUserId(user.id);
+      setLoading(false);
+      setHasInitialized(true);
       return;
     }
 
     try {
       setLoading(true);
       console.log('Fetching subscription for user:', user.id);
-      console.log('Clearing any cached subscription data...');
-      setSubscription(null);
       const { data, error } = await supabase.rpc('get_user_subscription_details', {
         user_uuid: user.id
       });
 
       console.log('Subscription data received:', data);
-      console.log('Subscription error:', error);
-      console.log('Raw subscription details:', JSON.stringify(data, null, 2));
+
+      let subscriptionData: SubscriptionDetails;
 
       if (error) {
         console.error('Error fetching subscription details:', error);
         // If there's an error, default to free plan (not expired) to avoid blocking access
-        setSubscription({
+        subscriptionData = {
           subscription_id: null,
           package_name: null,
           status: 'free',
@@ -62,14 +109,14 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           days_until_expiry: null,
           is_expired: false, // Free plan is not expired
           ai_features_enabled: false
-        });
+        };
       } else if (data && data.length > 0) {
         console.log('Setting subscription data:', data[0]);
-        setSubscription(data[0]);
+        subscriptionData = data[0];
       } else {
         console.log('No active subscription found in data - defaulting to free plan');
         // No active subscription found - user is on free plan
-        setSubscription({
+        subscriptionData = {
           subscription_id: null,
           package_name: null,
           status: 'free',
@@ -77,12 +124,16 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           days_until_expiry: null,
           is_expired: false, // Free plan is not expired
           ai_features_enabled: false
-        });
+        };
       }
+
+      setSubscription(subscriptionData);
+      setLastFetchedUserId(user.id);
+      saveSubscriptionToCache(user.id, subscriptionData);
     } catch (error) {
       console.error('Error in fetchSubscriptionDetails:', error);
       // On error, default to free plan to avoid blocking access
-      setSubscription({
+      const errorSubscription = {
         subscription_id: null,
         package_name: null,
         status: 'free',
@@ -90,30 +141,48 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         days_until_expiry: null,
         is_expired: false, // Free plan is not expired
         ai_features_enabled: false
-      });
+      };
+      setSubscription(errorSubscription);
+      setLastFetchedUserId(user.id);
+      saveSubscriptionToCache(user.id, errorSubscription);
     } finally {
       setLoading(false);
-      setHasAttemptedFetch(true);
+      setHasInitialized(true);
     }
   };
 
   useEffect(() => {
-    // Force refresh subscription data every time user state changes
-    if (user) {
-      setHasAttemptedFetch(false); // Force refresh
+    // Only fetch subscription when user logs in (user changes from null to a user)
+    if (user && !hasInitialized) {
+      console.log('User logged in, fetching subscription');
       fetchSubscriptionDetails();
     } else if (!user) {
       // Clear subscription when user logs out
       setSubscription(null);
       setLoading(false);
-      setHasAttemptedFetch(false);
+      setHasInitialized(true);
+      setLastFetchedUserId(null);
+      // Clear all cached subscriptions on logout
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('subscription_')) {
+          localStorage.removeItem(key);
+        }
+      });
     }
-  }, [user, hasAttemptedFetch]);
+  }, [user]); // Only depend on user, not hasInitialized
 
   // Auto-refresh removed - only check subscription on login or manual refresh
 
   const refreshSubscription = async () => {
-    await fetchSubscriptionDetails();
+    console.log('Manual subscription refresh requested');
+    await fetchSubscriptionDetails(true); // Force refresh
+  };
+
+  // Clear cache for specific actions (upgrade/downgrade)
+  const clearSubscriptionCache = () => {
+    if (user) {
+      localStorage.removeItem(`subscription_${user.id}`);
+    }
   };
 
   // Never consider expired while loading, and only expired if subscription data confirms it
@@ -128,6 +197,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     isExpired,
     daysUntilExpiry,
     refreshSubscription,
+    clearSubscriptionCache,
     showExpiryWarning,
     hasAIFeatures,
   };

@@ -7,11 +7,13 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { clearSubscriptionCache, refreshSubscription } = useSubscription();
   const [verifying, setVerifying] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'failed' | 'pending'>('pending');
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
@@ -47,6 +49,10 @@ export default function PaymentSuccess() {
           setPaymentStatus('success');
           setPaymentDetails(data);
           
+          // Clear subscription cache and refresh after successful payment
+          clearSubscriptionCache();
+          await refreshSubscription();
+          
           toast({
             title: "تم الدفع بنجاح! 🎉",
             description: "تم تفعيل اشتراكك وترقية حسابك بنجاح",
@@ -70,6 +76,10 @@ export default function PaymentSuccess() {
         if (invoice.payment_status === 'paid') {
           setPaymentStatus('success');
           setPaymentDetails({ invoice });
+          
+          // Clear subscription cache and refresh after successful payment
+          clearSubscriptionCache();
+          await refreshSubscription();
         } else {
           setPaymentStatus('pending');
         }
