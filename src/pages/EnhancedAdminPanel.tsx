@@ -780,7 +780,7 @@ export default function EnhancedAdminPanel() {
         .update({
           first_name: editingUser.first_name,
           last_name: editingUser.last_name,
-          phone: editingUser.profile_phone
+          phone: editingUser.profile_phone || editingUser.phone
         })
         .eq('id', editingUser.profile_id);
 
@@ -797,7 +797,7 @@ export default function EnhancedAdminPanel() {
 
       toast({
         title: "نجح",
-        description: "تم تحديث جميع بيانات المستخدم بنجاح"
+        description: "تم تحديث جميع بيانات المستخدم بنجاح (البيانات الأساسية، الحالة، والصلاحيات)"
       });
 
       loadUsers();
