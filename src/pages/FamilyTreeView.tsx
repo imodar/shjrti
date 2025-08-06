@@ -24,6 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
+import { SmartSearchBar } from "@/components/SmartSearchBar";
+import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { supabase } from "@/integrations/supabase/client";
 
 const FamilyTreeView = () => {
@@ -34,6 +36,7 @@ const FamilyTreeView = () => {
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [user, setUser] = useState<any>(null);
 
   // Fetch family tree data from database
   useEffect(() => {
@@ -50,6 +53,7 @@ const FamilyTreeView = () => {
         navigate('/auth');
         return;
       }
+      setUser(user);
 
       // First get families where user is creator
       const { data: createdFamilies, error: createdFamiliesError } = await supabase
@@ -485,6 +489,16 @@ const FamilyTreeView = () => {
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setZoomLevel(1);
 
+  const handleSearchResultSelect = (member: any) => {
+    console.log('Selected member from search:', member);
+    // يمكن إضافة منطق للتنقل إلى العضو في شجرة العائلة
+    toast({
+      title: "تم اختيار العضو",
+      description: `تم اختيار ${member.name} من نتائج البحث`,
+      variant: "default"
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
       <GlobalHeader />
@@ -586,8 +600,30 @@ const FamilyTreeView = () => {
               </div>
             </div>
 
-            {/* Tree Container */}
-            <Tabs defaultValue="traditional" className="w-full">
+            {/* البحث الذكي */}
+            <div className="mb-8 max-w-3xl mx-auto">
+              <SmartSearchBar
+                familyId={familyMembers[0]?.family_id || ''}
+                onResultSelect={handleSearchResultSelect}
+                placeholder="ابحث في شجرة العائلة... (مثال: ابن عم أحمد من ناحية الأب)"
+              />
+            </div>
+
+            {/* الشريط الجانبي والمحتوى الرئيسي */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+              {/* لوحة الاقتراحات الذكية */}
+              <div className="lg:col-span-1">
+                <SuggestionPanel
+                  familyId={familyMembers[0]?.family_id || ''}
+                  userId={user?.id || ''}
+                  className="sticky top-4"
+                />
+              </div>
+
+              {/* شجرة العائلة */}
+              <div className="lg:col-span-3">
+                {/* Tree Container */}
+                <Tabs defaultValue="traditional" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
                 <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
                   <TreePine className="ml-2 h-4 w-4" />
@@ -777,9 +813,11 @@ const FamilyTreeView = () => {
                     )}
                   </div>
                 </div>
-              </TabsContent>
+                </TabsContent>
 
-            </Tabs>
+                </Tabs>
+              </div>
+            </div>
 
             {/* Action Buttons */}
             <div className="mt-12 flex justify-center gap-6">

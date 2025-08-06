@@ -1,1 +1,51 @@
 project_id = "xzakoccnfswabrdwvukp"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_schemas = ["graphql_public"]
+max_rows = 1000
+
+[graphql]
+enabled = true
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+security_update_password_require_reauthentication = true
+
+[functions.intelligent-search]
+verify_jwt = true
+
+[functions.smart-suggestions]
+verify_jwt = true
+
+[functions.create-payment]
+verify_jwt = true
+
+[functions.delete-user]
+verify_jwt = true
+
+[functions.verify-payment]
+verify_jwt = true
