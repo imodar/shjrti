@@ -905,8 +905,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                             </div>
                           )}
                            <div className="flex gap-2">
-                            <TooltipProvider>
-                              <Tooltip open={!isImageUploadEnabled ? undefined : false}>
+                            <TooltipProvider delayDuration={200}>
+                              <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     type="button"
@@ -926,9 +926,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                   </Button>
                                 </TooltipTrigger>
                                 {!isImageUploadEnabled && (
-                                  <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
-                                    <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
-                                    <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                  <TooltipContent 
+                                    side="top" 
+                                    className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg max-w-xs z-50"
+                                    sideOffset={5}
+                                  >
+                                    <div className="text-center">
+                                      <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                      <p className="text-xs opacity-90 mt-1">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                    </div>
                                   </TooltipContent>
                                 )}
                               </Tooltip>
