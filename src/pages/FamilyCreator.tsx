@@ -640,7 +640,7 @@ const FamilyCreator = () => {
 
                           <div className="space-y-6">
                             <div className="group">
-                              <Label htmlFor="familyName" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                              <Label htmlFor="familyName" className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                 <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                 اسم العائلة *
                               </Label>
@@ -650,7 +650,7 @@ const FamilyCreator = () => {
                                   placeholder="مثال : السعيد"
                                   value={treeData.name}
                                   onChange={(e) => setTreeData({...treeData, name: e.target.value})}
-                                  className="h-14 text-lg placeholder:text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                  className="h-14 text-sm placeholder:text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
                                 />
                                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
                                   <span className="text-white text-xs font-bold">1</span>
@@ -659,7 +659,7 @@ const FamilyCreator = () => {
                             </div>
                             
                             <div className="group">
-                              <Label htmlFor="familyDescription" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                              <Label htmlFor="familyDescription" className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                 <div className="w-3 h-3 bg-gradient-to-r from-teal-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                 وصف العائلة (اختياري)
                               </Label>
@@ -669,7 +669,7 @@ const FamilyCreator = () => {
                                   placeholder="شارك قصة عائلتك، تاريخها، أو أي تفاصيل مميزة تود الاحتفاظ بها..."
                                   value={treeData.description}
                                   onChange={(e) => setTreeData({...treeData, description: e.target.value})}
-                                  className="min-h-[120px] text-lg placeholder:text-lg border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                  className="min-h-[120px] text-sm placeholder:text-sm border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
                                 />
                                 <div className="absolute right-4 top-4 w-6 h-6 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center">
                                   <span className="text-white text-xs font-bold">2</span>
@@ -893,7 +893,7 @@ const FamilyCreator = () => {
                             <div className="grid grid-cols-1 gap-4">
                               {/* Name */}
                               <div className="group">
-                              <Label htmlFor="founderName" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                              <Label htmlFor="founderName" className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                   <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                   الاسم الأول * 
                                   <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -908,7 +908,7 @@ const FamilyCreator = () => {
                                     onChange={(e) => {
                                       setFounderData({...founderData, name: e.target.value});
                                     }}
-                                    className="h-14 text-lg placeholder:text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
+                                    className="h-14 text-sm placeholder:text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
                                   />
                                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
                                     <span className="text-white text-xs font-bold">3</span>
@@ -920,7 +920,7 @@ const FamilyCreator = () => {
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 {/* Birth Date */}
                                 <div className="group">
-                                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                  <Label className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                     <div className="w-3 h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                     تاريخ الميلاد
                                   </Label>
@@ -933,12 +933,12 @@ const FamilyCreator = () => {
 
                                 {/* Status */}
                                 <div className="group">
-                                  <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                  <Label className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                     <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                     الحالة
                                   </Label>
                                   <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(value) => setFounderData({...founderData, isAlive: value === "alive"})}>
-                                    <SelectTrigger className="h-14 text-lg border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl">
+                                    <SelectTrigger className="h-14 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl">
                                       <SelectValue className="text-lg" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -951,7 +951,7 @@ const FamilyCreator = () => {
                                 {/* Death Date (conditional) */}
                                 {!founderData.isAlive && (
                                   <div className="group">
-                                    <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                                    <Label className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                       <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                       تاريخ الوفاة
                                     </Label>
@@ -969,7 +969,7 @@ const FamilyCreator = () => {
 
                             {/* Image Upload - Compact Card */}
                             <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200/50 dark:border-amber-700/50">
-                              <Label className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                              <Label className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                 <div className="w-3 h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                 صورة المؤسس (اختياري)
                               </Label>
@@ -1023,7 +1023,7 @@ const FamilyCreator = () => {
 
                             {/* Biography - Compact Card */}
                             <div className="bg-gradient-to-br from-teal-50/50 to-cyan-50/50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 border border-teal-200/50 dark:border-teal-700/50">
-                              <Label htmlFor="founderBio" className="text-lg font-bold flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
+                              <Label htmlFor="founderBio" className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                 <div className="w-3 h-3 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                                 السيرة الذاتية (اختياري)
                               </Label>
@@ -1032,7 +1032,7 @@ const FamilyCreator = () => {
                                 placeholder="معلومات عن المؤسس، إنجازاته، مهنته، قصص مميزة..."
                                 value={founderData.bio}
                                 onChange={(e) => setFounderData({...founderData, bio: e.target.value})}
-                                className="min-h-[120px] text-lg placeholder:text-lg border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none"
+                                className="min-h-[120px] text-sm placeholder:text-sm border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl resize-none"
                               />
                             </div>
                           </div>
