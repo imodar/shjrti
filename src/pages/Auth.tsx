@@ -15,7 +15,8 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otpCode, setOtpCode] = useState("");
@@ -103,7 +104,7 @@ const Auth = () => {
             });
           } else {
             // Store user data and show OTP screen
-            setPendingUserData({ email, password, fullName: "", phone: "" });
+            setPendingUserData({ email, password, firstName: "", lastName: "", phone: "" });
             setShowOTP(true);
             toast({
               title: t('verification_code_sent', 'تم إرسال رمز التحقق'),
@@ -166,7 +167,9 @@ const Auth = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            full_name: fullName,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
             phone: phone,
           }
         }
@@ -183,7 +186,7 @@ const Auth = () => {
       }
 
       // Store user data for later verification
-      setPendingUserData({ email, password, fullName, phone });
+      setPendingUserData({ email, password, firstName, lastName, phone });
       
       toast({
         title: t('verification_code_sent', 'تم إرسال رمز التحقق'),
@@ -231,7 +234,8 @@ const Auth = () => {
       // Clear form and redirect
       setEmail("");
       setPassword("");
-      setFullName("");
+      setFirstName("");
+      setLastName("");
       setPhone("");
       setOtpCode("");
       setShowOTP(false);
@@ -576,18 +580,35 @@ const Auth = () => {
                       {/* Register Tab */}
                       <TabsContent value="register" className="space-y-4">
                         <form onSubmit={handleRegister} className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="fullName">{t('full_name', 'الاسم الكامل')}</Label>
-                            <div className="relative">
-                              <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                id="fullName"
-                                placeholder={t('enter_full_name', 'أدخل اسمك الكامل')}
-                                className="pr-10"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                required
-                              />
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="firstName">{t('first_name', 'الاسم الأول')}</Label>
+                              <div className="relative">
+                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="firstName"
+                                  placeholder={t('enter_first_name', 'أدخل اسمك الأول')}
+                                  className="pr-10"
+                                  value={firstName}
+                                  onChange={(e) => setFirstName(e.target.value)}
+                                  required
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label htmlFor="lastName">{t('last_name', 'الاسم الأخير')}</Label>
+                              <div className="relative">
+                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="lastName"
+                                  placeholder={t('enter_last_name', 'أدخل اسمك الأخير')}
+                                  className="pr-10"
+                                  value={lastName}
+                                  onChange={(e) => setLastName(e.target.value)}
+                                  required
+                                />
+                              </div>
                             </div>
                           </div>
 
