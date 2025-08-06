@@ -778,7 +778,15 @@ const Dashboard = () => {
                             {/* Action Buttons - New Creative Design */}
                             <div className="flex items-center justify-between gap-2">
                               {/* Manage Button - Primary */}
-                              <Link to={`/family-builder?family=${tree.id}`} className="flex-1 group/btn">
+                              <Link 
+                                to={`/family-builder?family=${tree.id}`} 
+                                className="flex-1 group/btn"
+                                onClick={() => {
+                                  console.log('🔗 Navigating to family builder with ID:', tree.id);
+                                  console.log('🔗 Tree name:', tree.name);
+                                  console.log('🔗 Full URL:', `/family-builder?family=${tree.id}`);
+                                }}
+                              >
                                 <Button className="w-full h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Edit className="h-4 w-4 ml-2" />
                                   <span className="font-medium">{t('manage', 'إدارة')}</span>
@@ -786,7 +794,15 @@ const Dashboard = () => {
                               </Link>
                               
                               {/* View Button - Secondary */}
-                              <Link to={`/family-tree-view?family=${tree.id}`} className="flex-1 group/btn">
+                              <Link 
+                                to={`/family-tree-view?family=${tree.id}`} 
+                                className="flex-1 group/btn"
+                                onClick={() => {
+                                  console.log('🔗 Navigating to family tree view with ID:', tree.id);
+                                  console.log('🔗 Tree name:', tree.name);
+                                  console.log('🔗 Full URL:', `/family-tree-view?family=${tree.id}`);
+                                }}
+                              >
                                 <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Eye className="h-4 w-4 ml-2" />
                                   <span className="font-medium">{t('view', 'عرض')}</span>
