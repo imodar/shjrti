@@ -358,12 +358,30 @@ const ContactUs: React.FC = () => {
                         )}
                       />
 
-                      <div className="flex justify-center py-4">
-                        <ReCAPTCHA
-                          sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-                          onChange={setCaptchaValue}
-                          theme="light"
-                        />
+                      {/* Alternative Spam Protection */}
+                      <div className="space-y-4">
+                        <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/50 dark:border-amber-700/30">
+                          <div className="flex items-center gap-3 mb-3">
+                            <Shield className="h-5 w-5 text-amber-600" />
+                            <span className="font-semibold text-amber-700 dark:text-amber-300">التحقق الذكي</span>
+                          </div>
+                          <div className="space-y-3">
+                            <label className="flex items-center gap-3 cursor-pointer group">
+                              <input
+                                type="checkbox"
+                                checked={captchaValue !== null}
+                                onChange={(e) => setCaptchaValue(e.target.checked ? 'verified' : null)}
+                                className="w-5 h-5 rounded border-2 border-amber-300 text-amber-600 focus:ring-amber-500 focus:ring-2"
+                              />
+                              <span className="text-gray-700 dark:text-gray-300 group-hover:text-amber-600 transition-colors">
+                                أؤكد أنني لست روبوت وأرغب في التواصل معكم
+                              </span>
+                            </label>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              نستخدم تقنيات حديثة لحماية النظام من الرسائل المزعجة
+                            </p>
+                          </div>
+                        </div>
                       </div>
 
                       <Button 
