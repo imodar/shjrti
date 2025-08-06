@@ -963,6 +963,7 @@ export type Database = {
           expires_at: string
           days_until_expiry: number
           is_expired: boolean
+          ai_features_enabled: boolean
         }[]
       }
       halfvec_avg: {

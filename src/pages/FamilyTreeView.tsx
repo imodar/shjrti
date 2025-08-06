@@ -26,12 +26,14 @@ import { GlobalFooter } from "@/components/GlobalFooter";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const FamilyTreeView = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { hasAIFeatures } = useSubscription();
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
@@ -600,27 +602,31 @@ const FamilyTreeView = () => {
               </div>
             </div>
 
-            {/* البحث الذكي */}
-            <div className="mb-8 max-w-3xl mx-auto">
-              <SmartSearchBar
-                familyId={familyMembers[0]?.family_id || ''}
-                onResultSelect={handleSearchResultSelect}
-                placeholder="ابحث في شجرة العائلة... (مثال: ابن عم أحمد من ناحية الأب)"
-              />
-            </div>
-
-            {/* الشريط الجانبي والمحتوى الرئيسي */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-              {/* لوحة الاقتراحات الذكية */}
-              <div className="lg:col-span-1">
-              <SuggestionPanel
-                familyId={familyMembers[0]?.family_id || ''}
-                className="sticky top-4"
+            {/* البحث الذكي - يظهر فقط إذا كانت ميزات الـ AI مفعلة */}
+            {hasAIFeatures && (
+              <div className="mb-8 max-w-3xl mx-auto">
+                <SmartSearchBar
+                  familyId={familyMembers[0]?.family_id || ''}
+                  onResultSelect={handleSearchResultSelect}
+                  placeholder="ابحث في شجرة العائلة... (مثال: ابن عم أحمد من ناحية الأب)"
                 />
               </div>
+            )}
+
+            {/* الشريط الجانبي والمحتوى الرئيسي */}
+            <div className={`grid gap-6 mb-8 ${hasAIFeatures ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'}`}>
+              {/* لوحة الاقتراحات الذكية - تظهر فقط إذا كانت ميزات الـ AI مفعلة */}
+              {hasAIFeatures && (
+                <div className="lg:col-span-1">
+                  <SuggestionPanel
+                    familyId={familyMembers[0]?.family_id || ''}
+                    className="sticky top-4"
+                  />
+                </div>
+              )}
 
               {/* شجرة العائلة */}
-              <div className="lg:col-span-3">
+              <div className={hasAIFeatures ? "lg:col-span-3" : "col-span-1"}>
                 {/* Tree Container */}
                 <Tabs defaultValue="traditional" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">

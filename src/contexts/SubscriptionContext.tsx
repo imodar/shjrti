@@ -9,6 +9,7 @@ interface SubscriptionDetails {
   expires_at: string | null;
   days_until_expiry: number | null;
   is_expired: boolean;
+  ai_features_enabled: boolean;
 }
 
 interface SubscriptionContextType {
@@ -18,6 +19,7 @@ interface SubscriptionContextType {
   daysUntilExpiry: number | null;
   refreshSubscription: () => Promise<void>;
   showExpiryWarning: boolean;
+  hasAIFeatures: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -55,7 +57,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           status: null,
           expires_at: null,
           days_until_expiry: null,
-          is_expired: true
+          is_expired: true,
+          ai_features_enabled: false
         });
       } else if (data && data.length > 0) {
         console.log('Setting subscription data:', data[0]);
@@ -69,7 +72,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           status: null,
           expires_at: null,
           days_until_expiry: null,
-          is_expired: true
+          is_expired: true,
+          ai_features_enabled: false
         });
       }
     } catch (error) {
@@ -80,7 +84,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         status: null,
         expires_at: null,
         days_until_expiry: null,
-        is_expired: true
+        is_expired: true,
+        ai_features_enabled: false
       });
     } finally {
       setLoading(false);
@@ -110,6 +115,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const isExpired = loading ? false : (subscription?.is_expired ?? false);
   const daysUntilExpiry = subscription?.days_until_expiry ?? null;
   const showExpiryWarning = !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 7;
+  const hasAIFeatures = !isExpired && (subscription?.ai_features_enabled ?? false);
 
   const value = {
     subscription,
@@ -118,6 +124,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     daysUntilExpiry,
     refreshSubscription,
     showExpiryWarning,
+    hasAIFeatures,
   };
 
   return (
