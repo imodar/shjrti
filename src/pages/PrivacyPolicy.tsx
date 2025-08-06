@@ -80,7 +80,7 @@ export default function PrivacyPolicy() {
       <div className="relative z-10">
         <GlobalHeader />
         
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 pt-24">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Quick Info */}
             <div className="lg:col-span-1">
