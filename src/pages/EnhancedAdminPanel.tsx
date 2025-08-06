@@ -29,9 +29,11 @@ import {
   Trash2, 
   Save,
   RefreshCw,
-  Settings
+  Settings,
+  FileText
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
+import PageEditor from '@/components/PageEditor';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -764,7 +766,7 @@ export default function EnhancedAdminPanel() {
         </div>
 
         <Tabs defaultValue="packages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+          <TabsList className="grid w-full grid-cols-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
             <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Package className="ml-2 h-4 w-4" />
               الباقات
@@ -780,6 +782,10 @@ export default function EnhancedAdminPanel() {
             <TabsTrigger value="languages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Languages className="ml-2 h-4 w-4" />
               اللغات
+            </TabsTrigger>
+            <TabsTrigger value="pages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <FileText className="ml-2 h-4 w-4" />
+              الصفحات
             </TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Scale className="ml-2 h-4 w-4" />
@@ -1351,6 +1357,11 @@ export default function EnhancedAdminPanel() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Pages Tab */}
+          <TabsContent value="pages" className="space-y-6">
+            <PageEditor />
           </TabsContent>
 
           {/* Settings Tab - Placeholder */}
