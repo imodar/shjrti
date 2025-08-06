@@ -906,32 +906,27 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                           )}
                            <div className="flex gap-2">
                             {!isImageUploadEnabled ? (
-                              <TooltipProvider delayDuration={100}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      disabled={true}
-                                      className="gap-2 border-2 border-gray-300 text-gray-400 cursor-not-allowed opacity-60 transition-all duration-300 text-xs px-3 py-2"
-                                    >
-                                      <Upload className="h-3 w-3" />
-                                      {memberData.croppedImage ? 'تغيير' : 'اختيار'}
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent 
-                                    side="top" 
-                                    className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-xl z-[9999] max-w-xs"
-                                    sideOffset={8}
-                                  >
-                                    <div className="text-center p-1">
-                                      <p className="font-medium text-sm">رفع الصور متاح فقط في الخطط المدفوعة</p>
-                                      <p className="text-xs opacity-90 mt-1">قم بترقية خطتك للاستفادة من هذه الميزة</p>
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <div className="relative group">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={true}
+                                  className="gap-2 border-2 border-gray-300 text-gray-400 cursor-not-allowed opacity-60 transition-all duration-300 text-xs px-3 py-2"
+                                >
+                                  <Upload className="h-3 w-3" />
+                                  {memberData.croppedImage ? 'تغيير' : 'اختيار'}
+                                </Button>
+                                {/* Custom tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-[9999] whitespace-nowrap">
+                                  <div className="text-center">
+                                    <div className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</div>
+                                    <div className="text-xs opacity-90 mt-1">قم بترقية خطتك للاستفادة من هذه الميزة</div>
+                                  </div>
+                                  {/* Arrow */}
+                                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-orange-600"></div>
+                                </div>
+                              </div>
                             ) : (
                               <Button
                                 type="button"
