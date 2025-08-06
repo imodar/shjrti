@@ -140,34 +140,34 @@ const ContactUs: React.FC = () => {
               </p>
             </div>
 
-            {/* Right Side - Interactive Contact Cards */}
-            <div className="hidden lg:flex flex-col space-y-3 ml-8">
-              <div className="group flex items-center gap-3 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                  <Mail className="h-5 w-5 text-white" />
+            {/* Right Side - Horizontal Contact Cards */}
+            <div className="hidden lg:flex items-center space-x-4 ml-8">
+              <div className="group flex items-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-200/50 dark:border-blue-700/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-md">
+                  <Mail className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">البريد الإلكتروني</p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400">support@shjrti.com</p>
+                  <p className="text-xs font-bold text-blue-700 dark:text-blue-300">البريد الإلكتروني</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">support@shjrti.com</p>
                 </div>
               </div>
               
-              <div className="group flex items-center gap-3 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ml-4">
-                <div className="p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                  <Clock className="h-5 w-5 text-white" />
+              <div className="group flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl border border-purple-200/50 dark:border-purple-700/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-md">
+                  <Clock className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">ساعات العمل</p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400">9:00 ص - 6:00 م</p>
+                  <p className="text-xs font-bold text-purple-700 dark:text-purple-300">ساعات العمل</p>
+                  <p className="text-xs text-purple-600 dark:text-purple-400">9:00 ص - 6:00 م</p>
                 </div>
               </div>
               
-              <div className="group flex items-center gap-3 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                  <Globe className="h-5 w-5 text-white" />
+              <div className="group flex items-center gap-2 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-700/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-md">
+                  <Globe className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">نخدم جميع أنحاء</p>
+                  <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">نخدم جميع أنحاء</p>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400">المملكة العربية السعودية</p>
                 </div>
               </div>
