@@ -175,6 +175,7 @@ const FamilyBuilder = () => {
   // Package and subscription data
   const [packageData, setPackageData] = useState(null);
   const [subscriptionData, setSubscriptionData] = useState(null);
+  const familyId = searchParams.get('family');
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
@@ -233,25 +234,39 @@ const FamilyBuilder = () => {
           if (freePackage) setPackageData(freePackage);
         }
         
-        // Get user's families
-        const { data: families, error: familiesError } = await supabase
+        // Get the specific family based on URL parameter
+        if (!familyId) {
+          throw new Error('No family ID provided');
+        }
+
+        console.log('🔍 Loading family with ID:', familyId);
+        
+        const { data: family, error: familyError } = await supabase
           .from('families')
           .select('*')
-          .eq('creator_id', (await supabase.auth.getUser()).data.user?.id)
-          .order('created_at', { ascending: false });
+          .eq('id', familyId)
+          .eq('creator_id', user.id)
+          .single();
 
-        if (familiesError) throw familiesError;
+        if (familyError) {
+          console.error('Error fetching family:', familyError);
+          throw familyError;
+        }
 
-        if (families && families.length > 0) {
-          const family = families[0]; // Use most recent family
-          setFamilyData(family);
-          
-          // Get family members
-          // Load family tree members from the new table
-          const { data: members, error: membersError } = await supabase
-            .from('family_tree_members')
-            .select('*')
-            .eq('family_id', family.id);
+        if (!family) {
+          throw new Error('Family not found or access denied');
+        }
+
+        console.log('✅ Loaded family:', family);
+        const familyToUse = family;
+        setFamilyData(familyToUse);
+        
+        // Get family members
+        // Load family tree members from the new table
+        const { data: members, error: membersError } = await supabase
+          .from('family_tree_members')
+          .select('*')
+          .eq('family_id', familyToUse.id);
 
           if (membersError) throw membersError;
 
@@ -287,7 +302,7 @@ const FamilyBuilder = () => {
               wife:family_tree_members!marriages_wife_id_fkey(id, name),
               is_active
             `)
-            .eq('family_id', family.id)
+            .eq('family_id', familyToUse.id)
             .eq('is_active', true);
 
           if (marriagesError) throw marriagesError;
@@ -296,7 +311,6 @@ const FamilyBuilder = () => {
             setFamilyMarriages(marriages);
             console.log('Fetched marriages:', marriages);
           }
-        }
       } catch (error) {
         console.error('Error fetching family data:', error);
         toast({
