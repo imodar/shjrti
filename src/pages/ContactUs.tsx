@@ -115,7 +115,7 @@ const ContactUs: React.FC = () => {
         <div className="absolute top-1/3 right-20 w-24 h-24 bg-gradient-to-r from-purple-400/25 to-pink-400/25 rounded-full blur-lg animate-pulse delay-2000"></div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-5xl mx-auto space-y-6 animate-fade-in">
+          <div className="text-center max-w-5xl mx-auto space-y-3 animate-fade-in">
             {/* Creative Icon Display */}
             <div className="flex justify-center mb-8">
               <div className="relative group">
