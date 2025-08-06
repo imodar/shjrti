@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,8 @@ import { supabase } from "@/integrations/supabase/client";
 const FamilyStatistics = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const familyId = searchParams.get('family');
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
@@ -44,14 +46,33 @@ const FamilyStatistics = () => {
           return;
         }
 
-        // Fetch family data
+        if (!familyId) {
+          console.error('No family ID provided');
+          navigate('/dashboard');
+          return;
+        }
+
+        console.log('🔍 Loading family statistics for ID:', familyId);
+
+        // Fetch specific family data
         const { data: familyData, error: familyError } = await supabase
           .from('families')
           .select('*')
+          .eq('id', familyId)
           .eq('creator_id', user.id)
           .single();
 
-        if (familyError && familyError.code !== 'PGRST116') {
+        if (familyError) {
+          console.error('Error fetching family:', familyError);
+          if (familyError.code === 'PGRST116') {
+            toast({
+              title: "خطأ",
+              description: "لم يتم العثور على العائلة أو ليس لديك صلاحية للوصول إليها",
+              variant: "destructive"
+            });
+            navigate('/dashboard');
+            return;
+          }
           throw familyError;
         }
 
@@ -250,7 +271,7 @@ const FamilyStatistics = () => {
                   <div className="w-full sm:w-auto order-1 sm:order-1">
                     <Button
                       variant="outline"
-                      onClick={() => navigate('/family-builder')}
+                      onClick={() => navigate(`/family-builder?family=${familyId}`)}
                       className="w-full sm:w-auto group bg-white/20 dark:bg-gray-700/20 border-emerald-300/50 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-900/30 dark:border-emerald-600/30 transition-all duration-300 shadow-sm hover:shadow-md"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
@@ -284,7 +305,7 @@ const FamilyStatistics = () => {
                       إدارة الأعضاء
                     </Button>
                     <Button
-                      onClick={() => navigate('/family-tree-view')}
+                      onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
                       variant="outline"
                       className="w-full sm:w-auto gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20"
                     >
