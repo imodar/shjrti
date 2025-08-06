@@ -19,7 +19,7 @@ const Header = () => {
   const { t, direction } = useLanguage();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-border">{/* Simplified header - removed backdrop blur */}
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       {/* Simple Header Container */}
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
@@ -69,23 +69,40 @@ const Header = () => {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <div className="relative group cursor-pointer">
-                        {/* Simple avatar */}
-                        <div className="relative w-10 h-10">
-                          <Avatar className="h-full w-full border-2 border-primary">
-                            <AvatarImage src={user.user_metadata?.avatar_url} />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                              {user.email?.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
+                        {/* Floating avatar container with multiple layers */}
+                        <div className="absolute inset-0 w-12 h-12 bg-gradient-to-r from-primary via-accent to-secondary rounded-full blur-lg opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-500"></div>
+                        
+                        {/* Main avatar ring */}
+                        <div className="relative w-12 h-12 p-[2px] bg-gradient-to-r from-primary via-accent to-secondary rounded-full group-hover:scale-110 transition-all duration-500">
+                          <div className="w-full h-full bg-background rounded-full p-[2px]">
+                            <Avatar className="h-full w-full">
+                              <AvatarImage src={user.user_metadata?.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-sm">
+                                {user.email?.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                        </div>
+                        
+                        {/* Status indicator */}
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-background flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        </div>
+                        
+                        {/* Hover sparkle effect */}
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <Sparkles className="absolute -top-2 -right-2 h-4 w-4 text-accent animate-bounce" style={{animationDelay: '0s'}} />
+                          <Sparkles className="absolute -bottom-1 -left-2 h-3 w-3 text-primary animate-bounce" style={{animationDelay: '0.5s'}} />
+                          <Sparkles className="absolute top-1 -right-3 h-2 w-2 text-secondary animate-bounce" style={{animationDelay: '1s'}} />
                         </div>
                       </div>
                     </DropdownMenuTrigger>
                     
                     <DropdownMenuContent 
-                      className="w-64 mt-2 bg-background border shadow-lg rounded-lg p-2" 
+                      className="w-64 mt-2 bg-background/95 backdrop-blur-xl border-2 border-primary/20 shadow-2xl rounded-2xl p-2" 
                       align="end"
                       sideOffset={8}
-                    >{/* Simplified dropdown styling */}
+                    >
                       {/* User Info Header */}
                       <DropdownMenuLabel className="p-4 pb-2">
                         <div className="flex items-center gap-3">
