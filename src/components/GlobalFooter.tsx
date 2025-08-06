@@ -71,7 +71,7 @@ export const GlobalFooter = () => {
 
       <div className="relative z-10">
         {/* Main Footer Content */}
-        <div className="w-full px-4 py-8 md:py-16">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-12">
             {/* Brand Section */}
             <div className="md:col-span-1 space-y-4 md:space-y-6">
