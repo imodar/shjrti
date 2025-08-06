@@ -189,7 +189,7 @@ export const SmartSearchBar: React.FC<SmartSearchBarProps> = ({
                       <SelectValue placeholder="اختر الجنس" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">جميع الأجناس</SelectItem>
+                      <SelectItem value="all">جميع الأجناس</SelectItem>
                       <SelectItem value="male">ذكر</SelectItem>
                       <SelectItem value="female">أنثى</SelectItem>
                     </SelectContent>
@@ -205,7 +205,7 @@ export const SmartSearchBar: React.FC<SmartSearchBarProps> = ({
                       <SelectValue placeholder="اختر الحالة" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">الكل</SelectItem>
+                      <SelectItem value="all">الكل</SelectItem>
                       <SelectItem value="true">على قيد الحياة</SelectItem>
                       <SelectItem value="false">متوفى</SelectItem>
                     </SelectContent>
