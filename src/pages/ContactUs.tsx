@@ -106,7 +106,7 @@ const ContactUs: React.FC = () => {
       <GlobalHeader />
       
       {/* Immersive Hero Section */}
-      <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+      <section className="flex items-center justify-center relative overflow-hidden pt-20 pb-12">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-transparent to-amber-900/20"></div>
         
         {/* Interactive Floating Orbs */}
@@ -115,7 +115,7 @@ const ContactUs: React.FC = () => {
         <div className="absolute top-1/3 right-20 w-24 h-24 bg-gradient-to-r from-purple-400/25 to-pink-400/25 rounded-full blur-lg animate-pulse delay-2000"></div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-5xl mx-auto space-y-12 animate-fade-in">
+          <div className="text-center max-w-5xl mx-auto space-y-6 animate-fade-in">
             {/* Creative Icon Display */}
             <div className="flex justify-center mb-8">
               <div className="relative group">
@@ -127,13 +127,13 @@ const ContactUs: React.FC = () => {
             </div>
             
             {/* Dynamic Typography */}
-            <div className="space-y-8">
-              <h1 className="text-6xl md:text-8xl font-bold">
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl font-bold">
                 <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                   تواصل
                 </span>
                 <br />
-                <span className="text-gray-800 dark:text-gray-200 text-4xl md:text-6xl">
+                <span className="text-gray-800 dark:text-gray-200 text-2xl md:text-3xl">
                   معنا اليوم
                 </span>
               </h1>
@@ -167,9 +167,9 @@ const ContactUs: React.FC = () => {
       </section>
 
       {/* Interactive Support Cards */}
-      <section className="py-20 relative">
+      <section className="py-8 relative">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 لماذا تختارنا؟
