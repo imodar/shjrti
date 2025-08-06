@@ -2050,7 +2050,7 @@ const FamilyBuilder = () => {
                   
                   <div 
                     className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/family-tree-view')}
+                    onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
                   >
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <TreePine className="h-5 w-5" />
@@ -2070,7 +2070,7 @@ const FamilyBuilder = () => {
                   
                   <div 
                     className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/family-statistics')}
+                    onClick={() => navigate(`/family-statistics?family=${familyId}`)}
                   >
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Star className="h-5 w-5" />
