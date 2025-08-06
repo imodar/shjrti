@@ -543,6 +543,7 @@ export type Database = {
       }
       packages: {
         Row: {
+          ai_features_enabled: boolean | null
           created_at: string
           description: Json | null
           display_order: number | null
@@ -558,6 +559,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_features_enabled?: boolean | null
           created_at?: string
           description?: Json | null
           display_order?: number | null
@@ -573,6 +575,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_features_enabled?: boolean | null
           created_at?: string
           description?: Json | null
           display_order?: number | null
