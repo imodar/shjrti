@@ -124,18 +124,18 @@ export const GlobalFooter = () => {
                 <div className="absolute bottom-0 left-0 w-8 md:w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
               </h3>
               <div className="space-y-2 md:space-y-3">
-                <Link to="/terms" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
+                <Link to="/terms-conditions" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Shield className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{t('footer_link_terms', 'الشروط والأحكام')}</span>
                 </Link>
-                <a href="#" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
+                <Link to="/privacy-policy" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Heart className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{t('footer_link_help', 'مركز المساعدة')}</span>
-                </a>
-                <a href="#" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
+                  <span>{t('footer_link_privacy', 'سياسة الخصوصية')}</span>
+                </Link>
+                <Link to="/contact-us" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Users className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{t('footer_link_contact', 'تواصل معنا')}</span>
-                </a>
+                </Link>
               </div>
             </div>
             
