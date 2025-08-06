@@ -28,7 +28,22 @@ type ContactFormData = z.infer<typeof contactSchema>;
 const ContactUs: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const [captchaQuestion, setCaptchaQuestion] = useState({ num1: 0, num2: 0, answer: 0 });
   const { toast } = useToast();
+
+  // Generate random math question for captcha
+  const generateCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const answer = num1 + num2;
+    setCaptchaQuestion({ num1, num2, answer });
+    setCaptchaValue(null);
+  };
+
+  // Initialize captcha on component mount
+  React.useEffect(() => {
+    generateCaptcha();
+  }, []);
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -40,10 +55,10 @@ const ContactUs: React.FC = () => {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    if (!captchaValue) {
+    if (!captchaValue || parseInt(captchaValue) !== captchaQuestion.answer) {
       toast({
         title: "خطأ",
-        description: "يرجى التحقق من أنك لست روبوت",
+        description: "يرجى حل المعادلة الرياضية بشكل صحيح",
         variant: "destructive",
       });
       return;
@@ -358,27 +373,37 @@ const ContactUs: React.FC = () => {
                         )}
                       />
 
-                      {/* Alternative Spam Protection */}
+                      {/* Math Captcha */}
                       <div className="space-y-4">
-                        <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/50 dark:border-amber-700/30">
+                        <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-700/30">
                           <div className="flex items-center gap-3 mb-3">
-                            <Shield className="h-5 w-5 text-amber-600" />
-                            <span className="font-semibold text-amber-700 dark:text-amber-300">التحقق الذكي</span>
+                            <Shield className="h-5 w-5 text-emerald-600" />
+                            <span className="font-semibold text-emerald-700 dark:text-emerald-300">تحقق الأمان</span>
                           </div>
                           <div className="space-y-3">
-                            <label className="flex items-center gap-3 cursor-pointer group">
-                              <input
-                                type="checkbox"
-                                checked={captchaValue !== null}
-                                onChange={(e) => setCaptchaValue(e.target.checked ? 'verified' : null)}
-                                className="w-5 h-5 rounded border-2 border-amber-300 text-amber-600 focus:ring-amber-500 focus:ring-2"
-                              />
-                              <span className="text-gray-700 dark:text-gray-300 group-hover:text-amber-600 transition-colors">
-                                أؤكد أنني لست روبوت وأرغب في التواصل معكم
+                            <div className="flex items-center gap-3">
+                              <span className="text-lg font-bold text-gray-700 dark:text-gray-300">
+                                {captchaQuestion.num1} + {captchaQuestion.num2} = ?
                               </span>
-                            </label>
+                              <Button
+                                type="button"
+                                onClick={generateCaptcha}
+                                size="sm"
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                🔄
+                              </Button>
+                            </div>
+                            <Input
+                              type="number"
+                              placeholder="أدخل الناتج"
+                              value={captchaValue || ''}
+                              onChange={(e) => setCaptchaValue(e.target.value)}
+                              className="w-32 h-10 text-center bg-white/90 dark:bg-gray-800/90 border-2 border-emerald-200 dark:border-emerald-700 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-lg"
+                            />
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              نستخدم تقنيات حديثة لحماية النظام من الرسائل المزعجة
+                              حل المعادلة البسيطة للتأكد من أنك لست روبوت
                             </p>
                           </div>
                         </div>
