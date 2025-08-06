@@ -741,6 +741,36 @@ export type Database = {
           },
         ]
       }
+      user_status: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string | null
+          status: Database["public"]["Enums"]["user_status_type"]
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          status?: Database["public"]["Enums"]["user_status_type"]
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          status?: Database["public"]["Enums"]["user_status_type"]
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_subscriptions: {
         Row: {
           created_at: string
@@ -822,6 +852,11 @@ export type Database = {
           first_name: string
           last_name: string
           profile_phone: string
+          user_status: Database["public"]["Enums"]["user_status_type"]
+          status_reason: string
+          subscription_status: string
+          subscription_package_name: Json
+          subscription_expires_at: string
         }[]
       }
       get_user_family_ids: {
@@ -853,9 +888,17 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: boolean
       }
+      update_user_status: {
+        Args: {
+          target_user_id: string
+          new_status: Database["public"]["Enums"]["user_status_type"]
+          status_reason?: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_status_type: "active" | "pending" | "suspended" | "inactive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -982,6 +1025,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_status_type: ["active", "pending", "suspended", "inactive"],
+    },
   },
 } as const

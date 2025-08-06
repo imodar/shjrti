@@ -107,6 +107,11 @@ interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   profile_phone: string | null;
+  user_status: 'active' | 'pending' | 'suspended' | 'inactive';
+  status_reason: string | null;
+  subscription_status: string;
+  subscription_package_name: any;
+  subscription_expires_at: string | null;
 }
 
 interface UserSubscription {
@@ -186,6 +191,12 @@ export default function EnhancedAdminPanel() {
   // Custom JavaScript management state
   const [customJavaScript, setCustomJavaScript] = useState('');
   const [savingJavaScript, setSavingJavaScript] = useState(false);
+  
+  // User status management state
+  const [statusUpdating, setStatusUpdating] = useState<Set<string>>(new Set());
+  const [statusDialog, setStatusDialog] = useState<{isOpen: boolean, user: UserProfile | null}>({isOpen: false, user: null});
+  const [newUserStatus, setNewUserStatus] = useState<'active' | 'pending' | 'suspended' | 'inactive'>('active');
+  const [statusReason, setStatusReason] = useState('');
 
   const loadPackages = async () => {
     try {
@@ -315,6 +326,50 @@ export default function EnhancedAdminPanel() {
     } finally {
       setSavingJavaScript(false);
     }
+  };
+
+  // Update user status function
+  const updateUserStatus = async (userId: string, status: 'active' | 'pending' | 'suspended' | 'inactive', reason?: string) => {
+    setStatusUpdating(prev => new Set([...prev, userId]));
+    try {
+      const { error } = await supabase.rpc('update_user_status', {
+        target_user_id: userId,
+        new_status: status,
+        status_reason: reason || null
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "تم التحديث",
+        description: "تم تحديث حالة المستخدم بنجاح"
+      });
+
+      // إعادة تحميل المستخدمين
+      await loadUsers();
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث حالة المستخدم",
+        variant: "destructive"
+      });
+    } finally {
+      setStatusUpdating(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
+    }
+  };
+
+  // Handle status update dialog
+  const handleStatusUpdate = async () => {
+    if (!statusDialog.user) return;
+    
+    await updateUserStatus(statusDialog.user.id, newUserStatus, statusReason);
+    setStatusDialog({isOpen: false, user: null});
+    setStatusReason('');
   };
 
   useEffect(() => {
@@ -998,44 +1053,85 @@ export default function EnhancedAdminPanel() {
                 <div className="space-y-4">
                   {users.map((user) => {
                     const subscription = getUserSubscription(user.id);
+                    const getStatusBadge = (status: string) => {
+                      switch (status) {
+                        case 'active':
+                          return <Badge className="bg-green-100 text-green-800 border-green-200">فعال</Badge>;
+                        case 'pending':
+                          return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">بانتظار التفعيل</Badge>;
+                        case 'suspended':
+                          return <Badge className="bg-red-100 text-red-800 border-red-200">موقف</Badge>;
+                        case 'inactive':
+                          return <Badge className="bg-gray-100 text-gray-800 border-gray-200">غير مفعل</Badge>;
+                        default:
+                          return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">بانتظار التفعيل</Badge>;
+                      }
+                    };
+
+                    const getSubscriptionDisplay = () => {
+                      if (user.subscription_status === 'active' && user.subscription_package_name) {
+                        const packageName = typeof user.subscription_package_name === 'object' && user.subscription_package_name?.ar 
+                          ? user.subscription_package_name.ar 
+                          : 'باقة غير معروفة';
+                        const expiryDate = user.subscription_expires_at 
+                          ? new Date(user.subscription_expires_at).toLocaleDateString('ar-EG')
+                          : 'غير محدد';
+                        return (
+                          <div>
+                            <Badge className="bg-green-100 text-green-800 border-green-200">نشط</Badge>
+                            <p className="text-xs text-gray-600 mt-1">{packageName}</p>
+                            <p className="text-xs text-gray-500">ينتهي: {expiryDate}</p>
+                          </div>
+                        );
+                      } else {
+                        return <Badge className="bg-red-100 text-red-800 border-red-200">لا يوجد اشتراك</Badge>;
+                      }
+                    };
+
                     return (
-                      <div key={user.id} className="flex items-center justify-between p-4 border border-emerald-200/30 dark:border-emerald-700/30 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                        <div className="flex-1 grid grid-cols-4 gap-4">
+                      <div key={user.id} className="p-4 border border-emerald-200/30 dark:border-emerald-700/30 rounded-lg bg-white/50 dark:bg-gray-800/50">
+                        <div className="grid grid-cols-6 gap-4 items-center">
                           <div>
                             <p className="font-medium text-emerald-700">{user.email}</p>
                             <p className="text-sm text-gray-500">البريد الإلكتروني</p>
                           </div>
                           <div>
                             <p className="font-medium">{user.first_name || 'غير محدد'}</p>
-                            <p className="text-sm text-gray-500">الاسم الأول</p>
+                            <p className="text-sm text-gray-500">الاسم</p>
                           </div>
                           <div>
-                            <p className="font-medium">{user.last_name || 'غير محدد'}</p>
-                            <p className="text-sm text-gray-500">الاسم الأخير</p>
-                          </div>
-                          <div>
-                            <p className="font-medium">{user.phone || 'غير محدد'}</p>
-                            <p className="text-sm text-gray-500">رقم الهاتف</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-center min-w-[120px]">
-                            {subscription ? (
-                              <div>
-                                <Badge className="bg-green-100 text-green-800 border-green-200">
-                                  نشط
-                                </Badge>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {typeof subscription.package?.name === 'object' && subscription.package?.name?.ar 
-                                    ? subscription.package.name.ar 
-                                    : 'باقة غير معروفة'}
-                                </p>
-                              </div>
-                            ) : (
-                              <Badge className="bg-red-100 text-red-800 border-red-200">
-                                لا يوجد اشتراك
-                              </Badge>
+                            <div className="flex items-center gap-2">
+                              {getStatusBadge(user.user_status)}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setStatusDialog({isOpen: true, user});
+                                  setNewUserStatus(user.user_status);
+                                  setStatusReason(user.status_reason || '');
+                                }}
+                                disabled={statusUpdating.has(user.id)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <p className="text-sm text-gray-500">حالة المستخدم</p>
+                            {user.status_reason && (
+                              <p className="text-xs text-gray-400 mt-1">{user.status_reason}</p>
                             )}
+                          </div>
+                          <div>
+                            {getSubscriptionDisplay()}
+                            <p className="text-sm text-gray-500">حالة الاشتراك</p>
+                          </div>
+                          <div>
+                            {user.email_confirmed_at ? (
+                              <Badge className="bg-green-100 text-green-800 border-green-200">مفعل</Badge>
+                            ) : (
+                              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">غير مفعل</Badge>
+                            )}
+                            <p className="text-sm text-gray-500">تفعيل الإيميل</p>
                           </div>
                           <div className="flex gap-2">
                             <Button 
@@ -1787,6 +1883,53 @@ export default function EnhancedAdminPanel() {
               <Button onClick={handleUpdateUser} className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
                 <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                 حفظ التغييرات
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* User Status Update Dialog */}
+        <Dialog open={statusDialog.isOpen} onOpenChange={(open) => setStatusDialog({isOpen: open, user: null})}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>تحديث حالة المستخدم</DialogTitle>
+              <DialogDescription>
+                تغيير حالة المستخدم: {statusDialog.user?.email}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="new-status">الحالة الجديدة</Label>
+                <Select value={newUserStatus} onValueChange={(value: 'active' | 'pending' | 'suspended' | 'inactive') => setNewUserStatus(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">فعال</SelectItem>
+                    <SelectItem value="pending">بانتظار التفعيل</SelectItem>
+                    <SelectItem value="suspended">موقف من الإدمن</SelectItem>
+                    <SelectItem value="inactive">غير مفعل</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="status-reason">سبب التغيير (اختياري)</Label>
+                <Textarea
+                  id="status-reason"
+                  placeholder="أدخل سبب تغيير الحالة..."
+                  value={statusReason}
+                  onChange={(e) => setStatusReason(e.target.value)}
+                  className="min-h-[80px]"
+                />
+              </div>
+            </div>
+            <DialogFooter className={direction === 'rtl' ? 'flex-row-reverse' : ''}>
+              <Button onClick={() => setStatusDialog({isOpen: false, user: null})} variant="outline">
+                إلغاء
+              </Button>
+              <Button onClick={handleStatusUpdate} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+                <Save className={`h-4 w-4 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                حفظ التغيير
               </Button>
             </DialogFooter>
           </DialogContent>
