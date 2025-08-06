@@ -905,40 +905,46 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                             </div>
                           )}
                            <div className="flex gap-2">
-                            <TooltipProvider delayDuration={200}>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={isImageUploadEnabled ? () => document.getElementById('member-image')?.click() : undefined}
-                                    disabled={!isImageUploadEnabled || permissionLoading}
-                                    className={cn(
-                                      "gap-2 border-2 transition-all duration-300 text-xs px-3 py-2",
-                                      isImageUploadEnabled 
-                                        ? "border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50"
-                                        : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
-                                    )}
-                                  >
-                                    <Upload className="h-3 w-3" />
-                                    {memberData.croppedImage ? 'تغيير' : 'اختيار'}
-                                  </Button>
-                                </TooltipTrigger>
-                                {!isImageUploadEnabled && (
+                            {!isImageUploadEnabled ? (
+                              <TooltipProvider delayDuration={100}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={true}
+                                      className="gap-2 border-2 border-gray-300 text-gray-400 cursor-not-allowed opacity-60 transition-all duration-300 text-xs px-3 py-2"
+                                    >
+                                      <Upload className="h-3 w-3" />
+                                      {memberData.croppedImage ? 'تغيير' : 'اختيار'}
+                                    </Button>
+                                  </TooltipTrigger>
                                   <TooltipContent 
                                     side="top" 
-                                    className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg max-w-xs z-50"
-                                    sideOffset={5}
+                                    className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-xl z-[9999] max-w-xs"
+                                    sideOffset={8}
                                   >
-                                    <div className="text-center">
-                                      <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                    <div className="text-center p-1">
+                                      <p className="font-medium text-sm">رفع الصور متاح فقط في الخطط المدفوعة</p>
                                       <p className="text-xs opacity-90 mt-1">قم بترقية خطتك للاستفادة من هذه الميزة</p>
                                     </div>
                                   </TooltipContent>
-                                )}
-                              </Tooltip>
-                            </TooltipProvider>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => document.getElementById('member-image')?.click()}
+                                disabled={permissionLoading}
+                                className="gap-2 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300 text-xs px-3 py-2"
+                              >
+                                <Upload className="h-3 w-3" />
+                                {memberData.croppedImage ? 'تغيير' : 'اختيار'}
+                              </Button>
+                            )}
                             {memberData.croppedImage && isImageUploadEnabled && (
                               <Button
                                 type="button"
