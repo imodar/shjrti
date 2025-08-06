@@ -29,6 +29,7 @@ import Payment from "./pages/Payment";
 import ChangePassword from "./pages/ChangePassword";
 import TermsConditions from "./pages/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ContactUs from "./pages/ContactUs";
 import Store from "./pages/Store";
 import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
@@ -139,6 +140,7 @@ const App = () => (
                 } />
                 <Route path="/terms-conditions" element={<TermsConditions />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/contact" element={<ContactUs />} />
                 {/* Redirect old terms route to new one */}
                 <Route path="/terms" element={<TermsConditions />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
