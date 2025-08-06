@@ -1134,12 +1134,13 @@ export default function Payments() {
           </DialogContent>
         </Dialog>
       </div>
-      
-      <GlobalFooter />
-      <Toaster />
-          </div>
         </div>
       </div>
+      
+      {/* Footer outside of container to span full width */}
+      <GlobalFooter />
+      <Toaster />
+    </div>
     </div>
   );
 }
