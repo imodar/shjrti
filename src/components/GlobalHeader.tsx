@@ -55,54 +55,33 @@ export const GlobalHeader = () => {
   }, [user]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Luxury Background matching Footer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(16,185,129,0.15),transparent_50%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)]"></div>
+    <header className="fixed top-0 left-0 right-0 z-10">
+      {/* Simplified Background */}
+      <div className="bg-gray-900 backdrop-blur-sm border-b border-white/10"></div>
       
-      {/* Floating Elements */}
-      <div className="absolute top-2 right-20 w-16 h-16 bg-emerald-500/10 rounded-full animate-pulse blur-xl"></div>
-      <div className="absolute top-3 left-16 w-12 h-12 bg-amber-500/10 rounded-full animate-bounce blur-xl"></div>
-      
-      <div className="relative z-10 border-b border-white/10">
+      <div className="relative">
         {/* Main Header Container */}
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between h-16">
-            {/* Creative Logo Section */}
+            {/* Simplified Logo Section */}
             <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               <div className="relative">
-                {/* Multiple animated background layers */}
-                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-700"></div>
-                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 animate-pulse transition-all duration-500" style={{animationDelay: '0.5s'}}></div>
-                
-                {/* Logo container with premium styling */}
-                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-400 via-teal-400 to-amber-400 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 border-2 border-white/30">
+                {/* Simple Logo container */}
+                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-300">
                   <img 
                     src={familyTreeLogo} 
                     alt={t('site.name', 'شجرة العائلة')} 
-                    className="h-9 w-9 rounded object-cover filter brightness-110"
+                    className="h-8 w-8 rounded object-cover"
                   />
-                  
-                  {/* Premium sparkle effects */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                    <Sparkles className="absolute -top-2 -right-2 h-4 w-4 text-amber-300 animate-bounce" style={{animationDelay: '0s'}} />
-                    <Sparkles className="absolute -bottom-2 -left-2 h-3 w-3 text-emerald-300 animate-bounce" style={{animationDelay: '0.3s'}} />
-                    <Sparkles className="absolute top-0 -right-3 h-2 w-2 text-teal-300 animate-bounce" style={{animationDelay: '0.6s'}} />
-                    <Crown className="absolute -top-3 left-1/2 transform -translate-x-1/2 h-4 w-4 text-amber-300 animate-bounce" style={{animationDelay: '0.9s'}} />
-                  </div>
                 </div>
-                
-                {/* Floating ring effect */}
-                <div className="absolute inset-0 w-16 h-16 border-2 border-emerald-300/30 rounded-2xl group-hover:scale-125 group-hover:rotate-12 transition-all duration-700 opacity-0 group-hover:opacity-100"></div>
               </div>
               
-              {/* Brand Name and Tagline with enhanced styling */}
+              {/* Simple Brand Name */}
               <div className="flex flex-col">
-                <h1 className="text-xl sm:text-2xl font-bold text-emerald-300 bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300 bg-clip-text [background-clip:text] hover:text-transparent group-hover:scale-105 transition-transform duration-500 filter drop-shadow-lg">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">
                   {t('site.name', 'شجرة العائلة')}
                 </h1>
-                <p className="hidden sm:block text-sm text-gray-300 font-medium bg-gradient-to-r from-gray-300 to-emerald-200 bg-clip-text text-transparent">
+                <p className="hidden sm:block text-sm text-gray-300">
                   {t('site.tagline', 'منصة إدارة الأنساب')}
                 </p>
               </div>

@@ -134,11 +134,11 @@ const Home2 = () => {
 
       {/* Hero Section - Simplified for Visual Edits */}
       <section className="min-h-screen flex items-center justify-center relative pt-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/10 via-transparent to-amber-900/10 pointer-events-none"></div>
+        {/* Simple background */}
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 animate-fade-in">
+            <div className="space-y-8">
               <div className="space-y-6">
                 <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 text-sm">
                   <Sparkles className="h-4 w-4 ml-2" />
@@ -213,58 +213,38 @@ const Home2 = () => {
         </div>
       </section>
 
-      {/* Features Section with Luxury Design */}
-      <section className="relative py-32 overflow-hidden">
-        {/* Luxury Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(16,185,129,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_20%_50%,rgba(16,185,129,0.3),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.3),transparent_50%)]"></div>
-        
-        {/* Floating Decorations */}
-        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          {/* Luxury Header */}
+      {/* Features Section - Simplified */}
+      <section className="py-32">
+        <div className="container mx-auto px-4">
+          {/* Simple Header */}
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
-              <Sparkles className="h-4 w-4" />
+            <Badge className="bg-primary text-white px-6 py-3 rounded-full mb-8">
               {t('features_badge', 'الأفضل في العالم العربي')}
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <h2 className="text-5xl md:text-7xl font-bold mb-8">
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                {t('features_title_1', 'لماذا نحن')}
-              </span>
-              <br />
-              <span className="text-gray-800 dark:text-gray-200">{t('features_title_2', 'مميزون؟')}</span>
+            </Badge>
+            <h2 className="text-4xl md:text-6xl font-bold mb-8 text-foreground">
+              {t('features_title_1', 'لماذا نحن')} {t('features_title_2', 'مميزون؟')}
             </h2>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto">
               {t('features_description', 'نجمع بين الأصالة والحداثة لنقدم لك تجربة فريدة في حفظ تراث عائلتك')}
             </p>
           </div>
 
-          {/* Luxury Features Grid */}
+          {/* Simple Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="group relative bg-white dark:bg-gray-800 border shadow-lg hover:shadow-xl transition-shadow duration-300 hover:-translate-y-1">{/* Simplified card styling */}
+              <Card key={index} className="border hover:shadow-lg transition-shadow duration-300">{/* Simplified card styling */}
                 
-                <CardContent className="p-8 text-center">
-                  {/* Simple Icon */}
-                  <div className="mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-                      <div className="text-white">
-                        {feature.icon}
-                      </div>
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-full mb-4 text-white">
+                      {feature.icon}
                     </div>
                   </div>
                   
-                  {/* Simple Text */}
-                  <h3 className="text-xl font-bold text-foreground mb-4">
+                  <h3 className="text-lg font-bold mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -272,13 +252,11 @@ const Home2 = () => {
             ))}
           </div>
 
-          {/* Luxury Call to Action */}
-          <div className="text-center mt-20">
-            <div className="inline-flex items-center gap-3 text-emerald-600 dark:text-emerald-400 text-lg font-medium">
-              <Star className="h-5 w-5 text-amber-500" />
-              <span>{t('features_cta', 'تجربة استثنائية تنتظرك')}</span>
-              <Star className="h-5 w-5 text-amber-500" />
-            </div>
+          {/* Simple Call to Action */}
+          <div className="text-center mt-16">
+            <p className="text-lg font-medium text-primary">
+              {t('features_cta', 'تجربة استثنائية تنتظرك')}
+            </p>
           </div>
         </div>
       </section>
