@@ -25,6 +25,7 @@ interface Package {
   is_featured: boolean;
   features?: any; // Can be string, object, or Json from Supabase
   ai_features_enabled?: boolean;
+  image_upload_enabled?: boolean;
 }
 
 interface PackageEditModalProps {
@@ -55,7 +56,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
     is_active: true,
     is_featured: false,
     features: {},
-    ai_features_enabled: false
+    ai_features_enabled: false,
+    image_upload_enabled: false
   });
 
   useEffect(() => {
@@ -133,7 +135,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
         is_active: formData.is_active,
         is_featured: formData.is_featured,
         features: formData.features,  // Send as object, not JSON string
-        ai_features_enabled: formData.ai_features_enabled
+        ai_features_enabled: formData.ai_features_enabled,
+        image_upload_enabled: formData.image_upload_enabled
       };
 
       const { error } = await supabase
@@ -322,6 +325,17 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
                   }))}
                 />
                 <Label htmlFor="ai_features_enabled">ميزات الذكاء الاصطناعي</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="image_upload_enabled"
+                  checked={formData.image_upload_enabled || false}
+                  onCheckedChange={(checked) => setFormData(prev => ({
+                    ...prev,
+                    image_upload_enabled: checked
+                  }))}
+                />
+                <Label htmlFor="image_upload_enabled">رفع الصور</Label>
               </div>
             </div>
           </TabsContent>

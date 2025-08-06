@@ -15,6 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { sanitizeInput, validateName, sanitizeFormData } from "@/lib/security";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
+import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface FamilyMember {
   id: string;
@@ -72,6 +74,7 @@ interface ModernFamilyMemberModalProps {
 
 export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, editMember }: ModernFamilyMemberModalProps) => {
   const { toast } = useToast();
+  const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
   const [step, setStep] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [showCropModal, setShowCropModal] = useState(false);
@@ -524,6 +527,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
   };
 
   const handleNewWifeImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isImageUploadEnabled) {
+      toast({
+        title: "ميزة غير متاحة",
+        description: "رفع الصور متاح فقط في الخطط المدفوعة. قم بترقية خطتك للاستفادة من هذه الميزة.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const file = e.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
@@ -878,12 +890,14 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                   {memberData.name.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
-                              <button
-                                onClick={() => setMemberData({...memberData, image: null, croppedImage: null})}
-                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
+                              {isImageUploadEnabled && (
+                                <button
+                                  onClick={() => setMemberData({...memberData, image: null, croppedImage: null})}
+                                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
                             </div>
                           ) : (
                             <div className="w-20 h-20 bg-gradient-to-br from-orange-200 to-amber-200 dark:from-orange-800 to-amber-800 rounded-full flex items-center justify-center">
@@ -891,17 +905,37 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                             </div>
                           )}
                           <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => document.getElementById('member-image')?.click()}
-                              className="gap-2 border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50 transition-all duration-300 text-xs px-3 py-2"
-                            >
-                              <Upload className="h-3 w-3" />
-                              {memberData.croppedImage ? 'تغيير' : 'اختيار'}
-                            </Button>
-                            {memberData.croppedImage && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={isImageUploadEnabled ? () => document.getElementById('member-image')?.click() : undefined}
+                                      disabled={!isImageUploadEnabled || permissionLoading}
+                                      className={cn(
+                                        "gap-2 border-2 transition-all duration-300 text-xs px-3 py-2",
+                                        isImageUploadEnabled 
+                                          ? "border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/50"
+                                          : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+                                      )}
+                                    >
+                                      <Upload className="h-3 w-3" />
+                                      {memberData.croppedImage ? 'تغيير' : 'اختيار'}
+                                    </Button>
+                                  </div>
+                                </TooltipTrigger>
+                                {!isImageUploadEnabled && (
+                                  <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
+                                    <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                    <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            </TooltipProvider>
+                            {memberData.croppedImage && isImageUploadEnabled && (
                               <Button
                                 type="button"
                                 variant="outline"
@@ -919,6 +953,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
+                              if (!isImageUploadEnabled) {
+                                toast({
+                                  title: "ميزة غير متاحة",
+                                  description: "رفع الصور متاح فقط في الخطط المدفوعة. قم بترقية خطتك للاستفادة من هذه الميزة.",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
+                              
                               const file = e.target.files?.[0];
                               if (file) {
                                 const imageUrl = URL.createObjectURL(file);
@@ -1087,52 +1130,103 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                     الصورة الشخصية
                                   </label>
                                   <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleNewWifeImageSelect(e)}
-                                    className="hidden"
-                                    id="new-wife-image"
-                                  />
-                                  
-                                  {newWife.imageUrl ? (
-                                    <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
-                                      <img
-                                        src={newWife.imageUrl}
-                                        alt="New Wife"
-                                        className="w-16 h-16 rounded-full object-cover border-2 border-pink-300"
-                                      />
-                                       <div className="flex flex-col space-y-1">
-                                         <Button
-                                           type="button"
-                                           variant="outline"
-                                           size="sm"
-                                           onClick={() => document.getElementById('new-wife-image')?.click()}
-                                           className="border-pink-300 text-pink-600 hover:bg-pink-50 h-7 text-xs px-2"
-                                         >
-                                           <Camera className="w-2 h-2 mr-1" />
-                                           تغيير
-                                         </Button>
-                                         <Button
-                                           type="button"
-                                           variant="outline"
-                                           size="sm"
-                                           onClick={() => setNewWife({...newWife, imageUrl: ''})}
-                                           className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
-                                         >
-                                           <X className="w-2 h-2 mr-1" />
-                                           إزالة
-                                         </Button>
-                                       </div>
-                                    </div>
-                                  ) : (
-                                    <label
-                                      htmlFor="new-wife-image"
-                                      className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-pink-300 dark:border-pink-700 rounded-xl cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 dark:hover:bg-pink-900/20 transition-all duration-200 group"
-                                    >
-                                      <Camera className="w-6 h-6 text-pink-400 group-hover:text-pink-500 mb-1" />
-                                      <span className="text-sm text-pink-600 dark:text-pink-400 text-center">إضافة صورة</span>
-                                    </label>
-                                  )}
+                                     type="file"
+                                     accept="image/*"
+                                     onChange={(e) => handleNewWifeImageSelect(e)}
+                                     className="hidden"
+                                     id="new-wife-image"
+                                   />
+                                   
+                                   {newWife.imageUrl ? (
+                                     <div className="flex items-center space-x-3 p-3 bg-pink-50/50 dark:bg-pink-950/30 rounded-lg border border-pink-200/30 dark:border-pink-800/30">
+                                       <img
+                                         src={newWife.imageUrl}
+                                         alt="New Wife"
+                                         className="w-16 h-16 rounded-full object-cover border-2 border-pink-300"
+                                       />
+                                        <div className="flex flex-col space-y-1">
+                                          <TooltipProvider>
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <div>
+                                                  <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={isImageUploadEnabled ? () => document.getElementById('new-wife-image')?.click() : undefined}
+                                                    disabled={!isImageUploadEnabled}
+                                                    className={cn(
+                                                      "h-7 text-xs px-2",
+                                                      isImageUploadEnabled 
+                                                        ? "border-pink-300 text-pink-600 hover:bg-pink-50"
+                                                        : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+                                                    )}
+                                                  >
+                                                    <Camera className="w-2 h-2 mr-1" />
+                                                    تغيير
+                                                  </Button>
+                                                </div>
+                                              </TooltipTrigger>
+                                              {!isImageUploadEnabled && (
+                                                <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
+                                                  <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                                  <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                                </TooltipContent>
+                                              )}
+                                            </Tooltip>
+                                          </TooltipProvider>
+                                          {isImageUploadEnabled && (
+                                            <Button
+                                              type="button"
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => setNewWife({...newWife, imageUrl: ''})}
+                                              className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
+                                            >
+                                              <X className="w-2 h-2 mr-1" />
+                                              إزالة
+                                            </Button>
+                                          )}
+                                        </div>
+                                     </div>
+                                   ) : (
+                                     <TooltipProvider>
+                                       <Tooltip>
+                                         <TooltipTrigger asChild>
+                                           <div>
+                                             <label
+                                               htmlFor={isImageUploadEnabled ? "new-wife-image" : undefined}
+                                               className={cn(
+                                                 "flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-xl transition-all duration-200 group",
+                                                 isImageUploadEnabled 
+                                                   ? "border-pink-300 dark:border-pink-700 cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 dark:hover:bg-pink-900/20"
+                                                   : "border-gray-300 dark:border-gray-600 cursor-not-allowed opacity-60"
+                                               )}
+                                             >
+                                               <Camera className={cn(
+                                                 "w-6 h-6 mb-1",
+                                                 isImageUploadEnabled 
+                                                   ? "text-pink-400 group-hover:text-pink-500"
+                                                   : "text-gray-400"
+                                               )} />
+                                               <span className={cn(
+                                                 "text-sm text-center",
+                                                 isImageUploadEnabled 
+                                                   ? "text-pink-600 dark:text-pink-400"
+                                                   : "text-gray-400"
+                                               )}>إضافة صورة</span>
+                                             </label>
+                                           </div>
+                                         </TooltipTrigger>
+                                         {!isImageUploadEnabled && (
+                                           <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
+                                             <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                             <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                           </TooltipContent>
+                                         )}
+                                       </Tooltip>
+                                     </TooltipProvider>
+                                   )}
                                 </div>
 
                                 <Button
@@ -1386,45 +1480,96 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                      id="new-husband-image"
                                    />
                                    
-                                   {newWife.imageUrl ? (
-                                     <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
-                                       <img
-                                         src={newWife.imageUrl}
-                                         alt="New Husband"
-                                         className="w-16 h-16 rounded-full object-cover border-2 border-sky-300"
-                                       />
-                                        <div className="flex flex-col space-y-1">
-                                          <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => document.getElementById('new-husband-image')?.click()}
-                                            className="border-sky-300 text-sky-600 hover:bg-sky-50 h-7 text-xs px-2"
-                                          >
-                                            <Camera className="w-2 h-2 mr-1" />
-                                            تغيير
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setNewWife({...newWife, imageUrl: ''})}
-                                            className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
-                                          >
-                                            <X className="w-2 h-2 mr-1" />
-                                            إزالة
-                                          </Button>
-                                        </div>
-                                     </div>
-                                   ) : (
-                                     <label
-                                       htmlFor="new-husband-image"
-                                       className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-sky-300 dark:border-sky-700 rounded-xl cursor-pointer hover:border-sky-400 hover:bg-sky-50/30 dark:hover:bg-sky-900/20 transition-all duration-200 group"
-                                     >
-                                       <Camera className="w-6 h-6 text-sky-400 group-hover:text-sky-500 mb-1" />
-                                       <span className="text-sm text-sky-600 dark:text-sky-400 text-center">إضافة صورة</span>
-                                     </label>
-                                   )}
+                                    {newWife.imageUrl ? (
+                                      <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
+                                        <img
+                                          src={newWife.imageUrl}
+                                          alt="New Husband"
+                                          className="w-16 h-16 rounded-full object-cover border-2 border-sky-300"
+                                        />
+                                         <div className="flex flex-col space-y-1">
+                                           <TooltipProvider>
+                                             <Tooltip>
+                                               <TooltipTrigger asChild>
+                                                 <div>
+                                                   <Button
+                                                     type="button"
+                                                     variant="outline"
+                                                     size="sm"
+                                                     onClick={isImageUploadEnabled ? () => document.getElementById('new-husband-image')?.click() : undefined}
+                                                     disabled={!isImageUploadEnabled}
+                                                     className={cn(
+                                                       "h-7 text-xs px-2",
+                                                       isImageUploadEnabled 
+                                                         ? "border-sky-300 text-sky-600 hover:bg-sky-50"
+                                                         : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+                                                     )}
+                                                   >
+                                                     <Camera className="w-2 h-2 mr-1" />
+                                                     تغيير
+                                                   </Button>
+                                                 </div>
+                                               </TooltipTrigger>
+                                               {!isImageUploadEnabled && (
+                                                 <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
+                                                   <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                                   <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                                 </TooltipContent>
+                                               )}
+                                             </Tooltip>
+                                           </TooltipProvider>
+                                           {isImageUploadEnabled && (
+                                             <Button
+                                               type="button"
+                                               variant="outline"
+                                               size="sm"
+                                               onClick={() => setNewWife({...newWife, imageUrl: ''})}
+                                               className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
+                                             >
+                                               <X className="w-2 h-2 mr-1" />
+                                               إزالة
+                                             </Button>
+                                           )}
+                                         </div>
+                                      </div>
+                                    ) : (
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <div>
+                                              <label
+                                                htmlFor={isImageUploadEnabled ? "new-husband-image" : undefined}
+                                                className={cn(
+                                                  "flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-xl transition-all duration-200 group",
+                                                  isImageUploadEnabled 
+                                                    ? "border-sky-300 dark:border-sky-700 cursor-pointer hover:border-sky-400 hover:bg-sky-50/30 dark:hover:bg-sky-900/20"
+                                                    : "border-gray-300 dark:border-gray-600 cursor-not-allowed opacity-60"
+                                                )}
+                                              >
+                                                <Camera className={cn(
+                                                  "w-6 h-6 mb-1",
+                                                  isImageUploadEnabled 
+                                                    ? "text-sky-400 group-hover:text-sky-500"
+                                                    : "text-gray-400"
+                                                )} />
+                                                <span className={cn(
+                                                  "text-sm text-center",
+                                                  isImageUploadEnabled 
+                                                    ? "text-sky-600 dark:text-sky-400"
+                                                    : "text-gray-400"
+                                                )}>إضافة صورة</span>
+                                              </label>
+                                            </div>
+                                          </TooltipTrigger>
+                                          {!isImageUploadEnabled && (
+                                            <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
+                                              <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                              <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                            </TooltipContent>
+                                          )}
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                    )}
                                  </div>
 
                                   <Button

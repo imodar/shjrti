@@ -549,6 +549,7 @@ export type Database = {
           display_order: number | null
           features: Json | null
           id: string
+          image_upload_enabled: boolean | null
           is_active: boolean | null
           is_featured: boolean | null
           max_family_members: number | null
@@ -565,6 +566,7 @@ export type Database = {
           display_order?: number | null
           features?: Json | null
           id?: string
+          image_upload_enabled?: boolean | null
           is_active?: boolean | null
           is_featured?: boolean | null
           max_family_members?: number | null
@@ -581,6 +583,7 @@ export type Database = {
           display_order?: number | null
           features?: Json | null
           id?: string
+          image_upload_enabled?: boolean | null
           is_active?: boolean | null
           is_featured?: boolean | null
           max_family_members?: number | null
