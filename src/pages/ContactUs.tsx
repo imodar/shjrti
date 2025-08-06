@@ -106,60 +106,70 @@ const ContactUs: React.FC = () => {
       <GlobalHeader />
       
       {/* Immersive Hero Section */}
-      <section className="flex items-center justify-center relative overflow-hidden pt-32 pb-4">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-transparent to-amber-900/20"></div>
-        
-        {/* Interactive Floating Orbs */}
-        <div className="absolute top-32 left-1/4 w-32 h-32 bg-gradient-to-r from-emerald-400/30 to-teal-400/30 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-48 h-48 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/3 right-20 w-24 h-24 bg-gradient-to-r from-purple-400/25 to-pink-400/25 rounded-full blur-lg animate-pulse delay-2000"></div>
+      {/* Innovative Contact Hero */}
+      <section className="relative overflow-hidden pt-32 pb-8 bg-gradient-to-r from-emerald-50 via-white to-teal-50 dark:from-emerald-950/50 dark:via-gray-900 dark:to-teal-950/50">
+        {/* Geometric Background Pattern */}
+        <div className="absolute inset-0 opacity-10 dark:opacity-5">
+          <div className="absolute top-10 left-1/4 w-32 h-32 border-2 border-emerald-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-1/4 w-24 h-24 border-2 border-teal-400 rounded-lg rotate-45 animate-pulse delay-500"></div>
+          <div className="absolute top-1/2 left-10 w-16 h-16 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-full animate-bounce"></div>
+          <div className="absolute bottom-20 left-1/3 w-20 h-20 border-2 border-amber-400 rounded-full animate-pulse delay-1000"></div>
+        </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-5xl mx-auto space-y-3 animate-fade-in">
-            {/* Creative Icon Display */}
-            <div className="flex justify-center mb-8">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur opacity-75 group-hover:opacity-100 animate-pulse"></div>
-                <div className="relative p-6 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transform group-hover:scale-110 transition-transform duration-300">
-                  <Mail className="h-16 w-16 text-white" />
-                </div>
+          <div className="flex items-center justify-between max-w-6xl mx-auto">
+            {/* Left Side - Content */}
+            <div className="flex-1 space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
+                <MessageCircle className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">نحن هنا لمساعدتك</span>
               </div>
-            </div>
-            
-            {/* Dynamic Typography */}
-            <div className="space-y-4">
+              
               <h1 className="text-4xl md:text-5xl font-bold">
-                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                  تواصل
+                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">
+                  تواصل معنا
                 </span>
                 <br />
-                <span className="text-gray-800 dark:text-gray-200 text-2xl md:text-3xl">
-                  معنا اليوم
+                <span className="text-2xl md:text-3xl text-gray-700 dark:text-gray-300 font-normal">
+                  في أي وقت
                 </span>
               </h1>
               
-              <p className="text-2xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
-                <span className="font-medium text-emerald-600 dark:text-emerald-400">نحن هنا</span> لمساعدتك في رحلتك الاستثنائية لبناء شجرة عائلتك وحفظ تاريخكم العائلي للأبد
+              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-lg leading-relaxed">
+                فريقنا جاهز لمساعدتك في رحلة بناء شجرة عائلتك وحفظ تاريخكم العائلي
               </p>
             </div>
 
-            {/* Creative Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12">
-              <div className="text-center space-y-2 group hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">24/7</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">دعم مستمر</div>
+            {/* Right Side - Interactive Contact Cards */}
+            <div className="hidden lg:flex flex-col space-y-3 ml-8">
+              <div className="group flex items-center gap-3 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                  <Mail className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">البريد الإلكتروني</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">support@shjrti.com</p>
+                </div>
               </div>
-              <div className="text-center space-y-2 group hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-teal-600 dark:text-teal-400">100%</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">أمان البيانات</div>
+              
+              <div className="group flex items-center gap-3 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ml-4">
+                <div className="p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                  <Clock className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">ساعات العمل</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">9:00 ص - 6:00 م</p>
+                </div>
               </div>
-              <div className="text-center space-y-2 group hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">1K+</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">عائلة سعيدة</div>
-              </div>
-              <div className="text-center space-y-2 group hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">5★</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">تقييم العملاء</div>
+              
+              <div className="group flex items-center gap-3 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                  <Globe className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">نخدم جميع أنحاء</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">المملكة العربية السعودية</p>
+                </div>
               </div>
             </div>
           </div>
