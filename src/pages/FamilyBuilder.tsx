@@ -22,6 +22,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { SmartSearchBar } from "@/components/SmartSearchBar";
+import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -310,9 +312,13 @@ const FamilyBuilder = () => {
     // Create a refresh function that doesn't show loading
     const refreshFamilyData = async () => {
       try {
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('User not authenticated');
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+      // Continue with existing logic
 
         console.log('Refreshing family data...');
 
@@ -2070,6 +2076,45 @@ const FamilyBuilder = () => {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-8">
+
+              {/* البحث الذكي والاقتراحات */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+                {/* البحث الذكي */}
+                <div className="lg:col-span-3">
+                  <Card className="bg-white/70 backdrop-blur-sm border-emerald-200/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-emerald-700">
+                        <Search className="h-5 w-5" />
+                        البحث الذكي في العائلة
+                      </CardTitle>
+                      <CardDescription>
+                        استخدم الذكاء الاصطناعي للبحث بطريقة طبيعية عن أفراد العائلة
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <SmartSearchBar
+                        familyId={searchParams.get('family') || ''}
+                        onResultSelect={(member) => {
+                          toast({
+                            title: "تم العثور على العضو",
+                            description: `${member.name} موجود في شجرة العائلة`,
+                            variant: "default"
+                          });
+                        }}
+                        placeholder="ابحث عن أفراد العائلة... (مثال: ابن عم أحمد من ناحية الأب)"
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* الاقتراحات الذكية */}
+                <div className="lg:col-span-1">
+                  <SuggestionPanel
+                    familyId={searchParams.get('family') || ''}
+                    className="h-fit"
+                  />
+                </div>
+              </div>
 
               {/* Search and Add Section */}
               <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-8">

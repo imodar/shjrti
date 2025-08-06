@@ -15,10 +15,13 @@ import {
   Star,
   Gem,
   Shield,
-  X
+  X,
+  Search
 } from "lucide-react";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { GlobalHeader } from "@/components/GlobalHeader";
+import { SmartSearchBar } from "@/components/SmartSearchBar";
+import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -456,6 +459,44 @@ const Dashboard = () => {
             ) : familyTrees.length === 0 ? (
               <section className="py-2 pb-16 relative">
                 <div className="container mx-auto px-4 relative z-10">
+                  {/* البحث الذكي والاقتراحات */}
+                  <div className="mb-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* البحث الذكي */}
+                      <div className="lg:col-span-2">
+                        <Card className="bg-white/70 backdrop-blur-sm border-emerald-200/50">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-emerald-700">
+                              <Search className="h-5 w-5" />
+                              البحث الذكي في العائلة
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <SmartSearchBar
+                              familyId={familyTrees[0]?.id || ''}
+                              onResultSelect={(member) => {
+                                toast({
+                                  title: "تم العثور على العضو",
+                                  description: `${member.name} موجود في قاعدة البيانات`,
+                                  variant: "default"
+                                });
+                              }}
+                              placeholder="ابحث عن أفراد العائلة... (مثال: ابن عم أحمد)"
+                            />
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* الاقتراحات الذكية */}
+                      <div className="lg:col-span-1">
+                        <SuggestionPanel
+                          familyId={familyTrees[0]?.id || ''}
+                          className="h-fit"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Header with Icon and Title on Same Line */}
                   <div className="text-center mb-12">
                     <div className="flex items-center justify-center gap-4 mb-4">

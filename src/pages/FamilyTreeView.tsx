@@ -613,10 +613,9 @@ const FamilyTreeView = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
               {/* لوحة الاقتراحات الذكية */}
               <div className="lg:col-span-1">
-                <SuggestionPanel
-                  familyId={familyMembers[0]?.family_id || ''}
-                  userId={user?.id || ''}
-                  className="sticky top-4"
+              <SuggestionPanel
+                familyId={familyMembers[0]?.family_id || ''}
+                className="sticky top-4"
                 />
               </div>
 

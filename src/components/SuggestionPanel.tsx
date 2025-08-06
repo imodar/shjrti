@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface Suggestion {
   id: string;
@@ -17,23 +18,24 @@ interface Suggestion {
 
 interface SuggestionPanelProps {
   familyId: string;
-  userId: string;
   className?: string;
 }
 
 export const SuggestionPanel: React.FC<SuggestionPanelProps> = ({
   familyId,
-  userId,
   className = ""
 }) => {
+  const { user } = useCurrentUser();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    loadSuggestions();
-  }, [familyId, userId]);
+    if (familyId && user?.id) {
+      loadSuggestions();
+    }
+  }, [familyId, user?.id]);
 
   const loadSuggestions = async () => {
     try {
@@ -44,7 +46,7 @@ export const SuggestionPanel: React.FC<SuggestionPanelProps> = ({
       const { data: existingSuggestions, error: loadError } = await supabase
         .from('smart_suggestions')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', user?.id)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
@@ -73,7 +75,7 @@ export const SuggestionPanel: React.FC<SuggestionPanelProps> = ({
         // حفظ الاقتراحات الجديدة في قاعدة البيانات
         if (newSuggestions?.suggestions?.length > 0) {
           const suggestionsToSave = newSuggestions.suggestions.map((suggestion: any) => ({
-            user_id: userId,
+            user_id: user?.id,
             family_member_id: suggestion.suggestion_data?.member_id,
             suggestion_type: suggestion.suggestion_type,
             suggestion_data: suggestion.suggestion_data,
