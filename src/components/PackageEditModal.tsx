@@ -24,6 +24,7 @@ interface Package {
   is_active: boolean;
   is_featured: boolean;
   features?: any; // Can be string, object, or Json from Supabase
+  ai_features_enabled?: boolean;
 }
 
 interface PackageEditModalProps {
@@ -53,7 +54,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
     display_order: 0,
     is_active: true,
     is_featured: false,
-    features: {}
+    features: {},
+    ai_features_enabled: false
   });
 
   useEffect(() => {
@@ -130,7 +132,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
         display_order: formData.display_order,
         is_active: formData.is_active,
         is_featured: formData.is_featured,
-        features: formData.features  // Send as object, not JSON string
+        features: formData.features,  // Send as object, not JSON string
+        ai_features_enabled: formData.ai_features_enabled
       };
 
       const { error } = await supabase
@@ -308,6 +311,17 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
                   }))}
                 />
                 <Label htmlFor="is_featured">Featured</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="ai_features_enabled"
+                  checked={formData.ai_features_enabled || false}
+                  onCheckedChange={(checked) => setFormData(prev => ({
+                    ...prev,
+                    ai_features_enabled: checked
+                  }))}
+                />
+                <Label htmlFor="ai_features_enabled">ميزات الذكاء الاصطناعي</Label>
               </div>
             </div>
           </TabsContent>
