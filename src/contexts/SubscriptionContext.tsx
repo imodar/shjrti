@@ -53,41 +53,42 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
       if (error) {
         console.error('Error fetching subscription details:', error);
-        // If no subscription found, treat as expired
+        // If there's an error, default to free plan (not expired) to avoid blocking access
         setSubscription({
           subscription_id: null,
           package_name: null,
-          status: null,
+          status: 'free',
           expires_at: null,
           days_until_expiry: null,
-          is_expired: true,
+          is_expired: false, // Free plan is not expired
           ai_features_enabled: false
         });
       } else if (data && data.length > 0) {
         console.log('Setting subscription data:', data[0]);
         setSubscription(data[0]);
       } else {
-        console.log('No active subscription found in data');
-        // No active subscription found
+        console.log('No active subscription found in data - defaulting to free plan');
+        // No active subscription found - user is on free plan
         setSubscription({
           subscription_id: null,
           package_name: null,
-          status: null,
+          status: 'free',
           expires_at: null,
           days_until_expiry: null,
-          is_expired: true,
+          is_expired: false, // Free plan is not expired
           ai_features_enabled: false
         });
       }
     } catch (error) {
       console.error('Error in fetchSubscriptionDetails:', error);
+      // On error, default to free plan to avoid blocking access
       setSubscription({
         subscription_id: null,
         package_name: null,
-        status: null,
+        status: 'free',
         expires_at: null,
         days_until_expiry: null,
-        is_expired: true,
+        is_expired: false, // Free plan is not expired
         ai_features_enabled: false
       });
     } finally {
