@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const FamilyTreeView = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
@@ -37,11 +38,14 @@ const FamilyTreeView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [user, setUser] = useState<any>(null);
+  
+  // Get family ID from URL parameters
+  const familyId = searchParams.get('family');
 
   // Fetch family tree data from database
   useEffect(() => {
     fetchFamilyTreeData();
-  }, []);
+  }, [familyId]);
 
   const fetchFamilyTreeData = async () => {
     try {
@@ -55,40 +59,36 @@ const FamilyTreeView = () => {
       }
       setUser(user);
 
-      // First get families where user is creator
-      const { data: createdFamilies, error: createdFamiliesError } = await supabase
+      // If no family ID is provided, redirect to dashboard
+      if (!familyId) {
+        navigate('/dashboard');
+        return;
+      }
+
+      // Verify user has access to this family (either as creator or member)
+      const { data: family, error: familyError } = await supabase
         .from('families')
-        .select('id')
-        .eq('creator_id', user.id);
+        .select('id, name, creator_id')
+        .eq('id', familyId)
+        .eq('creator_id', user.id)
+        .single();
 
-      // Then get families where user is a member
-      const { data: memberFamilies, error: memberFamiliesError } = await supabase
-        .from('family_members')
-        .select('family_id')
-        .eq('user_id', user.id);
-
-      if (createdFamiliesError || memberFamiliesError) {
-        console.error('Error fetching families:', createdFamiliesError || memberFamiliesError);
+      if (familyError || !family) {
+        console.error('Error accessing family or family not found:', familyError);
+        toast({
+          title: "خطأ",
+          description: "لا يمكن الوصول إلى شجرة العائلة المطلوبة",
+          variant: "destructive"
+        });
+        navigate('/dashboard');
         return;
       }
 
-      // Combine all family IDs
-      const createdFamilyIds = createdFamilies?.map(f => f.id) || [];
-      const memberFamilyIds = memberFamilies?.map(f => f.family_id) || [];
-      const allFamilyIds = [...new Set([...createdFamilyIds, ...memberFamilyIds])];
-      
-      if (allFamilyIds.length === 0) {
-        setFamilyMembers([]);
-        setFamilyMarriages([]);
-        setIsLoading(false);
-        return;
-      }
-
-      // Fetch family tree members for user's families
+      // Fetch family tree members for the specific family only
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
         .select('*')
-        .in('family_id', allFamilyIds);
+        .eq('family_id', familyId);
 
       if (membersError) {
         console.error('Error fetching family members:', membersError);
@@ -100,11 +100,11 @@ const FamilyTreeView = () => {
         return;
       }
 
-      // Fetch marriages
+      // Fetch marriages for the specific family only
       const { data: marriages, error: marriagesError } = await supabase
         .from('marriages')
         .select('*')
-        .in('family_id', allFamilyIds);
+        .eq('family_id', familyId);
 
       if (marriagesError) {
         console.error('Error fetching marriages:', marriagesError);
@@ -112,7 +112,7 @@ const FamilyTreeView = () => {
 
       console.log('Fetched family members:', members);
       console.log('Fetched marriages:', marriages);
-      console.log('All family IDs:', allFamilyIds);
+      console.log('Family ID:', familyId);
 
       setFamilyMembers(members || []);
       setFamilyMarriages(marriages || []);
