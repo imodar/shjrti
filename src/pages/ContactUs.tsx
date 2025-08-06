@@ -108,7 +108,7 @@ const ContactUs: React.FC = () => {
       <GlobalHeader />
 
       {/* Immersive Hero Section */}
-      <section className="relative overflow-hidden pt-24 pb-12 bg-gradient-to-br from-emerald-900/10 via-transparent to-teal-900/10">
+      <section className="relative overflow-hidden pt-12 pb-6 bg-gradient-to-br from-emerald-900/10 via-transparent to-teal-900/10">
         {/* Luxury Background Pattern */}
         <div className="absolute inset-0 opacity-20 dark:opacity-10">
           <div className="absolute top-20 left-1/4 w-40 h-40 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-full blur-3xl animate-pulse"></div>
