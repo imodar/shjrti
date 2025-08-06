@@ -41,12 +41,15 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     try {
       setLoading(true);
       console.log('Fetching subscription for user:', user.id);
+      console.log('Clearing any cached subscription data...');
+      setSubscription(null);
       const { data, error } = await supabase.rpc('get_user_subscription_details', {
         user_uuid: user.id
       });
 
       console.log('Subscription data received:', data);
       console.log('Subscription error:', error);
+      console.log('Raw subscription details:', JSON.stringify(data, null, 2));
 
       if (error) {
         console.error('Error fetching subscription details:', error);
@@ -94,8 +97,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   };
 
   useEffect(() => {
-    // Only fetch subscription on user login, not on every user state change
-    if (user && !hasAttemptedFetch) {
+    // Force refresh subscription data every time user state changes
+    if (user) {
+      setHasAttemptedFetch(false); // Force refresh
       fetchSubscriptionDetails();
     } else if (!user) {
       // Clear subscription when user logs out
