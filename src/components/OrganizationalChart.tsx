@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, Users } from "lucide-react";
+import { Heart, HeartCrack, Users } from "lucide-react";
 
 interface FamilyUnit {
   id: string;
@@ -107,7 +107,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 <p className="text-xs text-gray-600 dark:text-gray-400">الزوج</p>
               </div>
               
-              <Heart className="h-8 w-8 text-pink-500 animate-pulse" />
+              {/* Show broken heart if either spouse is divorced */}
+              {(husband.marital_status === 'divorced' || wife.marital_status === 'divorced') ? (
+                <HeartCrack className="h-8 w-8 text-gray-500 animate-pulse" />
+              ) : (
+                <Heart className="h-8 w-8 text-pink-500 animate-pulse" />
+              )}
               
               <div className="text-center">
                 <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-pink-300">
