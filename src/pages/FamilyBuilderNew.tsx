@@ -1702,8 +1702,11 @@ const FamilyBuilderNew = () => {
                                                         لم يتم العثور على نتائج.
                                                       </CommandEmpty>
                                                       <CommandGroup>
-                                                        {familyMembers
-                                                          .filter(member => member.gender === "female")
+                                                         {familyMembers
+                                                           .filter(member => 
+                                                             member.gender === "female" && 
+                                                             member.id !== selectedMember?.id
+                                                           )
                                                           .map((member) => (
                                                             <CommandItem
                                                               key={member.id}
@@ -2081,8 +2084,11 @@ const FamilyBuilderNew = () => {
                                                       لم يتم العثور على نتائج.
                                                     </CommandEmpty>
                                                     <CommandGroup>
-                                                      {familyMembers
-                                                        .filter(member => member.gender === "male")
+                                                       {familyMembers
+                                                         .filter(member => 
+                                                           member.gender === "male" && 
+                                                           member.id !== selectedMember?.id
+                                                         )
                                                         .map((member) => (
                                                           <CommandItem
                                                             key={member.id}
