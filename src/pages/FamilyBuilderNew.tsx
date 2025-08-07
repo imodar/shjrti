@@ -1777,10 +1777,39 @@ const FamilyBuilderNew = () => {
                                         <div className="space-y-6">
                                           {/* Family Member Selection - Only from same family */}
                                           <div>
-                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
                                               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-                                              هل الزوجة من أفراد العائلة ، نعم ام لا
+                                              هل الزوجة من أفراد العائلة ؟
                                             </Label>
+                                            
+                                            <div className="flex items-center gap-6 mb-3">
+                                              <div className="flex items-center gap-2">
+                                                <input
+                                                  type="radio"
+                                                  id={`wife-family-yes-${index}`}
+                                                  name={`wife-family-${index}`}
+                                                  value="yes"
+                                                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                />
+                                                <Label htmlFor={`wife-family-yes-${index}`} className="text-sm font-arabic">
+                                                  نعم
+                                                </Label>
+                                              </div>
+                                              
+                                              <div className="flex items-center gap-2">
+                                                <input
+                                                  type="radio"
+                                                  id={`wife-family-no-${index}`}
+                                                  name={`wife-family-${index}`}
+                                                  value="no"
+                                                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                />
+                                                <Label htmlFor={`wife-family-no-${index}`} className="text-sm font-arabic">
+                                                  لا
+                                                </Label>
+                                              </div>
+                                            </div>
+                                            
                                             <p className="text-xs text-muted-foreground mb-3 font-arabic">
                                               يُسمح فقط باختيار الزوجة من أفراد العائلة المسجلين
                                             </p>
