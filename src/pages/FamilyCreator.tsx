@@ -22,11 +22,13 @@ import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 
 const FamilyCreator = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { isImageUploadEnabled, loading: imagePermissionLoading } = useImageUploadPermission();
   const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isCreatingFamily, setIsCreatingFamily] = useState(false);
@@ -992,7 +994,10 @@ const FamilyCreator = () => {
                                   className="hidden"
                                   id="founder-image"
                                 />
-                                <Label htmlFor="founder-image" className="cursor-pointer flex-1 group relative">
+                                <Label 
+                                  htmlFor={isImageUploadEnabled ? "founder-image" : undefined} 
+                                  className={`flex-1 group relative ${isImageUploadEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                                >
                                   <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-amber-300/50 rounded-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all duration-300">
                                     <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
                                       <Upload className="h-5 w-5 text-white" />
@@ -1005,7 +1010,7 @@ const FamilyCreator = () => {
                                   </div>
                                   {/* Tooltip */}
                                   <div className="absolute z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                                    ميزة مدفوعة - يتطلب اشتراك مميز
+                                    {isImageUploadEnabled ? "يمكنك رفع الصور" : "ميزة مدفوعة - يتطلب اشتراك مميز"}
                                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                                   </div>
                                 </Label>
