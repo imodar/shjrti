@@ -2394,9 +2394,20 @@ const MemberList = ({
                       {/* Name */}
                       <h3 className="font-semibold text-base font-arabic leading-tight">
                         {member.name}
-                        <span className="text-xs text-muted-foreground font-normal mr-2">
-                          {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                        </span>
+                        {(() => {
+                          // Only show ابن/ابنة for blood family members (those with fathers in the family or founders)
+                          const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
+                          const isBloodFamily = member.isFounder || memberHasFamilyFather;
+                          
+                          if (isBloodFamily) {
+                            return (
+                              <span className="text-xs text-muted-foreground font-normal mr-2">
+                                {member.gender === 'female' ? 'ابنة' : 'ابن'}
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
                       </h3>
                       
                       {/* Father + Grandfather names */}
