@@ -582,21 +582,6 @@ const Auth = () => {
                         <form onSubmit={handleRegister} className="space-y-4">
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <Label htmlFor="lastName">{t('last_name', 'اسم العائلة')}</Label>
-                              <div className="relative">
-                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  id="lastName"
-                                  placeholder={t('enter_last_name', 'أدخل اسم العائلة')}
-                                  className="pr-10"
-                                  value={lastName}
-                                  onChange={(e) => setLastName(e.target.value)}
-                                  required
-                                />
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
                               <Label htmlFor="firstName">{t('first_name', 'الاسم الأول')}</Label>
                               <div className="relative">
                                 <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -606,6 +591,23 @@ const Auth = () => {
                                   className="pr-10"
                                   value={firstName}
                                   onChange={(e) => setFirstName(e.target.value)}
+                                  tabIndex={1}
+                                  required
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label htmlFor="lastName">{t('last_name', 'اسم العائلة')}</Label>
+                              <div className="relative">
+                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="lastName"
+                                  placeholder={t('enter_last_name', 'أدخل اسم العائلة')}
+                                  className="pr-10"
+                                  value={lastName}
+                                  onChange={(e) => setLastName(e.target.value)}
+                                  tabIndex={2}
                                   required
                                 />
                               </div>
@@ -623,6 +625,7 @@ const Auth = () => {
                                 className="pr-10"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                tabIndex={3}
                                 required
                               />
                             </div>
@@ -639,6 +642,7 @@ const Auth = () => {
                                 className="pr-10"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
+                                tabIndex={4}
                                 required
                               />
                             </div>
@@ -655,6 +659,7 @@ const Auth = () => {
                                 className="pr-10"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                tabIndex={5}
                                 required
                               />
                             </div>
