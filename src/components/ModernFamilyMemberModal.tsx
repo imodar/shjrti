@@ -1143,48 +1143,58 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                       اختر من الأفراد المضافين
                                     </Label>
                                     <div className="relative z-[10001]">
-                                      <Select value={newWife.existingFamilyMemberId} onValueChange={(value) => {
-                                        const selectedMember = familyMembers.find(m => m.id === value);
-                                        if (selectedMember) {
-                                          setNewWife({
-                                            ...newWife, 
-                                            existingFamilyMemberId: value,
-                                            name: selectedMember.name,
-                                            birthDate: selectedMember.birthDate || '',
-                                            isAlive: selectedMember.isAlive,
-                                            deathDate: selectedMember.deathDate || '',
-                                            imageUrl: selectedMember.image || ''
-                                          });
-                                        }
-                                      }}>
-                                        <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic">
-                                          <SelectValue placeholder="اختر فرد من العائلة" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                          {familyMembers
-                                             .filter(member => 
-                                               member.gender === 'female' && 
-                                               member.fatherId && 
-                                               familyMembers.some(fm => fm.id === member.fatherId)
-                                             )
-                                             .map(member => (
-                                               <SelectItem key={member.id} value={member.id} className="font-arabic text-sm">
-                                                 {member.name}
-                                                 {member.fatherId && (
-                                                   <span className="text-xs text-gray-500 mr-2">
-                                                     (ابنة {familyMembers.find(f => f.id === member.fatherId)?.name})
-                                                   </span>
-                                                 )}
-                                              </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                      </Select>
+                                      <Command className="border-2 border-purple-200/50 dark:border-purple-700/50 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                                        <CommandInput 
+                                          placeholder="ابحث عن فرد من العائلة..." 
+                                          className="h-9 text-sm font-arabic"
+                                        />
+                                        <CommandList className="max-h-48">
+                                          <CommandEmpty className="text-sm font-arabic text-center py-4 text-gray-500">
+                                            لا توجد نتائج
+                                          </CommandEmpty>
+                                          <CommandGroup>
+                                            {familyMembers
+                                              .filter(member => 
+                                                member.gender === 'female' && 
+                                                member.fatherId && 
+                                                familyMembers.some(fm => fm.id === member.fatherId)
+                                              )
+                                              .map(member => (
+                                                <CommandItem 
+                                                  key={member.id} 
+                                                  value={`${member.name} ${familyMembers.find(f => f.id === member.fatherId)?.name || ''}`}
+                                                  onSelect={() => {
+                                                    setNewWife({
+                                                      ...newWife, 
+                                                      existingFamilyMemberId: member.id,
+                                                      name: member.name,
+                                                      birthDate: member.birthDate || '',
+                                                      isAlive: member.isAlive,
+                                                      deathDate: member.deathDate || '',
+                                                      imageUrl: member.image || ''
+                                                    });
+                                                  }}
+                                                  className="font-arabic text-sm cursor-pointer"
+                                                >
+                                                  <div className="flex items-center justify-between w-full">
+                                                    <span>{member.name}</span>
+                                                    {member.fatherId && (
+                                                      <span className="text-xs text-gray-500">
+                                                        (ابنة {familyMembers.find(f => f.id === member.fatherId)?.name})
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                </CommandItem>
+                                              ))}
+                                          </CommandGroup>
+                                        </CommandList>
+                                      </Command>
                                     </div>
                                   </div>
                                 )}
 
-                                {/* Name and Birth Date - only show if not family member or no selection */}
-                                {(!newWife.isFamilyMember || (newWife.isFamilyMember && !newWife.existingFamilyMemberId)) && (
+                                {/* Name and Birth Date - only show if not family member */}
+                                {!newWife.isFamilyMember && (
                                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     {/* Name - 2/3 width */}
                                     <div className="sm:col-span-2">
@@ -1228,79 +1238,80 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                   </div>
                                 )}
 
-                                {/* Marital Status, Life Status and Death Date */}
-                                <div className="space-y-4">
-                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {/* Marital Status */}
-                                    <div>
-                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                        الحالة الاجتماعية
-                                      </Label>
-                                      <div className="relative z-[10001]">
-                                        <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
-                                          <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                            <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                          </SelectTrigger>
-                                          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                            <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
-                                            <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
-                                          <Heart className="h-2 w-2 text-white" />
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Alive Status */}
-                                    <div>
-                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                        الحالة الحيوية
-                                      </Label>
-                                      <div className="relative z-[10001]">
-                                        <Select value={newWife.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewWife({...newWife, isAlive: value === "alive", deathDate: value === "alive" ? "" : newWife.deathDate})}>
-                                          <SelectTrigger className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                            <SelectValue placeholder="الحالة" />
-                                          </SelectTrigger>
-                                          <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                            <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
-                                            <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
-                                          <Heart className="h-2 w-2 text-white" />
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Death Date - only show if deceased */}
-                                    {!newWife.isAlive && (
-                                      <div className="animate-fade-in">
+                                {/* Marital Status, Life Status and Death Date - only show if not family member */}
+                                {!newWife.isFamilyMember && (
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                      {/* Marital Status */}
+                                      <div>
                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                          <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                          تاريخ الوفاة
+                                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الاجتماعية
                                         </Label>
-                                        <div className="relative z-[10000]">
-                                          <EnhancedDatePicker
-                                            value={newWife.deathDate ? new Date(newWife.deathDate) : null}
-                                            onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
-                                            placeholder="اختر تاريخ الوفاة"
-                                            className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
-                                          />
-                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                            <CalendarIcon className="h-2 w-2 text-white" />
+                                        <div className="relative z-[10001]">
+                                          <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
+                                            <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                              <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                              <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                              <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-2 w-2 text-white" />
                                           </div>
                                         </div>
                                       </div>
-                                    )}
-                                  </div>
-                                </div>
 
-                                {/* Image Upload Section - Split Layout */}
-                                <div className="grid grid-cols-2 gap-4">
-                                  {/* Image Upload */}
+                                      {/* Alive Status */}
+                                      <div>
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الحيوية
+                                        </Label>
+                                        <div className="relative z-[10001]">
+                                          <Select value={newWife.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewWife({...newWife, isAlive: value === "alive", deathDate: value === "alive" ? "" : newWife.deathDate})}>
+                                            <SelectTrigger className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                              <SelectValue placeholder="الحالة" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                              <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                              <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-2 w-2 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Death Date - only show if deceased */}
+                                      {!newWife.isAlive && (
+                                        <div className="animate-fade-in">
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                            تاريخ الوفاة
+                                          </Label>
+                                          <div className="relative z-[10000]">
+                                            <EnhancedDatePicker
+                                              value={newWife.deathDate ? new Date(newWife.deathDate) : null}
+                                              onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                              placeholder="اختر تاريخ الوفاة"
+                                              className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                            />
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                              <CalendarIcon className="h-2 w-2 text-white" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Image Upload Section - only show if not family member */}
+                                {!newWife.isFamilyMember && (
                                   <div>
                                     <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
                                       الصورة الشخصية
@@ -1372,18 +1383,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                       </TooltipProvider>
                                     )}
                                   </div>
-
-                                  {/* Additional Info Placeholder */}
-                                  <div>
-                                    <label className="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">
-                                      معلومات إضافية
-                                    </label>
-                                    <div className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-pink-200 dark:border-pink-800 rounded-xl bg-pink-50/30 dark:bg-pink-950/20">
-                                      <div className="w-5 h-5 bg-pink-300 rounded-full mb-1"></div>
-                                      <span className="text-xs text-center text-pink-500">قريباً</span>
-                                    </div>
-                                  </div>
-                                </div>
+                                )}
 
                                 <Button
                                   type="button"
