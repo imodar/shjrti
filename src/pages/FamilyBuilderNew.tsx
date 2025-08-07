@@ -2392,7 +2392,12 @@ const MemberList = ({
                     
                     <div className="flex-1 min-w-0 space-y-1">
                       {/* Name */}
-                      <h3 className="font-semibold text-base truncate font-arabic">{member.name}</h3>
+                      <h3 className="font-semibold text-base truncate font-arabic">
+                        {member.name}
+                        <span className="text-xs text-muted-foreground font-normal mr-2">
+                          {member.gender === 'female' ? 'ابنة' : 'ابن'}
+                        </span>
+                      </h3>
                       
                       {/* Father + Grandfather names */}
                       {(() => {
