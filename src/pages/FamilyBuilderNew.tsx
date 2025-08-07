@@ -753,7 +753,7 @@ const FamilyBuilderNew = () => {
         </div>
 
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+        <div>
           <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
