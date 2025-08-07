@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -878,104 +878,192 @@ const FamilyBuilderNew = () => {
                            
                             <div>
                               <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
-                              <Select 
-                                value={formData.selectedParent || ""} 
-                                onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="اختر الوالدين" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {Array.isArray(familyMarriages) && familyMarriages.length > 0 ? (
-                                    familyMarriages
-                                      .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
-                                       .map((marriage) => {
-                                         // Get full member details for proper naming
-                                         const husbandMember = (familyMembers || []).find(member => member?.id === marriage.husband?.id);
-                                         const wifeMember = (familyMembers || []).find(member => member?.id === marriage.wife?.id);
-                                         
-                                         let displayName = '';
-                                         
-                                         // Helper function to get father's name
-                                         const getFatherName = (member: any) => {
-                                           const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
-                                           return father?.name || '';
-                                         };
-                                         
-                                         // Helper function to get grandfather's name
-                                         const getGrandfatherName = (member: any) => {
-                                           const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
-                                           if (father) {
-                                             const grandfather = (familyMembers || []).find(m => m?.id === father?.fatherId);
-                                             return grandfather?.name || '';
-                                           }
-                                           return '';
-                                         };
-                                         
-                                         // Helper function to build full genealogical name
-                                         const getFullGenealogicalName = (member: any, isFounder: boolean) => {
-                                           if (isFounder) {
-                                             return `${member.name} ${familyData?.name || ''}`;
-                                           }
+                               <Popover>
+                                 <PopoverTrigger asChild>
+                                   <Button
+                                     variant="outline"
+                                     className="w-full justify-between"
+                                   >
+                                     {formData.selectedParent ? (
+                                       (() => {
+                                         const selectedMarriage = familyMarriages?.find(m => m?.id === formData.selectedParent);
+                                         if (selectedMarriage) {
+                                           const husbandMember = (familyMembers || []).find(member => member?.id === selectedMarriage.husband?.id);
+                                           const wifeMember = (familyMembers || []).find(member => member?.id === selectedMarriage.wife?.id);
                                            
-                                           const fatherName = getFatherName(member);
-                                           const grandfatherName = getGrandfatherName(member);
+                                           // Helper functions for display name
+                                           const getFatherName = (member: any) => {
+                                             const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
+                                             return father?.name || '';
+                                           };
                                            
-                                           if (member.gender === 'male') {
-                                             // Male: name + ابن + father + ابن + grandfather (if exists)
-                                             let result = member.name;
-                                             if (fatherName) {
-                                               result += ` ابن ${fatherName}`;
-                                               if (grandfatherName) {
-                                                 result += ` ابن ${grandfatherName}`;
-                                               }
+                                           const getGrandfatherName = (member: any) => {
+                                             const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
+                                             if (father) {
+                                               const grandfather = (familyMembers || []).find(m => m?.id === father?.fatherId);
+                                               return grandfather?.name || '';
                                              }
-                                             return result;
+                                             return '';
+                                           };
+                                           
+                                           const getFullGenealogicalName = (member: any, isFounder: boolean) => {
+                                             if (isFounder) {
+                                               return `${member.name} ${familyData?.name || ''}`;
+                                             }
+                                             
+                                             const fatherName = getFatherName(member);
+                                             const grandfatherName = getGrandfatherName(member);
+                                             
+                                             if (member.gender === 'male') {
+                                               let result = member.name;
+                                               if (fatherName) {
+                                                 result += ` ابن ${fatherName}`;
+                                                 if (grandfatherName) {
+                                                   result += ` ابن ${grandfatherName}`;
+                                                 }
+                                               }
+                                               return result;
+                                             } else {
+                                               let result = member.name;
+                                               if (fatherName) {
+                                                 result += ` بنت ${fatherName}`;
+                                                 if (grandfatherName) {
+                                                   result += ` ابن ${grandfatherName}`;
+                                                 }
+                                               }
+                                               return result;
+                                             }
+                                           };
+                                           
+                                           let displayName = '';
+                                           if (husbandMember && wifeMember) {
+                                             const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                             const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                             displayName = `${husbandFullName} ♥ ${wifeFullName}`;
+                                           } else if (husbandMember) {
+                                             const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                             displayName = `${husbandFullName} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
+                                           } else if (wifeMember) {
+                                             const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                             displayName = `${wifeFullName} ♥ ${selectedMarriage.husband?.name || 'بدون اسم'}`;
                                            } else {
-                                             // Female: name + بنت + father + ابن + grandfather (if exists)
-                                             let result = member.name;
-                                             if (fatherName) {
-                                               result += ` بنت ${fatherName}`;
-                                               if (grandfatherName) {
-                                                 result += ` ابن ${grandfatherName}`;
-                                               }
-                                             }
-                                             return result;
+                                             displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
                                            }
-                                         };
-                                         
-                                         if (husbandMember && wifeMember) {
-                                           // Both are family members
-                                           const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
-                                           const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
-                                           displayName = `${husbandFullName} ♥ ${wifeFullName}`;
-                                         } else if (husbandMember) {
-                                           // Only husband is family member
-                                           const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
-                                           displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                         } else if (wifeMember) {
-                                           // Only wife is family member
-                                           const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
-                                           displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
-                                         } else {
-                                           // Neither is family member (fallback)
-                                           displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                           
+                                           return displayName;
                                          }
-                                        
-                                        return (
-                                          <SelectItem key={marriage.id} value={marriage.id}>
-                                            <div className="flex items-center">
-                                              <Heart className="h-3 w-3 text-red-500 mr-1" />
-                                              <span>{displayName}</span>
-                                            </div>
-                                          </SelectItem>
-                                        );
-                                      })
-                                  ) : (
-                                    <SelectItem value="no-data" disabled>لا توجد زيجات مسجلة في هذه العائلة</SelectItem>
-                                  )}
-                                </SelectContent>
-                              </Select>
+                                         return 'غير محدد';
+                                       })()
+                                     ) : (
+                                       "اختر الوالدين"
+                                     )}
+                                     <ChevronDown className="h-4 w-4 opacity-50" />
+                                   </Button>
+                                 </PopoverTrigger>
+                                 <PopoverContent className="w-full p-0 bg-background border shadow-md" align="start">
+                                   <Command>
+                                     <CommandInput placeholder="ابحث عن الوالدين..." />
+                                     <CommandEmpty>لا توجد نتائج</CommandEmpty>
+                                     <CommandGroup>
+                                       {Array.isArray(familyMarriages) && familyMarriages.length > 0 ? (
+                                         familyMarriages
+                                           .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
+                                           .map((marriage) => {
+                                             // Get full member details for proper naming
+                                             const husbandMember = (familyMembers || []).find(member => member?.id === marriage.husband?.id);
+                                             const wifeMember = (familyMembers || []).find(member => member?.id === marriage.wife?.id);
+                                             
+                                             let displayName = '';
+                                             
+                                             // Helper function to get father's name
+                                             const getFatherName = (member: any) => {
+                                               const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
+                                               return father?.name || '';
+                                             };
+                                             
+                                             // Helper function to get grandfather's name
+                                             const getGrandfatherName = (member: any) => {
+                                               const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
+                                               if (father) {
+                                                 const grandfather = (familyMembers || []).find(m => m?.id === father?.fatherId);
+                                                 return grandfather?.name || '';
+                                               }
+                                               return '';
+                                             };
+                                             
+                                             // Helper function to build full genealogical name
+                                             const getFullGenealogicalName = (member: any, isFounder: boolean) => {
+                                               if (isFounder) {
+                                                 return `${member.name} ${familyData?.name || ''}`;
+                                               }
+                                               
+                                               const fatherName = getFatherName(member);
+                                               const grandfatherName = getGrandfatherName(member);
+                                               
+                                               if (member.gender === 'male') {
+                                                 // Male: name + ابن + father + ابن + grandfather (if exists)
+                                                 let result = member.name;
+                                                 if (fatherName) {
+                                                   result += ` ابن ${fatherName}`;
+                                                   if (grandfatherName) {
+                                                     result += ` ابن ${grandfatherName}`;
+                                                   }
+                                                 }
+                                                 return result;
+                                               } else {
+                                                 // Female: name + بنت + father + ابن + grandfather (if exists)
+                                                 let result = member.name;
+                                                 if (fatherName) {
+                                                   result += ` بنت ${fatherName}`;
+                                                   if (grandfatherName) {
+                                                     result += ` ابن ${grandfatherName}`;
+                                                   }
+                                                 }
+                                                 return result;
+                                               }
+                                             };
+                                             
+                                             if (husbandMember && wifeMember) {
+                                               // Both are family members
+                                               const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                               const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                               displayName = `${husbandFullName} ♥ ${wifeFullName}`;
+                                             } else if (husbandMember) {
+                                               // Only husband is family member
+                                               const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                               displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                             } else if (wifeMember) {
+                                               // Only wife is family member
+                                               const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                               displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                                             } else {
+                                               // Neither is family member (fallback)
+                                               displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                             }
+                                             
+                                             return (
+                                               <CommandItem
+                                                 key={marriage.id}
+                                                 value={`${displayName}-${marriage.id}`}
+                                                 onSelect={() => {
+                                                   setFormData({...formData, selectedParent: marriage.id});
+                                                 }}
+                                               >
+                                                 <div className="flex items-center w-full">
+                                                   <Heart className="h-3 w-3 text-red-500 mr-2" />
+                                                   <span className="truncate">{displayName}</span>
+                                                   {formData.selectedParent === marriage.id && <Check className="h-4 w-4 ml-auto" />}
+                                                 </div>
+                                               </CommandItem>
+                                             );
+                                           })
+                                       ) : (
+                                         <CommandItem disabled>لا توجد زيجات مسجلة في هذه العائلة</CommandItem>
+                                       )}
+                                     </CommandGroup>
+                                   </Command>
+                                 </PopoverContent>
+                               </Popover>
                             </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
