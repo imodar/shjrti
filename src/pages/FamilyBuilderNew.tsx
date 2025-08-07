@@ -637,6 +637,121 @@ const FamilyBuilderNew = () => {
       </div>
 
       <div className="relative z-10">
+        {/* Header Box from FamilyBuilder */}
+        <div className="max-w-7xl mx-auto px-6 pt-8">
+          <div className="mb-8">
+            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
+                {/* Right Side: Icon + Title + Description */}
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="relative">
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                      <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" />
+                    </div>
+                    {/* Status Indicator */}
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        {t('family_builder.family', 'عائلة')} {familyData?.name || t('family_builder.unspecified', 'غير محدد')}
+                      </span>
+                    </h1>
+                  </div>
+                </div>
+
+                {/* Sample Statistics Section - Responsive */}
+                <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 overflow-x-auto pb-2 lg:pb-0">
+                  {/* Members Available */}
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="text-center">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        {familyMembers.length}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.members_count', 'أعضاء')}</div>
+                    </div>
+                  </div>
+
+                  {/* Separator */}
+                  <div className="w-px h-6 sm:h-8 bg-white/20 dark:bg-gray-600/20"></div>
+
+                  {/* Number of Generations */}
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600 dark:text-amber-400" />
+                    <div className="text-center">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-amber-600 dark:text-amber-400">
+                        {calculateGenerationCount()}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.generations', 'أجيال')}</div>
+                    </div>
+                  </div>
+
+                  {/* Separator */}
+                  <div className="w-px h-6 sm:h-8 bg-white/20 dark:bg-gray-600/20"></div>
+
+                  {/* Last Modified Date */}
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 dark:text-teal-400" />
+                    <div className="text-center">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-teal-600 dark:text-teal-400">
+                        {familyData?.updated_at 
+                          ? format(new Date(familyData.updated_at), 'd MMM', { locale: ar })
+                          : t('family_builder.today', 'اليوم')
+                        }
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.last_modified', 'آخر تعديل')}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation Icons */}
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-center cursor-pointer group">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <TreePine className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate('/store')}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <Store className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col items-center cursor-pointer group"
+                    onClick={() => navigate(`/family-statistics?family=${familyId}`)}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                      <Star className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائات')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Header Section */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background">
           <div className="container mx-auto px-4 py-8">
