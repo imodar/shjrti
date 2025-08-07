@@ -37,6 +37,176 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import WifeForm from "@/components/WifeForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 
+// Image Upload Component - moved outside to prevent recreation on each render
+const ImageUploadSection = ({
+  isImageUploadEnabled,
+  uploadLoading,
+  croppedImage,
+  selectedImage,
+  showCropDialog,
+  crop,
+  zoom,
+  fileInputRef,
+  handleEditImage,
+  handleDeleteImage,
+  handleImageSelect,
+  setShowCropDialog,
+  setCrop,
+  setZoom,
+  onCropComplete,
+  handleCropSave
+}: any) => {
+  const tooltipContent = isImageUploadEnabled 
+    ? "انقر لرفع صورة شخصية للعضو" 
+    : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
+
+  if (uploadLoading) {
+    return (
+      <div>
+        <Label htmlFor="picture">الصورة الشخصية</Label>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <div className="space-y-2">
+            <Upload className="h-12 w-12 mx-auto text-gray-400 animate-pulse" />
+            <p className="text-sm text-gray-600">جاري التحقق من الصلاحيات...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div>
+      <Label htmlFor="picture">الصورة الشخصية</Label>
+      
+      {croppedImage ? (
+        // Show uploaded and cropped image with edit/delete options
+        <div className="space-y-4">
+          <div className="relative inline-block">
+            <img 
+              src={croppedImage} 
+              alt="صورة العضو" 
+              className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
+            />
+            <div className="absolute top-2 right-2 flex space-x-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={handleEditImage}
+                className="h-8 w-8 p-0"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                onClick={handleDeleteImage}
+                className="h-8 w-8 p-0"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Show upload area
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div 
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  isImageUploadEnabled 
+                    ? 'border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-50' 
+                    : 'border-gray-200 opacity-50 cursor-not-allowed bg-gray-50'
+                }`}
+                onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
+              >
+                {isImageUploadEnabled ? (
+                  <div className="space-y-2">
+                    <Upload className="h-12 w-12 mx-auto text-gray-400" />
+                    <p className="text-sm text-gray-600">انقر لرفع الصورة أو اسحب وأفلت</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF حتى 10MB</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-12 w-12 mx-auto text-gray-300" />
+                    <p className="text-sm text-gray-400">رفع الصور غير متاح</p>
+                    <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                  </div>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p>{tooltipContent}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageSelect}
+        className="hidden"
+        disabled={!isImageUploadEnabled}
+      />
+      
+      {/* Crop Dialog */}
+      <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>تعديل الصورة</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {selectedImage && (
+              <div className="relative h-64 bg-black rounded-lg overflow-hidden">
+                <Cropper
+                  image={selectedImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                  style={{
+                    containerStyle: {
+                      width: '100%',
+                      height: '100%',
+                      position: 'relative'
+                    }
+                  }}
+                />
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label>التكبير</Label>
+              <Slider
+                value={[zoom]}
+                onValueChange={(value) => setZoom(value[0])}
+                min={1}
+                max={3}
+                step={0.1}
+                className="w-full"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCropDialog(false)}>
+              إلغاء
+            </Button>
+            <Button onClick={handleCropSave}>
+              حفظ
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -252,159 +422,6 @@ const FamilyBuilderNew = () => {
 
   // Get image upload permission state from top level
   const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
-
-  const ImageUploadSection = () => {
-    
-    const tooltipContent = isImageUploadEnabled 
-      ? "انقر لرفع صورة شخصية للعضو" 
-      : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
-
-    if (uploadLoading) {
-      return (
-        <div>
-          <Label htmlFor="picture">الصورة الشخصية</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <div className="space-y-2">
-              <Upload className="h-12 w-12 mx-auto text-gray-400 animate-pulse" />
-              <p className="text-sm text-gray-600">جاري التحقق من الصلاحيات...</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    
-    return (
-      <div>
-        <Label htmlFor="picture">الصورة الشخصية</Label>
-        
-        {croppedImage ? (
-          // Show uploaded and cropped image with edit/delete options
-          <div className="space-y-4">
-            <div className="relative inline-block">
-              <img 
-                src={croppedImage} 
-                alt="صورة العضو" 
-                className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
-              />
-              <div className="absolute top-2 right-2 flex space-x-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  onClick={handleEditImage}
-                  className="h-8 w-8 p-0"
-                >
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="destructive"
-                  onClick={handleDeleteImage}
-                  className="h-8 w-8 p-0"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          // Show upload area
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div 
-                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                    isImageUploadEnabled 
-                      ? 'border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-50' 
-                      : 'border-gray-200 opacity-50 cursor-not-allowed bg-gray-50'
-                  }`}
-                  onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
-                >
-                  {isImageUploadEnabled ? (
-                    <div className="space-y-2">
-                      <Upload className="h-12 w-12 mx-auto text-gray-400" />
-                      <p className="text-sm text-gray-600">انقر لرفع الصورة أو اسحب وأفلت</p>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF حتى 10MB</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="h-12 w-12 mx-auto text-gray-300" />
-                      <p className="text-sm text-gray-400">رفع الصور غير متاح</p>
-                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
-                    </div>
-                  )}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs">
-                <p>{tooltipContent}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-        
-        {/* Hidden file input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleImageSelect}
-          className="hidden"
-          disabled={!isImageUploadEnabled}
-        />
-        
-        {/* Crop Dialog */}
-        <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>تعديل الصورة</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              {selectedImage && (
-                <div className="relative h-64 bg-black rounded-lg overflow-hidden">
-                  <Cropper
-                    image={selectedImage}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={1}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                    style={{
-                      containerStyle: {
-                        width: '100%',
-                        height: '100%',
-                        position: 'relative'
-                      }
-                    }}
-                  />
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label>التكبير</Label>
-                <Slider
-                  value={[zoom]}
-                  onValueChange={(value) => setZoom(value[0])}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  className="w-full"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowCropDialog(false)}>
-                إلغاء
-              </Button>
-              <Button onClick={handleCropSave}>
-                حفظ
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  };
 
   const { toast } = useToast();
   const { t, direction } = useLanguage();
@@ -1276,7 +1293,24 @@ const FamilyBuilderNew = () => {
                              />
                            </div>
 
-                           <ImageUploadSection />
+                            <ImageUploadSection
+                              isImageUploadEnabled={isImageUploadEnabled}
+                              uploadLoading={uploadLoading}
+                              croppedImage={croppedImage}
+                              selectedImage={selectedImage}
+                              showCropDialog={showCropDialog}
+                              crop={crop}
+                              zoom={zoom}
+                              fileInputRef={fileInputRef}
+                              handleEditImage={handleEditImage}
+                              handleDeleteImage={handleDeleteImage}
+                              handleImageSelect={handleImageSelect}
+                              setShowCropDialog={setShowCropDialog}
+                              setCrop={setCrop}
+                              setZoom={setZoom}
+                              onCropComplete={onCropComplete}
+                              handleCropSave={handleCropSave}
+                            />
                          </div>
                       )}
 
