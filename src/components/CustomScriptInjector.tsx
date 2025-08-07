@@ -12,14 +12,19 @@ export const CustomScriptInjector = () => {
           .from('admin_settings')
           .select('setting_value')
           .eq('setting_key', 'custom_javascript')
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           console.error('Error loading custom JavaScript:', error);
           return;
         }
 
-        const settingValue = data?.setting_value as { code?: string } | null;
+        // Only proceed if we have actual data and code
+        if (!data) {
+          return; // No setting exists, nothing to inject
+        }
+
+        const settingValue = data.setting_value as { code?: string } | null;
         const customCode = settingValue?.code;
 
         // Remove any existing custom scripts
