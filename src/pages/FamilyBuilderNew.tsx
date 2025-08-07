@@ -1200,54 +1200,52 @@ const FamilyBuilderNew = () => {
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                 <CardHeader className="pb-4 relative">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <CardTitle className="flex items-center gap-2">
-                        {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                        {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                        {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                         <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                           {formMode === 'view' && "معلومات العضو"}
-                           {formMode === 'add' && "إضافة عضو جديد"}
-                           {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
-                         </span>
-                      </CardTitle>
-                      
-                      {/* Step Indicator for add/edit modes */}
-                      {formMode !== 'view' && (
-                        <div className="flex items-center gap-3">
-                          {[1, 2].map((step, index) => (
-                            <div key={step} className="flex items-center gap-2">
-                              <div
-                                className={cn(
-                                  "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
-                                  currentStep >= step
-                                    ? "bg-primary border-primary text-primary-foreground shadow-md"
-                                    : "bg-background border-muted-foreground/30 text-muted-foreground"
-                                )}
-                              >
-                                {currentStep > step ? (
-                                  <Check className="h-4 w-4" />
-                                ) : (
-                                  step
-                                )}
-                              </div>
-                              <span className={cn(
-                                "text-sm font-medium",
-                                currentStep >= step ? "text-primary" : "text-muted-foreground"
-                              )}>
-                                {step === 1 ? "المعلومات الأساسية" : "التفاصيل الإضافية"}
-                              </span>
-                              {index < 1 && (
-                                <div className={cn(
-                                  "w-12 h-0.5 mx-2 transition-all duration-200",
-                                  currentStep > step ? "bg-primary" : "bg-muted-foreground/30"
-                                )} />
+                    {/* Step Indicator for add/edit modes - positioned at far left */}
+                    {formMode !== 'view' && (
+                      <div className="flex items-center gap-3">
+                        {[1, 2].map((step, index) => (
+                          <div key={step} className="flex items-center gap-2">
+                            <div
+                              className={cn(
+                                "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
+                                currentStep >= step
+                                  ? "bg-primary border-primary text-primary-foreground shadow-md"
+                                  : "bg-background border-muted-foreground/30 text-muted-foreground"
+                              )}
+                            >
+                              {currentStep > step ? (
+                                <Check className="h-4 w-4" />
+                              ) : (
+                                step
                               )}
                             </div>
-                          ))}
-                        </div>
-                      )}
-                     </div>
+                            <span className={cn(
+                              "text-sm font-medium",
+                              currentStep >= step ? "text-primary" : "text-muted-foreground"
+                            )}>
+                              {step === 1 ? "المعلومات الأساسية" : "التفاصيل الإضافية"}
+                            </span>
+                            {index < 1 && (
+                              <div className={cn(
+                                "w-12 h-0.5 mx-2 transition-all duration-200",
+                                currentStep > step ? "bg-primary" : "bg-muted-foreground/30"
+                              )} />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <CardTitle className="flex items-center gap-2">
+                      {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                      {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                      {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                         {formMode === 'view' && "معلومات العضو"}
+                         {formMode === 'add' && "إضافة عضو جديد"}
+                         {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
+                       </span>
+                    </CardTitle>
                      {formMode === 'view' && (
                        <Button onClick={handleAddMember} className="flex items-center gap-2">
                          <Plus className="h-4 w-4" />
