@@ -663,11 +663,11 @@ export const ModernFamilyMemberModal = ({
                 <div className="text-center sm:text-right">{/* Always right-aligned on larger screens */}
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 font-arabic">
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                      إضافة فرد جديد للعائلة
+                      {editMember ? `تعديل بيانات ${editMember.name}` : "إضافة فرد جديد للعائلة"}
                     </span>
                   </h1>
                   <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed font-arabic">
-                    {step === 1 ? "املأ البيانات الأساسية للفرد الجديد" : `املأ تفاصيل الزواج لـ ${memberData.name}`}
+                    {editMember ? "املأ البيانات بشكل صحيح حتى يمكنك تحقيق اقصى استفادة وسهولة" : (step === 1 ? "املأ البيانات الأساسية للفرد الجديد" : `املأ تفاصيل الزواج لـ ${memberData.name}`)}
                   </p>
                 </div>
               </div>
