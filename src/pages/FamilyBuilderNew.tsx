@@ -2190,10 +2190,10 @@ const FamilyBuilderNew = () => {
                           variant="outline"
                           onClick={prevStep}
                           disabled={currentStep === 1}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 font-arabic"
                         >
                           <ArrowLeft className="h-4 w-4" />
-                          السابق
+                          {currentStep === 1 ? "إلغاء الإضافة" : "السابق"}
                         </Button>
                         
                         {currentStep < 2 ? (
