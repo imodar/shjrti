@@ -927,6 +927,10 @@ export type Database = {
         }
         Returns: string
       }
+      delete_family_complete: {
+        Args: { family_uuid: string }
+        Returns: boolean
+      }
       generate_invoice_number: {
         Args: Record<PropertyKey, never>
         Returns: string

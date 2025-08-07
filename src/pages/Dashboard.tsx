@@ -272,13 +272,9 @@ const Dashboard = () => {
       console.log('🗑️ Starting delete operation for tree:', deleteTreeId);
       console.log('👤 User ID for delete operation:', user?.id);
       
-      // Delete the tree completely (CASCADE will handle members and marriages)
+      // Delete the tree completely using secure function
       const { data, error } = await supabase
-        .from('families')
-        .delete()
-        .eq('id', deleteTreeId)
-        .eq('creator_id', user?.id)
-        .select(); // Add select to see what was deleted
+        .rpc('delete_family_complete', { family_uuid: deleteTreeId });
 
       console.log('📊 Delete operation result:', { data, error });
       
@@ -292,8 +288,8 @@ const Dashboard = () => {
         return;
       }
 
-      if (!data || data.length === 0) {
-        console.error('❌ No rows were deleted during delete operation');
+      if (!data) {
+        console.error('❌ Family deletion failed');
         toast({
           title: t('dashboard.deletion_error', 'Deletion Error'),
           description: t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it'),
@@ -302,7 +298,7 @@ const Dashboard = () => {
         return;
       }
 
-      console.log('✅ Tree deleted successfully, deleted rows:', data.length);
+      console.log('✅ Tree and all related data deleted successfully');
       
       // Remove from local state
       setFamilyTrees(prev => prev.filter(tree => tree.id !== deleteTreeId));
