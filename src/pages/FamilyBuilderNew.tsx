@@ -1698,18 +1698,31 @@ const FamilyBuilderNew = () => {
                                                   <Command>
                                                     <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                                                     <CommandList>
-                                                      <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                        لم يتم العثور على نتائج.
-                                                      </CommandEmpty>
+                                                       <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
+                                                         لا توجد إناث عازبات من نفس العائلة متاحات للزواج.
+                                                       </CommandEmpty>
                                                       <CommandGroup>
                                                          {familyMembers
-                                                           .filter(member => 
-                                                             member.gender === "female" && 
-                                                             member.id !== selectedMember?.id &&
-                                                             member.father_id && // Only females with father_id (born into family)
-                                                             (member.marital_status === "single" || !member.marital_status) && // Only unmarried females
-                                                             !familyMarriages.some(marriage => marriage.wife?.id === member.id) // Not already in marriages
-                                                           )
+                                                           .filter(member => {
+                                                             const hasValidGender = member.gender === "female";
+                                                             const isNotSelf = member.id !== selectedMember?.id;
+                                                             const hasFatherId = member.father_id;
+                                                             const isUnmarried = member.marital_status === "single" || !member.marital_status;
+                                                             const notInMarriage = !familyMarriages.some(marriage => marriage.wife?.id === member.id);
+                                                             
+                                                             // Debug log for troubleshooting
+                                                             console.log(`Female member ${member.name}:`, {
+                                                               hasValidGender,
+                                                               isNotSelf,
+                                                               hasFatherId,
+                                                               isUnmarried,
+                                                               notInMarriage,
+                                                               maritalStatus: member.marital_status,
+                                                               marriageRecord: familyMarriages.find(m => m.wife?.id === member.id)
+                                                             });
+                                                             
+                                                             return hasValidGender && isNotSelf && hasFatherId && isUnmarried && notInMarriage;
+                                                           })
                                                           .map((member) => (
                                                             <CommandItem
                                                               key={member.id}
