@@ -2393,6 +2393,9 @@ const MemberList = ({
                     <div className="flex-1 min-w-0 space-y-1">
                       {/* Name */}
                       <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-base font-arabic leading-tight">
+                          {member.name}
+                        </h3>
                         {(() => {
                           // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
                           const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
@@ -2407,9 +2410,6 @@ const MemberList = ({
                           }
                           return null;
                         })()}
-                        <h3 className="font-semibold text-base font-arabic leading-tight">
-                          {member.name}
-                        </h3>
                       </div>
                       
                       {/* Father + Grandfather names */}
