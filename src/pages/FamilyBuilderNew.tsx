@@ -247,9 +247,15 @@ const FamilyBuilderNew = () => {
     }
   };
 
+  // Get image upload permission state from top level
+  const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
+
   const ImageUploadSection = () => {
-    const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
     
+    const tooltipContent = isImageUploadEnabled 
+      ? "انقر لرفع صورة شخصية للعضو" 
+      : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
+
     if (uploadLoading) {
       return (
         <div>
@@ -263,10 +269,6 @@ const FamilyBuilderNew = () => {
         </div>
       );
     }
-    
-    const tooltipContent = isImageUploadEnabled 
-      ? "انقر لرفع صورة شخصية للعضو" 
-      : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
     
     return (
       <div>

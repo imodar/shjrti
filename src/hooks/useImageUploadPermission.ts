@@ -15,6 +15,21 @@ export function useImageUploadPermission() {
         return;
       }
 
+      // Check cached permission first
+      const cacheKey = `image_upload_permission_${user.id}`;
+      const cachedPermission = localStorage.getItem(cacheKey);
+      const cacheTimestamp = localStorage.getItem(`${cacheKey}_timestamp`);
+      
+      // Use cache if it's less than 1 hour old
+      if (cachedPermission && cacheTimestamp) {
+        const isExpired = Date.now() - parseInt(cacheTimestamp) > 60 * 60 * 1000; // 1 hour
+        if (!isExpired) {
+          setIsImageUploadEnabled(cachedPermission === 'true');
+          setLoading(false);
+          return;
+        }
+      }
+
       try {
         // Get user's subscription details with package info
         const { data: subscriptionData, error } = await supabase
@@ -37,12 +52,13 @@ export function useImageUploadPermission() {
         }
 
         // If user has an active subscription with image upload enabled
-        if (subscriptionData?.packages?.image_upload_enabled) {
-          setIsImageUploadEnabled(true);
-        } else {
-          // User is on free plan or plan without image upload
-          setIsImageUploadEnabled(false);
-        }
+        const hasPermission = Boolean(subscriptionData?.packages?.image_upload_enabled);
+        setIsImageUploadEnabled(hasPermission);
+        
+        // Cache the result
+        localStorage.setItem(cacheKey, hasPermission.toString());
+        localStorage.setItem(`${cacheKey}_timestamp`, Date.now().toString());
+        
       } catch (error) {
         console.error('Error checking image upload permission:', error);
         setIsImageUploadEnabled(false);
