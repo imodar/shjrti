@@ -1874,9 +1874,10 @@ const FamilyBuilderNew = () => {
                                                 )}
                                               </div>
                                             </div>
-                                          {/* Image Upload - Not needed since only family members */}
-                                            <div className="space-y-3">
-                                              {wife.croppedImage ? (
+                                           {/* Image Upload - Allow for custom images */}
+                                           {!wife.isFamilyMember && (
+                                             <div className="space-y-3">
+                                               {wife.croppedImage ? (
                                                 <div className="text-center space-y-3">
                                                   <div className="relative inline-block">
                                                     <img 
@@ -1927,6 +1928,7 @@ const FamilyBuilderNew = () => {
                                           )}
                                         </div>
                                       </div>
+                                    ))}
                                     
                                     <Button
                                       type="button"
@@ -1947,7 +1949,7 @@ const FamilyBuilderNew = () => {
                                       className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
                                     >
                                       <Plus className="h-5 w-5 mr-2" />
-                                      إضافة زوجة
+                                      إضافة زوجة أخرى
                                     </Button>
                                   </div>
                                 </div>
