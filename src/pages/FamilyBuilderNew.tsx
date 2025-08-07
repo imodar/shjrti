@@ -89,50 +89,52 @@ const ImageUploadSection = ({
       <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
       
       {croppedImage ? (
-        // Enhanced uploaded image display
-        <div className="space-y-4">
-          <div className="relative group">
-            <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-4 transition-all duration-300 hover:border-primary/40 hover:shadow-lg">
+        // Enhanced uploaded image display - centered and compact
+        <div className="space-y-3">
+          <div className="relative group flex justify-center">
+            <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3 transition-all duration-300 hover:border-primary/40 hover:shadow-lg">
               <div className="relative inline-block">
                 <img 
                   src={croppedImage} 
                   alt="صورة العضو" 
-                  className="w-32 h-32 object-cover rounded-xl border-2 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
+                  className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {/* Action buttons with enhanced design */}
-                <div className="absolute -top-2 -right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="secondary"
-                    onClick={handleEditImage}
-                    className="h-8 w-8 p-0 bg-white/90 hover:bg-white border border-gray-200 shadow-lg backdrop-blur-sm"
-                  >
-                    <Edit2 className="h-4 w-4 text-gray-700" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="destructive"
-                    onClick={handleDeleteImage}
-                    className="h-8 w-8 p-0 bg-red-500/90 hover:bg-red-600 shadow-lg backdrop-blur-sm"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
               </div>
               
               {/* Success indicator */}
-              <div className="absolute top-2 left-2 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                تم الرفع
+              <div className="absolute top-1 left-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="font-arabic">تم الرفع</span>
               </div>
             </div>
-            
-            <p className="text-xs text-muted-foreground text-center mt-2">انقر على الأيقونات لتعديل أو حذف الصورة</p>
           </div>
+          
+          {/* Action buttons - centered and improved */}
+          <div className="flex justify-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={handleEditImage}
+              className="h-8 px-3 bg-white/90 hover:bg-white border border-gray-200 shadow-sm backdrop-blur-sm font-arabic"
+            >
+              <Edit2 className="h-3 w-3 ml-1" />
+              تعديل
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              onClick={handleDeleteImage}
+              className="h-8 px-3 bg-red-500/90 hover:bg-red-600 shadow-sm backdrop-blur-sm font-arabic"
+            >
+              <Trash2 className="h-3 w-3 ml-1" />
+              حذف
+            </Button>
+          </div>
+          
+          <p className="text-xs text-muted-foreground text-center font-arabic">انقر على الأزرار لتعديل أو حذف الصورة</p>
         </div>
       ) : (
         // Enhanced upload area
@@ -140,7 +142,7 @@ const ImageUploadSection = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <div 
-                className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
+                className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 ${
                   isImageUploadEnabled 
                     ? 'border-primary/40 cursor-pointer hover:border-primary/60 hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10 hover:shadow-lg transform hover:-translate-y-1 active:translate-y-0' 
                     : 'border-gray-300 opacity-70 cursor-not-allowed bg-gradient-to-br from-gray-50 to-gray-100'
@@ -151,55 +153,55 @@ const ImageUploadSection = ({
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-50"></div>
                 
                 {isImageUploadEnabled ? (
-                  <div className="relative space-y-4">
+                  <div className="relative space-y-2">
                     <div className="relative">
-                      <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl w-fit mx-auto">
-                        <Upload className="h-12 w-12 text-primary" />
+                      <div className="p-2 bg-gradient-to-br from-primary/10 to-primary/20 rounded-xl w-fit mx-auto">
+                        <Upload className="h-8 w-8 text-primary" />
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/40 rounded-2xl blur-xl opacity-30 animate-pulse"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/40 rounded-xl blur-xl opacity-30 animate-pulse"></div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <p className="text-base font-medium text-foreground">انقر لرفع الصورة أو اسحب وأفلت</p>
-                      <p className="text-sm text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-foreground font-arabic">انقر لرفع الصورة</p>
+                      <p className="text-xs text-muted-foreground font-arabic">PNG, JPG, GIF حتى 10MB</p>
                     </div>
                     
                     {/* Enhanced visual indicators */}
-                    <div className="flex justify-center items-center space-x-4 pt-2">
+                    <div className="flex justify-center items-center space-x-2 pt-1">
                       <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                        <Camera className="h-4 w-4 text-primary" />
-                        <span>صور عالية الجودة</span>
+                        <Camera className="h-3 w-3 text-primary" />
+                        <span className="font-arabic">عالية الجودة</span>
                       </div>
                       <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
                       <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                        <Crop className="h-4 w-4 text-primary" />
-                        <span>قص تلقائي</span>
+                        <Crop className="h-3 w-3 text-primary" />
+                        <span className="font-arabic">قص تلقائي</span>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="relative space-y-4">
+                  <div className="relative space-y-2">
                     <div className="relative">
-                      <div className="p-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl w-fit mx-auto">
-                        <Upload className="h-12 w-12 text-gray-400" />
+                      <div className="p-2 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl w-fit mx-auto">
+                        <Upload className="h-8 w-8 text-gray-400" />
                       </div>
                       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                          <X className="h-4 w-4 text-white" />
+                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                          <X className="h-3 w-3 text-white" />
                         </div>
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <p className="text-base font-medium text-gray-500">رفع الصور غير متاح</p>
-                      <p className="text-sm text-gray-400">يتطلب اشتراك مدفوع</p>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-gray-500 font-arabic">رفع الصور غير متاح</p>
+                      <p className="text-xs text-gray-400 font-arabic">يتطلب اشتراك مدفوع</p>
                     </div>
                     
                     {/* Upgrade call-to-action */}
-                    <div className="pt-2">
-                      <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                        <Star className="h-4 w-4" />
-                        <span>ترقية الاشتراك</span>
+                    <div className="pt-1">
+                      <div className="inline-flex items-center space-x-1 bg-gradient-to-r from-primary to-primary/80 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                        <Star className="h-3 w-3" />
+                        <span className="font-arabic">ترقية الاشتراك</span>
                       </div>
                     </div>
                   </div>
