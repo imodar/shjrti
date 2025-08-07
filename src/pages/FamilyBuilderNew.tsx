@@ -2419,25 +2419,27 @@ const MemberList = ({
                       {(() => {
                         // Find marriage where this member is husband or wife
                         const marriage = marriages?.find(m => 
-                          m.husband_id === member.id || m.wife_id === member.id
+                          m.husband?.id === member.id || m.wife?.id === member.id
                         );
                         
                         if (marriage) {
                           // Find the spouse (the other person in the marriage)
-                          const spouseId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
-                          const spouse = familyMembers?.find(m => m?.id === spouseId);
+                          const isHusband = marriage.husband?.id === member.id;
+                          const spouse = isHusband ? marriage.wife : marriage.husband;
                           
                           if (spouse) {
-                            // Get spouse's father and grandfather
-                            const spouseFather = familyMembers?.find(m => m?.id === spouse.fatherId);
+                            // Get spouse's father and grandfather from familyMembers
+                            const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
+                            const spouseFather = familyMembers?.find(m => m?.id === spouseFullData?.fatherId);
                             const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
                             
                             // Build the lineage string
                             let spouseInfo = spouse.name;
                             
                             if (spouseFather) {
-                              // Use ابن for male, ابنة for female
-                              const childOf = spouse.gender === 'male' ? 'ابن' : 'ابنة';
+                              // Use ابن for male, ابنة for female - get gender from full spouse data
+                              const spouseGender = spouseFullData?.gender || spouse.gender;
+                              const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
                               spouseInfo += ` ${childOf} ${spouseFather.name}`;
                               
                               if (spouseGrandfather) {
