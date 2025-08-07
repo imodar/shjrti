@@ -272,16 +272,13 @@ const Dashboard = () => {
       console.log('🗑️ Starting archive operation for tree:', deleteTreeId);
       console.log('👤 User ID for archive operation:', user?.id);
       
-      // Archive the tree instead of deleting it
+      // Delete the tree completely (CASCADE will handle members and marriages)
       const { data, error } = await supabase
         .from('families')
-        .update({ 
-          is_archived: true, 
-          archived_at: new Date().toISOString() 
-        })
+        .delete()
         .eq('id', deleteTreeId)
         .eq('creator_id', user?.id)
-        .select(); // Add select to see what was updated
+        .select(); // Add select to see what was deleted
 
       console.log('📊 Archive operation result:', { data, error });
       
