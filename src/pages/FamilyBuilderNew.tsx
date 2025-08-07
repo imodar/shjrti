@@ -2415,8 +2415,13 @@ const MemberList = ({
                         return null;
                       })()}
                       
-                      {/* Spouse information - show only for non-family members (those married into the family) */}
+                      {/* Spouse information - show only for non-family members (those married into the family) and not for founders */}
                       {(() => {
+                        // Don't show spouse info for founders
+                        if (member.is_founder) {
+                          return null;
+                        }
+
                         // Find marriage where this member is husband or wife
                         const marriage = marriages?.find(m => 
                           (m.husband?.id === member.id || m.wife?.id === member.id) ||
