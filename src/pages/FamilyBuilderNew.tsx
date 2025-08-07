@@ -2190,7 +2190,7 @@ const FamilyBuilderNew = () => {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={prevStep}
+                          onClick={currentStep === 1 ? handleCancelForm : prevStep}
                           className="flex items-center gap-2 font-arabic"
                         >
                           <ArrowLeft className="h-4 w-4" />
