@@ -2428,9 +2428,29 @@ const MemberList = ({
                           const spouse = familyMembers?.find(m => m?.id === spouseId);
                           
                           if (spouse) {
+                            // Get spouse's father and grandfather
+                            const spouseFather = familyMembers?.find(m => m?.id === spouse.fatherId);
+                            const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
+                            
+                            // Build the lineage string
+                            let spouseInfo = spouse.name;
+                            
+                            if (spouseFather) {
+                              // Use ابن for male, ابنة for female
+                              const childOf = spouse.gender === 'male' ? 'ابن' : 'ابنة';
+                              spouseInfo += ` ${childOf} ${spouseFather.name}`;
+                              
+                              if (spouseGrandfather) {
+                                spouseInfo += ` ابن ${spouseGrandfather.name}`;
+                              }
+                            }
+                            
+                            // Use زوج for husband, زوجة for wife (from member's perspective)
+                            const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+                            
                             return (
                               <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                                زوج {spouse.name}
+                                {relationLabel} {spouseInfo}
                               </p>
                             );
                           }
