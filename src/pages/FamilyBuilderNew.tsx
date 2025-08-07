@@ -1714,7 +1714,7 @@ const FamilyBuilderNew = () => {
                                                            return familyMembers.filter(member => {
                                                              const hasValidGender = member.gender === "female";
                                                              const isNotSelf = member.id !== selectedMember?.id;
-                                                             const hasFatherId = member.father_id; // غير فارغ
+                                                             // إزالة شرط father_id مؤقتاً للاختبار
                                                              const isAvailableForMarriage = 
                                                                member.marital_status === "single" || 
                                                                member.marital_status === "divorced";
@@ -1729,13 +1729,13 @@ const FamilyBuilderNew = () => {
                                                                  selectedMember: selectedMember?.name,
                                                                  passes_gender: hasValidGender,
                                                                  passes_not_self: isNotSelf,
-                                                                 passes_father: !!member.father_id,
+                                                                 passes_father: true, // إزالة شرط father_id مؤقتاً
                                                                  passes_marital: isAvailableForMarriage,
-                                                                 FINAL_RESULT: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
+                                                                 FINAL_RESULT: hasValidGender && isNotSelf && isAvailableForMarriage
                                                                });
                                                              }
                                                              
-                                                             return hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage;
+                                                             return hasValidGender && isNotSelf && isAvailableForMarriage;
                                                            });
                                                          })()
                                                           .map((member) => (
