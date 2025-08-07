@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, MoreVertical, Edit, Trash2, Star } from "lucide-react";
+import { TreePine, ArrowRight, ArrowLeft, Users, Heart, UserPlus, CheckCircle, Plus, CalendarIcon, Upload, X, MoreVertical, Edit, Trash2, Star, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -992,8 +992,8 @@ const FamilyCreator = () => {
                                   className="hidden"
                                   id="founder-image"
                                 />
-                                <Label htmlFor="founder-image" className="cursor-pointer flex-1">
-                                  <div className="group flex items-center gap-3 px-4 py-3 border-2 border-dashed border-amber-300/50 rounded-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all duration-300">
+                                <Label htmlFor="founder-image" className="cursor-pointer flex-1 group relative">
+                                  <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-amber-300/50 rounded-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all duration-300">
                                     <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
                                       <Upload className="h-5 w-5 text-white" />
                                     </div>
@@ -1001,6 +1001,12 @@ const FamilyCreator = () => {
                                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300">اختر صورة</p>
                                       <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG أو GIF</p>
                                     </div>
+                                    <Crown className="h-4 w-4 text-amber-500" />
+                                  </div>
+                                  {/* Tooltip */}
+                                  <div className="absolute z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
+                                    ميزة مدفوعة - يتطلب اشتراك مميز
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                                   </div>
                                 </Label>
                                 {founderData.croppedImage && (
