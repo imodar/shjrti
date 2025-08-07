@@ -1699,30 +1699,32 @@ const FamilyBuilderNew = () => {
                                                     <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                                                     <CommandList>
                                                        <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                         لا توجد إناث متاحات للزواج في هذه العائلة.
+                                                         لا توجد إناث متاحات (لديهن أب في العائلة وعازبات/مطلقات).
                                                        </CommandEmpty>
                                                       <CommandGroup>
                                                          {familyMembers
                                                            .filter(member => {
                                                              const hasValidGender = member.gender === "female";
                                                              const isNotSelf = member.id !== selectedMember?.id;
+                                                             const hasFatherId = member.father_id; // غير فارغ
                                                              const isAvailableForMarriage = 
                                                                member.marital_status === "single" || 
                                                                member.marital_status === "divorced";
                                                              
-                                                             // تفصيل أكثر للتحقق
                                                              console.log(`🔍 Female member "${member.name}":`, {
                                                                gender: member.gender,
                                                                hasValidGender,
                                                                selectedMemberId: selectedMember?.id,
                                                                memberId: member.id,
                                                                isNotSelf,
+                                                               fatherId: member.father_id,
+                                                               hasFatherId: !!member.father_id,
                                                                maritalStatus: `"${member.marital_status}"`,
                                                                isAvailableForMarriage,
-                                                               finalResult: hasValidGender && isNotSelf && isAvailableForMarriage
+                                                               finalResult: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
                                                              });
                                                              
-                                                             return hasValidGender && isNotSelf && isAvailableForMarriage;
+                                                             return hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage;
                                                            })
                                                           .map((member) => (
                                                             <CommandItem
@@ -2102,10 +2104,29 @@ const FamilyBuilderNew = () => {
                                                     </CommandEmpty>
                                                     <CommandGroup>
                                                        {familyMembers
-                                                         .filter(member => 
-                                                           member.gender === "male" && 
-                                                           member.id !== selectedMember?.id
-                                                         )
+                                                         .filter(member => {
+                                                           const hasValidGender = member.gender === "male";
+                                                           const isNotSelf = member.id !== selectedMember?.id;
+                                                           const hasFatherId = member.father_id; // غير فارغ
+                                                           const isAvailableForMarriage = 
+                                                             member.marital_status === "single" || 
+                                                             member.marital_status === "divorced";
+                                                           
+                                                           console.log(`🔍 Male member "${member.name}":`, {
+                                                             gender: member.gender,
+                                                             hasValidGender,
+                                                             selectedMemberId: selectedMember?.id,
+                                                             memberId: member.id,
+                                                             isNotSelf,
+                                                             fatherId: member.father_id,
+                                                             hasFatherId: !!member.father_id,
+                                                             maritalStatus: `"${member.marital_status}"`,
+                                                             isAvailableForMarriage,
+                                                             finalResult: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
+                                                           });
+                                                           
+                                                           return hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage;
+                                                         })
                                                         .map((member) => (
                                                           <CommandItem
                                                             key={member.id}
