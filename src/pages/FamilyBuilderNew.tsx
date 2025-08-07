@@ -595,25 +595,25 @@ const FamilyBuilderNew = () => {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-tr from-secondary/5 via-secondary/10 to-transparent blur-3xl"></div>
       </div>
 
-      <div className="relative z-10">
-        {/* Header Section - Dashboard Style */}
-        <div className="relative">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex items-center justify-between mb-8">
+      <div className="relative z-10 bg-white dark:bg-gray-900 min-h-screen">
+        {/* Clean Header - Home Page Style */}
+        <div className="border-b border-gray-200 dark:border-gray-800">
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Button
                   variant="ghost"
                   onClick={() => navigate('/dashboard')}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-300"
+                  className="p-2"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <div>
-                  <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
-                    {familyData?.name ? `شجرة ${familyData.name}` : t('family_builder.title', 'بناء شجرة العائلة')}
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {familyData?.name ? `شجرة ${familyData.name}` : 'بناء شجرة العائلة'}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">
-                    {t('family_builder.subtitle', 'أضف وأدر أفراد عائلتك بسهولة')}
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    أضف وأدر أفراد عائلتك بسهولة
                   </p>
                 </div>
               </div>
@@ -626,72 +626,23 @@ const FamilyBuilderNew = () => {
               )}
             </div>
 
-            {/* Stats Cards - Dashboard Style */}
-            <div className="w-full bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-xl p-6 mb-8 border border-emerald-200/50 dark:border-emerald-700/50">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <Users className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                      {familyMembers.length}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      إجمالي الأعضاء
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <TreePine className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                      {calculateGenerationCount()}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      الأجيال
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <Heart className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                      {familyMarriages.length}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      الزيجات
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <Crown className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                      {familyMembers.filter(m => m.isFounder).length}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      المؤسسون
-                    </div>
-                  </div>
-                </div>
+            {/* Clean Stats Row */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{familyMembers.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">إجمالي الأعضاء</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{calculateGenerationCount()}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">الأجيال</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{familyMarriages.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">الزيجات</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{familyMembers.filter(m => m.isFounder).length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">المؤسسون</div>
               </div>
             </div>
           </div>
