@@ -1301,7 +1301,7 @@ const FamilyBuilderNew = () => {
                            {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
                              <div className="col-span-12 md:col-span-6">
-                                <Label htmlFor="name" className="font-arabic">name وبالعربي : الاسم *</Label>
+                                <Label htmlFor="name" className="font-arabic">الاسم الكامل *</Label>
                                  <Input
                                    id="name"
                                    value={formData.name}
