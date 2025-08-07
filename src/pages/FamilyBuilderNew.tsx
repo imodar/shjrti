@@ -1706,7 +1706,9 @@ const FamilyBuilderNew = () => {
                                                            .filter(member => 
                                                              member.gender === "female" && 
                                                              member.id !== selectedMember?.id &&
-                                                             member.father_id // Only females with father_id (born into family, not external spouses)
+                                                             member.father_id && // Only females with father_id (born into family)
+                                                             (member.marital_status === "single" || !member.marital_status) && // Only unmarried females
+                                                             !familyMarriages.some(marriage => marriage.wife?.id === member.id) // Not already in marriages
                                                            )
                                                           .map((member) => (
                                                             <CommandItem
