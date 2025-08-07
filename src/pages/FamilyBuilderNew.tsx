@@ -1135,7 +1135,7 @@ const MemberList = ({
           members.map((member: any) => (
             <Card 
               key={member.id} 
-              className="relative cursor-pointer bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm border border-white/30 dark:border-gray-600/30 hover:bg-white/30 dark:hover:bg-gray-800/30 transition-all duration-300 hover:shadow-lg"
+              className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden"
               onClick={() => onEditMember(member)}
             >
               <CardContent className="p-4">
