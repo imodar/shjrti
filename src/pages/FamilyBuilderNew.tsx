@@ -971,6 +971,34 @@ const FamilyBuilderNew = () => {
   };
 
   const nextStep = () => {
+    // Validate required fields for step 1
+    if (currentStep === 1) {
+      if (!formData.name?.trim()) {
+        toast({
+          title: "خطأ في البيانات",
+          description: "يرجى إدخال الاسم الكامل",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!formData.gender) {
+        toast({
+          title: "خطأ في البيانات", 
+          description: "يرجى اختيار الجنس",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!formData.selectedParent) {
+        toast({
+          title: "خطأ في البيانات",
+          description: "يرجى اختيار العلاقة العائلية",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
     if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
@@ -1273,18 +1301,19 @@ const FamilyBuilderNew = () => {
                            {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
                              <div className="col-span-12 md:col-span-6">
-                               <Label htmlFor="name" className="font-arabic">الاسم الكامل *</Label>
-                                <Input
-                                  id="name"
-                                  value={formData.name}
-                                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                  placeholder="أدخل الاسم الكامل"
-                                  className="font-arabic"
-                                />
+                                <Label htmlFor="name" className="font-arabic">الاسم الكامل *</Label>
+                                 <Input
+                                   id="name"
+                                   value={formData.name}
+                                   onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                   placeholder="أدخل الاسم الكامل"
+                                   className="font-arabic"
+                                   required
+                                 />
                              </div>
                              
                              <div className="col-span-6 md:col-span-3">
-                                <Label htmlFor="gender" className="font-arabic">الجنس</Label>
+                                <Label htmlFor="gender" className="font-arabic">الجنس *</Label>
                                 <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
                                   <SelectTrigger className="font-arabic">
                                     <SelectValue placeholder="اختر الجنس" />
@@ -1310,7 +1339,7 @@ const FamilyBuilderNew = () => {
                            {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
                              <div className="col-span-12 md:col-span-6">
-                               <Label htmlFor="parentRelation" className="font-arabic">العلاقة العائلية (الوالدين)</Label>
+                               <Label htmlFor="parentRelation" className="font-arabic">العلاقة العائلية (الوالدين) *</Label>
                                 <Select 
                                   value={formData.selectedParent || ""} 
                                   onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
