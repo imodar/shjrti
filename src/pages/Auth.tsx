@@ -581,7 +581,7 @@ const Auth = () => {
                       <TabsContent value="register" className="space-y-4">
                         <form onSubmit={handleRegister} className="space-y-4">
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
+                            <div className={`space-y-2 ${direction === 'rtl' ? 'order-2' : 'order-1'}`}>
                               <Label htmlFor="firstName">{t('first_name', 'الاسم الأول')}</Label>
                               <div className="relative">
                                 <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -597,7 +597,7 @@ const Auth = () => {
                               </div>
                             </div>
                             
-                            <div className="space-y-2">
+                            <div className={`space-y-2 ${direction === 'rtl' ? 'order-1' : 'order-2'}`}>
                               <Label htmlFor="lastName">{t('last_name', 'اسم العائلة')}</Label>
                               <div className="relative">
                                 <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
