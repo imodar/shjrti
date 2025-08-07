@@ -817,7 +817,7 @@ const Dashboard = () => {
                             <div className="flex items-center justify-between gap-2">
                               {/* Manage Button - Primary */}
                               <Link 
-                                to={`/family-builder?family=${tree.id}`} 
+                                to={`/family-builder-new?family=${tree.id}`} 
                                 className="flex-1 group/btn"
                                 onClick={() => {
                                   console.log('🔗 Navigating to family builder with ID:', tree.id);
