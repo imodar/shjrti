@@ -572,12 +572,35 @@ const FamilyBuilderNew = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+        </div>
+
+        {/* Floating Animated Icons */}
+        <div className="absolute top-32 right-20 animate-float">
+          <Heart className="h-10 w-10 text-pink-400 opacity-60" />
+        </div>
+        <div className="absolute bottom-40 left-20 animate-float-delayed">
+          <Users className="h-12 w-12 text-emerald-400 opacity-40" />
+        </div>
+        <div className="absolute top-1/2 left-10 animate-float-slow">
+          <Star className="h-8 w-8 text-yellow-400 opacity-60" />
+        </div>
+        
         <GlobalHeader />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">{t('common.loading', 'جاري التحميل...')}</p>
+        <div className="flex items-center justify-center min-h-[80vh] relative z-10">
+          <div className="text-center space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+              <div className="relative animate-spin rounded-full h-12 w-12 border-4 border-emerald-200 border-t-emerald-600 mx-auto"></div>
+            </div>
+            <p className="text-lg font-medium bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+              {t('common.loading', 'جاري التحميل...')}
+            </p>
           </div>
         </div>
         <GlobalFooter />
@@ -586,8 +609,26 @@ const FamilyBuilderNew = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20" dir={direction}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
+      
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+      </div>
+
+      {/* Floating Animated Icons */}
+      <div className="absolute top-32 right-20 animate-float">
+        <Heart className="h-10 w-10 text-pink-400 opacity-60" />
+      </div>
+      <div className="absolute bottom-40 left-20 animate-float-delayed">
+        <Users className="h-12 w-12 text-emerald-400 opacity-40" />
+      </div>
+      <div className="absolute top-1/2 left-10 animate-float-slow">
+        <Star className="h-8 w-8 text-yellow-400 opacity-60" />
+      </div>
       
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
