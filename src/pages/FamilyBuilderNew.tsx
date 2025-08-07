@@ -2098,6 +2098,47 @@ const FamilyBuilderNew = () => {
                                           </div>
                                         </div>
 
+                                  {husband ? (
+                                    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/30 rounded-xl p-6 shadow-md">
+                                      <div className="space-y-6">
+                                        {/* Family Member Check */}
+                                        <div>
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
+                                            هل الزوج من نفس العائلة؟
+                                          </Label>
+                                          <div className="flex gap-3">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                              <input 
+                                                type="radio" 
+                                                name="husbandIsFamilyMember" 
+                                                checked={husband.isFamilyMember === true} 
+                                                onChange={() => setHusband({
+                                                  ...husband,
+                                                  isFamilyMember: true,
+                                                  existingFamilyMemberId: ''
+                                                })}
+                                                className="w-4 h-4 text-green-600"
+                                              />
+                                              <span className="text-sm text-green-600 font-arabic">نعم</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                              <input 
+                                                type="radio" 
+                                                name="husbandIsFamilyMember" 
+                                                checked={husband.isFamilyMember === false} 
+                                                onChange={() => setHusband({
+                                                  ...husband,
+                                                  isFamilyMember: false,
+                                                  existingFamilyMemberId: ''
+                                                })}
+                                                className="w-4 h-4 text-red-600"
+                                              />
+                                              <span className="text-sm text-red-600 font-arabic">لا</span>
+                                            </label>
+                                          </div>
+                                        </div>
+
                                         {/* Select Existing Family Member */}
                                         {husband.isFamilyMember && (
                                           <div className="space-y-3">
