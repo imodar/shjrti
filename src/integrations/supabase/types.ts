@@ -188,7 +188,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "family_members_family_id_fkey"
+            foreignKeyName: "family_members_family_id_fkey_cascade"
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
@@ -259,21 +259,21 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "family_tree_members_family_id_fkey"
+            foreignKeyName: "family_tree_members_family_id_fkey_cascade"
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "family_tree_members_father_id_fkey"
+            foreignKeyName: "family_tree_members_father_id_fkey_cascade"
             columns: ["father_id"]
             isOneToOne: false
             referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "family_tree_members_mother_id_fkey"
+            foreignKeyName: "family_tree_members_mother_id_fkey_cascade"
             columns: ["mother_id"]
             isOneToOne: false
             referencedRelation: "family_tree_members"
@@ -287,7 +287,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "family_tree_members_spouse_id_fkey"
+            foreignKeyName: "family_tree_members_spouse_id_fkey_cascade"
             columns: ["spouse_id"]
             isOneToOne: false
             referencedRelation: "family_tree_members"
@@ -462,21 +462,21 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "marriages_family_id_fkey"
+            foreignKeyName: "marriages_family_id_fkey_cascade"
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "marriages_husband_id_fkey"
+            foreignKeyName: "marriages_husband_id_fkey_cascade"
             columns: ["husband_id"]
             isOneToOne: false
             referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "marriages_wife_id_fkey"
+            foreignKeyName: "marriages_wife_id_fkey_cascade"
             columns: ["wife_id"]
             isOneToOne: false
             referencedRelation: "family_tree_members"
