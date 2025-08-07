@@ -1135,10 +1135,10 @@ const MemberList = ({
           members.map((member: any) => (
             <Card 
               key={member.id} 
-              className="relative cursor-pointer bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm border border-white/30 dark:border-gray-600/30 hover:bg-white/30 dark:hover:bg-gray-800/30 transition-all duration-300 hover:shadow-lg"
+              className="relative cursor-pointer bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10 hover:shadow-2xl transition-all duration-300"
               onClick={() => onEditMember(member)}
             >
-              <CardContent className="p-4">
+              <CardContent className="relative p-4">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={member.image} />
