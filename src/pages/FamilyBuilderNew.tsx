@@ -891,8 +891,9 @@ const FamilyBuilderNew = () => {
                          <div className="space-y-4">
                            <h3 className="text-lg font-semibold">المعلومات الأساسية</h3>
                            
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div>
+                           {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
+                           <div className="grid grid-cols-12 gap-4">
+                             <div className="col-span-12 md:col-span-6">
                                <Label htmlFor="name">الاسم الكامل *</Label>
                                <Input
                                  id="name"
@@ -902,7 +903,7 @@ const FamilyBuilderNew = () => {
                                />
                              </div>
                              
-                             <div>
+                             <div className="col-span-6 md:col-span-3">
                                <Label htmlFor="gender">الجنس</Label>
                                <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
                                  <SelectTrigger>
@@ -913,9 +914,9 @@ const FamilyBuilderNew = () => {
                                    <SelectItem value="female">أنثى</SelectItem>
                                  </SelectContent>
                                </Select>
-                              </div>
+                             </div>
                               
-                              <div>
+                             <div className="col-span-6 md:col-span-3">
                                <Label>تاريخ الميلاد</Label>
                                <EnhancedDatePicker
                                  value={formData.birthDate}
@@ -923,25 +924,11 @@ const FamilyBuilderNew = () => {
                                  placeholder="اختر تاريخ الميلاد"
                                />
                              </div>
-                             
-                             <div>
-                               <Label htmlFor="aliveStatus">الحالة الحيوية</Label>
-                               <Select 
-                                 value={formData.isAlive ? "alive" : "deceased"} 
-                                 onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
-                               >
-                                 <SelectTrigger>
-                                   <SelectValue placeholder="اختر الحالة الحيوية" />
-                                 </SelectTrigger>
-                                 <SelectContent>
-                                   <SelectItem value="alive">على قيد الحياة</SelectItem>
-                                   <SelectItem value="deceased">متوفى</SelectItem>
-                                 </SelectContent>
-                               </Select>
-                             </div>
-                            </div>
+                           </div>
                             
-                             <div>
+                           {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
+                           <div className="grid grid-cols-12 gap-4">
+                             <div className="col-span-12 md:col-span-6">
                                <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
                                 <Select 
                                   value={formData.selectedParent || ""} 
@@ -1045,17 +1032,33 @@ const FamilyBuilderNew = () => {
                                   </SelectContent>
                                 </Select>
                              </div>
+                             
+                             <div className="col-span-6 md:col-span-3">
+                               <Label htmlFor="aliveStatus">الحالة الحيوية</Label>
+                               <Select 
+                                 value={formData.isAlive ? "alive" : "deceased"} 
+                                 onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
+                               >
+                                 <SelectTrigger>
+                                   <SelectValue placeholder="اختر الحالة الحيوية" />
+                                 </SelectTrigger>
+                                 <SelectContent>
+                                   <SelectItem value="alive">على قيد الحياة</SelectItem>
+                                   <SelectItem value="deceased">متوفى</SelectItem>
+                                 </SelectContent>
+                               </Select>
+                             </div>
 
-                           {!formData.isAlive && (
-                             <div>
+                             <div className="col-span-6 md:col-span-3">
                                <Label>تاريخ الوفاة</Label>
                                <EnhancedDatePicker
                                  value={formData.deathDate}
                                  onChange={(date) => setFormData({...formData, deathDate: date})}
                                  placeholder="اختر تاريخ الوفاة"
+                                 disabled={formData.isAlive}
                                />
                              </div>
-                           )}
+                           </div>
 
                            <div>
                              <Label htmlFor="bio">السيرة الذاتية</Label>
