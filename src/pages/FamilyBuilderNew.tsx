@@ -2392,8 +2392,10 @@ const MemberList = ({
                     
                     <div className="flex-1 min-w-0 space-y-1">
                       {/* Name */}
-                      <h3 className="font-semibold text-base font-arabic leading-tight">
-                        {member.name}
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-base font-arabic leading-tight">
+                          {member.name}
+                        </h3>
                         {(() => {
                           // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
                           const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
@@ -2401,14 +2403,14 @@ const MemberList = ({
                           
                           if (isDescendant) {
                             return (
-                              <span className="text-xs text-muted-foreground font-normal mr-2">
+                              <span className="text-xs text-muted-foreground font-normal">
                                 {member.gender === 'female' ? 'ابنة' : 'ابن'}
                               </span>
                             );
                           }
                           return null;
                         })()}
-                      </h3>
+                      </div>
                       
                       {/* Father + Grandfather names */}
                       {(() => {
