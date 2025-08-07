@@ -1200,7 +1200,7 @@ const FamilyBuilderNew = () => {
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                 <CardHeader className="pb-4 relative">
                   <div className="flex items-center justify-end">
-                    <CardTitle className="flex items-center gap-2 order-2">
+                    <CardTitle className="flex items-center gap-2 order-1">
                       {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
                       {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
                       {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
@@ -1213,7 +1213,7 @@ const FamilyBuilderNew = () => {
 
                     {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
                     {formMode !== 'view' && (
-                      <div className="flex items-center gap-3 order-1 me-auto">
+                      <div className="flex items-center gap-3 order-2 ms-auto">
                         {[1, 2].map((step, index) => (
                           <div key={step} className="flex items-center gap-2">
                             <div
