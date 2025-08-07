@@ -932,12 +932,12 @@ const FamilyBuilderNew = () => {
                                              }
                                              return result;
                                            } else {
-                                             // Female: name + بنت + father + grandfather (if exists)
+                                             // Female: name + بنت + father + ابن + grandfather (if exists)
                                              let result = member.name;
                                              if (fatherName) {
                                                result += ` بنت ${fatherName}`;
                                                if (grandfatherName) {
-                                                 result += ` ${grandfatherName}`;
+                                                 result += ` ابن ${grandfatherName}`;
                                                }
                                              }
                                              return result;
