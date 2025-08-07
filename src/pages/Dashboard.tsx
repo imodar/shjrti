@@ -84,6 +84,23 @@ const Dashboard = () => {
       setLoading(true);
       try {
         // Fetch non-archived family trees only
+        console.log('🔍 Fetching families for user:', user.id);
+        
+        // First try a simple query without the count aggregation
+        const { data: familiesSimple, error: familiesSimpleError } = await supabase
+          .from('families')
+          .select('id, name, created_at, updated_at')
+          .eq('creator_id', user.id)
+          .eq('is_archived', false);
+          
+        console.log('📊 Simple families query result:', { familiesSimple, familiesSimpleError });
+        
+        if (familiesSimpleError) {
+          console.error('❌ Error in simple families query:', familiesSimpleError);
+          throw familiesSimpleError;
+        }
+
+        // Now try the complex query with count
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select(`
@@ -96,7 +113,22 @@ const Dashboard = () => {
           .eq('creator_id', user.id)
           .eq('is_archived', false);
 
-        if (familiesError) throw familiesError;
+        console.log('📊 Complex families query result:', { families, familiesError });
+        if (familiesError) {
+          console.error('❌ Error in complex families query:', familiesError);
+          // Fallback to simple query if complex one fails
+          const treesDataSimple = familiesSimple?.map(family => ({
+            id: family.id,
+            name: family.name,
+            members_count: 0, // We'll set this to 0 for now
+            created_at: family.created_at,
+            updated_at: family.updated_at
+          })) || [];
+          
+          console.log('🌳 Using fallback trees data:', treesDataSimple);
+          setFamilyTrees(treesDataSimple);
+          return; // Skip the complex processing
+        }
 
         const treesData = families?.map(family => ({
           id: family.id,
@@ -106,6 +138,7 @@ const Dashboard = () => {
           updated_at: family.updated_at
         })) || [];
 
+        console.log('🌳 Processed trees data:', treesData);
         setFamilyTrees(treesData);
 
         // Fetch user profile
@@ -173,13 +206,14 @@ const Dashboard = () => {
           });
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('❌ Error fetching data:', error);
         toast({
           title: t('dashboard.error', 'Error'),
           description: t('dashboard.error_loading_data', 'Error occurred while loading data'),
           variant: "destructive"
         });
       } finally {
+        console.log('✅ Dashboard data loading completed. Final familyTrees:', familyTrees.length);
         setLoading(false);
       }
     };
