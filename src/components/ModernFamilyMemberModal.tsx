@@ -548,8 +548,8 @@ export const ModernFamilyMemberModal = ({
       isAlive: wife.isAlive,
       deathDate: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : "",
       imageUrl: wife.croppedImage || "",
-      isFamilyMember: false,
-      existingFamilyMemberId: ""
+      isFamilyMember: wife.isExistingFamilyMember || false,
+      existingFamilyMemberId: wife.existingFamilyMemberId || ""
     });
     removeWife(index);
   };
