@@ -162,13 +162,35 @@ const FamilyBuilderNew = () => {
   const ImageUploadSection = () => {
     const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
     
+    if (uploadLoading) {
+      return (
+        <div>
+          <Label htmlFor="picture">الصورة الشخصية</Label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <div className="space-y-2">
+              <Upload className="h-12 w-12 mx-auto text-gray-400 animate-pulse" />
+              <p className="text-sm text-gray-600">جاري التحقق من الصلاحيات...</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    const tooltipContent = isImageUploadEnabled 
+      ? "انقر لرفع صورة شخصية للعضو" 
+      : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
+    
     return (
       <div>
         <Label htmlFor="picture">الصورة الشخصية</Label>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className={`border-2 border-dashed border-gray-300 rounded-lg p-6 text-center ${!isImageUploadEnabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}>
+              <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                isImageUploadEnabled 
+                  ? 'border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-50' 
+                  : 'border-gray-200 opacity-50 cursor-not-allowed bg-gray-50'
+              }`}>
                 {isImageUploadEnabled ? (
                   <div className="space-y-2">
                     <Upload className="h-12 w-12 mx-auto text-gray-400" />
@@ -184,11 +206,8 @@ const FamilyBuilderNew = () => {
                 )}
               </div>
             </TooltipTrigger>
-            <TooltipContent>
-              {isImageUploadEnabled 
-                ? "انقر لرفع صورة شخصية للعضو" 
-                : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة."
-              }
+            <TooltipContent side="top" className="max-w-xs">
+              <p>{tooltipContent}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
