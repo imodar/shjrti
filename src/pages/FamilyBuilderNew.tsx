@@ -81,7 +81,7 @@ const FamilyBuilderNew = () => {
       });
     }
     
-    familyMarriages.forEach(marriage => {
+    (familyMarriages || []).forEach(marriage => {
       const husbandGeneration = generationMap.get(marriage.husband?.id);
       const wifeGeneration = generationMap.get(marriage.wife?.id);
       
@@ -137,7 +137,7 @@ const FamilyBuilderNew = () => {
       });
     }
     
-    familyMarriages.forEach(marriage => {
+    (familyMarriages || []).forEach(marriage => {
       const husbandGeneration = generationMap.get(marriage.husband?.id);
       const wifeGeneration = generationMap.get(marriage.wife?.id);
       
@@ -888,7 +888,7 @@ const FamilyBuilderNew = () => {
                                  >
                                    {formData.selectedParent ? (
                                      (() => {
-                                       const marriage = familyMarriages.find(m => m.id === formData.selectedParent);
+                                       const marriage = (familyMarriages || []).find(m => m.id === formData.selectedParent);
                                        return marriage ? `${marriage.husband?.name} ♥ ${marriage.wife?.name}` : "اختر الوالدين";
                                      })()
                                    ) : "اختر الوالدين"}
@@ -915,7 +915,7 @@ const FamilyBuilderNew = () => {
                                        />
                                        بدون والدين (مؤسس العائلة)
                                      </CommandItem>
-                                     {familyMarriages.map((marriage) => (
+                                     {(familyMarriages || []).map((marriage) => (
                                        <CommandItem
                                          key={marriage.id}
                                          value={`${marriage.husband?.name} ${marriage.wife?.name}`}
