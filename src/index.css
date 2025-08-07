@@ -112,7 +112,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Noto Sans Arabic', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
