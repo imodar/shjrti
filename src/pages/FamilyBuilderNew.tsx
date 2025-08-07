@@ -1706,18 +1706,20 @@ const FamilyBuilderNew = () => {
                                                            .filter(member => {
                                                              const hasValidGender = member.gender === "female";
                                                              const isNotSelf = member.id !== selectedMember?.id;
-                                                             // Include single, divorced, or undefined/null marital status
                                                              const isAvailableForMarriage = 
                                                                member.marital_status === "single" || 
-                                                               member.marital_status === "divorced" ||
-                                                               !member.marital_status || // null or undefined
-                                                               member.marital_status === "";
+                                                               member.marital_status === "divorced";
                                                              
-                                                             console.log(`Female member ${member.name}:`, {
+                                                             // تفصيل أكثر للتحقق
+                                                             console.log(`🔍 Female member "${member.name}":`, {
+                                                               gender: member.gender,
                                                                hasValidGender,
+                                                               selectedMemberId: selectedMember?.id,
+                                                               memberId: member.id,
                                                                isNotSelf,
+                                                               maritalStatus: `"${member.marital_status}"`,
                                                                isAvailableForMarriage,
-                                                               maritalStatus: member.marital_status
+                                                               finalResult: hasValidGender && isNotSelf && isAvailableForMarriage
                                                              });
                                                              
                                                              return hasValidGender && isNotSelf && isAvailableForMarriage;
