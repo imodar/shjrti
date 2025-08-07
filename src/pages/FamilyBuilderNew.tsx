@@ -2401,7 +2401,7 @@ const MemberList = ({
                           
                           if (isDescendant) {
                             return (
-                              <span className="text-xs text-muted-foreground font-normal mr-2">
+                              <span className="text-xs text-muted-foreground font-normal ml-2">
                                 {member.gender === 'female' ? 'ابنة' : 'ابن'}
                               </span>
                             );
