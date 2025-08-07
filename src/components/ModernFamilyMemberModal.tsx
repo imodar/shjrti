@@ -51,6 +51,8 @@ interface Wife {
   image: File | null;
   imageUrl?: string;
   croppedImage: string | null;
+  isExistingFamilyMember?: boolean;
+  existingFamilyMemberId?: string;
 }
 
 interface Husband {
@@ -62,6 +64,8 @@ interface Husband {
   deathDate: Date | null;
   image: File | null;
   croppedImage: string | null;
+  isExistingFamilyMember?: boolean;
+  existingFamilyMemberId?: string;
 }
 
 interface ModernFamilyMemberModalProps {
@@ -109,6 +113,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
 
   const [wives, setWives] = useState<Wife[]>([]);
   const [husband, setHusband] = useState<Husband | null>(null);
+  const [commandOpen, setCommandOpen] = useState(false);
   const [newWife, setNewWife] = useState({
     name: "",
     birthDate: "",
@@ -418,11 +423,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
         relatedPersonId, // Set related person ID to marriage ID (which marriage this person comes from)
         wives: memberData.gender === "male" ? wives.map(wife => ({
           ...wife,
-          name: sanitizeInput(wife.name || "")
+          name: sanitizeInput(wife.name || ""),
+          isExistingFamilyMember: wife.isExistingFamilyMember || false,
+          existingFamilyMemberId: wife.existingFamilyMemberId || null
         })) : [], // Always include wives array for males
         husband: memberData.gender === "female" && husband ? {
           ...husband,
-          name: sanitizeInput(husband.name || "")
+          name: sanitizeInput(husband.name || ""),
+          isExistingFamilyMember: husband.isExistingFamilyMember || false,
+          existingFamilyMemberId: husband.existingFamilyMemberId || null
         } : null // Always include husband for females
       });
 
@@ -483,14 +492,16 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     console.log('🔥 addWife called, newWife:', newWife);
     if (newWife.name.trim()) {
       const wifeToAdd = {
-        id: crypto.randomUUID(),
+        id: newWife.isFamilyMember && newWife.existingFamilyMemberId ? newWife.existingFamilyMemberId : crypto.randomUUID(),
         name: newWife.name,
         birthDate: newWife.birthDate ? new Date(newWife.birthDate) : null,
         maritalStatus: newWife.maritalStatus,
         isAlive: newWife.isAlive,
         deathDate: newWife.deathDate ? new Date(newWife.deathDate) : null,
         image: null,
-        croppedImage: newWife.imageUrl || null
+        croppedImage: newWife.imageUrl || null,
+        isExistingFamilyMember: newWife.isFamilyMember,
+        existingFamilyMemberId: newWife.existingFamilyMemberId
       };
       console.log('🔥 Adding wife to array:', wifeToAdd);
       setWives([...wives, wifeToAdd]);
@@ -505,6 +516,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
         isFamilyMember: false,
         existingFamilyMemberId: ""
       });
+      setCommandOpen(false); // Close the command when a wife is added
     }
   };
 
@@ -1117,7 +1129,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                         type="radio"
                                         name="isFamilyMember"
                                         checked={newWife.isFamilyMember === true}
-                                        onChange={() => setNewWife({...newWife, isFamilyMember: true, existingFamilyMemberId: ''})}
+                                        onChange={() => {setNewWife({...newWife, isFamilyMember: true, existingFamilyMemberId: ''}); setCommandOpen(false);}}
                                         className="text-purple-500 focus:ring-purple-500"
                                       />
                                       <span className="text-sm text-gray-700 dark:text-gray-300">نعم</span>
@@ -1127,7 +1139,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                         type="radio"
                                         name="isFamilyMember"
                                         checked={newWife.isFamilyMember === false}
-                                        onChange={() => setNewWife({...newWife, isFamilyMember: false, existingFamilyMemberId: ''})}
+                                        onChange={() => {setNewWife({...newWife, isFamilyMember: false, existingFamilyMemberId: ''}); setCommandOpen(false);}}
                                         className="text-purple-500 focus:ring-purple-500"
                                       />
                                       <span className="text-sm text-gray-700 dark:text-gray-300">لا</span>
@@ -1143,52 +1155,70 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                       اختر من الأفراد المضافين
                                     </Label>
                                     <div className="relative z-[10001]">
-                                      <Command className="border-2 border-purple-200/50 dark:border-purple-700/50 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                                        <CommandInput 
-                                          placeholder="ابحث عن فرد من العائلة..." 
-                                          className="h-9 text-sm font-arabic"
-                                        />
-                                        <CommandList className="max-h-48">
-                                          <CommandEmpty className="text-sm font-arabic text-center py-4 text-gray-500">
-                                            لا توجد نتائج
-                                          </CommandEmpty>
-                                          <CommandGroup>
-                                            {familyMembers
-                                              .filter(member => 
-                                                member.gender === 'female' && 
-                                                member.fatherId && 
-                                                familyMembers.some(fm => fm.id === member.fatherId)
-                                              )
-                                              .map(member => (
-                                                <CommandItem 
-                                                  key={member.id} 
-                                                  value={`${member.name} ${familyMembers.find(f => f.id === member.fatherId)?.name || ''}`}
-                                                  onSelect={() => {
-                                                    setNewWife({
-                                                      ...newWife, 
-                                                      existingFamilyMemberId: member.id,
-                                                      name: member.name,
-                                                      birthDate: member.birthDate || '',
-                                                      isAlive: member.isAlive,
-                                                      deathDate: member.deathDate || '',
-                                                      imageUrl: member.image || ''
-                                                    });
-                                                  }}
-                                                  className="font-arabic text-sm cursor-pointer"
-                                                >
-                                                  <div className="flex items-center justify-between w-full">
-                                                    <span>{member.name}</span>
-                                                    {member.fatherId && (
-                                                      <span className="text-xs text-gray-500">
-                                                        (ابنة {familyMembers.find(f => f.id === member.fatherId)?.name})
-                                                      </span>
-                                                    )}
-                                                  </div>
-                                                </CommandItem>
-                                              ))}
-                                          </CommandGroup>
-                                        </CommandList>
-                                      </Command>
+                                      <Popover open={commandOpen} onOpenChange={setCommandOpen}>
+                                        <PopoverTrigger asChild>
+                                          <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={commandOpen}
+                                            className="w-full justify-between h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
+                                          >
+                                            {newWife.existingFamilyMemberId
+                                              ? familyMembers.find(m => m.id === newWife.existingFamilyMemberId)?.name
+                                              : "اختر فرد من العائلة..."}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-full p-0 z-[10002]">
+                                          <Command className="border-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl">
+                                            <CommandInput 
+                                              placeholder="ابحث عن فرد من العائلة..." 
+                                              className="h-9 text-sm font-arabic"
+                                            />
+                                            <CommandList className="max-h-48">
+                                              <CommandEmpty className="text-sm font-arabic text-center py-4 text-gray-500">
+                                                لا توجد نتائج
+                                              </CommandEmpty>
+                                              <CommandGroup>
+                                                {familyMembers
+                                                  .filter(member => 
+                                                    member.gender === 'female' && 
+                                                    member.fatherId && 
+                                                    familyMembers.some(fm => fm.id === member.fatherId)
+                                                  )
+                                                  .map(member => (
+                                                    <CommandItem 
+                                                      key={member.id} 
+                                                      value={`${member.name} ${familyMembers.find(f => f.id === member.fatherId)?.name || ''}`}
+                                                      onSelect={() => {
+                                                        setNewWife({
+                                                          ...newWife, 
+                                                          existingFamilyMemberId: member.id,
+                                                          name: member.name,
+                                                          birthDate: member.birthDate || '',
+                                                          isAlive: member.isAlive,
+                                                          deathDate: member.deathDate || '',
+                                                          imageUrl: member.image || ''
+                                                        });
+                                                        setCommandOpen(false);
+                                                      }}
+                                                      className="font-arabic text-sm cursor-pointer"
+                                                    >
+                                                      <div className="flex items-center justify-between w-full">
+                                                        <span>{member.name}</span>
+                                                        {member.fatherId && (
+                                                          <span className="text-xs text-gray-500">
+                                                            (ابنة {familyMembers.find(f => f.id === member.fatherId)?.name})
+                                                          </span>
+                                                        )}
+                                                      </div>
+                                                    </CommandItem>
+                                                  ))}
+                                              </CommandGroup>
+                                            </CommandList>
+                                          </Command>
+                                        </PopoverContent>
+                                      </Popover>
                                     </div>
                                   </div>
                                 )}
