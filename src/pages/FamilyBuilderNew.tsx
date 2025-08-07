@@ -1774,17 +1774,50 @@ const FamilyBuilderNew = () => {
                                           </h5>
                                         </div>
                                         
-                                        <div className="space-y-6">
-                                          {/* Family Member Selection - Only from same family */}
-                                          <div>
-                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-                                              اختر الزوجة من أفراد العائلة
-                                            </Label>
-                                            <p className="text-xs text-muted-foreground mb-3 font-arabic">
-                                              يُسمح فقط باختيار الزوجة من أفراد العائلة المسجلين
-                                            </p>
-                                          </div>
+                                         <div className="space-y-6">
+                                           {/* Question: Is wife from family members? */}
+                                           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-900/30 rounded-xl p-4 border border-blue-200/50 dark:border-blue-800/30">
+                                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
+                                               <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg"></div>
+                                               هل الزوجة من أفراد عائلة {familyData?.name}؟
+                                             </Label>
+                                             <div className="flex gap-3">
+                                               <Button
+                                                 type="button"
+                                                 variant={wife.isFamilyMember === true ? "default" : "outline"}
+                                                 size="sm"
+                                                 onClick={() => {
+                                                   const newWives = [...wives];
+                                                   newWives[index] = { ...wife, isFamilyMember: true, existingFamilyMemberId: '', name: '', birthDate: null };
+                                                   setWives(newWives);
+                                                 }}
+                                                 className="flex-1 font-arabic"
+                                               >
+                                                 نعم، من أفراد العائلة
+                                               </Button>
+                                               <Button
+                                                 type="button"
+                                                 variant={wife.isFamilyMember === false ? "default" : "outline"}
+                                                 size="sm"
+                                                 onClick={() => {
+                                                   const newWives = [...wives];
+                                                   newWives[index] = { ...wife, isFamilyMember: false, existingFamilyMemberId: '', name: '', birthDate: null };
+                                                   setWives(newWives);
+                                                 }}
+                                                 className="flex-1 font-arabic"
+                                               >
+                                                 لا، من خارج العائلة
+                                               </Button>
+                                             </div>
+                                           </div>
+
+                                           {/* Show appropriate form based on selection */}
+                                           {wife.isFamilyMember === true && (
+                                             <div className="bg-green-50 dark:bg-green-950/30 rounded-xl p-4 border border-green-200/50 dark:border-green-800/30">
+                                               <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
+                                                 <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg"></div>
+                                                 اختر الزوجة من أفراد العائلة
+                                               </Label>
 
                                           {/* Select Existing Family Member - Always shown now */}
                                             <div className="space-y-3">
@@ -2092,7 +2125,7 @@ const FamilyBuilderNew = () => {
                                           birthDate: null,
                                           deathDate: null,
                                           maritalStatus: 'married',
-                                          isFamilyMember: true, // Always true now - only family members allowed
+                                          isFamilyMember: undefined, // User needs to choose
                                           existingFamilyMemberId: '',
                                           croppedImage: null
                                         }]);
