@@ -746,6 +746,14 @@ const FamilyBuilderNew = () => {
   useEffect(() => {
     fetchFamilyData();
   }, [toast]);
+
+  // Load spouses when data is updated and there's a member being edited
+  useEffect(() => {
+    if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
+      console.log('🔥 Reloading spouses for editing member:', editingMember);
+      loadExistingSpouses(editingMember);
+    }
+  }, [familyMarriages, familyMembers, editingMember]);
   
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -917,7 +925,70 @@ const FamilyBuilderNew = () => {
       croppedImage: member.image || null,
       isFounder: member.isFounder || false
     });
-    // TODO: Load existing spouses
+    
+    // Load existing spouses
+    loadExistingSpouses(member);
+  };
+
+  const loadExistingSpouses = (member: any) => {
+    if (!familyMarriages || familyMarriages.length === 0) return;
+    
+    // Reset spouse states first
+    setWives([]);
+    setHusband(null);
+    
+    if (member.gender === "male") {
+      // Load wives for male member
+      const memberMarriages = familyMarriages.filter(marriage => 
+        marriage.husband?.id === member.id
+      );
+      
+      if (memberMarriages.length > 0) {
+        const memberWives = memberMarriages.map(marriage => {
+          const wifeMember = familyMembers.find(fm => fm.id === marriage.wife?.id);
+          
+          return {
+            id: marriage.wife?.id || '',
+            name: marriage.wife?.name || '',
+            birthDate: wifeMember?.birth_date ? new Date(wifeMember.birth_date) : null,
+            maritalStatus: 'married',
+            isAlive: wifeMember?.is_alive ?? true,
+            deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
+            croppedImage: wifeMember?.image_url || null,
+            isFamilyMember: !!wifeMember, // If found in family members, it's a family member
+            existingFamilyMemberId: wifeMember ? wifeMember.id : ''
+          };
+        }).filter(wife => wife.id); // Filter out wives without ID
+        
+        console.log('🔥 Loading wives for male member:', memberWives);
+        setWives(memberWives);
+      }
+    } else if (member.gender === "female") {
+      // Load husband for female member
+      const memberMarriages = familyMarriages.filter(marriage => 
+        marriage.wife?.id === member.id
+      );
+      
+      if (memberMarriages.length > 0) {
+        const marriage = memberMarriages[0]; // Take the first marriage
+        const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
+        
+        const husbandData = {
+          id: marriage.husband?.id || '',
+          name: marriage.husband?.name || '',
+          birthDate: husbandMember?.birth_date ? new Date(husbandMember.birth_date) : null,
+          maritalStatus: 'married',
+          isAlive: husbandMember?.is_alive ?? true,
+          deathDate: husbandMember?.death_date ? new Date(husbandMember.death_date) : null,
+          croppedImage: husbandMember?.image_url || null,
+          isFamilyMember: !!husbandMember, // If found in family members, it's a family member
+          existingFamilyMemberId: husbandMember ? husbandMember.id : ''
+        };
+        
+        console.log('🔥 Loading husband for female member:', husbandData);
+        setHusband(husbandData);
+      }
+    }
   };
 
   const handleFormSubmit = async (submissionData: any) => {
