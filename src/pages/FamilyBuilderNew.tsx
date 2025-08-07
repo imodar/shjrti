@@ -1201,6 +1201,17 @@ const FamilyBuilderNew = () => {
                 <CardHeader className="pb-4 relative">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
+                      <CardTitle className="flex items-center gap-2">
+                        {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                        {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                        {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                         <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                           {formMode === 'view' && "معلومات العضو"}
+                           {formMode === 'add' && "إضافة عضو جديد"}
+                           {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
+                         </span>
+                      </CardTitle>
+                      
                       {/* Step Indicator for add/edit modes */}
                       {formMode !== 'view' && (
                         <div className="flex items-center gap-3">
@@ -1236,17 +1247,6 @@ const FamilyBuilderNew = () => {
                           ))}
                         </div>
                       )}
-                      
-                      <CardTitle className="flex items-center gap-2">
-                        {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                        {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                        {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                         <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                           {formMode === 'view' && "معلومات العضو"}
-                           {formMode === 'add' && "إضافة عضو جديد"}
-                           {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
-                         </span>
-                      </CardTitle>
                      </div>
                      {formMode === 'view' && (
                        <Button onClick={handleAddMember} className="flex items-center gap-2">
