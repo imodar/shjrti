@@ -125,6 +125,17 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     existingFamilyMemberId: ""
   });
 
+  const [newHusband, setNewHusband] = useState({
+    name: "",
+    birthDate: "",
+    maritalStatus: "married",
+    isAlive: true,
+    deathDate: "",
+    imageUrl: "",
+    isFamilyMember: false,
+    existingFamilyMemberId: ""
+  });
+
   console.log('🔥 ModernFamilyMemberModal render - isOpen:', isOpen, 'familyId:', familyId);
 
   useEffect(() => {
@@ -521,21 +532,23 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
   };
 
   const addHusband = () => {
-    console.log('🔥 addHusband called, newWife:', newWife);
-    if (newWife.name.trim()) {
+    console.log('🔥 addHusband called, newHusband:', newHusband);
+    if (newHusband.name.trim()) {
       const husbandToAdd = {
-        id: crypto.randomUUID(),
-        name: newWife.name,
-        birthDate: newWife.birthDate ? new Date(newWife.birthDate) : null,
-        maritalStatus: newWife.maritalStatus,
-        isAlive: newWife.isAlive,
-        deathDate: newWife.deathDate ? new Date(newWife.deathDate) : null,
+        id: newHusband.isFamilyMember && newHusband.existingFamilyMemberId ? newHusband.existingFamilyMemberId : crypto.randomUUID(),
+        name: newHusband.name,
+        birthDate: newHusband.birthDate ? new Date(newHusband.birthDate) : null,
+        maritalStatus: newHusband.maritalStatus,
+        isAlive: newHusband.isAlive,
+        deathDate: newHusband.deathDate ? new Date(newHusband.deathDate) : null,
         image: null,
-        croppedImage: newWife.imageUrl || null
+        croppedImage: newHusband.imageUrl || null,
+        isExistingFamilyMember: newHusband.isFamilyMember,
+        existingFamilyMemberId: newHusband.existingFamilyMemberId
       };
       console.log('🔥 Setting husband:', husbandToAdd);
       setHusband(husbandToAdd);
-      setNewWife({
+      setNewHusband({
         name: "",
         birthDate: "",
         maritalStatus: "married",
@@ -584,6 +597,27 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
       setIsMainPersonImage(false);
       setIsHusbandImage(false);
       setCurrentWifeIndex(-1); // Use -1 to indicate new wife
+      setShowCropModal(true);
+    }
+  };
+
+  const handleNewHusbandImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isImageUploadEnabled) {
+      toast({
+        title: "ميزة غير متاحة",
+        description: "رفع الصور متاح فقط في الخطط المدفوعة. قم بترقية خطتك للاستفادة من هذه الميزة.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setCropImage(imageUrl);
+      setIsMainPersonImage(false);
+      setIsHusbandImage(true); // Set to true for husband image
+      setCurrentWifeIndex(null);
       setShowCropModal(true);
     }
   };
@@ -1553,8 +1587,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                       </Label>
                                       <div className="relative">
                                         <Input
-                                          value={newWife.name}
-                                          onChange={(e) => setNewWife({...newWife, name: e.target.value})}
+                                          value={newHusband.name}
+                                          onChange={(e) => setNewHusband({...newHusband, name: e.target.value})}
                                           className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
                                           placeholder="اسم الزوج"
                                         />
@@ -1572,8 +1606,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                       </Label>
                                       <div className="relative z-[10001]">
                                         <EnhancedDatePicker
-                                          value={newWife.birthDate ? new Date(newWife.birthDate) : null}
-                                          onChange={(date) => setNewWife({...newWife, birthDate: date ? date.toISOString().split('T')[0] : ''})}
+                                          value={newHusband.birthDate ? new Date(newHusband.birthDate) : null}
+                                          onChange={(date) => setNewHusband({...newHusband, birthDate: date ? date.toISOString().split('T')[0] : ''})}
                                           placeholder="اختر التاريخ"
                                           className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
                                         />
@@ -1595,7 +1629,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                            الحالة الاجتماعية
                                          </Label>
                                          <div className="relative z-[10001]">
-                                           <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
+                                           <Select value={newHusband.maritalStatus || "married"} onValueChange={(value) => setNewHusband({...newHusband, maritalStatus: value})}>
                                              <SelectTrigger className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
                                                <SelectValue placeholder="اختر الحالة الاجتماعية" />
                                              </SelectTrigger>
@@ -1617,7 +1651,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                            الحالة الحيوية
                                          </Label>
                                          <div className="relative z-[10001]">
-                                           <Select value={newWife.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewWife({...newWife, isAlive: value === "alive", deathDate: value === "alive" ? "" : newWife.deathDate})}>
+                                           <Select value={newHusband.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewHusband({...newHusband, isAlive: value === "alive", deathDate: value === "alive" ? "" : newHusband.deathDate})}>
                                              <SelectTrigger className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
                                                <SelectValue placeholder="الحالة" />
                                              </SelectTrigger>
@@ -1633,7 +1667,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                        </div>
 
                                        {/* Death Date - only show if deceased */}
-                                       {!newWife.isAlive && (
+                                       {!newHusband.isAlive && (
                                          <div className="animate-fade-in">
                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                              <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -1641,8 +1675,8 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                            </Label>
                                            <div className="relative z-[10000]">
                                              <EnhancedDatePicker
-                                               value={newWife.deathDate ? new Date(newWife.deathDate) : null}
-                                               onChange={(date) => setNewWife({...newWife, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                               value={newHusband.deathDate ? new Date(newHusband.deathDate) : null}
+                                               onChange={(date) => setNewHusband({...newHusband, deathDate: date ? date.toISOString().split('T')[0] : ''})}
                                                placeholder="اختر تاريخ الوفاة"
                                                className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
                                              />
@@ -1662,15 +1696,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                    <input
                                      type="file"
                                      accept="image/*"
-                                     onChange={(e) => handleNewWifeImageSelect(e)}
+                                    onChange={(e) => handleNewHusbandImageSelect(e)}
                                      className="hidden"
                                      id="new-husband-image"
                                    />
                                    
-                                    {newWife.imageUrl ? (
+                                    {newHusband.imageUrl ? (
                                       <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
                                         <img
-                                          src={newWife.imageUrl}
+                                          src={newHusband.imageUrl}
                                           alt="New Husband"
                                           className="w-16 h-16 rounded-full object-cover border-2 border-sky-300"
                                         />
@@ -1710,7 +1744,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                                type="button"
                                                variant="outline"
                                                size="sm"
-                                               onClick={() => setNewWife({...newWife, imageUrl: ''})}
+                                               onClick={() => setNewHusband({...newHusband, imageUrl: ''})}
                                                className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
                                              >
                                                <X className="w-2 h-2 mr-1" />
@@ -1844,7 +1878,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                          size="sm"
                                          onClick={() => {
                                            // Set husband data to the form for editing
-                                            setNewWife({
+                                            setNewHusband({
                                               name: husband.name,
                                               birthDate: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : "",
                                               maritalStatus: husband.maritalStatus || "married",
@@ -2091,6 +2125,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                   setShowCropModal(false);
                   setCropImage(null);
                   setIsMainPersonImage(false);
+                  setIsHusbandImage(false);
                 }}
                 className="flex-1"
               >
@@ -2103,6 +2138,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                       const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
                       if (isMainPersonImage) {
                         setMemberData({...memberData, croppedImage});
+                      } else if (isHusbandImage) {
+                        // Handle new husband image
+                        setNewHusband({...newHusband, imageUrl: croppedImage});
                       } else if (currentWifeIndex !== null && currentWifeIndex >= 0) {
                         const newWives = [...wives];
                         newWives[currentWifeIndex].croppedImage = croppedImage;
@@ -2114,6 +2152,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                       setShowCropModal(false);
                       setCropImage(null);
                       setIsMainPersonImage(false);
+                      setIsHusbandImage(false);
                       setCurrentWifeIndex(null);
                     } catch (error) {
                       console.error('Error cropping image:', error);
