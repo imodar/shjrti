@@ -15,7 +15,6 @@ export const CustomScriptInjector = () => {
           .maybeSingle();
 
         if (error) {
-          console.error('Error loading custom JavaScript:', error);
           return;
         }
 
@@ -43,7 +42,7 @@ export const CustomScriptInjector = () => {
           document.head.appendChild(scriptContainer);
         }
       } catch (error) {
-        console.error('Error injecting custom scripts:', error);
+        // Silently handle errors
       }
     };
 
