@@ -902,36 +902,61 @@ const FamilyBuilderNew = () => {
                                            return father?.name || '';
                                          };
                                          
+                                         // Helper function to get grandfather's name
+                                         const getGrandfatherName = (member: any) => {
+                                           const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
+                                           if (father) {
+                                             const grandfather = (familyMembers || []).find(m => m?.id === father?.fatherId);
+                                             return grandfather?.name || '';
+                                           }
+                                           return '';
+                                         };
+                                         
+                                         // Helper function to build full genealogical name
+                                         const getFullGenealogicalName = (member: any, isFounder: boolean) => {
+                                           if (isFounder) {
+                                             return `${member.name} ${familyData?.name || ''}`;
+                                           }
+                                           
+                                           const fatherName = getFatherName(member);
+                                           const grandfatherName = getGrandfatherName(member);
+                                           
+                                           if (member.gender === 'male') {
+                                             // Male: name + ابن + father + ابن + grandfather (if exists)
+                                             let result = member.name;
+                                             if (fatherName) {
+                                               result += ` ابن ${fatherName}`;
+                                               if (grandfatherName) {
+                                                 result += ` ابن ${grandfatherName}`;
+                                               }
+                                             }
+                                             return result;
+                                           } else {
+                                             // Female: name + بنت + father + grandfather (if exists)
+                                             let result = member.name;
+                                             if (fatherName) {
+                                               result += ` بنت ${fatherName}`;
+                                               if (grandfatherName) {
+                                                 result += ` ${grandfatherName}`;
+                                               }
+                                             }
+                                             return result;
+                                           }
+                                         };
+                                         
                                          if (husbandMember && wifeMember) {
                                            // Both are family members
-                                           if (husbandMember.isFounder) {
-                                             // Founder: founder name + family name ♥ wife name
-                                             displayName = `${husbandMember.name} ${familyData?.name || ''} ♥ ${wifeMember.name}`;
-                                           } else {
-                                             // Male non-founder: his name + father name ♥ wife name
-                                             const fatherName = getFatherName(husbandMember);
-                                             displayName = `${husbandMember.name} ${fatherName} ♥ ${wifeMember.name}`;
-                                           }
+                                           const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                           const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                           displayName = `${husbandFullName} ♥ ${wifeFullName}`;
                                          } else if (husbandMember) {
                                            // Only husband is family member
-                                           if (husbandMember.isFounder) {
-                                             // Founder: founder name + family name ♥ wife name
-                                             displayName = `${husbandMember.name} ${familyData?.name || ''} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                           } else {
-                                             // Male non-founder: his name + father name ♥ wife name
-                                             const fatherName = getFatherName(husbandMember);
-                                             displayName = `${husbandMember.name} ${fatherName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                           }
+                                           const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                           displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
                                          } else if (wifeMember) {
                                            // Only wife is family member
-                                           if (wifeMember.isFounder) {
-                                             // Female founder: founder name + family name ♥ husband name
-                                             displayName = `${wifeMember.name} ${familyData?.name || ''} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
-                                           } else {
-                                             // Female non-founder: her name + father name ♥ husband name
-                                             const fatherName = getFatherName(wifeMember);
-                                             displayName = `${wifeMember.name} ${fatherName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
-                                           }
+                                           const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                           displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
                                          } else {
                                            // Neither is family member (fallback)
                                            displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
