@@ -1010,8 +1010,89 @@ const FamilyBuilderNew = () => {
       // Call the existing submission logic (same as modal)
       console.log('🔥 Submitting form data:', finalData);
       
-      // TODO: Implement actual submission to database
-      // This should match the logic from ModernFamilyMemberModal.tsx
+      // Determine family relationship info based on selectedParent
+      let fatherId = null;
+      let motherId = null;
+      let relatedPersonId = null;
+      
+      if (submissionData.selectedParent && submissionData.selectedParent !== "none") {
+        const selectedMarriage = familyMarriages.find(m => m.id === submissionData.selectedParent);
+        console.log('🔥 Found selected marriage:', selectedMarriage);
+        if (selectedMarriage) {
+          fatherId = selectedMarriage.husband?.id || null;
+          motherId = selectedMarriage.wife?.id || null;
+          relatedPersonId = selectedMarriage.id;
+          console.log('🔥 Setting parent IDs - Father:', fatherId, 'Mother:', motherId, 'RelatedPerson (Marriage):', relatedPersonId);
+        }
+      }
+
+      // Insert new family member into database
+      const { data: newMember, error: memberError } = await supabase
+        .from('family_tree_members')
+        .insert({
+          name: submissionData.name,
+          gender: submissionData.gender,
+          birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
+          is_alive: submissionData.isAlive,
+          death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
+          biography: submissionData.bio || null,
+          image_url: submissionData.croppedImage || null,
+          father_id: fatherId,
+          mother_id: motherId,
+          related_person_id: relatedPersonId,
+          family_id: familyId,
+          created_by: familyData?.creator_id,
+          is_founder: submissionData.isFounder || false,
+          marital_status: finalData.maritalStatus || 'single'
+        })
+        .select()
+        .single();
+
+      if (memberError) {
+        console.error('Error adding family member:', memberError);
+        throw memberError;
+      }
+
+      console.log('🔥 Successfully added family member:', newMember);
+
+      // Handle marriages if applicable
+      if (finalData.maritalStatus === 'married') {
+        // Handle wives for male members
+        if (submissionData.gender === 'male' && wives.length > 0) {
+          for (const wife of wives) {
+            const { error: marriageError } = await supabase
+              .from('marriages')
+              .insert({
+                family_id: familyId,
+                husband_id: newMember.id,
+                wife_id: wife.existingFamilyMemberId || null,
+                is_active: true,
+                marital_status: 'married'
+              });
+
+            if (marriageError) {
+              console.error('Error creating marriage:', marriageError);
+            }
+          }
+        }
+
+        // Handle husband for female members  
+        if (submissionData.gender === 'female' && husband) {
+          const { error: marriageError } = await supabase
+            .from('marriages')
+            .insert({
+              family_id: familyId,
+              husband_id: husband.existingFamilyMemberId || null,
+              wife_id: newMember.id,
+              is_active: true,
+              marital_status: 'married'
+            });
+
+          if (marriageError) {
+            console.error('Error creating marriage:', marriageError);
+          }
+        }
+      }
       
       await refreshFamilyData();
       setFormMode('view');
