@@ -647,8 +647,8 @@ const FamilyBuilderNew = () => {
         .from('marriages')
         .select(`
           id,
-          husband:family_tree_members!marriages_husband_id_fkey(id, name),
-          wife:family_tree_members!marriages_wife_id_fkey(id, name),
+          husband_id,
+          wife_id,
           is_active
         `)
         .eq('family_id', familyToUse.id)
@@ -656,9 +656,28 @@ const FamilyBuilderNew = () => {
 
       if (marriagesError) throw marriagesError;
 
+      // Get detailed marriage data with member info
+      let marriagesWithMembers = [];
       if (marriages) {
-        setFamilyMarriages(marriages);
-        console.log('Fetched marriages:', marriages);
+        marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
+          const [husbandResult, wifeResult] = await Promise.all([
+            supabase.from('family_tree_members').select('id, name').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('id, name').eq('id', marriage.wife_id).single()
+          ]);
+          
+          return {
+            ...marriage,
+            husband: husbandResult.data,
+            wife: wifeResult.data
+          };
+        }));
+      }
+
+      if (marriagesError) throw marriagesError;
+
+      if (marriagesWithMembers) {
+        setFamilyMarriages(marriagesWithMembers);
+        console.log('Fetched marriages with members:', marriagesWithMembers);
       }
     } catch (error) {
       console.error('Error fetching family data:', error);
@@ -724,8 +743,8 @@ const FamilyBuilderNew = () => {
         .from('marriages')
         .select(`
           id,
-          husband:family_tree_members!marriages_husband_id_fkey(id, name),
-          wife:family_tree_members!marriages_wife_id_fkey(id, name),
+          husband_id,
+          wife_id,
           is_active
         `)
         .eq('family_id', family.id)
@@ -733,8 +752,25 @@ const FamilyBuilderNew = () => {
 
       if (marriagesError) throw marriagesError;
 
+      // Get detailed marriage data with member info
+      let marriagesWithMembers = [];
       if (marriages) {
-        setFamilyMarriages(marriages);
+        marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
+          const [husbandResult, wifeResult] = await Promise.all([
+            supabase.from('family_tree_members').select('id, name').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('id, name').eq('id', marriage.wife_id).single()
+          ]);
+          
+          return {
+            ...marriage,
+            husband: husbandResult.data,
+            wife: wifeResult.data
+          };
+        }));
+      }
+
+      if (marriagesWithMembers) {
+        setFamilyMarriages(marriagesWithMembers);
       }
 
       console.log('Family data refreshed successfully');
