@@ -1268,31 +1268,32 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                   </div>
                                 )}
 
-                                {/* Marital Status, Life Status and Death Date - only show if not family member */}
+                                {/* Marital Status - always show */}
+                                <div>
+                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                    <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                    الحالة الاجتماعية
+                                  </Label>
+                                  <div className="relative z-[10001]">
+                                    <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
+                                      <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                        <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                        <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                        <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                      <Heart className="h-2 w-2 text-white" />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Life Status and Death Date - only show if not family member */}
                                 {!newWife.isFamilyMember && (
                                   <div className="space-y-4">
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                      {/* Marital Status */}
-                                      <div>
-                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                          الحالة الاجتماعية
-                                        </Label>
-                                        <div className="relative z-[10001]">
-                                          <Select value={newWife.maritalStatus || "married"} onValueChange={(value) => setNewWife({...newWife, maritalStatus: value})}>
-                                            <SelectTrigger className="h-9 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                              <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                              <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
-                                              <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
-                                            </SelectContent>
-                                          </Select>
-                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
-                                            <Heart className="h-2 w-2 text-white" />
-                                          </div>
-                                        </div>
-                                      </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                       {/* Alive Status */}
                                       <div>
