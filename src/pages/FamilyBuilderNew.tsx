@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -179,6 +179,7 @@ const FamilyBuilderNew = () => {
   const [editingMember, setEditingMember] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
   
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
@@ -503,9 +504,10 @@ const FamilyBuilderNew = () => {
       name: member.name || "",
       relation: member.relation || "",
       relatedPersonId: member.relatedPersonId,
+      selectedParent: member.relatedPersonId || null,
       gender: member.gender || "male",
       birthDate: member.birthDate ? new Date(member.birthDate) : null,
-      isAlive: member.isAlive,
+      isAlive: member.isAlive ?? true,
       deathDate: member.deathDate ? new Date(member.deathDate) : null,
       bio: member.bio || "",
       imageUrl: member.image || "",
@@ -876,19 +878,73 @@ const FamilyBuilderNew = () => {
                            
                            <div>
                              <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
-                             <Select value={formData.selectedParent || ""} onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}>
-                               <SelectTrigger>
-                                 <SelectValue placeholder="اختر الوالدين" />
-                               </SelectTrigger>
-                               <SelectContent>
-                                 <SelectItem value="none">بدون والدين (مؤسس العائلة)</SelectItem>
-                                 {familyMarriages.map((marriage) => (
-                                   <SelectItem key={marriage.id} value={marriage.id}>
-                                     {marriage.husband?.name} ♥ {marriage.wife?.name}
-                                   </SelectItem>
-                                 ))}
-                               </SelectContent>
-                             </Select>
+                             <Popover open={relationshipPopoverOpen} onOpenChange={setRelationshipPopoverOpen}>
+                               <PopoverTrigger asChild>
+                                 <Button
+                                   variant="outline"
+                                   role="combobox"
+                                   aria-expanded={relationshipPopoverOpen}
+                                   className="w-full justify-between"
+                                 >
+                                   {formData.selectedParent ? (
+                                     (() => {
+                                       const marriage = familyMarriages.find(m => m.id === formData.selectedParent);
+                                       return marriage ? `${marriage.husband?.name} ♥ ${marriage.wife?.name}` : "اختر الوالدين";
+                                     })()
+                                   ) : "اختر الوالدين"}
+                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                 </Button>
+                               </PopoverTrigger>
+                               <PopoverContent className="w-full p-0">
+                                 <Command>
+                                   <CommandInput placeholder="ابحث عن الوالدين..." />
+                                   <CommandEmpty>لا توجد نتائج</CommandEmpty>
+                                   <CommandGroup>
+                                     <CommandItem
+                                       value="none"
+                                       onSelect={() => {
+                                         setFormData({...formData, selectedParent: null});
+                                         setRelationshipPopoverOpen(false);
+                                       }}
+                                     >
+                                       <Check
+                                         className={cn(
+                                           "mr-2 h-4 w-4",
+                                           !formData.selectedParent ? "opacity-100" : "opacity-0"
+                                         )}
+                                       />
+                                       بدون والدين (مؤسس العائلة)
+                                     </CommandItem>
+                                     {familyMarriages.map((marriage) => (
+                                       <CommandItem
+                                         key={marriage.id}
+                                         value={`${marriage.husband?.name} ${marriage.wife?.name}`}
+                                         onSelect={() => {
+                                           setFormData({...formData, selectedParent: marriage.id});
+                                           setRelationshipPopoverOpen(false);
+                                         }}
+                                       >
+                                         <Check
+                                           className={cn(
+                                             "mr-2 h-4 w-4",
+                                             formData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
+                                           )}
+                                         />
+                                         <div className="flex items-center">
+                                           <Heart className="h-3 w-3 text-red-500 mx-1" />
+                                           <span>{marriage.husband?.name} ♥ {marriage.wife?.name}</span>
+                                           {marriage.husband?.father_name && (
+                                             <span className="text-sm text-muted-foreground mr-2">
+                                               (ابن {marriage.husband.father_name})
+                                             </span>
+                                           )}
+                                         </div>
+                                       </CommandItem>
+                                     ))}
+                                   </CommandGroup>
+                                 </Command>
+                               </PopoverContent>
+                             </Popover>
                            </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
