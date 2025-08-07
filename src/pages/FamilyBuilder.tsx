@@ -221,7 +221,6 @@ const FamilyBuilder = () => {
         console.log('User subscription data:', userSubscription, 'Error:', subError);
 
         if (userSubscription && userSubscription.packages) {
-          console.log('Setting package data from subscription:', userSubscription.packages);
           setPackageData(userSubscription.packages);
           setSubscriptionData(userSubscription);
         } else {
@@ -291,7 +290,6 @@ const FamilyBuilder = () => {
               relation: "" // Add relation field for consistency
             }));
             
-            console.log('Fetched family members:', transformedMembers);
             setFamilyMembers(transformedMembers);
           }
 
@@ -467,10 +465,6 @@ const FamilyBuilder = () => {
   ];
 
   // Filter members based on search term and selected filter
-  console.log('Current filter:', selectedFilter);
-  console.log('Family members:', familyMembers);
-  console.log('Family marriages:', familyMarriages);
-  
   const filteredMembers = familyMembers.filter(member => {
     // First filter by search term (with null checks)
     const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -613,25 +607,11 @@ const FamilyBuilder = () => {
   };
   // Function to get additional info for each member
   const getAdditionalInfo = (member) => {
-    console.log('getAdditionalInfo called for:', member.name);
-    console.log('Member details:', {
-      name: member.name,
-      gender: member.gender,
-      fatherId: member.fatherId,
-      motherId: member.motherId,
-      isFounder: member.isFounder,
-      relatedPersonId: member.relatedPersonId
-    });
-    console.log('Available family members:', familyMembers.map(m => ({ id: m.id, name: m.name })));
-    console.log('Available marriages:', familyMarriages);
-    
     // Method 1: Check if this person is a child of a marriage using relatedPersonId
     if (member.relatedPersonId) {
-      console.log(`${member.name} has relatedPersonId: ${member.relatedPersonId}`);
       const parentMarriage = familyMarriages.find(marriage => marriage.id === member.relatedPersonId);
       
       if (parentMarriage) {
-        console.log(`Found parent marriage for ${member.name}:`, parentMarriage);
         
         const father = familyMembers.find(m => m.id === parentMarriage.husband?.id);
         const mother = familyMembers.find(m => m.id === parentMarriage.wife?.id);
@@ -640,16 +620,12 @@ const FamilyBuilder = () => {
           const familyName = familyData?.name || t('family_builder.family_name', 'العائلة');
           if (member.gender === 'male') {
             const result = `ابن ${father.name} ${familyName}`;
-            console.log(`Male child result for ${member.name}:`, result);
             return result;
           } else if (member.gender === 'female') {
             const result = `بنت ${father.name} ${familyName}`;
-            console.log(`Female child result for ${member.name}:`, result);
             return result;
           }
         }
-      } else {
-        console.log(`No marriage found for relatedPersonId: ${member.relatedPersonId}`);
       }
     }
     
@@ -659,7 +635,6 @@ const FamilyBuilder = () => {
     );
     
     if (memberMarriage) {
-      console.log(`Found marriage for ${member.name}:`, memberMarriage);
       
       // For husbands married into the family
       if (member.gender === 'male' && memberMarriage.husband?.id === member.id) {
@@ -692,7 +667,6 @@ const FamilyBuilder = () => {
             wifeInfo += ` ${familyName}`;
             
             const result = `زوج ${wifeInfo}`;
-            console.log(`Husband result for ${member.name}:`, result);
             return result;
           }
         }
@@ -729,7 +703,6 @@ const FamilyBuilder = () => {
             husbandInfo += ` ${familyName}`;
             
             const result = `زوجة ${husbandInfo}`;
-            console.log(`Wife result for ${member.name}:`, result);
             return result;
           }
         }
@@ -738,7 +711,6 @@ const FamilyBuilder = () => {
     
     // Method 3: Fallback to father_id/mother_id for legacy data
     if (member.fatherId || member.motherId) {
-      console.log(`${member.name} has parent IDs - checking for parent marriage`);
       
       // Find the marriage where one parent is husband and other is wife
       const parentMarriage = familyMarriages.find(marriage => {
@@ -748,7 +720,6 @@ const FamilyBuilder = () => {
       });
       
       if (parentMarriage) {
-        console.log(`Found parent marriage for ${member.name}:`, parentMarriage);
         
         const father = familyMembers.find(m => m.id === parentMarriage.husband?.id);
         
@@ -756,11 +727,9 @@ const FamilyBuilder = () => {
           const familyName = familyData?.name || t('family_builder.family_name', 'العائلة');
           if (member.gender === 'male') {
             const result = `ابن ${father.name} ${familyName}`;
-            console.log(`Male child result for ${member.name}:`, result);
             return result;
           } else if (member.gender === 'female') {
             const result = `بنت ${father.name} ${familyName}`;
-            console.log(`Female child result for ${member.name}:`, result);
             return result;
           }
         }
@@ -770,11 +739,9 @@ const FamilyBuilder = () => {
     // Method 4: If this person is a founder, show family name
     if (member.isFounder) {
       const result = familyData?.name || t('family_builder.family_name', 'العائلة');
-      console.log(`Founder result for ${member.name}:`, result);
       return result;
     }
     
-    console.log(`No additional info determined for ${member.name}`);
     return null;
   };
 
@@ -867,14 +834,8 @@ const FamilyBuilder = () => {
   };
 
   const handleAddNewMember = () => {
-    console.log('handleAddNewMember called');
-    console.log('Current family members count:', familyMembers.length);
-    console.log('Package data:', packageData);
-    console.log('Max family members:', packageData?.max_family_members);
-    
     // Check member limit before allowing to add
     if (packageData && familyMembers.length >= packageData.max_family_members) {
-      console.log('Member limit reached, showing toast');
       toast({
         title: t('family_builder.max_limit_reached', 'تم الوصول للحد الأقصى'),
         description: `${t('family_builder.max_limit_desc', 'لا يمكن إضافة أعضاء جدد. الحد الأقصى المسموح:')} ${packageData.max_family_members} ${t('family_builder.member', 'عضو')}`,
@@ -883,24 +844,16 @@ const FamilyBuilder = () => {
       return;
     }
     
-    console.log('Member limit check passed, opening modal');
-    console.log('About to setShowAddMember(true), current state:', showAddMember);
     setShowAddMember(true);
-    console.log('setShowAddMember(true) called');
   };
 
   // Handler for the modern modal submission
   const handleModernModalSubmit = async (memberData: any) => {
-    console.log('🔥 SUBMISSION STARTED - Member data:', memberData.name, memberData.gender);
     try {
-      console.log('🔥 FamilyBuilder handleModernModalSubmit called with data:', memberData);
-      console.log('🔥 Selected member for editing:', selectedMember);
       
       const familyId = searchParams.get('family');
-      console.log('🔥 Family ID from URL:', familyId);
       
       if (!familyId) {
-        console.log('🔥 Error: No family ID found');
         toast({
           title: t('family_builder.error', 'خطأ'),
           description: t('family_builder.family_id_required', 'معرف العائلة مطلوب'),
@@ -911,10 +864,8 @@ const FamilyBuilder = () => {
 
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      console.log('🔥 Current user:', user, 'Error:', userError);
       
       if (!user) {
-        console.log('🔥 Error: User not authenticated');
         throw new Error('User not authenticated');
       }
 
@@ -923,23 +874,6 @@ const FamilyBuilder = () => {
                         (memberData.gender === "female" && memberData.husband);
       const maritalStatus = hasSpouses ? "married" : "single";
       
-      console.log('🔥 Member data received:', {
-        gender: memberData.gender,
-        name: memberData.name,
-        fatherId: memberData.fatherId,
-        motherId: memberData.motherId,
-        relatedPersonId: memberData.relatedPersonId,
-        wives: memberData.wives,
-        husband: memberData.husband
-      });
-      console.log('🔥 Calculated marital status:', maritalStatus, 'hasSpouses:', hasSpouses);
-      console.log('🔥 Current familyId:', familyId);
-      console.log('🔥 Current user:', user?.id);
-      console.log('🔥 Husband data structure check:', typeof memberData.husband, memberData.husband);
-      if (memberData.husband) {
-        console.log('🔥 Husband name check:', memberData.husband.name, 'trimmed:', memberData.husband.name?.trim());
-      }
-
       // Insert main member - with proper date handling
       const memberInsertData = {
         family_id: familyId,
@@ -958,11 +892,7 @@ const FamilyBuilder = () => {
         created_by: user.id
       };
 
-      console.log('🔥 Member insert data:', memberInsertData);
-
-      console.log('🔥 About to execute database operation...');
-      
-      const { data: insertedMember, error: memberError } = selectedMember 
+      const { data: insertedMember, error: memberError } = selectedMember
         ? await supabase
             .from('family_tree_members')
             .update(memberInsertData)
@@ -975,40 +905,24 @@ const FamilyBuilder = () => {
             .select()
             .single();
 
-      console.log('🔥 Database operation result:');
-      console.log('🔥 - Data:', insertedMember);
-      console.log('🔥 - Error:', memberError);
-
       if (memberError) {
-        console.error('🔥 Database insertion failed:');
-        console.error('🔥 - Error message:', memberError.message);
-        console.error('🔥 - Error code:', memberError.code);
-        console.error('🔥 - Error details:', memberError.details);
-        console.error('🔥 - Error hint:', memberError.hint);
-        console.error('🔥 - Full error object:', memberError);
         throw memberError;
       }
 
       if (!insertedMember) {
-        console.error('🔥 No data returned from database operation');
         throw new Error('No data returned from database operation');
       }
       
-      console.log('🔥 Member successfully created/updated:', insertedMember);
-
       // Handle wives for male members - only if not editing or if wives changed
-      console.log('🔥 Checking wives for male member:', memberData.gender, memberData.wives?.length);
       if (memberData.gender === "male" && memberData.wives?.length > 0) {
-        console.log('🔥 Processing wives:', memberData.wives);
         
         // If editing, first remove existing marriages for this member
         if (selectedMember) {
-          console.log('🔥 Editing mode - removing existing marriages for member:', selectedMember.id);
           const { error: deleteError } = await supabase
             .from('marriages')
             .delete()
             .eq('husband_id', selectedMember.id);
-          if (deleteError) console.error('Error deleting existing marriages:', deleteError);
+          if (deleteError) throw deleteError;
         }
         
         for (const wife of memberData.wives) {
@@ -1051,21 +965,17 @@ const FamilyBuilder = () => {
       }
 
       // Handle husband for female members - only if not editing or if husband changed
-      console.log('🔥 Checking husband insertion for female member:', memberData.gender === "female", !!memberData.husband);
       if (memberData.gender === "female" && memberData.husband) {
         const husband = memberData.husband;
-        console.log('🔥 Husband data:', husband);
         if (husband.name.trim()) {
-          console.log('🔥 Husband name is valid, proceeding with insertion:', husband.name);
           
           // If editing, first remove existing marriages for this member
           if (selectedMember) {
-            console.log('🔥 Editing mode - removing existing marriages for member:', selectedMember.id);
             const { error: deleteError } = await supabase
               .from('marriages')
               .delete()
               .eq('wife_id', selectedMember.id);
-            if (deleteError) console.error('Error deleting existing marriages:', deleteError);
+            if (deleteError) throw deleteError;
           }
           
           // Always create new husband records - don't reuse temporary IDs
@@ -1087,11 +997,8 @@ const FamilyBuilder = () => {
             .single();
 
           if (husbandError) {
-            console.error('🔥 Error inserting husband:', husbandError);
             throw husbandError;
           }
-
-          console.log('🔥 Husband inserted successfully:', husbandData);
 
           // Create marriage record
           const { error: marriageError } = await supabase
@@ -1105,16 +1012,11 @@ const FamilyBuilder = () => {
             });
 
           if (marriageError) {
-            console.error('🔥 Error creating marriage:', marriageError);
             throw marriageError;
           }
-
-          console.log('🔥 Marriage created successfully between:', husbandData.name, 'and', memberData.name);
         }
       }
 
-      console.log('🔥 About to refresh data and show success message...');
-      
       // Refresh family data - trigger re-fetch by reloading the page
       window.location.reload();
       
@@ -1141,7 +1043,6 @@ const FamilyBuilder = () => {
   };
 
   const handleEditMember = async (member: any) => {
-    console.log('Edit member called:', member);
     setSelectedMember(member);
     setShowAddMember(true); // Open the modern modal for editing
   };
@@ -2165,8 +2066,6 @@ const FamilyBuilder = () => {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                     <Button
                       onClick={() => {
-                        console.log('🔴 Add button clicked!');
-                        console.log('Current members:', familyMembers.length, 'Package data:', packageData);
                         handleAddNewMember();
                       }}
                       disabled={packageData && familyMembers.length >= packageData.max_family_members}
@@ -2245,9 +2144,8 @@ const FamilyBuilder = () => {
                              
                              {/* Additional info under name */}
                              {(() => {
-                               const additionalInfo = getAdditionalInfo(member);
-                               console.log(`Additional info for ${member.name}:`, additionalInfo);
-                               return additionalInfo ? (
+                                const additionalInfo = getAdditionalInfo(member);
+                                return additionalInfo ? (
                                  <div className="mb-2">
                                    <p className="text-sm text-muted-foreground/80 font-medium leading-relaxed">
                                      {additionalInfo}
@@ -2461,7 +2359,6 @@ const FamilyBuilder = () => {
       <ModernFamilyMemberModal
         isOpen={showAddMember}
         onClose={() => {
-          console.log('Modal onClose called');
           setShowAddMember(false);
           setSelectedMember(null); // Reset selected member when closing
         }}
