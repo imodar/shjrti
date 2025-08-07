@@ -2395,15 +2395,21 @@ const MemberList = ({
                       {(() => {
                         const father = familyMembers?.find(m => m?.id === member.fatherId);
                         const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
-                        const parentInfo = [];
-                        if (father) parentInfo.push(father.name);
-                        if (grandfather) parentInfo.push(grandfather.name);
                         
-                        return parentInfo.length > 0 ? (
-                          <p className="text-sm text-muted-foreground truncate font-arabic">
-                            {parentInfo.join(' • ')}
-                          </p>
-                        ) : null;
+                        if (father && grandfather) {
+                          return (
+                            <p className="text-sm text-muted-foreground truncate font-arabic">
+                              {father.name} ابن {grandfather.name}
+                            </p>
+                          );
+                        } else if (father) {
+                          return (
+                            <p className="text-sm text-muted-foreground truncate font-arabic">
+                              {father.name}
+                            </p>
+                          );
+                        }
+                        return null;
                       })()}
                       
                       {/* Birth date and gender icon */}
