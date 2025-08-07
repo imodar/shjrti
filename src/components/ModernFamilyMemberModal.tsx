@@ -535,7 +535,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     console.log('🔥 addHusband called, newHusband:', newHusband);
     if (newHusband.name.trim()) {
       const husbandToAdd = {
-        id: newHusband.isFamilyMember && newHusband.existingFamilyMemberId ? newHusband.existingFamilyMemberId : crypto.randomUUID(),
+        id: crypto.randomUUID(),
         name: newHusband.name,
         birthDate: newHusband.birthDate ? new Date(newHusband.birthDate) : null,
         maritalStatus: newHusband.maritalStatus,
@@ -597,27 +597,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
       setIsMainPersonImage(false);
       setIsHusbandImage(false);
       setCurrentWifeIndex(-1); // Use -1 to indicate new wife
-      setShowCropModal(true);
-    }
-  };
-
-  const handleNewHusbandImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isImageUploadEnabled) {
-      toast({
-        title: "ميزة غير متاحة",
-        description: "رفع الصور متاح فقط في الخطط المدفوعة. قم بترقية خطتك للاستفادة من هذه الميزة.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setCropImage(imageUrl);
-      setIsMainPersonImage(false);
-      setIsHusbandImage(true); // Set to true for husband image
-      setCurrentWifeIndex(null);
       setShowCropModal(true);
     }
   };
@@ -1575,7 +1554,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                  </div>
                                  <h4 className="text-lg font-semibold text-sky-700 dark:text-sky-300">إضافة زوج</h4>
                                </div>
-                                
+                               
                                 <div className="space-y-4">
                                   {/* Family Member Check */}
                                   <div>
@@ -1587,117 +1566,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                       <label className="flex items-center gap-2 cursor-pointer">
                                         <input
                                           type="radio"
-                                           name="isHusbandFamilyMember"
-                                           checked={newHusband.isFamilyMember === true}
-                                           onChange={() => {setNewHusband({...newHusband, isFamilyMember: true, existingFamilyMemberId: ''});}}
-                                           className="text-sky-500 focus:ring-sky-500"
-                                         />
-                                         <span className="text-sm text-gray-700 dark:text-gray-300">نعم</span>
-                                       </label>
-                                       <label className="flex items-center gap-2 cursor-pointer">
-                                         <input
-                                           type="radio"
-                                           name="isHusbandFamilyMember"
-                                           checked={newHusband.isFamilyMember === false}
-                                           onChange={() => {setNewHusband({...newHusband, isFamilyMember: false, existingFamilyMemberId: ''});}}
-                                           className="text-sky-500 focus:ring-sky-500"
-                                         />
-                                         <span className="text-sm text-gray-700 dark:text-gray-300">لا</span>
-                                       </label>
-                                     </div>
-                                   </div>
-
-                                   {/* Family Member Selection */}
-                                   {newHusband.isFamilyMember && (
-                                     <div className="animate-fade-in">
-                                       <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                         <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg"></div>
-                                         اختر من الأفراد المضافين
-                                       </Label>
-                                       <div className="relative z-[10001]">
-                                         <Popover open={commandOpen} onOpenChange={setCommandOpen}>
-                                           <PopoverTrigger asChild>
-                                             <Button
-                                               variant="outline"
-                                               role="combobox"
-                                               aria-expanded={commandOpen}
-                                               className="w-full justify-between h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
-                                             >
-                                               {newHusband.existingFamilyMemberId
-                                                 ? familyMembers.find(m => m.id === newHusband.existingFamilyMemberId)?.name
-                                                 : "اختر فرد من العائلة..."}
-                                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                             </Button>
-                                           </PopoverTrigger>
-                                           <PopoverContent className="w-full p-0 z-[10002]">
-                                             <Command className="border-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl">
-                                               <CommandInput 
-                                                 placeholder="ابحث عن فرد من العائلة..." 
-                                                 className="h-9 text-sm font-arabic"
-                                               />
-                                               <CommandList className="max-h-48">
-                                                 <CommandEmpty className="text-sm font-arabic text-center py-4 text-gray-500">
-                                                   لا توجد نتائج
-                                                 </CommandEmpty>
-                                                 <CommandGroup>
-                                                   {familyMembers
-                                                     .filter(member => 
-                                                       member.gender === 'male' && 
-                                                       member.fatherId && 
-                                                       familyMembers.some(fm => fm.id === member.fatherId)
-                                                     )
-                                                     .map(member => (
-                                                       <CommandItem 
-                                                         key={member.id} 
-                                                         value={`${member.name} ${familyMembers.find(f => f.id === member.fatherId)?.name || ''}`}
-                                                         onSelect={() => {
-                                                           setNewHusband({
-                                                             ...newHusband, 
-                                                             existingFamilyMemberId: member.id,
-                                                             name: member.name,
-                                                             birthDate: member.birthDate || '',
-                                                             isAlive: member.isAlive,
-                                                             deathDate: member.deathDate || '',
-                                                             imageUrl: member.image || ''
-                                                           });
-                                                           setCommandOpen(false);
-                                                         }}
-                                                         className="font-arabic text-sm cursor-pointer"
-                                                       >
-                                                         <div className="flex items-center justify-between w-full">
-                                                           <span>{member.name}</span>
-                                                           {member.fatherId && (
-                                                             <span className="text-xs text-gray-500">
-                                                               (ابن {familyMembers.find(f => f.id === member.fatherId)?.name})
-                                                             </span>
-                                                           )}
-                                                         </div>
-                                                       </CommandItem>
-                                                     ))}
-                                                 </CommandGroup>
-                                               </CommandList>
-                                             </Command>
-                                           </PopoverContent>
-                                         </Popover>
-                                       </div>
-                                     </div>
-                                   )}
-
-                                   {/* Name and Birth Date - only show if not family member */}
-                                   {!newHusband.isFamilyMember && (
-                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                       {/* Name - 2/3 width */}
-                                       <div className="sm:col-span-2">
-                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                           <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                           الاسم *
-                                         </Label>
-                                         <div className="relative">
-                                           <Input
-                                             value={newHusband.name}
-                                             onChange={(e) => setNewHusband({...newHusband, name: e.target.value})}
-                                             className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
-                                             placeholder="اسم الزوج"
+                                          name="isHusbandFamilyMember"
                                           checked={newHusband.isFamilyMember === true}
                                           onChange={() => {setNewHusband({...newHusband, isFamilyMember: true, existingFamilyMemberId: ''}); setCommandOpen(false);}}
                                           className="text-sky-500 focus:ring-sky-500"
@@ -1795,221 +1664,212 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
 
                                   {/* Name and Birth Date - only show if not family member */}
                                   {!newHusband.isFamilyMember && (
-                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                   {/* Name - 2/3 width */}
-                                    <div className="sm:col-span-2">
-                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                        الاسم *
-                                      </Label>
-                                      <div className="relative">
-                                        <Input
-                                          value={newHusband.name}
-                                          onChange={(e) => setNewHusband({...newHusband, name: e.target.value})}
-                                          className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
-                                         disabled={newHusband.isFamilyMember && !!newHusband.existingFamilyMemberId}
-                                       />
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-sky-500 to-blue-500 rounded-lg flex items-center justify-center">
-                                          <Heart className="h-2 w-2 text-white" />
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                      {/* Name - 2/3 width */}
+                                      <div className="sm:col-span-2">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الاسم *
+                                        </Label>
+                                        <div className="relative">
+                                          <Input
+                                            value={newHusband.name}
+                                            onChange={(e) => setNewHusband({...newHusband, name: e.target.value})}
+                                            className="h-9 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                            placeholder="اسم الزوج"
+                                            disabled={newHusband.isFamilyMember && !!newHusband.existingFamilyMemberId}
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-sky-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-2 w-2 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Birth Date - 1/3 width */}
+                                      <div className="sm:col-span-1">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          تاريخ الميلاد
+                                        </Label>
+                                        <div className="relative z-[10001]">
+                                          <EnhancedDatePicker
+                                            value={newHusband.birthDate ? new Date(newHusband.birthDate) : null}
+                                            onChange={(date) => setNewHusband({...newHusband, birthDate: date ? date.toISOString().split('T')[0] : ''})}
+                                            placeholder="اختر التاريخ"
+                                            className="h-9 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                            disabled={newHusband.isFamilyMember && !!newHusband.existingFamilyMemberId}
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
+                                            <CalendarIcon className="h-2 w-2 text-white" />
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
+                                  )}
 
-                                   {/* Birth Date - 1/3 width */}
-                                    <div className="sm:col-span-1">
-                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                        تاريخ الميلاد
-                                      </Label>
-                                      <div className="relative z-[10001]">
-                                        <EnhancedDatePicker
-                                          value={newHusband.birthDate ? new Date(newHusband.birthDate) : null}
-                                          onChange={(date) => setNewHusband({...newHusband, birthDate: date ? date.toISOString().split('T')[0] : ''})}
-                                          placeholder="اختر التاريخ"
-                                         disabled={newHusband.isFamilyMember && !!newHusband.existingFamilyMemberId}
-                                        />
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
-                                          <CalendarIcon className="h-2 w-2 text-white" />
-                                        </div>
+                                  {/* Marital Status - always show */}
+                                  <div>
+                                    <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                      <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                      الحالة الاجتماعية
+                                    </Label>
+                                    <div className="relative z-[10001]">
+                                      <Select value={newHusband.maritalStatus || "married"} onValueChange={(value) => setNewHusband({...newHusband, maritalStatus: value})}>
+                                        <SelectTrigger className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                          <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                          <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                          <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                        <Heart className="h-2 w-2 text-white" />
                                       </div>
                                     </div>
-                                 </div>
+                                  </div>
 
-                                   {/* Marital Status - always show */}
-                                   <div className="space-y-4">
                                   {/* Life Status and Death Date - only show if not family member */}
                                   {!newHusband.isFamilyMember && (
                                     <div className="space-y-4">
                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                           <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                           الحالة الاجتماعية
-                                         </Label>
-                                         <div className="relative z-[10001]">
-                                           <Select value={newHusband.maritalStatus || "married"} onValueChange={(value) => setNewHusband({...newHusband, maritalStatus: value})}>
-                                             <SelectTrigger className="h-9 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                               <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                             </SelectTrigger>
+                                        {/* Alive Status */}
+                                        <div>
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                            الحالة الحيوية
+                                          </Label>
+                                          <div className="relative z-[10001]">
+                                            <Select value={newHusband.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewHusband({...newHusband, isAlive: value === "alive", deathDate: value === "alive" ? "" : newHusband.deathDate})}>
+                                              <SelectTrigger className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
+                                                <SelectValue placeholder="الحالة" />
+                                              </SelectTrigger>
                                               <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                                <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
-                                                <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                                <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                                <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
                                               </SelectContent>
-                                           </Select>
-                                           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                             <Heart className="h-2 w-2 text-white" />
-                                           </div>
-                                         </div>
-                                       </div>
+                                            </Select>
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                              <Heart className="h-2 w-2 text-white" />
+                                            </div>
+                                          </div>
+                                        </div>
 
-                                       {/* Alive Status */}
-                                       <div>
-                                         <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                           <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                           الحالة الحيوية
-                                         </Label>
-                                         <div className="relative z-[10001]">
-                                           <Select value={newHusband.isAlive ? "alive" : "deceased"} onValueChange={(value) => setNewHusband({...newHusband, isAlive: value === "alive", deathDate: value === "alive" ? "" : newHusband.deathDate})}>
-                                             <SelectTrigger className="h-9 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic">
-                                               <SelectValue placeholder="الحالة" />
-                                             </SelectTrigger>
-                                             <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                               <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
-                                               <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
-                                             </SelectContent>
-                                           </Select>
-                                           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
-                                             <Heart className="h-2 w-2 text-white" />
-                                           </div>
-                                         </div>
-                                       </div>
+                                        {/* Death Date - only show if deceased */}
+                                        {!newHusband.isAlive && (
+                                          <div className="animate-fade-in">
+                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                              <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                              تاريخ الوفاة
+                                            </Label>
+                                            <div className="relative z-[10000]">
+                                              <EnhancedDatePicker
+                                                value={newHusband.deathDate ? new Date(newHusband.deathDate) : null}
+                                                onChange={(date) => setNewHusband({...newHusband, deathDate: date ? date.toISOString().split('T')[0] : ''})}
+                                                placeholder="اختر تاريخ الوفاة"
+                                                className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
+                                              />
+                                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                <CalendarIcon className="h-2 w-2 text-white" />
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
 
-                                       {/* Death Date - only show if deceased */}
-                                       {!newHusband.isAlive && (
-                                         <div className="animate-fade-in">
-                                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                             <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                             تاريخ الوفاة
-                                           </Label>
-                                           <div className="relative z-[10000]">
-                                             <EnhancedDatePicker
-                                               value={newHusband.deathDate ? new Date(newHusband.deathDate) : null}
-                                               onChange={(date) => setNewHusband({...newHusband, deathDate: date ? date.toISOString().split('T')[0] : ''})}
-                                               placeholder="اختر تاريخ الوفاة"
-                                               className="h-9 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic"
-                                             />
-                                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                               <CalendarIcon className="h-2 w-2 text-white" />
-                                             </div>
-                                           </div>
-                                         </div>
-                                       )}
-                                     </div>
-                                   </div>
-
-                                 <div>
-                                   <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
-                                     الصورة الشخصية
-                                   </label>
-                                   <input
-                                     type="file"
-                                     accept="image/*"
-                                    onChange={(e) => handleNewHusbandImageSelect(e)}
-                                     className="hidden"
-                                     id="new-husband-image"
-                                   />
-                                   
-                                    {newHusband.imageUrl ? (
-                                      <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
-                                        <img
-                                          src={newHusband.imageUrl}
-                                          alt="New Husband"
-                                          className="w-16 h-16 rounded-full object-cover border-2 border-sky-300"
-                                        />
-                                         <div className="flex flex-col space-y-1">
-                                           <TooltipProvider>
-                                             <Tooltip>
-                                               <TooltipTrigger asChild>
                                   {/* Image Upload Section - only show if not family member */}
                                   {!newHusband.isFamilyMember && (
-                                                   <Button
-                                                     type="button"
-                                                     variant="outline"
-                                                     size="sm"
-                                                     onClick={isImageUploadEnabled ? () => document.getElementById('new-husband-image')?.click() : undefined}
-                                                     disabled={!isImageUploadEnabled}
-                                                     className={cn(
-                                                       "h-7 text-xs px-2",
-                                                       isImageUploadEnabled 
-                                                         ? "border-sky-300 text-sky-600 hover:bg-sky-50"
-                                                         : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
-                                                     )}
-                                                   >
-                                                     <Camera className="w-2 h-2 mr-1" />
-                                                     تغيير
-                                                   </Button>
-                                                 </div>
-                                               </TooltipTrigger>
-                                               {!isImageUploadEnabled && (
-                                                 <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
-                                                   <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
-                                                   <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
-                                                 </TooltipContent>
-                                               )}
-                                             </Tooltip>
-                                           </TooltipProvider>
-                                           {isImageUploadEnabled && (
-                                             <Button
-                                               type="button"
-                                               variant="outline"
-                                               size="sm"
-                                               onClick={() => setNewHusband({...newHusband, imageUrl: ''})}
-                                               className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
-                                             >
-                                               <X className="w-2 h-2 mr-1" />
-                                               إزالة
-                                             </Button>
-                                           )}
-                                         </div>
-                                      </div>
-                                    ) : (
-                                      <TooltipProvider>
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <div>
-                                              <label
-                                                htmlFor={isImageUploadEnabled ? "new-husband-image" : undefined}
-                                                className={cn(
-                                                  "flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-xl transition-all duration-200 group",
-                                                  isImageUploadEnabled 
-                                                    ? "border-sky-300 dark:border-sky-700 cursor-pointer hover:border-sky-400 hover:bg-sky-50/30 dark:hover:bg-sky-900/20"
-                                                    : "border-gray-300 dark:border-gray-600 cursor-not-allowed opacity-60"
-                                                )}
-                                              >
-                                                <Camera className={cn(
-                                                  "w-6 h-6 mb-1",
-                                                  isImageUploadEnabled 
-                                                    ? "text-sky-400 group-hover:text-sky-500"
-                                                    : "text-gray-400"
-                                                )} />
-                                                <span className={cn(
-                                                  "text-sm text-center",
-                                                  isImageUploadEnabled 
-                                                    ? "text-sky-600 dark:text-sky-400"
-                                                    : "text-gray-400"
-                                                )}>إضافة صورة</span>
-                                              </label>
+                                    <div>
+                                      <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
+                                        الصورة الشخصية
+                                      </label>
+                                      {isImageUploadEnabled ? (
+                                        <>
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                              const file = e.target.files?.[0];
+                                              if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (e) => {
+                                                  setNewHusband({ ...newHusband, imageUrl: e.target?.result as string });
+                                                };
+                                                reader.readAsDataURL(file);
+                                              }
+                                            }}
+                                            className="hidden"
+                                            id="new-husband-image"
+                                          />
+                                          
+                                          {newHusband.imageUrl ? (
+                                            <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
+                                              <img
+                                                src={newHusband.imageUrl}
+                                                alt="New Husband"
+                                                className="w-16 h-16 rounded-full object-cover border-2 border-sky-300"
+                                              />
+                                              <div className="flex flex-col space-y-1">
+                                                <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => document.getElementById('new-husband-image')?.click()}
+                                                  className="border-sky-300 text-sky-600 hover:bg-sky-50 h-7 text-xs px-2"
+                                                >
+                                                  <Camera className="w-2 h-2 mr-1" />
+                                                  تغيير
+                                                </Button>
+                                                <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => setNewHusband({...newHusband, imageUrl: ''})}
+                                                  className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2"
+                                                >
+                                                  <X className="w-2 h-2 mr-1" />
+                                                  إزالة
+                                                </Button>
+                                              </div>
                                             </div>
-                                          </TooltipTrigger>
-                                          {!isImageUploadEnabled && (
-                                            <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
-                                              <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
-                                              <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
-                                            </TooltipContent>
+                                          ) : (
+                                            <label
+                                              htmlFor="new-husband-image"
+                                              className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-sky-300 dark:border-sky-700 cursor-pointer rounded-xl hover:border-sky-400 hover:bg-sky-50/30 dark:hover:bg-sky-900/20 transition-all duration-200 group"
+                                            >
+                                              <Camera className="w-6 h-6 mb-1 text-sky-400 group-hover:text-sky-500" />
+                                              <span className="text-sm text-sky-600 dark:text-sky-400 text-center">إضافة صورة</span>
+                                            </label>
                                           )}
-                                        </Tooltip>
-                                      </TooltipProvider>
-                                    )}
-                                 </div>
+                                        </>
+                                      ) : (
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div>
+                                                <input
+                                                  type="file"
+                                                  accept="image/*"
+                                                  disabled
+                                                  className="hidden"
+                                                />
+                                                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-not-allowed rounded-xl opacity-60">
+                                                  <Camera className="w-6 h-6 mb-1 text-gray-400" />
+                                                  <span className="text-sm text-gray-400 text-center">إضافة صورة</span>
+                                                </label>
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p>يتطلب ترقية الباقة لرفع الصور</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
 
                                   <Button
                                     type="button"
@@ -2019,11 +1879,51 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                     }}
                                    className="w-full bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white shadow-md"
                                    size="lg"
-                                   disabled={!newWife.name.trim()}
-                                 >
-                                   <Plus className="w-4 h-4 mr-2" />
-                                   إضافة الزوج
-                                 </Button>
+                                   disabled={!newHusband.name.trim()}
+                                  >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    إضافة الزوج
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* Added Husbands Section - 1/3 width */}
+                              <div className="w-full md:col-span-1">
+                                <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-6 shadow-md">
+                                  <div className="flex items-center gap-2 mb-6">
+                                    <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full flex items-center justify-center">
+                                      <Heart className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h4 className="text-lg font-semibold text-sky-700 dark:text-sky-300">الأزواج المضافين</h4>
+                                  </div>
+                                  
+                                  {husband ? (
+                                    <div className="space-y-3">
+                                      <div className="p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
+                                        <div className="flex items-center justify-between">
+                                          <span className="font-medium text-sky-700 dark:text-sky-300">{husband.name}</span>
+                                          <Button
+                                            type="button"
+                                            onClick={() => setHusband(null)}
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-red-300 text-red-600 hover:bg-red-50"
+                                          >
+                                            <X className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                                  ) : (
+                                    <p className="text-sm text-gray-500 text-center py-8">لم يتم إضافة أزواج بعد</p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                                </div>
                              </div>
                           </div>
@@ -2096,7 +1996,7 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                          size="sm"
                                          onClick={() => {
                                            // Set husband data to the form for editing
-                                            setNewHusband({
+                                            setNewWife({
                                               name: husband.name,
                                               birthDate: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : "",
                                               maritalStatus: husband.maritalStatus || "married",
@@ -2343,7 +2243,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                   setShowCropModal(false);
                   setCropImage(null);
                   setIsMainPersonImage(false);
-                  setIsHusbandImage(false);
                 }}
                 className="flex-1"
               >
@@ -2356,9 +2255,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                       const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
                       if (isMainPersonImage) {
                         setMemberData({...memberData, croppedImage});
-                      } else if (isHusbandImage) {
-                        // Handle new husband image
-                        setNewHusband({...newHusband, imageUrl: croppedImage});
                       } else if (currentWifeIndex !== null && currentWifeIndex >= 0) {
                         const newWives = [...wives];
                         newWives[currentWifeIndex].croppedImage = croppedImage;
@@ -2370,7 +2266,6 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                       setShowCropModal(false);
                       setCropImage(null);
                       setIsMainPersonImage(false);
-                      setIsHusbandImage(false);
                       setCurrentWifeIndex(null);
                     } catch (error) {
                       console.error('Error cropping image:', error);
@@ -2388,3 +2283,5 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
     </>
   );
 };
+
+export default ModernFamilyMemberModal;
