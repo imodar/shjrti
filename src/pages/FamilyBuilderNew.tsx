@@ -2417,8 +2417,11 @@ const MemberList = ({
                       
                       {/* Spouse information - show only for non-family members (those married into the family) and not for founders */}
                       {(() => {
-                        // Don't show spouse info for founders
-                        if (member.is_founder) {
+                        // Debug logging
+                        console.log('Member:', member.name, 'is_founder:', member.is_founder, 'founder:', member.founder);
+                        
+                        // Don't show spouse info for founders - check both is_founder and founder fields
+                        if (member.is_founder || member.founder) {
                           return null;
                         }
 
