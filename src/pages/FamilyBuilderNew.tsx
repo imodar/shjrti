@@ -2393,6 +2393,11 @@ const MemberList = ({
                     <div className="flex-1 min-w-0 space-y-1">
                       {/* Name */}
                       <div className="flex items-center gap-2">
+                        {member.gender === 'male' ? (
+                          <User className="h-3 w-3 text-blue-500" />
+                        ) : (
+                          <UserIcon className="h-3 w-3 text-pink-500" />
+                        )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                           {member.name}
                         </h3>
@@ -2511,17 +2516,12 @@ const MemberList = ({
                         return null;
                       })()}
                       
-                      {/* Birth date and gender icon */}
+                      {/* Birth date and other icons */}
                       <div className="flex items-center gap-2">
                         {member.birthDate && (
                           <span className="text-xs text-muted-foreground font-arabic">
                             {new Date(member.birthDate).toLocaleDateString('ar-SA')}
                           </span>
-                        )}
-                        {member.gender === 'male' ? (
-                          <User className="h-3 w-3 text-blue-500" />
-                        ) : (
-                          <UserIcon className="h-3 w-3 text-pink-500" />
                         )}
                         {member.isFounder && (
                           <Crown className="h-3 w-3 text-yellow-500" />
