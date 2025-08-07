@@ -1779,7 +1779,7 @@ const FamilyBuilderNew = () => {
                                           <div>
                                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-                                              اختر الزوجة من أفراد العائلة
+                                              هل الزوجة من أفراد العائلة ، نعم ام لا
                                             </Label>
                                             <p className="text-xs text-muted-foreground mb-3 font-arabic">
                                               يُسمح فقط باختيار الزوجة من أفراد العائلة المسجلين
