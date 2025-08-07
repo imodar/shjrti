@@ -870,7 +870,7 @@ const FamilyBuilderNew = () => {
             {/* Form Panel - Left Side on Desktop */}
             <div className={cn(
               "space-y-6",
-              isMobile ? "order-2" : "col-span-8 order-1"
+              isMobile ? "order-2" : "col-span-4 order-1"
             )}>
               <Card className="h-fit relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-lg"></div>
@@ -1067,7 +1067,7 @@ const FamilyBuilderNew = () => {
             {/* Member List - Right Side on Desktop */}
             <div className={cn(
               "space-y-4",
-              isMobile ? "order-1" : "col-span-4 order-2"
+              isMobile ? "order-1" : "col-span-8 order-2"
             )}>
               {isMobile ? (
                 <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
