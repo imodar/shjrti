@@ -276,23 +276,36 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
           wife_id,
           is_active,
           husband:family_tree_members!marriages_husband_id_fkey(id, name, is_founder, father_id),
-          wife:family_tree_members!marriages_wife_id_fkey(id, name)
+          wife:family_tree_members!marriages_wife_id_fkey(id, name, is_founder, father_id)
         `)
         .eq('family_id', familyId)
         .eq('is_active', true);
 
       if (marriagesError) throw marriagesError;
 
-      // Transform marriages data and get father names for husbands
+      // Transform marriages data and get father names for husbands and wives
       const transformedMarriages = await Promise.all((marriagesData || []).map(async (marriage) => {
-        let fatherName = "";
+        let husbandFatherName = "";
+        let wifeFatherName = "";
+        
+        // Get husband's father name
         if (marriage.husband?.father_id && !marriage.husband?.is_founder) {
           const { data: fatherData } = await supabase
             .from('family_tree_members')
             .select('name')
             .eq('id', marriage.husband.father_id)
             .single();
-          fatherName = fatherData?.name || "";
+          husbandFatherName = fatherData?.name || "";
+        }
+
+        // Get wife's father name  
+        if (marriage.wife?.father_id && !marriage.wife?.is_founder) {
+          const { data: wifeFatherData } = await supabase
+            .from('family_tree_members')
+            .select('name')
+            .eq('id', marriage.wife.father_id)
+            .single();
+          wifeFatherName = wifeFatherData?.name || "";
         }
 
         return {
@@ -302,9 +315,15 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
             name: marriage.husband?.name || "",
             is_founder: marriage.husband?.is_founder || false,
             father_id: marriage.husband?.father_id || null,
-            father_name: fatherName
+            father_name: husbandFatherName
           },
-          wife: { id: marriage.wife_id, name: marriage.wife?.name || "" },
+          wife: { 
+            id: marriage.wife_id, 
+            name: marriage.wife?.name || "",
+            is_founder: marriage.wife?.is_founder || false,
+            father_id: marriage.wife?.father_id || null,
+            father_name: wifeFatherName
+          },
           is_active: marriage.is_active
         };
       }));
@@ -777,9 +796,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                         : marriages.find(m => m.id === memberData.selectedParent)
                                           ? (() => {
                                               const marriage = marriages.find(m => m.id === memberData.selectedParent);
-                                               return marriage?.husband.is_founder 
-                                                 ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                                 : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`;
+                                                return marriage?.husband.is_founder 
+                                                  ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name} ${(marriage.wife as any).father_name ? (marriage.wife as any).father_name + ' ' : ''}${familyName}`
+                                                  : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name} ${(marriage.wife as any).father_name ? (marriage.wife as any).father_name + ' ' : ''}${familyName}`;
                                             })()
                                           : "اختر علاقة القرابة مع العائلة"
                                       }
@@ -807,9 +826,9 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                              }}
                                              className="font-arabic whitespace-nowrap"
                                            >
-                                              {marriage.husband.is_founder 
-                                                ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                                : `${marriage.husband.name} ${marriage.husband.father_name} ${familyName} & ${marriage.wife.name}`}
+                                                 {marriage.husband.is_founder 
+                                                   ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name} ${(marriage.wife as any).father_name ? (marriage.wife as any).father_name + ' ' : ''}${familyName}`
+                                                   : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name} ${(marriage.wife as any).father_name ? (marriage.wife as any).father_name + ' ' : ''}${familyName}`}
                                            </CommandItem>
                                          ))}
                                        </CommandGroup>
