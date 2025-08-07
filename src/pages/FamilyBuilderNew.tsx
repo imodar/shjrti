@@ -2395,11 +2395,11 @@ const MemberList = ({
                       <h3 className="font-semibold text-base font-arabic leading-tight">
                         {member.name}
                         {(() => {
-                          // Only show ابن/ابنة for blood family members (those with fathers in the family or founders)
+                          // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
                           const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-                          const isBloodFamily = member.isFounder || memberHasFamilyFather;
+                          const isDescendant = !member.isFounder && memberHasFamilyFather;
                           
-                          if (isBloodFamily) {
+                          if (isDescendant) {
                             return (
                               <span className="text-xs text-muted-foreground font-normal mr-2">
                                 {member.gender === 'female' ? 'ابنة' : 'ابن'}
