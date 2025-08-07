@@ -986,8 +986,8 @@ const FamilyBuilderNew = () => {
                   </DrawerContent>
                 </Drawer>
               ) : (
-                <Card className="bg-gradient-to-r from-tree-primary/5 to-tree-secondary/5 border-border">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-lg"></div>
+                <Card className="bg-white/10 backdrop-blur-md border-white/20">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-lg"></div>
                   <CardHeader className="pb-4 relative">
                     <CardTitle className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
