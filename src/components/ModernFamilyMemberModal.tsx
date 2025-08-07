@@ -157,11 +157,14 @@ export const ModernFamilyMemberModal = ({
 
   // Separate useEffect for populating edit form when marriages data is available
   useEffect(() => {
-    if (editMember && isOpen && marriages.length > 0) {
-      console.log('🔥 Populating edit form with marriages available');
-      populateEditForm();
+    if (editMember && isOpen && marriages.length > 0 && familyMembers.length > 0) {
+      console.log('🔥 Populating edit form with marriages and family members available');
+      // Use setTimeout to ensure state updates are complete
+      setTimeout(() => {
+        populateEditForm();
+      }, 50);
     }
-  }, [editMember, isOpen, marriages]);
+  }, [editMember, isOpen, marriages, familyMembers]);
   const populateEditForm = () => {
     if (!editMember) return;
     console.log('🔥 Populating edit form for member:', editMember);
@@ -335,10 +338,7 @@ export const ModernFamilyMemberModal = ({
       setFamilyMembers(transformedMembers);
       setMarriages(transformedMarriages);
 
-      // If we're editing and now have the data, populate the form
-      if (editMember && transformedMarriages.length > 0) {
-        setTimeout(populateEditForm, 100); // Small delay to ensure state is updated
-      }
+      // The useEffect will handle form population when data is ready
     } catch (error) {
       console.error('Error fetching family data:', error);
       toast({
