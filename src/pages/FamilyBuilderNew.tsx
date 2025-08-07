@@ -595,402 +595,290 @@ const FamilyBuilderNew = () => {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-tr from-secondary/5 via-secondary/10 to-transparent blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 bg-white dark:bg-gray-900 min-h-screen">
-        {/* Clean Header - Home Page Style */}
-        <div className="border-b border-gray-200 dark:border-gray-800">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+      <div className="relative z-10 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        {/* Simple Header */}
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center space-x-4 rtl:space-x-reverse">
                 <Button
                   variant="ghost"
+                  size="sm"
                   onClick={() => navigate('/dashboard')}
-                  className="p-2"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 >
-                  <ArrowLeft className="h-5 w-5" />
+                  <ArrowLeft className="h-4 w-4 ml-2" />
+                  العودة
                 </Button>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {familyData?.name ? `شجرة ${familyData.name}` : 'بناء شجرة العائلة'}
-                  </h1>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1">
-                    أضف وأدر أفراد عائلتك بسهولة
-                  </p>
-                </div>
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {familyData?.name ? `عائلة ${familyData.name}` : "شجرة العائلة"}
+                </h1>
               </div>
-              
               {hasAIFeatures && (
-                <div className="flex gap-3">
+                <div className="flex items-center space-x-3 rtl:space-x-reverse">
                   <SmartSearchBar familyId={familyId} />
                   <SuggestionPanel familyId={familyId} />
                 </div>
               )}
             </div>
+          </div>
+        </header>
 
-            {/* Clean Stats Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        {/* Stats Bar */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="grid grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">{familyMembers.length}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">إجمالي الأعضاء</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">الأعضاء</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">{calculateGenerationCount()}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">الأجيال</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">الأجيال</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">{familyMarriages.length}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">الزيجات</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">الزيجات</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">{familyMembers.filter(m => m.isFounder).length}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">المؤسسون</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">المؤسسون</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            {/* Tab Navigation - Dashboard Style */}
-            <div className="flex justify-center mb-8">
-              <TabsList className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-2xl p-2 shadow-lg">
-                <TabsTrigger 
-                  value="overview" 
-                  className="flex items-center gap-3 px-6 py-3 rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-                >
-                  <Users className="h-5 w-5" />
-                  <span className="font-medium">نظرة عامة</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="tree" 
-                  className="flex items-center gap-3 px-6 py-3 rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-                >
-                  <TreePine className="h-5 w-5" />
-                  <span className="font-medium">الشجرة</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="statistics" 
-                  className="flex items-center gap-3 px-6 py-3 rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-                >
-                  <Star className="h-5 w-5" />
-                  <span className="font-medium">الإحصائيات</span>
-                </TabsTrigger>
-              </TabsList>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
+              <TabsTrigger value="tree">الشجرة</TabsTrigger>
+              <TabsTrigger value="statistics">الإحصائيات</TabsTrigger>
+            </TabsList>
 
-            <TabsContent value="overview">
-              <div className={cn(
-                "grid gap-8",
-                isMobile ? "grid-cols-1" : "grid-cols-12"
-              )}>
-                {/* Form Panel - Dashboard Card Style */}
-                <div className={cn(
-                  "space-y-6",
-                  isMobile ? "order-2" : "col-span-8 order-1"
-                )}>
-                  <div className="group relative">
-                    {/* Floating Background Effect - Dashboard Style */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-all duration-700"></div>
-                    
-                    <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 rounded-3xl">
-                      {/* Dynamic Gradient Background */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-gray-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      
-                      {/* Decorative Corner Elements */}
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-400/20 to-transparent rounded-bl-3xl"></div>
-                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-teal-400/20 to-transparent rounded-tr-3xl"></div>
-                      
-                      <CardHeader className="relative pb-6 pt-8">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800 dark:text-white">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-md opacity-50"></div>
-                              <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                {formMode === 'view' && <User className="h-6 w-6 text-white" />}
-                                {formMode === 'add' && <UserPlus className="h-6 w-6 text-white" />}
-                                {formMode === 'edit' && <Edit className="h-6 w-6 text-white" />}
-                              </div>
-                            </div>
-                            <span>
-                              {formMode === 'view' && "معلومات العضو"}
-                              {formMode === 'add' && "إضافة عضو جديد"}
-                              {formMode === 'edit' && "تعديل العضو"}
-                            </span>
-                          </CardTitle>
-                          {formMode === 'view' && (
-                            <Button 
-                              onClick={handleAddMember} 
-                              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                            >
-                              <Plus className="h-5 w-5 ml-2" />
-                              <span className="font-medium">إضافة عضو</span>
-                            </Button>
-                          )}
-                          {formMode !== 'view' && (
-                            <Button 
-                              variant="outline" 
-                              onClick={handleCancelForm}
-                              className="border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl px-6 py-3 transition-all duration-300"
-                            >
-                              إلغاء
-                            </Button>
-                          )}
+            <TabsContent value="overview" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Member Form */}
+                <div className="lg:col-span-2">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
+                          {formMode === 'view' && <User className="h-5 w-5" />}
+                          {formMode === 'add' && <UserPlus className="h-5 w-5" />}
+                          {formMode === 'edit' && <Edit className="h-5 w-5" />}
+                          <span>
+                            {formMode === 'view' && "معلومات العضو"}
+                            {formMode === 'add' && "إضافة عضو جديد"}
+                            {formMode === 'edit' && "تعديل العضو"}
+                          </span>
+                        </CardTitle>
+                        {formMode === 'view' && (
+                          <Button onClick={handleAddMember}>
+                            <Plus className="h-4 w-4 ml-2" />
+                            إضافة عضو
+                          </Button>
+                        )}
+                        {formMode !== 'view' && (
+                          <Button variant="outline" onClick={handleCancelForm}>
+                            إلغاء
+                          </Button>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {formMode === 'view' ? (
+                        <div className="text-center py-12">
+                          <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                            اختر عضواً من القائمة
+                          </h3>
+                          <p className="text-gray-500 dark:text-gray-400">
+                            لعرض أو تعديل بياناته، أو اضغط إضافة عضو لإضافة عضو جديد
+                          </p>
                         </div>
-                      </CardHeader>
-                      
-                      <CardContent className="relative">
-                        {formMode === 'view' ? (
-                          <div className="text-center py-20">
-                            <div className="relative inline-block mb-6">
-                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-20"></div>
-                              <User className="relative h-16 w-16 mx-auto text-gray-400 dark:text-gray-500" />
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">اختر عضواً من القائمة</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-6">لعرض أو تعديل بياناته</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-500">أو اضغط "إضافة عضو" لإضافة عضو جديد</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-8">
-                            {/* Step Indicator - Dashboard Style */}
-                            <div className="flex items-center justify-center mb-8">
-                              <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                {[1, 2, 3].map((step, index) => (
-                                  <div key={step} className="flex items-center">
-                                    <div
-                                      className={cn(
-                                        "flex items-center justify-center w-12 h-12 rounded-full text-sm font-bold transition-all duration-300 relative",
-                                        currentStep >= step
-                                          ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg scale-110"
-                                          : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-600"
-                                      )}
-                                    >
-                                      {currentStep > step ? (
-                                        <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                                          <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                                        </div>
-                                      ) : (
-                                        step
-                                      )}
-                                      {currentStep >= step && (
-                                        <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur animate-pulse"></div>
-                                      )}
-                                    </div>
-                                    {index < 2 && (
-                                      <div 
-                                        className={cn(
-                                          "w-16 h-1 mx-2 rounded-full transition-all duration-500",
-                                          currentStep > step + 1 
-                                            ? "bg-gradient-to-r from-emerald-500 to-teal-500" 
-                                            : "bg-gray-200 dark:bg-gray-700"
-                                        )}
-                                      />
-                                    )}
-                                  </div>
-                                ))}
+                      ) : (
+                        <div className="space-y-6">
+                          {/* Step Progress */}
+                          <div className="flex items-center justify-center space-x-4 rtl:space-x-reverse mb-8">
+                            {[1, 2, 3].map((step) => (
+                              <div key={step} className="flex items-center">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                                  currentStep >= step 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                                }`}>
+                                  {step}
+                                </div>
+                                {step < 3 && (
+                                  <div className={`w-12 h-px mx-2 ${
+                                    currentStep > step ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+                                  }`} />
+                                )}
                               </div>
-                            </div>
+                            ))}
+                          </div>
 
-                            {/* Form Steps */}
-                            <div className="min-h-[400px]">
-                              {currentStep === 1 && (
-                                <div className="space-y-6">
-                                  <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">المعلومات الأساسية</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">أدخل البيانات الأساسية للعضو</p>
+                          {/* Form Content */}
+                          {currentStep === 1 && (
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                                المعلومات الأساسية
+                              </h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor="name">الاسم الكامل *</Label>
+                                  <Input
+                                    id="name"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    placeholder="أدخل الاسم الكامل"
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="gender">الجنس</Label>
+                                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                                    <SelectTrigger className="mt-1">
+                                      <SelectValue placeholder="اختر الجنس" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="male">ذكر</SelectItem>
+                                      <SelectItem value="female">أنثى</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <Label>تاريخ الميلاد</Label>
+                                  <div className="mt-1">
+                                    <EnhancedDatePicker
+                                      value={formData.birthDate}
+                                      onChange={(date) => setFormData({...formData, birthDate: date})}
+                                      placeholder="اختر تاريخ الميلاد"
+                                    />
                                   </div>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-3">
-                                      <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                                        <User className="h-4 w-4 text-emerald-500" />
-                                        الاسم الكامل *
-                                      </Label>
-                                      <Input
-                                        id="name"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        placeholder="أدخل الاسم الكامل"
-                                        className="h-12 rounded-xl border-gray-200 dark:border-gray-700 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-300"
-                                      />
-                                    </div>
-                                    
-                                    <div className="space-y-3">
-                                      <Label htmlFor="gender" className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                                        <Crown className="h-4 w-4 text-purple-500" />
-                                        الجنس
-                                      </Label>
-                                      <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
-                                        <SelectTrigger className="h-12 rounded-xl border-gray-200 dark:border-gray-700 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-300">
-                                          <SelectValue placeholder="اختر الجنس" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-gray-200 dark:border-gray-700">
-                                          <SelectItem value="male">ذكر</SelectItem>
-                                          <SelectItem value="female">أنثى</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-3">
-                                      <Label className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                                        <Calendar className="h-4 w-4 text-blue-500" />
-                                        تاريخ الميلاد
-                                      </Label>
-                                      <EnhancedDatePicker
-                                        value={formData.birthDate}
-                                        onChange={(date) => setFormData({...formData, birthDate: date})}
-                                        placeholder="اختر تاريخ الميلاد"
-                                      />
-                                    </div>
-                                    
-                                    <div className="space-y-3">
-                                      <Label className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                                        <Heart className="h-4 w-4 text-pink-500" />
-                                        الحالة
-                                      </Label>
-                                      <div className="flex items-center space-x-3 rtl:space-x-reverse bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-                                        <input
-                                          type="checkbox"
-                                          id="isAlive"
-                                          checked={formData.isAlive}
-                                          onChange={(e) => setFormData({...formData, isAlive: e.target.checked})}
-                                          className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-emerald-500 focus:ring-emerald-500 focus:ring-2 transition-all duration-300"
-                                        />
-                                        <Label htmlFor="isAlive" className="text-gray-700 dark:text-gray-300 font-medium cursor-pointer">على قيد الحياة</Label>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {!formData.isAlive && (
-                                    <div className="space-y-3">
-                                      <Label className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                                        <Skull className="h-4 w-4 text-gray-500" />
-                                        تاريخ الوفاة
-                                      </Label>
-                                      <EnhancedDatePicker
-                                        value={formData.deathDate}
-                                        onChange={(date) => setFormData({...formData, deathDate: date})}
-                                        placeholder="اختر تاريخ الوفاة"
-                                      />
-                                    </div>
-                                  )}
-
-                                  <div className="space-y-3">
-                                    <Label htmlFor="bio" className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                                      <FileText className="h-4 w-4 text-amber-500" />
-                                      السيرة الذاتية
-                                    </Label>
-                                    <Textarea
-                                      id="bio"
-                                      value={formData.bio}
-                                      onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                      placeholder="أدخل معلومات إضافية عن العضو..."
-                                      rows={4}
-                                      className="rounded-xl border-gray-200 dark:border-gray-700 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-300 resize-none"
+                                </div>
+                                <div className="flex items-center space-x-2 rtl:space-x-reverse mt-6">
+                                  <input
+                                    type="checkbox"
+                                    id="isAlive"
+                                    checked={formData.isAlive}
+                                    onChange={(e) => setFormData({...formData, isAlive: e.target.checked})}
+                                    className="rounded border-gray-300"
+                                  />
+                                  <Label htmlFor="isAlive">على قيد الحياة</Label>
+                                </div>
+                              </div>
+                              {!formData.isAlive && (
+                                <div>
+                                  <Label>تاريخ الوفاة</Label>
+                                  <div className="mt-1">
+                                    <EnhancedDatePicker
+                                      value={formData.deathDate}
+                                      onChange={(date) => setFormData({...formData, deathDate: date})}
+                                      placeholder="اختر تاريخ الوفاة"
                                     />
                                   </div>
                                 </div>
                               )}
-
-                              {currentStep === 2 && (
-                                <div className="space-y-6">
-                                  <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">العلاقات العائلية</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">أضف معلومات الزواج والعلاقات العائلية</p>
-                                  </div>
-                                  <div className="text-center py-16 text-gray-500 dark:text-gray-400">
-                                    <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>سيتم تطوير إدارة العلاقات قريباً</p>
-                                  </div>
-                                </div>
-                              )}
-
-                              {currentStep === 3 && (
-                                <div className="space-y-6">
-                                  <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">الصورة والمعلومات الإضافية</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">أضف صورة شخصية ومعلومات إضافية</p>
-                                  </div>
-                                  <div className="text-center py-16 text-gray-500 dark:text-gray-400">
-                                    <Camera className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>سيتم تطوير رفع الصور قريباً</p>
-                                  </div>
-                                </div>
-                              )}
+                              <div>
+                                <Label htmlFor="bio">السيرة الذاتية</Label>
+                                <Textarea
+                                  id="bio"
+                                  value={formData.bio}
+                                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                  placeholder="أدخل معلومات إضافية عن العضو..."
+                                  rows={3}
+                                  className="mt-1"
+                                />
+                              </div>
                             </div>
+                          )}
 
-                            {/* Navigation Buttons - Dashboard Style */}
-                            <div className="flex justify-between pt-8 border-t border-gray-200 dark:border-gray-700">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={prevStep}
-                                disabled={currentStep === 1}
-                                className="border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl px-6 py-3 transition-all duration-300"
-                              >
-                                <ArrowLeft className="h-4 w-4 ml-2" />
-                                السابق
+                          {currentStep === 2 && (
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                                العلاقات العائلية
+                              </h3>
+                              <div className="text-center py-8">
+                                <Heart className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                                <p className="text-gray-500 dark:text-gray-400">
+                                  سيتم تطوير إدارة العلاقات قريباً
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {currentStep === 3 && (
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                                الصورة والمعلومات الإضافية
+                              </h3>
+                              <div className="text-center py-8">
+                                <Camera className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                                <p className="text-gray-500 dark:text-gray-400">
+                                  سيتم تطوير رفع الصور قريباً
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Navigation */}
+                          <div className="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <Button
+                              variant="outline"
+                              onClick={prevStep}
+                              disabled={currentStep === 1}
+                            >
+                              <ArrowLeft className="h-4 w-4 ml-2" />
+                              السابق
+                            </Button>
+                            {currentStep < 3 ? (
+                              <Button onClick={nextStep}>
+                                التالي
+                                <ArrowRight className="h-4 w-4 mr-2" />
                               </Button>
-                              
-                              {currentStep < 3 ? (
-                                <Button
-                                  type="button"
-                                  onClick={nextStep}
-                                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-                                >
-                                  <span className="mr-2">التالي</span>
-                                  <ArrowRight className="h-4 w-4" />
-                                </Button>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  onClick={() => handleFormSubmit(formData)}
-                                  disabled={isSaving}
-                                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    {isSaving ? (
-                                      <>
-                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                        <span>جاري الحفظ...</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Save className="h-4 w-4" />
-                                        <span className="font-medium">حفظ</span>
-                                      </>
-                                    )}
-                                  </div>
-                                </Button>
-                              )}
-                            </div>
+                            ) : (
+                              <Button
+                                onClick={() => handleFormSubmit(formData)}
+                                disabled={isSaving}
+                              >
+                                {isSaving ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white ml-2"></div>
+                                    جاري الحفظ...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Save className="h-4 w-4 ml-2" />
+                                    حفظ
+                                  </>
+                                )}
+                              </Button>
+                            )}
                           </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
 
-                {/* Member List Panel - Dashboard Style */}
-                <div className={cn(
-                  "space-y-6",
-                  isMobile ? "order-1" : "col-span-4 order-2"
-                )}>
+                {/* Members List */}
+                <div className="lg:col-span-1">
                   {isMobile ? (
                     <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
                       <DrawerTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl py-4 transition-all duration-300"
-                        >
-                          <Menu className="h-5 w-5 ml-2" />
-                          <span className="font-medium">عرض قائمة الأعضاء ({familyMembers.length})</span>
+                        <Button variant="outline" className="w-full mb-4">
+                          <Menu className="h-4 w-4 ml-2" />
+                          عرض الأعضاء ({familyMembers.length})
                         </Button>
                       </DrawerTrigger>
-                      <DrawerContent className="h-[85vh] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                        <div className="p-6">
+                      <DrawerContent>
+                        <div className="p-4">
                           <MemberList 
                             members={filteredMembers}
                             onEditMember={handleEditMember}
@@ -1005,117 +893,86 @@ const FamilyBuilderNew = () => {
                       </DrawerContent>
                     </Drawer>
                   ) : (
-                    <div className="group relative">
-                      {/* Floating Background Effect */}
-                      <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-all duration-700"></div>
-                      
-                      <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 rounded-3xl">
-                        {/* Dynamic Gradient Background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
-                        
-                        {/* Decorative Corner Elements */}
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-400/20 to-transparent rounded-bl-3xl"></div>
-                        
-                        <CardHeader className="relative pb-4 bg-gradient-to-r from-white/5 to-transparent">
-                          <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-800 dark:text-white">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-md opacity-50"></div>
-                              <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                <Users className="h-6 w-6 text-white" />
-                              </div>
-                            </div>
-                            <span>أعضاء العائلة ({familyMembers.length})</span>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="relative p-6">
-                          <MemberList 
-                            members={filteredMembers}
-                            onEditMember={handleEditMember}
-                            searchTerm={searchTerm}
-                            onSearchChange={setSearchTerm}
-                            selectedFilter={selectedFilter}
-                            onFilterChange={setSelectedFilter}
-                            getAdditionalInfo={getAdditionalInfo}
-                            getGenderColor={getGenderColor}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
+                          <Users className="h-5 w-5" />
+                          <span>أعضاء العائلة ({familyMembers.length})</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <MemberList 
+                          members={filteredMembers}
+                          onEditMember={handleEditMember}
+                          searchTerm={searchTerm}
+                          onSearchChange={setSearchTerm}
+                          selectedFilter={selectedFilter}
+                          onFilterChange={setSelectedFilter}
+                          getAdditionalInfo={getAdditionalInfo}
+                          getGenderColor={getGenderColor}
+                        />
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="tree">
-              <div className="group relative">
-                <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-all duration-700"></div>
-                
-                <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-0 shadow-2xl rounded-3xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
-                  
-                  <CardContent className="relative p-12">
-                    <div className="text-center text-gray-500 dark:text-gray-400">
-                      <div className="relative inline-block mb-6">
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                        <TreePine className="relative h-16 w-16 mx-auto text-gray-400 dark:text-gray-500" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">عرض الشجرة</h3>
-                      <p className="text-lg">سيتم تطويره قريباً مع تصورات تفاعلية مذهلة</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+              <Card>
+                <CardContent className="p-12">
+                  <div className="text-center">
+                    <TreePine className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      عرض الشجرة
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      سيتم تطويره قريباً
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="statistics">
-              <div className="group relative">
-                <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-all duration-700"></div>
-                
-                <Card className="relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl border-0 shadow-2xl rounded-3xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-emerald-50/60 to-teal-50/60 dark:from-gray-800/90 dark:via-emerald-950/60 dark:to-teal-950/60"></div>
-                  
-                  <CardContent className="relative p-12">
-                    <div className="text-center text-gray-500 dark:text-gray-400">
-                      <div className="relative inline-block mb-6">
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                        <Star className="relative h-16 w-16 mx-auto text-gray-400 dark:text-gray-500" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">الإحصائيات المفصلة</h3>
-                      <p className="text-lg">ستتوفر قريباً مع رسوم بيانية تفاعلية</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+              <Card>
+                <CardContent className="p-12">
+                  <div className="text-center">
+                    <Star className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      الإحصائيات
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      ستتوفر قريباً
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Delete Modals */}
+        <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+              <AlertDialogDescription>
+                {deleteWarningMessage}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => setShowDeleteModal(false)}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                حذف
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-
-      {/* Keep existing delete modals */}
-      <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteWarningMessage}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                // TODO: Implement delete logic
-                setShowDeleteModal(false);
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              حذف
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <GlobalFooter />
     </div>
   );
 };
