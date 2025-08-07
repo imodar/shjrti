@@ -2415,46 +2415,70 @@ const MemberList = ({
                         return null;
                       })()}
                       
-                      {/* Spouse information - show if married to existing family member */}
+                      {/* Spouse information - show only for non-family members (those married into the family) */}
                       {(() => {
                         // Find marriage where this member is husband or wife
                         const marriage = marriages?.find(m => 
-                          m.husband?.id === member.id || m.wife?.id === member.id
+                          (m.husband?.id === member.id || m.wife?.id === member.id) ||
+                          (m.husband_id === member.id || m.wife_id === member.id)
                         );
                         
                         if (marriage) {
-                          // Find the spouse (the other person in the marriage)
-                          const isHusband = marriage.husband?.id === member.id;
-                          const spouse = isHusband ? marriage.wife : marriage.husband;
+                          // Determine if this member is the husband or wife
+                          const isHusband = (marriage.husband?.id === member.id) || (marriage.husband_id === member.id);
+                          
+                          // Get spouse data - try both nested object and direct ID approaches
+                          let spouse;
+                          let spouseId;
+                          
+                          if (isHusband) {
+                            spouse = marriage.wife;
+                            spouseId = marriage.wife_id;
+                          } else {
+                            spouse = marriage.husband;
+                            spouseId = marriage.husband_id;
+                          }
+                          
+                          // If spouse is not in nested object, find by ID
+                          if (!spouse && spouseId) {
+                            spouse = familyMembers?.find(m => m?.id === spouseId);
+                          }
                           
                           if (spouse) {
-                            // Get spouse's father and grandfather from familyMembers
-                            const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
-                            const spouseFather = familyMembers?.find(m => m?.id === spouseFullData?.fatherId);
-                            const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
+                            // Check if current member is a non-family member (married into the family)
+                            // A non-family member would not have father/grandfather in the family tree
+                            const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
                             
-                            // Build the lineage string
-                            let spouseInfo = spouse.name;
-                            
-                            if (spouseFather) {
-                              // Use ابن for male, ابنة for female - get gender from full spouse data
-                              const spouseGender = spouseFullData?.gender || spouse.gender;
-                              const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
-                              spouseInfo += ` ${childOf} ${spouseFather.name}`;
+                            // Only show spouse info for non-family members (those without family fathers)
+                            if (!memberHasFamilyFather) {
+                              // Get spouse's father and grandfather from familyMembers
+                              const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
+                              const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
+                              const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
                               
-                              if (spouseGrandfather) {
-                                spouseInfo += ` ابن ${spouseGrandfather.name}`;
+                              // Build the lineage string
+                              let spouseInfo = spouse.name || spouse.full_name;
+                              
+                              if (spouseFather) {
+                                // Use ابن for male, ابنة for female
+                                const spouseGender = spouseFullData?.gender || spouse.gender;
+                                const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
+                                spouseInfo += ` ${childOf} ${spouseFather.name}`;
+                                
+                                if (spouseGrandfather) {
+                                  spouseInfo += ` ابن ${spouseGrandfather.name}`;
+                                }
                               }
+                              
+                              // Use زوج for husband, زوجة for wife (from member's perspective)
+                              const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+                              
+                              return (
+                                <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                                  {relationLabel} {spouseInfo}
+                                </p>
+                              );
                             }
-                            
-                            // Use زوج for husband, زوجة for wife (from member's perspective)
-                            const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-                            
-                            return (
-                              <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                                {relationLabel} {spouseInfo}
-                              </p>
-                            );
                           }
                         }
                         return null;
