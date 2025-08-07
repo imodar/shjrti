@@ -1704,9 +1704,9 @@ const FamilyBuilderNew = () => {
                            </p>
                            
                             {formData.gender === "male" ? (
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Right Panel - Add Wife Form */}
-                                <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
+                                <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg col-span-1 lg:col-span-2">
                                   <div className="flex items-center gap-2 mb-6">
                                     <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
                                       <UserPlus className="w-4 h-4 text-white" />
@@ -2091,7 +2091,7 @@ const FamilyBuilderNew = () => {
                                 </div>
 
                                 {/* Left Panel - Wives List */}
-                                <div className="space-y-4">
+                                <div className="space-y-4 col-span-1 lg:col-span-1">
                                   <div className="flex items-center gap-2 mb-4">
                                     <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
                                       <Heart className="w-3 h-3 text-white" />
