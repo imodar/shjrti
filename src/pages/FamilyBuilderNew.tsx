@@ -1702,8 +1702,16 @@ const FamilyBuilderNew = () => {
                                                          لا توجد إناث متاحات (لديهن أب في العائلة وعازبات/مطلقات).
                                                        </CommandEmpty>
                                                       <CommandGroup>
-                                                         {familyMembers
-                                                           .filter(member => {
+                                                         {(() => {
+                                                           console.log('🔍 All family members:', familyMembers.map(m => ({
+                                                             name: m.name,
+                                                             gender: m.gender,
+                                                             marital_status: m.marital_status,
+                                                             father_id: m.father_id,
+                                                             id: m.id
+                                                           })));
+                                                           
+                                                           return familyMembers.filter(member => {
                                                              const hasValidGender = member.gender === "female";
                                                              const isNotSelf = member.id !== selectedMember?.id;
                                                              const hasFatherId = member.father_id; // غير فارغ
@@ -1711,21 +1719,25 @@ const FamilyBuilderNew = () => {
                                                                member.marital_status === "single" || 
                                                                member.marital_status === "divorced";
                                                              
-                                                             console.log(`🔍 Female member "${member.name}":`, {
-                                                               gender: member.gender,
-                                                               hasValidGender,
-                                                               selectedMemberId: selectedMember?.id,
-                                                               memberId: member.id,
-                                                               isNotSelf,
-                                                               fatherId: member.father_id,
-                                                               hasFatherId: !!member.father_id,
-                                                               maritalStatus: `"${member.marital_status}"`,
-                                                               isAvailableForMarriage,
-                                                               finalResult: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
-                                                             });
+                                                             if (member.name === "ربى" || member.name === "ميرا") {
+                                                               console.log(`🚨 SPECIAL CHECK for "${member.name}":`, {
+                                                                 gender: member.gender,
+                                                                 marital_status: member.marital_status,
+                                                                 father_id: member.father_id,
+                                                                 father_id_type: typeof member.father_id,
+                                                                 father_id_exists: !!member.father_id,
+                                                                 selectedMember: selectedMember?.name,
+                                                                 passes_gender: hasValidGender,
+                                                                 passes_not_self: isNotSelf,
+                                                                 passes_father: !!member.father_id,
+                                                                 passes_marital: isAvailableForMarriage,
+                                                                 FINAL_RESULT: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
+                                                               });
+                                                             }
                                                              
                                                              return hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage;
-                                                           })
+                                                           });
+                                                         })()
                                                           .map((member) => (
                                                             <CommandItem
                                                               key={member.id}
