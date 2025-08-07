@@ -636,7 +636,7 @@ const FamilyBuilderNew = () => {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-tr from-secondary/5 via-secondary/10 to-transparent blur-3xl"></div>
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 pt-20">
         {/* Header Box from FamilyBuilder */}
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="mb-8">
