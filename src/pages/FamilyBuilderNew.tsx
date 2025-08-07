@@ -517,11 +517,35 @@ const FamilyBuilderNew = () => {
     try {
       setIsSaving(true);
       
-      // TODO: Implement form submission logic (same as original modal)
+      // Determine marital status based on presence of spouses
+      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
+                        submissionData.gender === "female" && husband;
+      
+      // Prepare final submission data matching modal structure
+      const finalData = {
+        ...submissionData,
+        maritalStatus: hasSpouses ? "married" : "single",
+        wives: submissionData.gender === "male" ? wives : [],
+        husband: submissionData.gender === "female" && husband ? husband : null
+      };
+      
+      // Call the existing submission logic (same as modal)
+      console.log('🔥 Submitting form data:', finalData);
+      
+      // TODO: Implement actual submission to database
+      // This should match the logic from ModernFamilyMemberModal.tsx
       
       await refreshFamilyData();
       setFormMode('view');
+      setCurrentStep(1);
       resetFormData();
+      setWives([]);
+      setHusband(null);
+      
+      toast({
+        title: "تم بنجاح",
+        description: editingMember ? "تم تحديث البيانات بنجاح" : "تم إضافة العضو بنجاح",
+      });
       
       toast({
         title: formMode === 'edit' ? "تم تحديث العضو" : "تم إضافة العضو",
@@ -540,7 +564,7 @@ const FamilyBuilderNew = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -801,21 +825,21 @@ const FamilyBuilderNew = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {/* Step Indicator */}
-                      <div className="flex items-center justify-between mb-6">
-                        {[1, 2, 3].map((step) => (
-                          <div
-                            key={step}
-                            className={cn(
-                              "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium",
-                              currentStep >= step
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground"
-                            )}
-                          >
-                            {step}
-                          </div>
-                        ))}
+                       {/* Step Indicator */}
+                       <div className="flex items-center justify-between mb-6">
+                         {[1, 2].map((step) => (
+                           <div
+                             key={step}
+                             className={cn(
+                               "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium",
+                               currentStep >= step
+                                 ? "bg-primary text-primary-foreground"
+                                 : "bg-muted text-muted-foreground"
+                             )}
+                           >
+                             {step}
+                           </div>
+                         ))}
                       </div>
 
                       {/* Step Content */}
@@ -893,20 +917,185 @@ const FamilyBuilderNew = () => {
                         </div>
                       )}
 
-                      {currentStep === 2 && (
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">العلاقات العائلية</h3>
-                          <p className="text-sm text-muted-foreground">أضف معلومات الزواج والعلاقات العائلية</p>
-                          {/* TODO: Add relationship forms */}
-                        </div>
-                      )}
-
-                      {currentStep === 3 && (
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">الصورة والمعلومات الإضافية</h3>
-                          {/* TODO: Add image upload */}
-                        </div>
-                      )}
+                       {currentStep === 2 && (
+                         <div className="space-y-4">
+                           <h3 className="text-lg font-semibold">
+                             {formData.gender === "male" ? "معلومات الزوجة/الزوجات" : "معلومات الزوج"}
+                           </h3>
+                           <p className="text-sm text-muted-foreground">
+                             {formData.gender === "male" 
+                               ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً"
+                               : "أضف معلومات الزوج إذا كانت متزوجة"
+                             }
+                           </p>
+                           
+                           {formData.gender === "male" ? (
+                             <div className="space-y-4">
+                               {wives.map((wife, index) => (
+                                 <div key={index} className="border rounded-lg p-4">
+                                   <div className="flex items-center justify-between mb-3">
+                                     <h4 className="font-medium">الزوجة {index + 1}</h4>
+                                     <Button
+                                       variant="outline"
+                                       size="sm"
+                                       onClick={() => {
+                                         const newWives = wives.filter((_, i) => i !== index);
+                                         setWives(newWives);
+                                       }}
+                                     >
+                                       <X className="h-4 w-4" />
+                                       إزالة
+                                     </Button>
+                                   </div>
+                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                     <div>
+                                       <Label>اسم الزوجة</Label>
+                                       <Input
+                                         value={wife.name}
+                                         onChange={(e) => {
+                                           const newWives = [...wives];
+                                           newWives[index] = {...wife, name: e.target.value};
+                                           setWives(newWives);
+                                         }}
+                                         placeholder="أدخل اسم الزوجة"
+                                       />
+                                     </div>
+                                     <div>
+                                       <Label>تاريخ الميلاد</Label>
+                                       <EnhancedDatePicker
+                                         value={wife.birthDate}
+                                         onChange={(date) => {
+                                           const newWives = [...wives];
+                                           newWives[index] = {...wife, birthDate: date};
+                                           setWives(newWives);
+                                         }}
+                                         placeholder="اختر تاريخ الميلاد"
+                                       />
+                                     </div>
+                                   </div>
+                                   <div className="mt-4 flex items-center space-x-2">
+                                     <input
+                                       type="checkbox"
+                                       id={`wifeAlive${index}`}
+                                       checked={wife.isAlive}
+                                       onChange={(e) => {
+                                         const newWives = [...wives];
+                                         newWives[index] = {...wife, isAlive: e.target.checked};
+                                         setWives(newWives);
+                                       }}
+                                     />
+                                     <Label htmlFor={`wifeAlive${index}`}>على قيد الحياة</Label>
+                                   </div>
+                                   {!wife.isAlive && (
+                                     <div className="mt-4">
+                                       <Label>تاريخ الوفاة</Label>
+                                       <EnhancedDatePicker
+                                         value={wife.deathDate}
+                                         onChange={(date) => {
+                                           const newWives = [...wives];
+                                           newWives[index] = {...wife, deathDate: date};
+                                           setWives(newWives);
+                                         }}
+                                         placeholder="اختر تاريخ الوفاة"
+                                       />
+                                     </div>
+                                   )}
+                                 </div>
+                               ))}
+                               
+                               <Button
+                                 type="button"
+                                 variant="outline"
+                                 onClick={() => {
+                                   setWives([...wives, {
+                                     id: '',
+                                     name: '',
+                                     isAlive: true,
+                                     birthDate: null,
+                                     deathDate: null,
+                                     maritalStatus: 'married'
+                                   }]);
+                                 }}
+                                 className="w-full"
+                               >
+                                 <Plus className="h-4 w-4 mr-2" />
+                                 إضافة زوجة
+                               </Button>
+                             </div>
+                           ) : (
+                             <div className="space-y-4">
+                               {husband ? (
+                                 <div className="border rounded-lg p-4">
+                                   <div className="flex items-center justify-between mb-3">
+                                     <h4 className="font-medium">معلومات الزوج</h4>
+                                     <Button
+                                       variant="outline"
+                                       size="sm"
+                                       onClick={() => setHusband(null)}
+                                     >
+                                       <X className="h-4 w-4" />
+                                       إزالة
+                                     </Button>
+                                   </div>
+                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                     <div>
+                                       <Label>اسم الزوج</Label>
+                                       <Input
+                                         value={husband.name}
+                                         onChange={(e) => setHusband({...husband, name: e.target.value})}
+                                         placeholder="أدخل اسم الزوج"
+                                       />
+                                     </div>
+                                     <div>
+                                       <Label>تاريخ الميلاد</Label>
+                                       <EnhancedDatePicker
+                                         value={husband.birthDate}
+                                         onChange={(date) => setHusband({...husband, birthDate: date})}
+                                         placeholder="اختر تاريخ الميلاد"
+                                       />
+                                     </div>
+                                   </div>
+                                   <div className="mt-4 flex items-center space-x-2">
+                                     <input
+                                       type="checkbox"
+                                       id="husbandAlive"
+                                       checked={husband.isAlive}
+                                       onChange={(e) => setHusband({...husband, isAlive: e.target.checked})}
+                                     />
+                                     <Label htmlFor="husbandAlive">على قيد الحياة</Label>
+                                   </div>
+                                   {!husband.isAlive && (
+                                     <div className="mt-4">
+                                       <Label>تاريخ الوفاة</Label>
+                                       <EnhancedDatePicker
+                                         value={husband.deathDate}
+                                         onChange={(date) => setHusband({...husband, deathDate: date})}
+                                         placeholder="اختر تاريخ الوفاة"
+                                       />
+                                     </div>
+                                   )}
+                                 </div>
+                               ) : (
+                                 <Button
+                                   type="button"
+                                   variant="outline"
+                                   onClick={() => setHusband({
+                                     id: '',
+                                     name: '',
+                                     isAlive: true,
+                                     birthDate: null,
+                                     deathDate: null
+                                   })}
+                                   className="w-full"
+                                 >
+                                   <Plus className="h-4 w-4 mr-2" />
+                                   إضافة زوج
+                                 </Button>
+                               )}
+                             </div>
+                           )}
+                         </div>
+                       )}
 
                       {/* Navigation Buttons */}
                       <div className="flex justify-between pt-6">
@@ -921,7 +1110,7 @@ const FamilyBuilderNew = () => {
                           السابق
                         </Button>
                         
-                        {currentStep < 3 ? (
+                        {currentStep < 2 ? (
                           <Button
                             type="button"
                             onClick={nextStep}
