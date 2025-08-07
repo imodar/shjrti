@@ -1543,41 +1543,38 @@ export const ModernFamilyMemberModal = ({
                                         </div>
                                       </div>
 
-                                      {/* Image Upload Section */}
-                                      
-                                    </div>}
-
-                                 <div>
-                                   <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
-                                     الصورة الشخصية
-                                   </label>
-                                   <input type="file" accept="image/*" onChange={e => handleNewWifeImageSelect(e)} className="hidden" id="new-husband-image" />
-                                   
-                                    {newWife.imageUrl ? <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
-                                        <img src={newWife.imageUrl} alt="New Husband" className="w-16 h-16 rounded-full object-cover border-2 border-sky-300" />
-                                         <div className="flex flex-col space-y-1">
-                                           <TooltipProvider>
-                                             <Tooltip>
-                                               <TooltipTrigger asChild>
-                                                 <div>
-                                                   <Button type="button" variant="outline" size="sm" onClick={isImageUploadEnabled ? () => document.getElementById('new-husband-image')?.click() : undefined} disabled={!isImageUploadEnabled} className={cn("h-7 text-xs px-2", isImageUploadEnabled ? "border-sky-300 text-sky-600 hover:bg-sky-50" : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60")}>
-                                                     <Camera className="w-2 h-2 mr-1" />
-                                                     تغيير
-                                                   </Button>
-                                                 </div>
-                                               </TooltipTrigger>
-                                               {!isImageUploadEnabled && <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
-                                                   <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
-                                                   <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
-                                                 </TooltipContent>}
-                                             </Tooltip>
-                                           </TooltipProvider>
-                                           {isImageUploadEnabled && <Button type="button" variant="outline" size="sm" onClick={() => setNewWife({
-                                ...newWife,
-                                imageUrl: ''
-                              })} className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2">
-                                               <X className="w-2 h-2 mr-1" />
-                                               إزالة
+                                      {/* Image Upload Section - only show if not family member */}
+                                      {!newHusband.isFamilyMember && <div>
+                                        <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
+                                          الصورة الشخصية
+                                        </label>
+                                        <input type="file" accept="image/*" onChange={e => handleNewWifeImageSelect(e)} className="hidden" id="new-husband-image" />
+                                        
+                                         {newWife.imageUrl ? <div className="flex items-center space-x-3 p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-lg border border-sky-200/30 dark:border-sky-800/30">
+                                             <img src={newWife.imageUrl} alt="New Husband" className="w-16 h-16 rounded-full object-cover border-2 border-sky-300" />
+                                              <div className="flex flex-col space-y-1">
+                                                <TooltipProvider>
+                                                  <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                      <div>
+                                                        <Button type="button" variant="outline" size="sm" onClick={isImageUploadEnabled ? () => document.getElementById('new-husband-image')?.click() : undefined} disabled={!isImageUploadEnabled} className={cn("h-7 text-xs px-2", isImageUploadEnabled ? "border-sky-300 text-sky-600 hover:bg-sky-50" : "border-gray-300 text-gray-400 cursor-not-allowed opacity-60")}>
+                                                          <Camera className="w-2 h-2 mr-1" />
+                                                          تغيير
+                                                        </Button>
+                                                      </div>
+                                                    </TooltipTrigger>
+                                                    {!isImageUploadEnabled && <TooltipContent side="top" className="bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 shadow-lg">
+                                                        <p className="font-medium">رفع الصور متاح فقط في الخطط المدفوعة</p>
+                                                        <p className="text-xs opacity-90">قم بترقية خطتك للاستفادة من هذه الميزة</p>
+                                                      </TooltipContent>}
+                                                  </Tooltip>
+                                                </TooltipProvider>
+                                                {isImageUploadEnabled && <Button type="button" variant="outline" size="sm" onClick={() => setNewWife({
+                                     ...newWife,
+                                     imageUrl: ''
+                                   })} className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-xs px-2">
+                                                    <X className="w-2 h-2 mr-1" />
+                                                    إزالة
                                              </Button>}
                                          </div>
                                       </div> : <TooltipProvider>
