@@ -1216,11 +1216,6 @@ const FamilyBuilderNew = () => {
                         إضافة عضو
                       </Button>
                     )}
-                    {formMode !== 'view' && (
-                      <Button variant="outline" onClick={handleCancelForm}>
-                        إلغاء
-                      </Button>
-                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="relative">
