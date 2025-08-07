@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,13 +16,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
@@ -158,7 +159,94 @@ const FamilyBuilderNew = () => {
     return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
   };
 
-  // Image Upload Component
+  // Image Upload and Crop Component
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [showCropDialog, setShowCropDialog] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = document.createElement('img');
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', error => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc: string, pixelCrop: any) => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) return null;
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise<string>((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const reader = new FileReader();
+        reader.addEventListener('load', () => resolve(reader.result as string));
+        reader.readAsDataURL(blob);
+      }, 'image/jpeg', 0.95);
+    });
+  };
+
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        const result = reader.result as string;
+        setSelectedImage(result);
+        setShowCropDialog(true);
+      });
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropSave = async () => {
+    if (selectedImage && croppedAreaPixels) {
+      const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
+      if (croppedImg) {
+        setCroppedImage(croppedImg);
+        setShowCropDialog(false);
+      }
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setCroppedImage(null);
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleEditImage = () => {
+    if (selectedImage) {
+      setShowCropDialog(true);
+    }
+  };
+
   const ImageUploadSection = () => {
     const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
     
@@ -183,34 +271,132 @@ const FamilyBuilderNew = () => {
     return (
       <div>
         <Label htmlFor="picture">الصورة الشخصية</Label>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                isImageUploadEnabled 
-                  ? 'border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-50' 
-                  : 'border-gray-200 opacity-50 cursor-not-allowed bg-gray-50'
-              }`}>
-                {isImageUploadEnabled ? (
-                  <div className="space-y-2">
-                    <Upload className="h-12 w-12 mx-auto text-gray-400" />
-                    <p className="text-sm text-gray-600">انقر لرفع الصورة أو اسحب وأفلت</p>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF حتى 10MB</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Upload className="h-12 w-12 mx-auto text-gray-300" />
-                    <p className="text-sm text-gray-400">رفع الصور غير متاح</p>
-                    <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
-                  </div>
-                )}
+        
+        {croppedImage ? (
+          // Show uploaded and cropped image with edit/delete options
+          <div className="space-y-4">
+            <div className="relative inline-block">
+              <img 
+                src={croppedImage} 
+                alt="صورة العضو" 
+                className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
+              />
+              <div className="absolute top-2 right-2 flex space-x-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleEditImage}
+                  className="h-8 w-8 p-0"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleDeleteImage}
+                  className="h-8 w-8 p-0"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
-              <p>{tooltipContent}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </div>
+          </div>
+        ) : (
+          // Show upload area
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div 
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                    isImageUploadEnabled 
+                      ? 'border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-50' 
+                      : 'border-gray-200 opacity-50 cursor-not-allowed bg-gray-50'
+                  }`}
+                  onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
+                >
+                  {isImageUploadEnabled ? (
+                    <div className="space-y-2">
+                      <Upload className="h-12 w-12 mx-auto text-gray-400" />
+                      <p className="text-sm text-gray-600">انقر لرفع الصورة أو اسحب وأفلت</p>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF حتى 10MB</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Upload className="h-12 w-12 mx-auto text-gray-300" />
+                      <p className="text-sm text-gray-400">رفع الصور غير متاح</p>
+                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                    </div>
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs">
+                <p>{tooltipContent}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageSelect}
+          className="hidden"
+          disabled={!isImageUploadEnabled}
+        />
+        
+        {/* Crop Dialog */}
+        <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>تعديل الصورة</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              {selectedImage && (
+                <div className="relative h-64 bg-black rounded-lg overflow-hidden">
+                  <Cropper
+                    image={selectedImage}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                    style={{
+                      containerStyle: {
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative'
+                      }
+                    }}
+                  />
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label>التكبير</Label>
+                <Slider
+                  value={[zoom]}
+                  onValueChange={(value) => setZoom(value[0])}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCropDialog(false)}>
+                إلغاء
+              </Button>
+              <Button onClick={handleCropSave}>
+                حفظ
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   };
@@ -490,7 +676,7 @@ const FamilyBuilderNew = () => {
     isExistingFamilyMember?: boolean;
   } | null>(null);
 
-  // Image cropping states
+  // Image cropping states  
   const [showImageCrop, setShowImageCrop] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
