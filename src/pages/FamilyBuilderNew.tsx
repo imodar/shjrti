@@ -2415,11 +2415,15 @@ const MemberList = ({
                         return null;
                       })()}
                       
-                      {/* Spouse information - show only for non-family members (those married into the family) and not for founders */}
+                      {/* Spouse information - show founder text for founders, spouse info for non-family members */}
                       {(() => {
-                        // Don't show spouse info for founders - check isFounder field (camelCase from transform)
+                        // Show founder text for founders
                         if (member.isFounder) {
-                          return null;
+                          return (
+                            <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                              الجد الأكبر للعائلة
+                            </p>
+                          );
                         }
 
                         // Find marriage where this member is husband or wife
