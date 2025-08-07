@@ -159,10 +159,13 @@ const FamilyBuilderNew = () => {
     return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
   };
 
-  // Image Upload and Crop Component
+  // Image Upload and Crop Component (consolidated states)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [showCropDialog, setShowCropDialog] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createImage = (url: string): Promise<HTMLImageElement> =>
@@ -678,12 +681,7 @@ const FamilyBuilderNew = () => {
     isExistingFamilyMember?: boolean;
   } | null>(null);
 
-  // Image cropping states  
-  const [showImageCrop, setShowImageCrop] = useState(false);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  // Form states for member creation/editing
   
   // Delete modal states (keep existing delete modal functionality)
   const [showDeleteModal, setShowDeleteModal] = useState(false);
