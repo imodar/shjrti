@@ -1517,7 +1517,7 @@ const FamilyBuilderNew = () => {
                            {formData.gender === "male" ? (
                                <div className="space-y-6">
                                  {wives.map((wife, index) => (
-                                   <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                                   <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
                                      <div className="flex items-center justify-between mb-4">
                                        <h4 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
                                          <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg"></div>
@@ -1911,7 +1911,7 @@ const FamilyBuilderNew = () => {
                              ) : (
                                <div className="space-y-6">
                                 {husband ? (
-                                  <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                                  <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                     <div className="flex items-center justify-between mb-4">
                                       <h4 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
                                         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg"></div>
