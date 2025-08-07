@@ -2359,7 +2359,7 @@ const MemberList = ({
       </Select>
 
       {/* Member List */}
-      <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+      <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-hidden">
         {members.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />

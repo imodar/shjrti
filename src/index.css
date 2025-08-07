@@ -375,3 +375,13 @@ All colors MUST be HSL.
     -webkit-backface-visibility: hidden;
   }
 }
+
+/* Hide scrollbar utility class */
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
