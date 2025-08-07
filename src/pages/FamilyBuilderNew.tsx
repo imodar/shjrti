@@ -1658,18 +1658,54 @@ const FamilyBuilderNew = () => {
                                         </div>
                                         
                                         <div className="space-y-6">
-                                          {/* Family Member Selection - Only from same family */}
+                                          {/* Family Member Check */}
                                           <div>
                                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-                                              اختر الزوجة من أفراد العائلة
+                                              هل الزوجة من نفس العائلة؟
                                             </Label>
-                                            <p className="text-xs text-muted-foreground mb-3 font-arabic">
-                                              يُسمح فقط باختيار الزوجة من أفراد العائلة المسجلين
-                                            </p>
+                                            <div className="flex gap-3">
+                                              <label className="flex items-center gap-2 cursor-pointer">
+                                                <input 
+                                                  type="radio" 
+                                                  name={`wifeIsFamilyMember${index}`} 
+                                                  checked={wife.isFamilyMember === true} 
+                                                  onChange={() => {
+                                                    const newWives = [...wives];
+                                                    newWives[index] = {
+                                                      ...wife,
+                                                      isFamilyMember: true,
+                                                      existingFamilyMemberId: ''
+                                                    };
+                                                    setWives(newWives);
+                                                  }}
+                                                  className="w-4 h-4 text-green-600"
+                                                />
+                                                <span className="text-sm text-green-600 font-arabic">نعم</span>
+                                              </label>
+                                              <label className="flex items-center gap-2 cursor-pointer">
+                                                <input 
+                                                  type="radio" 
+                                                  name={`wifeIsFamilyMember${index}`} 
+                                                  checked={wife.isFamilyMember === false} 
+                                                  onChange={() => {
+                                                    const newWives = [...wives];
+                                                    newWives[index] = {
+                                                      ...wife,
+                                                      isFamilyMember: false,
+                                                      existingFamilyMemberId: ''
+                                                    };
+                                                    setWives(newWives);
+                                                  }}
+                                                  className="w-4 h-4 text-red-600"
+                                                />
+                                                <span className="text-sm text-red-600 font-arabic">لا</span>
+                                              </label>
+                                            </div>
                                           </div>
 
-                                          {/* Select Existing Family Member - Always shown now */}
+                                          {/* Select Existing Family Member */}
+                                          {wife.isFamilyMember && (
                                             <div className="space-y-3">
                                               <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
                                                 <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
@@ -1737,7 +1773,10 @@ const FamilyBuilderNew = () => {
                                                 </PopoverContent>
                                               </Popover>
                                             </div>
-                                          {/* Name Input - Not needed since only family members */}
+                                          )}
+
+                                          {/* Name Input - only if not family member or family member not selected */}
+                                          {(!wife.isFamilyMember || (wife.isFamilyMember && !wife.existingFamilyMemberId)) && (
                                             <div className="group">
                                               <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                                 <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -1760,7 +1799,10 @@ const FamilyBuilderNew = () => {
                                                 </div>
                                               </div>
                                             </div>
-                                          {/* Birth Date - Not needed since only family members */}
+                                          )}
+
+                                          {/* Birth Date - only show if not family member */}
+                                          {!wife.isFamilyMember && (
                                             <div className="group">
                                               <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                                 <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -1783,7 +1825,9 @@ const FamilyBuilderNew = () => {
                                                 </div>
                                               </div>
                                             </div>
-                                          {/* Marital Status - Always show */}
+                                          )}
+
+                                          {/* Marital Status - always show */}
                                           <div className="group">
                                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -1812,7 +1856,8 @@ const FamilyBuilderNew = () => {
                                             </div>
                                           </div>
 
-                                          {/* Life Status and Death Date - Not needed since only family members */}
+                                          {/* Life Status and Death Date - only show if not family member */}
+                                          {!wife.isFamilyMember && (
                                             <div className="space-y-6">
                                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 {/* Life Status */}
@@ -1874,7 +1919,10 @@ const FamilyBuilderNew = () => {
                                                 )}
                                               </div>
                                             </div>
-                                          {/* Image Upload - Not needed since only family members */}
+                                          )}
+
+                                          {/* Image Upload - only show if not family member and feature enabled */}
+                                          {!wife.isFamilyMember && (
                                             <div className="space-y-3">
                                               {wife.croppedImage ? (
                                                 <div className="text-center space-y-3">
@@ -1927,6 +1975,7 @@ const FamilyBuilderNew = () => {
                                           )}
                                         </div>
                                       </div>
+                                    ))}
                                     
                                     <Button
                                       type="button"
@@ -1939,7 +1988,7 @@ const FamilyBuilderNew = () => {
                                           birthDate: null,
                                           deathDate: null,
                                           maritalStatus: 'married',
-                                          isFamilyMember: true, // Always true now - only family members allowed
+                                          isFamilyMember: false,
                                           existingFamilyMemberId: '',
                                           croppedImage: null
                                         }]);
@@ -2039,7 +2088,7 @@ const FamilyBuilderNew = () => {
                                                 checked={husband.isFamilyMember === false} 
                                                 onChange={() => setHusband({
                                                   ...husband,
-                                          isFamilyMember: true, // Only family members allowed
+                                                  isFamilyMember: false,
                                                   existingFamilyMemberId: ''
                                                 })}
                                                 className="w-4 h-4 text-red-600"
