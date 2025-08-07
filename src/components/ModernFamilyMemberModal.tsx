@@ -823,19 +823,6 @@ export const ModernFamilyMemberModal = ({
                                     // تحديد من ينتمي فعلاً للعائلة بالدم - ليس فقط وجود في القائمة
                                     const husbandIsBloodFamily = marriage.husband.is_founder || marriage.husband.father_id && familyMembers.some(member => member.id === marriage.husband.father_id);
                                     const wifeIsBloodFamily = (marriage.wife as any).is_founder || (marriage.wife as any).father_id && familyMembers.some(member => member.id === (marriage.wife as any).father_id);
-                                    console.log('🔍 Marriage debug:', {
-                                      husbandId: marriage.husband.id,
-                                      husbandName: marriage.husband.name,
-                                      husbandFatherId: marriage.husband.father_id,
-                                      husbandIsFounder: marriage.husband.is_founder,
-                                      husbandIsBloodFamily,
-                                      wifeId: marriage.wife.id,
-                                      wifeName: marriage.wife.name,
-                                      wifeFatherId: (marriage.wife as any).father_id,
-                                      wifeIsFounder: (marriage.wife as any).is_founder,
-                                      wifeIsBloodFamily,
-                                      familyMembersIds: familyMembers.map(m => m.id)
-                                    });
                                     if (husbandIsBloodFamily && wifeIsBloodFamily) {
                                       // كلاهما من العائلة بالدم - نعرض الزوج أولاً
                                       return marriage.husband.is_founder ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}` : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name}`;
