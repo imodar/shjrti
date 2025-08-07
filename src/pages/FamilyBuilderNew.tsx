@@ -889,25 +889,53 @@ const FamilyBuilderNew = () => {
                                   {Array.isArray(familyMarriages) && familyMarriages.length > 0 ? (
                                     familyMarriages
                                       .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
-                                      .map((marriage) => {
-                                        // Check which spouse is a family member for proper name ordering
-                                        const husbandIsFamilyMember = (familyMembers || []).some(member => member?.id === marriage.husband?.id);
-                                        const wifeIsFamilyMember = (familyMembers || []).some(member => member?.id === marriage.wife?.id);
-                                        
-                                        let displayName = '';
-                                        if (husbandIsFamilyMember && wifeIsFamilyMember) {
-                                          // Both are family members - show husband first
-                                          displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                        } else if (husbandIsFamilyMember) {
-                                          // Husband is family member
-                                          displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                        } else if (wifeIsFamilyMember) {
-                                          // Wife is family member
-                                          displayName = `${marriage.wife?.name || 'بدون اسم'} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
-                                        } else {
-                                          // Neither is family member (fallback)
-                                          displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                        }
+                                       .map((marriage) => {
+                                         // Get full member details for proper naming
+                                         const husbandMember = (familyMembers || []).find(member => member?.id === marriage.husband?.id);
+                                         const wifeMember = (familyMembers || []).find(member => member?.id === marriage.wife?.id);
+                                         
+                                         let displayName = '';
+                                         
+                                         // Helper function to get father's name
+                                         const getFatherName = (member: any) => {
+                                           const father = (familyMembers || []).find(m => m?.id === member?.fatherId);
+                                           return father?.name || '';
+                                         };
+                                         
+                                         if (husbandMember && wifeMember) {
+                                           // Both are family members
+                                           if (husbandMember.isFounder) {
+                                             // Founder: founder name + family name ♥ wife name
+                                             displayName = `${husbandMember.name} ${familyData?.name || ''} ♥ ${wifeMember.name}`;
+                                           } else {
+                                             // Male non-founder: his name + father name ♥ wife name
+                                             const fatherName = getFatherName(husbandMember);
+                                             displayName = `${husbandMember.name} ${fatherName} ♥ ${wifeMember.name}`;
+                                           }
+                                         } else if (husbandMember) {
+                                           // Only husband is family member
+                                           if (husbandMember.isFounder) {
+                                             // Founder: founder name + family name ♥ wife name
+                                             displayName = `${husbandMember.name} ${familyData?.name || ''} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                           } else {
+                                             // Male non-founder: his name + father name ♥ wife name
+                                             const fatherName = getFatherName(husbandMember);
+                                             displayName = `${husbandMember.name} ${fatherName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                           }
+                                         } else if (wifeMember) {
+                                           // Only wife is family member
+                                           if (wifeMember.isFounder) {
+                                             // Female founder: founder name + family name ♥ husband name
+                                             displayName = `${wifeMember.name} ${familyData?.name || ''} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                                           } else {
+                                             // Female non-founder: her name + father name ♥ husband name
+                                             const fatherName = getFatherName(wifeMember);
+                                             displayName = `${wifeMember.name} ${fatherName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                                           }
+                                         } else {
+                                           // Neither is family member (fallback)
+                                           displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                         }
                                         
                                         return (
                                           <SelectItem key={marriage.id} value={marriage.id}>
@@ -919,7 +947,7 @@ const FamilyBuilderNew = () => {
                                         );
                                       })
                                   ) : (
-                                    <SelectItem value="no-data" disabled>لا توجد زيجات متاحة</SelectItem>
+                                    <SelectItem value="no-data" disabled>لا توجد زيجات مسجلة في هذه العائلة</SelectItem>
                                   )}
                                 </SelectContent>
                               </Select>
