@@ -1699,29 +1699,25 @@ const FamilyBuilderNew = () => {
                                                     <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                                                     <CommandList>
                                                        <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                         لا توجد إناث متاحات للزواج من نفس العائلة.
+                                                         لا توجد عازبات أو مطلقات متاحات من هذه العائلة.
                                                        </CommandEmpty>
                                                       <CommandGroup>
                                                          {familyMembers
                                                            .filter(member => {
                                                              const hasValidGender = member.gender === "female";
                                                              const isNotSelf = member.id !== selectedMember?.id;
-                                                             // Allow single, divorced, or undefined marital status
                                                              const isAvailableForMarriage = 
                                                                member.marital_status === "single" || 
-                                                               member.marital_status === "divorced" || 
-                                                               !member.marital_status;
-                                                             const notInMarriage = !familyMarriages.some(marriage => marriage.wife?.id === member.id);
+                                                               member.marital_status === "divorced";
                                                              
                                                              console.log(`Female member ${member.name}:`, {
                                                                hasValidGender,
                                                                isNotSelf,
                                                                isAvailableForMarriage,
-                                                               notInMarriage,
                                                                maritalStatus: member.marital_status
                                                              });
                                                              
-                                                             return hasValidGender && isNotSelf && isAvailableForMarriage && notInMarriage;
+                                                             return hasValidGender && isNotSelf && isAvailableForMarriage;
                                                            })
                                                           .map((member) => (
                                                             <CommandItem
