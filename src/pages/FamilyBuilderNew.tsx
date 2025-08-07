@@ -878,102 +878,106 @@ const FamilyBuilderNew = () => {
                            
                             <div>
                               <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between"
-                                  >
-                                    {formData.selectedParent ? 
-                                      (() => {
-                                        const selectedMarriage = familyMarriages.find(m => m.id === formData.selectedParent);
-                                        if (selectedMarriage) {
-                                          // Check which spouse is a family member
-                                          const husbandIsFamilyMember = familyMembers.some(member => member.id === selectedMarriage.husband?.id);
-                                          const wifeIsFamilyMember = familyMembers.some(member => member.id === selectedMarriage.wife?.id);
-                                          
-                                          let displayName = '';
-                                          if (husbandIsFamilyMember && wifeIsFamilyMember) {
-                                            // Both are family members - show husband first
-                                            displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
-                                          } else if (husbandIsFamilyMember) {
-                                            // Husband is family member
-                                            displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
-                                          } else if (wifeIsFamilyMember) {
-                                            // Wife is family member
-                                            displayName = `${selectedMarriage.wife?.name || 'بدون اسم'} ♥ ${selectedMarriage.husband?.name || 'بدون اسم'}`;
-                                          } else {
-                                            // Neither is family member (fallback)
-                                            displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
-                                          }
-                                          return displayName;
-                                        }
-                                        return 'زواج محدد';
-                                      })()
-                                      : "اختر الوالدين"
-                                    }
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-full p-0">
-                                  <Command>
-                                    <CommandInput placeholder="ابحث في الزيجات..." />
-                                    <CommandEmpty>لا توجد زيجات مطابقة</CommandEmpty>
-                                    <CommandGroup>
-                                      {Array.isArray(familyMarriages) && familyMarriages.length > 0 ? (
-                                        familyMarriages
-                                          .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
-                                          .map((marriage) => {
-                                            // Check which spouse is a family member for proper name ordering
-                                            const husbandIsFamilyMember = familyMembers.some(member => member.id === marriage.husband?.id);
-                                            const wifeIsFamilyMember = familyMembers.some(member => member.id === marriage.wife?.id);
+                              {loading ? (
+                                <div className="w-full h-10 bg-muted animate-pulse rounded-md" />
+                              ) : (
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      role="combobox"
+                                      className="w-full justify-between"
+                                    >
+                                      {formData.selectedParent ? 
+                                        (() => {
+                                          const selectedMarriage = (familyMarriages || []).find(m => m?.id === formData.selectedParent);
+                                          if (selectedMarriage) {
+                                            // Check which spouse is a family member
+                                            const husbandIsFamilyMember = (familyMembers || []).some(member => member?.id === selectedMarriage.husband?.id);
+                                            const wifeIsFamilyMember = (familyMembers || []).some(member => member?.id === selectedMarriage.wife?.id);
                                             
                                             let displayName = '';
                                             if (husbandIsFamilyMember && wifeIsFamilyMember) {
                                               // Both are family members - show husband first
-                                              displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                              displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
                                             } else if (husbandIsFamilyMember) {
                                               // Husband is family member
-                                              displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                              displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
                                             } else if (wifeIsFamilyMember) {
                                               // Wife is family member
-                                              displayName = `${marriage.wife?.name || 'بدون اسم'} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                                              displayName = `${selectedMarriage.wife?.name || 'بدون اسم'} ♥ ${selectedMarriage.husband?.name || 'بدون اسم'}`;
                                             } else {
                                               // Neither is family member (fallback)
-                                              displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                              displayName = `${selectedMarriage.husband?.name || 'بدون اسم'} ♥ ${selectedMarriage.wife?.name || 'بدون اسم'}`;
                                             }
-                                            
-                                            return (
-                                              <CommandItem
-                                                key={marriage.id}
-                                                value={displayName}
-                                                onSelect={() => {
-                                                  setFormData({...formData, selectedParent: marriage.id});
-                                                }}
-                                              >
-                                                <Check
-                                                  className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    formData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
-                                                  )}
-                                                />
-                                                <div className="flex items-center">
-                                                  <Heart className="h-3 w-3 text-red-500 mr-1" />
-                                                  <span>{displayName}</span>
-                                                </div>
-                                              </CommandItem>
-                                            );
-                                          })
-                                      ) : (
-                                        <CommandItem disabled>
-                                          لا توجد زيجات متاحة
-                                        </CommandItem>
-                                      )}
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
+                                            return displayName;
+                                          }
+                                          return 'زواج محدد';
+                                        })()
+                                        : "اختر الوالدين"
+                                      }
+                                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-full p-0">
+                                    <Command>
+                                      <CommandInput placeholder="ابحث في الزيجات..." />
+                                      <CommandEmpty>لا توجد زيجات مطابقة</CommandEmpty>
+                                      <CommandGroup>
+                                        {Array.isArray(familyMarriages) && familyMarriages.length > 0 ? (
+                                          familyMarriages
+                                            .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
+                                            .map((marriage) => {
+                                              // Check which spouse is a family member for proper name ordering
+                                              const husbandIsFamilyMember = (familyMembers || []).some(member => member?.id === marriage.husband?.id);
+                                              const wifeIsFamilyMember = (familyMembers || []).some(member => member?.id === marriage.wife?.id);
+                                              
+                                              let displayName = '';
+                                              if (husbandIsFamilyMember && wifeIsFamilyMember) {
+                                                // Both are family members - show husband first
+                                                displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                              } else if (husbandIsFamilyMember) {
+                                                // Husband is family member
+                                                displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                              } else if (wifeIsFamilyMember) {
+                                                // Wife is family member
+                                                displayName = `${marriage.wife?.name || 'بدون اسم'} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                                              } else {
+                                                // Neither is family member (fallback)
+                                                displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                              }
+                                              
+                                              return (
+                                                <CommandItem
+                                                  key={marriage.id}
+                                                  value={displayName}
+                                                  onSelect={() => {
+                                                    setFormData({...formData, selectedParent: marriage.id});
+                                                  }}
+                                                >
+                                                  <Check
+                                                    className={cn(
+                                                      "mr-2 h-4 w-4",
+                                                      formData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                  />
+                                                  <div className="flex items-center">
+                                                    <Heart className="h-3 w-3 text-red-500 mr-1" />
+                                                    <span>{displayName}</span>
+                                                  </div>
+                                                </CommandItem>
+                                              );
+                                            })
+                                        ) : (
+                                          <CommandItem disabled>
+                                            لا توجد زيجات متاحة
+                                          </CommandItem>
+                                        )}
+                                      </CommandGroup>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
+                              )}
                             </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
