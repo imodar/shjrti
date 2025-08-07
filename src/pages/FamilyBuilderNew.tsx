@@ -1705,56 +1705,6 @@ const FamilyBuilderNew = () => {
                            
                             {formData.gender === "male" ? (
                               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Left Panel - Wives List */}
-                                <div className="space-y-4">
-                                  <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                      <Heart className="w-3 h-3 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">قائمة الزوجات ({wives.length})</h4>
-                                  </div>
-                                  
-                                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                                    {wives.length === 0 ? (
-                                      <div className="text-center py-8 text-muted-foreground">
-                                        <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                        <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
-                                      </div>
-                                    ) : (
-                                      wives.map((wife, index) => (
-                                        <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                              <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                {index + 1}
-                                              </div>
-                                              <div>
-                                                <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                  {wife.name || `الزوجة ${index + 1}`}
-                                                </h5>
-                                                <p className="text-xs text-muted-foreground font-arabic">
-                                                  {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                </p>
-                                              </div>
-                                            </div>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() => {
-                                                const newWives = wives.filter((_, i) => i !== index);
-                                                setWives(newWives);
-                                              }}
-                                              className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                            >
-                                              <X className="h-3 w-3" />
-                                            </Button>
-                                          </div>
-                                        </div>
-                                      ))
-                                    )}
-                                  </div>
-                                </div>
-
                                 {/* Right Panel - Add Wife Form */}
                                 <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg">
                                   <div className="flex items-center gap-2 mb-6">
@@ -2137,6 +2087,56 @@ const FamilyBuilderNew = () => {
                                       <Plus className="h-5 w-5 mr-2" />
                                       إضافة زوجة أخرى
                                     </Button>
+                                  </div>
+                                </div>
+
+                                {/* Left Panel - Wives List */}
+                                <div className="space-y-4">
+                                  <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                      <Heart className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">قائمة الزوجات ({wives.length})</h4>
+                                  </div>
+                                  
+                                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                                    {wives.length === 0 ? (
+                                      <div className="text-center py-8 text-muted-foreground">
+                                        <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                        <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
+                                      </div>
+                                    ) : (
+                                      wives.map((wife, index) => (
+                                        <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                              <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                {index + 1}
+                                              </div>
+                                              <div>
+                                                <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                  {wife.name || `الزوجة ${index + 1}`}
+                                                </h5>
+                                                <p className="text-xs text-muted-foreground font-arabic">
+                                                  {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => {
+                                                const newWives = wives.filter((_, i) => i !== index);
+                                                setWives(newWives);
+                                              }}
+                                              className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                            >
+                                              <X className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ))
+                                    )}
                                   </div>
                                 </div>
                               </div>
