@@ -269,8 +269,8 @@ const Dashboard = () => {
     console.log('👤 Current user ID:', user?.id);
     
     try {
-      console.log('🗑️ Starting archive operation for tree:', deleteTreeId);
-      console.log('👤 User ID for archive operation:', user?.id);
+      console.log('🗑️ Starting delete operation for tree:', deleteTreeId);
+      console.log('👤 User ID for delete operation:', user?.id);
       
       // Delete the tree completely (CASCADE will handle members and marriages)
       const { data, error } = await supabase
@@ -280,10 +280,10 @@ const Dashboard = () => {
         .eq('creator_id', user?.id)
         .select(); // Add select to see what was deleted
 
-      console.log('📊 Archive operation result:', { data, error });
+      console.log('📊 Delete operation result:', { data, error });
       
       if (error) {
-        console.error('❌ Archive error details:', error);
+        console.error('❌ Delete error details:', error);
         toast({
           title: t('dashboard.deletion_error', 'Deletion Error'),
           description: `${t('dashboard.tree_deletion_error', 'Error occurred while deleting family tree')}: ${error.message}`,
@@ -293,7 +293,7 @@ const Dashboard = () => {
       }
 
       if (!data || data.length === 0) {
-        console.error('❌ No rows were updated during archive operation');
+        console.error('❌ No rows were deleted during delete operation');
         toast({
           title: t('dashboard.deletion_error', 'Deletion Error'),
           description: t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it'),
@@ -302,7 +302,7 @@ const Dashboard = () => {
         return;
       }
 
-      console.log('✅ Tree archived successfully, updated rows:', data.length);
+      console.log('✅ Tree deleted successfully, deleted rows:', data.length);
       
       // Remove from local state
       setFamilyTrees(prev => prev.filter(tree => tree.id !== deleteTreeId));

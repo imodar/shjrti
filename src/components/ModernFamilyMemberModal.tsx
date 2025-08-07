@@ -302,34 +302,36 @@ export const ModernFamilyMemberModal = ({
         let wifeFatherName = "";
 
         // Get husband's father name
-        if (marriage.husband?.father_id && !marriage.husband?.is_founder) {
+        const husband = Array.isArray(marriage.husband) ? marriage.husband[0] : marriage.husband;
+        if (husband?.father_id && !husband?.is_founder) {
           const {
             data: fatherData
-          } = await supabase.from('family_tree_members').select('name').eq('id', marriage.husband.father_id).single();
+          } = await supabase.from('family_tree_members').select('name').eq('id', husband.father_id).single();
           husbandFatherName = fatherData?.name || "";
         }
 
         // Get wife's father name  
-        if (marriage.wife?.father_id && !marriage.wife?.is_founder) {
+        const wife = Array.isArray(marriage.wife) ? marriage.wife[0] : marriage.wife;
+        if (wife?.father_id && !wife?.is_founder) {
           const {
             data: wifeFatherData
-          } = await supabase.from('family_tree_members').select('name').eq('id', marriage.wife.father_id).single();
+          } = await supabase.from('family_tree_members').select('name').eq('id', wife.father_id).single();
           wifeFatherName = wifeFatherData?.name || "";
         }
         return {
           id: marriage.id,
           husband: {
             id: marriage.husband_id,
-            name: marriage.husband?.name || "",
-            is_founder: marriage.husband?.is_founder || false,
-            father_id: marriage.husband?.father_id || null,
+            name: husband?.name || "",
+            is_founder: husband?.is_founder || false,
+            father_id: husband?.father_id || null,
             father_name: husbandFatherName
           },
           wife: {
             id: marriage.wife_id,
-            name: marriage.wife?.name || "",
-            is_founder: marriage.wife?.is_founder || false,
-            father_id: marriage.wife?.father_id || null,
+            name: wife?.name || "",
+            is_founder: wife?.is_founder || false,
+            father_id: wife?.father_id || null,
             father_name: wifeFatherName
           },
           is_active: marriage.is_active
