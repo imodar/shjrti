@@ -888,61 +888,84 @@ const FamilyBuilderNew = () => {
                                  >
                                    {formData.selectedParent ? (
                                      (() => {
-                                       const marriage = (familyMarriages || []).find(m => m.id === formData.selectedParent);
-                                       return marriage ? `${marriage.husband?.name} ♥ ${marriage.wife?.name}` : "اختر الوالدين";
+                                       console.log('familyMarriages in button:', familyMarriages);
+                                       const marriage = (familyMarriages || []).find(m => m && m.id === formData.selectedParent);
+                                       if (marriage && marriage.husband && marriage.wife) {
+                                         return `${marriage.husband.name || 'بدون اسم'} ♥ ${marriage.wife.name || 'بدون اسم'}`;
+                                       }
+                                       return "اختر الوالدين";
                                      })()
                                    ) : "اختر الوالدين"}
                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                  </Button>
                                </PopoverTrigger>
                                <PopoverContent className="w-full p-0">
-                                 <Command>
-                                   <CommandInput placeholder="ابحث عن الوالدين..." />
-                                   <CommandEmpty>لا توجد نتائج</CommandEmpty>
-                                   <CommandGroup>
-                                     <CommandItem
-                                       value="none"
-                                       onSelect={() => {
-                                         setFormData({...formData, selectedParent: null});
-                                         setRelationshipPopoverOpen(false);
-                                       }}
-                                     >
-                                       <Check
-                                         className={cn(
-                                           "mr-2 h-4 w-4",
-                                           !formData.selectedParent ? "opacity-100" : "opacity-0"
-                                         )}
-                                       />
-                                       بدون والدين (مؤسس العائلة)
-                                     </CommandItem>
-                                     {(familyMarriages || []).map((marriage) => (
+                                 {familyMarriages ? (
+                                   <Command>
+                                     <CommandInput placeholder="ابحث عن الوالدين..." />
+                                     <CommandEmpty>لا توجد نتائج</CommandEmpty>
+                                     <CommandGroup>
                                        <CommandItem
-                                         key={marriage.id}
-                                         value={`${marriage.husband?.name} ${marriage.wife?.name}`}
+                                         value="none"
                                          onSelect={() => {
-                                           setFormData({...formData, selectedParent: marriage.id});
+                                           setFormData({...formData, selectedParent: null});
                                            setRelationshipPopoverOpen(false);
                                          }}
                                        >
                                          <Check
                                            className={cn(
                                              "mr-2 h-4 w-4",
-                                             formData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
+                                             !formData.selectedParent ? "opacity-100" : "opacity-0"
                                            )}
                                          />
-                                         <div className="flex items-center">
-                                           <Heart className="h-3 w-3 text-red-500 mx-1" />
-                                           <span>{marriage.husband?.name} ♥ {marriage.wife?.name}</span>
-                                           {marriage.husband?.father_name && (
-                                             <span className="text-sm text-muted-foreground mr-2">
-                                               (ابن {marriage.husband.father_name})
-                                             </span>
-                                           )}
-                                         </div>
+                                         بدون والدين (مؤسس العائلة)
                                        </CommandItem>
-                                     ))}
-                                   </CommandGroup>
-                                 </Command>
+                                       {Array.isArray(familyMarriages) && familyMarriages.length > 0 ? (
+                                         familyMarriages
+                                           .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
+                                           .map((marriage) => {
+                                             console.log('Processing marriage:', marriage);
+                                             const husbandName = marriage.husband?.name || 'بدون اسم';
+                                             const wifeName = marriage.wife?.name || 'بدون اسم';
+                                             const valueStr = `${husbandName} ${wifeName}`;
+                                             
+                                             return (
+                                               <CommandItem
+                                                 key={marriage.id || Math.random()}
+                                                 value={valueStr}
+                                                 onSelect={() => {
+                                                   setFormData({...formData, selectedParent: marriage.id});
+                                                   setRelationshipPopoverOpen(false);
+                                                 }}
+                                               >
+                                                 <Check
+                                                   className={cn(
+                                                     "mr-2 h-4 w-4",
+                                                     formData.selectedParent === marriage.id ? "opacity-100" : "opacity-0"
+                                                   )}
+                                                 />
+                                                 <div className="flex items-center">
+                                                   <Heart className="h-3 w-3 text-red-500 mx-1" />
+                                                   <span>{husbandName} ♥ {wifeName}</span>
+                                                   {marriage.husband?.father_name && (
+                                                     <span className="text-sm text-muted-foreground mr-2">
+                                                       (ابن {marriage.husband.father_name})
+                                                     </span>
+                                                   )}
+                                                 </div>
+                                               </CommandItem>
+                                             );
+                                           })
+                                       ) : (
+                                         <CommandItem value="no-marriages" disabled>
+                                           لا توجد زيجات متاحة
+                                         </CommandItem>
+                                       )}
+                                     </CommandGroup>
+                                   </Command>
+                                 ) : (
+                                   <div className="p-4 text-center">جاري التحميل...</div>
+                                 )}
                                </PopoverContent>
                              </Popover>
                            </div>
