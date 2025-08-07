@@ -1699,16 +1699,19 @@ const FamilyBuilderNew = () => {
                                                     <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                                                     <CommandList>
                                                        <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                         لا توجد عازبات أو مطلقات متاحات من هذه العائلة.
+                                                         لا توجد إناث متاحات للزواج في هذه العائلة.
                                                        </CommandEmpty>
                                                       <CommandGroup>
                                                          {familyMembers
                                                            .filter(member => {
                                                              const hasValidGender = member.gender === "female";
                                                              const isNotSelf = member.id !== selectedMember?.id;
+                                                             // Include single, divorced, or undefined/null marital status
                                                              const isAvailableForMarriage = 
                                                                member.marital_status === "single" || 
-                                                               member.marital_status === "divorced";
+                                                               member.marital_status === "divorced" ||
+                                                               !member.marital_status || // null or undefined
+                                                               member.marital_status === "";
                                                              
                                                              console.log(`Female member ${member.name}:`, {
                                                                hasValidGender,
