@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
@@ -154,6 +156,44 @@ const FamilyBuilderNew = () => {
     });
     
     return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
+  };
+
+  // Image Upload Component
+  const ImageUploadSection = () => {
+    const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
+    
+    return (
+      <div>
+        <Label htmlFor="picture">الصورة الشخصية</Label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={`border-2 border-dashed border-gray-300 rounded-lg p-6 text-center ${!isImageUploadEnabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}>
+                {isImageUploadEnabled ? (
+                  <div className="space-y-2">
+                    <Upload className="h-12 w-12 mx-auto text-gray-400" />
+                    <p className="text-sm text-gray-600">انقر لرفع الصورة أو اسحب وأفلت</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF حتى 10MB</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-12 w-12 mx-auto text-gray-300" />
+                    <p className="text-sm text-gray-400">رفع الصور غير متاح</p>
+                    <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                  </div>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {isImageUploadEnabled 
+                ? "انقر لرفع صورة شخصية للعضو" 
+                : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة."
+              }
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    );
   };
 
   const { toast } = useToast();
@@ -848,182 +888,188 @@ const FamilyBuilderNew = () => {
 
                       {/* Step Content */}
                       {currentStep === 1 && (
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">المعلومات الأساسية</h3>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="name">الاسم الكامل *</Label>
-                              <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                placeholder="أدخل الاسم الكامل"
-                              />
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor="gender">الجنس</Label>
-                              <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="اختر الجنس" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="male">ذكر</SelectItem>
-                                  <SelectItem value="female">أنثى</SelectItem>
-                                </SelectContent>
-                              </Select>
-                             </div>
-                           </div>
+                         <div className="space-y-4">
+                           <h3 className="text-lg font-semibold">المعلومات الأساسية</h3>
                            
-                            <div>
-                              <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
-                               <Select 
-                                 value={formData.selectedParent || ""} 
-                                 onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
-                                 disabled={loading || !familyMarriages || !familyMembers}
-                               >
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div>
+                               <Label htmlFor="name">الاسم الكامل *</Label>
+                               <Input
+                                 id="name"
+                                 value={formData.name}
+                                 onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                 placeholder="أدخل الاسم الكامل"
+                               />
+                             </div>
+                             
+                             <div>
+                               <Label htmlFor="gender">الجنس</Label>
+                               <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
                                  <SelectTrigger>
-                                   <SelectValue placeholder={loading ? "جاري التحميل..." : "اختر الوالدين"} />
+                                   <SelectValue placeholder="اختر الجنس" />
                                  </SelectTrigger>
                                  <SelectContent>
-                                   {loading || !familyMarriages || !familyMembers ? (
-                                     <SelectItem value="loading" disabled>جاري تحميل البيانات...</SelectItem>
-                                   ) : familyMarriages.length > 0 ? (
-                                     familyMarriages
-                                       .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
-                                       .map((marriage) => {
-                                         // Get full member details for proper naming
-                                         const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
-                                         const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
-                                         
-                                         let displayName = '';
-                                         
-                                         // Helper function to get father's name
-                                         const getFatherName = (member: any) => {
-                                           const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                           return father?.name || '';
-                                         };
-                                         
-                                         // Helper function to get grandfather's name
-                                         const getGrandfatherName = (member: any) => {
-                                           const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                           if (father) {
-                                             const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
-                                             return grandfather?.name || '';
-                                           }
-                                           return '';
-                                         };
-                                         
-                                         // Helper function to build full genealogical name
-                                         const getFullGenealogicalName = (member: any, isFounder: boolean) => {
-                                           if (isFounder) {
-                                             return `${member.name} ${familyData?.name || ''}`;
-                                           }
-                                           
-                                           const fatherName = getFatherName(member);
-                                           const grandfatherName = getGrandfatherName(member);
-                                           
-                                           if (member.gender === 'male') {
-                                             // Male: name + ابن + father + ابن + grandfather (if exists)
-                                             let result = member.name;
-                                             if (fatherName) {
-                                               result += ` ابن ${fatherName}`;
-                                               if (grandfatherName) {
-                                                 result += ` ابن ${grandfatherName}`;
-                                               }
-                                             }
-                                             return result;
-                                           } else {
-                                             // Female: name + بنت + father + ابن + grandfather (if exists)
-                                             let result = member.name;
-                                             if (fatherName) {
-                                               result += ` بنت ${fatherName}`;
-                                               if (grandfatherName) {
-                                                 result += ` ابن ${grandfatherName}`;
-                                               }
-                                             }
-                                             return result;
-                                           }
-                                         };
-                                         
-                                         if (husbandMember && wifeMember) {
-                                           // Both are family members
-                                           const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
-                                           const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
-                                           displayName = `${husbandFullName} ♥ ${wifeFullName}`;
-                                         } else if (husbandMember) {
-                                           // Only husband is family member
-                                           const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
-                                           displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                         } else if (wifeMember) {
-                                           // Only wife is family member
-                                           const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
-                                           displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
-                                         } else {
-                                           // Neither is family member (fallback)
-                                           displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                         }
-                                         
-                                         return (
-                                           <SelectItem key={marriage.id} value={marriage.id}>
-                                             <div className="flex items-center">
-                                               <Heart className="h-3 w-3 text-red-500 mr-2" />
-                                               <span className="truncate">{displayName}</span>
-                                             </div>
-                                           </SelectItem>
-                                         );
-                                       })
-                                   ) : (
-                                     <SelectItem value="no-data" disabled>لا توجد زيجات مسجلة في هذه العائلة</SelectItem>
-                                   )}
+                                   <SelectItem value="male">ذكر</SelectItem>
+                                   <SelectItem value="female">أنثى</SelectItem>
                                  </SelectContent>
                                </Select>
-                            </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label>تاريخ الميلاد</Label>
-                              <EnhancedDatePicker
-                                value={formData.birthDate}
-                                onChange={(date) => setFormData({...formData, birthDate: date})}
-                                placeholder="اختر تاريخ الميلاد"
-                              />
+                              </div>
+                              
+                              <div>
+                               <Label>تاريخ الميلاد</Label>
+                               <EnhancedDatePicker
+                                 value={formData.birthDate}
+                                 onChange={(date) => setFormData({...formData, birthDate: date})}
+                                 placeholder="اختر تاريخ الميلاد"
+                               />
+                             </div>
+                             
+                             <div>
+                               <Label htmlFor="aliveStatus">الحالة الحيوية</Label>
+                               <Select 
+                                 value={formData.isAlive ? "alive" : "deceased"} 
+                                 onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
+                               >
+                                 <SelectTrigger>
+                                   <SelectValue placeholder="اختر الحالة الحيوية" />
+                                 </SelectTrigger>
+                                 <SelectContent>
+                                   <SelectItem value="alive">على قيد الحياة</SelectItem>
+                                   <SelectItem value="deceased">متوفى</SelectItem>
+                                 </SelectContent>
+                               </Select>
+                             </div>
                             </div>
                             
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id="isAlive"
-                                checked={formData.isAlive}
-                                onChange={(e) => setFormData({...formData, isAlive: e.target.checked})}
-                              />
-                              <Label htmlFor="isAlive">على قيد الحياة</Label>
-                            </div>
-                          </div>
+                             <div>
+                               <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
+                                <Select 
+                                  value={formData.selectedParent || ""} 
+                                  onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
+                                  disabled={loading || !familyMarriages || !familyMembers}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={loading ? "جاري التحميل..." : "اختر الوالدين"} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {loading || !familyMarriages || !familyMembers ? (
+                                      <SelectItem value="loading" disabled>جاري تحميل البيانات...</SelectItem>
+                                    ) : familyMarriages.length > 0 ? (
+                                      familyMarriages
+                                        .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
+                                        .map((marriage) => {
+                                          // Get full member details for proper naming
+                                          const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
+                                          const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
+                                          
+                                          let displayName = '';
+                                          
+                                          // Helper function to get father's name
+                                          const getFatherName = (member: any) => {
+                                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                                            return father?.name || '';
+                                          };
+                                          
+                                          // Helper function to get grandfather's name
+                                          const getGrandfatherName = (member: any) => {
+                                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                                            if (father) {
+                                              const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                                              return grandfather?.name || '';
+                                            }
+                                            return '';
+                                          };
+                                          
+                                          // Helper function to build full genealogical name
+                                          const getFullGenealogicalName = (member: any, isFounder: boolean) => {
+                                            if (isFounder) {
+                                              return `${member.name} ${familyData?.name || ''}`;
+                                            }
+                                            
+                                            const fatherName = getFatherName(member);
+                                            const grandfatherName = getGrandfatherName(member);
+                                            
+                                            if (member.gender === 'male') {
+                                              // Male: name + ابن + father + ابن + grandfather (if exists)
+                                              let result = member.name;
+                                              if (fatherName) {
+                                                result += ` ابن ${fatherName}`;
+                                                if (grandfatherName) {
+                                                  result += ` ابن ${grandfatherName}`;
+                                                }
+                                              }
+                                              return result;
+                                            } else {
+                                              // Female: name + بنت + father + ابن + grandfather (if exists)
+                                              let result = member.name;
+                                              if (fatherName) {
+                                                result += ` بنت ${fatherName}`;
+                                                if (grandfatherName) {
+                                                  result += ` ابن ${grandfatherName}`;
+                                                }
+                                              }
+                                              return result;
+                                            }
+                                          };
+                                          
+                                          if (husbandMember && wifeMember) {
+                                            // Both are family members
+                                            const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                            const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                            displayName = `${husbandFullName} ♥ ${wifeFullName}`;
+                                          } else if (husbandMember) {
+                                            // Only husband is family member
+                                            const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                            displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                          } else if (wifeMember) {
+                                            // Only wife is family member
+                                            const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                            displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                                          } else {
+                                            // Neither is family member (fallback)
+                                            displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                                          }
+                                          
+                                          return (
+                                            <SelectItem key={marriage.id} value={marriage.id}>
+                                              <div className="flex items-center">
+                                                <Heart className="h-3 w-3 text-red-500 mr-2" />
+                                                <span className="truncate">{displayName}</span>
+                                              </div>
+                                            </SelectItem>
+                                          );
+                                        })
+                                    ) : (
+                                      <SelectItem value="no-data" disabled>لا توجد زيجات مسجلة في هذه العائلة</SelectItem>
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                             </div>
 
-                          {!formData.isAlive && (
-                            <div>
-                              <Label>تاريخ الوفاة</Label>
-                              <EnhancedDatePicker
-                                value={formData.deathDate}
-                                onChange={(date) => setFormData({...formData, deathDate: date})}
-                                placeholder="اختر تاريخ الوفاة"
-                              />
-                            </div>
-                          )}
+                           {!formData.isAlive && (
+                             <div>
+                               <Label>تاريخ الوفاة</Label>
+                               <EnhancedDatePicker
+                                 value={formData.deathDate}
+                                 onChange={(date) => setFormData({...formData, deathDate: date})}
+                                 placeholder="اختر تاريخ الوفاة"
+                               />
+                             </div>
+                           )}
 
-                          <div>
-                            <Label htmlFor="bio">السيرة الذاتية</Label>
-                            <Textarea
-                              id="bio"
-                              value={formData.bio}
-                              onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                              placeholder="أدخل معلومات إضافية عن العضو"
-                              rows={3}
-                            />
-                          </div>
-                        </div>
+                           <div>
+                             <Label htmlFor="bio">السيرة الذاتية</Label>
+                             <Textarea
+                               id="bio"
+                               value={formData.bio}
+                               onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                               placeholder="أدخل معلومات إضافية عن العضو"
+                               rows={3}
+                             />
+                           </div>
+
+                           <ImageUploadSection />
+                         </div>
                       )}
 
                        {currentStep === 2 && (
