@@ -394,6 +394,7 @@ const FamilyBuilderNew = () => {
     name: "",
     relation: "",
     relatedPersonId: null as string | null,
+    selectedParent: null as string | null,
     gender: "male",
     birthDate: null as Date | null,
     isAlive: true,
@@ -483,6 +484,7 @@ const FamilyBuilderNew = () => {
       name: "",
       relation: "",
       relatedPersonId: null,
+      selectedParent: null,
       gender: "male",
       birthDate: null,
       isAlive: true,
@@ -869,8 +871,25 @@ const FamilyBuilderNew = () => {
                                   <SelectItem value="female">أنثى</SelectItem>
                                 </SelectContent>
                               </Select>
-                            </div>
-                          </div>
+                             </div>
+                           </div>
+                           
+                           <div>
+                             <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
+                             <Select value={formData.selectedParent || ""} onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}>
+                               <SelectTrigger>
+                                 <SelectValue placeholder="اختر الوالدين" />
+                               </SelectTrigger>
+                               <SelectContent>
+                                 <SelectItem value="none">بدون والدين (مؤسس العائلة)</SelectItem>
+                                 {familyMarriages.map((marriage) => (
+                                   <SelectItem key={marriage.id} value={marriage.id}>
+                                     {marriage.husband?.name} ♥ {marriage.wife?.name}
+                                   </SelectItem>
+                                 ))}
+                               </SelectContent>
+                             </Select>
+                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
