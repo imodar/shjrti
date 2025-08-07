@@ -10,6 +10,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
 import ScrollToTop from "@/components/ScrollToTop";
 import CustomScriptInjector from "@/components/CustomScriptInjector";
 import Index from "./pages/Index";
@@ -75,11 +76,13 @@ const App = () => (
                     <FamilyCreator />
                   </ProtectedRoute>
                 } />
-                <Route path="/family-builder" element={
-                  <ProtectedRoute requireActiveSubscription={true}>
-                    <FamilyBuilder />
-                  </ProtectedRoute>
-                } />
+        <Route path="/family-builder" element={
+          <ProtectedRoute requireActiveSubscription={true}>
+            <ProtectedFamilyRoute>
+              <FamilyBuilder />
+            </ProtectedFamilyRoute>
+          </ProtectedRoute>
+        } />
                 <Route path="/family-tree-view" element={
                   <ProtectedRoute>
                     <FamilyTreeView />
