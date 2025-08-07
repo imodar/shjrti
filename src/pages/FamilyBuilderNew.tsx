@@ -2258,6 +2258,7 @@ const FamilyBuilderNew = () => {
                         onFilterChange={setSelectedFilter}
                         getAdditionalInfo={getAdditionalInfo}
                         getGenderColor={getGenderColor}
+                        familyMembers={familyMembers}
                       />
                     </div>
                   </DrawerContent>
@@ -2283,6 +2284,7 @@ const FamilyBuilderNew = () => {
                       onFilterChange={setSelectedFilter}
                       getAdditionalInfo={getAdditionalInfo}
                       getGenderColor={getGenderColor}
+                      familyMembers={familyMembers}
                     />
                   </CardContent>
                 </Card>
@@ -2330,7 +2332,8 @@ const MemberList = ({
   selectedFilter, 
   onFilterChange,
   getAdditionalInfo,
-  getGenderColor 
+  getGenderColor,
+  familyMembers 
 }: any) => {
   return (
     <div className="space-y-4">
@@ -2375,28 +2378,83 @@ const MemberList = ({
               onClick={() => onEditMember(member)}
             >
               <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={member.image} />
-                    <AvatarFallback className={getGenderColor(member.gender)}>
-                      {member.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{member.name}</p>
-                    {getAdditionalInfo(member) && (
-                      <p className="text-xs text-muted-foreground truncate">
-                        {getAdditionalInfo(member)}
-                      </p>
-                    )}
+                <div className="flex items-start justify-between gap-3 min-h-[80px]">
+                  <div className="flex items-start gap-3 flex-1">
+                    <Avatar className="h-12 w-12 flex-shrink-0">
+                      <AvatarImage src={member.image} />
+                      <AvatarFallback className={getGenderColor(member.gender)}>
+                        {member.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1 min-w-0 space-y-1">
+                      {/* Name */}
+                      <h3 className="font-semibold text-base truncate font-arabic">{member.name}</h3>
+                      
+                      {/* Father + Grandfather names */}
+                      {(() => {
+                        const father = familyMembers?.find(m => m?.id === member.fatherId);
+                        const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
+                        const parentInfo = [];
+                        if (father) parentInfo.push(father.name);
+                        if (grandfather) parentInfo.push(grandfather.name);
+                        
+                        return parentInfo.length > 0 ? (
+                          <p className="text-sm text-muted-foreground truncate font-arabic">
+                            {parentInfo.join(' • ')}
+                          </p>
+                        ) : null;
+                      })()}
+                      
+                      {/* Birth date and gender icon */}
+                      <div className="flex items-center gap-2">
+                        {member.birthDate && (
+                          <span className="text-xs text-muted-foreground font-arabic">
+                            {new Date(member.birthDate).toLocaleDateString('ar-SA')}
+                          </span>
+                        )}
+                        {member.gender === 'male' ? (
+                          <User className="h-3 w-3 text-blue-500" />
+                        ) : (
+                          <UserIcon className="h-3 w-3 text-pink-500" />
+                        )}
+                        {member.isFounder && (
+                          <Crown className="h-3 w-3 text-yellow-500" />
+                        )}
+                        {!member.isAlive && (
+                          <Skull className="h-3 w-3 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {member.isFounder && (
-                      <Crown className="h-4 w-4 text-yellow-500" />
-                    )}
-                    {!member.isAlive && (
-                      <Skull className="h-4 w-4 text-muted-foreground" />
-                    )}
+                  
+                  {/* Edit & Remove buttons at the most left */}
+                  <div className="flex flex-col gap-1 flex-shrink-0">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditMember(member);
+                      }}
+                      className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
+                    >
+                      <Edit2 className="h-3 w-3 text-gray-600" />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Add remove member function here
+                        console.log('Remove member:', member.id);
+                      }}
+                      className="h-7 w-7 p-0 bg-red-50/80 hover:bg-red-100 border border-red-200 shadow-sm"
+                    >
+                      <Trash2 className="h-3 w-3 text-red-500" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
