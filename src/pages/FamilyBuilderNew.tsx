@@ -2259,6 +2259,7 @@ const FamilyBuilderNew = () => {
                         getAdditionalInfo={getAdditionalInfo}
                         getGenderColor={getGenderColor}
                         familyMembers={familyMembers}
+                        marriages={familyMarriages}
                       />
                     </div>
                   </DrawerContent>
@@ -2285,6 +2286,7 @@ const FamilyBuilderNew = () => {
                       getAdditionalInfo={getAdditionalInfo}
                       getGenderColor={getGenderColor}
                       familyMembers={familyMembers}
+                      marriages={familyMarriages}
                     />
                   </CardContent>
                 </Card>
@@ -2333,7 +2335,8 @@ const MemberList = ({
   onFilterChange,
   getAdditionalInfo,
   getGenderColor,
-  familyMembers 
+  familyMembers,
+  marriages 
 }: any) => {
   return (
     <div className="space-y-4">
@@ -2408,6 +2411,29 @@ const MemberList = ({
                               {father.name}
                             </p>
                           );
+                        }
+                        return null;
+                      })()}
+                      
+                      {/* Spouse information - show if married to existing family member */}
+                      {(() => {
+                        // Find marriage where this member is husband or wife
+                        const marriage = marriages?.find(m => 
+                          m.husband_id === member.id || m.wife_id === member.id
+                        );
+                        
+                        if (marriage) {
+                          // Find the spouse (the other person in the marriage)
+                          const spouseId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
+                          const spouse = familyMembers?.find(m => m?.id === spouseId);
+                          
+                          if (spouse) {
+                            return (
+                              <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                                زوج {spouse.name}
+                              </p>
+                            );
+                          }
                         }
                         return null;
                       })()}
