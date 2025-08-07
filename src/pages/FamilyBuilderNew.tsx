@@ -1699,7 +1699,8 @@ const FamilyBuilderNew = () => {
                                                     <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                                                     <CommandList>
                                                        <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                         لا توجد إناث عازبات من نفس العائلة متاحات للزواج.
+                                                         لا توجد إناث عازبات من نفس العائلة متاحات للزواج.<br/>
+                                                         <span className="text-xs mt-1 block">تأكد من إضافة الأعضاء المطلوبين لشجرة العائلة أولاً</span>
                                                        </CommandEmpty>
                                                       <CommandGroup>
                                                          {familyMembers
