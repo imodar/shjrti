@@ -1250,55 +1250,57 @@ const FamilyBuilderNew = () => {
                       {/* Step Content */}
                       {currentStep === 1 && (
                          <div className="space-y-4">
-                           <h3 className="text-lg font-semibold">المعلومات الأساسية</h3>
+                           <h3 className="text-lg font-semibold font-arabic">المعلومات الأساسية</h3>
                            
                            {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
                              <div className="col-span-12 md:col-span-6">
-                               <Label htmlFor="name">الاسم الكامل *</Label>
-                               <Input
-                                 id="name"
-                                 value={formData.name}
-                                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                 placeholder="أدخل الاسم الكامل"
-                               />
+                               <Label htmlFor="name" className="font-arabic">الاسم الكامل *</Label>
+                                <Input
+                                  id="name"
+                                  value={formData.name}
+                                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                  placeholder="أدخل الاسم الكامل"
+                                  className="font-arabic"
+                                />
                              </div>
                              
                              <div className="col-span-6 md:col-span-3">
-                               <Label htmlFor="gender">الجنس</Label>
-                               <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
-                                 <SelectTrigger>
-                                   <SelectValue placeholder="اختر الجنس" />
-                                 </SelectTrigger>
-                                 <SelectContent>
-                                   <SelectItem value="male">ذكر</SelectItem>
-                                   <SelectItem value="female">أنثى</SelectItem>
-                                 </SelectContent>
-                               </Select>
+                                <Label htmlFor="gender" className="font-arabic">الجنس</Label>
+                                <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                                  <SelectTrigger className="font-arabic">
+                                    <SelectValue placeholder="اختر الجنس" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="male" className="font-arabic">ذكر</SelectItem>
+                                    <SelectItem value="female" className="font-arabic">أنثى</SelectItem>
+                                  </SelectContent>
+                                </Select>
                              </div>
                               
                              <div className="col-span-6 md:col-span-3">
-                               <Label>تاريخ الميلاد</Label>
-                               <EnhancedDatePicker
-                                 value={formData.birthDate}
-                                 onChange={(date) => setFormData({...formData, birthDate: date})}
-                                 placeholder="اختر تاريخ الميلاد"
-                               />
+                                <Label className="font-arabic">تاريخ الميلاد</Label>
+                                <EnhancedDatePicker
+                                  value={formData.birthDate}
+                                  onChange={(date) => setFormData({...formData, birthDate: date})}
+                                  placeholder="اختر تاريخ الميلاد"
+                                  className="font-arabic"
+                                />
                              </div>
                            </div>
                             
                            {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
                              <div className="col-span-12 md:col-span-6">
-                               <Label htmlFor="parentRelation">العلاقة العائلية (الوالدين)</Label>
+                               <Label htmlFor="parentRelation" className="font-arabic">العلاقة العائلية (الوالدين)</Label>
                                 <Select 
                                   value={formData.selectedParent || ""} 
                                   onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
                                   disabled={loading || !familyMarriages || !familyMembers}
                                 >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder={loading ? "جاري التحميل..." : "اختر الوالدين"} />
-                                  </SelectTrigger>
+                                   <SelectTrigger className="font-arabic">
+                                     <SelectValue placeholder={loading ? "جاري التحميل..." : "اختر الوالدين"} />
+                                   </SelectTrigger>
                                   <SelectContent>
                                     {loading || !familyMarriages || !familyMembers ? (
                                       <SelectItem value="loading" disabled>جاري تحميل البيانات...</SelectItem>
