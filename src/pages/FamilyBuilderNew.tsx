@@ -785,6 +785,7 @@ const FamilyBuilderNew = () => {
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
+    maritalStatus?: string;
     croppedImage?: string | null;
     isFamilyMember?: boolean;
     existingFamilyMemberId?: string;
@@ -1420,170 +1421,347 @@ const FamilyBuilderNew = () => {
                            </p>
                            
                            {formData.gender === "male" ? (
-                             <div className="space-y-4">
-                               {wives.map((wife, index) => (
-                                 <div key={index} className="border rounded-lg p-4">
-                                   <div className="flex items-center justify-between mb-3">
-                                     <h4 className="font-medium">الزوجة {index + 1}</h4>
-                                     <Button
-                                       variant="outline"
-                                       size="sm"
-                                       onClick={() => {
-                                         const newWives = wives.filter((_, i) => i !== index);
-                                         setWives(newWives);
-                                       }}
-                                     >
-                                       <X className="h-4 w-4" />
-                                       إزالة
-                                     </Button>
-                                   </div>
-                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                     <div>
-                                       <Label>اسم الزوجة</Label>
-                                       <Input
-                                         value={wife.name}
-                                         onChange={(e) => {
-                                           const newWives = [...wives];
-                                           newWives[index] = {...wife, name: e.target.value};
-                                           setWives(newWives);
-                                         }}
-                                         placeholder="أدخل اسم الزوجة"
-                                       />
-                                     </div>
-                                     <div>
-                                       <Label>تاريخ الميلاد</Label>
-                                       <EnhancedDatePicker
-                                         value={wife.birthDate}
-                                         onChange={(date) => {
-                                           const newWives = [...wives];
-                                           newWives[index] = {...wife, birthDate: date};
-                                           setWives(newWives);
-                                         }}
-                                         placeholder="اختر تاريخ الميلاد"
-                                       />
-                                     </div>
-                                   </div>
-                                   <div className="mt-4 flex items-center space-x-2">
-                                     <input
-                                       type="checkbox"
-                                       id={`wifeAlive${index}`}
-                                       checked={wife.isAlive}
-                                       onChange={(e) => {
-                                         const newWives = [...wives];
-                                         newWives[index] = {...wife, isAlive: e.target.checked};
-                                         setWives(newWives);
-                                       }}
-                                     />
-                                     <Label htmlFor={`wifeAlive${index}`}>على قيد الحياة</Label>
-                                   </div>
-                                   {!wife.isAlive && (
-                                     <div className="mt-4">
-                                       <Label>تاريخ الوفاة</Label>
-                                       <EnhancedDatePicker
-                                         value={wife.deathDate}
-                                         onChange={(date) => {
-                                           const newWives = [...wives];
-                                           newWives[index] = {...wife, deathDate: date};
-                                           setWives(newWives);
-                                         }}
-                                         placeholder="اختر تاريخ الوفاة"
-                                       />
-                                     </div>
-                                   )}
-                                 </div>
-                               ))}
-                               
-                               <Button
-                                 type="button"
-                                 variant="outline"
-                                 onClick={() => {
-                                   setWives([...wives, {
-                                     id: '',
-                                     name: '',
-                                     isAlive: true,
-                                     birthDate: null,
-                                     deathDate: null,
-                                     maritalStatus: 'married'
-                                   }]);
-                                 }}
-                                 className="w-full"
-                               >
-                                 <Plus className="h-4 w-4 mr-2" />
-                                 إضافة زوجة
-                               </Button>
-                             </div>
-                           ) : (
-                             <div className="space-y-4">
-                               {husband ? (
-                                 <div className="border rounded-lg p-4">
-                                   <div className="flex items-center justify-between mb-3">
-                                     <h4 className="font-medium">معلومات الزوج</h4>
-                                     <Button
-                                       variant="outline"
-                                       size="sm"
-                                       onClick={() => setHusband(null)}
-                                     >
-                                       <X className="h-4 w-4" />
-                                       إزالة
-                                     </Button>
-                                   </div>
-                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                     <div>
-                                       <Label>اسم الزوج</Label>
-                                       <Input
-                                         value={husband.name}
-                                         onChange={(e) => setHusband({...husband, name: e.target.value})}
-                                         placeholder="أدخل اسم الزوج"
-                                       />
-                                     </div>
-                                     <div>
-                                       <Label>تاريخ الميلاد</Label>
-                                       <EnhancedDatePicker
-                                         value={husband.birthDate}
-                                         onChange={(date) => setHusband({...husband, birthDate: date})}
-                                         placeholder="اختر تاريخ الميلاد"
-                                       />
-                                     </div>
-                                   </div>
-                                   <div className="mt-4 flex items-center space-x-2">
-                                     <input
-                                       type="checkbox"
-                                       id="husbandAlive"
-                                       checked={husband.isAlive}
-                                       onChange={(e) => setHusband({...husband, isAlive: e.target.checked})}
-                                     />
-                                     <Label htmlFor="husbandAlive">على قيد الحياة</Label>
-                                   </div>
-                                   {!husband.isAlive && (
-                                     <div className="mt-4">
-                                       <Label>تاريخ الوفاة</Label>
-                                       <EnhancedDatePicker
-                                         value={husband.deathDate}
-                                         onChange={(date) => setHusband({...husband, deathDate: date})}
-                                         placeholder="اختر تاريخ الوفاة"
-                                       />
-                                     </div>
-                                   )}
-                                 </div>
-                               ) : (
-                                 <Button
-                                   type="button"
-                                   variant="outline"
-                                   onClick={() => setHusband({
-                                     id: '',
-                                     name: '',
-                                     isAlive: true,
-                                     birthDate: null,
-                                     deathDate: null
-                                   })}
-                                   className="w-full"
-                                 >
-                                   <Plus className="h-4 w-4 mr-2" />
-                                   إضافة زوج
-                                 </Button>
-                               )}
-                             </div>
-                           )}
+                              <div className="space-y-6">
+                                {wives.map((wife, index) => (
+                                  <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <h4 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                                        <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg"></div>
+                                        الزوجة {index + 1}
+                                      </h4>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          const newWives = wives.filter((_, i) => i !== index);
+                                          setWives(newWives);
+                                        }}
+                                        className="gap-2 border-2 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300"
+                                      >
+                                        <X className="h-4 w-4" />
+                                        إزالة
+                                      </Button>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                      {/* Wife Name */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          اسم الزوجة
+                                        </Label>
+                                        <div className="relative">
+                                          <Input
+                                            value={wife.name}
+                                            onChange={(e) => {
+                                              const newWives = [...wives];
+                                              newWives[index] = {...wife, name: e.target.value};
+                                              setWives(newWives);
+                                            }}
+                                            placeholder="أدخل اسم الزوجة"
+                                            className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Birth Date */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          تاريخ الميلاد
+                                        </Label>
+                                        <div className="relative">
+                                          <EnhancedDatePicker
+                                            value={wife.birthDate}
+                                            onChange={(date) => {
+                                              const newWives = [...wives];
+                                              newWives[index] = {...wife, birthDate: date};
+                                              setWives(newWives);
+                                            }}
+                                            placeholder="اختر تاريخ الميلاد"
+                                            className="h-11 text-sm border-2 border-rose-200/50 dark:border-rose-700/50 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-rose-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                            <CalendarIcon className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                      {/* Marital Status */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الاجتماعية
+                                        </Label>
+                                        <div className="relative">
+                                          <Select
+                                            value={wife.maritalStatus || "married"}
+                                            onValueChange={(value) => {
+                                              const newWives = [...wives];
+                                              newWives[index] = {...wife, maritalStatus: value};
+                                              setWives(newWives);
+                                            }}
+                                          >
+                                            <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                              <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                              <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                              <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Life Status */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الحيوية
+                                        </Label>
+                                        <div className="relative">
+                                          <Select
+                                            value={wife.isAlive ? "alive" : "deceased"}
+                                            onValueChange={(value) => {
+                                              const newWives = [...wives];
+                                              newWives[index] = {
+                                                ...wife, 
+                                                isAlive: value === "alive",
+                                                deathDate: value === "alive" ? null : wife.deathDate
+                                              };
+                                              setWives(newWives);
+                                            }}
+                                          >
+                                            <SelectTrigger className="h-11 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                              <SelectValue placeholder="الحالة" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                              <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                              <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Death Date - only show if deceased */}
+                                    {!wife.isAlive && (
+                                      <div className="mt-6 animate-fade-in">
+                                        <div className="group">
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                            تاريخ الوفاة
+                                          </Label>
+                                          <div className="relative">
+                                            <EnhancedDatePicker
+                                              value={wife.deathDate}
+                                              onChange={(date) => {
+                                                const newWives = [...wives];
+                                                newWives[index] = {...wife, deathDate: date};
+                                                setWives(newWives);
+                                              }}
+                                              placeholder="اختر تاريخ الوفاة"
+                                              className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                            />
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                              <CalendarIcon className="h-3 w-3 text-white" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                                
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setWives([...wives, {
+                                      id: '',
+                                      name: '',
+                                      isAlive: true,
+                                      birthDate: null,
+                                      deathDate: null,
+                                      maritalStatus: 'married'
+                                    }]);
+                                  }}
+                                  className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
+                                >
+                                  <Plus className="h-5 w-5 mr-2" />
+                                  إضافة زوجة
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="space-y-6">
+                                {husband ? (
+                                  <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border border-white/30 dark:border-gray-700/30">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <h4 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                                        <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg"></div>
+                                        معلومات الزوج
+                                      </h4>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setHusband(null)}
+                                        className="gap-2 border-2 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300"
+                                      >
+                                        <X className="h-4 w-4" />
+                                        إزالة
+                                      </Button>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                      {/* Husband Name */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          اسم الزوج
+                                        </Label>
+                                        <div className="relative">
+                                          <Input
+                                            value={husband.name}
+                                            onChange={(e) => setHusband({...husband, name: e.target.value})}
+                                            placeholder="أدخل اسم الزوج"
+                                            className="h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
+                                            <User className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Birth Date */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          تاريخ الميلاد
+                                        </Label>
+                                        <div className="relative">
+                                          <EnhancedDatePicker
+                                            value={husband.birthDate}
+                                            onChange={(date) => setHusband({...husband, birthDate: date})}
+                                            placeholder="اختر تاريخ الميلاد"
+                                            className="h-11 text-sm border-2 border-sky-200/50 dark:border-sky-700/50 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                          />
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-sky-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                            <CalendarIcon className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                      {/* Marital Status */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الاجتماعية
+                                        </Label>
+                                        <div className="relative">
+                                          <Select
+                                            value={husband.maritalStatus || "married"}
+                                            onValueChange={(value) => setHusband({...husband, maritalStatus: value})}
+                                          >
+                                            <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                              <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                              <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                              <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Life Status */}
+                                      <div className="group">
+                                        <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                          الحالة الحيوية
+                                        </Label>
+                                        <div className="relative">
+                                          <Select
+                                            value={husband.isAlive ? "alive" : "deceased"}
+                                            onValueChange={(value) => setHusband({
+                                              ...husband, 
+                                              isAlive: value === "alive",
+                                              deathDate: value === "alive" ? null : husband.deathDate
+                                            })}
+                                          >
+                                            <SelectTrigger className="h-11 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                              <SelectValue placeholder="الحالة" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                              <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                              <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                            <Heart className="h-3 w-3 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Death Date - only show if deceased */}
+                                    {!husband.isAlive && (
+                                      <div className="mt-6 animate-fade-in">
+                                        <div className="group">
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                            تاريخ الوفاة
+                                          </Label>
+                                          <div className="relative">
+                                            <EnhancedDatePicker
+                                              value={husband.deathDate}
+                                              onChange={(date) => setHusband({...husband, deathDate: date})}
+                                              placeholder="اختر تاريخ الوفاة"
+                                              className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                            />
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                              <CalendarIcon className="h-3 w-3 text-white" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setHusband({
+                                      id: '',
+                                      name: '',
+                                      isAlive: true,
+                                      birthDate: null,
+                                      deathDate: null,
+                                      maritalStatus: 'married'
+                                    })}
+                                    className="w-full h-12 border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 rounded-xl"
+                                  >
+                                    <Plus className="h-5 w-5 mr-2" />
+                                    إضافة زوج
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                          </div>
                        )}
 
