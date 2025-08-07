@@ -846,31 +846,41 @@ export const ModernFamilyMemberModal = ({ isOpen, onClose, onSubmit, familyId, e
                                              }}
                                              className="font-arabic whitespace-nowrap"
                                            >
-                                                 {(() => {
-                                                   // تحديد من ينتمي للعائلة - الزوج أم الزوجة
-                                                   const husbandFromFamily = familyMembers.some(member => member.id === marriage.husband.id);
-                                                   const wifeFromFamily = familyMembers.some(member => member.id === marriage.wife.id);
-                                                   
-                                                   if (husbandFromFamily && wifeFromFamily) {
-                                                     // كلاهما من العائلة - نعرض الزوج أولاً
-                                                     return marriage.husband.is_founder 
-                                                       ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                                       : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name}`;
-                                                   } else if (husbandFromFamily) {
-                                                     // الزوج من العائلة
-                                                     return marriage.husband.is_founder 
-                                                       ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
-                                                       : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name}`;
-                                                   } else if (wifeFromFamily) {
-                                                     // الزوجة من العائلة
-                                                     return (marriage.wife as any).is_founder 
-                                                       ? `${marriage.wife.name} ${familyName} & ${marriage.husband.name}`
-                                                       : `${marriage.wife.name} ${(marriage.wife as any).father_name ? (marriage.wife as any).father_name + ' ' : ''}${familyName} & ${marriage.husband.name}`;
-                                                   } else {
-                                                     // لا أحد منهما من العائلة (حالة غريبة)
-                                                     return `${marriage.husband.name} & ${marriage.wife.name}`;
-                                                   }
-                                                 })()}
+                                                  {(() => {
+                                                    // تحديد من ينتمي للعائلة - الزوج أم الزوجة
+                                                    const husbandFromFamily = familyMembers.some(member => member.id === marriage.husband.id);
+                                                    const wifeFromFamily = familyMembers.some(member => member.id === marriage.wife.id);
+                                                    
+                                                    console.log('🔍 Marriage debug:', {
+                                                      husbandId: marriage.husband.id,
+                                                      husbandName: marriage.husband.name,
+                                                      wifeId: marriage.wife.id,
+                                                      wifeName: marriage.wife.name,
+                                                      husbandFromFamily,
+                                                      wifeFromFamily,
+                                                      familyMembersIds: familyMembers.map(m => m.id)
+                                                    });
+                                                    
+                                                    if (husbandFromFamily && wifeFromFamily) {
+                                                      // كلاهما من العائلة - نعرض الزوج أولاً
+                                                      return marriage.husband.is_founder 
+                                                        ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                                        : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name}`;
+                                                    } else if (husbandFromFamily) {
+                                                      // الزوج من العائلة
+                                                      return marriage.husband.is_founder 
+                                                        ? `${marriage.husband.name} ${familyName} & ${marriage.wife.name}`
+                                                        : `${marriage.husband.name} ${(marriage.husband as any).father_name ? (marriage.husband as any).father_name + ' ' : ''}${familyName} & ${marriage.wife.name}`;
+                                                    } else if (wifeFromFamily) {
+                                                      // الزوجة من العائلة  
+                                                      return (marriage.wife as any).is_founder 
+                                                        ? `${marriage.wife.name} ${familyName} & ${marriage.husband.name}`
+                                                        : `${marriage.wife.name} ${(marriage.wife as any).father_name ? (marriage.wife as any).father_name + ' ' : ''}${familyName} & ${marriage.husband.name}`;
+                                                    } else {
+                                                      // لا أحد منهما من العائلة (حالة غريبة)
+                                                      return `${marriage.husband.name} & ${marriage.wife.name}`;
+                                                    }
+                                                  })()}
                                            </CommandItem>
                                          ))}
                                        </CommandGroup>
