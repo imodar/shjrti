@@ -669,59 +669,75 @@ const FamilyBuilderNew = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200/50 dark:from-blue-950/20 dark:to-blue-900/10 dark:border-blue-800/30">
-                <CardContent className="p-4">
+              <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10 hover:shadow-2xl transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-lg"></div>
+                <CardContent className="relative p-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500/10 rounded-lg">
-                      <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-lg opacity-20 animate-pulse"></div>
+                      <div className="relative p-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-lg border border-emerald-200/20 dark:border-emerald-700/20">
+                        <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      </div>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{familyMembers.length}</p>
-                      <p className="text-sm text-blue-600/70 dark:text-blue-400/70">إجمالي الأعضاء</p>
+                      <p className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{familyMembers.length}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي الأعضاء</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-50 to-green-100/50 border-green-200/50 dark:from-green-950/20 dark:to-green-900/10 dark:border-green-800/30">
-                <CardContent className="p-4">
+              <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10 hover:shadow-2xl transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-teal-500/5 to-amber-500/5 rounded-lg"></div>
+                <CardContent className="relative p-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
-                      <TreePine className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-amber-500 rounded-lg blur-lg opacity-20 animate-pulse"></div>
+                      <div className="relative p-2 bg-gradient-to-r from-teal-500/10 to-amber-500/10 rounded-lg border border-teal-200/20 dark:border-teal-700/20">
+                        <TreePine className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                      </div>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">{calculateGenerationCount()}</p>
-                      <p className="text-sm text-green-600/70 dark:text-green-400/70">الأجيال</p>
+                      <p className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">{calculateGenerationCount()}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">الأجيال</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-pink-50 to-pink-100/50 border-pink-200/50 dark:from-pink-950/20 dark:to-pink-900/10 dark:border-pink-800/30">
-                <CardContent className="p-4">
+              <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10 hover:shadow-2xl transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 to-rose-500/5 rounded-lg"></div>
+                <CardContent className="relative p-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-pink-500/10 rounded-lg">
-                      <Heart className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg blur-lg opacity-20 animate-pulse"></div>
+                      <div className="relative p-2 bg-gradient-to-r from-pink-500/10 to-rose-500/10 rounded-lg border border-pink-200/20 dark:border-pink-700/20">
+                        <Heart className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                      </div>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-pink-700 dark:text-pink-300">{familyMarriages.length}</p>
-                      <p className="text-sm text-pink-600/70 dark:text-pink-400/70">الزيجات</p>
+                      <p className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">{familyMarriages.length}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">الزيجات</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200/50 dark:from-purple-950/20 dark:to-purple-900/10 dark:border-purple-800/30">
-                <CardContent className="p-4">
+              <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10 hover:shadow-2xl transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-lg"></div>
+                <CardContent className="relative p-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500/10 rounded-lg">
-                      <Crown className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-violet-500 rounded-lg blur-lg opacity-20 animate-pulse"></div>
+                      <div className="relative p-2 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-lg border border-purple-200/20 dark:border-purple-700/20">
+                        <Crown className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      </div>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+                      <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">
                         {familyMembers.filter(m => m.isFounder).length}
                       </p>
-                      <p className="text-sm text-purple-600/70 dark:text-purple-400/70">المؤسسون</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">المؤسسون</p>
                     </div>
                   </div>
                 </CardContent>
@@ -758,16 +774,19 @@ const FamilyBuilderNew = () => {
                   "space-y-6",
                   isMobile ? "order-2" : "col-span-8 order-1"
                 )}>
-                  <Card className="h-fit">
-                    <CardHeader className="pb-4">
+                  <Card className="h-fit relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-lg"></div>
+                    <CardHeader className="pb-4 relative">
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
-                          {formMode === 'view' && <User className="h-5 w-5" />}
-                          {formMode === 'add' && <UserPlus className="h-5 w-5" />}
-                          {formMode === 'edit' && <Edit className="h-5 w-5" />}
-                          {formMode === 'view' && "معلومات العضو"}
-                          {formMode === 'add' && "إضافة عضو جديد"}
-                          {formMode === 'edit' && "تعديل العضو"}
+                          {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                          {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                          {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                          <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            {formMode === 'view' && "معلومات العضو"}
+                            {formMode === 'add' && "إضافة عضو جديد"}
+                            {formMode === 'edit' && "تعديل العضو"}
+                          </span>
                         </CardTitle>
                         {formMode === 'view' && (
                           <Button onClick={handleAddMember} className="flex items-center gap-2">
@@ -782,7 +801,7 @@ const FamilyBuilderNew = () => {
                         )}
                       </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="relative">
                       {formMode === 'view' ? (
                         <div className="text-center py-12 text-muted-foreground">
                           <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -976,14 +995,17 @@ const FamilyBuilderNew = () => {
                       </DrawerContent>
                     </Drawer>
                   ) : (
-                    <Card>
-                      <CardHeader className="pb-4">
+                    <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-lg"></div>
+                      <CardHeader className="pb-4 relative">
                         <CardTitle className="flex items-center gap-2">
-                          <Users className="h-5 w-5" />
-                          أعضاء العائلة ({familyMembers.length})
+                          <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                          <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            أعضاء العائلة ({familyMembers.length})
+                          </span>
                         </CardTitle>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="relative">
                         <MemberList 
                           members={filteredMembers}
                           onEditMember={handleEditMember}
@@ -1002,22 +1024,30 @@ const FamilyBuilderNew = () => {
             </TabsContent>
 
             <TabsContent value="tree">
-              <Card>
-                <CardContent className="p-8">
+              <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-lg"></div>
+                <CardContent className="relative p-8">
                   <div className="text-center text-muted-foreground">
-                    <TreePine className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>عرض الشجرة سيتم تطويره قريباً</p>
+                    <div className="relative inline-block">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-20 animate-pulse"></div>
+                      <TreePine className="relative h-12 w-12 mx-auto mb-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <p className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent font-medium">عرض الشجرة سيتم تطويره قريباً</p>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
             <TabsContent value="statistics">
-              <Card>
-                <CardContent className="p-8">
+              <Card className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 rounded-lg"></div>
+                <CardContent className="relative p-8">
                   <div className="text-center text-muted-foreground">
-                    <Star className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>الإحصائيات المفصلة ستتوفر قريباً</p>
+                    <div className="relative inline-block">
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg opacity-20 animate-pulse"></div>
+                      <Star className="relative h-12 w-12 mx-auto mb-4 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <p className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent font-medium">الإحصائيات المفصلة ستتوفر قريباً</p>
                   </div>
                 </CardContent>
               </Card>
@@ -1105,7 +1135,7 @@ const MemberList = ({
           members.map((member: any) => (
             <Card 
               key={member.id} 
-              className="cursor-pointer hover:shadow-md transition-shadow"
+              className="relative cursor-pointer bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm border border-white/30 dark:border-gray-600/30 hover:bg-white/30 dark:hover:bg-gray-800/30 transition-all duration-300 hover:shadow-lg"
               onClick={() => onEditMember(member)}
             >
               <CardContent className="p-4">
