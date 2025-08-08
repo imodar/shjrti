@@ -16,7 +16,8 @@ import {
   Gem,
   Shield,
   X,
-  Search
+  Search,
+  Loader2
 } from "lucide-react";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -29,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -75,6 +77,19 @@ const Dashboard = () => {
   const [deleteTreeId, setDeleteTreeId] = useState<string | null>(null);
   const [deleteTreeName, setDeleteTreeName] = useState("");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
+  // Deletion progress modal state
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const deletionSteps = [
+    'جاري مسح الأعضاء',
+    'جاري مسح العلاقات',
+    'جاري مسح الوسائط والذكريات',
+    'جاري تنظيف الشجرة'
+  ];
+  const [currentStep, setCurrentStep] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletionError, setDeletionError] = useState<string | null>(null);
 
   // Fetch user's data
   useEffect(() => {
@@ -221,6 +236,16 @@ const Dashboard = () => {
     fetchUserData();
   }, [user?.id, toast]);
 
+  // Map progress to current step index
+  useEffect(() => {
+    const stepsCount = deletionSteps.length;
+    // Avoid NaN when there are no steps
+    if (stepsCount > 0) {
+      const idx = Math.min(Math.floor((progress / 100) * stepsCount), stepsCount - 1);
+      setCurrentStep(idx);
+    }
+  }, [progress, deletionSteps.length]);
+
   // Check if user can create new trees
   const canCreateNewTree = () => {
     if (!userSubscription?.max_trees) return false;
@@ -265,6 +290,18 @@ const Dashboard = () => {
       return;
     }
 
+    // Close confirm modal and open progress modal
+    setShowDeleteModal(false);
+    setShowProgressModal(true);
+    setIsDeleting(true);
+    setDeletionError(null);
+    setProgress(0);
+
+    // Start a smooth progress animation up to 95%
+    const interval = setInterval(() => {
+      setProgress((prev) => Math.min(prev + 5, 95));
+    }, 400);
+
     console.log('🗑️ Attempting to delete tree:', deleteTreeId);
     console.log('👤 Current user ID:', user?.id);
     
@@ -272,39 +309,26 @@ const Dashboard = () => {
       console.log('🗑️ Starting delete operation for tree:', deleteTreeId);
       console.log('👤 User ID for delete operation:', user?.id);
       
-      // Delete the tree completely using secure function
+      // Perform deletion via secure function
       const { data, error } = await supabase
         .rpc('delete_family_complete', { family_uuid: deleteTreeId });
 
       console.log('📊 Delete operation result:', { data, error });
       
-      if (error) {
-        console.error('❌ Delete error details:', error);
-        toast({
-          title: t('dashboard.deletion_error', 'Deletion Error'),
-          description: `${t('dashboard.tree_deletion_error', 'Error occurred while deleting family tree')}: ${error.message}`,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (!data) {
-        console.error('❌ Family deletion failed');
-        toast({
-          title: t('dashboard.deletion_error', 'Deletion Error'),
-          description: t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it'),
-          variant: "destructive"
-        });
+      if (error || !data) {
+        const message = error?.message || t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it');
+        console.error('❌ Delete error details:', message);
+        setDeletionError(`${t('dashboard.tree_deletion_error', 'Error occurred while deleting family tree')}: ${message}`);
         return;
       }
 
       console.log('✅ Tree and all related data deleted successfully');
       
-      // Remove from local state
-      setFamilyTrees(prev => prev.filter(tree => tree.id !== deleteTreeId));
+      // Ensure progress completes
+      setProgress(100);
       
-      // Close modal and reset state
-      setShowDeleteModal(false);
+      // Update local state
+      setFamilyTrees(prev => prev.filter(tree => tree.id !== deleteTreeId));
       setDeleteTreeId(null);
       setDeleteTreeName("");
       setDeleteConfirmText("");
@@ -313,13 +337,16 @@ const Dashboard = () => {
         title: t('dashboard.deletion_success', 'Deleted Successfully'),
         description: t('dashboard.tree_deletion_success', 'Family tree deleted successfully')
       });
-    } catch (error) {
+
+      // Small delay for users to see 100%
+      await new Promise((res) => setTimeout(res, 600));
+      setShowProgressModal(false);
+    } catch (error: any) {
       console.error('❌ Unexpected error during deletion:', error);
-      toast({
-        title: t('dashboard.error', 'Error'),
-        description: t('dashboard.unexpected_error', 'Unexpected error occurred'),
-        variant: "destructive"
-      });
+      setDeletionError(`${t('dashboard.unexpected_error', 'Unexpected error occurred')}: ${error?.message || ''}`);
+    } finally {
+      clearInterval(interval);
+      setIsDeleting(false);
     }
   };
 
@@ -1088,6 +1115,58 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Deletion Progress Modal */}
+      <Dialog open={showProgressModal} onOpenChange={(open) => { if (!isDeleting) setShowProgressModal(open); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 text-red-600 animate-spin" />
+              {t('deleting_tree', 'جاري حذف الشجرة...')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Progress bar */}
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">
+                {deletionSteps[currentStep] || t('finalizing', 'جاري الإنهاء...')}
+              </div>
+              <Progress value={progress} />
+              <div className="text-xs text-muted-foreground">{progress}%</div>
+            </div>
+
+            {/* Steps list */}
+            <ul className="space-y-2">
+              {deletionSteps.map((step, idx) => (
+                <li
+                  key={idx}
+                  className={`flex items-center gap-2 text-sm ${idx < currentStep ? 'text-emerald-600' : idx === currentStep ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${idx < currentStep ? 'bg-emerald-500' : idx === currentStep ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                  ></span>
+                  {step}
+                </li>
+              ))}
+            </ul>
+
+            {deletionError && (
+              <div className="text-sm text-red-600">
+                {deletionError}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            {!isDeleting && (
+              <Button onClick={() => setShowProgressModal(false)} className="w-full">
+                {t('close', 'إغلاق')}
+              </Button>
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       
