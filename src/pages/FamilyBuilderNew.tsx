@@ -838,6 +838,7 @@ const FamilyBuilderNew = () => {
     isFamilyMember?: boolean;
     existingFamilyMemberId?: string;
     isExistingFamilyMember?: boolean;
+    isSaved?: boolean;
   } | null>(null);
 
   // Command states for search
@@ -1065,95 +1066,207 @@ const FamilyBuilderNew = () => {
         }
       }
 
-      // Insert new family member into database
-      const { data: newMember, error: memberError } = await supabase
-        .from('family_tree_members')
-        .insert({
-          name: submissionData.name,
-          gender: submissionData.gender,
-          birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
-          is_alive: submissionData.isAlive,
-          death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
-          biography: submissionData.bio || null,
-          image_url: submissionData.croppedImage || null,
-          father_id: fatherId,
-          mother_id: motherId,
-          related_person_id: relatedPersonId,
-          family_id: familyId,
-          created_by: familyData?.creator_id,
-          is_founder: submissionData.isFounder || false,
-          marital_status: finalData.maritalStatus || 'single'
-        })
-        .select()
-        .single();
+      let isEditMode = formMode === 'edit' && editingMember;
+      let memberData;
 
-      if (memberError) {
-        console.error('Error adding family member:', memberError);
-        throw memberError;
+      if (isEditMode) {
+        // Update existing member
+        const { data: updatedMember, error: updateError } = await supabase
+          .from('family_tree_members')
+          .update({
+            name: submissionData.name,
+            gender: submissionData.gender,
+            birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: submissionData.isAlive,
+            death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
+            biography: submissionData.bio || null,
+            image_url: submissionData.croppedImage || null,
+            father_id: fatherId,
+            mother_id: motherId,
+            related_person_id: relatedPersonId,
+            marital_status: finalData.maritalStatus || 'single',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editingMember.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Error updating family member:', updateError);
+          throw updateError;
+        }
+
+        memberData = updatedMember;
+        console.log('🔥 Successfully updated family member:', updatedMember);
+      } else {
+        // Insert new family member into database
+        const { data: newMember, error: memberError } = await supabase
+          .from('family_tree_members')
+          .insert({
+            name: submissionData.name,
+            gender: submissionData.gender,
+            birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: submissionData.isAlive,
+            death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
+            biography: submissionData.bio || null,
+            image_url: submissionData.croppedImage || null,
+            father_id: fatherId,
+            mother_id: motherId,
+            related_person_id: relatedPersonId,
+            family_id: familyId,
+            created_by: familyData?.creator_id,
+            is_founder: submissionData.isFounder || false,
+            marital_status: finalData.maritalStatus || 'single'
+          })
+          .select()
+          .single();
+
+        if (memberError) {
+          console.error('Error adding family member:', memberError);
+          throw memberError;
+        }
+
+        memberData = newMember;
+        console.log('🔥 Successfully added family member:', newMember);
       }
 
-      console.log('🔥 Successfully added family member:', newMember);
+      // Track successful marriages for toast message
+      let marriageResults = {
+        successful: 0,
+        failed: 0,
+        details: []
+      };
 
       // Handle marriages if applicable
       if (finalData.maritalStatus === 'married') {
-        // Handle wives for male members
+        // First, deactivate existing marriages for this member if editing
+        if (isEditMode) {
+          await supabase
+            .from('marriages')
+            .update({ is_active: false })
+            .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`);
+        }
+
+        // Handle wives for male members - only process saved wives
         if (submissionData.gender === 'male' && wives.length > 0) {
-          for (const wife of wives) {
+          const savedWives = wives.filter(wife => wife.isSaved === true && wife.existingFamilyMemberId);
+          for (const wife of savedWives) {
+            try {
+              const { error: marriageError } = await supabase
+                .from('marriages')
+                .insert({
+                  family_id: familyId,
+                  husband_id: memberData.id,
+                  wife_id: wife.existingFamilyMemberId || null,
+                  is_active: true,
+                  marital_status: 'married'
+                });
+
+              if (marriageError) {
+                console.error('Error creating marriage with wife:', wife.name, marriageError);
+                marriageResults.failed++;
+                marriageResults.details.push(`فشل ربط الزواج مع ${wife.name}`);
+              } else {
+                marriageResults.successful++;
+                marriageResults.details.push(`تم ربط الزواج مع ${wife.name}`);
+                console.log('🔥 Successfully created marriage with wife:', wife.name);
+              }
+            } catch (error) {
+              console.error('Marriage creation error:', error);
+              marriageResults.failed++;
+              marriageResults.details.push(`خطأ في ربط الزواج مع ${wife.name}`);
+            }
+          }
+        }
+
+        // Handle husband for female members - only if saved and has valid ID
+        if (submissionData.gender === 'female' && husband && husband.isSaved === true && husband.existingFamilyMemberId) {
+          try {
             const { error: marriageError } = await supabase
               .from('marriages')
               .insert({
                 family_id: familyId,
-                husband_id: newMember.id,
-                wife_id: wife.existingFamilyMemberId || null,
+                husband_id: husband.existingFamilyMemberId || null,
+                wife_id: memberData.id,
                 is_active: true,
                 marital_status: 'married'
               });
 
             if (marriageError) {
-              console.error('Error creating marriage:', marriageError);
+              console.error('Error creating marriage with husband:', husband.name, marriageError);
+              marriageResults.failed++;
+              marriageResults.details.push(`فشل ربط الزواج مع ${husband.name}`);
+            } else {
+              marriageResults.successful++;
+              marriageResults.details.push(`تم ربط الزواج مع ${husband.name}`);
+              console.log('🔥 Successfully created marriage with husband:', husband.name);
             }
-          }
-        }
-
-        // Handle husband for female members  
-        if (submissionData.gender === 'female' && husband) {
-          const { error: marriageError } = await supabase
-            .from('marriages')
-            .insert({
-              family_id: familyId,
-              husband_id: husband.existingFamilyMemberId || null,
-              wife_id: newMember.id,
-              is_active: true,
-              marital_status: 'married'
-            });
-
-          if (marriageError) {
-            console.error('Error creating marriage:', marriageError);
+          } catch (error) {
+            console.error('Marriage creation error:', error);
+            marriageResults.failed++;
+            marriageResults.details.push(`خطأ في ربط الزواج مع ${husband.name}`);
           }
         }
       }
       
+      // Refresh family data to show updated information
       await refreshFamilyData();
+      
+      // Reset form state
       setFormMode('view');
       setCurrentStep(1);
       resetFormData();
       setWives([]);
       setHusband(null);
       
-      toast({
-        title: "تم بنجاح",
-        description: editingMember ? "تم تحديث البيانات بنجاح" : "تم إضافة العضو بنجاح",
-      });
+      // Show success toast with detailed information
+      const actionText = isEditMode ? "تحديث" : "إضافة";
+      const actionedText = isEditMode ? "تم تحديث" : "تم إضافة";
+      let toastDescription = `${actionedText} العضو "${submissionData.name}" بنجاح`;
+      
+      // Add marriage information to toast
+      if (marriageResults.successful > 0) {
+        toastDescription += `\n✅ تم ربط ${marriageResults.successful} زواج بنجاح`;
+      }
+      
+      if (marriageResults.failed > 0) {
+        toastDescription += `\n❌ فشل في ربط ${marriageResults.failed} زواج`;
+      }
       
       toast({
-        title: formMode === 'edit' ? "تم تحديث العضو" : "تم إضافة العضو",
-        description: formMode === 'edit' ? "تم تحديث بيانات العضو بنجاح" : "تم إضافة العضو الجديد بنجاح",
+        title: `تم ${actionText} العضو بنجاح`,
+        description: toastDescription,
+        variant: "default"
       });
+
+      // Show additional detailed toast if there were marriage operations
+      if (marriageResults.successful > 0 || marriageResults.failed > 0) {
+        setTimeout(() => {
+          toast({
+            title: "تفاصيل عمليات الزواج",
+            description: marriageResults.details.join('\n'),
+            variant: marriageResults.failed > 0 ? "destructive" : "default"
+          });
+        }, 1000);
+      }
+      
     } catch (error) {
       console.error('Error submitting form:', error);
+      
+      let errorMessage = "حدث خطأ أثناء حفظ البيانات";
+      
+      // Provide more specific error messages
+      if (error.message?.includes('duplicate')) {
+        errorMessage = "يوجد عضو بنفس هذه البيانات مسبقاً";
+      } else if (error.message?.includes('foreign key')) {
+        errorMessage = "خطأ في الربط مع بيانات العائلة";
+      } else if (error.message?.includes('permission')) {
+        errorMessage = "ليس لديك صلاحية لتنفيذ هذا الإجراء";
+      }
+      
       toast({
-        title: "خطأ في الحفظ",
-        description: "حدث خطأ أثناء حفظ البيانات",
+        title: formMode === 'edit' ? "خطأ في التحديث" : "خطأ في الإضافة",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
