@@ -1633,7 +1633,7 @@ const FamilyBuilderNew = () => {
 
       <div className="relative z-10 pt-20">
         {/* Header Box from FamilyBuilder */}
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-2">
           <div className="mb-8">
             <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
               <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
