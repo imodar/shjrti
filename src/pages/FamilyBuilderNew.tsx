@@ -14,6 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown } from "lucide-react";
@@ -536,6 +537,7 @@ const FamilyBuilderNew = () => {
   const [familyMarriages, setFamilyMarriages] = useState([]);
   const [familyData, setFamilyData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [memberListLoading, setMemberListLoading] = useState(false);
 
   // Form panel states
   const [formMode, setFormMode] = useState<'view' | 'add' | 'edit'>('view');
@@ -2958,6 +2960,7 @@ const FamilyBuilderNew = () => {
                         getGenderColor={getGenderColor}
                         familyMembers={familyMembers}
                         marriages={familyMarriages}
+                        memberListLoading={memberListLoading}
                       />
                     </div>
                   </DrawerContent>
@@ -2985,6 +2988,7 @@ const FamilyBuilderNew = () => {
                       getGenderColor={getGenderColor}
                       familyMembers={familyMembers}
                       marriages={familyMarriages}
+                      memberListLoading={memberListLoading}
                     />
                   </CardContent>
                 </Card>
@@ -3034,7 +3038,8 @@ const MemberList = ({
   getAdditionalInfo,
   getGenderColor,
   familyMembers,
-  marriages 
+  marriages,
+  memberListLoading 
 }: any) => {
   return (
     <div className="space-y-4">
@@ -3066,7 +3071,25 @@ const MemberList = ({
 
       {/* Member List */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-hidden">
-        {members.length === 0 ? (
+        {memberListLoading ? (
+          // Loading skeletons
+          Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
+              <div className="flex items-start gap-3">
+                <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : members.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>لا توجد أعضاء</p>
