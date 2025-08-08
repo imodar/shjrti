@@ -824,6 +824,7 @@ const FamilyBuilderNew = () => {
     isFamilyMember?: boolean;
     existingFamilyMemberId?: string;
     isExistingFamilyMember?: boolean;
+    isSaved?: boolean;
   }>>([]);
 
   const [husband, setHusband] = useState<{
@@ -2043,31 +2044,102 @@ const FamilyBuilderNew = () => {
                                               />
                                             </>
                                           )}
+
+                                          {/* Save Wife Button */}
+                                          <div className="pt-4 border-t border-pink-200/30 dark:border-pink-700/30">
+                                            <Button
+                                              type="button"
+                                              onClick={() => {
+                                                // Validate wife data
+                                                const isValid = wife.name.trim() && (
+                                                  (wiveFamilyStatus[index] === 'yes' && wife.existingFamilyMemberId) ||
+                                                  wiveFamilyStatus[index] === 'no'
+                                                );
+
+                                                if (!isValid) {
+                                                  toast({
+                                                    title: "خطأ في البيانات",
+                                                    description: "يرجى إكمال جميع البيانات المطلوبة للزوجة",
+                                                    variant: "destructive"
+                                                  });
+                                                  return;
+                                                }
+
+                                                // Mark wife as saved
+                                                const newWives = [...wives];
+                                                newWives[index] = { ...wife, isSaved: true };
+                                                setWives(newWives);
+
+                                                toast({
+                                                  title: "تم الحفظ بنجاح",
+                                                  description: `تم حفظ بيانات الزوجة ${index + 1} بنجاح`,
+                                                  variant: "default"
+                                                });
+                                              }}
+                                              disabled={wife.isSaved}
+                                              className={cn(
+                                                "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
+                                                wife.isSaved 
+                                                  ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
+                                                  : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl"
+                                              )}
+                                            >
+                                              {wife.isSaved ? (
+                                                <>
+                                                  <Check className="h-4 w-4 mr-2" />
+                                                  تم حفظ البيانات
+                                                </>
+                                              ) : (
+                                                <>
+                                                  <Save className="h-4 w-4 mr-2" />
+                                                  حفظ بيانات الزوجة
+                                                </>
+                                              )}
+                                            </Button>
+                                          </div>
                                         </div>
                                       </div>
                                     ))}
                                     
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => {
-                                        setWives([...wives, {
-                                          id: '',
-                                          name: '',
-                                          isAlive: true,
-                                          birthDate: null,
-                                          deathDate: null,
-                                          maritalStatus: 'married',
-                                          isFamilyMember: true, // Always true now - only family members allowed
-                                          existingFamilyMemberId: '',
-                                          croppedImage: null
-                                        }]);
-                                      }}
-                                      className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
-                                    >
-                                      <Plus className="h-5 w-5 mr-2" />
-                                      إضافة زوجة أخرى
-                                    </Button>
+                                    {/* Show Add Wife Button only if: no wives OR last wife is saved */}
+                                    {(wives.length === 0 || wives[wives.length - 1]?.isSaved) && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                          setWives([...wives, {
+                                            id: '',
+                                            name: '',
+                                            isAlive: true,
+                                            birthDate: null,
+                                            deathDate: null,
+                                            maritalStatus: 'married',
+                                            isFamilyMember: true,
+                                            existingFamilyMemberId: '',
+                                            croppedImage: null,
+                                            isSaved: false
+                                          }]);
+                                          
+                                          // Initialize family status for new wife
+                                          const newStatus = {...wiveFamilyStatus};
+                                          newStatus[wives.length] = null;
+                                          setWiveFamilyStatus(newStatus);
+                                        }}
+                                        className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
+                                      >
+                                        <Plus className="h-5 w-5 mr-2" />
+                                        إضافة زوجة أخرى
+                                      </Button>
+                                    )}
+                                    
+                                    {/* Show message if last wife is not saved */}
+                                    {wives.length > 0 && !wives[wives.length - 1]?.isSaved && (
+                                      <div className="text-center py-4">
+                                        <p className="text-sm text-amber-600 dark:text-amber-400 font-arabic">
+                                          يرجى حفظ بيانات الزوجة الحالية قبل إضافة زوجة أخرى
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
 
@@ -2098,8 +2170,14 @@ const FamilyBuilderNew = () => {
                                                 <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
                                                   {wife.name || `الزوجة ${index + 1}`}
                                                 </h5>
-                                                <p className="text-xs text-muted-foreground font-arabic">
+                                                <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
                                                   {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                  {wife.isSaved && (
+                                                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                      <Check className="h-3 w-3" />
+                                                      محفوظة
+                                                    </span>
+                                                  )}
                                                 </p>
                                               </div>
                                             </div>
