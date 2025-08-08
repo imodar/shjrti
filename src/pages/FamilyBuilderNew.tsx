@@ -17,7 +17,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -3188,28 +3188,71 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Spouse edit warning modal */}
+      {/* Spouse edit warning modal - Creative Design */}
       <AlertDialog open={showSpouseEditWarning} onOpenChange={setShowSpouseEditWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-arabic">لا يمكن تعديل البيانات مباشرة</AlertDialogTitle>
-            <AlertDialogDescription className="font-arabic text-center">
-              <div className="space-y-2">
-                <p>لا يمكن تعديل أو حذف بيانات الزوج/الزوجة مباشرة من هنا.</p>
-                {spousePartnerName && (
-                  <p className="font-semibold">
-                    يرجى التعديل من خلال شاشة تحرير بيانات: <span className="text-primary">{spousePartnerName}</span>
+        <AlertDialogContent className="max-w-md animate-scale-in">
+          <div className="relative overflow-hidden">
+            {/* Background gradient decoration */}
+            <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 opacity-50"></div>
+            
+            {/* Header with icon */}
+            <AlertDialogHeader className="relative z-10 text-center pb-4">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-4 animate-pulse shadow-lg">
+                <Heart className="h-8 w-8 text-white animate-fade-in" />
+              </div>
+              <AlertDialogTitle className="font-arabic text-xl text-gray-800 font-bold">
+                تعديل محمي
+              </AlertDialogTitle>
+            </AlertDialogHeader>
+
+            <AlertDialogDescription className="font-arabic text-center space-y-4 px-2">
+              {/* Main message card */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200 animate-fade-in">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-2">
+                    <Users className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <p className="text-gray-700 font-medium">
+                    لا يمكن تعديل بيانات الزوج/الزوجة مباشرة
                   </p>
-                )}
-                <p className="text-sm text-muted-foreground">
-                  هذا لضمان سلامة البيانات والحفاظ على العلاقات العائلية.
-                </p>
+                </div>
+              </div>
+
+              {/* Partner name highlight */}
+              {spousePartnerName && (
+                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
+                  <div className="flex items-center justify-center mb-2">
+                    <Edit className="h-5 w-5 text-primary mr-2" />
+                    <p className="text-sm text-gray-600">للتعديل، انتقل إلى:</p>
+                  </div>
+                  <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
+                    <p className="font-bold text-primary text-lg animate-pulse">
+                      {spousePartnerName}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Info section */}
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200 animate-fade-in">
+                <div className="flex items-start justify-center">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                    <Shield className="h-3 w-3 text-blue-600" />
+                  </div>
+                  <p className="text-xs text-blue-700 leading-relaxed">
+                    هذا الإجراء يحافظ على سلامة البيانات والعلاقات العائلية المترابطة
+                  </p>
+                </div>
               </div>
             </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="font-arabic">فهمت</AlertDialogCancel>
-          </AlertDialogFooter>
+
+            <AlertDialogFooter className="pt-6">
+              <AlertDialogCancel className="font-arabic w-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border border-gray-300 text-gray-700 hover:text-gray-800 transition-all duration-200 hover-scale">
+                <Check className="h-4 w-4 mr-2" />
+                فهمت
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
