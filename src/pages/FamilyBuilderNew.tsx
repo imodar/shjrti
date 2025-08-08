@@ -17,7 +17,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -3266,20 +3266,154 @@ const FamilyBuilderNew = () => {
 
       {/* Keep existing delete modals */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteWarningMessage}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+        <AlertDialogContent className="max-w-lg animate-scale-in">
+          <div className="relative overflow-hidden">
+            {/* Background gradient decoration */}
+            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 opacity-60"></div>
+            
+            {/* Header with warning icon */}
+            <AlertDialogHeader className="relative z-10 text-center pb-6">
+              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center mb-4 animate-pulse shadow-lg ring-4 ring-red-100">
+                <AlertTriangle className="h-10 w-10 text-white animate-fade-in" />
+              </div>
+              <AlertDialogTitle className="font-arabic text-2xl text-gray-800 font-bold">
+                تحذير حذف العضو
+              </AlertDialogTitle>
+            </AlertDialogHeader>
+
+            {memberToDelete && (
+              <div className="space-y-4 px-2">
+                {/* Member being deleted */}
+                <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border-2 border-red-200 animate-fade-in">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-red-800">العضو المراد حذفه</h3>
+                      <p className="text-red-700 font-medium">{memberToDelete.name}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Items that will be deleted */}
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-fade-in">
+                  <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                      العناصر التي سيتم حذفها
+                    </h3>
+                  </div>
+                  
+                  <div className="p-4 space-y-3">
+                    {(() => {
+                      const spouses = familyMarriages
+                        .filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id)
+                        .map((marriage: any) => {
+                          const spouseId = marriage.husband?.id === memberToDelete.id ? marriage.wife?.id : marriage.husband?.id;
+                          return familyMembers.find(m => m.id === spouseId);
+                        })
+                        .filter(Boolean);
+
+                      const children = familyMembers.filter(m => m.fatherId === memberToDelete.id || m.motherId === memberToDelete.id);
+                      
+                      const getAllDescendants = (parentId: string): any[] => {
+                        const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
+                        let allDescendants = [...directChildren];
+                        directChildren.forEach(child => {
+                          allDescendants = [...allDescendants, ...getAllDescendants(child.id)];
+                        });
+                        return allDescendants;
+                      };
+
+                      const allDescendants = getAllDescendants(memberToDelete.id);
+                      const marriages = familyMarriages.filter((marriage: any) => 
+                        marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id
+                      );
+
+                      return (
+                        <>
+                          {/* Main person */}
+                          <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                            <User className="h-4 w-4 text-red-600" />
+                            <span className="text-red-800 font-medium">الشخص المحدد: {memberToDelete.name}</span>
+                          </div>
+
+                          {/* Spouses */}
+                          {spouses.length > 0 && (
+                            <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                              <Heart className="h-4 w-4 text-pink-600" />
+                              <div>
+                                <span className="text-pink-800 font-medium">الأزواج: {spouses.length}</span>
+                                <div className="text-sm text-pink-700 mt-1">
+                                  {spouses.map((spouse, index) => (
+                                    <span key={index}>
+                                      {spouse?.name || 'غير معروف'}
+                                      {index < spouses.length - 1 && ', '}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Children and descendants */}
+                          {children.length > 0 && (
+                            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                              <Users className="h-4 w-4 text-blue-600" />
+                              <div>
+                                <span className="text-blue-800 font-medium">
+                                  الأطفال المباشرين: {children.length}
+                                </span>
+                                {allDescendants.length > children.length && (
+                                  <div className="text-sm text-blue-700 mt-1">
+                                    إجمالي الأحفاد: {allDescendants.length} شخص
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Marriages */}
+                          {marriages.length > 0 && (
+                            <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                              <Heart className="h-4 w-4 text-purple-600" />
+                              <span className="text-purple-800 font-medium">علاقات الزواج: {marriages.length}</span>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* Warning message */}
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 animate-fade-in">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div className="text-yellow-800">
+                      <p className="font-medium mb-1">تحذير هام:</p>
+                      <p className="text-sm">
+                        هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع البيانات المذكورة أعلاه نهائياً من شجرة العائلة.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <AlertDialogFooter className="gap-3 pt-6">
+            <AlertDialogCancel className="flex-1 hover:bg-gray-100">
+              <X className="h-4 w-4 mr-2" />
+              إلغاء
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-medium shadow-lg"
             >
-              حذف
+              <Trash2 className="h-4 w-4 mr-2" />
+              تأكيد الحذف
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
