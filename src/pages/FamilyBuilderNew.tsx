@@ -3237,7 +3237,7 @@ const MemberList = ({
               onClick={() => onEditMember(member)}
             >
               <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-3 min-h-[80px]">
+                <div className="flex items-center justify-between gap-3 min-h-[80px]">
                   <div className="flex items-start gap-3 flex-1">
                     <Avatar className="h-12 w-12 flex-shrink-0">
                       <AvatarImage src={member.image} />
