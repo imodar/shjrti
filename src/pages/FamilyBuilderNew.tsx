@@ -1604,7 +1604,7 @@ const FamilyBuilderNew = () => {
                 </div>
 
                 {/* Sample Statistics Section - Responsive */}
-                <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 overflow-x-auto pb-2 lg:pb-0">
+                <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 flex-wrap pb-2 lg:pb-0">
                   {/* Members Available */}
                   <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     <Users className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
