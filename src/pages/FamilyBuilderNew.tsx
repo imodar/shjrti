@@ -1615,7 +1615,7 @@ const FamilyBuilderNew = () => {
         });
         return;
       }
-      if (!formData.selectedParent) {
+      if (!formData.selectedParent && !formData.isFounder) {
         toast({
           title: "خطأ في البيانات",
           description: "يرجى اختيار العلاقة العائلية",
