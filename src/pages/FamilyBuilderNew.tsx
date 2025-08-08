@@ -970,18 +970,24 @@ const FamilyBuilderNew = () => {
     const membersToDelete = new Set<string>();
     const marriagesToDelete = new Set<string>();
 
+    // Add the main member to be deleted
     membersToDelete.add(member.id);
 
+    // Find all marriages involving this member
     const memberMarriages = familyMarriages.filter((marriage: any) =>
       marriage.husband?.id === member.id || marriage.wife?.id === member.id
     );
 
+    // Process each marriage
     memberMarriages.forEach((marriage: any) => {
       marriagesToDelete.add(marriage.id);
+      
+      // If deleting a blood family member (not a spouse), also delete their spouse if the spouse is not a blood family member
       if (!checkIfMemberIsSpouse(member)) {
         const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
         if (spouseId) {
           const spouse = familyMembers.find(m => m.id === spouseId);
+          // Delete spouse only if they are not a blood family member (i.e., they are a spouse brought in by marriage)
           if (spouse && checkIfMemberIsSpouse(spouse)) {
             membersToDelete.add(spouseId);
           }
@@ -989,15 +995,22 @@ const FamilyBuilderNew = () => {
       }
     });
 
+    // Recursive function to find and delete all descendants
     const findDescendants = (parentId: string) => {
       const children = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
+      
       children.forEach(child => {
         membersToDelete.add(child.id);
+        
+        // Find and delete marriages of this child
         const childMarriages = familyMarriages.filter((marriage: any) =>
           marriage.husband?.id === child.id || marriage.wife?.id === child.id
         );
+        
         childMarriages.forEach((marriage: any) => {
           marriagesToDelete.add(marriage.id);
+          
+          // If child's spouse is not a blood family member, delete them too
           const spouseId = marriage.husband?.id === child.id ? marriage.wife?.id : marriage.husband?.id;
           if (spouseId) {
             const spouse = familyMembers.find(m => m.id === spouseId);
@@ -1006,35 +1019,46 @@ const FamilyBuilderNew = () => {
             }
           }
         });
+        
+        // Recursively find descendants of this child
         findDescendants(child.id);
       });
     };
 
+    // Start the recursive descent from the member being deleted
     findDescendants(member.id);
 
-    if (marriagesToDelete.size > 0) {
-      const { error: marriageError } = await supabase
-        .from('marriages')
-        .delete()
-        .in('id', Array.from(marriagesToDelete));
-      if (marriageError) throw marriageError;
+    try {
+      // Delete marriages first (to avoid foreign key constraints)
+      if (marriagesToDelete.size > 0) {
+        const { error: marriageError } = await supabase
+          .from('marriages')
+          .delete()
+          .in('id', Array.from(marriagesToDelete));
+        if (marriageError) throw marriageError;
+      }
+
+      // Then delete family members
+      if (membersToDelete.size > 0) {
+        const { error: memberError } = await supabase
+          .from('family_tree_members')
+          .delete()
+          .in('id', Array.from(membersToDelete));
+        if (memberError) throw memberError;
+      }
+
+      // Update local state
+      setFamilyMembers(familyMembers.filter(m => !membersToDelete.has(m.id)));
+      setFamilyMarriages(familyMarriages.filter((marriage: any) => !marriagesToDelete.has(marriage.id)));
+
+      toast({
+        title: t('family_builder.deleted', 'تم الحذف بنجاح'),
+        description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} علاقة زواج من شجرة العائلة`
+      });
+    } catch (error) {
+      console.error('Error in cascading delete:', error);
+      throw error;
     }
-
-    if (membersToDelete.size > 0) {
-      const { error: memberError } = await supabase
-        .from('family_tree_members')
-        .delete()
-        .in('id', Array.from(membersToDelete));
-      if (memberError) throw memberError;
-    }
-
-    setFamilyMembers(familyMembers.filter(m => !membersToDelete.has(m.id)));
-    setFamilyMarriages(familyMarriages.filter((marriage: any) => !marriagesToDelete.has(marriage.id)));
-
-    toast({
-      title: t('family_builder.deleted', 'تم الحذف'),
-      description: `${t('family_builder.deleted_desc', 'تم حذف')} ${membersToDelete.size} ${t('family_builder.member', 'عضو')} و ${marriagesToDelete.size} ${t('family_builder.marriage', 'زواج')} من شجرة العائلة`
-    });
   };
 
   const handleDeleteMember = async (memberOrId: any) => {
@@ -1052,20 +1076,60 @@ const FamilyBuilderNew = () => {
 
     setMemberToDelete(member);
 
+    // Get detailed information about what will be deleted
+    const spouses = familyMarriages
+      .filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id)
+      .map((marriage: any) => {
+        const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
+        return familyMembers.find(m => m.id === spouseId);
+      })
+      .filter(Boolean);
+
+    const children = familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
+    
+    // Count all descendants recursively
+    const getAllDescendants = (parentId: string): any[] => {
+      const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
+      let allDescendants = [...directChildren];
+      directChildren.forEach(child => {
+        allDescendants = [...allDescendants, ...getAllDescendants(child.id)];
+      });
+      return allDescendants;
+    };
+
+    const allDescendants = getAllDescendants(member.id);
+    const marriages = familyMarriages.filter((marriage: any) => 
+      marriage.husband?.id === member.id || marriage.wife?.id === member.id
+    );
+
     const isSpouse = checkIfMemberIsSpouse(member);
+    
     if (isSpouse) {
       setDeleteModalType('spouse');
       setDeleteWarningMessage(
-        t('family_builder.spouse_delete_warning_1', 'هذا الشخص زوج/زوجة لأحد أفراد العائلة.') + "\n" +
-        t('family_builder.spouse_delete_warning_2', 'لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج.')
+        `تحذير: حذف هذا الزوج/الزوجة سيؤدي إلى:\n` +
+        `- حذف الشخص نفسه\n` +
+        `- إزالة علاقة الزواج\n` +
+        (children.length > 0 ? `- حذف ${children.length} من الأطفال وجميع أحفادهم (${allDescendants.length} شخص إجمالي)\n` : '') +
+        `هل أنت متأكد من المتابعة؟`
       );
     } else {
-      const childrenCount = getChildrenCount(member.id);
-      const spousesCount = getSpousesCount(member.id);
       let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
-      if (spousesCount > 0) warningMessage += `- ${spousesCount} زوج/زوجة\n`;
-      if (childrenCount > 0) warningMessage += `- ${childrenCount} طفل/أطفال وجميع أحفادهم\n`;
-      warningMessage += `- جميع الزيجات المرتبطة بهذا الشخص`;
+      warningMessage += `- الشخص نفسه (${member.name})\n`;
+      if (spouses.length > 0) {
+        warningMessage += `- ${spouses.length} زوج/زوجة: ${spouses.map(s => s?.name).join(', ')}\n`;
+      }
+      if (children.length > 0) {
+        warningMessage += `- ${children.length} من الأطفال المباشرين\n`;
+        if (allDescendants.length > children.length) {
+          warningMessage += `- جميع الأحفاد (${allDescendants.length} شخص إجمالي)\n`;
+        }
+      }
+      if (marriages.length > 0) {
+        warningMessage += `- ${marriages.length} من علاقات الزواج\n`;
+      }
+      warningMessage += `\nهل أنت متأكد من المتابعة؟`;
+      
       setDeleteModalType('bloodMember');
       setDeleteWarningMessage(warningMessage);
     }
