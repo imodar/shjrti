@@ -897,6 +897,138 @@ const FamilyBuilderNew = () => {
   const [deleteModalType, setDeleteModalType] = useState<'spouse' | 'bloodMember'>('spouse');
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
 
+  // --- Spouse rules helpers & delete handlers ---
+  const checkIfMemberIsSpouse = (member: any) => {
+    // Spouse: no parents in this family and not a founder
+    return !member?.fatherId && !member?.motherId && !member?.isFounder;
+  };
+
+  const getChildrenCount = (parentId: string) => {
+    return familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId).length;
+  };
+
+  const getSpousesCount = (memberId: string) => {
+    return familyMarriages.filter((marriage: any) => marriage.husband?.id === memberId || marriage.wife?.id === memberId).length;
+  };
+
+  const performCascadingDelete = async (member: any) => {
+    const membersToDelete = new Set<string>();
+    const marriagesToDelete = new Set<string>();
+
+    membersToDelete.add(member.id);
+
+    const memberMarriages = familyMarriages.filter((marriage: any) =>
+      marriage.husband?.id === member.id || marriage.wife?.id === member.id
+    );
+
+    memberMarriages.forEach((marriage: any) => {
+      marriagesToDelete.add(marriage.id);
+      if (!checkIfMemberIsSpouse(member)) {
+        const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
+        if (spouseId) {
+          const spouse = familyMembers.find(m => m.id === spouseId);
+          if (spouse && checkIfMemberIsSpouse(spouse)) {
+            membersToDelete.add(spouseId);
+          }
+        }
+      }
+    });
+
+    const findDescendants = (parentId: string) => {
+      const children = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
+      children.forEach(child => {
+        membersToDelete.add(child.id);
+        const childMarriages = familyMarriages.filter((marriage: any) =>
+          marriage.husband?.id === child.id || marriage.wife?.id === child.id
+        );
+        childMarriages.forEach((marriage: any) => {
+          marriagesToDelete.add(marriage.id);
+          const spouseId = marriage.husband?.id === child.id ? marriage.wife?.id : marriage.husband?.id;
+          if (spouseId) {
+            const spouse = familyMembers.find(m => m.id === spouseId);
+            if (spouse && checkIfMemberIsSpouse(spouse)) {
+              membersToDelete.add(spouseId);
+            }
+          }
+        });
+        findDescendants(child.id);
+      });
+    };
+
+    findDescendants(member.id);
+
+    if (marriagesToDelete.size > 0) {
+      const { error: marriageError } = await supabase
+        .from('marriages')
+        .delete()
+        .in('id', Array.from(marriagesToDelete));
+      if (marriageError) throw marriageError;
+    }
+
+    if (membersToDelete.size > 0) {
+      const { error: memberError } = await supabase
+        .from('family_tree_members')
+        .delete()
+        .in('id', Array.from(membersToDelete));
+      if (memberError) throw memberError;
+    }
+
+    setFamilyMembers(familyMembers.filter(m => !membersToDelete.has(m.id)));
+    setFamilyMarriages(familyMarriages.filter((marriage: any) => !marriagesToDelete.has(marriage.id)));
+
+    toast({
+      title: t('family_builder.deleted', 'تم الحذف'),
+      description: `${t('family_builder.deleted_desc', 'تم حذف')} ${membersToDelete.size} ${t('family_builder.member', 'عضو')} و ${marriagesToDelete.size} ${t('family_builder.marriage', 'زواج')} من شجرة العائلة`
+    });
+  };
+
+  const handleDeleteMember = async (memberOrId: any) => {
+    const id = typeof memberOrId === 'string' ? memberOrId : memberOrId?.id;
+    const member = familyMembers.find(m => m.id === id);
+    if (!member) {
+      toast({ title: t('family_builder.error', 'خطأ'), description: t('family_builder.member_not_found', 'العضو غير موجود'), variant: 'destructive' });
+      return;
+    }
+
+    if (member.isFounder) {
+      toast({ title: t('family_builder.warning', 'تحذير'), description: t('family_builder.cannot_delete_founder', 'لا يمكن حذف مؤسس العائلة'), variant: 'destructive' });
+      return;
+    }
+
+    setMemberToDelete(member);
+
+    const isSpouse = checkIfMemberIsSpouse(member);
+    if (isSpouse) {
+      setDeleteModalType('spouse');
+      setDeleteWarningMessage(
+        t('family_builder.spouse_delete_warning_1', 'هذا الشخص زوج/زوجة لأحد أفراد العائلة.') + "\n" +
+        t('family_builder.spouse_delete_warning_2', 'لحذف هذا الشخص، يجب تعديل بيانات الزوج/الزوجة وإزالة الزواج.')
+      );
+    } else {
+      const childrenCount = getChildrenCount(member.id);
+      const spousesCount = getSpousesCount(member.id);
+      let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
+      if (spousesCount > 0) warningMessage += `- ${spousesCount} زوج/زوجة\n`;
+      if (childrenCount > 0) warningMessage += `- ${childrenCount} طفل/أطفال وجميع أحفادهم\n`;
+      warningMessage += `- جميع الزيجات المرتبطة بهذا الشخص`;
+      setDeleteModalType('bloodMember');
+      setDeleteWarningMessage(warningMessage);
+    }
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!memberToDelete) return;
+    try {
+      await performCascadingDelete(memberToDelete);
+      setShowDeleteModal(false);
+      setMemberToDelete(null);
+    } catch (error) {
+      console.error('Error deleting member:', error);
+      toast({ title: t('family_builder.error', 'خطأ'), description: t('family_builder.delete_error', 'حدث خطأ أثناء حذف العضو'), variant: 'destructive' });
+    }
+  };
+
   const filteredMembers = familyMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === "all" || 
@@ -2952,6 +3084,8 @@ const FamilyBuilderNew = () => {
                       <MemberList 
                         members={filteredMembers}
                         onEditMember={handleEditMember}
+                        onDeleteMember={handleDeleteMember}
+                        checkIfMemberIsSpouse={checkIfMemberIsSpouse}
                         searchTerm={searchTerm}
                         onSearchChange={setSearchTerm}
                         selectedFilter={selectedFilter}
@@ -2980,6 +3114,8 @@ const FamilyBuilderNew = () => {
                     <MemberList 
                       members={filteredMembers}
                       onEditMember={handleEditMember}
+                      onDeleteMember={handleDeleteMember}
+                      checkIfMemberIsSpouse={checkIfMemberIsSpouse}
                       searchTerm={searchTerm}
                       onSearchChange={setSearchTerm}
                       selectedFilter={selectedFilter}
@@ -3010,10 +3146,7 @@ const FamilyBuilderNew = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>إلغاء</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                // TODO: Implement delete logic
-                setShowDeleteModal(false);
-              }}
+              onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               حذف
@@ -3031,6 +3164,8 @@ const FamilyBuilderNew = () => {
 const MemberList = ({ 
   members, 
   onEditMember, 
+  onDeleteMember,
+  checkIfMemberIsSpouse,
   searchTerm, 
   onSearchChange, 
   selectedFilter, 
@@ -3262,10 +3397,10 @@ const MemberList = ({
                         type="button"
                         size="sm"
                         variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEditMember(member);
-                        }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEditMember(member);
+                          }}
                         className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
                       >
                         <Edit2 className="h-3 w-3 text-gray-600" />
@@ -3296,10 +3431,10 @@ const MemberList = ({
                       type="button"
                       size="sm"
                       variant="outline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteMember(member);
-                      }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteMember(member);
+                        }}
                       className="h-7 w-7 p-0 bg-red-50/80 hover:bg-red-100 border border-red-200 shadow-sm"
                     >
                       <Trash2 className="h-3 w-3 text-red-500" />
@@ -3311,138 +3446,6 @@ const MemberList = ({
           ))
         )}
       </div>
-      {/* Delete Information Modal - Creative Design */}
-      <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <AlertDialogContent className="max-w-lg font-arabic border-0 bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-red-950/20 dark:via-gray-900 dark:to-orange-950/20 shadow-2xl">
-          <div className="relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-red-100/50 to-transparent dark:from-red-900/20 rounded-full transform translate-x-16 -translate-y-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-100/50 to-transparent dark:from-orange-900/20 rounded-full transform -translate-x-12 translate-y-12"></div>
-            
-            <AlertDialogHeader className="relative z-10 pb-6">
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="h-8 w-8 text-white" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
-                    <Bell className="h-3 w-3 text-yellow-800" />
-                  </div>
-                </div>
-              </div>
-              
-              <AlertDialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent dark:from-red-400 dark:to-orange-400">
-                معلومات حول العضو
-              </AlertDialogTitle>
-              
-              {memberToDelete && (
-                <div className="text-center mt-2">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <Crown className="h-4 w-4 text-amber-500" />
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">{memberToDelete.name}</span>
-                  </div>
-                </div>
-              )}
-            </AlertDialogHeader>
-            
-            <div className="relative z-10 px-6 pb-6">
-              <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-inner">
-                {deleteModalType === 'spouse' ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-amber-700 dark:text-amber-300">
-                      <Heart className="h-5 w-5 flex-shrink-0" />
-                      <span className="font-medium">زوج/زوجة أحد أفراد العائلة</span>
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      هذا الشخص مرتبط بالعائلة من خلال الزواج ، لإزالته من شجرة العائلة ، يجب تعديل بيانات {
-                        (() => {
-                          // Find the marriage of this spouse
-                          const spouseMarriage = familyMarriages.find(marriage => 
-                            marriage.husband?.id === memberToDelete?.id || marriage.wife?.id === memberToDelete?.id
-                          );
-                          if (spouseMarriage) {
-                            // Get the blood family member (not the spouse)
-                            const connectedMemberId = spouseMarriage.husband?.id === memberToDelete?.id 
-                              ? spouseMarriage.wife?.id 
-                              : spouseMarriage.husband?.id;
-                            
-                            const connectedMember = familyMembers.find(m => m.id === connectedMemberId);
-                            if (connectedMember) {
-                              let fullName = connectedMember.name;
-                              
-                              // Add father name if available
-                              if (connectedMember.fatherId) {
-                                const father = familyMembers.find(m => m.id === connectedMember.fatherId);
-                                if (father) {
-                                  fullName += ` ${father.name}`;
-                                }
-                              }
-                              
-                              // Add family name
-                              if (familyData?.name) {
-                                fullName += ` ${familyData.name}`;
-                              }
-                              
-                              return fullName;
-                            }
-                          }
-                          return 'العضو المرتبط';
-                        })()
-                      }
-                     </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-red-700 dark:text-red-300">
-                      <Users className="h-5 w-5 flex-shrink-0" />
-                      <span className="font-medium">عضو أساسي في العائلة</span>
-                    </div>
-                    <div className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      <p className="mb-3">حذف هذا العضو سيؤثر على:</p>
-                      <div className="bg-red-50 dark:bg-red-950/30 rounded-lg p-4 border border-red-200 dark:border-red-800">
-                        <pre className="whitespace-pre-wrap text-sm font-medium text-red-800 dark:text-red-200 font-arabic">
-                          {deleteWarningMessage}
-                        </pre>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Bell className="h-3 w-3 text-white" />
-                    </div>
-                    <div className="text-sm text-blue-800 dark:text-blue-200">
-                      <p className="font-medium mb-1">نصيحة مهمة:</p>
-                      <p className="leading-relaxed">
-                        {deleteModalType === 'spouse' 
-                          ? "يمكنك تعديل بيانات العضو الأساسي في العائلة وإزالة الزواج من هناك."
-                          : "تأكد من أن هذا الإجراء ضروري لأنه لا يمكن التراجع عنه."
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <AlertDialogFooter className="relative z-10 gap-3">
-            <AlertDialogCancel className="font-arabic hover:bg-gray-100 dark:hover:bg-gray-800">
-              إلغاء
-            </AlertDialogCancel>
-            {deleteModalType === 'bloodMember' && (
-              <AlertDialogAction 
-                onClick={confirmDelete}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-arabic shadow-lg"
-              >
-                نعم، احذف العضو
-              </AlertDialogAction>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
