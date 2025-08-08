@@ -896,11 +896,33 @@ const FamilyBuilderNew = () => {
   const [memberToDelete, setMemberToDelete] = useState<any>(null);
   const [deleteModalType, setDeleteModalType] = useState<'spouse' | 'bloodMember'>('spouse');
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
+  const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
+  const [spousePartnerName, setSpousePartnerName] = useState("");
 
   // --- Spouse rules helpers & delete handlers ---
   const checkIfMemberIsSpouse = (member: any) => {
     // Spouse: no parents in this family and not a founder
     return !member?.fatherId && !member?.motherId && !member?.isFounder;
+  };
+
+  const getSpousePartnerName = (spouseMember: any) => {
+    const marriage = familyMarriages.find((marriage: any) => 
+      marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id
+    );
+    
+    if (!marriage) return "";
+    
+    if (marriage.husband?.id === spouseMember.id) {
+      return marriage.wife?.name || "";
+    } else {
+      return marriage.husband?.name || "";
+    }
+  };
+
+  const handleSpouseEditAttempt = (spouseMember: any) => {
+    const partnerName = getSpousePartnerName(spouseMember);
+    setSpousePartnerName(partnerName);
+    setShowSpouseEditWarning(true);
   };
 
   const getChildrenCount = (parentId: string) => {
@@ -3090,16 +3112,17 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                      <MemberList 
-                        members={filteredMembers}
-                        onEditMember={handleEditMember}
-                        onDeleteMember={handleDeleteMember}
-                        checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
-                        selectedFilter={selectedFilter}
-                        onFilterChange={setSelectedFilter}
-                        getAdditionalInfo={getAdditionalInfo}
+                       <MemberList 
+                         members={filteredMembers}
+                         onEditMember={handleEditMember}
+                         onDeleteMember={handleDeleteMember}
+                         onSpouseEditAttempt={handleSpouseEditAttempt}
+                         checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                         searchTerm={searchTerm}
+                         onSearchChange={setSearchTerm}
+                         selectedFilter={selectedFilter}
+                         onFilterChange={setSelectedFilter}
+                         getAdditionalInfo={getAdditionalInfo}
                         getGenderColor={getGenderColor}
                         familyMembers={familyMembers}
                         marriages={familyMarriages}
@@ -3120,16 +3143,17 @@ const FamilyBuilderNew = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                    <MemberList 
-                      members={filteredMembers}
-                      onEditMember={handleEditMember}
-                      onDeleteMember={handleDeleteMember}
-                      checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                      searchTerm={searchTerm}
-                      onSearchChange={setSearchTerm}
-                      selectedFilter={selectedFilter}
-                      onFilterChange={setSelectedFilter}
-                      getAdditionalInfo={getAdditionalInfo}
+                     <MemberList 
+                       members={filteredMembers}
+                       onEditMember={handleEditMember}
+                       onDeleteMember={handleDeleteMember}
+                       onSpouseEditAttempt={handleSpouseEditAttempt}
+                       checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                       searchTerm={searchTerm}
+                       onSearchChange={setSearchTerm}
+                       selectedFilter={selectedFilter}
+                       onFilterChange={setSelectedFilter}
+                       getAdditionalInfo={getAdditionalInfo}
                       getGenderColor={getGenderColor}
                       familyMembers={familyMembers}
                       marriages={familyMarriages}
@@ -3164,6 +3188,31 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Spouse edit warning modal */}
+      <AlertDialog open={showSpouseEditWarning} onOpenChange={setShowSpouseEditWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-arabic">لا يمكن تعديل البيانات مباشرة</AlertDialogTitle>
+            <AlertDialogDescription className="font-arabic text-center">
+              <div className="space-y-2">
+                <p>لا يمكن تعديل أو حذف بيانات الزوج/الزوجة مباشرة من هنا.</p>
+                {spousePartnerName && (
+                  <p className="font-semibold">
+                    يرجى التعديل من خلال شاشة تحرير بيانات: <span className="text-primary">{spousePartnerName}</span>
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  هذا لضمان سلامة البيانات والحفاظ على العلاقات العائلية.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-arabic">فهمت</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <GlobalFooter />
     </div>
   );
@@ -3174,6 +3223,7 @@ const MemberList = ({
   members, 
   onEditMember, 
   onDeleteMember,
+  onSpouseEditAttempt,
   checkIfMemberIsSpouse,
   searchTerm, 
   onSearchChange, 
@@ -3400,54 +3450,57 @@ const MemberList = ({
                   
                    {/* Edit & Remove buttons at the most left */}
                   <div className="flex flex-col gap-1 flex-shrink-0">
-                    {/* Only show edit button for non-spouse members */}
-                    {!checkIfMemberIsSpouse(member) ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEditMember(member);
-                          }}
-                        className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
-                      >
-                        <Edit2 className="h-3 w-3 text-gray-600" />
-                      </Button>
-                    ) : (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="outline"
-                              disabled
-                              className="h-7 w-7 p-0 bg-gray-100/80 border border-gray-200 shadow-sm opacity-50 cursor-not-allowed"
-                            >
-                              <Edit2 className="h-3 w-3 text-gray-400" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="left" className="bg-card border border-border shadow-lg">
-                            <p className="text-sm font-arabic">لا يمكن تعديل بيانات الزوج/الزوجة مباشرة</p>
-                            <p className="text-xs text-muted-foreground font-arabic">يجب التعديل من خلال بيانات الزوج/الزوجة في العائلة</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
+                     {/* Only show edit button for non-spouse members */}
+                     {!checkIfMemberIsSpouse(member) ? (
+                       <Button
+                         type="button"
+                         size="sm"
+                         variant="outline"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             onEditMember(member);
+                           }}
+                         className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
+                       >
+                         <Edit2 className="h-3 w-3 text-gray-600" />
+                       </Button>
+                     ) : (
+                       <Button
+                         type="button"
+                         size="sm"
+                         variant="outline"
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           onSpouseEditAttempt(member);
+                         }}
+                         className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm"
+                       >
+                         <Edit2 className="h-3 w-3 text-yellow-600" />
+                       </Button>
+                     )}
                     
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteMember(member);
-                        }}
-                      className="h-7 w-7 p-0 bg-red-50/80 hover:bg-red-100 border border-red-200 shadow-sm"
-                    >
-                      <Trash2 className="h-3 w-3 text-red-500" />
-                    </Button>
+                     <Button
+                       type="button"
+                       size="sm"
+                       variant="outline"
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           if (checkIfMemberIsSpouse(member)) {
+                             onSpouseEditAttempt(member);
+                           } else {
+                             onDeleteMember(member);
+                           }
+                         }}
+                       className={`h-7 w-7 p-0 border shadow-sm ${
+                         checkIfMemberIsSpouse(member) 
+                           ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' 
+                           : 'bg-red-50/80 hover:bg-red-100 border-red-200'
+                       }`}
+                     >
+                       <Trash2 className={`h-3 w-3 ${
+                         checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'
+                       }`} />
+                     </Button>
                   </div>
                 </div>
               </CardContent>
