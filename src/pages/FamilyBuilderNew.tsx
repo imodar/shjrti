@@ -1149,17 +1149,50 @@ const FamilyBuilderNew = () => {
             .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`);
         }
 
-        // Handle wives for male members - only process saved wives
+        // Handle wives for male members - process all saved wives
         if (submissionData.gender === 'male' && wives.length > 0) {
-          const savedWives = wives.filter(wife => wife.isSaved === true && wife.existingFamilyMemberId);
+          const savedWives = wives.filter(wife => wife.isSaved === true);
           for (const wife of savedWives) {
             try {
+              let wifeId = wife.existingFamilyMemberId;
+              
+              // If wife is not from existing family members, create new family member first
+              if (!wife.isFamilyMember || !wife.existingFamilyMemberId) {
+                const { data: newWifeMember, error: wifeError } = await supabase
+                  .from('family_tree_members')
+                  .insert({
+                    name: wife.name,
+                    gender: 'female',
+                    birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                    is_alive: wife.isAlive ?? true,
+                    death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                    family_id: familyId,
+                    created_by: familyData?.creator_id,
+                    is_founder: false,
+                    marital_status: 'married',
+                    image_url: wife.croppedImage || null
+                  })
+                  .select()
+                  .single();
+
+                if (wifeError) {
+                  console.error('Error creating wife member:', wife.name, wifeError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
+                  continue;
+                }
+                
+                wifeId = newWifeMember.id;
+                console.log('🔥 Successfully created wife member:', newWifeMember);
+              }
+
+              // Create marriage record
               const { error: marriageError } = await supabase
                 .from('marriages')
                 .insert({
                   family_id: familyId,
                   husband_id: memberData.id,
-                  wife_id: wife.existingFamilyMemberId || null,
+                  wife_id: wifeId,
                   is_active: true,
                   marital_status: 'married'
                 });
@@ -1181,27 +1214,61 @@ const FamilyBuilderNew = () => {
           }
         }
 
-        // Handle husband for female members - only if saved and has valid ID
-        if (submissionData.gender === 'female' && husband && husband.isSaved === true && husband.existingFamilyMemberId) {
+        // Handle husband for female members - process if saved
+        if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
           try {
-            const { error: marriageError } = await supabase
-              .from('marriages')
-              .insert({
-                family_id: familyId,
-                husband_id: husband.existingFamilyMemberId || null,
-                wife_id: memberData.id,
-                is_active: true,
-                marital_status: 'married'
-              });
+            let husbandId = husband.existingFamilyMemberId;
+            
+            // If husband is not from existing family members, create new family member first
+            if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
+              const { data: newHusbandMember, error: husbandError } = await supabase
+                .from('family_tree_members')
+                .insert({
+                  name: husband.name,
+                  gender: 'male',
+                  birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
+                  is_alive: husband.isAlive ?? true,
+                  death_date: !husband.isAlive && husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
+                  family_id: familyId,
+                  created_by: familyData?.creator_id,
+                  is_founder: false,
+                  marital_status: 'married',
+                  image_url: husband.croppedImage || null
+                })
+                .select()
+                .single();
 
-            if (marriageError) {
-              console.error('Error creating marriage with husband:', husband.name, marriageError);
-              marriageResults.failed++;
-              marriageResults.details.push(`فشل ربط الزواج مع ${husband.name}`);
-            } else {
-              marriageResults.successful++;
-              marriageResults.details.push(`تم ربط الزواج مع ${husband.name}`);
-              console.log('🔥 Successfully created marriage with husband:', husband.name);
+              if (husbandError) {
+                console.error('Error creating husband member:', husband.name, husbandError);
+                marriageResults.failed++;
+                marriageResults.details.push(`فشل في إنشاء العضو ${husband.name}`);
+              } else {
+                husbandId = newHusbandMember.id;
+                console.log('🔥 Successfully created husband member:', newHusbandMember);
+              }
+            }
+
+            // Create marriage record if husband was created/found successfully
+            if (husbandId) {
+              const { error: marriageError } = await supabase
+                .from('marriages')
+                .insert({
+                  family_id: familyId,
+                  husband_id: husbandId,
+                  wife_id: memberData.id,
+                  is_active: true,
+                  marital_status: 'married'
+                });
+
+              if (marriageError) {
+                console.error('Error creating marriage with husband:', husband.name, marriageError);
+                marriageResults.failed++;
+                marriageResults.details.push(`فشل ربط الزواج مع ${husband.name}`);
+              } else {
+                marriageResults.successful++;
+                marriageResults.details.push(`تم ربط الزواج مع ${husband.name}`);
+                console.log('🔥 Successfully created marriage with husband:', husband.name);
+              }
             }
           } catch (error) {
             console.error('Marriage creation error:', error);
