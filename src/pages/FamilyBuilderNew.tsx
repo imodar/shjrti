@@ -1819,15 +1819,24 @@ const FamilyBuilderNew = () => {
                             
                            {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
-                             <div className="col-span-12 md:col-span-6">
-                               <Label htmlFor="parentRelation" className="font-arabic">العلاقة العائلية (الوالدين) *</Label>
-                                <Select 
-                                  value={formData.selectedParent || ""} 
-                                  onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
-                                  disabled={loading || !familyMarriages || !familyMembers}
-                                >
+                              <div className="col-span-12 md:col-span-6">
+                                <Label htmlFor="parentRelation" className="font-arabic">
+                                  العلاقة العائلية (الوالدين) *
+                                  {formData.isFounder && (
+                                    <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
+                                  )}
+                                </Label>
+                                 <Select 
+                                   value={formData.selectedParent || ""} 
+                                   onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
+                                   disabled={loading || !familyMarriages || !familyMembers || formData.isFounder}
+                                  >
                                    <SelectTrigger className="font-arabic">
-                                     <SelectValue placeholder={loading ? "جاري التحميل..." : "اختر الوالدين"} />
+                                      <SelectValue placeholder={
+                                        loading ? "جاري التحميل..." : 
+                                        formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : 
+                                        "اختر الوالدين"
+                                      } />
                                    </SelectTrigger>
                                   <SelectContent>
                                     {loading || !familyMarriages || !familyMembers ? (
