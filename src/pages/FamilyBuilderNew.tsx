@@ -898,6 +898,7 @@ const FamilyBuilderNew = () => {
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
+  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "" });
 
   // --- Spouse rules helpers & delete handlers ---
   const checkIfMemberIsSpouse = (member: any) => {
@@ -919,9 +920,41 @@ const FamilyBuilderNew = () => {
     }
   };
 
+  const getSpousePartnerDetails = (spouseMember: any) => {
+    const marriage = familyMarriages.find((marriage: any) => 
+      marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id
+    );
+    
+    if (!marriage) return { name: "", fatherName: "", grandfatherName: "" };
+    
+    let partnerMember;
+    if (marriage.husband?.id === spouseMember.id) {
+      partnerMember = familyMembers.find(m => m.id === marriage.wife?.id);
+    } else {
+      partnerMember = familyMembers.find(m => m.id === marriage.husband?.id);
+    }
+    
+    if (!partnerMember) return { name: "", fatherName: "", grandfatherName: "" };
+    
+    // Get father information
+    const father = familyMembers.find(m => m.id === partnerMember.fatherId);
+    const fatherName = father?.name || "";
+    
+    // Get grandfather information
+    const grandfather = father ? familyMembers.find(m => m.id === father.fatherId) : null;
+    const grandfatherName = grandfather?.name || "";
+    
+    return {
+      name: partnerMember.name || "",
+      fatherName,
+      grandfatherName
+    };
+  };
+
   const handleSpouseEditAttempt = (spouseMember: any) => {
-    const partnerName = getSpousePartnerName(spouseMember);
-    setSpousePartnerName(partnerName);
+    const partnerDetails = getSpousePartnerDetails(spouseMember);
+    setSpousePartnerName(partnerDetails.name);
+    setSpousePartnerDetails(partnerDetails);
     setShowSpouseEditWarning(true);
   };
 
@@ -3219,7 +3252,7 @@ const FamilyBuilderNew = () => {
               </div>
 
               {/* Partner name highlight */}
-              {spousePartnerName && (
+              {spousePartnerDetails.name && (
                 <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
                   <div className="flex items-center justify-center mb-2">
                     <Edit className="h-5 w-5 text-primary mr-2" />
@@ -3227,8 +3260,18 @@ const FamilyBuilderNew = () => {
                   </div>
                   <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
                     <p className="font-bold text-primary text-lg animate-pulse">
-                      {spousePartnerName}
+                      {spousePartnerDetails.name}
                     </p>
+                    {spousePartnerDetails.fatherName && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
+                      </p>
+                    )}
+                    {spousePartnerDetails.grandfatherName && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
