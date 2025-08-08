@@ -996,7 +996,8 @@ const FamilyBuilderNew = () => {
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
             isFamilyMember: !!wifeMember, // If found in family members, it's a family member
-            existingFamilyMemberId: wifeMember ? wifeMember.id : ''
+            existingFamilyMemberId: wifeMember ? wifeMember.id : '',
+            isSaved: true // Mark existing wives as saved
           };
         }).filter(wife => wife.id); // Filter out wives without ID
         
@@ -1022,7 +1023,8 @@ const FamilyBuilderNew = () => {
           deathDate: husbandMember?.death_date ? new Date(husbandMember.death_date) : null,
           croppedImage: husbandMember?.image_url || null,
           isFamilyMember: !!husbandMember, // If found in family members, it's a family member
-          existingFamilyMemberId: husbandMember ? husbandMember.id : ''
+          existingFamilyMemberId: husbandMember ? husbandMember.id : '',
+          isSaved: true // Mark existing husband as saved
         };
         
         console.log('🔥 Loading husband for female member:', husbandData);
@@ -2255,7 +2257,7 @@ const FamilyBuilderNew = () => {
                                         className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
                                       >
                                         <Plus className="h-5 w-5 mr-2" />
-                                        إضافة زوجة أخرى
+                                        {wives.length === 0 ? 'إضافة زوجة' : 'إضافة زوجة أخرى'}
                                       </Button>
                                     )}
                                     
@@ -2286,42 +2288,87 @@ const FamilyBuilderNew = () => {
                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
                                       </div>
                                     ) : (
-                                      wives.map((wife, index) => (
-                                        <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                              <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                {index + 1}
-                                              </div>
-                                              <div>
-                                                <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                  {wife.name || `الزوجة ${index + 1}`}
-                                                </h5>
-                                                <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                  {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                  {wife.isSaved && (
-                                                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                      <Check className="h-3 w-3" />
-                                                      محفوظة
-                                                    </span>
+                                        wives.map((wife, index) => (
+                                          <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
+                                            <div className="flex items-center justify-between">
+                                              <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                  {index + 1}
+                                                </div>
+                                                <div 
+                                                  className={cn(
+                                                    wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
                                                   )}
-                                                </p>
+                                                  onClick={() => {
+                                                    if (wife.isSaved) {
+                                                      // Edit mode: Load wife data for editing
+                                                      const updatedWives = [...wives];
+                                                      updatedWives[index] = { ...wife, isSaved: false };
+                                                      setWives(updatedWives);
+                                                      
+                                                      toast({
+                                                        title: "وضع التعديل",
+                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                        variant: "default"
+                                                      });
+                                                    }
+                                                  }}
+                                                >
+                                                  <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                    {wife.name || `الزوجة ${index + 1}`}
+                                                  </h5>
+                                                  <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                    {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                    {wife.isSaved && (
+                                                      <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                        <Check className="h-3 w-3" />
+                                                        محفوظة
+                                                      </span>
+                                                    )}
+                                                  </p>
+                                                  {wife.isSaved && (
+                                                    <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                      انقر للتعديل
+                                                    </p>
+                                                  )}
+                                                </div>
+                                              </div>
+                                              <div className="flex gap-2">
+                                                {wife.isSaved && (
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                      const updatedWives = [...wives];
+                                                      updatedWives[index] = { ...wife, isSaved: false };
+                                                      setWives(updatedWives);
+                                                      
+                                                      toast({
+                                                        title: "وضع التعديل",
+                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                        variant: "default"
+                                                      });
+                                                    }}
+                                                    className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
+                                                  >
+                                                    <Edit className="h-3 w-3" />
+                                                  </Button>
+                                                )}
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => {
+                                                    const newWives = wives.filter((_, i) => i !== index);
+                                                    setWives(newWives);
+                                                  }}
+                                                  className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                                >
+                                                  <X className="h-3 w-3" />
+                                                </Button>
                                               </div>
                                             </div>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() => {
-                                                const newWives = wives.filter((_, i) => i !== index);
-                                                setWives(newWives);
-                                              }}
-                                              className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                            >
-                                              <X className="h-3 w-3" />
-                                            </Button>
                                           </div>
-                                        </div>
-                                      ))
+                                        ))
                                     )}
                                   </div>
                                 </div>
@@ -2338,7 +2385,7 @@ const FamilyBuilderNew = () => {
                                   </div>
                                   
                                   <div className="space-y-3">
-                                    {!husband ? (
+                                     {!husband ? (
                                       <div className="text-center py-8 text-muted-foreground">
                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
@@ -2346,7 +2393,24 @@ const FamilyBuilderNew = () => {
                                     ) : (
                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                         <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
+                                          <div 
+                                            className={cn(
+                                              "flex items-center gap-3 flex-1",
+                                              husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
+                                            )}
+                                            onClick={() => {
+                                              if (husband.isSaved) {
+                                                // Edit mode: Load husband data for editing
+                                                setHusband({ ...husband, isSaved: false });
+                                                
+                                                toast({
+                                                  title: "وضع التعديل",
+                                                  description: "يمكنك الآن تعديل بيانات الزوج",
+                                                  variant: "default"
+                                                });
+                                              }
+                                            }}
+                                          >
                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                               <User className="w-4 h-4" />
                                             </div>
@@ -2354,19 +2418,50 @@ const FamilyBuilderNew = () => {
                                               <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
                                                 {husband.name || 'الزوج'}
                                               </h5>
-                                              <p className="text-xs text-muted-foreground font-arabic">
+                                              <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
                                                 {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                {husband.isSaved && (
+                                                  <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                    <Check className="h-3 w-3" />
+                                                    محفوظ
+                                                  </span>
+                                                )}
                                               </p>
+                                              {husband.isSaved && (
+                                                <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                  انقر للتعديل
+                                                </p>
+                                              )}
                                             </div>
                                           </div>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setHusband(null)}
-                                            className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                          >
-                                            <X className="h-3 w-3" />
-                                          </Button>
+                                          <div className="flex gap-2">
+                                            {husband.isSaved && (
+                                              <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                  setHusband({ ...husband, isSaved: false });
+                                                  
+                                                  toast({
+                                                    title: "وضع التعديل",
+                                                    description: "يمكنك الآن تعديل بيانات الزوج",
+                                                    variant: "default"
+                                                  });
+                                                }}
+                                                className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
+                                              >
+                                                <Edit className="h-3 w-3" />
+                                              </Button>
+                                            )}
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => setHusband(null)}
+                                              className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                            >
+                                              <X className="h-3 w-3" />
+                                            </Button>
+                                          </div>
                                         </div>
                                       </div>
                                     )}
@@ -2632,7 +2727,58 @@ const FamilyBuilderNew = () => {
                                               )}
                                             </div>
                                           </div>
-                                        )}
+                                         )}
+
+                                         {/* Save Husband Button */}
+                                         <div className="pt-4 border-t border-blue-200/30 dark:border-blue-700/30">
+                                           <Button
+                                             type="button"
+                                             onClick={() => {
+                                               // Validate husband data
+                                               const isValid = husband.name.trim() && (
+                                                 (husband.isFamilyMember && husband.existingFamilyMemberId) ||
+                                                 !husband.isFamilyMember
+                                               );
+
+                                               if (!isValid) {
+                                                 toast({
+                                                   title: "خطأ في البيانات",
+                                                   description: "يرجى إكمال جميع البيانات المطلوبة للزوج",
+                                                   variant: "destructive"
+                                                 });
+                                                 return;
+                                               }
+
+                                               // Mark husband as saved
+                                               setHusband({ ...husband, isSaved: true });
+
+                                               toast({
+                                                 title: "تم الحفظ بنجاح",
+                                                 description: "تم حفظ بيانات الزوج بنجاح",
+                                                 variant: "default"
+                                               });
+                                             }}
+                                             disabled={husband.isSaved}
+                                             className={cn(
+                                               "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
+                                               husband.isSaved 
+                                                 ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
+                                                 : "bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white shadow-lg hover:shadow-xl"
+                                             )}
+                                           >
+                                             {husband.isSaved ? (
+                                               <>
+                                                 <Check className="h-4 w-4 mr-2" />
+                                                 تم حفظ البيانات
+                                               </>
+                                             ) : (
+                                               <>
+                                                 <Save className="h-4 w-4 mr-2" />
+                                                 حفظ بيانات الزوج
+                                               </>
+                                             )}
+                                           </Button>
+                                         </div>
                                       </div>
                                     </div>
                                   ) : (
@@ -2648,7 +2794,8 @@ const FamilyBuilderNew = () => {
                                         maritalStatus: 'married',
                                         isFamilyMember: false,
                                         existingFamilyMemberId: '',
-                                        croppedImage: null
+                                        croppedImage: null,
+                                        isSaved: false
                                       })}
                                       className="w-full h-12 border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 rounded-xl"
                                     >
