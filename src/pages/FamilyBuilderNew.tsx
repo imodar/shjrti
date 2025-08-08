@@ -1720,6 +1720,9 @@ const FamilyBuilderNew = () => {
                                                     const newStatus = {...wiveFamilyStatus};
                                                     newStatus[index] = 'yes';
                                                     setWiveFamilyStatus(newStatus);
+                                                    const updatedWives = [...wives];
+                                                    updatedWives[index] = { ...wife, isFamilyMember: true };
+                                                    setWives(updatedWives);
                                                   }}
                                                   className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                                 />
@@ -1739,6 +1742,9 @@ const FamilyBuilderNew = () => {
                                                     const newStatus = {...wiveFamilyStatus};
                                                     newStatus[index] = 'no';
                                                     setWiveFamilyStatus(newStatus);
+                                                    const updatedWives = [...wives];
+                                                    updatedWives[index] = { ...wife, isFamilyMember: false, existingFamilyMemberId: '' };
+                                                    setWives(updatedWives);
                                                   }}
                                                   className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                                 />
@@ -2074,7 +2080,7 @@ const FamilyBuilderNew = () => {
                                     <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">قائمة الزوجات ({wives.length})</h4>
                                   </div>
                                   
-                                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                                  <div className="space-y-3 max-h-[70vh] overflow-y-auto">
                                     {wives.length === 0 ? (
                                       <div className="text-center py-8 text-muted-foreground">
                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -2202,7 +2208,7 @@ const FamilyBuilderNew = () => {
                                                 checked={husband.isFamilyMember === false} 
                                                 onChange={() => setHusband({
                                                   ...husband,
-                                          isFamilyMember: true, // Only family members allowed
+                                                  isFamilyMember: false,
                                                   existingFamilyMemberId: ''
                                                 })}
                                                 className="w-4 h-4 text-red-600"
