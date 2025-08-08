@@ -1692,12 +1692,14 @@ const FamilyBuilderNew = () => {
 
                                   {/* Wife Form Content */}
                                   <div className="space-y-6">
-                                    {wives.map((wife, index) => (
+                                    {wives.filter((wife, index) => !wife.isSaved || index === wives.length - 1).map((wife, index) => {
+                                      const actualIndex = wives.findIndex(w => w === wife);
+                                      return (
                                       <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md mb-4">
                                         <div className="flex items-center justify-between mb-4">
                                           <h5 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
                                             <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg"></div>
-                                            الزوجة {index + 1}
+                                            الزوجة {wives.findIndex(w => w === wife) + 1}
                                           </h5>
                                         </div>
                                         
@@ -1713,21 +1715,22 @@ const FamilyBuilderNew = () => {
                                               <div className="flex items-center gap-2">
                                                 <input
                                                   type="radio"
-                                                  id={`wife-family-yes-${index}`}
-                                                  name={`wife-family-${index}`}
+                                                  id={`wife-family-yes-${wives.findIndex(w => w === wife)}`}
+                                                  name={`wife-family-${wives.findIndex(w => w === wife)}`}
                                                   value="yes"
-                                                  checked={wiveFamilyStatus[index] === 'yes'}
+                                                  checked={wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'yes'}
                                                   onChange={(e) => {
+                                                    const actualIndex = wives.findIndex(w => w === wife);
                                                     const newStatus = {...wiveFamilyStatus};
-                                                    newStatus[index] = 'yes';
+                                                    newStatus[actualIndex] = 'yes';
                                                     setWiveFamilyStatus(newStatus);
                                                     const updatedWives = [...wives];
-                                                    updatedWives[index] = { ...wife, isFamilyMember: true };
+                                                    updatedWives[actualIndex] = { ...wife, isFamilyMember: true };
                                                     setWives(updatedWives);
                                                   }}
                                                   className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                                 />
-                                                <Label htmlFor={`wife-family-yes-${index}`} className="text-sm font-arabic">
+                                                <Label htmlFor={`wife-family-yes-${wives.findIndex(w => w === wife)}`} className="text-sm font-arabic">
                                                   نعم
                                                 </Label>
                                               </div>
@@ -1735,21 +1738,22 @@ const FamilyBuilderNew = () => {
                                               <div className="flex items-center gap-2">
                                                 <input
                                                   type="radio"
-                                                  id={`wife-family-no-${index}`}
-                                                  name={`wife-family-${index}`}
+                                                  id={`wife-family-no-${wives.findIndex(w => w === wife)}`}
+                                                  name={`wife-family-${wives.findIndex(w => w === wife)}`}
                                                   value="no"
-                                                  checked={wiveFamilyStatus[index] === 'no'}
+                                                  checked={wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no'}
                                                   onChange={(e) => {
+                                                    const actualIndex = wives.findIndex(w => w === wife);
                                                     const newStatus = {...wiveFamilyStatus};
-                                                    newStatus[index] = 'no';
+                                                    newStatus[actualIndex] = 'no';
                                                     setWiveFamilyStatus(newStatus);
                                                     const updatedWives = [...wives];
-                                                    updatedWives[index] = { ...wife, isFamilyMember: false, existingFamilyMemberId: '' };
+                                                    updatedWives[actualIndex] = { ...wife, isFamilyMember: false, existingFamilyMemberId: '' };
                                                     setWives(updatedWives);
                                                   }}
                                                   className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                                 />
-                                                <Label htmlFor={`wife-family-no-${index}`} className="text-sm font-arabic">
+                                                <Label htmlFor={`wife-family-no-${wives.findIndex(w => w === wife)}`} className="text-sm font-arabic">
                                                   لا
                                                 </Label>
                                               </div>
@@ -1761,7 +1765,7 @@ const FamilyBuilderNew = () => {
                                           </div>
 
                                           {/* Conditional rendering based on radio button selection */}
-                                          {wiveFamilyStatus[index] === 'yes' && (
+                                          {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'yes' && (
                                             <>
                                               {/* Select Existing Family Member */}
                                               <div className="space-y-3">
@@ -1769,16 +1773,17 @@ const FamilyBuilderNew = () => {
                                                   <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
                                                   اختر الزوجة من القائمة
                                                 </Label>
-                                                <Popover open={wivesCommandOpen[index]} onOpenChange={(open) => {
+                                                <Popover open={wivesCommandOpen[wives.findIndex(w => w === wife)]} onOpenChange={(open) => {
+                                                  const actualIndex = wives.findIndex(w => w === wife);
                                                   const newState = {...wivesCommandOpen};
-                                                  newState[index] = open;
+                                                  newState[actualIndex] = open;
                                                   setWivesCommandOpen(newState);
                                                 }}>
                                                   <PopoverTrigger asChild>
                                                     <Button
                                                       variant="outline"
                                                       role="combobox"
-                                                      aria-expanded={wivesCommandOpen[index]} 
+                                                      aria-expanded={wivesCommandOpen[wives.findIndex(w => w === wife)]} 
                                                       className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
                                                     >
                                                       {wife.existingFamilyMemberId ? 
@@ -1810,15 +1815,16 @@ const FamilyBuilderNew = () => {
                                                                 key={member.id}
                                                                 value={member.name}
                                                                 onSelect={() => {
+                                                                  const actualIndex = wives.findIndex(w => w === wife);
                                                                   const newWives = [...wives];
-                                                                  newWives[index] = {
+                                                                  newWives[actualIndex] = {
                                                                     ...wife,
                                                                     existingFamilyMemberId: member.id,
                                                                     name: member.name
                                                                   };
                                                                   setWives(newWives);
                                                                   const newState = {...wivesCommandOpen};
-                                                                  newState[index] = false;
+                                                                  newState[actualIndex] = false;
                                                                   setWivesCommandOpen(newState);
                                                                 }}
                                                                 className="font-arabic"
@@ -1849,8 +1855,9 @@ const FamilyBuilderNew = () => {
                                                   <Select
                                                     value={wife.maritalStatus || "married"}
                                                     onValueChange={(value) => {
+                                                      const actualIndex = wives.findIndex(w => w === wife);
                                                       const newWives = [...wives];
-                                                      newWives[index] = { ...wife, maritalStatus: value };
+                                                      newWives[actualIndex] = { ...wife, maritalStatus: value };
                                                       setWives(newWives);
                                                     }}
                                                   >
@@ -1871,7 +1878,7 @@ const FamilyBuilderNew = () => {
                                             </>
                                           )}
 
-                                          {wiveFamilyStatus[index] === 'no' && (
+                                          {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no' && (
                                             <>
                                               {/* Name Input */}
                                               <div className="group">
@@ -1883,8 +1890,9 @@ const FamilyBuilderNew = () => {
                                                   <Input
                                                     value={wife.name}
                                                     onChange={(e) => {
+                                                      const actualIndex = wives.findIndex(w => w === wife);
                                                       const newWives = [...wives];
-                                                      newWives[index] = { ...wife, name: e.target.value };
+                                                      newWives[actualIndex] = { ...wife, name: e.target.value };
                                                       setWives(newWives);
                                                     }}
                                                     placeholder="أدخل اسم الزوجة"
@@ -1906,8 +1914,9 @@ const FamilyBuilderNew = () => {
                                                   <EnhancedDatePicker
                                                     value={wife.birthDate}
                                                     onChange={(date) => {
+                                                      const actualIndex = wives.findIndex(w => w === wife);
                                                       const newWives = [...wives];
-                                                      newWives[index] = { ...wife, birthDate: date };
+                                                      newWives[actualIndex] = { ...wife, birthDate: date };
                                                       setWives(newWives);
                                                     }}
                                                     placeholder="اختر تاريخ الميلاد"
@@ -1995,11 +2004,12 @@ const FamilyBuilderNew = () => {
                                                       <div className="relative">
                                                         <EnhancedDatePicker
                                                           value={wife.deathDate}
-                                                          onChange={(date) => {
-                                                            const newWives = [...wives];
-                                                            newWives[index] = { ...wife, deathDate: date };
-                                                            setWives(newWives);
-                                                          }}
+                                                      onChange={(date) => {
+                                                        const actualIndex = wives.findIndex(w => w === wife);
+                                                        const newWives = [...wives];
+                                                        newWives[actualIndex] = { ...wife, deathDate: date };
+                                                        setWives(newWives);
+                                                      }}
                                                           placeholder="اختر تاريخ الوفاة"
                                                           className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
                                                         />
@@ -2024,8 +2034,9 @@ const FamilyBuilderNew = () => {
                                                 fileInputRef={fileInputRef}
                                                 handleEditImage={handleEditImage}
                                                 handleDeleteImage={() => {
+                                                  const actualIndex = wives.findIndex(w => w === wife);
                                                   const newWives = [...wives];
-                                                  newWives[index] = { ...wife, croppedImage: null };
+                                                  newWives[actualIndex] = { ...wife, croppedImage: null };
                                                   setWives(newWives);
                                                 }}
                                                 handleImageSelect={handleImageSelect}
@@ -2035,8 +2046,9 @@ const FamilyBuilderNew = () => {
                                                 onCropComplete={onCropComplete}
                                                 handleCropSave={() => {
                                                   if (croppedImage) {
+                                                    const actualIndex = wives.findIndex(w => w === wife);
                                                     const newWives = [...wives];
-                                                    newWives[index] = { ...wife, croppedImage: croppedImage };
+                                                    newWives[actualIndex] = { ...wife, croppedImage: croppedImage };
                                                     setWives(newWives);
                                                   }
                                                   setShowCropDialog(false);
@@ -2051,9 +2063,10 @@ const FamilyBuilderNew = () => {
                                               type="button"
                                               onClick={() => {
                                                 // Validate wife data
+                                                const actualIndex = wives.findIndex(w => w === wife);
                                                 const isValid = wife.name.trim() && (
-                                                  (wiveFamilyStatus[index] === 'yes' && wife.existingFamilyMemberId) ||
-                                                  wiveFamilyStatus[index] === 'no'
+                                                  (wiveFamilyStatus[actualIndex] === 'yes' && wife.existingFamilyMemberId) ||
+                                                  wiveFamilyStatus[actualIndex] === 'no'
                                                 );
 
                                                 if (!isValid) {
@@ -2067,12 +2080,12 @@ const FamilyBuilderNew = () => {
 
                                                 // Mark wife as saved
                                                 const newWives = [...wives];
-                                                newWives[index] = { ...wife, isSaved: true };
+                                                newWives[actualIndex] = { ...wife, isSaved: true };
                                                 setWives(newWives);
 
                                                 toast({
                                                   title: "تم الحفظ بنجاح",
-                                                  description: `تم حفظ بيانات الزوجة ${index + 1} بنجاح`,
+                                                  description: `تم حفظ بيانات الزوجة ${actualIndex + 1} بنجاح`,
                                                   variant: "default"
                                                 });
                                               }}
@@ -2098,8 +2111,9 @@ const FamilyBuilderNew = () => {
                                             </Button>
                                           </div>
                                         </div>
-                                      </div>
-                                    ))}
+                                        </div>
+                                      );
+                                    })}
                                     
                                     {/* Show Add Wife Button only if: no wives OR last wife is saved */}
                                     {(wives.length === 0 || wives[wives.length - 1]?.isSaved) && (
