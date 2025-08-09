@@ -19,6 +19,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   onBack,
   familyMembers
 }) => {
+  console.log('MemberProfileView - member data:', member);
+  console.log('MemberProfileView - familyMembers data:', familyMembers);
   if (!member) return null;
   const getGenderColor = (gender: string) => {
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
@@ -74,6 +76,15 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const mother = getMother();
   const spouses = getSpouses();
   const children = getChildren();
+  
+  console.log('Profile data debug:', {
+    member: member.name,
+    birth_date: member.birth_date,
+    father: father?.name,
+    mother: mother?.name,
+    spouses: spouses.map(s => s.name),
+    children: children.map(c => c.name)
+  });
   return <div className="h-full overflow-y-auto bg-gradient-to-br from-violet-50/30 via-blue-50/20 to-emerald-50/30 relative">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
