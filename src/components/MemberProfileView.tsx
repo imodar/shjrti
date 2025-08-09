@@ -119,8 +119,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             <div className="relative p-8 text-center">
               {/* Avatar Section with Advanced Design */}
               <div className="relative inline-block mb-6">
-                {/* Rotating Gradient Ring */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1 animate-spin" style={{ animationDuration: '8s' }}>
+                {/* Gradient Ring */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
                   <div className="rounded-full bg-gradient-to-br from-white/90 to-white/70 p-1">
                     <Avatar className="h-32 w-32 ring-4 ring-white/50 transition-transform group-hover:scale-110 duration-500">
                       <AvatarImage src={member.image} className="object-cover" />
