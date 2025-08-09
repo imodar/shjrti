@@ -49,26 +49,26 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return familyMembers.filter(m => member.spouse_id === m.id || m.spouse_id === member.id);
   };
   const getChildren = () => {
-    return familyMembers.filter(m => m.parent_id === member.id);
+    return familyMembers.filter(m => m.father_id === member.id || m.mother_id === member.id);
   };
+  
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
-    if (!spouseId) return children.filter(child => !child.mother_id && !child.father_id);
-    return children.filter(child => child.mother_id === spouseId || child.father_id === spouseId);
-  };
-  const getFather = () => {
+    if (!spouseId) return children.filter(child => (!child.mother_id && !child.father_id) || (child.father_id === member.id && !child.mother_id) || (child.mother_id === member.id && !child.father_id));
+    
     if (member.gender === 'male') {
-      return familyMembers.find(m => m.id === member.parent_id);
+      return children.filter(child => child.mother_id === spouseId && child.father_id === member.id);
     } else {
-      return familyMembers.find(m => m.id === member.father_id);
+      return children.filter(child => child.father_id === spouseId && child.mother_id === member.id);
     }
   };
+  
+  const getFather = () => {
+    return familyMembers.find(m => m.id === member.father_id);
+  };
+  
   const getMother = () => {
-    if (member.gender === 'female') {
-      return familyMembers.find(m => m.id === member.parent_id);
-    } else {
-      return familyMembers.find(m => m.id === member.mother_id);
-    }
+    return familyMembers.find(m => m.id === member.mother_id);
   };
   const father = getFather();
   const mother = getMother();
@@ -101,12 +101,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             
             {/* Content */}
             <div className="relative p-8 text-center">
-              {/* Avatar Section with Advanced Design */}
-              <div className="relative inline-block mb-6">
-                {/* Gradient Ring */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
-                  
-                </div>
+                {/* Avatar Section with Advanced Design */}
+                <div className="relative inline-block mb-6">
+                  {/* Gradient Ring */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
+                    <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <Avatar className="w-24 h-24 ring-4 ring-white/30">
+                        <AvatarImage src={member.image_url} className="object-cover" />
+                        <AvatarFallback className={`text-2xl font-bold text-white ${getGenderColor(member.gender)}`}>
+                          {member.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  </div>
                 
                 {/* Floating Status Indicators */}
                 <div className="absolute -top-2 -right-2 flex flex-col gap-1">
