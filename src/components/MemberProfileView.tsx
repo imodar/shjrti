@@ -33,6 +33,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       return 'مطلق';
     }
     const spouses = getSpouses();
+    const children = getChildren();
+    
+    // If has children, must have been married
+    if (children.length > 0) {
+      return 'متزوج';
+    }
     
     // Check if has relatedPersonId (indicates marriage relationship)
     if (member.relatedPersonId && spouses.length === 0) {
