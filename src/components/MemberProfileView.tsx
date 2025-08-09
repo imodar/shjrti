@@ -23,16 +23,32 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const getGenderColor = (gender: string) => {
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
-  const getMaritalStatus = () => {
+  const getMaritalStatus = (spouse?: any) => {
+    if (spouse && spouse.marital_status === 'divorced') {
+      return 'مطلق';
+    }
     const spouses = getSpouses();
     return spouses.length > 0 ? 'متزوج' : 'أعزب';
   };
+  
   const getSpouses = () => {
-    // Check for marriages table relationships
+    // First check marriages table for proper relationships
+    const marriages = familyMembers.filter(m => 
+      (member.gender === 'male' && m.husband_id === member.id) || 
+      (member.gender === 'female' && m.wife_id === member.id)
+    );
+    
+    if (marriages.length > 0) {
+      return marriages.map(marriage => {
+        const spouseId = member.gender === 'male' ? marriage.wife_id : marriage.husband_id;
+        const spouse = familyMembers.find(m => m.id === spouseId);
+        return spouse ? { ...spouse, marital_status: marriage.marital_status, marriage_date: marriage.created_at } : null;
+      }).filter(Boolean);
+    }
+    
+    // Fallback to direct spouse_id relationship
     return familyMembers.filter(m => 
-      (member.gender === 'male' && m.id === member.spouse_id) || 
-      (member.gender === 'female' && m.id === member.spouse_id) ||
-      (m.spouse_id === member.id)
+      (member.spouse_id === m.id) || (m.spouse_id === member.id)
     );
   };
   const getChildren = () => {
@@ -110,7 +126,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               <div className="relative inline-block mb-6">
                 {/* Gradient Ring */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
-                  
+                  <div className="rounded-full bg-white p-1">
+                    <Avatar className="h-32 w-32">
+                      <AvatarImage src={member.image_url} className="object-cover" />
+                      <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold text-2xl`}>
+                        {member.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
                 </div>
                 
                 {/* Floating Status Indicators */}
@@ -313,11 +336,42 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         </div>
                         
                         <div className="flex-1">
-                          <p className="text-lg font-bold text-gray-800 mb-1">{spouse.name}</p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-lg font-bold text-gray-800">{spouse.name}</p>
+                            {spouse.marital_status === 'divorced' && (
+                              <Badge variant="destructive" className="text-xs">مطلق</Badge>
+                            )}
+                          </div>
                           {spouse.marriage_date && <div className="flex items-center gap-2 text-sm text-gray-600">
                               <Calendar className="h-4 w-4 text-rose-500" />
                               <span>تاريخ الزواج: {new Date(spouse.marriage_date).toLocaleDateString('ar-SA')}</span>
                             </div>}
+                          
+                          {/* Show children for this spouse */}
+                          {(() => {
+                            const spouseChildren = getChildrenBySpouse(spouse.id);
+                            if (spouseChildren.length > 0) {
+                              return (
+                                <div className="mt-3 pt-3 border-t border-rose-200/50">
+                                  <p className="text-sm font-semibold text-rose-700 mb-2">الأطفال ({spouseChildren.length})</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {spouseChildren.map(child => (
+                                      <div key={child.id} className="flex items-center gap-2 bg-rose-50/80 rounded-lg px-3 py-1">
+                                        <Avatar className="h-6 w-6">
+                                          <AvatarImage src={child.image_url} className="object-cover" />
+                                          <AvatarFallback className={`${getGenderColor(child.gender)} text-white text-xs`}>
+                                            {child.name.charAt(0)}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-sm font-medium text-gray-700">{child.name}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
                       </div>
                     </div>)}
@@ -325,97 +379,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               </div>
             </div>}
 
-          {/* Children Section */}
-          {children.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-green-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl blur-sm opacity-30"></div>
-                    <div className="relative p-3 bg-gradient-to-br from-green-500/20 to-teal-500/20 rounded-2xl backdrop-blur-sm">
-                      <Users className="h-6 w-6 text-green-600" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                    الأطفال ({children.length})
-                  </h3>
-                </div>
-                
-                {spouses.length > 0 ? <div className="space-y-6">
-                    {spouses.map((spouse, spouseIndex) => {
-                const spouseChildren = getChildrenBySpouse(spouse.id);
-                if (spouseChildren.length === 0) return null;
-                return <div key={spouse.id} className="space-y-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-1 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></div>
-                            <h4 className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                              الأطفال من {spouse.name} ({spouseChildren.length})
-                            </h4>
-                          </div>
-                          
-                          <div className="grid gap-3 pl-6">
-                            {spouseChildren.map(child => <div key={child.id} className="group/child relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-green-50/90 border border-green-200/50 p-4 hover:border-green-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
-                                <div className="flex items-center gap-4">
-                                  <div className="relative">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full p-0.5">
-                                      <div className="rounded-full bg-white p-0.5">
-                                         <Avatar className="h-12 w-12 ring-2 ring-green-200/50 group-hover/child:ring-green-300/70 transition-all">
-                                           <AvatarImage src={child.image_url} className="object-cover" />
-                                           <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold text-sm`}>
-                                             {child.name.charAt(0)}
-                                           </AvatarFallback>
-                                         </Avatar>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex-1">
-                                    <p className="font-bold text-gray-800 mb-1">{child.name}</p>
-                                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                                      <Calendar className="h-3 w-3 text-green-500" />
-                                      <span>{child.birth_date ? new Date(child.birth_date).toLocaleDateString('ar-SA') : 'غير محدد'}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>)}
-                          </div>
-                          
-                          {spouseIndex < spouses.length - 1 && spouses[spouseIndex + 1] && getChildrenBySpouse(spouses[spouseIndex + 1].id).length > 0 && <div className="flex items-center gap-4 my-6">
-                              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-300/50 to-transparent"></div>
-                              <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-300/50 to-transparent"></div>
-                            </div>}
-                        </div>;
-              })}
-                  </div> : <div className="grid gap-3">
-                    {children.map(child => <div key={child.id} className="group/child relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-green-50/90 border border-green-200/50 p-4 hover:border-green-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
-                        <div className="flex items-center gap-4">
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full p-0.5">
-                              <div className="rounded-full bg-white p-0.5">
-                                 <Avatar className="h-12 w-12 ring-2 ring-green-200/50 group-hover/child:ring-green-300/70 transition-all">
-                                   <AvatarImage src={child.image_url} className="object-cover" />
-                                   <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold text-sm`}>
-                                     {child.name.charAt(0)}
-                                   </AvatarFallback>
-                                 </Avatar>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex-1">
-                            <p className="font-bold text-gray-800 mb-1">{child.name}</p>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Calendar className="h-3 w-3 text-green-500" />
-                              <span>{child.birth_date ? new Date(child.birth_date).toLocaleDateString('ar-SA') : 'غير محدد'}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>)}
-                  </div>}
-              </div>
-            </div>}
         </div>
 
         {/* Action Buttons at Bottom */}
