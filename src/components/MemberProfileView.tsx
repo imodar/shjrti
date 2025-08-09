@@ -30,11 +30,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       return 'مطلق';
     }
     const spouses = getSpouses();
+    
+    // Check if has relatedPersonId (indicates marriage relationship)
+    if (member.relatedPersonId && spouses.length === 0) {
+      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+      if (relatedPerson) {
+        return 'متزوج';
+      }
+    }
+    
     return spouses.length > 0 ? 'متزوج' : 'أعزب';
   };
   const getSpouses = () => {
     // First check marriages table for proper relationships
-    const marriages = familyMembers.filter(m => member.gender === 'male' && m.husband_id === member.id || member.gender === 'female' && m.wife_id === member.id);
+    const marriages = familyMembers.filter(m => 
+      (member.gender === 'male' && m.husband_id === member.id) || 
+      (member.gender === 'female' && m.wife_id === member.id)
+    );
+    
     if (marriages.length > 0) {
       return marriages.map(marriage => {
         const spouseId = member.gender === 'male' ? marriage.wife_id : marriage.husband_id;
@@ -47,7 +60,15 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }).filter(Boolean);
     }
 
-    // Fallback to direct spouse_id relationship
+    // Check if member has relatedPersonId (which might indicate marriage)
+    if (member.relatedPersonId) {
+      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+      if (relatedPerson) {
+        return [relatedPerson];
+      }
+    }
+
+    // Fallback to direct spouseId relationship
     return familyMembers.filter(m => member.spouseId === m.id || m.spouseId === member.id);
   };
   const getChildren = () => {
