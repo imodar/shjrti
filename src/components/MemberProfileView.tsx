@@ -192,29 +192,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
                 </div>
               </div>
-
-              {/* Action Buttons with Creative Design */}
-              <div className="flex gap-4">
-                <Button 
-                  onClick={onEdit} 
-                  className="flex-1 relative overflow-hidden bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
-                  size="lg"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Edit className="h-5 w-5 ml-2 relative z-10" />
-                  <span className="relative z-10">تعديل المعلومات</span>
-                </Button>
-                
-                <Button 
-                  onClick={onDelete} 
-                  className="flex-1 relative overflow-hidden bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
-                  size="lg"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Trash2 className="h-5 w-5 ml-2 relative z-10" />
-                  <span className="relative z-10">حذف العضو</span>
-                </Button>
-              </div>
             </div>
           </div>
         </div>
@@ -482,6 +459,31 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               </div>
             </div>
           )}
+        </div>
+
+        {/* Action Buttons at Bottom */}
+        <div className="sticky bottom-0 backdrop-blur-xl bg-white/10 border-t border-white/20 p-6 mt-8">
+          <div className="flex gap-4">
+            <Button 
+              onClick={onEdit} 
+              className="flex-1 relative overflow-hidden bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
+              size="lg"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <Edit className="h-5 w-5 ml-2 relative z-10" />
+              <span className="relative z-10">تعديل المعلومات</span>
+            </Button>
+            
+            <Button 
+              onClick={onDelete} 
+              className="flex-1 relative overflow-hidden bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
+              size="lg"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <Trash2 className="h-5 w-5 ml-2 relative z-10" />
+              <span className="relative z-10">حذف العضو</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
