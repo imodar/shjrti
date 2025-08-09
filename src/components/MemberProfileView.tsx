@@ -24,11 +24,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
   const getMaritalStatus = () => {
-    const spouses = familyMembers.filter(m => m.spouse_ids?.includes(member.id) || member.spouse_ids?.includes(m.id));
+    const spouses = getSpouses();
     return spouses.length > 0 ? 'متزوج' : 'أعزب';
   };
   const getSpouses = () => {
-    return familyMembers.filter(m => m.spouse_ids?.includes(member.id) || member.spouse_ids?.includes(m.id));
+    // Check for marriages table relationships
+    return familyMembers.filter(m => 
+      (member.gender === 'male' && m.id === member.spouse_id) || 
+      (member.gender === 'female' && m.id === member.spouse_id) ||
+      (m.spouse_id === member.id)
+    );
   };
   const getChildren = () => {
     return familyMembers.filter(m => m.parent_id === member.id);
@@ -127,10 +132,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {member.name}
                 </h1>
                 
-                {member.bio && <div className="relative max-w-md mx-auto">
+                {member.biography && <div className="relative max-w-md mx-auto">
                     <div className="absolute inset-0 bg-gradient-to-r from-violet-200/30 to-emerald-200/30 rounded-2xl blur-sm"></div>
                     <p className="relative text-gray-600 italic font-medium px-6 py-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/40">
-                      "{member.bio}"
+                      "{member.biography}"
                     </p>
                   </div>}
                 
@@ -294,12 +299,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="relative">
                           <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full p-0.5">
                             <div className="rounded-full bg-white p-0.5">
-                              <Avatar className="h-14 w-14 ring-2 ring-rose-200/50 group-hover/spouse:ring-rose-300/70 transition-all">
-                                <AvatarImage src={spouse.image} className="object-cover" />
-                                <AvatarFallback className={`${getGenderColor(spouse.gender)} text-white font-bold`}>
-                                  {spouse.name.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
+                 <Avatar className="h-14 w-14 ring-2 ring-rose-200/50 group-hover/spouse:ring-rose-300/70 transition-all">
+                                 <AvatarImage src={spouse.image_url} className="object-cover" />
+                                 <AvatarFallback className={`${getGenderColor(spouse.gender)} text-white font-bold`}>
+                                   {spouse.name.charAt(0)}
+                                 </AvatarFallback>
+                               </Avatar>
                             </div>
                           </div>
                           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
@@ -355,12 +360,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full p-0.5">
                                       <div className="rounded-full bg-white p-0.5">
-                                        <Avatar className="h-12 w-12 ring-2 ring-green-200/50 group-hover/child:ring-green-300/70 transition-all">
-                                          <AvatarImage src={child.image} className="object-cover" />
-                                          <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold text-sm`}>
-                                            {child.name.charAt(0)}
-                                          </AvatarFallback>
-                                        </Avatar>
+                                         <Avatar className="h-12 w-12 ring-2 ring-green-200/50 group-hover/child:ring-green-300/70 transition-all">
+                                           <AvatarImage src={child.image_url} className="object-cover" />
+                                           <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold text-sm`}>
+                                             {child.name.charAt(0)}
+                                           </AvatarFallback>
+                                         </Avatar>
                                       </div>
                                     </div>
                                   </div>
@@ -389,12 +394,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full p-0.5">
                               <div className="rounded-full bg-white p-0.5">
-                                <Avatar className="h-12 w-12 ring-2 ring-green-200/50 group-hover/child:ring-green-300/70 transition-all">
-                                  <AvatarImage src={child.image} className="object-cover" />
-                                  <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold text-sm`}>
-                                    {child.name.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
+                                 <Avatar className="h-12 w-12 ring-2 ring-green-200/50 group-hover/child:ring-green-300/70 transition-all">
+                                   <AvatarImage src={child.image_url} className="object-cover" />
+                                   <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold text-sm`}>
+                                     {child.name.charAt(0)}
+                                   </AvatarFallback>
+                                 </Avatar>
                               </div>
                             </div>
                           </div>
