@@ -88,25 +88,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
       {/* Glassmorphism Header */}
       <div className="sticky top-0 z-20 backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-lg">
-        <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="sm" onClick={onBack} className="hover:bg-white/20 hover-scale backdrop-blur-sm bg-white/10 border border-white/30 rounded-full">
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{
-              animationDelay: '0.2s'
-            }}></div>
-              <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" style={{
-              animationDelay: '0.4s'
-            }}></div>
-            </div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-violet-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent">
-              الملف الشخصي
-            </h2>
-          </div>
-        </div>
+        
       </div>
 
       <div className="relative z-10 p-6 space-y-8">
