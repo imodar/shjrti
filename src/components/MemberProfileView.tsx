@@ -30,26 +30,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     const spouses = getSpouses();
     return spouses.length > 0 ? 'متزوج' : 'أعزب';
   };
-  
   const getSpouses = () => {
     // First check marriages table for proper relationships
-    const marriages = familyMembers.filter(m => 
-      (member.gender === 'male' && m.husband_id === member.id) || 
-      (member.gender === 'female' && m.wife_id === member.id)
-    );
-    
+    const marriages = familyMembers.filter(m => member.gender === 'male' && m.husband_id === member.id || member.gender === 'female' && m.wife_id === member.id);
     if (marriages.length > 0) {
       return marriages.map(marriage => {
         const spouseId = member.gender === 'male' ? marriage.wife_id : marriage.husband_id;
         const spouse = familyMembers.find(m => m.id === spouseId);
-        return spouse ? { ...spouse, marital_status: marriage.marital_status, marriage_date: marriage.created_at } : null;
+        return spouse ? {
+          ...spouse,
+          marital_status: marriage.marital_status,
+          marriage_date: marriage.created_at
+        } : null;
       }).filter(Boolean);
     }
-    
+
     // Fallback to direct spouse_id relationship
-    return familyMembers.filter(m => 
-      (member.spouse_id === m.id) || (m.spouse_id === member.id)
-    );
+    return familyMembers.filter(m => member.spouse_id === m.id || m.spouse_id === member.id);
   };
   const getChildren = () => {
     return familyMembers.filter(m => m.parent_id === member.id);
@@ -126,14 +123,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               <div className="relative inline-block mb-6">
                 {/* Gradient Ring */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
-                  <div className="rounded-full bg-white p-1">
-                    <Avatar className="h-32 w-32">
-                      <AvatarImage src={member.image_url} className="object-cover" />
-                      <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold text-2xl`}>
-                        {member.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
+                  
                 </div>
                 
                 {/* Floating Status Indicators */}
@@ -338,9 +328,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <p className="text-lg font-bold text-gray-800">{spouse.name}</p>
-                            {spouse.marital_status === 'divorced' && (
-                              <Badge variant="destructive" className="text-xs">مطلق</Badge>
-                            )}
+                            {spouse.marital_status === 'divorced' && <Badge variant="destructive" className="text-xs">مطلق</Badge>}
                           </div>
                           {spouse.marriage_date && <div className="flex items-center gap-2 text-sm text-gray-600">
                               <Calendar className="h-4 w-4 text-rose-500" />
@@ -349,14 +337,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           
                           {/* Show children for this spouse */}
                           {(() => {
-                            const spouseChildren = getChildrenBySpouse(spouse.id);
-                            if (spouseChildren.length > 0) {
-                              return (
-                                <div className="mt-3 pt-3 border-t border-rose-200/50">
+                      const spouseChildren = getChildrenBySpouse(spouse.id);
+                      if (spouseChildren.length > 0) {
+                        return <div className="mt-3 pt-3 border-t border-rose-200/50">
                                   <p className="text-sm font-semibold text-rose-700 mb-2">الأطفال ({spouseChildren.length})</p>
                                   <div className="flex flex-wrap gap-2">
-                                    {spouseChildren.map(child => (
-                                      <div key={child.id} className="flex items-center gap-2 bg-rose-50/80 rounded-lg px-3 py-1">
+                                    {spouseChildren.map(child => <div key={child.id} className="flex items-center gap-2 bg-rose-50/80 rounded-lg px-3 py-1">
                                         <Avatar className="h-6 w-6">
                                           <AvatarImage src={child.image_url} className="object-cover" />
                                           <AvatarFallback className={`${getGenderColor(child.gender)} text-white text-xs`}>
@@ -364,14 +350,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                           </AvatarFallback>
                                         </Avatar>
                                         <span className="text-sm font-medium text-gray-700">{child.name}</span>
-                                      </div>
-                                    ))}
+                                      </div>)}
                                   </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          })()}
+                                </div>;
+                      }
+                      return null;
+                    })()}
                         </div>
                       </div>
                     </div>)}
