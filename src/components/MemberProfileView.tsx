@@ -155,19 +155,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       </Avatar>
                     </div>
                   </div>
-                
-                {/* Floating Status Indicators */}
-                <div className="absolute -top-2 -right-2 flex flex-col gap-1">
-                  <div className={`w-6 h-6 rounded-full ${member.gender === 'male' ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-pink-500 to-pink-600'} flex items-center justify-center shadow-lg animate-bounce`}>
-                    <User className="h-3 w-3 text-white" />
-                  </div>
-                  {getMaritalStatus() === 'متزوج' && <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-rose-600 flex items-center justify-center shadow-lg animate-bounce" style={{
-                  animationDelay: '0.5s'
-                }}>
-                      <Heart className="h-3 w-3 text-white" />
-                    </div>}
                 </div>
-              </div>
 
               {/* Name and Bio Section */}
               <div className="space-y-4 mb-8">
