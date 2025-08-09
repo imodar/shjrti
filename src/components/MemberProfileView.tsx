@@ -48,29 +48,29 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     }
 
     // Fallback to direct spouse_id relationship
-    return familyMembers.filter(m => member.spouse_id === m.id || m.spouse_id === member.id);
+    return familyMembers.filter(m => member.spouseId === m.id || m.spouseId === member.id);
   };
   const getChildren = () => {
-    return familyMembers.filter(m => m.father_id === member.id || m.mother_id === member.id);
+    return familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
   };
   
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
-    if (!spouseId) return children.filter(child => (!child.mother_id && !child.father_id) || (child.father_id === member.id && !child.mother_id) || (child.mother_id === member.id && !child.father_id));
+    if (!spouseId) return children.filter(child => (!child.motherId && !child.fatherId) || (child.fatherId === member.id && !child.motherId) || (child.motherId === member.id && !child.fatherId));
     
     if (member.gender === 'male') {
-      return children.filter(child => child.mother_id === spouseId && child.father_id === member.id);
+      return children.filter(child => child.motherId === spouseId && child.fatherId === member.id);
     } else {
-      return children.filter(child => child.father_id === spouseId && child.mother_id === member.id);
+      return children.filter(child => child.fatherId === spouseId && child.motherId === member.id);
     }
   };
   
   const getFather = () => {
-    return familyMembers.find(m => m.id === member.father_id);
+    return familyMembers.find(m => m.id === member.fatherId);
   };
   
   const getMother = () => {
-    return familyMembers.find(m => m.id === member.mother_id);
+    return familyMembers.find(m => m.id === member.motherId);
   };
   const father = getFather();
   const mother = getMother();
@@ -145,10 +145,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {member.name}
                 </h1>
                 
-                {member.biography && <div className="relative max-w-md mx-auto">
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-200/30 to-emerald-200/30 rounded-2xl blur-sm"></div>
-                    <p className="relative text-gray-600 italic font-medium px-6 py-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/40">
-                      "{member.biography}"
+                 {member.bio && <div className="relative max-w-md mx-auto">
+                     <div className="absolute inset-0 bg-gradient-to-r from-violet-200/30 to-emerald-200/30 rounded-2xl blur-sm"></div>
+                     <p className="relative text-gray-600 italic font-medium px-6 py-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/40">
+                       "{member.bio}"
                     </p>
                   </div>}
                 
@@ -158,9 +158,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="relative flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-violet-600" />
-                      <span className="text-sm font-semibold text-gray-700">
-                        {member.birth_date ? new Date(member.birth_date).toLocaleDateString('ar-SA') : 'غير محدد'}
-                      </span>
+                       <span className="text-sm font-semibold text-gray-700">
+                         {member.birthDate ? new Date(member.birthDate).toLocaleDateString('ar-SA') : 'غير محدد'}
+                       </span>
                     </div>
                   </div>
                   
@@ -269,22 +269,22 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-emerald-700 mb-1">مكان الميلاد</p>
-                      <p className="text-base font-bold text-gray-800">{member.birth_place || 'غير محدد'}</p>
+                      <p className="text-base font-bold text-gray-800">{member.birthPlace || 'غير محدد'}</p>
                     </div>
                   </div>
                 </div>
                 
-                {member.death_date && <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-red-50/80 to-orange-50/80 border border-red-200/40 p-4 hover:border-red-300/60 transition-all duration-300 hover:scale-[1.01]">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
-                        <Calendar className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-red-700 mb-1">تاريخ الوفاة</p>
-                        <p className="text-base font-bold text-gray-800">{new Date(member.death_date).toLocaleDateString('ar-SA')}</p>
-                      </div>
-                    </div>
-                  </div>}
+                 {member.deathDate && <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-red-50/80 to-orange-50/80 border border-red-200/40 p-4 hover:border-red-300/60 transition-all duration-300 hover:scale-[1.01]">
+                     <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
+                         <Calendar className="h-5 w-5" />
+                       </div>
+                       <div className="flex-1">
+                         <p className="text-sm font-semibold text-red-700 mb-1">تاريخ الوفاة</p>
+                         <p className="text-base font-bold text-gray-800">{new Date(member.deathDate).toLocaleDateString('ar-SA')}</p>
+                       </div>
+                     </div>
+                   </div>}
               </div>
             </div>
           </div>
@@ -312,9 +312,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="relative">
                           <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full p-0.5">
                             <div className="rounded-full bg-white p-0.5">
-                 <Avatar className="h-14 w-14 ring-2 ring-rose-200/50 group-hover/spouse:ring-rose-300/70 transition-all">
-                                 <AvatarImage src={spouse.image_url} className="object-cover" />
-                                 <AvatarFallback className={`${getGenderColor(spouse.gender)} text-white font-bold`}>
+                  <Avatar className="h-14 w-14 ring-2 ring-rose-200/50 group-hover/spouse:ring-rose-300/70 transition-all">
+                                  <AvatarImage src={spouse.image} className="object-cover" />
+                                  <AvatarFallback className={`${getGenderColor(spouse.gender)} text-white font-bold`}>
                                    {spouse.name.charAt(0)}
                                  </AvatarFallback>
                                </Avatar>
