@@ -5,7 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Edit, Trash2, Heart, Users, Calendar, User, MapPin, ArrowRight } from 'lucide-react';
-
 interface MemberProfileViewProps {
   member: any;
   onEdit: () => void;
@@ -13,7 +12,6 @@ interface MemberProfileViewProps {
   onBack: () => void;
   familyMembers: any[];
 }
-
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   member,
   onEdit,
@@ -22,37 +20,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   familyMembers
 }) => {
   if (!member) return null;
-
   const getGenderColor = (gender: string) => {
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
-
   const getMaritalStatus = () => {
-    const spouses = familyMembers.filter(m => 
-      m.spouse_ids?.includes(member.id) || member.spouse_ids?.includes(m.id)
-    );
+    const spouses = familyMembers.filter(m => m.spouse_ids?.includes(member.id) || member.spouse_ids?.includes(m.id));
     return spouses.length > 0 ? 'متزوج' : 'أعزب';
   };
-
   const getSpouses = () => {
-    return familyMembers.filter(m => 
-      m.spouse_ids?.includes(member.id) || member.spouse_ids?.includes(m.id)
-    );
+    return familyMembers.filter(m => m.spouse_ids?.includes(member.id) || member.spouse_ids?.includes(m.id));
   };
-
   const getChildren = () => {
     return familyMembers.filter(m => m.parent_id === member.id);
   };
-
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
     if (!spouseId) return children.filter(child => !child.mother_id && !child.father_id);
-    
-    return children.filter(child => 
-      child.mother_id === spouseId || child.father_id === spouseId
-    );
+    return children.filter(child => child.mother_id === spouseId || child.father_id === spouseId);
   };
-
   const getFather = () => {
     if (member.gender === 'male') {
       return familyMembers.find(m => m.id === member.parent_id);
@@ -60,7 +45,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       return familyMembers.find(m => m.id === member.father_id);
     }
   };
-
   const getMother = () => {
     if (member.gender === 'female') {
       return familyMembers.find(m => m.id === member.parent_id);
@@ -68,37 +52,37 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       return familyMembers.find(m => m.id === member.mother_id);
     }
   };
-
   const father = getFather();
   const mother = getMother();
   const spouses = getSpouses();
   const children = getChildren();
-
-  return (
-    <div className="h-full overflow-y-auto bg-gradient-to-br from-violet-50/30 via-blue-50/20 to-emerald-50/30 relative">
+  return <div className="h-full overflow-y-auto bg-gradient-to-br from-violet-50/30 via-blue-50/20 to-emerald-50/30 relative">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 right-10 w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-10 w-24 h-24 bg-gradient-to-tr from-accent/15 to-primary/15 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 left-10 w-24 h-24 bg-gradient-to-tr from-accent/15 to-primary/15 rounded-full blur-2xl animate-pulse" style={{
+        animationDelay: '1s'
+      }}></div>
+        <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-full blur-xl animate-pulse" style={{
+        animationDelay: '2s'
+      }}></div>
       </div>
 
       {/* Glassmorphism Header */}
       <div className="sticky top-0 z-20 backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-lg">
         <div className="flex items-center gap-4 p-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onBack} 
-            className="hover:bg-white/20 hover-scale backdrop-blur-sm bg-white/10 border border-white/30 rounded-full"
-          >
+          <Button variant="ghost" size="sm" onClick={onBack} className="hover:bg-white/20 hover-scale backdrop-blur-sm bg-white/10 border border-white/30 rounded-full">
             <ArrowRight className="h-4 w-4" />
           </Button>
           <div className="flex items-center gap-3">
             <div className="flex gap-1">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{
+              animationDelay: '0.2s'
+            }}></div>
+              <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" style={{
+              animationDelay: '0.4s'
+            }}></div>
             </div>
             <h2 className="text-xl font-bold bg-gradient-to-r from-violet-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent">
               الملف الشخصي
@@ -121,14 +105,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               <div className="relative inline-block mb-6">
                 {/* Gradient Ring */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
-                  <div className="rounded-full bg-gradient-to-br from-white/90 to-white/70 p-1">
-                    <Avatar className="h-32 w-32 ring-4 ring-white/50 transition-transform group-hover:scale-110 duration-500">
-                      <AvatarImage src={member.image} className="object-cover" />
-                      <AvatarFallback className={`${getGenderColor(member.gender)} text-white text-3xl font-bold`}>
-                        {member.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
+                  
                 </div>
                 
                 {/* Floating Status Indicators */}
@@ -136,11 +113,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <div className={`w-6 h-6 rounded-full ${member.gender === 'male' ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-pink-500 to-pink-600'} flex items-center justify-center shadow-lg animate-bounce`}>
                     <User className="h-3 w-3 text-white" />
                   </div>
-                  {getMaritalStatus() === 'متزوج' && (
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-rose-600 flex items-center justify-center shadow-lg animate-bounce" style={{ animationDelay: '0.5s' }}>
+                  {getMaritalStatus() === 'متزوج' && <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-rose-600 flex items-center justify-center shadow-lg animate-bounce" style={{
+                  animationDelay: '0.5s'
+                }}>
                       <Heart className="h-3 w-3 text-white" />
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </div>
 
@@ -150,14 +127,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {member.name}
                 </h1>
                 
-                {member.bio && (
-                  <div className="relative max-w-md mx-auto">
+                {member.bio && <div className="relative max-w-md mx-auto">
                     <div className="absolute inset-0 bg-gradient-to-r from-violet-200/30 to-emerald-200/30 rounded-2xl blur-sm"></div>
                     <p className="relative text-gray-600 italic font-medium px-6 py-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/40">
                       "{member.bio}"
                     </p>
-                  </div>
-                )}
+                  </div>}
                 
                 {/* Enhanced Info Pills */}
                 <div className="flex flex-wrap justify-center gap-3">
@@ -281,8 +256,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
                 </div>
                 
-                {member.death_date && (
-                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-red-50/80 to-orange-50/80 border border-red-200/40 p-4 hover:border-red-300/60 transition-all duration-300 hover:scale-[1.01]">
+                {member.death_date && <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-red-50/80 to-orange-50/80 border border-red-200/40 p-4 hover:border-red-300/60 transition-all duration-300 hover:scale-[1.01]">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
                         <Calendar className="h-5 w-5" />
@@ -292,15 +266,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <p className="text-base font-bold text-gray-800">{new Date(member.death_date).toLocaleDateString('ar-SA')}</p>
                       </div>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
             </div>
           </div>
 
           {/* Spouses Section */}
-          {spouses.length > 0 && (
-            <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-rose-500/10 via-pink-500/5 to-red-500/10 border border-rose-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+          {spouses.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-rose-500/10 via-pink-500/5 to-red-500/10 border border-rose-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <div className="relative p-6">
@@ -317,8 +289,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 </div>
                 
                 <div className="space-y-4">
-                  {spouses.map((spouse, index) => (
-                    <div key={spouse.id} className="group/spouse relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-rose-50/90 border border-rose-200/50 p-5 hover:border-rose-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+                  {spouses.map((spouse, index) => <div key={spouse.id} className="group/spouse relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-rose-50/90 border border-rose-200/50 p-5 hover:border-rose-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
                       <div className="flex items-center gap-4">
                         <div className="relative">
                           <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full p-0.5">
@@ -338,24 +309,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         
                         <div className="flex-1">
                           <p className="text-lg font-bold text-gray-800 mb-1">{spouse.name}</p>
-                          {spouse.marriage_date && (
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                          {spouse.marriage_date && <div className="flex items-center gap-2 text-sm text-gray-600">
                               <Calendar className="h-4 w-4 text-rose-500" />
                               <span>تاريخ الزواج: {new Date(spouse.marriage_date).toLocaleDateString('ar-SA')}</span>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* Children Section */}
-          {children.length > 0 && (
-            <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-teal-500/10 border border-green-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+          {children.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-teal-500/10 border border-green-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <div className="relative p-6">
@@ -371,14 +337,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </h3>
                 </div>
                 
-                {spouses.length > 0 ? (
-                  <div className="space-y-6">
+                {spouses.length > 0 ? <div className="space-y-6">
                     {spouses.map((spouse, spouseIndex) => {
-                      const spouseChildren = getChildrenBySpouse(spouse.id);
-                      if (spouseChildren.length === 0) return null;
-                      
-                      return (
-                        <div key={spouse.id} className="space-y-4">
+                const spouseChildren = getChildrenBySpouse(spouse.id);
+                if (spouseChildren.length === 0) return null;
+                return <div key={spouse.id} className="space-y-4">
                           <div className="flex items-center gap-3">
                             <div className="w-1 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></div>
                             <h4 className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
@@ -387,8 +350,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           </div>
                           
                           <div className="grid gap-3 pl-6">
-                            {spouseChildren.map((child) => (
-                              <div key={child.id} className="group/child relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-green-50/90 border border-green-200/50 p-4 hover:border-green-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
+                            {spouseChildren.map(child => <div key={child.id} className="group/child relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-green-50/90 border border-green-200/50 p-4 hover:border-green-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
                                 <div className="flex items-center gap-4">
                                   <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full p-0.5">
@@ -411,25 +373,18 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              </div>)}
                           </div>
                           
-                          {spouseIndex < spouses.length - 1 && spouses[spouseIndex + 1] && getChildrenBySpouse(spouses[spouseIndex + 1].id).length > 0 && (
-                            <div className="flex items-center gap-4 my-6">
+                          {spouseIndex < spouses.length - 1 && spouses[spouseIndex + 1] && getChildrenBySpouse(spouses[spouseIndex + 1].id).length > 0 && <div className="flex items-center gap-4 my-6">
                               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-300/50 to-transparent"></div>
                               <div className="w-2 h-2 rounded-full bg-green-400"></div>
                               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-300/50 to-transparent"></div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="grid gap-3">
-                    {children.map((child) => (
-                      <div key={child.id} className="group/child relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-green-50/90 border border-green-200/50 p-4 hover:border-green-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
+                            </div>}
+                        </div>;
+              })}
+                  </div> : <div className="grid gap-3">
+                    {children.map(child => <div key={child.id} className="group/child relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-green-50/90 border border-green-200/50 p-4 hover:border-green-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
                         <div className="flex items-center gap-4">
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full p-0.5">
@@ -452,33 +407,22 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      </div>)}
+                  </div>}
               </div>
-            </div>
-          )}
+            </div>}
         </div>
 
         {/* Action Buttons at Bottom */}
         <div className="sticky bottom-0 backdrop-blur-xl bg-white/10 border-t border-white/20 p-6 mt-8">
           <div className="flex gap-4">
-            <Button 
-              onClick={onEdit} 
-              className="flex-1 relative overflow-hidden bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
-              size="lg"
-            >
+            <Button onClick={onEdit} className="flex-1 relative overflow-hidden bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group" size="lg">
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <Edit className="h-5 w-5 ml-2 relative z-10" />
               <span className="relative z-10">تعديل المعلومات</span>
             </Button>
             
-            <Button 
-              onClick={onDelete} 
-              className="flex-1 relative overflow-hidden bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
-              size="lg"
-            >
+            <Button onClick={onDelete} className="flex-1 relative overflow-hidden bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group" size="lg">
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <Trash2 className="h-5 w-5 ml-2 relative z-10" />
               <span className="relative z-10">حذف العضو</span>
@@ -486,6 +430,5 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
