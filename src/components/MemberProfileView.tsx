@@ -221,58 +221,60 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
         {/* Family Information Cards - Masonry Layout */}
         <div className="grid grid-cols-1 gap-6">
-          {/* Parents Section */}
-          <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-blue-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="relative p-6">
-              {/* Section Header */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-sm opacity-30"></div>
-                  <div className="relative p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-sm">
-                    <Users className="h-6 w-6 text-blue-600" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  الوالدين
-                </h3>
-              </div>
+          {/* Parents Section - Only show if member has parents or is not just a spouse */}
+          {(father || mother || !member.relatedPersonId) && (
+            <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-blue-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
-              {/* Parents Grid */}
-              <div className="space-y-4">
-                <div className="group/item relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-200/40 p-4 hover:border-blue-300/60 transition-all duration-300 hover:scale-[1.01]">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
-                        <User className="h-5 w-5" />
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full"></div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-blue-700 mb-1">الوالد</p>
-                      <p className="text-base font-bold text-gray-800">{father?.name || 'غير محدد'}</p>
+              <div className="relative p-6">
+                {/* Section Header */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-sm opacity-30"></div>
+                    <div className="relative p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-sm">
+                      <Users className="h-6 w-6 text-blue-600" />
                     </div>
                   </div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    الوالدين
+                  </h3>
                 </div>
                 
-                <div className="group/item relative overflow-hidden rounded-xl bg-gradient-to-r from-pink-50/80 to-rose-50/80 border border-pink-200/40 p-4 hover:border-pink-300/60 transition-all duration-300 hover:scale-[1.01]">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white font-bold shadow-lg">
-                        <User className="h-5 w-5" />
+                {/* Parents Grid */}
+                <div className="space-y-4">
+                  <div className="group/item relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-200/40 p-4 hover:border-blue-300/60 transition-all duration-300 hover:scale-[1.01]">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+                          <User className="h-5 w-5" />
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full"></div>
                       </div>
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-pink-500 rounded-full"></div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-blue-700 mb-1">الوالد</p>
+                        <p className="text-base font-bold text-gray-800">{father?.name || 'غير محدد'}</p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-pink-700 mb-1">الوالدة</p>
-                      <p className="text-base font-bold text-gray-800">{mother?.name || 'غير محدد'}</p>
+                  </div>
+                  
+                  <div className="group/item relative overflow-hidden rounded-xl bg-gradient-to-r from-pink-50/80 to-rose-50/80 border border-pink-200/40 p-4 hover:border-pink-300/60 transition-all duration-300 hover:scale-[1.01]">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white font-bold shadow-lg">
+                          <User className="h-5 w-5" />
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-pink-500 rounded-full"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-pink-700 mb-1">الوالدة</p>
+                        <p className="text-base font-bold text-gray-800">{mother?.name || 'غير محدد'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Additional Info Section */}
           <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-emerald-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
