@@ -541,13 +541,11 @@ const FamilyBuilderNew = () => {
   const [memberListLoading, setMemberListLoading] = useState(false);
 
   // Form panel states
-  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit'>('view');
+  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile'>('view');
   const [editingMember, setEditingMember] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
-  const [showProfileView, setShowProfileView] = useState(false);
-  const [profileMember, setProfileMember] = useState<any>(null);
   
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
@@ -1173,8 +1171,9 @@ const FamilyBuilderNew = () => {
   };
 
   const handleViewMember = (member: any) => {
-    setProfileMember(member);
-    setShowProfileView(true);
+    setFormMode('profile');
+    setEditingMember(member);
+    if (isMobile) setIsMemberListOpen(false);
   };
 
   const handleEditMember = (member: any) => {
@@ -1836,19 +1835,21 @@ const FamilyBuilderNew = () => {
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                 <CardHeader className="pb-4 relative">
                   <div className="flex items-center justify-end">
-                    <CardTitle className="flex items-center gap-2 order-1">
-                      {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                      {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                      {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                         {formMode === 'view' && "معلومات العضو"}
-                         {formMode === 'add' && "إضافة عضو جديد"}
-                         {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
-                       </span>
-                    </CardTitle>
+                     <CardTitle className="flex items-center gap-2 order-1">
+                       {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                       {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                       {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                       {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                          {formMode === 'view' && "معلومات العضو"}
+                          {formMode === 'add' && "إضافة عضو جديد"}
+                          {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
+                          {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
+                        </span>
+                     </CardTitle>
 
-                    {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
-                    {formMode !== 'view' && (
+                     {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
+                     {(formMode === 'add' || formMode === 'edit') && (
                       <div className="flex items-center gap-3 order-2 ms-auto">
                         {[1, 2].map((step, index) => (
                           <div key={step} className="flex items-center gap-2">
@@ -1883,7 +1884,7 @@ const FamilyBuilderNew = () => {
                       </div>
                     )}
                      
-                     {formMode === 'view' && (
+                      {formMode === 'view' && (
                        <Button onClick={handleAddMember} className="flex items-center gap-2">
                          <Plus className="h-4 w-4" />
                          إضافة عضو
@@ -1898,6 +1899,18 @@ const FamilyBuilderNew = () => {
                       <p>اختر عضواً من القائمة لعرض أو تعديل بياناته</p>
                       <p className="text-sm mt-2">أو اضغط "إضافة عضو" لإضافة عضو جديد</p>
                     </div>
+                  ) : formMode === 'profile' ? (
+                    <MemberProfileView
+                      member={editingMember}
+                      onEdit={() => {
+                        setFormMode('edit');
+                        setCurrentStep(1);
+                        populateFormData(editingMember);
+                      }}
+                      onDelete={() => handleDeleteMember(editingMember)}
+                      onBack={() => setFormMode('view')}
+                      familyMembers={familyMembers}
+                    />
                   ) : (
                     <div className="space-y-6">
 
@@ -3507,24 +3520,6 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Member Profile View */}
-      <MemberProfileView
-        member={profileMember}
-        isOpen={showProfileView}
-        onClose={() => {
-          setShowProfileView(false);
-          setProfileMember(null);
-        }}
-        onEdit={() => {
-          setShowProfileView(false);
-          handleEditMember(profileMember);
-        }}
-        onDelete={() => {
-          setShowProfileView(false);
-          handleDeleteMember(profileMember);
-        }}
-        familyMembers={familyMembers}
-      />
 
       <GlobalFooter />
     </div>
