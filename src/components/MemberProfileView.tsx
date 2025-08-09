@@ -179,7 +179,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         {/* Family Information Cards - Masonry Layout */}
         <div className="grid grid-cols-1 gap-6">
           {/* Parents Section */}
-          <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-blue-500/10 via-indigo-500/5 to-purple-500/10 border border-blue-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+          <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-blue-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <div className="relative p-6">
@@ -232,7 +232,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           </div>
 
           {/* Additional Info Section */}
-          <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-emerald-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+          <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-emerald-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <div className="relative p-6">
@@ -277,7 +277,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           </div>
 
           {/* Spouses Section */}
-          {spouses.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-rose-500/10 via-pink-500/5 to-red-500/10 border border-rose-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+          {spouses.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-rose-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <div className="relative p-6">
@@ -326,7 +326,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             </div>}
 
           {/* Children Section */}
-          {children.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-teal-500/10 border border-green-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+          {children.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-green-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <div className="relative p-6">
