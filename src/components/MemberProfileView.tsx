@@ -352,9 +352,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                </Avatar>
                             </div>
                           </div>
-                          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                            <Heart className="h-3 w-3 text-white" />
-                          </div>
                         </div>
                         
                         <div className="flex-1">
