@@ -11,16 +11,19 @@ interface MemberProfileViewProps {
   onDelete: () => void;
   onBack: () => void;
   familyMembers: any[];
+  marriages?: any[]; // Add marriages prop
 }
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   member,
   onEdit,
   onDelete,
   onBack,
-  familyMembers
+  familyMembers,
+  marriages = [] // Default to empty array
 }) => {
   console.log('MemberProfileView - member data:', member);
   console.log('MemberProfileView - familyMembers data:', familyMembers);
+  console.log('MemberProfileView - marriages data:', marriages);
   if (!member) return null;
   const getGenderColor = (gender: string) => {
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
@@ -43,18 +46,18 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
   const getSpouses = () => {
     // First check marriages table for proper relationships
-    const marriages = familyMembers.filter(m => 
+    const memberMarriages = marriages.filter(m => 
       (member.gender === 'male' && m.husband_id === member.id) || 
       (member.gender === 'female' && m.wife_id === member.id)
     );
     
-    if (marriages.length > 0) {
-      return marriages.map(marriage => {
+    if (memberMarriages.length > 0) {
+      return memberMarriages.map(marriage => {
         const spouseId = member.gender === 'male' ? marriage.wife_id : marriage.husband_id;
         const spouse = familyMembers.find(m => m.id === spouseId);
         return spouse ? {
           ...spouse,
-          marital_status: marriage.marital_status,
+          marital_status: marriage.marital_status || 'married',
           marriage_date: marriage.created_at
         } : null;
       }).filter(Boolean);

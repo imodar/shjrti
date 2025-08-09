@@ -1908,6 +1908,7 @@ const FamilyBuilderNew = () => {
                       onDelete={() => handleDeleteMember(editingMember)}
                       onBack={() => setFormMode('view')}
                       familyMembers={familyMembers}
+                      marriages={familyMarriages}
                     />
                   ) : (
                     <div className="space-y-6">
