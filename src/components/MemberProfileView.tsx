@@ -221,8 +221,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
         {/* Family Information Cards - Masonry Layout */}
         <div className="grid grid-cols-1 gap-6">
-          {/* Parents Section - Only show if member has parents or is not just a spouse */}
-          {(father || mother || !member.relatedPersonId) && (
+          {/* Parents Section - Only show if member has actual parent IDs */}
+          {(member.fatherId || member.motherId) && (
             <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-blue-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
