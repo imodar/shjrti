@@ -38,6 +38,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import WifeForm from "@/components/WifeForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
+import { MemberProfileView } from "@/components/MemberProfileView";
 
 // Image Upload Component - moved outside to prevent recreation on each render
 const ImageUploadSection = ({
@@ -545,6 +546,8 @@ const FamilyBuilderNew = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
+  const [showProfileView, setShowProfileView] = useState(false);
+  const [profileMember, setProfileMember] = useState<any>(null);
   
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
@@ -1167,6 +1170,11 @@ const FamilyBuilderNew = () => {
     setCurrentStep(1);
     resetFormData();
     if (isMobile) setIsMemberListOpen(false);
+  };
+
+  const handleViewMember = (member: any) => {
+    setProfileMember(member);
+    setShowProfileView(true);
   };
 
   const handleEditMember = (member: any) => {
@@ -3211,7 +3219,8 @@ const FamilyBuilderNew = () => {
                     <div className="p-4">
                        <MemberList 
                          members={filteredMembers}
-                         onEditMember={handleEditMember}
+                        onEditMember={handleEditMember}
+                        onViewMember={handleViewMember}
                          onDeleteMember={handleDeleteMember}
                          onSpouseEditAttempt={handleSpouseEditAttempt}
                          checkIfMemberIsSpouse={checkIfMemberIsSpouse}
@@ -3242,7 +3251,8 @@ const FamilyBuilderNew = () => {
                   <CardContent className="relative">
                      <MemberList 
                        members={filteredMembers}
-                       onEditMember={handleEditMember}
+                        onEditMember={handleEditMember}
+                        onViewMember={handleViewMember}
                        onDeleteMember={handleDeleteMember}
                        onSpouseEditAttempt={handleSpouseEditAttempt}
                        checkIfMemberIsSpouse={checkIfMemberIsSpouse}
@@ -3497,6 +3507,25 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Member Profile View */}
+      <MemberProfileView
+        member={profileMember}
+        isOpen={showProfileView}
+        onClose={() => {
+          setShowProfileView(false);
+          setProfileMember(null);
+        }}
+        onEdit={() => {
+          setShowProfileView(false);
+          handleEditMember(profileMember);
+        }}
+        onDelete={() => {
+          setShowProfileView(false);
+          handleDeleteMember(profileMember);
+        }}
+        familyMembers={familyMembers}
+      />
+
       <GlobalFooter />
     </div>
   );
@@ -3505,7 +3534,8 @@ const FamilyBuilderNew = () => {
 // Member List Component
 const MemberList = ({ 
   members, 
-  onEditMember, 
+  onEditMember,
+  onViewMember, 
   onDeleteMember,
   onSpouseEditAttempt,
   checkIfMemberIsSpouse,
@@ -3577,7 +3607,7 @@ const MemberList = ({
             <Card 
               key={member.id} 
               className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden"
-              onClick={() => onEditMember(member)}
+              onClick={() => onViewMember(member)}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-3 min-h-[80px]">
