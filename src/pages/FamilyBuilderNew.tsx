@@ -844,6 +844,16 @@ const FamilyBuilderNew = () => {
     isSaved?: boolean;
   } | null>(null);
 
+  // Sync croppedImage with formData when croppedImage changes
+  useEffect(() => {
+    if (croppedImage !== formData.croppedImage) {
+      setFormData(prev => ({
+        ...prev,
+        croppedImage: croppedImage
+      }));
+    }
+  }, [croppedImage, formData.croppedImage]);
+
   // Command states for search
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
   const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
