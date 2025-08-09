@@ -149,7 +149,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                       <Avatar className="w-24 h-24 ring-4 ring-white/30">
                         {member.image_url ? (
-                          <AvatarImage src={member.image_url} className="object-cover" />
+                          <AvatarImage src={member.image_url} alt={member.name} className="object-cover w-full h-full" />
                         ) : (
                           <AvatarFallback className={`text-2xl font-bold text-white ${getGenderColor(member.gender)}`}>
                             {member.name.charAt(0)}
