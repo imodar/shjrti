@@ -1456,16 +1456,38 @@ const FamilyBuilderNew = () => {
                 console.log('🔥 Successfully created wife member:', newWifeMember);
               }
 
-              // Create marriage record
-              const { error: marriageError } = await supabase
+              // Check if marriage already exists and update it, otherwise create new one
+              const { data: existingMarriage } = await supabase
                 .from('marriages')
-                .insert({
-                  family_id: familyId,
-                  husband_id: memberData.id,
-                  wife_id: wifeId,
-                  is_active: true,
-                  marital_status: 'married'
-                });
+                .select('id')
+                .eq('husband_id', memberData.id)
+                .eq('wife_id', wifeId)
+                .maybeSingle();
+
+              let marriageError;
+              if (existingMarriage) {
+                // Update existing marriage
+                const { error } = await supabase
+                  .from('marriages')
+                  .update({
+                    is_active: true,
+                    marital_status: 'married'
+                  })
+                  .eq('id', existingMarriage.id);
+                marriageError = error;
+              } else {
+                // Create new marriage record
+                const { error } = await supabase
+                  .from('marriages')
+                  .insert({
+                    family_id: familyId,
+                    husband_id: memberData.id,
+                    wife_id: wifeId,
+                    is_active: true,
+                    marital_status: 'married'
+                  });
+                marriageError = error;
+              }
 
               if (marriageError) {
                 console.error('Error creating marriage with wife:', wife.name, marriageError);
@@ -1520,15 +1542,38 @@ const FamilyBuilderNew = () => {
 
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
-              const { error: marriageError } = await supabase
+              // Check if marriage already exists and update it, otherwise create new one
+              const { data: existingMarriage } = await supabase
                 .from('marriages')
-                .insert({
-                  family_id: familyId,
-                  husband_id: husbandId,
-                  wife_id: memberData.id,
-                  is_active: true,
-                  marital_status: 'married'
-                });
+                .select('id')
+                .eq('husband_id', husbandId)
+                .eq('wife_id', memberData.id)
+                .maybeSingle();
+
+              let marriageError;
+              if (existingMarriage) {
+                // Update existing marriage
+                const { error } = await supabase
+                  .from('marriages')
+                  .update({
+                    is_active: true,
+                    marital_status: 'married'
+                  })
+                  .eq('id', existingMarriage.id);
+                marriageError = error;
+              } else {
+                // Create new marriage record
+                const { error } = await supabase
+                  .from('marriages')
+                  .insert({
+                    family_id: familyId,
+                    husband_id: husbandId,
+                    wife_id: memberData.id,
+                    is_active: true,
+                    marital_status: 'married'
+                  });
+                marriageError = error;
+              }
 
               if (marriageError) {
                 console.error('Error creating marriage with husband:', husband.name, marriageError);
