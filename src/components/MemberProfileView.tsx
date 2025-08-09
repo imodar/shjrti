@@ -143,15 +143,18 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {/* Content */}
             <div className="relative p-8 text-center">
                 {/* Avatar Section with Advanced Design */}
-                <div className="relative inline-block mb-6">
+                <div className="relative inline-block mb-8">
                   {/* Gradient Ring */}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
                     <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                       <Avatar className="w-24 h-24 ring-4 ring-white/30">
-                        <AvatarImage src={member.image_url} className="object-cover" />
-                        <AvatarFallback className={`text-2xl font-bold text-white ${getGenderColor(member.gender)}`}>
-                          {member.name.charAt(0)}
-                        </AvatarFallback>
+                        {member.image_url ? (
+                          <AvatarImage src={member.image_url} className="object-cover" />
+                        ) : (
+                          <AvatarFallback className={`text-2xl font-bold text-white ${getGenderColor(member.gender)}`}>
+                            {member.name.charAt(0)}
+                          </AvatarFallback>
+                        )}
                       </Avatar>
                     </div>
                   </div>
