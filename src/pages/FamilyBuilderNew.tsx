@@ -1278,9 +1278,17 @@ const FamilyBuilderNew = () => {
         
         console.log('🔥 Loading wives for male member:', memberWives);
         setWives(memberWives);
+        
+        // Initialize wife family status based on whether they are family members
+        const initialWiveFamilyStatus: { [key: number]: 'yes' | 'no' | null } = {};
+        memberWives.forEach((wife, index) => {
+          initialWiveFamilyStatus[index] = wife.isFamilyMember ? 'yes' : 'no';
+        });
+        setWiveFamilyStatus(initialWiveFamilyStatus);
       } else {
         console.log('🔥 Debug - No marriages found for member:', member.name);
         setWives([]);
+        setWiveFamilyStatus({});
       }
     } else if (member.gender === "female") {
       // Load husband for female member
@@ -2664,9 +2672,9 @@ const FamilyBuilderNew = () => {
                                             isSaved: false
                                           }]);
                                           
-                                          // Initialize family status for new wife
+                                          // Initialize family status for new wife based on isFamilyMember
                                           const newStatus = {...wiveFamilyStatus};
-                                          newStatus[wives.length] = null;
+                                          newStatus[wives.length] = 'yes'; // Default to 'yes' since isFamilyMember is true by default
                                           setWiveFamilyStatus(newStatus);
                                         }}
                                         className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
