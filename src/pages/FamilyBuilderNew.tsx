@@ -1249,9 +1249,14 @@ const FamilyBuilderNew = () => {
     
     if (member.gender === "male") {
       // Load wives for male member
+      console.log('🔥 Debug - Loading wives for male member:', member.name, 'ID:', member.id);
+      console.log('🔥 Debug - Available marriages:', familyMarriages);
+      
       const memberMarriages = familyMarriages.filter(marriage => 
         marriage.husband?.id === member.id
       );
+      
+      console.log('🔥 Debug - Found marriages for this member:', memberMarriages);
       
       if (memberMarriages.length > 0) {
         const memberWives = memberMarriages.map(marriage => {
@@ -1273,6 +1278,9 @@ const FamilyBuilderNew = () => {
         
         console.log('🔥 Loading wives for male member:', memberWives);
         setWives(memberWives);
+      } else {
+        console.log('🔥 Debug - No marriages found for member:', member.name);
+        setWives([]);
       }
     } else if (member.gender === "female") {
       // Load husband for female member
