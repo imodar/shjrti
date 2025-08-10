@@ -910,6 +910,14 @@ const FamilyBuilderNew = () => {
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
   const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "" });
+  
+  // Spouse deletion modal states
+  const [showSpouseDeleteModal, setShowSpouseDeleteModal] = useState(false);
+  const [spouseToDelete, setSpouseToDelete] = useState<{ wife: any; index: number } | null>(null);
+  const [spouseDeleteWarning, setSpouseDeleteWarning] = useState("");
+  
+  // Track original wife data for change detection
+  const [originalWivesData, setOriginalWivesData] = useState<any[]>([]);
 
   // --- Spouse rules helpers & delete handlers ---
   const checkIfMemberIsSpouse = (member: any) => {
@@ -1159,6 +1167,95 @@ const FamilyBuilderNew = () => {
     }
   };
 
+  // Helper function to check if wife data has changed
+  const hasWifeDataChanged = (wife: any, index: number) => {
+    const original = originalWivesData[index];
+    if (!original && wife.isSaved) return false; // New wife that's saved
+    if (!original) return true; // New unsaved wife
+    
+    return (
+      wife.name !== original.name ||
+      wife.isAlive !== original.isAlive ||
+      wife.maritalStatus !== original.maritalStatus ||
+      wife.isFamilyMember !== original.isFamilyMember ||
+      (wife.birthDate?.getTime() || 0) !== (original.birthDate?.getTime() || 0) ||
+      (wife.deathDate?.getTime() || 0) !== (original.deathDate?.getTime() || 0)
+    );
+  };
+
+  // Handle spouse deletion with modal
+  const handleSpouseDelete = (wife: any, index: number) => {
+    // Find children of this spouse
+    const spouseChildren = familyMembers.filter(member => 
+      member.mother_id === wife.id || member.father_id === wife.id
+    );
+    
+    // Get all descendants
+    const getAllSpouseDescendants = (memberId: string): any[] => {
+      const children = familyMembers.filter(member => 
+        member.father_id === memberId || member.mother_id === memberId
+      );
+      let descendants = [...children];
+      children.forEach(child => {
+        descendants = [...descendants, ...getAllSpouseDescendants(child.id)];
+      });
+      return descendants;
+    };
+    
+    const allDescendants = getAllSpouseDescendants(wife.id);
+    
+    let warningMessage = `تحذير: حذف هذه الزوجة سيؤدي إلى:\n`;
+    warningMessage += `- حذف الزوجة: ${wife.name}\n`;
+    warningMessage += `- إزالة علاقة الزواج\n`;
+    
+    if (spouseChildren.length > 0) {
+      warningMessage += `- حذف ${spouseChildren.length} من الأطفال\n`;
+    }
+    
+    if (allDescendants.length > spouseChildren.length) {
+      warningMessage += `- حذف جميع الأحفاد (${allDescendants.length} شخص إجمالي)\n`;
+    }
+    
+    warningMessage += `\nسيتم التأكيد النهائي عند حفظ بيانات العضو الحالي.\nهل تريد المتابعة؟`;
+    
+    setSpouseToDelete({ wife, index });
+    setSpouseDeleteWarning(warningMessage);
+    setShowSpouseDeleteModal(true);
+  };
+
+  // Confirm spouse deletion (just mark for deletion)
+  const confirmSpouseDelete = () => {
+    if (!spouseToDelete) return;
+    
+    const { index } = spouseToDelete;
+    const newWives = wives.filter((_, i) => i !== index);
+    setWives(newWives);
+    
+    // Update family status object
+    const newStatus = { ...wiveFamilyStatus };
+    delete newStatus[index];
+    // Reindex the remaining statuses
+    const reindexedStatus: { [key: number]: 'yes' | 'no' | null } = {};
+    Object.keys(newStatus).forEach((key, newIndex) => {
+      const oldIndex = parseInt(key);
+      if (oldIndex > index) {
+        reindexedStatus[newIndex] = newStatus[oldIndex];
+      } else if (oldIndex < index) {
+        reindexedStatus[oldIndex] = newStatus[oldIndex];
+      }
+    });
+    setWiveFamilyStatus(reindexedStatus);
+    
+    setShowSpouseDeleteModal(false);
+    setSpouseToDelete(null);
+    
+    toast({
+      title: "تم تحديد الزوجة للحذف",
+      description: "سيتم حذف الزوجة نهائياً عند حفظ بيانات العضو",
+      variant: "destructive"
+    });
+  };
+
   const filteredMembers = familyMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === "all" || 
@@ -1262,6 +1359,9 @@ const FamilyBuilderNew = () => {
         const memberWives = memberMarriages.map(marriage => {
           const wifeMember = familyMembers.find(fm => fm.id === marriage.wife?.id);
           
+          // Determine if spouse is external: no father_id and not founder
+          const isExternalSpouse = wifeMember ? (!wifeMember.father_id && !wifeMember.is_founder) : true;
+          
           return {
             id: marriage.wife?.id || '',
             name: marriage.wife?.name || '',
@@ -1270,14 +1370,23 @@ const FamilyBuilderNew = () => {
             isAlive: wifeMember?.is_alive ?? true,
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
-            isFamilyMember: !!wifeMember, // If found in family members, it's a family member
+            isFamilyMember: !isExternalSpouse, // If external spouse, mark as not family member
             existingFamilyMemberId: wifeMember ? wifeMember.id : '',
-            isSaved: true // Mark existing wives as saved
+            isSaved: true, // Mark existing wives as saved
+            originalData: wifeMember ? { // Store original data for change tracking
+              name: marriage.wife?.name || '',
+              birthDate: wifeMember.birth_date ? new Date(wifeMember.birth_date) : null,
+              isAlive: wifeMember.is_alive ?? true,
+              deathDate: wifeMember.death_date ? new Date(wifeMember.death_date) : null,
+              maritalStatus: 'married',
+              isFamilyMember: !isExternalSpouse
+            } : null
           };
         }).filter(wife => wife.id); // Filter out wives without ID
         
         console.log('🔥 Loading wives for male member:', memberWives);
         setWives(memberWives);
+        setOriginalWivesData(memberWives.map(wife => ({ ...wife }))); // Store original data
         
         // Initialize wife family status based on whether they are family members
         const initialWiveFamilyStatus: { [key: number]: 'yes' | 'no' | null } = {};
@@ -2616,36 +2725,41 @@ const FamilyBuilderNew = () => {
                                                   return;
                                                 }
 
-                                                // Mark wife as saved
-                                                const newWives = [...wives];
-                                                newWives[actualIndex] = { ...wife, isSaved: true };
-                                                setWives(newWives);
+                                                 // Mark wife as saved and update original data
+                                                 const newWives = [...wives];
+                                                 newWives[actualIndex] = { ...wife, isSaved: true };
+                                                 setWives(newWives);
 
-                                                toast({
-                                                  title: "تم الحفظ بنجاح",
-                                                  description: `تم حفظ بيانات الزوجة ${actualIndex + 1} بنجاح`,
-                                                  variant: "default"
-                                                });
+                                                 // Update original data to current state
+                                                 const newOriginalData = [...originalWivesData];
+                                                 newOriginalData[actualIndex] = { ...wife };
+                                                 setOriginalWivesData(newOriginalData);
+
+                                                 toast({
+                                                   title: "تم الحفظ بنجاح",
+                                                   description: `تم حفظ بيانات الزوجة ${actualIndex + 1} بنجاح`,
+                                                   variant: "default"
+                                                 });
                                               }}
-                                              disabled={wife.isSaved}
-                                              className={cn(
-                                                "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
-                                                wife.isSaved 
-                                                  ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
-                                                  : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl"
-                                              )}
+                                              disabled={wife.isSaved && !hasWifeDataChanged(wife, index)}
+                                               className={cn(
+                                                 "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
+                                                 (wife.isSaved && !hasWifeDataChanged(wife, index))
+                                                   ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
+                                                   : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl"
+                                               )}
                                             >
-                                              {wife.isSaved ? (
-                                                <>
-                                                  <Check className="h-4 w-4 mr-2" />
-                                                  تم حفظ البيانات
-                                                </>
-                                              ) : (
-                                                <>
-                                                  <Save className="h-4 w-4 mr-2" />
-                                                  حفظ بيانات الزوجة
-                                                </>
-                                              )}
+                                             {(wife.isSaved && !hasWifeDataChanged(wife, index)) ? (
+                                                 <>
+                                                   <Check className="h-4 w-4 mr-2" />
+                                                   تم حفظ البيانات
+                                                 </>
+                                               ) : (
+                                                 <>
+                                                   <Save className="h-4 w-4 mr-2" />
+                                                   {wife.isSaved && hasWifeDataChanged(wife, index) ? 'حفظ التغييرات' : 'حفظ بيانات الزوجة'}
+                                                 </>
+                                               )}
                                             </Button>
                                           </div>
                                         </div>
@@ -2672,10 +2786,15 @@ const FamilyBuilderNew = () => {
                                             isSaved: false
                                           }]);
                                           
-                                          // Initialize family status for new wife based on isFamilyMember
-                                          const newStatus = {...wiveFamilyStatus};
-                                          newStatus[wives.length] = 'yes'; // Default to 'yes' since isFamilyMember is true by default
-                                          setWiveFamilyStatus(newStatus);
+                                           // Initialize family status for new wife based on isFamilyMember
+                                           const newStatus = {...wiveFamilyStatus};
+                                           newStatus[wives.length] = 'yes'; // Default to 'yes' since isFamilyMember is true by default
+                                           setWiveFamilyStatus(newStatus);
+                                           
+                                           // Initialize original data for new wife
+                                           const newOriginalData = [...originalWivesData];
+                                           newOriginalData[wives.length] = null; // No original data for new wife
+                                           setOriginalWivesData(newOriginalData);
                                         }}
                                         className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
                                       >
@@ -2777,17 +2896,14 @@ const FamilyBuilderNew = () => {
                                                     <Edit className="h-3 w-3" />
                                                   </Button>
                                                 )}
-                                                <Button
-                                                  variant="outline"
-                                                  size="sm"
-                                                  onClick={() => {
-                                                    const newWives = wives.filter((_, i) => i !== index);
-                                                    setWives(newWives);
-                                                  }}
-                                                  className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                                >
-                                                  <X className="h-3 w-3" />
-                                                </Button>
+                                                 <Button
+                                                   variant="outline"
+                                                   size="sm"
+                                                   onClick={() => handleSpouseDelete(wife, index)}
+                                                   className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                                 >
+                                                   <X className="h-3 w-3" />
+                                                 </Button>
                                               </div>
                                             </div>
                                           </div>
@@ -3356,6 +3472,42 @@ const FamilyBuilderNew = () => {
           </div>
         </div>
       </div>
+
+      {/* Spouse deletion modal */}
+      <AlertDialog open={showSpouseDeleteModal} onOpenChange={setShowSpouseDeleteModal}>
+        <AlertDialogContent className="max-w-lg animate-scale-in">
+          <div className="relative overflow-hidden">
+            {/* Background gradient decoration */}
+            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 opacity-60"></div>
+            
+            {/* Header with warning icon */}
+            <AlertDialogHeader className="relative z-10 text-center pb-6">
+              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center mb-4 animate-pulse shadow-lg ring-4 ring-red-100">
+                <AlertTriangle className="h-10 w-10 text-white animate-fade-in" />
+              </div>
+              <AlertDialogTitle className="text-2xl font-bold text-gray-900 font-arabic mb-2">
+                تأكيد حذف الزوجة
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-600 text-base leading-relaxed font-arabic whitespace-pre-line">
+                {spouseDeleteWarning}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            
+            {/* Action buttons */}
+            <AlertDialogFooter className="relative z-10 flex gap-3 pt-4">
+              <AlertDialogCancel className="flex-1 h-12 text-base border-2 font-arabic hover:bg-gray-50 transition-all duration-300">
+                إلغاء
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmSpouseDelete}
+                className="flex-1 h-12 text-base bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-arabic shadow-lg hover:shadow-xl transition-all duration-300 border-0"
+              >
+                تأكيد الحذف
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Keep existing delete modals */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
