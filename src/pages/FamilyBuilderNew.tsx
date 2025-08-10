@@ -2211,7 +2211,7 @@ const FamilyBuilderNew = () => {
 
                                   {/* Wife Form Content */}
                                   <div className="space-y-6">
-                                    {wives.filter((wife, index) => !wife.isSaved || index === wives.length - 1).map((wife, index) => {
+                                    {wives.map((wife, index) => {
                                       const actualIndex = wives.findIndex(w => w === wife);
                                       return (
                                       <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md mb-4">
