@@ -665,8 +665,8 @@ const FamilyBuilderNew = () => {
       if (marriages) {
         marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
           const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('id, name').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('id, name').eq('id', marriage.wife_id).single()
+            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
           ]);
           
           return {
@@ -761,8 +761,8 @@ const FamilyBuilderNew = () => {
       if (marriages) {
         marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
           const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('id, name').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('id, name').eq('id', marriage.wife_id).single()
+            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
           ]);
           
           return {
