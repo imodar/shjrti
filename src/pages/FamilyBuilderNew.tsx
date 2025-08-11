@@ -1366,7 +1366,7 @@ const FamilyBuilderNew = () => {
             id: marriage.wife?.id || '',
             name: marriage.wife?.name || '',
             birthDate: wifeMember?.birth_date ? new Date(wifeMember.birth_date) : null,
-            maritalStatus: 'married',
+            maritalStatus: wifeMember?.marital_status || 'married',
             isAlive: wifeMember?.is_alive ?? true,
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
@@ -1378,7 +1378,8 @@ const FamilyBuilderNew = () => {
               birthDate: wifeMember.birth_date ? new Date(wifeMember.birth_date) : null,
               isAlive: wifeMember.is_alive ?? true,
               deathDate: wifeMember.death_date ? new Date(wifeMember.death_date) : null,
-              maritalStatus: 'married',
+              maritalStatus: wifeMember.marital_status || 'married',
+              croppedImage: wifeMember.image_url || null,
               isFamilyMember: !isExternalSpouse
             } : null
           };
