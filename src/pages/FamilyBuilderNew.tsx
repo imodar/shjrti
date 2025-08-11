@@ -2506,11 +2506,16 @@ const FamilyBuilderNew = () => {
                                                                 onSelect={() => {
                                                                   const actualIndex = wives.findIndex(w => w === wife);
                                                                   const newWives = [...wives];
-                                                                  newWives[actualIndex] = {
-                                                                    ...wife,
-                                                                    existingFamilyMemberId: member.id,
-                                                                    name: member.name
-                                                                  };
+                                                                   newWives[actualIndex] = {
+                                                                     ...wife,
+                                                                     existingFamilyMemberId: member.id,
+                                                                     name: member.name,
+                                                                     birthDate: member.birth_date ? new Date(member.birth_date) : null,
+                                                                     isAlive: member.is_alive ?? true,
+                                                                     deathDate: member.death_date ? new Date(member.death_date) : null,
+                                                                     maritalStatus: member.marital_status || 'single',
+                                                                     croppedImage: member.image_url || null
+                                                                   };
                                                                   setWives(newWives);
                                                                   const newState = {...wivesCommandOpen};
                                                                   newState[actualIndex] = false;
