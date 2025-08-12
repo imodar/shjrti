@@ -2661,8 +2661,12 @@ const FamilyBuilderNew = () => {
                                                   {/* Life Status */}
                                                   <div className="group">
                                                     <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                      <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                      الحالة الحيوية
+                                                      <div className={`w-2 h-2 rounded-full shadow-lg group-hover:scale-110 transition-transform ${
+                                                        wife.isAlive 
+                                                          ? 'bg-gradient-to-r from-emerald-500 to-green-500' 
+                                                          : 'bg-gradient-to-r from-red-500 to-rose-500'
+                                                      }`}></div>
+                                                      الحالة الحيوية {!wife.isAlive && <span className="text-red-500 text-xs">(متوفاة)</span>}
                                                     </Label>
                                                     <div className="relative">
                                                       <Select
@@ -2677,7 +2681,11 @@ const FamilyBuilderNew = () => {
                                                           setWives(newWives);
                                                         }}
                                                       >
-                                                        <SelectTrigger className="h-11 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                                        <SelectTrigger className={`h-11 text-sm border-2 focus:ring-4 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic ${
+                                                          wife.isAlive 
+                                                            ? 'border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-emerald-500/20' 
+                                                            : 'border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-red-500/20'
+                                                        }`}>
                                                           <SelectValue placeholder="اختر الحالة الحيوية" />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
