@@ -133,87 +133,112 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       </div>
 
       <div className="relative z-10 p-6 space-y-8 fade-in">
-        {/* Floating Icons - Homepage Style */}
-        <div className="absolute top-4 right-4 text-primary/20 text-4xl animate-bounce" style={{ animationDelay: '0.5s' }}>
-          <Heart />
+        {/* Homepage-Style Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 right-10 text-primary/10 text-8xl animate-pulse">
+            <Heart />
+          </div>
+          <div className="absolute bottom-20 left-10 text-secondary/20 text-6xl animate-bounce" style={{ animationDelay: '1s' }}>
+            <Users />
+          </div>
+          <div className="absolute top-1/2 left-1/4 text-accent/15 text-5xl rotate-12 animate-pulse" style={{ animationDelay: '2s' }}>
+            <User />
+          </div>
         </div>
-        <div className="absolute top-16 left-8 text-secondary/15 text-3xl animate-pulse" style={{ animationDelay: '1s' }}>
-          <Users />
-        </div>
-        <div className="absolute bottom-20 right-16 text-accent/20 text-5xl animate-bounce" style={{ animationDelay: '1.5s' }}>
-          <User />
-        </div>
-        {/* Hero Profile Card - Completely Redesigned */}
-        <div className="relative group">
-          {/* Main Card with Glassmorphism */}
-          <div className="relative overflow-hidden rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 border border-white/30 shadow-2xl">
-            {/* Animated Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-blue-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            
-            {/* Content */}
-            <div className="relative p-8 text-center">
-                {/* Avatar Section with Advanced Design */}
-                <div className="relative inline-block mb-8">
-                  {/* Gradient Ring */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 p-1">
-                    <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                      <Avatar className="w-24 h-24 ring-4 ring-white/30">
+
+        {/* Hero Section - Homepage Style */}
+        <div className="relative">
+          {/* Main Hero Card */}
+          <div className="relative overflow-hidden rounded-3xl hero-gradient p-1">
+            <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl p-8">
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
+                {/* Avatar & Info */}
+                <div className="text-center lg:text-right space-y-6">
+                  {/* Large Avatar with Homepage Style */}
+                  <div className="relative inline-block">
+                    <div className="absolute inset-0 hero-gradient rounded-full blur-lg opacity-30 scale-110"></div>
+                    <div className="relative p-2 hero-gradient rounded-full">
+                      <Avatar className="w-32 h-32 ring-4 ring-white/50">
                         {member.image_url ? (
-                          <AvatarImage src={member.image_url} alt={member.name} className="object-cover w-full h-full" />
+                          <AvatarImage src={member.image_url} alt={member.name} className="object-cover" />
                         ) : (
-                          <AvatarFallback className={`text-2xl font-bold text-white ${getGenderColor(member.gender)}`}>
+                          <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
                             {member.name.charAt(0)}
                           </AvatarFallback>
                         )}
                       </Avatar>
                     </div>
+                    {/* Floating Badge */}
+                    <div className="absolute -top-2 -right-2 bg-accent p-2 rounded-xl tree-shadow">
+                      <User className="h-4 w-4 text-accent-foreground" />
+                    </div>
+                  </div>
+
+                  {/* Name & Title */}
+                  <div className="space-y-3">
+                    <h1 className="text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                      {member.name}
+                    </h1>
+                    {member.bio && (
+                      <p className="text-lg text-muted-foreground italic max-w-sm mx-auto lg:mx-0">
+                        "{member.bio}"
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Stats Cards - Homepage Style */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border border-primary/20">
+                      <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
+                      <div className="text-xs text-muted-foreground">تاريخ الميلاد</div>
+                      <div className="font-bold text-foreground">
+                        {member.birthDate ? new Date(member.birthDate).toLocaleDateString('ar-SA') : 'غير محدد'}
+                      </div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl border border-secondary/20">
+                      <Heart className="h-6 w-6 text-secondary mx-auto mb-2" />
+                      <div className="text-xs text-muted-foreground">الحالة الاجتماعية</div>
+                      <div className="font-bold text-foreground">{getMaritalStatus()}</div>
+                    </div>
                   </div>
                 </div>
 
-              {/* Name and Bio Section */}
-              <div className="space-y-4 mb-8">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 bg-clip-text text-transparent">
-                  {member.name}
-                </h1>
-                
-                 {member.bio && <div className="relative max-w-md mx-auto">
-                     <div className="absolute inset-0 bg-gradient-to-r from-violet-200/30 to-emerald-200/30 rounded-2xl blur-sm"></div>
-                     <p className="relative text-gray-600 italic font-medium px-6 py-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/40">
-                       "{member.bio}"
-                    </p>
-                  </div>}
-                
-                {/* Enhanced Info Pills */}
-                <div className="flex flex-wrap justify-center gap-3">
-                  <div className="group relative overflow-hidden rounded-full backdrop-blur-sm bg-gradient-to-r from-violet-500/10 to-blue-500/10 border border-violet-300/30 px-4 py-2 hover:scale-105 transition-transform">
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-violet-600" />
-                       <span className="text-sm font-semibold text-gray-700">
-                         {member.birthDate ? new Date(member.birthDate).toLocaleDateString('ar-SA') : 'غير محدد'}
-                       </span>
+                {/* Feature Cards Grid */}
+                <div className="space-y-4">
+                  {/* Gender Card */}
+                  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-2xl border border-accent/20 hover:scale-105 transition-transform">
+                    <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Badge className={`h-6 w-6 rounded-full ${member.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm text-muted-foreground">النوع</div>
+                      <div className="font-bold">{member.gender === 'male' ? 'ذكر' : 'أنثى'}</div>
                     </div>
                   </div>
-                  
-                  <div className="group relative overflow-hidden rounded-full backdrop-blur-sm bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-300/30 px-4 py-2 hover:scale-105 transition-transform">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative flex items-center gap-2">
-                      <Badge className={`h-4 w-4 rounded-full ${member.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'}`} />
-                      <span className="text-sm font-semibold text-gray-700">
-                        {member.gender === 'male' ? 'ذكر' : 'أنثى'}
-                      </span>
+
+                  {/* Birth Place Card */}
+                  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 hover:scale-105 transition-transform">
+                    <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                      <MapPin className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm text-muted-foreground">مكان الميلاد</div>
+                      <div className="font-bold">{member.birthPlace || 'غير محدد'}</div>
                     </div>
                   </div>
-                  
-                  <div className="group relative overflow-hidden rounded-full backdrop-blur-sm bg-gradient-to-r from-rose-500/10 to-pink-500/10 border border-rose-300/30 px-4 py-2 hover:scale-105 transition-transform">
-                    <div className="absolute inset-0 bg-gradient-to-r from-rose-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative flex items-center gap-2">
-                      <Heart className="h-4 w-4 text-rose-600" />
-                      <span className="text-sm font-semibold text-gray-700">
-                        {getMaritalStatus()}
-                      </span>
+
+                  {/* Death Date Card - if applicable */}
+                  {member.deathDate && (
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-destructive/10 to-destructive/5 rounded-2xl border border-destructive/20 hover:scale-105 transition-transform">
+                      <div className="h-12 w-12 rounded-full bg-destructive/20 flex items-center justify-center">
+                        <Calendar className="h-6 w-6 text-destructive" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm text-muted-foreground">تاريخ الوفاة</div>
+                        <div className="font-bold">{new Date(member.deathDate).toLocaleDateString('ar-SA')}</div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
