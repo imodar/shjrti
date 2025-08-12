@@ -132,7 +132,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         
       </div>
 
-      <div className="relative z-10 p-6 space-y-8">
+      <div className="relative z-10 p-6 space-y-8 fade-in">
+        {/* Floating Icons - Homepage Style */}
+        <div className="absolute top-4 right-4 text-primary/20 text-4xl animate-bounce" style={{ animationDelay: '0.5s' }}>
+          <Heart />
+        </div>
+        <div className="absolute top-16 left-8 text-secondary/15 text-3xl animate-pulse" style={{ animationDelay: '1s' }}>
+          <Users />
+        </div>
+        <div className="absolute bottom-20 right-16 text-accent/20 text-5xl animate-bounce" style={{ animationDelay: '1.5s' }}>
+          <User />
+        </div>
         {/* Hero Profile Card - Completely Redesigned */}
         <div className="relative group">
           {/* Main Card with Glassmorphism */}
