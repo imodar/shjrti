@@ -1367,7 +1367,14 @@ const FamilyBuilderNew = () => {
             name: marriage.wife?.name || '',
             birthDate: wifeMember?.birth_date ? new Date(wifeMember.birth_date) : null,
             maritalStatus: wifeMember?.marital_status || 'married',
-            isAlive: wifeMember?.is_alive ?? true,
+            isAlive: (() => {
+              console.log('Wife isAlive debug:', { 
+                raw_is_alive: wifeMember?.is_alive, 
+                type: typeof wifeMember?.is_alive,
+                final_value: wifeMember?.is_alive ?? true 
+              });
+              return wifeMember?.is_alive ?? true;
+            })(),
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
             isFamilyMember: !isExternalSpouse, // If external spouse, mark as not family member
