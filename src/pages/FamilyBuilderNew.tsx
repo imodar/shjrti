@@ -3749,51 +3749,51 @@ const FamilyBuilderNew = () => {
             <AlertDialogDescription className="font-arabic text-center space-y-4 px-2">
               {/* Main message card */}
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200 animate-fade-in">
-                <div className="flex items-center justify-center mb-3">
-                  <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-2">
-                    <Users className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <p className="text-gray-700 font-medium">
-                    لا يمكن تعديل بيانات الزوج/الزوجة مباشرة
-                  </p>
-                </div>
+                 <div className="flex items-center justify-center mb-3">
+                   <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-2">
+                     <Users className="h-4 w-4 text-amber-600" />
+                   </div>
+                   <div className="text-gray-700 font-medium">
+                     لا يمكن تعديل بيانات الزوج/الزوجة مباشرة
+                   </div>
+                 </div>
               </div>
 
               {/* Partner name highlight */}
               {spousePartnerDetails.name && (
                 <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
-                  <div className="flex items-center justify-center mb-2">
-                    <Edit className="h-5 w-5 text-primary mr-2" />
-                    <p className="text-sm text-gray-600">للتعديل، انتقل إلى:</p>
-                  </div>
-                  <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
-                    <p className="font-bold text-primary text-lg animate-pulse">
-                      {spousePartnerDetails.name}
-                    </p>
-                    {spousePartnerDetails.fatherName && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                      </p>
-                    )}
-                    {spousePartnerDetails.grandfatherName && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                      </p>
-                    )}
-                  </div>
+                   <div className="flex items-center justify-center mb-2">
+                     <Edit className="h-5 w-5 text-primary mr-2" />
+                     <div className="text-sm text-gray-600">للتعديل، انتقل إلى:</div>
+                   </div>
+                   <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
+                     <div className="font-bold text-primary text-lg animate-pulse">
+                       {spousePartnerDetails.name}
+                     </div>
+                     {spousePartnerDetails.fatherName && (
+                       <div className="text-sm text-gray-600 mt-1">
+                         ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
+                       </div>
+                     )}
+                     {spousePartnerDetails.grandfatherName && (
+                       <div className="text-xs text-gray-500 mt-1">
+                         حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
+                       </div>
+                     )}
+                   </div>
                 </div>
               )}
 
               {/* Info section */}
               <div className="bg-blue-50 rounded-lg p-3 border border-blue-200 animate-fade-in">
-                <div className="flex items-start justify-center">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
-                    <Shield className="h-3 w-3 text-blue-600" />
-                  </div>
-                  <p className="text-xs text-blue-700 leading-relaxed">
-                    هذا الإجراء يحافظ على سلامة البيانات والعلاقات العائلية المترابطة
-                  </p>
-                </div>
+                 <div className="flex items-start justify-center">
+                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                     <Shield className="h-3 w-3 text-blue-600" />
+                   </div>
+                   <div className="text-xs text-blue-700 leading-relaxed">
+                     هذا الإجراء يحافظ على سلامة البيانات والعلاقات العائلية المترابطة
+                   </div>
+                 </div>
               </div>
             </AlertDialogDescription>
 
