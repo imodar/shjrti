@@ -1357,24 +1357,25 @@ const FamilyBuilderNew = () => {
       
       if (memberMarriages.length > 0) {
         const memberWives = memberMarriages.map(marriage => {
-          const wifeMember = familyMembers.find(fm => fm.id === marriage.wife?.id);
+          // Use the wife data from the marriage object directly (it already has all fields from the database)
+          const wifeMember = marriage.wife || familyMembers.find(fm => fm.id === marriage.wife?.id);
           
           // Determine if spouse is external: no father_id and not founder
           const isExternalSpouse = wifeMember ? (!wifeMember.father_id && !wifeMember.is_founder) : true;
+          
+          console.log('🔥 Wife member debug:', {
+            marriage_wife: marriage.wife,
+            family_member: familyMembers.find(fm => fm.id === marriage.wife?.id),
+            final_wife: wifeMember,
+            is_alive: wifeMember?.is_alive
+          });
           
           return {
             id: marriage.wife?.id || '',
             name: marriage.wife?.name || '',
             birthDate: wifeMember?.birth_date ? new Date(wifeMember.birth_date) : null,
             maritalStatus: wifeMember?.marital_status || 'married',
-            isAlive: (() => {
-              console.log('Wife isAlive debug:', { 
-                raw_is_alive: wifeMember?.is_alive, 
-                type: typeof wifeMember?.is_alive,
-                final_value: wifeMember?.is_alive ?? true 
-              });
-              return wifeMember?.is_alive ?? true;
-            })(),
+            isAlive: wifeMember?.is_alive ?? true,
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
             isFamilyMember: !isExternalSpouse, // If external spouse, mark as not family member

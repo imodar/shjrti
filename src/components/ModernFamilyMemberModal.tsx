@@ -291,8 +291,8 @@ export const ModernFamilyMemberModal = ({
           husband_id,
           wife_id,
           is_active,
-          husband:family_tree_members!marriages_husband_id_fkey(id, name, is_founder, father_id),
-          wife:family_tree_members!marriages_wife_id_fkey(id, name, is_founder, father_id)
+          husband:family_tree_members!marriages_husband_id_fkey(id, name, is_founder, father_id, is_alive, death_date),
+          wife:family_tree_members!marriages_wife_id_fkey(id, name, is_founder, father_id, is_alive, death_date)
         `).eq('family_id', familyId).eq('is_active', true);
       if (marriagesError) throw marriagesError;
 
