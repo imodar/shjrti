@@ -55,72 +55,44 @@ export const GlobalHeader = () => {
   }, [user]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Luxury Background matching Footer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(16,185,129,0.15),transparent_50%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)]"></div>
-      
-      {/* Floating Elements */}
-      <div className="absolute top-2 right-20 w-16 h-16 bg-emerald-500/10 rounded-full animate-pulse blur-xl"></div>
-      <div className="absolute top-3 left-16 w-12 h-12 bg-amber-500/10 rounded-full animate-bounce blur-xl"></div>
-      
-      <div className="relative z-10 border-b border-white/10">
-        {/* Main Header Container */}
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-between h-16">
-            {/* Creative Logo Section */}
-            <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
+    <header className="fixed top-0 left-0 right-0 z-50 social-nav">
+      <div className="relative z-10 border-b border-border/20">
+        {/* Modern Social Media Header Container */}
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between h-12">
+            {/* Clean Modern Logo Section */}
+            <Link to="/" className={`flex items-center gap-3 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               <div className="relative">
-                {/* Multiple animated background layers */}
-                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-700"></div>
-                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 animate-pulse transition-all duration-500" style={{animationDelay: '0.5s'}}></div>
-                
-                {/* Logo container with premium styling */}
-                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-400 via-teal-400 to-amber-400 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 border-2 border-white/30">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
                   <img 
                     src={familyTreeLogo} 
                     alt={t('site.name', 'شجرة العائلة')} 
-                    className="h-9 w-9 rounded object-cover filter brightness-110"
+                    className="h-6 w-6 rounded object-cover"
                   />
-                  
-                  {/* Premium sparkle effects */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                    <Sparkles className="absolute -top-2 -right-2 h-4 w-4 text-amber-300 animate-bounce" style={{animationDelay: '0s'}} />
-                    <Sparkles className="absolute -bottom-2 -left-2 h-3 w-3 text-emerald-300 animate-bounce" style={{animationDelay: '0.3s'}} />
-                    <Sparkles className="absolute top-0 -right-3 h-2 w-2 text-teal-300 animate-bounce" style={{animationDelay: '0.6s'}} />
-                    <Crown className="absolute -top-3 left-1/2 transform -translate-x-1/2 h-4 w-4 text-amber-300 animate-bounce" style={{animationDelay: '0.9s'}} />
-                  </div>
                 </div>
-                
-                {/* Floating ring effect */}
-                <div className="absolute inset-0 w-16 h-16 border-2 border-emerald-300/30 rounded-2xl group-hover:scale-125 group-hover:rotate-12 transition-all duration-700 opacity-0 group-hover:opacity-100"></div>
               </div>
               
-              {/* Brand Name and Tagline with enhanced styling */}
+              {/* Clean Brand Name */}
               <div className="flex flex-col">
-                <h1 className="text-xl sm:text-2xl font-bold text-emerald-300 bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300 bg-clip-text [background-clip:text] hover:text-transparent group-hover:scale-105 transition-transform duration-500 filter drop-shadow-lg">
+                <h1 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-200">
                   {t('site.name', 'شجرة العائلة')}
                 </h1>
-                <p className="hidden sm:block text-sm text-gray-300 font-medium bg-gradient-to-r from-gray-300 to-emerald-200 bg-clip-text text-transparent">
-                  {t('site.tagline', 'منصة إدارة الأنساب')}
-                </p>
               </div>
             </Link>
 
-            {/* Desktop Navigation and Auth Section */}
-            <div className={`hidden md:flex items-center gap-8 ${direction === 'rtl' ? 'font-arabic' : ''}`}>
+            {/* Modern Desktop Navigation */}
+            <div className={`hidden md:flex items-center gap-6 ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               
               {user ? (
-                // Authenticated User Section
+                // Clean Authenticated User Section
                 <>
-                  {/* Admin Panel Link - Only show if user is admin */}
+                  {/* Admin Panel Link - Clean modern style */}
                   {isAdmin && (
                     <Link 
                       to="/admin" 
-                      className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-amber-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-amber-400/30 group"
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
                     >
-                      <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                      <Shield className="h-4 w-4" />
                       <span>{t('nav.admin', 'لوحة الإدارة')}</span>
                     </Link>
                   )}
@@ -128,148 +100,127 @@ export const GlobalHeader = () => {
                   {/* Dashboard Link */}
                   <Link 
                     to="/dashboard" 
-                    className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-emerald-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-emerald-400/30 group"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
                   >
-                    <Home className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                    <Home className="h-4 w-4" />
                     <span>{t('nav.dashboard', 'لوحة التحكم')}</span>
                   </Link>
 
                   {/* Contact Us Link */}
                   <a 
                     href="#contact" 
-                    className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-teal-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-teal-400/30 group"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
                   >
-                    <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                    <Mail className="h-4 w-4" />
                     <span>{t('nav.contact', 'تواصل معنا')}</span>
                   </a>
 
-                  {/* User Avatar Menu */}
+                  {/* Clean Modern Avatar Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <div className="relative group cursor-pointer">
-                        {/* Premium floating avatar container */}
-                        <div className="absolute inset-0 w-14 h-14 bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full blur-xl opacity-50 group-hover:opacity-80 animate-pulse transition-all duration-700"></div>
+                        <Avatar className="h-9 w-9 border border-border hover:border-primary transition-colors duration-200">
+                          <AvatarImage src={user.user_metadata?.avatar_url} />
+                          <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-sm">
+                            {user.email?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                         
-                        {/* Main avatar ring with premium styling */}
-                        <div className="relative w-14 h-14 p-[3px] bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full group-hover:scale-110 transition-all duration-700">
-                          <div className="w-full h-full bg-gray-900 rounded-full p-[2px]">
-                            <Avatar className="h-full w-full">
-                              <AvatarImage src={user.user_metadata?.avatar_url} />
-                              <AvatarFallback className="bg-gradient-to-br from-emerald-400/30 to-teal-400/30 text-emerald-300 font-bold text-sm border border-emerald-400/30">
-                                {user.email?.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                        </div>
-                        
-                        {/* Premium status indicator */}
-                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full border-2 border-gray-900 flex items-center justify-center shadow-lg">
-                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        </div>
-                        
-                        {/* Enhanced sparkle effects */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                          <Sparkles className="absolute -top-3 -right-3 h-5 w-5 text-amber-300 animate-bounce" style={{animationDelay: '0s'}} />
-                          <Sparkles className="absolute -bottom-2 -left-3 h-4 w-4 text-emerald-300 animate-bounce" style={{animationDelay: '0.4s'}} />
-                          <Sparkles className="absolute top-0 -right-4 h-3 w-3 text-teal-300 animate-bounce" style={{animationDelay: '0.8s'}} />
-                          <Crown className="absolute -top-4 left-1/2 transform -translate-x-1/2 h-5 w-5 text-amber-300 animate-bounce" style={{animationDelay: '1.2s'}} />
-                        </div>
+                        {/* Simple status indicator */}
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success rounded-full border-2 border-background"></div>
                       </div>
                     </DropdownMenuTrigger>
                     
                     <DropdownMenuContent 
-                      className="w-72 mt-3 bg-gray-900/95 backdrop-blur-xl border-2 border-emerald-400/30 shadow-2xl rounded-2xl p-3" 
+                      className="w-64 mt-2 bg-card border border-border shadow-lg rounded-lg p-2" 
                       align="end"
-                      sideOffset={10}
+                      sideOffset={8}
                     >
-                      {/* User Info Header */}
-                      <DropdownMenuLabel className="p-4 pb-3">
-                        <div className="flex items-center gap-4">
-                          <div className="relative">
-                            <Avatar className="h-12 w-12 border-2 border-emerald-400/30">
-                              <AvatarImage src={user.user_metadata?.avatar_url} />
-                              <AvatarFallback className="bg-gradient-to-br from-emerald-400/30 to-teal-400/30 text-emerald-300 font-bold">
-                                {user.email?.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-gray-900"></div>
-                          </div>
+                      {/* Clean User Info Header */}
+                      <DropdownMenuLabel className="p-3 pb-2">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10 border border-border">
+                            <AvatarImage src={user.user_metadata?.avatar_url} />
+                            <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                              {user.email?.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">
+                            <p className="text-sm font-semibold text-foreground truncate">
                               {user.user_metadata?.full_name || user.email?.split('@')[0]}
                             </p>
-                            <p className="text-xs text-gray-400 truncate">
+                            <p className="text-xs text-muted-foreground truncate">
                               {user.email}
                             </p>
                           </div>
                         </div>
                       </DropdownMenuLabel>
                       
-                      <DropdownMenuSeparator className="bg-white/10" />
+                      <DropdownMenuSeparator />
                       
-                      {/* Enhanced Menu Items */}
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
-                        <Link to="/dashboard" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
-                            <TreePine className="h-5 w-5 text-emerald-300" />
+                      {/* Clean Modern Menu Items */}
+                      <DropdownMenuItem className="p-2 rounded-md hover:bg-accent transition-colors duration-200 cursor-pointer" asChild>
+                        <Link to="/dashboard" className={`flex items-center gap-3 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className="p-2 bg-primary/10 rounded-md">
+                            <TreePine className="h-4 w-4 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.dashboard', 'لوحة التحكم')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
+                            <p className="font-medium text-foreground text-sm">{t('nav.dashboard', 'لوحة التحكم')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
-                        <Link to="/profile" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-colors border border-teal-400/30">
-                            <Settings className="h-5 w-5 text-teal-300" />
+                      <DropdownMenuItem className="p-2 rounded-md hover:bg-accent transition-colors duration-200 cursor-pointer" asChild>
+                        <Link to="/profile" className={`flex items-center gap-3 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className="p-2 bg-muted rounded-md">
+                            <Settings className="h-4 w-4 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.settings', 'الإعدادات')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
+                            <p className="font-medium text-foreground text-sm">{t('nav.settings', 'الإعدادات')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-amber-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/20" asChild>
-                        <Link to="/payments" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-amber-400/20 rounded-xl group-hover:bg-amber-400/30 transition-colors border border-amber-400/30">
-                            <CreditCard className="h-5 w-5 text-amber-300" />
+                      <DropdownMenuItem className="p-2 rounded-md hover:bg-accent transition-colors duration-200 cursor-pointer" asChild>
+                        <Link to="/payments" className={`flex items-center gap-3 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className="p-2 bg-muted rounded-md">
+                            <CreditCard className="h-4 w-4 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.billing', 'الفواتير')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
+                            <p className="font-medium text-foreground text-sm">{t('nav.billing', 'الفواتير')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/30">
-                         <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
-                            <HelpCircle className="h-5 w-5 text-emerald-300" />
+                      <DropdownMenuItem className="p-2 rounded-md hover:bg-accent transition-colors duration-200 cursor-pointer">
+                         <div className={`flex items-center gap-3 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className="p-2 bg-muted rounded-md">
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.help', 'المساعدة')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
+                            <p className="font-medium text-foreground text-sm">{t('nav.help', 'المساعدة')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuSeparator className="bg-white/10" />
+                      <DropdownMenuSeparator />
                       
                       {/* Logout */}
                       <DropdownMenuItem 
-                        className="group p-4 rounded-xl hover:bg-red-500/20 transition-all duration-300 cursor-pointer text-red-400 focus:text-red-300 border border-transparent hover:border-red-500/30"
+                        className="p-2 rounded-md hover:bg-destructive/10 transition-colors duration-200 cursor-pointer text-destructive focus:text-destructive"
                         onClick={signOut}
                       >
-                        <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-colors border border-red-500/30">
-                            <LogOut className="h-5 w-5 text-red-400" />
+                        <div className={`flex items-center gap-3 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className="p-2 bg-destructive/10 rounded-md">
+                            <LogOut className="h-4 w-4 text-destructive" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.logout', 'تسجيل الخروج')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
+                            <p className="font-medium text-destructive text-sm">{t('nav.logout', 'تسجيل الخروج')}</p>
+                            <p className="text-xs text-muted-foreground">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
@@ -277,11 +228,11 @@ export const GlobalHeader = () => {
                   </DropdownMenu>
                 </>
               ) : (
-                // Non-authenticated User Section  
-                <div className="flex items-center gap-4">
-                  {/* Register/Login Button */}
+                // Clean Non-authenticated User Section  
+                <div className="flex items-center gap-3">
+                  {/* Modern Login Button */}
                   <Button 
-                    className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 hover:from-emerald-400 hover:via-teal-400 hover:to-emerald-400 text-white border-0 rounded-xl px-8 py-3 text-sm font-bold shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 backdrop-blur-sm border border-white/20 hover:border-white/40"
+                    className="h-9 px-6 text-sm"
                     asChild
                   >
                     <Link to="/auth" className="flex items-center gap-3">

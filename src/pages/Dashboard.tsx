@@ -354,27 +354,10 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen" dir={direction}>
+    <div className="min-h-screen bg-background" dir={direction}>
       <GlobalHeader />
       <SubscriptionGuard>
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
-          {/* Floating Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
-            <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-            <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
-          </div>
-
-          {/* Floating Animated Icons */}
-          <div className="absolute top-32 right-20 animate-float">
-            <Heart className="h-10 w-10 text-pink-400 opacity-60" />
-          </div>
-          <div className="absolute bottom-40 left-20 animate-float-delayed">
-            <Users className="h-12 w-12 text-emerald-400 opacity-40" />
-          </div>
-          <div className="absolute top-1/2 left-10 animate-float-slow">
-            <Star className="h-8 w-8 text-yellow-400 opacity-60" />
-          </div>
+        <div className="min-h-screen bg-background relative">
 
           <main className="relative z-10 pt-20">
             {/* Hero Section */}
@@ -390,33 +373,26 @@ const Dashboard = () => {
                     <div className="mb-2 relative">
                       {/* Main Content Container - Horizontal Rectangle */}
                       <div className="relative w-full mx-auto">
-                      {/* Background Glow */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
-                      
-                      <div className={`relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl ${familyTrees.length > 0 ? 'py-0.5 px-2' : 'py-1 px-3'} shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10`}>
+                      {/* Modern Background */}
+                      <div className={`relative professional-card rounded-xl ${familyTrees.length > 0 ? 'py-3 px-4' : 'py-4 px-6'}`}>
                         <div className="flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
                           {/* Left: Avatar & Welcome */}
                           <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                            {/* User Avatar */}
+                            {/* Modern User Avatar */}
                             <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                              <div className={`relative ${familyTrees.length > 0 ? 'w-8 h-8' : 'w-12 h-12'} bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30`}>
-                                <span className={`${familyTrees.length > 0 ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'} font-bold text-white`}>
+                              <div className={`${familyTrees.length > 0 ? 'w-10 h-10' : 'w-12 h-12'} bg-primary rounded-full flex items-center justify-center shadow-lg`}>
+                                <span className={`${familyTrees.length > 0 ? 'text-sm' : 'text-base'} font-semibold text-primary-foreground`}>
                                   {userProfile?.first_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                                 </span>
                               </div>
                               {/* Status Indicator */}
-                              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
-                                <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
-                              </div>
+                              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success rounded-full border-2 border-background"></div>
                             </div>
                             
-                            {/* Welcome Text */}
+                            {/* Clean Welcome Text */}
                             <div className="text-right">
-                              <h1 className={`${familyTrees.length > 0 ? 'text-xs sm:text-sm md:text-base' : 'text-sm sm:text-base md:text-lg'} font-bold`}>
-                                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                  {t('dashboard_welcome', 'أهلاً')} {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
-                                </span>
+                              <h1 className={`${familyTrees.length > 0 ? 'text-sm md:text-base' : 'text-lg md:text-xl'} font-semibold text-foreground`}>
+                                {t('dashboard_welcome', 'أهلاً')} {userProfile?.first_name || user?.email?.split('@')[0] || 'صديقي العزيز'}
                               </h1>
                             </div>
                           </div>
