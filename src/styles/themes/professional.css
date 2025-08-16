@@ -1,0 +1,153 @@
+/* Professional Theme - Facebook-like Design */
+.theme-professional {
+  /* Background Colors - Clean whites and light grays */
+  --background: 0 0% 98%;
+  --foreground: 0 0% 10%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 0 0% 15%;
+
+  /* Primary Colors - Facebook blue */
+  --primary: 214 100% 59%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 214 100% 59%;
+  --sidebar-primary-foreground: 0 0% 100%;
+
+  /* Secondary Colors - Professional grays */
+  --secondary: 210 11% 96%;
+  --secondary-foreground: 0 0% 15%;
+
+  /* Accent Colors - Subtle blues */
+  --accent: 210 11% 96%;
+  --accent-foreground: 0 0% 15%;
+  --sidebar-accent: 210 11% 96%;
+  --sidebar-accent-foreground: 0 0% 15%;
+
+  /* Muted Colors */
+  --muted: 210 11% 96%;
+  --muted-foreground: 0 0% 45%;
+
+  /* Card Colors - Clean white cards */
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+
+  /* Popover Colors */
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+
+  /* Border and Input - Subtle borders */
+  --border: 210 14% 89%;
+  --input: 210 14% 97%;
+  --sidebar-border: 210 14% 89%;
+
+  /* Ring and Focus - Facebook blue */
+  --ring: 214 100% 59%;
+  --sidebar-ring: 214 100% 59%;
+
+  /* Destructive - Professional red */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Radius - Rounded corners like Facebook */
+  --radius: 0.375rem;
+
+  /* Family Tree Specific */
+  --family-tree-primary: 214 100% 59%;
+  --family-tree-secondary: 210 11% 96%;
+  --family-tree-background: 0 0% 98%;
+  --family-tree-foreground: 0 0% 10%;
+  --family-tree-accent: 214 100% 59%;
+  --family-tree-muted: 0 0% 45%;
+  --family-tree-border: 210 14% 89%;
+
+  /* Gradients - Clean professional gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(214 100% 59%), hsl(214 89% 52%));
+  --gradient-secondary: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 11% 96%));
+  --gradient-accent: linear-gradient(135deg, hsl(214 100% 59%), hsl(210 11% 96%));
+
+  /* Shadows - Subtle professional shadows */
+  --shadow-elegant: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+  --shadow-soft: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+  --shadow-glow: 0 0 0 1px hsl(214 100% 59% / 0.1);
+
+  /* Transitions - Smooth like social media */
+  --transition-smooth: all 0.2s ease-in-out;
+  --transition-quick: all 0.1s ease-out;
+}
+
+.theme-professional[data-theme="dark"] {
+  /* Dark mode for professional theme - like Facebook dark mode */
+  --background: 0 0% 8%;
+  --foreground: 0 0% 95%;
+  --sidebar-background: 0 0% 10%;
+  --sidebar-foreground: 0 0% 90%;
+
+  --card: 0 0% 12%;
+  --card-foreground: 0 0% 95%;
+
+  --popover: 0 0% 12%;
+  --popover-foreground: 0 0% 95%;
+
+  --primary: 214 100% 59%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 90%;
+
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+
+  --accent: 0 0% 15%;
+  --accent-foreground: 0 0% 90%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 0 0% 18%;
+  --input: 0 0% 15%;
+  --ring: 214 100% 59%;
+
+  --family-tree-background: 0 0% 8%;
+  --family-tree-foreground: 0 0% 95%;
+  --family-tree-border: 0 0% 18%;
+}
+
+/* Professional theme specific styling */
+.theme-professional .card {
+  box-shadow: var(--shadow-elegant);
+  border: 1px solid hsl(var(--border));
+}
+
+.theme-professional button {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.theme-professional .sidebar {
+  border-right: 1px solid hsl(var(--border));
+}
+
+.theme-professional input, 
+.theme-professional textarea, 
+.theme-professional select {
+  background-color: hsl(var(--input));
+  border: 1px solid hsl(var(--border));
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.theme-professional input:focus, 
+.theme-professional textarea:focus, 
+.theme-professional select:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+.theme-professional .nav-link:hover {
+  background-color: hsl(var(--accent));
+  border-radius: var(--radius);
+}
+
+.theme-professional .nav-link.active {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  font-weight: 600;
+}

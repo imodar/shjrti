@@ -5,15 +5,18 @@ import './index.css'
 import { AuthProvider } from './contexts/AuthContext'
 import { SubscriptionProvider } from './contexts/SubscriptionContext'
 import { DatePreferenceProvider } from './contexts/DatePreferenceContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <DatePreferenceProvider>
-        <SubscriptionProvider>
-          <App />
-        </SubscriptionProvider>
-      </DatePreferenceProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <DatePreferenceProvider>
+          <SubscriptionProvider>
+            <App />
+          </SubscriptionProvider>
+        </DatePreferenceProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

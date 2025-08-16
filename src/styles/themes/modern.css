@@ -1,0 +1,111 @@
+/* Modern Theme - Current Design */
+.theme-modern {
+  /* Background Colors */
+  --background: 225 57% 7%;
+  --foreground: 210 40% 98%;
+  --sidebar-background: 225 57% 7%;
+  --sidebar-foreground: 210 40% 98%;
+
+  /* Primary Colors */
+  --primary: 210 100% 50%;
+  --primary-foreground: 222.2 84% 4.9%;
+  --sidebar-primary: 210 100% 50%;
+  --sidebar-primary-foreground: 222.2 84% 4.9%;
+
+  /* Secondary Colors */
+  --secondary: 217 32% 17%;
+  --secondary-foreground: 210 40% 98%;
+
+  /* Accent Colors */
+  --accent: 217 32% 17%;
+  --accent-foreground: 210 40% 98%;
+  --sidebar-accent: 217 32% 17%;
+  --sidebar-accent-foreground: 210 40% 98%;
+
+  /* Muted Colors */
+  --muted: 217 32% 17%;
+  --muted-foreground: 215 20% 65%;
+
+  /* Card Colors */
+  --card: 225 57% 7%;
+  --card-foreground: 210 40% 98%;
+
+  /* Popover Colors */
+  --popover: 225 57% 7%;
+  --popover-foreground: 210 40% 98%;
+
+  /* Border and Input */
+  --border: 217 32% 17%;
+  --input: 217 32% 17%;
+  --sidebar-border: 217 32% 17%;
+
+  /* Ring and Focus */
+  --ring: 212 100% 50%;
+  --sidebar-ring: 212 100% 50%;
+
+  /* Destructive */
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 210 40% 98%;
+
+  /* Radius */
+  --radius: 0.5rem;
+
+  /* Family Tree Specific */
+  --family-tree-primary: 210 100% 50%;
+  --family-tree-secondary: 217 32% 17%;
+  --family-tree-background: 225 57% 7%;
+  --family-tree-foreground: 210 40% 98%;
+  --family-tree-accent: 212 100% 50%;
+  --family-tree-muted: 215 20% 65%;
+  --family-tree-border: 217 32% 17%;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(210 100% 50%), hsl(212 100% 50%));
+  --gradient-secondary: linear-gradient(135deg, hsl(217 32% 17%), hsl(225 57% 7%));
+  --gradient-accent: linear-gradient(135deg, hsl(210 100% 50%), hsl(217 32% 17%));
+
+  /* Shadows */
+  --shadow-elegant: 0 10px 30px -10px hsl(210 100% 50% / 0.3);
+  --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.25);
+  --shadow-glow: 0 0 40px hsl(210 100% 50% / 0.2);
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-quick: all 0.15s ease-out;
+}
+
+.theme-modern[data-theme="light"] {
+  /* Light mode overrides for modern theme */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+
+  --family-tree-background: 0 0% 100%;
+  --family-tree-foreground: 222.2 84% 4.9%;
+}
