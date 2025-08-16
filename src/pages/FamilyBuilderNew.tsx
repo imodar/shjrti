@@ -2587,7 +2587,7 @@ const FamilyBuilderNew = () => {
                                                      {wife.birthDate && (
                                                        <>
                                                          <Calendar className="h-4 w-4 text-cyan-500" />
-                                                         <span>{wife.birthDate.toLocaleDateString('ar-SA')}</span>
+                                                         
                                                        </>
                                                      )}
                                                     
