@@ -360,36 +360,36 @@ export default function Profile() {
         <GlobalHeader />
 
         <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
-          <div className="max-w-6xl mx-auto">
+            <div className="max-w-6xl mx-auto">
             
             {/* Profile Header Section */}
-            <div className="mb-8 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
+            <div className="mb-6 sm:mb-8 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl floating-bg-elements"></div>
               
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:py-6 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 profile-header">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                     {/* User Avatar */}
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                      <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
-                        <span className="text-2xl font-bold text-white">
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
+                        <span className="text-lg sm:text-2xl font-bold text-white">
                           {getInitials()}
                         </span>
                       </div>
-                      <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                      <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full border-2 sm:border-3 border-white dark:border-gray-800 flex items-center justify-center">
+                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full animate-ping"></div>
                       </div>
                     </div>
                     
                     {/* Welcome Text */}
-                    <div>
-                      <h1 className="text-3xl font-bold mb-2">
+                    <div className="text-center sm:text-start">
+                      <h1 className="text-2xl sm:text-3xl font-bold mb-2">
                         <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                           الملف الشخصي
                         </span>
                       </h1>
-                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2 justify-center sm:justify-start">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                         إدارة معلوماتك الشخصية والحساب
                       </p>
@@ -397,7 +397,7 @@ export default function Profile() {
                   </div>
                   
                   {/* Package Status - Match Dashboard Logic */}
-                  <div className="flex flex-col items-start gap-2">
+                  <div className="flex flex-col items-center sm:items-start gap-2 profile-stats">
                     {currentPackage && currentPackage.name !== "الباقة المجانية" && currentPackage.status === "active" ? (
                       <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-2 rounded-full shadow-lg">
                         <Crown className="h-4 w-4" />
@@ -429,7 +429,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               
               {/* Stats Section */}
               <div className="space-y-6">

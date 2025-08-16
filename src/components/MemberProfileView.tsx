@@ -312,9 +312,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
@@ -342,7 +342,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   
                   <div className="space-y-4">
                     {/* Essential Info Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl">
                         <Calendar className="h-5 w-5 text-emerald-600" />
                         <div>
@@ -394,7 +394,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     {/* Additional Info - Expandable */}
                     {showAllInfo && (
                       <div className="space-y-4 border-t pt-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
                             <Phone className="h-5 w-5 text-gray-600" />
                             <div>
@@ -476,7 +476,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           </div>
 
           {/* Right Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 profile-sidebar">
             {/* Quick Actions */}
             <div className="bg-white rounded-xl border border-border p-4">
               <h4 className="font-bold text-sm mb-4">إجراءات سريعة</h4>

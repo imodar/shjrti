@@ -66,6 +66,74 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
+
+  /* Mobile responsive adjustments for modern theme */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Mobile profile adjustments */
+  .profile-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .profile-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Mobile grid adjustments */
+  .grid-cols-1.lg\\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Mobile tabs */
+  .tabs-horizontal {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .tabs-horizontal::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile member profile view */
+  .member-profile-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.5rem;
+  }
+
+  .member-profile-tabs button {
+    flex-shrink: 0;
+    min-width: auto;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Mobile sidebar adjustments */
+  .profile-sidebar {
+    order: -1;
+    margin-bottom: 1rem;
+  }
+
+  /* Mobile floating elements - reduce on small screens */
+  .floating-bg-elements {
+    display: none;
+  }
+
+  /* Mobile backdrop blur - reduce performance impact */
+  .backdrop-blur-xl {
+    backdrop-filter: blur(8px);
+  }
 }
 
 .scrollbar-hidden {
