@@ -1400,6 +1400,8 @@ const FamilyBuilderNew = () => {
         
         const husbandData = {
           id: marriage.husband?.id || '',
+          firstName: husbandMember?.first_name || marriage.husband?.firstName || '',
+          lastName: husbandMember?.last_name || marriage.husband?.lastName || '',
           name: marriage.husband?.name || '',
           birthDate: husbandMember?.birth_date ? new Date(husbandMember.birth_date) : null,
           maritalStatus: 'married',
