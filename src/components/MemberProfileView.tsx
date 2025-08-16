@@ -209,30 +209,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Hero Section */}
         <div className="relative mb-8">
-          {/* Cover Photo */}
-          <div className="relative h-80 bg-gradient-to-r from-primary via-secondary to-accent rounded-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-            
-            {/* Floating Elements */}
-            <div className="absolute top-8 right-8 animate-float">
-              <div className="p-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
-                <Crown className="h-6 w-6 text-yellow-300" />
-              </div>
-            </div>
-            <div className="absolute top-16 left-12 animate-float-delayed">
-              <div className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
-                <Star className="h-5 w-5 text-yellow-300" />
-              </div>
-            </div>
-            <div className="absolute bottom-16 right-16 animate-float-slow">
-              <div className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
-                <Sparkles className="h-5 w-5 text-blue-300" />
-              </div>
-            </div>
+          {/* Cover Ribbon */}
+          <div className="relative h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
           </div>
 
           {/* Profile Info Card */}
-          <div className="relative -mt-20 mx-4">
+          <div className="relative -mt-8 mx-4">
             <div className="bg-card/95 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl">
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
