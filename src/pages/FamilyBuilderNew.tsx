@@ -2483,10 +2483,10 @@ const FamilyBuilderNew = () => {
                                                       aria-expanded={wivesCommandOpen[wives.findIndex(w => w === wife)]} 
                                                       className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
                                                     >
-                                                      {wife.existingFamilyMemberId ? 
-                                                        familyMembers.find(m => m.id === wife.existingFamilyMemberId)?.name || "اختر فرد من العائلة..."
+                                                       {wife.existingFamilyMemberId ? 
+                                                        familyMembers.find(m => m.id === wife.existingFamilyMemberId)?.name || ""
                                                         : "اختر فرد من العائلة..."
-                                                      }
+                                                       }
                                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                                     </Button>
                                                   </PopoverTrigger>
