@@ -1552,12 +1552,13 @@ const FamilyBuilderNew = () => {
              try {
                let wifeId = wife.existingFamilyMemberId;
                
-               // If wife has an existing ID, update the existing record
-               if (wife.existingFamilyMemberId && wife.id) {
-                 const { data: updatedWife, error: wifeUpdateError } = await supabase
-                   .from('family_tree_members')
-                    .update({
-                      name: wife.name,
+                // If wife has an existing ID, update the existing record
+                if (wife.existingFamilyMemberId && wife.id) {
+                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
+                  const { data: updatedWife, error: wifeUpdateError } = await supabase
+                    .from('family_tree_members')
+                     .update({
+                       name: wifeName,
                       first_name: wife.firstName || null,
                       last_name: wife.lastName || null,
                       birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
@@ -1581,13 +1582,14 @@ const FamilyBuilderNew = () => {
                  wifeId = updatedWife.id;
                  console.log('🔥 Successfully updated wife member:', updatedWife);
                } else {
-                 // If wife is not from existing family members, create new family member
-                 const { data: newWifeMember, error: wifeError } = await supabase
-                   .from('family_tree_members')
-                    .insert({
-                      name: wife.name,
-                      first_name: wife.firstName || null,
-                      last_name: wife.lastName || null,
+                  // If wife is not from existing family members, create new family member
+                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
+                  const { data: newWifeMember, error: wifeError } = await supabase
+                    .from('family_tree_members')
+                     .insert({
+                       name: wifeName,
+                       first_name: wife.firstName || null,
+                       last_name: wife.lastName || null,
                       gender: 'female',
                       birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
                       is_alive: wife.isAlive ?? true,
@@ -1677,10 +1679,13 @@ const FamilyBuilderNew = () => {
             
             // If husband is not from existing family members, create new family member first
             if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
+              const husbandName = husband.name || (husband.firstName && husband.lastName ? `${husband.firstName} ${husband.lastName}` : husband.firstName || husband.lastName || '');
               const { data: newHusbandMember, error: husbandError } = await supabase
                 .from('family_tree_members')
                 .insert({
-                  name: husband.name,
+                  name: husbandName,
+                  first_name: husband.firstName || null,
+                  last_name: husband.lastName || null,
                   gender: 'male',
                   birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
                   is_alive: husband.isAlive ?? true,
