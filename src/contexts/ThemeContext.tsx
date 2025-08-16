@@ -35,11 +35,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   useEffect(() => {
-    // Apply theme to document
-    document.documentElement.className = themes[currentTheme];
+    // Remove existing theme classes
+    document.documentElement.classList.remove('theme-modern', 'theme-professional');
+    // Apply new theme class
+    document.documentElement.classList.add(themes[currentTheme]);
     // Save to localStorage
     localStorage.setItem('selected-theme', currentTheme);
-  }, [currentTheme]);
+  }, [currentTheme, themes]);
 
   const handleSetTheme = (theme: ThemeVariant) => {
     setCurrentTheme(theme);
