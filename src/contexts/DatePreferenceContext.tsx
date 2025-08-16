@@ -111,15 +111,16 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
       return 'تاريخ غير صحيح';
     }
 
-    if (datePreference === 'hijri') {
-      return toHijri(dateObj);
-    } else {
+    if (datePreference === 'gregorian') {
       // Gregorian format in Arabic
       return dateObj.toLocaleDateString('ar-SA', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
+    } else {
+      // Hijri format
+      return toHijri(dateObj);
     }
   };
 
