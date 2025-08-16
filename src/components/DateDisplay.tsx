@@ -21,7 +21,7 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
   const { format: formatDate, formatRelative, formatLifespan, loading } = useDateFormat();
 
   if (loading) {
-    return <span className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-20 inline-block ${className}`}></span>;
+    return <span className={`animate-pulse bg-muted rounded h-4 w-20 inline-block ${className}`}></span>;
   }
 
   let formattedDate: string;

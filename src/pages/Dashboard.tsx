@@ -738,7 +738,7 @@ const Dashboard = () => {
                               {familyTrees.length} / {userSubscription?.max_trees || '∞'}
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div 
                               className="bg-emerald-500 h-2 rounded-full transition-all duration-300" 
                               style={{ 
@@ -763,7 +763,7 @@ const Dashboard = () => {
                               {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div 
                               className="bg-teal-500 h-2 rounded-full transition-all duration-300" 
                               style={{ 
