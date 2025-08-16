@@ -2538,52 +2538,91 @@ const FamilyBuilderNew = () => {
                                        </div>
                                      ) : (
                                        wives.map((wife, index) => (
-                                         <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
-                                           <div className="flex items-center justify-between">
-                                             <div 
-                                               className={cn(
-                                                 "flex items-center gap-3 flex-1",
-                                                 wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                               )}
-                                              onClick={() => {
-                                                if (wife.isSaved) {
-                                                  const updatedWives = [...wives];
-                                                  updatedWives[index] = { ...wife, isSaved: false };
-                                                  setWives(updatedWives);
-                                                  setCurrentWife(wife);
-                                                  setShowWifeForm(true);
-                                                  setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                          <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
+                                            <div className="flex items-start justify-between h-full">
+                                              <div 
+                                                className={cn(
+                                                  "flex items-start gap-3 flex-1",
+                                                  wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
+                                                )}
+                                               onClick={() => {
+                                                 if (wife.isSaved) {
+                                                   const updatedWives = [...wives];
+                                                   updatedWives[index] = { ...wife, isSaved: false };
+                                                   setWives(updatedWives);
+                                                   setCurrentWife(wife);
+                                                   setShowWifeForm(true);
+                                                   setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                   
+                                                   toast({
+                                                     title: "وضع التعديل",
+                                                     description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                     variant: "default"
+                                                   });
+                                                 }
+                                               }}
+                                              >
+                                                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                  {index + 1}
+                                                </div>
+                                                <div className="flex-1 space-y-2">
+                                                  <div>
+                                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic text-lg">
+                                                      {wife.name || `الزوجة ${index + 1}`}
+                                                    </h5>
+                                                    <p className="text-sm text-muted-foreground font-arabic flex items-center gap-2">
+                                                      {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                      {wife.isSaved && (
+                                                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                          <Check className="h-3 w-3" />
+                                                          محفوظة
+                                                        </span>
+                                                      )}
+                                                    </p>
+                                                  </div>
                                                   
-                                                  toast({
-                                                    title: "وضع التعديل",
-                                                    description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                    variant: "default"
-                                                  });
-                                                }
-                                              }}
-                                             >
-                                               <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                 {index + 1}
-                                               </div>
-                                               <div>
-                                                 <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                   {wife.name || `الزوجة ${index + 1}`}
-                                                 </h5>
-                                                 <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                   {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                   {wife.isSaved && (
-                                                     <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                       <Check className="h-3 w-3" />
-                                                       محفوظة
-                                                     </span>
-                                                   )}
-                                                 </p>
-                                                 {wife.isSaved && (
-                                                   <p className="text-xs text-pink-600 font-arabic mt-1">
-                                                     انقر للتعديل
-                                                   </p>
-                                                 )}
-                                               </div>
+                                                  {/* Additional Information */}
+                                                  <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 font-arabic">
+                                                    {/* Birth Date */}
+                                                    {wife.birthDate && (
+                                                      <div className="flex items-center gap-2">
+                                                        <Calendar className="h-4 w-4 text-cyan-500" />
+                                                        <span>تاريخ الميلاد: {wife.birthDate.toLocaleDateString('ar-SA')}</span>
+                                                      </div>
+                                                    )}
+                                                    
+                                                    {/* Death Date */}
+                                                    {wife.deathDate && (
+                                                      <div className="flex items-center gap-2">
+                                                        <Calendar className="h-4 w-4 text-red-500" />
+                                                        <span>تاريخ الوفاة: {wife.deathDate.toLocaleDateString('ar-SA')}</span>
+                                                      </div>
+                                                    )}
+                                                    
+                                                    {/* Marital Status */}
+                                                    {wife.maritalStatus && (
+                                                      <div className="flex items-center gap-2">
+                                                        <Heart className="h-4 w-4 text-purple-500" />
+                                                        <span>الحالة الاجتماعية: {wife.maritalStatus === 'married' ? 'متزوجة' : 'مطلقة'}</span>
+                                                      </div>
+                                                    )}
+                                                    
+                                                    {/* Life Status */}
+                                                    <div className="flex items-center gap-2">
+                                                      <div className={cn(
+                                                        "h-4 w-4 rounded-full",
+                                                        wife.isAlive ? "bg-green-500" : "bg-gray-500"
+                                                      )} />
+                                                      <span>{wife.isAlive ? 'على قيد الحياة' : 'متوفية'}</span>
+                                                    </div>
+                                                  </div>
+                                                  
+                                                  {wife.isSaved && (
+                                                    <p className="text-xs text-pink-600 font-arabic mt-2">
+                                                      انقر للتعديل
+                                                    </p>
+                                                  )}
+                                                </div>
                                              </div>
                                              <div className="flex gap-2">
                                                 {wife.isSaved && (
