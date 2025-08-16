@@ -2476,13 +2476,6 @@ const FamilyBuilderNew = () => {
                         ))}
                       </div>
                      )}
-                      
-                       {formMode === 'view' && (
-                        <Button onClick={handleAddMember} className="flex items-center gap-2">
-                          <Plus className="h-4 w-4" />
-                          إضافة عضو
-                        </Button>
-                       )}
                   </CardHeader>
                 <CardContent className="relative">
                   {formMode === 'view' ? (
@@ -3065,23 +3058,25 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                       <MemberList 
-                         members={filteredMembers}
-                        onEditMember={handleEditMember}
-                        onViewMember={handleViewMember}
-                         onDeleteMember={handleDeleteMember}
-                          onSpouseEditAttempt={handleSpouseEditWarning}
-                         checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                         searchTerm={searchTerm}
-                         onSearchChange={setSearchTerm}
-                         selectedFilter={selectedFilter}
-                         onFilterChange={setSelectedFilter}
-                         getAdditionalInfo={getAdditionalInfo}
-                        getGenderColor={getGenderColor}
-                        familyMembers={familyMembers}
-                        marriages={familyMarriages}
-                        memberListLoading={memberListLoading}
-                      />
+                        <MemberList 
+                          members={filteredMembers}
+                         onEditMember={handleEditMember}
+                         onViewMember={handleViewMember}
+                          onDeleteMember={handleDeleteMember}
+                           onSpouseEditAttempt={handleSpouseEditWarning}
+                          checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                          searchTerm={searchTerm}
+                          onSearchChange={setSearchTerm}
+                          selectedFilter={selectedFilter}
+                          onFilterChange={setSelectedFilter}
+                          getAdditionalInfo={getAdditionalInfo}
+                         getGenderColor={getGenderColor}
+                         familyMembers={familyMembers}
+                         marriages={familyMarriages}
+                         memberListLoading={memberListLoading}
+                         formMode={formMode}
+                         onAddMember={handleAddMember}
+                       />
                     </div>
                   </DrawerContent>
                 </Drawer>
@@ -3091,29 +3086,37 @@ const FamilyBuilderNew = () => {
                   <CardHeader className="pb-4 relative">
                     <CardTitle className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                      <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                        أعضاء العائلة ({familyMembers.length})
-                      </span>
-                    </CardTitle>
+                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                         أعضاء العائلة ({familyMembers.length})
+                       </span>
+                       {formMode === 'view' && (
+                         <Button onClick={handleAddMember} size="sm" className="flex items-center gap-2 mr-auto">
+                           <Plus className="h-4 w-4" />
+                           إضافة عضو
+                         </Button>
+                       )}
+                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                     <MemberList 
-                       members={filteredMembers}
-                        onEditMember={handleEditMember}
-                        onViewMember={handleViewMember}
-                       onDeleteMember={handleDeleteMember}
-                       onSpouseEditAttempt={handleSpouseEditWarning}
-                       checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                       searchTerm={searchTerm}
-                       onSearchChange={setSearchTerm}
-                       selectedFilter={selectedFilter}
-                       onFilterChange={setSelectedFilter}
-                       getAdditionalInfo={getAdditionalInfo}
-                      getGenderColor={getGenderColor}
-                      familyMembers={familyMembers}
-                      marriages={familyMarriages}
-                      memberListLoading={memberListLoading}
-                    />
+                      <MemberList 
+                        members={filteredMembers}
+                         onEditMember={handleEditMember}
+                         onViewMember={handleViewMember}
+                        onDeleteMember={handleDeleteMember}
+                        onSpouseEditAttempt={handleSpouseEditWarning}
+                        checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        selectedFilter={selectedFilter}
+                        onFilterChange={setSelectedFilter}
+                        getAdditionalInfo={getAdditionalInfo}
+                       getGenderColor={getGenderColor}
+                       familyMembers={familyMembers}
+                       marriages={familyMarriages}
+                       memberListLoading={memberListLoading}
+                       formMode={formMode}
+                       onAddMember={handleAddMember}
+                     />
                   </CardContent>
                 </Card>
               )}
@@ -3413,7 +3416,9 @@ const MemberList = ({
   getGenderColor,
   familyMembers,
   marriages,
-  memberListLoading 
+  memberListLoading,
+  formMode,
+  onAddMember
 }: any) => {
   return (
     <div className="space-y-4">
@@ -3442,6 +3447,14 @@ const MemberList = ({
           <SelectItem value="founders">المؤسسون</SelectItem>
         </SelectContent>
       </Select>
+
+      {/* Add Member Button */}
+      {formMode === 'view' && (
+        <Button onClick={onAddMember} className="w-full flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          إضافة عضو جديد
+        </Button>
+      )}
 
       {/* Member List */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
