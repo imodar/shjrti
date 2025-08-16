@@ -74,7 +74,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   const hasChanges = originalSpouse && (
     originalSpouse.firstName !== spouse.firstName ||
     originalSpouse.lastName !== spouse.lastName ||
-    originalSpouse.maritalStatus !== spouse.maritalStatus ||
+    (originalSpouse.maritalStatus || "married") !== (spouse.maritalStatus || "married") ||
     originalSpouse.isFamilyMember !== spouse.isFamilyMember ||
     originalSpouse.existingFamilyMemberId !== spouse.existingFamilyMemberId ||
     originalSpouse.birthDate?.getTime() !== spouse.birthDate?.getTime() ||
