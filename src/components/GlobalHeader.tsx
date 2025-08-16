@@ -16,6 +16,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
+import ThemeSelector from "@/components/ThemeSelector";
 
 export const GlobalHeader = () => {
   const { user, signOut } = useAuth();
@@ -142,6 +143,9 @@ export const GlobalHeader = () => {
                     <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" />
                     <span>{t('nav.contact', 'تواصل معنا')}</span>
                   </a>
+
+                  {/* Theme Selector */}
+                  <ThemeSelector />
 
                   {/* User Avatar Menu */}
                   <DropdownMenu>

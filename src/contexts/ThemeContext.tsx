@@ -67,16 +67,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const savePreferences = async (theme: ThemeVariant, mode: ThemeMode) => {
     if (user) {
       try {
-        await supabase
+        const { data: profile } = await supabase
           .from('profiles')
-          .upsert({
-            user_id: user.id,
-            theme_variant: theme,
-            theme_mode: mode,
-            updated_at: new Date().toISOString()
-          }, {
-            onConflict: 'user_id'
-          });
+          .select('email, first_name, last_name, phone, date_preference')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profile) {
+          await supabase
+            .from('profiles')
+            .update({
+              theme_variant: theme,
+              theme_mode: mode,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id);
+        }
       } catch (error) {
         console.error('Error saving theme preferences:', error);
       }
