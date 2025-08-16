@@ -837,6 +837,7 @@ const FamilyBuilderNew = () => {
   
   // Unified spouse form states
   const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
+  const [currentHusband, setCurrentHusband] = useState<SpouseData | null>(null);
   const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
   const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
   const [husbandFamilyStatus, setHusbandFamilyStatus] = useState<'yes' | 'no' | null>(null);
@@ -2474,19 +2475,22 @@ const FamilyBuilderNew = () => {
                                                  "flex items-center gap-3 flex-1",
                                                  wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
                                                )}
-                                               onClick={() => {
-                                                 if (wife.isSaved) {
-                                                   const updatedWives = [...wives];
-                                                   updatedWives[index] = { ...wife, isSaved: false };
-                                                   setWives(updatedWives);
-                                                   
-                                                   toast({
-                                                     title: "وضع التعديل",
-                                                     description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                     variant: "default"
-                                                   });
-                                                 }
-                                               }}
+                                              onClick={() => {
+                                                if (wife.isSaved) {
+                                                  const updatedWives = [...wives];
+                                                  updatedWives[index] = { ...wife, isSaved: false };
+                                                  setWives(updatedWives);
+                                                  setCurrentWife(wife);
+                                                  setShowWifeForm(true);
+                                                  setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                  
+                                                  toast({
+                                                    title: "وضع التعديل",
+                                                    description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                    variant: "default"
+                                                  });
+                                                }
+                                              }}
                                              >
                                                <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                  {index + 1}
@@ -2512,26 +2516,29 @@ const FamilyBuilderNew = () => {
                                                </div>
                                              </div>
                                              <div className="flex gap-2">
-                                               {wife.isSaved && (
-                                                 <Button
-                                                   variant="outline"
-                                                   size="sm"
-                                                   onClick={() => {
-                                                     const updatedWives = [...wives];
-                                                     updatedWives[index] = { ...wife, isSaved: false };
-                                                     setWives(updatedWives);
-                                                     
-                                                     toast({
-                                                       title: "وضع التعديل",
-                                                       description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                       variant: "default"
-                                                     });
-                                                   }}
-                                                   className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
-                                                 >
-                                                   <Edit className="h-3 w-3" />
-                                                 </Button>
-                                               )}
+                                                {wife.isSaved && (
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                      const updatedWives = [...wives];
+                                                      updatedWives[index] = { ...wife, isSaved: false };
+                                                      setWives(updatedWives);
+                                                      setCurrentWife(wife);
+                                                      setShowWifeForm(true);
+                                                      setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                      
+                                                      toast({
+                                                        title: "وضع التعديل",
+                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                        variant: "default"
+                                                      });
+                                                    }}
+                                                    className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
+                                                  >
+                                                    <Edit className="h-3 w-3" />
+                                                  </Button>
+                                                )}
                                                <Button
                                                  variant="outline"
                                                  size="sm"
@@ -2602,17 +2609,20 @@ const FamilyBuilderNew = () => {
                                                "flex items-center gap-3 flex-1",
                                                husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
                                              )}
-                                             onClick={() => {
-                                               if (husband.isSaved) {
-                                                 setHusband({ ...husband, isSaved: false });
-                                                 
-                                                 toast({
-                                                   title: "وضع التعديل",
-                                                   description: "يمكنك الآن تعديل بيانات الزوج",
-                                                   variant: "default"
-                                                 });
-                                               }
-                                             }}
+                                              onClick={() => {
+                                                if (husband.isSaved) {
+                                                  setHusband({ ...husband, isSaved: false });
+                                                  setCurrentHusband(husband);
+                                                  setShowHusbandForm(true);
+                                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
+                                                  
+                                                  toast({
+                                                    title: "وضع التعديل",
+                                                    description: "يمكنك الآن تعديل بيانات الزوج",
+                                                    variant: "default"
+                                                  });
+                                                }
+                                              }}
                                            >
                                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                <User className="w-4 h-4" />
@@ -2638,16 +2648,19 @@ const FamilyBuilderNew = () => {
                                              </div>
                                            </div>
                                            <div className="flex gap-2">
-                                             {husband.isSaved && (
-                                               <Button
-                                                 variant="outline"
-                                                 size="sm"
-                                                 onClick={() => {
-                                                   setHusband({ ...husband, isSaved: false });
-                                                   
-                                                   toast({
-                                                     title: "وضع التعديل",
-                                                     description: "يمكنك الآن تعديل بيانات الزوج",
+                                              {husband.isSaved && (
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => {
+                                                    setHusband({ ...husband, isSaved: false });
+                                                    setCurrentHusband(husband);
+                                                    setShowHusbandForm(true);
+                                                    setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
+                                                    
+                                                    toast({
+                                                      title: "وضع التعديل",
+                                                      description: "يمكنك الآن تعديل بيانات الزوج",
                                                      variant: "default"
                                                    });
                                                  }}
