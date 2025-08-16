@@ -1555,7 +1555,17 @@ const FamilyBuilderNew = () => {
 
          // Handle wives for male members - process all saved wives
          if (submissionData.gender === 'male' && wives.length > 0) {
-           const savedWives = wives.filter(wife => wife.isSaved === true);
+            const savedWives = wives.filter(wife => {
+              // Get the wife's index to check family status
+              const wifeIndex = wives.findIndex(w => w === wife);
+              const familyStatus = wiveFamilyStatus[wifeIndex];
+              
+              // Only save if:
+              // 1. Wife is marked as saved
+              // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
+              return wife.isSaved === true && 
+                     (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+            });
            for (const wife of savedWives) {
              try {
                let wifeId = wife.existingFamilyMemberId;
