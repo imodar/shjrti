@@ -1066,13 +1066,8 @@ const FamilyBuilderNew = () => {
         return;
       }
       
-      // Different spouse, show conflict dialog
-      toast({
-        title: "يوجد تعديل نشط",
-        description: "يرجى إغلاق تعديل الزوج/الزوجة الحالي قبل تعديل آخر",
-        variant: "destructive"
-      });
-      return;
+      // Different spouse, close the previous edit and proceed with new one
+      closeActiveSpouseEdit();
     }
     
     // No active edit, proceed with editing
