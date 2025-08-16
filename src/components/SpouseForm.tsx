@@ -37,6 +37,7 @@ interface SpouseFormProps {
   onFamilyStatusChange: (status: string) => void;
   onSave: () => void;
   onAdd: () => void;
+  onClose?: () => void;
   showForm: boolean;
 }
 
@@ -52,6 +53,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   onFamilyStatusChange,
   onSave,
   onAdd,
+  onClose,
   showForm
 }) => {
   const { toast } = useToast();
@@ -460,8 +462,21 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
             </>
           )}
 
-          {/* Save Button */}
-          <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30">
+          {/* Action Buttons */}
+          <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
+            {/* Close Button - Show if editing but no changes made */}
+            {spouse.isSaved && !hasChanges && onClose && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+              >
+                إغلاق
+              </Button>
+            )}
+            
+            {/* Save Button */}
             <Button
               type="button"
               onClick={handleValidationAndSave}
