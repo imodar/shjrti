@@ -2583,13 +2583,13 @@ const FamilyBuilderNew = () => {
                                                   
                                                   {/* Additional Information */}
                                                   <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 font-arabic">
-                                                    {/* Birth Date */}
-                                                    {wife.birthDate && (
-                                                      <div className="flex items-center gap-2">
-                                                        <Calendar className="h-4 w-4 text-cyan-500" />
-                                                        <span>تاريخ الميلاد: {wife.birthDate.toLocaleDateString('ar-SA')}</span>
-                                                      </div>
-                                                    )}
+                                                     {/* Birth Date */}
+                                                     {wife.birthDate && (
+                                                       <>
+                                                         <Calendar className="h-4 w-4 text-cyan-500" />
+                                                         <span>تاريخ الميلاد: {wife.birthDate.toLocaleDateString('ar-SA')}</span>
+                                                       </>
+                                                     )}
                                                     
                                                     {/* Death Date */}
                                                     {wife.deathDate && (
