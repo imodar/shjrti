@@ -3089,12 +3089,6 @@ const FamilyBuilderNew = () => {
                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                          أعضاء العائلة ({familyMembers.length})
                        </span>
-                       {formMode === 'view' && (
-                         <Button onClick={handleAddMember} size="sm" className="flex items-center gap-2 mr-auto">
-                           <Plus className="h-4 w-4" />
-                           إضافة عضو
-                         </Button>
-                       )}
                      </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
