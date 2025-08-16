@@ -2121,15 +2121,50 @@ const FamilyBuilderNew = () => {
            }
          }
          
-         // If editing, deactivate marriages that are no longer needed
-         if (isEditMode && activeMarriageIds.length > 0) {
-           await supabase
-             .from('marriages')
-             .update({ is_active: false })
-             .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`)
-             .not('id', 'in', `(${activeMarriageIds.join(',')})`);
-           console.log('🔥 Deactivated unused marriages for member:', editingMember.id);
-         }
+          // If editing, deactivate marriages that are no longer needed
+          if (isEditMode && activeMarriageIds.length > 0) {
+            // Get all current active marriages for this member
+            const { data: currentMarriages } = await supabase
+              .from('marriages')
+              .select('id')
+              .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`)
+              .eq('is_active', true);
+            
+            // Get IDs of marriages that should remain active (existing + newly created/updated)
+            const existingActiveMarriageIds = currentMarriages?.map(m => m.id) || [];
+            const allActiveMarriageIds = [...new Set([...existingActiveMarriageIds, ...activeMarriageIds])];
+            
+            // Only deactivate marriages that are NOT in wives/husband data
+            const wiveIds = wives.filter(w => w.isSaved).map(w => w.existingFamilyMemberId || w.id).filter(Boolean);
+            const husbandIds = husband && husband.isSaved ? [husband.existingFamilyMemberId || husband.id].filter(Boolean) : [];
+            const validSpouseIds = [...wiveIds, ...husbandIds];
+            
+            if (validSpouseIds.length > 0) {
+              // Get marriages that should remain active based on current spouse data
+              const { data: validMarriages } = await supabase
+                .from('marriages')
+                .select('id')
+                .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`)
+                .eq('is_active', true)
+                .or(validSpouseIds.map(spouseId => 
+                  editingMember.gender === 'male' 
+                    ? `wife_id.eq.${spouseId}`
+                    : `husband_id.eq.${spouseId}`
+                ).join(','));
+              
+              const validMarriageIds = validMarriages?.map(m => m.id) || [];
+              
+              // Only deactivate marriages that are not in validMarriageIds
+              if (validMarriageIds.length > 0) {
+                await supabase
+                  .from('marriages')
+                  .update({ is_active: false })
+                  .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`)
+                  .not('id', 'in', `(${validMarriageIds.join(',')})`);
+                console.log('🔥 Deactivated unused marriages for member:', editingMember.id, 'keeping valid:', validMarriageIds);
+              }
+            }
+          }
        }
        
        // Refresh family data to show updated information
