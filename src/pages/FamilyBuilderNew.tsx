@@ -1031,27 +1031,45 @@ const FamilyBuilderNew = () => {
   };
 
   const closeActiveSpouseEdit = () => {
-    if (showWifeForm) {
+    if (showWifeForm && editingWifeIndex !== null) {
       setShowWifeForm(false);
       setCurrentWife(null);
       setWifeFamilyStatus(null);
-      setEditingWifeIndex(null);
-      // Restore the saved state for the wife being edited
-      if (editingWifeIndex !== null) {
-        const updatedWives = [...wives];
-        if (updatedWives[editingWifeIndex]) {
-          updatedWives[editingWifeIndex].isSaved = true;
-        }
+      
+      // Restore the original saved wife data
+      const updatedWives = [...wives];
+      const originalWife = familyMarriages
+        .flatMap((m: any) => m.wife ? [m.wife] : [])
+        .find((w: any) => w.id === updatedWives[editingWifeIndex]?.id);
+      
+      if (originalWife && updatedWives[editingWifeIndex]) {
+        updatedWives[editingWifeIndex] = {
+          ...originalWife,
+          isSaved: true,
+          isFamilyMember: updatedWives[editingWifeIndex].isFamilyMember
+        };
         setWives(updatedWives);
       }
+      
+      setEditingWifeIndex(null);
     }
-    if (showHusbandForm) {
+    
+    if (showHusbandForm && husband) {
       setShowHusbandForm(false);
       setCurrentHusband(null);
       setHusbandFamilyStatus(null);
-      // Restore the saved state for the husband
-      if (husband) {
-        setHusband({ ...husband, isSaved: true });
+      
+      // Restore the original saved husband data
+      const originalHusband = familyMarriages
+        .flatMap((m: any) => m.husband ? [m.husband] : [])
+        .find((h: any) => h.id === husband.id);
+      
+      if (originalHusband) {
+        setHusband({
+          ...originalHusband,
+          isSaved: true,
+          isFamilyMember: husband.isFamilyMember
+        });
       }
     }
   };
