@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -205,11 +205,13 @@ export type Database = {
           death_date: string | null
           family_id: string
           father_id: string | null
+          first_name: string | null
           gender: string | null
           id: string
           image_url: string | null
           is_alive: boolean | null
           is_founder: boolean | null
+          last_name: string | null
           marital_status: string | null
           mother_id: string | null
           name: string
@@ -225,11 +227,13 @@ export type Database = {
           death_date?: string | null
           family_id: string
           father_id?: string | null
+          first_name?: string | null
           gender?: string | null
           id?: string
           image_url?: string | null
           is_alive?: boolean | null
           is_founder?: boolean | null
+          last_name?: string | null
           marital_status?: string | null
           mother_id?: string | null
           name: string
@@ -245,11 +249,13 @@ export type Database = {
           death_date?: string | null
           family_id?: string
           father_id?: string | null
+          first_name?: string | null
           gender?: string | null
           id?: string
           image_url?: string | null
           is_alive?: boolean | null
           is_founder?: boolean | null
+          last_name?: string | null
           marital_status?: string | null
           mother_id?: string | null
           name?: string
@@ -919,11 +925,11 @@ export type Database = {
       }
       create_invoice: {
         Args: {
-          p_user_id: string
-          p_package_id: string
           p_amount: number
           p_currency?: string
           p_family_id?: string
+          p_package_id: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -938,21 +944,21 @@ export type Database = {
       get_all_users_for_admin: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
+          created_at: string
           email: string
           email_confirmed_at: string
-          phone: string
-          created_at: string
-          updated_at: string
-          profile_id: string
           first_name: string
+          id: string
           last_name: string
+          phone: string
+          profile_id: string
           profile_phone: string
-          user_status: Database["public"]["Enums"]["user_status_type"]
           status_reason: string
-          subscription_status: string
-          subscription_package_name: Json
           subscription_expires_at: string
+          subscription_package_name: Json
+          subscription_status: string
+          updated_at: string
+          user_status: Database["public"]["Enums"]["user_status_type"]
         }[]
       }
       get_user_family_ids: {
@@ -964,13 +970,13 @@ export type Database = {
       get_user_subscription_details: {
         Args: { user_uuid: string }
         Returns: {
-          subscription_id: string
+          ai_features_enabled: boolean
+          days_until_expiry: number
+          expires_at: string
+          is_expired: boolean
           package_name: Json
           status: string
-          expires_at: string
-          days_until_expiry: number
-          is_expired: boolean
-          ai_features_enabled: boolean
+          subscription_id: string
         }[]
       }
       halfvec_avg: {
@@ -1051,9 +1057,9 @@ export type Database = {
       }
       update_user_status: {
         Args: {
-          target_user_id: string
           new_status: Database["public"]["Enums"]["user_status_type"]
           status_reason?: string
+          target_user_id: string
         }
         Returns: boolean
       }

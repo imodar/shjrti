@@ -819,6 +819,8 @@ const FamilyBuilderNew = () => {
   const [wives, setWives] = useState<Array<{
     id: string;
     name: string;
+    firstName?: string;
+    lastName?: string;
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
@@ -833,6 +835,8 @@ const FamilyBuilderNew = () => {
   const [husband, setHusband] = useState<{
     id: string;
     name: string;
+    firstName?: string;
+    lastName?: string;
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
@@ -1373,6 +1377,8 @@ const FamilyBuilderNew = () => {
           return {
             id: marriage.wife?.id || '',
             name: marriage.wife?.name || '',
+            firstName: wifeMember?.first_name || '',
+            lastName: wifeMember?.last_name || '',
             birthDate: wifeMember?.birth_date ? new Date(wifeMember.birth_date) : null,
             maritalStatus: wifeMember?.marital_status || 'married',
             isAlive: wifeMember?.is_alive ?? true,
@@ -1383,6 +1389,8 @@ const FamilyBuilderNew = () => {
             isSaved: true, // Mark existing wives as saved
             originalData: wifeMember ? { // Store original data for change tracking
               name: marriage.wife?.name || '',
+              firstName: wifeMember.first_name || '',
+              lastName: wifeMember.last_name || '',
               birthDate: wifeMember.birth_date ? new Date(wifeMember.birth_date) : null,
               isAlive: wifeMember.is_alive ?? true,
               deathDate: wifeMember.death_date ? new Date(wifeMember.death_date) : null,
@@ -1574,15 +1582,17 @@ const FamilyBuilderNew = () => {
                if (wife.existingFamilyMemberId && wife.id) {
                  const { data: updatedWife, error: wifeUpdateError } = await supabase
                    .from('family_tree_members')
-                   .update({
-                     name: wife.name,
-                     birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                     is_alive: wife.isAlive ?? true,
-                     death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                     marital_status: 'married',
-                     image_url: wife.croppedImage || null,
-                     updated_at: new Date().toISOString()
-                   })
+                    .update({
+                      name: wife.name,
+                      first_name: wife.firstName || null,
+                      last_name: wife.lastName || null,
+                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                      is_alive: wife.isAlive ?? true,
+                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                      marital_status: 'married',
+                      image_url: wife.croppedImage || null,
+                      updated_at: new Date().toISOString()
+                    })
                    .eq('id', wife.existingFamilyMemberId)
                    .select()
                    .single();
@@ -1600,18 +1610,20 @@ const FamilyBuilderNew = () => {
                  // If wife is not from existing family members, create new family member
                  const { data: newWifeMember, error: wifeError } = await supabase
                    .from('family_tree_members')
-                   .insert({
-                     name: wife.name,
-                     gender: 'female',
-                     birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                     is_alive: wife.isAlive ?? true,
-                     death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                     family_id: familyId,
-                     created_by: familyData?.creator_id,
-                     is_founder: false,
-                     marital_status: 'married',
-                     image_url: wife.croppedImage || null
-                   })
+                    .insert({
+                      name: wife.name,
+                      first_name: wife.firstName || null,
+                      last_name: wife.lastName || null,
+                      gender: 'female',
+                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                      is_alive: wife.isAlive ?? true,
+                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                      family_id: familyId,
+                      created_by: familyData?.creator_id,
+                      is_founder: false,
+                      marital_status: 'married',
+                      image_url: wife.croppedImage || null
+                    })
                    .select()
                    .single();
 
@@ -2588,26 +2600,59 @@ const FamilyBuilderNew = () => {
 
                                           {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no' && (
                                             <>
-                                              {/* Name Input */}
-                                              <div className="group">
-                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                  <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                  اسم الزوجة *
-                                                </Label>
-                                                <div className="relative">
-                                                  <Input
-                                                    value={wife.name}
-                                                    onChange={(e) => {
-                                                      const actualIndex = wives.findIndex(w => w === wife);
-                                                      const newWives = [...wives];
-                                                      newWives[actualIndex] = { ...wife, name: e.target.value };
-                                                      setWives(newWives);
-                                                    }}
-                                                    placeholder="أدخل اسم الزوجة"
-                                                    className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                  />
-                                                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                                    <User className="h-3 w-3 text-white" />
+                                              {/* First Name and Last Name Inputs */}
+                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* First Name Input */}
+                                                <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    الاسم الأول *
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <Input
+                                                      value={wife.firstName || ''}
+                                                      onChange={(e) => {
+                                                        const actualIndex = wives.findIndex(w => w === wife);
+                                                        const newWives = [...wives];
+                                                        const updatedWife = { ...wife, firstName: e.target.value };
+                                                        // Update the full name for display
+                                                        updatedWife.name = `${e.target.value} ${wife.lastName || ''}`.trim();
+                                                        newWives[actualIndex] = updatedWife;
+                                                        setWives(newWives);
+                                                      }}
+                                                      placeholder="أدخل الاسم الأول"
+                                                      className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                                    />
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                      <User className="h-3 w-3 text-white" />
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {/* Last Name Input */}
+                                                <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    اسم العائلة
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <Input
+                                                      value={wife.lastName || ''}
+                                                      onChange={(e) => {
+                                                        const actualIndex = wives.findIndex(w => w === wife);
+                                                        const newWives = [...wives];
+                                                        const updatedWife = { ...wife, lastName: e.target.value };
+                                                        // Update the full name for display
+                                                        updatedWife.name = `${wife.firstName || ''} ${e.target.value}`.trim();
+                                                        newWives[actualIndex] = updatedWife;
+                                                        setWives(newWives);
+                                                      }}
+                                                      placeholder="أدخل اسم العائلة"
+                                                      className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
+                                                    />
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                      <User className="h-3 w-3 text-white" />
+                                                    </div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -2848,6 +2893,8 @@ const FamilyBuilderNew = () => {
                                           setWives([...wives, {
                                             id: '',
                                             name: '',
+                                            firstName: '',
+                                            lastName: '',
                                             isAlive: true,
                                             birthDate: null,
                                             deathDate: null,
