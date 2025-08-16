@@ -14,21 +14,21 @@
     --sidebar-background: 225 57% 7%;
     --sidebar-foreground: 210 40% 98%;
 
-    /* Primary Colors */
-    --primary: 210 100% 50%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 210 100% 50%;
-    --sidebar-primary-foreground: 222.2 84% 4.9%;
+    /* Primary Colors - Green Theme */
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
 
-    /* Secondary Colors */
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary Colors - Green Theme */
+    --secondary: 160 84% 39%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Accent Colors */
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
-    --sidebar-accent: 217 32% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    /* Accent Colors - Green Theme */
+    --accent: 158 64% 52%;
+    --accent-foreground: 0 0% 100%;
+    --sidebar-accent: 158 64% 52%;
+    --sidebar-accent-foreground: 0 0% 100%;
 
     /* Muted Colors */
     --muted: 217 32% 17%;
@@ -47,9 +47,9 @@
     --input: 217 32% 17%;
     --sidebar-border: 217 32% 17%;
 
-    /* Ring and Focus */
-    --ring: 212 100% 50%;
-    --sidebar-ring: 212 100% 50%;
+    /* Ring and Focus - Green Theme */
+    --ring: 142 76% 36%;
+    --sidebar-ring: 142 76% 36%;
 
     /* Destructive */
     --destructive: 0 62% 50%;
@@ -58,10 +58,10 @@
     /* Radius */
     --radius: 0.5rem;
 
-    /* Family Tree Specific */
-    --tree-primary: 210 100% 50%;
-    --tree-secondary: 217 32% 17%;
-    --tree-accent: 212 100% 50%;
+    /* Family Tree Specific - Green Theme */
+    --tree-primary: 142 76% 36%;
+    --tree-secondary: 160 84% 39%;
+    --tree-accent: 158 64% 52%;
     --tree-background: 225 57% 7%;
     --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
     --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
@@ -80,8 +80,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
@@ -97,7 +97,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 142 76% 36%;
 
     --tree-background: 0 0% 100%;
     --tree-foreground: 222.2 84% 4.9%;
