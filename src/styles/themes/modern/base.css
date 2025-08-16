@@ -10,9 +10,9 @@
   .theme-modern {
     /* Light Background Colors - Default */
     --background: 0 0% 100% !important;
-    --foreground: 222.2 84% 4.9% !important;
+    --foreground: 0 0% 20% !important;
     --sidebar-background: 0 0% 100% !important;
-    --sidebar-foreground: 222.2 84% 4.9% !important;
+    --sidebar-foreground: 0 0% 20% !important;
 
     /* Primary Colors - Emerald Green */
     --primary: 160 84% 39% !important;
@@ -22,7 +22,7 @@
 
     /* Secondary Colors - Light */
     --secondary: 160 15% 96% !important;
-    --secondary-foreground: 222.2 84% 4.9% !important;
+    --secondary-foreground: 0 0% 20% !important;
 
     /* Accent Colors - Teal */
     --accent: 173 80% 40% !important;
@@ -36,11 +36,11 @@
 
     /* Card Colors - Light */
     --card: 0 0% 100% !important;
-    --card-foreground: 222.2 84% 4.9% !important;
+    --card-foreground: 0 0% 20% !important;
 
     /* Popover Colors - Light */
     --popover: 0 0% 100% !important;
-    --popover-foreground: 222.2 84% 4.9% !important;
+    --popover-foreground: 0 0% 20% !important;
 
     /* Border and Input - Light */
     --border: 160 20% 88% !important;
