@@ -480,8 +480,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
           {/* Action Buttons - Only show when radio button is selected */}
           {(familyStatus === 'yes' || familyStatus === 'no') && (
             <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
-              {/* Close Button - Show if editing but no changes made */}
-              {spouse.isSaved && !hasChanges && onClose && (
+              {/* Close Button - Always show when form is open */}
+              {onClose && (
                 <Button
                   type="button"
                   variant="outline"
