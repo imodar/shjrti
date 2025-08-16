@@ -29,6 +29,19 @@
     scroll-behavior: smooth;
   }
 }
+
+/* Professional Theme Variables */
+.theme-professional {
+  /* Background Colors - Clean whites and light grays */
+  --background: 0 0% 98%;
+  --foreground: 0 0% 10%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 0 0% 15%;
+
+  /* Primary Colors - Facebook blue */
+  --primary: 214 100% 59%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 214 100% 59%;
   --sidebar-primary-foreground: 0 0% 100%;
 
   /* Secondary Colors - Professional grays */
