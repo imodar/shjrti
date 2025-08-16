@@ -62,7 +62,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   if (!member) return null;
 
   const getGenderColor = (gender: string) => {
-    return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
+    return gender === 'male' ? 'bg-emerald-500' : 'bg-pink-500';
   };
 
   const getMaritalStatus = (spouse?: any) => {
@@ -343,10 +343,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <div className="space-y-4">
                     {/* Essential Info Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
-                        <Calendar className="h-5 w-5 text-blue-600" />
+                      <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl">
+                        <Calendar className="h-5 w-5 text-emerald-600" />
                         <div>
-                          <div className="text-sm text-blue-700">تاريخ الميلاد</div>
+                          <div className="text-sm text-emerald-700">تاريخ الميلاد</div>
                           <div className="font-semibold">
                             {member.birthDate ? <DateDisplay date={member.birthDate} className="inline" /> : 'غير محدد'}
                           </div>
