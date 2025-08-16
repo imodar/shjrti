@@ -3464,7 +3464,7 @@ const MemberList = ({
 
       {/* Add Member Button */}
       {formMode === 'view' && (
-        <Button onClick={onAddMember} className="w-full flex items-center gap-2">
+        <Button onClick={onAddMember} className="w-full flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
           <Plus className="h-4 w-4" />
           إضافة عضو جديد
         </Button>
