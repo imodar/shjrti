@@ -2566,7 +2566,6 @@ const FamilyBuilderNew = () => {
                                                     <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
                                                       <SelectItem value="married" className="font-arabic text-sm">متزوجة</SelectItem>
                                                       <SelectItem value="divorced" className="font-arabic text-sm">مطلقة</SelectItem>
-                                                      <SelectItem value="widowed" className="font-arabic text-sm">أرملة</SelectItem>
                                                     </SelectContent>
                                                   </Select>
                                                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
