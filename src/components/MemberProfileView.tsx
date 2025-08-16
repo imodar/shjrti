@@ -161,46 +161,44 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     <div className={`min-h-screen transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
       {/* Header */}
       <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 border-2 border-primary">
+              {member.image_url ? (
+                <AvatarImage src={member.image_url} alt={member.name} />
+              ) : (
+                <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold`}>
+                  {member.name.charAt(0)}
+                </AvatarFallback>
+              )}
+            </Avatar>
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border-2 border-primary">
-                {member.image_url ? (
-                  <AvatarImage src={member.image_url} alt={member.name} />
-                ) : (
-                  <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold`}>
-                    {member.name.charAt(0)}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <div className="flex items-center gap-3">
-                <div>
-                  <h2 className="font-bold text-lg">{member.name}</h2>
-                  <p className="text-sm text-muted-foreground">{getMaritalStatus()}</p>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={onBack}
-                  className="facebook-button-secondary"
-                >
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                  العودة
-                </Button>
+              <div>
+                <h2 className="font-bold text-lg">{member.name}</h2>
+                <p className="text-sm text-muted-foreground">{getMaritalStatus()}</p>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="facebook-button-secondary">
-                <MessageCircle className="h-4 w-4" />
-              </Button>
-              <Button size="sm" variant="outline" className="facebook-button-secondary">
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button size="sm" variant="outline" className="facebook-button-secondary">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onBack}
+                className="facebook-button-secondary"
+              >
+                <ArrowRight className="h-4 w-4 ml-2" />
+                العودة
               </Button>
             </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" className="facebook-button-secondary">
+              <MessageCircle className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant="outline" className="facebook-button-secondary">
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant="outline" className="facebook-button-secondary">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
