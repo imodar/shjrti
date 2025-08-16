@@ -2447,19 +2447,31 @@ const FamilyBuilderNew = () => {
             )}>
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
-                 <CardHeader className="relative">
-                     <CardTitle className="flex items-center gap-2">
-                       {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                       {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                       {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                       {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                          {formMode === 'view' && "معلومات العضو"}
-                          {formMode === 'add' && "إضافة عضو جديد"}
-                          {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
-                          {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
-                        </span>
-                     </CardTitle>
+                  <CardHeader className="relative">
+                      <CardTitle className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                          {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                          {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                          {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                           <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                             {formMode === 'view' && "معلومات العضو"}
+                             {formMode === 'add' && "إضافة عضو جديد"}
+                             {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
+                             {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
+                           </span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={currentStep === 1 ? handleCancelForm : prevStep}
+                          className="flex items-center gap-2 font-arabic"
+                          size="sm"
+                        >
+                          <ArrowLeft className="h-4 w-4" />
+                          {currentStep === 1 ? "إلغاء الإضافة" : "السابق"}
+                        </Button>
+                      </CardTitle>
 
                      {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
                      {(formMode === 'add' || formMode === 'edit') && (
@@ -3015,17 +3027,8 @@ const FamilyBuilderNew = () => {
                           </div>
                        )}
 
-                      {/* Navigation Buttons */}
-                      <div className="flex justify-between pt-6">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={currentStep === 1 ? handleCancelForm : prevStep}
-                          className="flex items-center gap-2 font-arabic"
-                        >
-                          <ArrowLeft className="h-4 w-4" />
-                          {currentStep === 1 ? "إلغاء الإضافة" : "السابق"}
-                        </Button>
+                       {/* Navigation Buttons */}
+                       <div className="flex justify-end pt-6">
                         
                         {currentStep < 2 ? (
                           <Button
