@@ -1,0 +1,44 @@
+/* Modern Theme Components */
+@layer components {
+  .hero-gradient {
+    background: var(--tree-gradient);
+  }
+  
+  .tree-shadow {
+    box-shadow: var(--tree-shadow);
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  /* 3D Flip Animation */
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .rotate-y-0 {
+    transform: rotateY(0deg);
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  
+  /* Calendar-specific styles to prevent class leakage */
+  .calendar-month-spacing {
+    @apply space-y-4;
+  }
+  
+  .calendar-table-spacing {
+    @apply space-y-1;
+  }
+  
+  .rdp-caption {
+    /* Calendar caption styles */
+  }
+}

@@ -1,0 +1,75 @@
+/* Professional Theme RTL Support */
+
+/* RTL Support for spacing and alignment */
+[dir="rtl"] .space-x-2 > * + * {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .space-x-4 > * + * {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Professional RTL Dialog and Modal Support */
+[dir="rtl"] .dialog-footer,
+[dir="rtl"] .professional-modal-footer {
+  flex-direction: row-reverse;
+}
+
+/* Professional RTL Navigation Support */
+[dir="rtl"] .nav-item,
+[dir="rtl"] .professional-nav-item {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .professional-sidebar-item {
+  flex-direction: row-reverse;
+}
+
+/* Professional RTL Form Support */
+[dir="rtl"] .checkbox-wrapper,
+[dir="rtl"] .checkbox-container {
+  flex-direction: row-reverse;
+}
+
+/* Professional RTL Grid Support */
+[dir="rtl"] .professional-flex-between {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .professional-flex-start {
+  justify-content: flex-end;
+}
+
+[dir="rtl"] .professional-flex-end {
+  justify-content: flex-start;
+}
+
+/* Preserve normal layout for centered content */
+[dir="rtl"] .justify-between {
+  justify-content: space-between;
+}
+
+[dir="rtl"] .professional-flex-center {
+  flex-direction: row;
+}
+
+/* Professional RTL Typography */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
