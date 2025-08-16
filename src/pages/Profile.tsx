@@ -667,11 +667,24 @@ export default function Profile() {
                               </SelectContent>
                             </Select>
                           ) : (
-                            <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50">
-                              <div className="flex items-center gap-2">
-                                <span>{profileData.datePreference === 'hijri' ? '🌙' : '📅'}</span>
-                                <span className="text-gray-700 dark:text-gray-300">
-                                  {profileData.datePreference === 'hijri' ? 'التقويم الهجري (الإسلامي)' : 'التقويم الميلادي (الغربي)'}
+                            <div 
+                              className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600"
+                              onClick={() => {
+                                const newPreference = profileData.datePreference === 'hijri' ? 'gregorian' : 'hijri';
+                                setProfileData({...profileData, datePreference: newPreference});
+                                // Auto-save the preference
+                                handleSave();
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span>{profileData.datePreference === 'hijri' ? '🌙' : '📅'}</span>
+                                  <span className="text-gray-700 dark:text-gray-300">
+                                    {profileData.datePreference === 'hijri' ? 'التقويم الهجري (الإسلامي)' : 'التقويم الميلادي (الغربي)'}
+                                  </span>
+                                </div>
+                                <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
+                                  انقر للتبديل
                                 </span>
                               </div>
                             </div>
