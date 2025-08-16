@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle, Calendar, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { DateDisplay } from '@/components/DateDisplay';
 
 interface SubscriptionGuardProps {
   children: React.ReactNode;
@@ -84,7 +85,7 @@ export function SubscriptionGuard({
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">تاريخ الانتهاء</p>
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      {new Date(subscription.expires_at).toLocaleDateString('ar-SA')}
+                      <DateDisplay date={subscription.expires_at} className="inline font-bold text-red-600" />
                     </p>
                   </div>
                 </div>

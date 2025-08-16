@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { RelativeDateDisplay } from '@/components/DateDisplay';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -136,15 +137,7 @@ const ContactSubmissions: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  // Remove the local formatDate function since we're using the global one
 
   if (loading) {
     return (
@@ -190,7 +183,7 @@ const ContactSubmissions: React.FC = () => {
 
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
-                      <span>{formatDate(submission.created_at)}</span>
+                      <RelativeDateDisplay date={submission.created_at} />
                     </div>
 
                     <div className="flex items-start gap-2">
@@ -268,7 +261,7 @@ const ContactSubmissions: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>تاريخ الإرسال</Label>
-                  <Input value={formatDate(selectedSubmission.created_at)} readOnly />
+                  <RelativeDateDisplay date={selectedSubmission.created_at} />
                 </div>
                 <div>
                   <Label>الحالة</Label>

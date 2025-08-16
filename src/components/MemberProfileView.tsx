@@ -1,4 +1,5 @@
 import React from 'react';
+import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -191,9 +192,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border border-primary/20">
                       <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
                       <div className="text-xs text-muted-foreground">تاريخ الميلاد</div>
-                      <div className="font-bold text-foreground">
-                        {member.birthDate ? new Date(member.birthDate).toLocaleDateString('ar-SA') : 'غير محدد'}
-                      </div>
+                       <div className="font-bold text-foreground">
+                         {member.birthDate ? <DateDisplay date={member.birthDate} className="inline" /> : 'غير محدد'}
+                       </div>
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl border border-secondary/20">
                       <Heart className="h-6 w-6 text-secondary mx-auto mb-2" />
@@ -235,7 +236,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       </div>
                       <div className="flex-1">
                         <div className="text-sm text-muted-foreground">تاريخ الوفاة</div>
-                        <div className="font-bold">{new Date(member.deathDate).toLocaleDateString('ar-SA')}</div>
+                        <div className="font-bold"><DateDisplay date={member.deathDate} className="inline" /></div>
                       </div>
                     </div>
                   )}
@@ -339,7 +340,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                        </div>
                        <div className="flex-1">
                          <p className="text-sm font-semibold text-red-700 mb-1">تاريخ الوفاة</p>
-                         <p className="text-base font-bold text-gray-800">{new Date(member.deathDate).toLocaleDateString('ar-SA')}</p>
+                         <p className="text-base font-bold text-gray-800"><DateDisplay date={member.deathDate} className="inline" /></p>
                        </div>
                      </div>
                    </div>}
@@ -387,7 +388,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           </div>
                           {spouse.marriage_date && <div className="flex items-center gap-2 text-sm text-gray-600">
                               <Calendar className="h-4 w-4 text-rose-500" />
-                              <span>تاريخ الزواج: {new Date(spouse.marriage_date).toLocaleDateString('ar-SA')}</span>
+                              <span>تاريخ الزواج: <DateDisplay date={spouse.marriage_date} className="inline" /></span>
                             </div>}
                           
                           {/* Show children for this spouse */}

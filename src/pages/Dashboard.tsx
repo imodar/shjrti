@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useDateFormat } from "@/hooks/useDateFormat";
+import { DateDisplay, RelativeDateDisplay } from "@/components/DateDisplay";
 import { 
   Sparkles, 
   TreePine,
@@ -825,7 +827,7 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mr-20">
                               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                               <Calendar className="h-4 w-4" />
-                              <span className="font-medium">{t('created_on_prefix', 'Created on')} {new Date(tree.created_at).toLocaleDateString('en-GB')}</span>
+                              <span className="font-medium">{t('created_on_prefix', 'تم إنشاؤها في')} <DateDisplay date={tree.created_at} className="inline" /></span>
                             </div>
                           </CardHeader>
                           
@@ -838,7 +840,7 @@ const Dashboard = () => {
                                   <span className="font-semibold">{t('last_update', 'آخر تحديث')}</span>
                                 </div>
                                 <span className="text-gray-600 dark:text-gray-300 font-medium">
-                                  {new Date(tree.updated_at).toLocaleDateString('en-GB')}
+                                  <RelativeDateDisplay date={tree.updated_at} className="inline" />
                                 </span>
                               </div>
                             </div>
