@@ -1459,10 +1459,17 @@ const FamilyBuilderNew = () => {
 
       if (isEditMode) {
         // Update existing member
+        // Split the name into first and last name for proper storage
+        const nameParts = submissionData.name?.split(' ') || [''];
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
         const { data: updatedMember, error: updateError } = await supabase
           .from('family_tree_members')
           .update({
-            name: submissionData.name,
+            name: submissionData.name || '',
+            first_name: firstName,
+            last_name: lastName || null,
             gender: submissionData.gender,
             birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
             is_alive: submissionData.isAlive,
@@ -1488,10 +1495,17 @@ const FamilyBuilderNew = () => {
         console.log('🔥 Successfully updated family member:', updatedMember);
       } else {
         // Insert new family member into database
+        // Split the name into first and last name for proper storage
+        const nameParts = submissionData.name?.split(' ') || [''];
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
         const { data: newMember, error: memberError } = await supabase
           .from('family_tree_members')
           .insert({
-            name: submissionData.name,
+            name: submissionData.name || '',
+            first_name: firstName,
+            last_name: lastName || null,
             gender: submissionData.gender,
             birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
             is_alive: submissionData.isAlive,
