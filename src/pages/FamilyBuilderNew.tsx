@@ -872,23 +872,50 @@ const FamilyBuilderNew = () => {
   };
 
   const handleAddHusband = () => {
+    setCurrentHusband({
+      id: '',
+      firstName: '',
+      lastName: '',
+      name: '',
+      isAlive: true,
+      birthDate: null,
+      deathDate: null,
+      maritalStatus: 'married',
+      isFamilyMember: false,
+      existingFamilyMemberId: '',
+      croppedImage: null,
+      isSaved: false
+    });
     setShowHusbandForm(true);
   };
 
   const handleWifeSave = () => {
     if (!currentWife) return;
     
-    const newWife = { ...currentWife, isSaved: true };
-    setWives(prev => [...prev, newWife]);
+    // Check if we're editing an existing wife or adding a new one
+    const existingWifeIndex = wives.findIndex(w => w.id === currentWife.id);
+    
+    if (existingWifeIndex >= 0) {
+      // Update existing wife
+      const updatedWives = [...wives];
+      updatedWives[existingWifeIndex] = { ...currentWife, isSaved: true };
+      setWives(updatedWives);
+    } else {
+      // Add new wife
+      const newWife = { ...currentWife, isSaved: true };
+      setWives(prev => [...prev, newWife]);
+    }
+    
     setCurrentWife(null);
     setShowWifeForm(false);
     setWifeFamilyStatus(null);
   };
 
   const handleHusbandSave = () => {
-    if (!husband) return;
+    if (!currentHusband) return;
     
-    setHusband({ ...husband, isSaved: true });
+    setHusband({ ...currentHusband, isSaved: true });
+    setCurrentHusband(null);
     setShowHusbandForm(false);
     setHusbandFamilyStatus(null);
   };
@@ -2685,23 +2712,23 @@ const FamilyBuilderNew = () => {
                                  </div>
 
                                  {/* Unified Husband Form */}
-                                 <SpouseForm
-                                   spouseType="husband"
-                                   spouse={husband || {
-                                     id: '',
-                                     firstName: '',
-                                     lastName: '',
-                                     name: '',
-                                     isAlive: true,
-                                     birthDate: null,
-                                     deathDate: null,
-                                     maritalStatus: 'married',
-                                     isFamilyMember: false,
-                                     existingFamilyMemberId: '',
-                                     croppedImage: null,
-                                     isSaved: false
-                                   }}
-                                   onSpouseChange={setHusband}
+                                  <SpouseForm
+                                    spouseType="husband"
+                                    spouse={currentHusband || {
+                                      id: '',
+                                      firstName: '',
+                                      lastName: '',
+                                      name: '',
+                                      isAlive: true,
+                                      birthDate: null,
+                                      deathDate: null,
+                                      maritalStatus: 'married',
+                                      isFamilyMember: false,
+                                      existingFamilyMemberId: '',
+                                      croppedImage: null,
+                                      isSaved: false
+                                    }}
+                                    onSpouseChange={setCurrentHusband}
                                    familyMembers={familyMembers}
                                    selectedMember={selectedMember}
                                    commandOpen={husbandCommandOpen}
