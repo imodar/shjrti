@@ -2800,21 +2800,36 @@ const FamilyBuilderNew = () => {
                                             <Button
                                               type="button"
                                               onClick={() => {
-                                                // Validate wife data
-                                                const actualIndex = wives.findIndex(w => w === wife);
-                                                const isValid = wife.name.trim() && (
-                                                  (wiveFamilyStatus[actualIndex] === 'yes' && wife.existingFamilyMemberId) ||
-                                                  wiveFamilyStatus[actualIndex] === 'no'
-                                                );
+                                                 // Validate wife data - Enhanced validation
+                                                 const actualIndex = wives.findIndex(w => w === wife);
+                                                 const familyStatus = wiveFamilyStatus[actualIndex];
+                                                 
+                                                 let isValid = false;
+                                                 let errorMessage = "يرجى إكمال جميع البيانات المطلوبة للزوجة";
+                                                 
+                                                 if (familyStatus === 'yes') {
+                                                   // If from family, must have selected a family member
+                                                   isValid = wife.existingFamilyMemberId && wife.existingFamilyMemberId.trim() !== '';
+                                                   if (!isValid) {
+                                                     errorMessage = "يرجى اختيار الزوجة من قائمة أفراد العائلة";
+                                                   }
+                                                 } else if (familyStatus === 'no') {
+                                                   // If not from family, must have first and last name
+                                                   isValid = wife.firstName && wife.firstName.trim() !== '' && 
+                                                           wife.lastName && wife.lastName.trim() !== '';
+                                                   if (!isValid) {
+                                                     errorMessage = "يرجى إكمال الاسم الأول والأخير للزوجة";
+                                                   }
+                                                 }
 
-                                                if (!isValid) {
-                                                  toast({
-                                                    title: "خطأ في البيانات",
-                                                    description: "يرجى إكمال جميع البيانات المطلوبة للزوجة",
-                                                    variant: "destructive"
-                                                  });
-                                                  return;
-                                                }
+                                                 if (!isValid) {
+                                                   toast({
+                                                     title: "خطأ في البيانات",
+                                                     description: errorMessage,
+                                                     variant: "destructive"
+                                                   });
+                                                   return;
+                                                 }
 
                                                  // Mark wife as saved and update original data
                                                  const newWives = [...wives];
