@@ -150,7 +150,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   }
 
   return (
-    <div className={cn("bg-gradient-to-br rounded-2xl p-6 border shadow-lg col-span-1 lg:col-span-2", colorScheme.background, colorScheme.border)}>
+    <div className={cn("bg-gradient-to-br rounded-2xl p-6 border shadow-lg w-full", colorScheme.background, colorScheme.border)}>
       <div className="flex items-center gap-2 mb-6">
         <div className={cn("w-8 h-8 bg-gradient-to-r rounded-full flex items-center justify-center", colorScheme.gradient)}>
           <UserPlus className="w-4 h-4 text-white" />
