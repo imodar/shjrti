@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +55,30 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   showForm
 }) => {
   const { toast } = useToast();
+  
+  // Track original spouse data for change detection
+  const [originalSpouse, setOriginalSpouse] = useState<SpouseData | null>(null);
+  
+  // Initialize original spouse data when spouse prop changes
+  useEffect(() => {
+    if (spouse && spouse.isSaved) {
+      setOriginalSpouse({ ...spouse });
+    } else if (!spouse.isSaved) {
+      setOriginalSpouse(null);
+    }
+  }, [spouse.isSaved, spouse.id]);
+  
+  // Check if data has changed
+  const hasChanges = originalSpouse && (
+    originalSpouse.firstName !== spouse.firstName ||
+    originalSpouse.lastName !== spouse.lastName ||
+    originalSpouse.maritalStatus !== spouse.maritalStatus ||
+    originalSpouse.isFamilyMember !== spouse.isFamilyMember ||
+    originalSpouse.existingFamilyMemberId !== spouse.existingFamilyMemberId ||
+    originalSpouse.birthDate?.getTime() !== spouse.birthDate?.getTime() ||
+    originalSpouse.isAlive !== spouse.isAlive ||
+    originalSpouse.deathDate?.getTime() !== spouse.deathDate?.getTime()
+  );
   
   const isWife = spouseType === 'wife';
   const spouseLabel = isWife ? 'الزوجة' : 'الزوج';
@@ -438,16 +462,16 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
             <Button
               type="button"
               onClick={handleValidationAndSave}
-              disabled={spouse.isSaved}
+              disabled={spouse.isSaved && !hasChanges}
               className={cn(
                 "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
-                spouse.isSaved 
+                spouse.isSaved && !hasChanges
                   ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
                   : cn("bg-gradient-to-r text-white shadow-lg hover:shadow-xl", 
                        isWife ? "from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600" : "from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600")
               )}
             >
-              {spouse.isSaved ? (
+              {spouse.isSaved && !hasChanges ? (
                 <>
                   <Check className="h-4 w-4 mr-2" />
                   تم حفظ البيانات
@@ -455,7 +479,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  {saveButtonText}
+                  {hasChanges ? `حفظ التغييرات ${isWife ? 'للزوجة' : 'للزوج'}` : saveButtonText}
                 </>
               )}
             </Button>
