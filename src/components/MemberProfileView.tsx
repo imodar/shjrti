@@ -163,30 +163,30 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onBack}
-                className="facebook-button-secondary"
-              >
-                <ArrowRight className="h-4 w-4 ml-2" />
-                العودة
-              </Button>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10 border-2 border-primary">
+                {member.image_url ? (
+                  <AvatarImage src={member.image_url} alt={member.name} />
+                ) : (
+                  <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold`}>
+                    {member.name.charAt(0)}
+                  </AvatarFallback>
+                )}
+              </Avatar>
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 border-2 border-primary">
-                  {member.image_url ? (
-                    <AvatarImage src={member.image_url} alt={member.name} />
-                  ) : (
-                    <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold`}>
-                      {member.name.charAt(0)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
                 <div>
                   <h2 className="font-bold text-lg">{member.name}</h2>
                   <p className="text-sm text-muted-foreground">{getMaritalStatus()}</p>
                 </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onBack}
+                  className="facebook-button-secondary"
+                >
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                  العودة
+                </Button>
               </div>
             </div>
             
