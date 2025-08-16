@@ -250,12 +250,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
         {/* Navigation Tabs */}
         <div className="bg-card rounded-lg border border-border mb-6">
-          <div className="flex overflow-x-auto scrollbar-hidden">
+          <div className="flex overflow-x-auto scrollbar-hidden snap-x snap-mandatory -webkit-overflow-scrolling-touch" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {tabItems.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3 sm:px-6 py-3 sm:py-4 font-semibold transition-all relative whitespace-nowrap min-w-0 ${
+                className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-all relative whitespace-nowrap min-w-fit flex-shrink-0 snap-start ${
                   activeTab === tab.id 
                     ? 'text-primary border-b-2 border-primary' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
