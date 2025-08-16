@@ -1974,40 +1974,47 @@ const FamilyBuilderNew = () => {
                  console.log('🔥 Successfully created wife member:', newWifeMember);
                }
 
-               // Check if marriage already exists and update it, otherwise create new one
-               const { data: existingMarriage } = await supabase
-                 .from('marriages')
-                 .select('id')
-                 .eq('husband_id', memberData.id)
-                 .eq('wife_id', wifeId)
-                 .maybeSingle();
+                // If wife is an existing family member, update their marital status
+                if (wife.isFamilyMember && wife.existingFamilyMemberId && wife.maritalStatus) {
+                  await supabase
+                    .from('family_tree_members')
+                    .update({ marital_status: wife.maritalStatus })
+                    .eq('id', wife.existingFamilyMemberId);
+                  console.log('🔥 Updated wife marital status:', wife.maritalStatus);
+                }
 
-               let marriageError;
-               if (existingMarriage) {
-                 // Update existing marriage to ensure it's active
-                 const { error } = await supabase
-                   .from('marriages')
-                   .update({
-                     is_active: true,
-                     marital_status: 'married'
-                   })
-                   .eq('id', existingMarriage.id);
-                 marriageError = error;
+                // Check if marriage already exists and update it, otherwise create new one
+                const { data: existingMarriage } = await supabase
+                  .from('marriages')
+                  .select('id')
+                  .eq('husband_id', memberData.id)
+                  .eq('wife_id', wifeId)
+                  .maybeSingle();
+
+                let marriageError;
+                if (existingMarriage) {
+                  // Update existing marriage to ensure it's active
+                  const { error } = await supabase
+                    .from('marriages')
+                    .update({
+                      is_active: true
+                    })
+                    .eq('id', existingMarriage.id);
+                  marriageError = error;
                  activeMarriageIds.push(existingMarriage.id);
                  console.log('🔥 Updated existing marriage:', existingMarriage.id);
-               } else {
-                 // Create new marriage record
-                 const { data: newMarriage, error } = await supabase
-                   .from('marriages')
-                   .insert({
-                     family_id: familyId,
-                     husband_id: memberData.id,
-                     wife_id: wifeId,
-                     is_active: true,
-                     marital_status: 'married'
-                   })
-                   .select('id')
-                   .single();
+                } else {
+                  // Create new marriage record
+                  const { data: newMarriage, error } = await supabase
+                    .from('marriages')
+                    .insert({
+                      family_id: familyId,
+                      husband_id: memberData.id,
+                      wife_id: wifeId,
+                      is_active: true
+                    })
+                    .select('id')
+                    .single();
                  marriageError = error;
                  if (newMarriage) {
                    activeMarriageIds.push(newMarriage.id);
@@ -2071,6 +2078,15 @@ const FamilyBuilderNew = () => {
 
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
+              // If husband is an existing family member, update their marital status
+              if (husband.isFamilyMember && husband.existingFamilyMemberId && husband.maritalStatus) {
+                await supabase
+                  .from('family_tree_members')
+                  .update({ marital_status: husband.maritalStatus })
+                  .eq('id', husband.existingFamilyMemberId);
+                console.log('🔥 Updated husband marital status:', husband.maritalStatus);
+              }
+
               // Check if marriage already exists and update it, otherwise create new one
               const { data: existingMarriage } = await supabase
                 .from('marriages')
@@ -2085,8 +2101,7 @@ const FamilyBuilderNew = () => {
                 const { error } = await supabase
                   .from('marriages')
                   .update({
-                    is_active: true,
-                    marital_status: 'married'
+                    is_active: true
                   })
                   .eq('id', existingMarriage.id);
                 marriageError = error;
@@ -2098,8 +2113,7 @@ const FamilyBuilderNew = () => {
                     family_id: familyId,
                     husband_id: husbandId,
                     wife_id: memberData.id,
-                    is_active: true,
-                    marital_status: 'married'
+                    is_active: true
                   });
                 marriageError = error;
               }
