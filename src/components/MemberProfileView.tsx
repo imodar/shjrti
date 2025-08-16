@@ -1,34 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Trash2, Heart, Users, Calendar, User, MapPin, ArrowRight } from 'lucide-react';
+import { 
+  Edit, 
+  Trash2, 
+  Heart, 
+  Users, 
+  Calendar, 
+  User, 
+  MapPin, 
+  ArrowRight,
+  Star,
+  Crown,
+  Gift,
+  Phone,
+  Mail,
+  Home,
+  Briefcase,
+  GraduationCap,
+  Camera,
+  MessageCircle,
+  Share2,
+  Bookmark,
+  MoreHorizontal,
+  ChevronDown,
+  Award,
+  Clock,
+  Eye,
+  Sparkles
+} from 'lucide-react';
+
 interface MemberProfileViewProps {
   member: any;
   onEdit: () => void;
   onDelete: () => void;
   onBack: () => void;
   familyMembers: any[];
-  marriages?: any[]; // Add marriages prop
+  marriages?: any[];
 }
+
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   member,
   onEdit,
   onDelete,
   onBack,
   familyMembers,
-  marriages = [] // Default to empty array
+  marriages = []
 }) => {
-  console.log('MemberProfileView - member data:', member);
-  console.log('MemberProfileView - familyMembers data:', familyMembers);
-  console.log('MemberProfileView - marriages data:', marriages);
+  const [isVisible, setIsVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showAllInfo, setShowAllInfo] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   if (!member) return null;
+
   const getGenderColor = (gender: string) => {
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
+
   const getMaritalStatus = (spouse?: any) => {
     if (spouse && spouse.marital_status === 'divorced') {
       return 'مطلق';
@@ -36,12 +72,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     const spouses = getSpouses();
     const children = getChildren();
     
-    // If has children, must have been married
     if (children.length > 0) {
       return 'متزوج';
     }
     
-    // Check if has relatedPersonId (indicates marriage relationship)
     if (member.relatedPersonId && spouses.length === 0) {
       const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
       if (relatedPerson) {
@@ -51,8 +85,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     
     return spouses.length > 0 ? 'متزوج' : 'أعزب';
   };
+
   const getSpouses = () => {
-    // First check marriages table for proper relationships
     const memberMarriages = marriages.filter(m => 
       (member.gender === 'male' && m.husband_id === member.id) || 
       (member.gender === 'female' && m.wife_id === member.id)
@@ -70,7 +104,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }).filter(Boolean);
     }
 
-    // Check if member has relatedPersonId (which might indicate marriage)
     if (member.relatedPersonId) {
       const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
       if (relatedPerson) {
@@ -78,9 +111,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }
     }
 
-    // Fallback to direct spouseId relationship
     return familyMembers.filter(m => member.spouseId === m.id || m.spouseId === member.id);
   };
+
   const getChildren = () => {
     return familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
   };
@@ -103,63 +136,108 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const getMother = () => {
     return familyMembers.find(m => m.id === member.motherId);
   };
+
   const father = getFather();
   const mother = getMother();
   const spouses = getSpouses();
   const children = getChildren();
-  
-  console.log('Profile data debug:', {
-    member: member.name,
-    birth_date: member.birth_date,
-    father: father?.name,
-    mother: mother?.name,
-    spouses: spouses.map(s => s.name),
-    children: children.map(c => c.name)
-  });
-  return <div className="h-full overflow-y-auto bg-gradient-to-br from-violet-50/30 via-blue-50/20 to-emerald-50/30 relative">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-10 w-24 h-24 bg-gradient-to-tr from-accent/15 to-primary/15 rounded-full blur-2xl animate-pulse" style={{
-        animationDelay: '1s'
-      }}></div>
-        <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-full blur-xl animate-pulse" style={{
-        animationDelay: '2s'
-      }}></div>
-      </div>
 
-      {/* Glassmorphism Header */}
-      <div className="sticky top-0 z-20 backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-lg">
-        
-      </div>
+  const tabItems = [
+    { id: 'overview', label: 'نظرة عامة', icon: User },
+    { id: 'family', label: 'العائلة', icon: Users },
+    { id: 'timeline', label: 'الأحداث', icon: Clock },
+    { id: 'media', label: 'الصور', icon: Camera }
+  ];
 
-      <div className="relative z-10 p-6 space-y-8 fade-in">
-        {/* Homepage-Style Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 right-10 text-primary/10 text-8xl animate-pulse">
-            <Heart />
-          </div>
-          <div className="absolute bottom-20 left-10 text-secondary/20 text-6xl animate-bounce" style={{ animationDelay: '1s' }}>
-            <Users />
-          </div>
-          <div className="absolute top-1/2 left-1/4 text-accent/15 text-5xl rotate-12 animate-pulse" style={{ animationDelay: '2s' }}>
-            <User />
+  const getAge = () => {
+    if (!member.birthDate) return null;
+    const birth = new Date(member.birthDate);
+    const death = member.deathDate ? new Date(member.deathDate) : new Date();
+    const age = death.getFullYear() - birth.getFullYear();
+    return age;
+  };
+
+  return (
+    <div className={`h-full overflow-hidden facebook-layout transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      {/* Facebook-Style Header */}
+      <div className="facebook-header-layout sticky top-0 z-50">
+        <div className="facebook-flex-start gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onBack}
+            className="facebook-button-secondary"
+          >
+            <ArrowRight className="h-4 w-4 ml-2" />
+            العودة
+          </Button>
+          <div className="facebook-flex-start gap-3">
+            <Avatar className="h-10 w-10 facebook-avatar-md border-2 border-primary">
+              {member.image_url ? (
+                <AvatarImage src={member.image_url} alt={member.name} />
+              ) : (
+                <AvatarFallback className={`${getGenderColor(member.gender)} text-white font-bold`}>
+                  {member.name.charAt(0)}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div>
+              <h2 className="facebook-text-heading text-lg">{member.name}</h2>
+              <p className="facebook-text-caption">{getMaritalStatus()}</p>
+            </div>
           </div>
         </div>
+        
+        <div className="facebook-flex-end gap-2">
+          <Button size="sm" variant="outline" className="facebook-button-secondary">
+            <MessageCircle className="h-4 w-4" />
+          </Button>
+          <Button size="sm" variant="outline" className="facebook-button-secondary">
+            <Share2 className="h-4 w-4" />
+          </Button>
+          <Button size="sm" variant="outline" className="facebook-button-secondary">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
-        {/* Hero Section - Homepage Style */}
-        <div className="relative">
-          {/* Main Hero Card */}
-          <div className="relative overflow-hidden rounded-3xl hero-gradient p-1">
-            <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl p-8">
-              <div className="grid lg:grid-cols-2 gap-8 items-center">
-                {/* Avatar & Info */}
-                <div className="text-center lg:text-right space-y-6">
-                  {/* Large Avatar with Homepage Style */}
-                  <div className="relative inline-block">
-                    <div className="absolute inset-0 hero-gradient rounded-full blur-lg opacity-30 scale-110"></div>
-                    <div className="relative p-2 hero-gradient rounded-full">
-                      <Avatar className="w-32 h-32 ring-4 ring-white/50">
+      {/* Main Content */}
+      <div className="facebook-main-content">
+        <div className="facebook-container-fluid max-w-6xl mx-auto">
+          {/* Hero Section */}
+          <div className="relative mb-8">
+            {/* Cover Photo */}
+            <div className="relative h-80 bg-gradient-to-r from-primary via-secondary to-accent rounded-t-3xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-pattern opacity-20"></div>
+              
+              {/* Floating Elements */}
+              <div className="absolute top-8 right-8 animate-float">
+                <div className="facebook-card p-3 bg-white/10 backdrop-blur-md border border-white/20">
+                  <Crown className="h-6 w-6 text-yellow-300" />
+                </div>
+              </div>
+              <div className="absolute top-16 left-12 animate-float-delayed">
+                <div className="facebook-card p-2 bg-white/10 backdrop-blur-md border border-white/20">
+                  <Star className="h-5 w-5 text-yellow-300" />
+                </div>
+              </div>
+              <div className="absolute bottom-16 right-16 animate-float-slow">
+                <div className="facebook-card p-2 bg-white/10 backdrop-blur-md border border-white/20">
+                  <Sparkles className="h-5 w-5 text-blue-300" />
+                </div>
+              </div>
+            </div>
+
+            {/* Profile Info Card */}
+            <div className="relative -mt-20 mx-8">
+              <div className="facebook-card p-8 backdrop-blur-xl bg-white/95">
+                <div className="facebook-flex-between items-end">
+                  <div className="facebook-flex-start gap-6">
+                    {/* Profile Avatar */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
+                      <Avatar className="relative h-32 w-32 border-4 border-white shadow-2xl">
                         {member.image_url ? (
                           <AvatarImage src={member.image_url} alt={member.name} className="object-cover" />
                         ) : (
@@ -168,275 +246,555 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           </AvatarFallback>
                         )}
                       </Avatar>
+                      {/* Status Indicator */}
+                      <div className="absolute -bottom-1 -right-1 facebook-card p-2 bg-success border-4 border-white rounded-full">
+                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                      </div>
                     </div>
-                    {/* Floating Badge */}
-                    <div className="absolute -top-2 -right-2 bg-accent p-2 rounded-xl tree-shadow">
-                      <User className="h-4 w-4 text-accent-foreground" />
+
+                    {/* Basic Info */}
+                    <div className="space-y-3">
+                      <div>
+                        <h1 className="facebook-text-heading text-4xl mb-2">
+                          {member.name}
+                        </h1>
+                        {member.bio && (
+                          <p className="facebook-text-body text-lg italic text-muted-foreground max-w-md">
+                            "{member.bio}"
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Quick Stats */}
+                      <div className="facebook-flex-start gap-6 pt-2">
+                        <div className="text-center">
+                          <div className="facebook-text-heading text-2xl text-primary">{children.length}</div>
+                          <div className="facebook-text-caption">الأطفال</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="facebook-text-heading text-2xl text-secondary">{spouses.length}</div>
+                          <div className="facebook-text-caption">الأزواج</div>
+                        </div>
+                        {getAge() && (
+                          <div className="text-center">
+                            <div className="facebook-text-heading text-2xl text-accent">{getAge()}</div>
+                            <div className="facebook-text-caption">سنة</div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Name & Title */}
-                  <div className="space-y-3">
-                    <h1 className="text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                      {member.name}
-                    </h1>
-                    {member.bio && (
-                      <p className="text-lg text-muted-foreground italic max-w-sm mx-auto lg:mx-0">
-                        "{member.bio}"
-                      </p>
-                    )}
+                  {/* Action Buttons */}
+                  <div className="facebook-flex-end gap-3">
+                    <Button 
+                      onClick={onEdit} 
+                      className="facebook-button-primary px-6 py-3"
+                    >
+                      <Edit className="h-4 w-4 ml-2" />
+                      تعديل الملف الشخصي
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="facebook-button-secondary px-4 py-3"
+                    >
+                      <Camera className="h-4 w-4" />
+                    </Button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                  {/* Stats Cards - Homepage Style */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border border-primary/20">
-                      <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
-                      <div className="text-xs text-muted-foreground">تاريخ الميلاد</div>
-                       <div className="font-bold text-foreground">
-                         {member.birthDate ? <DateDisplay date={member.birthDate} className="inline" /> : 'غير محدد'}
-                       </div>
+          {/* Navigation Tabs */}
+          <div className="facebook-card mb-6">
+            <div className="facebook-flex-start">
+              {tabItems.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`facebook-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                >
+                  <tab.icon className="h-5 w-5 ml-2" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div className="facebook-feed-layout">
+            <div className="facebook-feed-main space-y-6">
+              {/* Overview Tab */}
+              {activeTab === 'overview' && (
+                <div className="space-y-6">
+                  {/* Personal Information */}
+                  <div className="facebook-post">
+                    <div className="facebook-post-header">
+                      <div className="facebook-flex-start gap-3">
+                        <div className="facebook-card p-3 bg-primary/10">
+                          <User className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="facebook-post-author">المعلومات الشخصية</h3>
+                          <p className="facebook-post-time">البيانات الأساسية</p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setShowAllInfo(!showAllInfo)}
+                        className="facebook-button-secondary"
+                      >
+                        <ChevronDown className={`h-4 w-4 transition-transform ${showAllInfo ? 'rotate-180' : ''}`} />
+                      </Button>
                     </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl border border-secondary/20">
-                      <Heart className="h-6 w-6 text-secondary mx-auto mb-2" />
-                      <div className="text-xs text-muted-foreground">الحالة الاجتماعية</div>
-                      <div className="font-bold text-foreground">{getMaritalStatus()}</div>
+                    
+                    <div className="space-y-4">
+                      {/* Essential Info Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="facebook-flex-start gap-3 p-4 bg-blue-50 rounded-xl">
+                          <Calendar className="h-5 w-5 text-blue-600" />
+                          <div>
+                            <div className="facebook-text-caption text-blue-700">تاريخ الميلاد</div>
+                            <div className="facebook-text-body font-semibold">
+                              {member.birthDate ? <DateDisplay date={member.birthDate} className="inline" /> : 'غير محدد'}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="facebook-flex-start gap-3 p-4 bg-green-50 rounded-xl">
+                          <MapPin className="h-5 w-5 text-green-600" />
+                          <div>
+                            <div className="facebook-text-caption text-green-700">مكان الميلاد</div>
+                            <div className="facebook-text-body font-semibold">{member.birthPlace || 'غير محدد'}</div>
+                          </div>
+                        </div>
+
+                        <div className="facebook-flex-start gap-3 p-4 bg-purple-50 rounded-xl">
+                          <Heart className="h-5 w-5 text-purple-600" />
+                          <div>
+                            <div className="facebook-text-caption text-purple-700">الحالة الاجتماعية</div>
+                            <div className="facebook-text-body font-semibold">{getMaritalStatus()}</div>
+                          </div>
+                        </div>
+
+                        <div className="facebook-flex-start gap-3 p-4 bg-orange-50 rounded-xl">
+                          <Award className="h-5 w-5 text-orange-600" />
+                          <div>
+                            <div className="facebook-text-caption text-orange-700">النوع</div>
+                            <div className="facebook-text-body font-semibold">{member.gender === 'male' ? 'ذكر' : 'أنثى'}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Death Date - if applicable */}
+                      {member.deathDate && (
+                        <div className="facebook-flex-start gap-3 p-4 bg-red-50 rounded-xl border border-red-200">
+                          <Calendar className="h-5 w-5 text-red-600" />
+                          <div>
+                            <div className="facebook-text-caption text-red-700">تاريخ الوفاة</div>
+                            <div className="facebook-text-body font-semibold">
+                              <DateDisplay date={member.deathDate} className="inline" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Additional Info - Expandable */}
+                      {showAllInfo && (
+                        <div className="space-y-4 border-t pt-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="facebook-flex-start gap-3 p-4 bg-gray-50 rounded-xl">
+                              <Phone className="h-5 w-5 text-gray-600" />
+                              <div>
+                                <div className="facebook-text-caption text-gray-700">رقم الهاتف</div>
+                                <div className="facebook-text-body font-semibold">{member.phone || 'غير محدد'}</div>
+                              </div>
+                            </div>
+
+                            <div className="facebook-flex-start gap-3 p-4 bg-gray-50 rounded-xl">
+                              <Mail className="h-5 w-5 text-gray-600" />
+                              <div>
+                                <div className="facebook-text-caption text-gray-700">البريد الإلكتروني</div>
+                                <div className="facebook-text-body font-semibold">{member.email || 'غير محدد'}</div>
+                              </div>
+                            </div>
+
+                            <div className="facebook-flex-start gap-3 p-4 bg-gray-50 rounded-xl">
+                              <Briefcase className="h-5 w-5 text-gray-600" />
+                              <div>
+                                <div className="facebook-text-caption text-gray-700">المهنة</div>
+                                <div className="facebook-text-body font-semibold">{member.occupation || 'غير محدد'}</div>
+                              </div>
+                            </div>
+
+                            <div className="facebook-flex-start gap-3 p-4 bg-gray-50 rounded-xl">
+                              <GraduationCap className="h-5 w-5 text-gray-600" />
+                              <div>
+                                <div className="facebook-text-caption text-gray-700">التعليم</div>
+                                <div className="facebook-text-body font-semibold">{member.education || 'غير محدد'}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
+              )}
 
-                {/* Feature Cards Grid */}
-                <div className="space-y-4">
-                  {/* Gender Card */}
-                  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-2xl border border-accent/20 hover:scale-105 transition-transform">
-                    <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
-                      <Badge className={`h-6 w-6 rounded-full ${member.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'}`} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm text-muted-foreground">النوع</div>
-                      <div className="font-bold">{member.gender === 'male' ? 'ذكر' : 'أنثى'}</div>
-                    </div>
-                  </div>
-
-                  {/* Birth Place Card */}
-                  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 hover:scale-105 transition-transform">
-                    <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <MapPin className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm text-muted-foreground">مكان الميلاد</div>
-                      <div className="font-bold">{member.birthPlace || 'غير محدد'}</div>
-                    </div>
-                  </div>
-
-                  {/* Death Date Card - if applicable */}
-                  {member.deathDate && (
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-destructive/10 to-destructive/5 rounded-2xl border border-destructive/20 hover:scale-105 transition-transform">
-                      <div className="h-12 w-12 rounded-full bg-destructive/20 flex items-center justify-center">
-                        <Calendar className="h-6 w-6 text-destructive" />
+              {/* Family Tab */}
+              {activeTab === 'family' && (
+                <div className="space-y-6">
+                  {/* Parents */}
+                  {(father || mother) && (
+                    <div className="facebook-post">
+                      <div className="facebook-post-header">
+                        <div className="facebook-flex-start gap-3">
+                          <div className="facebook-card p-3 bg-blue-500/10">
+                            <Users className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="facebook-post-author">الوالدين</h3>
+                            <p className="facebook-post-time">الأسرة المباشرة</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <div className="text-sm text-muted-foreground">تاريخ الوفاة</div>
-                        <div className="font-bold"><DateDisplay date={member.deathDate} className="inline" /></div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {father && (
+                          <div className="facebook-flex-start gap-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                            <Avatar className="h-16 w-16 facebook-avatar-lg border-2 border-blue-200">
+                              <AvatarImage src={father.image_url} />
+                              <AvatarFallback className="bg-blue-500 text-white font-bold text-lg">
+                                {father.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="facebook-text-caption text-blue-700 mb-1">الوالد</div>
+                              <div className="facebook-text-body font-bold text-lg">{father.name}</div>
+                              {father.birthDate && (
+                                <div className="facebook-text-caption mt-1">
+                                  <DateDisplay date={father.birthDate} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {mother && (
+                          <div className="facebook-flex-start gap-4 p-4 bg-pink-50/50 rounded-xl border border-pink-100">
+                            <Avatar className="h-16 w-16 facebook-avatar-lg border-2 border-pink-200">
+                              <AvatarImage src={mother.image_url} />
+                              <AvatarFallback className="bg-pink-500 text-white font-bold text-lg">
+                                {mother.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="facebook-text-caption text-pink-700 mb-1">الوالدة</div>
+                              <div className="facebook-text-body font-bold text-lg">{mother.name}</div>
+                              {mother.birthDate && (
+                                <div className="facebook-text-caption mt-1">
+                                  <DateDisplay date={mother.birthDate} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Spouses */}
+                  {spouses.length > 0 && (
+                    <div className="facebook-post">
+                      <div className="facebook-post-header">
+                        <div className="facebook-flex-start gap-3">
+                          <div className="facebook-card p-3 bg-rose-500/10">
+                            <Heart className="h-6 w-6 text-rose-600" />
+                          </div>
+                          <div>
+                            <h3 className="facebook-post-author">الأزواج ({spouses.length})</h3>
+                            <p className="facebook-post-time">شركاء الحياة</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {spouses.map((spouse, index) => (
+                          <div key={spouse.id} className="facebook-flex-start gap-4 p-6 bg-gradient-to-r from-rose-50/50 to-pink-50/50 rounded-xl border border-rose-100 hover:shadow-md transition-all">
+                            <Avatar className="h-20 w-20 facebook-avatar-lg border-3 border-rose-200">
+                              <AvatarImage src={spouse.image_url} />
+                              <AvatarFallback className={`${getGenderColor(spouse.gender)} text-white font-bold text-xl`}>
+                                {spouse.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="facebook-flex-between items-start mb-2">
+                                <div>
+                                  <div className="facebook-text-body font-bold text-xl">{spouse.name}</div>
+                                  <div className="facebook-text-caption text-rose-700">
+                                    {spouse.marital_status === 'divorced' ? 'مطلق' : 'الزوج/الزوجة'}
+                                  </div>
+                                </div>
+                                {spouse.marital_status === 'divorced' && (
+                                  <Badge variant="destructive" className="text-xs">مطلق</Badge>
+                                )}
+                              </div>
+                              
+                              {spouse.marriage_date && (
+                                <div className="facebook-flex-start gap-2 mb-3 text-sm text-rose-600">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>تاريخ الزواج: <DateDisplay date={spouse.marriage_date} className="inline" /></span>
+                                </div>
+                              )}
+                              
+                              {/* Children for this spouse */}
+                              {(() => {
+                                const spouseChildren = getChildrenBySpouse(spouse.id);
+                                if (spouseChildren.length > 0) {
+                                  return (
+                                    <div className="pt-3 border-t border-rose-200/50">
+                                      <div className="facebook-text-caption text-rose-700 mb-3">الأطفال ({spouseChildren.length})</div>
+                                      <div className="flex flex-wrap gap-2">
+                                        {spouseChildren.map(child => (
+                                          <div key={child.id} className="facebook-flex-start gap-2 bg-white/80 rounded-lg px-3 py-2 border border-rose-100">
+                                            <Avatar className="h-8 w-8 facebook-avatar-sm">
+                                              <AvatarImage src={child.image_url} />
+                                              <AvatarFallback className={`${getGenderColor(child.gender)} text-white text-sm font-semibold`}>
+                                                {child.name.charAt(0)}
+                                              </AvatarFallback>
+                                            </Avatar>
+                                            <span className="facebook-text-body font-medium">{child.name}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Children */}
+                  {children.length > 0 && (
+                    <div className="facebook-post">
+                      <div className="facebook-post-header">
+                        <div className="facebook-flex-start gap-3">
+                          <div className="facebook-card p-3 bg-green-500/10">
+                            <Gift className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <h3 className="facebook-post-author">الأطفال ({children.length})</h3>
+                            <p className="facebook-post-time">الجيل التالي</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="facebook-card-grid">
+                        {children.map(child => (
+                          <div key={child.id} className="facebook-card p-4 hover:shadow-lg transition-all cursor-pointer">
+                            <div className="text-center space-y-3">
+                              <Avatar className="h-16 w-16 facebook-avatar-lg mx-auto border-2 border-green-200">
+                                <AvatarImage src={child.image_url} />
+                                <AvatarFallback className={`${getGenderColor(child.gender)} text-white font-bold`}>
+                                  {child.name.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="facebook-text-body font-bold">{child.name}</div>
+                                <div className="facebook-text-caption text-green-700">
+                                  {child.gender === 'male' ? 'ابن' : 'ابنة'}
+                                </div>
+                                {child.birthDate && (
+                                  <div className="facebook-text-caption mt-1">
+                                    <DateDisplay date={child.birthDate} />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              )}
 
-        {/* Family Information Cards - Masonry Layout */}
-        <div className="grid grid-cols-1 gap-6">
-          {/* Parents Section - Only show if member has actual parent IDs */}
-          {(member.fatherId || member.motherId) && (
-            <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-blue-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative p-6">
-                {/* Section Header */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-sm opacity-30"></div>
-                    <div className="relative p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-sm">
-                      <Users className="h-6 w-6 text-blue-600" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    الوالدين
-                  </h3>
-                </div>
-                
-                {/* Parents Grid */}
-                <div className="space-y-4">
-                  <div className="group/item relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-200/40 p-4 hover:border-blue-300/60 transition-all duration-300 hover:scale-[1.01]">
-                    <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
-                          <User className="h-5 w-5" />
-                        </div>
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full"></div>
+              {/* Timeline Tab */}
+              {activeTab === 'timeline' && (
+                <div className="facebook-post">
+                  <div className="facebook-post-header">
+                    <div className="facebook-flex-start gap-3">
+                      <div className="facebook-card p-3 bg-purple-500/10">
+                        <Clock className="h-6 w-6 text-purple-600" />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-blue-700 mb-1">الوالد</p>
-                        <p className="text-base font-bold text-gray-800">{father?.name || 'غير محدد'}</p>
+                      <div>
+                        <h3 className="facebook-post-author">الأحداث المهمة</h3>
+                        <p className="facebook-post-time">مراحل الحياة</p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="group/item relative overflow-hidden rounded-xl bg-gradient-to-r from-pink-50/80 to-rose-50/80 border border-pink-200/40 p-4 hover:border-pink-300/60 transition-all duration-300 hover:scale-[1.01]">
-                    <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white font-bold shadow-lg">
-                          <User className="h-5 w-5" />
+                  <div className="space-y-6">
+                    {/* Birth Event */}
+                    {member.birthDate && (
+                      <div className="facebook-flex-start gap-4 p-4 bg-blue-50 rounded-xl">
+                        <div className="facebook-card p-3 bg-blue-500">
+                          <Gift className="h-6 w-6 text-white" />
                         </div>
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-pink-500 rounded-full"></div>
+                        <div>
+                          <div className="facebook-text-body font-bold">الميلاد</div>
+                          <div className="facebook-text-caption">
+                            <DateDisplay date={member.birthDate} />
+                            {member.birthPlace && ` في ${member.birthPlace}`}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-pink-700 mb-1">الوالدة</p>
-                        <p className="text-base font-bold text-gray-800">{mother?.name || 'غير محدد'}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+                    )}
 
-          {/* Additional Info Section */}
-          <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-emerald-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="relative p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl blur-sm opacity-30"></div>
-                  <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-2xl backdrop-blur-sm">
-                    <MapPin className="h-6 w-6 text-emerald-600" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">
-                  معلومات إضافية
-                </h3>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-50/80 to-teal-50/80 border border-emerald-200/40 p-4 hover:border-emerald-300/60 transition-all duration-300 hover:scale-[1.01]">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg">
-                      <MapPin className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-emerald-700 mb-1">مكان الميلاد</p>
-                      <p className="text-base font-bold text-gray-800">{member.birthPlace || 'غير محدد'}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                 {member.deathDate && <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-red-50/80 to-orange-50/80 border border-red-200/40 p-4 hover:border-red-300/60 transition-all duration-300 hover:scale-[1.01]">
-                     <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
-                         <Calendar className="h-5 w-5" />
-                       </div>
-                       <div className="flex-1">
-                         <p className="text-sm font-semibold text-red-700 mb-1">تاريخ الوفاة</p>
-                         <p className="text-base font-bold text-gray-800"><DateDisplay date={member.deathDate} className="inline" /></p>
-                       </div>
-                     </div>
-                   </div>}
-              </div>
-            </div>
-          </div>
-
-          {/* Spouses Section */}
-          {spouses.length > 0 && <div className="group relative overflow-hidden rounded-2xl backdrop-blur-xl border border-rose-300/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-red-500 rounded-2xl blur-sm opacity-30"></div>
-                    <div className="relative p-3 bg-gradient-to-br from-rose-500/20 to-red-500/20 rounded-2xl backdrop-blur-sm">
-                      <Heart className="h-6 w-6 text-rose-600" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-rose-600 to-red-600 bg-clip-text text-transparent">
-                    الأزواج ({spouses.length})
-                  </h3>
-                </div>
-                
-                <div className="space-y-4">
-                  {spouses.map((spouse, index) => <div key={spouse.id} className="group/spouse relative overflow-hidden rounded-xl bg-gradient-to-r from-white/90 to-rose-50/90 border border-rose-200/50 p-5 hover:border-rose-300/70 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full p-0.5">
-                            <div className="rounded-full bg-white p-0.5">
-                  <Avatar className="h-14 w-14 ring-2 ring-rose-200/50 group-hover/spouse:ring-rose-300/70 transition-all">
-                                  <AvatarImage src={spouse.image} className="object-cover" />
-                                  <AvatarFallback className={`${getGenderColor(spouse.gender)} text-white font-bold`}>
-                                   {spouse.name.charAt(0)}
-                                 </AvatarFallback>
-                               </Avatar>
+                    {/* Marriage Events */}
+                    {spouses.map((spouse, index) => (
+                      spouse.marriage_date && (
+                        <div key={spouse.id} className="facebook-flex-start gap-4 p-4 bg-rose-50 rounded-xl">
+                          <div className="facebook-card p-3 bg-rose-500">
+                            <Heart className="h-6 w-6 text-white" />
+                          </div>
+                          <div>
+                            <div className="facebook-text-body font-bold">الزواج من {spouse.name}</div>
+                            <div className="facebook-text-caption">
+                              <DateDisplay date={spouse.marriage_date} />
                             </div>
                           </div>
                         </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-lg font-bold text-gray-800">{spouse.name}</p>
-                            {spouse.marital_status === 'divorced' && <Badge variant="destructive" className="text-xs">مطلق</Badge>}
+                      )
+                    ))}
+
+                    {/* Death Event */}
+                    {member.deathDate && (
+                      <div className="facebook-flex-start gap-4 p-4 bg-gray-50 rounded-xl">
+                        <div className="facebook-card p-3 bg-gray-500">
+                          <Calendar className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="facebook-text-body font-bold">الوفاة</div>
+                          <div className="facebook-text-caption">
+                            <DateDisplay date={member.deathDate} />
                           </div>
-                          {spouse.marriage_date && <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Calendar className="h-4 w-4 text-rose-500" />
-                              <span>تاريخ الزواج: <DateDisplay date={spouse.marriage_date} className="inline" /></span>
-                            </div>}
-                          
-                          {/* Show children for this spouse */}
-                          {(() => {
-                      const spouseChildren = getChildrenBySpouse(spouse.id);
-                      if (spouseChildren.length > 0) {
-                        return <div className="mt-3 pt-3 border-t border-rose-200/50">
-                                  <p className="text-sm font-semibold text-rose-700 mb-2">الأطفال ({spouseChildren.length})</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {spouseChildren.map(child => <div key={child.id} className="flex items-center gap-2 bg-rose-50/80 rounded-lg px-3 py-1">
-                                        <Avatar className="h-6 w-6">
-                                          <AvatarImage src={child.image_url} className="object-cover" />
-                                          <AvatarFallback className={`${getGenderColor(child.gender)} text-white text-xs`}>
-                                            {child.name.charAt(0)}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                        <span className="text-sm font-medium text-gray-700">{child.name}</span>
-                                      </div>)}
-                                  </div>
-                                </div>;
-                      }
-                      return null;
-                    })()}
                         </div>
                       </div>
-                    </div>)}
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Media Tab */}
+              {activeTab === 'media' && (
+                <div className="facebook-post">
+                  <div className="facebook-post-header">
+                    <div className="facebook-flex-start gap-3">
+                      <div className="facebook-card p-3 bg-indigo-500/10">
+                        <Camera className="h-6 w-6 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="facebook-post-author">الصور والذكريات</h3>
+                        <p className="facebook-post-time">الوسائط المرفقة</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center py-12">
+                    <Camera className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                    <p className="facebook-text-body text-gray-500">لا توجد صور مرفقة حالياً</p>
+                    <Button className="facebook-button-primary mt-4">
+                      <Camera className="h-4 w-4 ml-2" />
+                      إضافة صور
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Sidebar */}
+            <div className="facebook-feed-sidebar-right space-y-6">
+              {/* Quick Actions */}
+              <div className="facebook-card p-4">
+                <h4 className="facebook-text-heading text-sm mb-4">إجراءات سريعة</h4>
+                <div className="space-y-3">
+                  <Button 
+                    onClick={onEdit} 
+                    className="facebook-button-primary w-full"
+                    size="sm"
+                  >
+                    <Edit className="h-4 w-4 ml-2" />
+                    تعديل المعلومات
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="facebook-button-secondary w-full"
+                    size="sm"
+                  >
+                    <MessageCircle className="h-4 w-4 ml-2" />
+                    إضافة ملاحظة
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="facebook-button-secondary w-full"
+                    size="sm"
+                  >
+                    <Share2 className="h-4 w-4 ml-2" />
+                    مشاركة الملف
+                  </Button>
                 </div>
               </div>
-            </div>}
 
-        </div>
+              {/* Family Stats */}
+              <div className="facebook-card p-4">
+                <h4 className="facebook-text-heading text-sm mb-4">إحصائيات العائلة</h4>
+                <div className="space-y-3">
+                  <div className="facebook-flex-between">
+                    <span className="facebook-text-caption">الأطفال</span>
+                    <span className="facebook-text-body font-semibold">{children.length}</span>
+                  </div>
+                  <div className="facebook-flex-between">
+                    <span className="facebook-text-caption">الأزواج</span>
+                    <span className="facebook-text-body font-semibold">{spouses.length}</span>
+                  </div>
+                  <div className="facebook-flex-between">
+                    <span className="facebook-text-caption">الجيل</span>
+                    <span className="facebook-text-body font-semibold">
+                      {(father || mother) ? 'الثاني' : 'الأول'}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-        {/* Action Buttons at Bottom */}
-        <div className="sticky bottom-0 backdrop-blur-xl bg-white/10 border-t border-white/20 p-6 mt-8">
-          <div className="flex gap-4">
-            <Button onClick={onEdit} className="flex-1 relative overflow-hidden bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group" size="lg">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <Edit className="h-5 w-5 ml-2 relative z-10" />
-              <span className="relative z-10">تعديل المعلومات</span>
-            </Button>
-            
-            <Button onClick={onDelete} className="flex-1 relative overflow-hidden bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group" size="lg">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <Trash2 className="h-5 w-5 ml-2 relative z-10" />
-              <span className="relative z-10">حذف العضو</span>
-            </Button>
+              {/* Delete Action */}
+              <div className="facebook-card p-4 border-destructive/20">
+                <h4 className="facebook-text-heading text-sm mb-4 text-destructive">منطقة الخطر</h4>
+                <Button 
+                  onClick={onDelete}
+                  variant="destructive" 
+                  className="w-full"
+                  size="sm"
+                >
+                  <Trash2 className="h-4 w-4 ml-2" />
+                  حذف العضو
+                </Button>
+                <p className="facebook-text-caption text-destructive/70 mt-2 text-center">
+                  هذا الإجراء لا يمكن التراجع عنه
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
