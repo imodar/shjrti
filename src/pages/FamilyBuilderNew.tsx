@@ -2629,34 +2629,43 @@ const FamilyBuilderNew = () => {
                                    </div>
                                  </div>
 
-                                 {/* Unified Wife Form */}
-                                 <SpouseForm
-                                   spouseType="wife"
-                                   spouse={currentWife || {
-                                     id: '',
-                                     firstName: '',
-                                     lastName: '',
-                                     name: '',
-                                     isAlive: true,
-                                     birthDate: null,
-                                     deathDate: null,
-                                     maritalStatus: 'married',
-                                     isFamilyMember: false,
-                                     existingFamilyMemberId: '',
-                                     croppedImage: null,
-                                     isSaved: false
-                                   }}
-                                   onSpouseChange={setCurrentWife}
-                                   familyMembers={familyMembers}
-                                   selectedMember={selectedMember}
-                                   commandOpen={wifeCommandOpen}
-                                   onCommandOpenChange={setWifeCommandOpen}
-                                   familyStatus={wifeFamilyStatus}
-                                   onFamilyStatusChange={handleWifeFamilyStatusChange}
-                                   onSave={handleWifeSave}
-                                   onAdd={handleAddWife}
-                                   showForm={showWifeForm}
-                                 />
+                                  {/* Unified Wife Form */}
+                                  <div className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-4 w-full">
+                                      <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                        <Heart className="w-3 h-3 text-white" />
+                                      </div>
+                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
+                                    </div>
+                                    
+                                    <SpouseForm
+                                      spouseType="wife"
+                                      spouse={currentWife || {
+                                        id: '',
+                                        firstName: '',
+                                        lastName: '',
+                                        name: '',
+                                        isAlive: true,
+                                        birthDate: null,
+                                        deathDate: null,
+                                        maritalStatus: 'married',
+                                        isFamilyMember: false,
+                                        existingFamilyMemberId: '',
+                                        croppedImage: null,
+                                        isSaved: false
+                                      }}
+                                      onSpouseChange={setCurrentWife}
+                                      familyMembers={familyMembers}
+                                      selectedMember={selectedMember}
+                                      commandOpen={wifeCommandOpen}
+                                      onCommandOpenChange={setWifeCommandOpen}
+                                      familyStatus={wifeFamilyStatus}
+                                      onFamilyStatusChange={handleWifeFamilyStatusChange}
+                                      onSave={handleWifeSave}
+                                      onAdd={handleAddWife}
+                                      showForm={showWifeForm}
+                                    />
+                                  </div>
                                </div>
                              ) : (
                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
