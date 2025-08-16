@@ -889,107 +889,79 @@ const FamilyBuilderNew = () => {
     setShowHusbandForm(true);
   };
 
-  const handleWifeSave = async () => {
-    if (!currentWife) return;
+  const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
+    const currentSpouse = spouseType === 'wife' ? currentWife : currentHusband;
+    if (!currentSpouse) return;
     
     try {
-      // Check if we're editing an existing wife or adding a new one
-      const existingWifeIndex = wives.findIndex(w => w.id === currentWife.id);
-      
-      if (existingWifeIndex >= 0) {
-        // Update existing wife
-        const updatedWives = [...wives];
-        updatedWives[existingWifeIndex] = { ...currentWife, isSaved: true };
-        setWives(updatedWives);
+      if (spouseType === 'wife') {
+        // Check if we're editing an existing wife or adding a new one
+        const existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
+        
+        if (existingWifeIndex >= 0) {
+          // Update existing wife
+          const updatedWives = [...wives];
+          updatedWives[existingWifeIndex] = { ...currentSpouse, isSaved: true };
+          setWives(updatedWives);
+        } else {
+          // Add new wife
+          const newWife = { ...currentSpouse, isSaved: true };
+          setWives(prev => [...prev, newWife]);
+        }
       } else {
-        // Add new wife
-        const newWife = { ...currentWife, isSaved: true };
-        setWives(prev => [...prev, newWife]);
+        // Update husband
+        setHusband({ ...currentSpouse, isSaved: true });
       }
 
       // If the spouse is from family and has an existing ID, update in database
-      if (currentWife.isFamilyMember && currentWife.existingFamilyMemberId) {
-        const wifeName = currentWife.name || (currentWife.firstName && currentWife.lastName ? `${currentWife.firstName} ${currentWife.lastName}` : currentWife.firstName || currentWife.lastName || '');
+      if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
+        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
         
         await supabase
           .from('family_tree_members')
           .update({
-            name: wifeName,
-            first_name: currentWife.firstName || null,
-            last_name: currentWife.lastName || null,
-            birth_date: currentWife.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: currentWife.isAlive ?? true,
-            death_date: !currentWife.isAlive && currentWife.deathDate ? currentWife.deathDate.toISOString().split('T')[0] : null,
+            name: spouseName,
+            first_name: currentSpouse.firstName || null,
+            last_name: currentSpouse.lastName || null,
+            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: currentSpouse.isAlive ?? true,
+            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
             marital_status: 'married',
-            image_url: currentWife.croppedImage || null,
+            image_url: currentSpouse.croppedImage || null,
             updated_at: new Date().toISOString()
           })
-          .eq('id', currentWife.existingFamilyMemberId);
+          .eq('id', currentSpouse.existingFamilyMemberId);
       }
       
-      setCurrentWife(null);
-      setShowWifeForm(false);
-      setWifeFamilyStatus(null);
+      // Reset form state
+      if (spouseType === 'wife') {
+        setCurrentWife(null);
+        setShowWifeForm(false);
+        setWifeFamilyStatus(null);
+      } else {
+        setCurrentHusband(null);
+        setShowHusbandForm(false);
+        setHusbandFamilyStatus(null);
+      }
       
       toast({
         title: "تم حفظ البيانات",
-        description: "تم حفظ بيانات الزوجة بنجاح",
+        description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
         variant: "default"
       });
     } catch (error) {
-      console.error('Error saving wife data:', error);
+      console.error(`Error saving ${spouseType} data:`, error);
       toast({
         title: "خطأ في الحفظ",
-        description: "حدث خطأ أثناء حفظ بيانات الزوجة",
+        description: `حدث خطأ أثناء حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'}`,
         variant: "destructive"
       });
     }
   };
 
-  const handleHusbandSave = async () => {
-    if (!currentHusband) return;
-    
-    try {
-      setHusband({ ...currentHusband, isSaved: true });
-
-      // If the spouse is from family and has an existing ID, update in database
-      if (currentHusband.isFamilyMember && currentHusband.existingFamilyMemberId) {
-        const husbandName = currentHusband.name || (currentHusband.firstName && currentHusband.lastName ? `${currentHusband.firstName} ${currentHusband.lastName}` : currentHusband.firstName || currentHusband.lastName || '');
-        
-        await supabase
-          .from('family_tree_members')
-          .update({
-            name: husbandName,
-            first_name: currentHusband.firstName || null,
-            last_name: currentHusband.lastName || null,
-            birth_date: currentHusband.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: currentHusband.isAlive ?? true,
-            death_date: !currentHusband.isAlive && currentHusband.deathDate ? currentHusband.deathDate.toISOString().split('T')[0] : null,
-            marital_status: 'married',
-            image_url: currentHusband.croppedImage || null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', currentHusband.existingFamilyMemberId);
-      }
-      
-      setCurrentHusband(null);
-      setShowHusbandForm(false);
-      setHusbandFamilyStatus(null);
-      
-      toast({
-        title: "تم حفظ البيانات",
-        description: "تم حفظ بيانات الزوج بنجاح",
-        variant: "default"
-      });
-    } catch (error) {
-      console.error('Error saving husband data:', error);
-      toast({
-        title: "خطأ في الحفظ",
-        description: "حدث خطأ أثناء حفظ بيانات الزوج",
-        variant: "destructive"
-      });
-    }
-  };
+  // Wrapper functions for backward compatibility
+  const handleWifeSave = () => handleSpouseSave('wife');
+  const handleHusbandSave = () => handleSpouseSave('husband');
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
