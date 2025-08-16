@@ -57,16 +57,16 @@ export const GlobalHeader = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Luxury Background matching Footer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(16,185,129,0.15),transparent_50%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)]"></div>
+      {/* Luxury Background using theme colors */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-primary/20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.15),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.1),transparent_50%)]"></div>
       
       {/* Floating Elements */}
-      <div className="absolute top-2 right-20 w-16 h-16 bg-emerald-500/10 rounded-full animate-pulse blur-xl"></div>
-      <div className="absolute top-3 left-16 w-12 h-12 bg-amber-500/10 rounded-full animate-bounce blur-xl"></div>
+      <div className="absolute top-2 right-20 w-16 h-16 bg-primary/10 rounded-full animate-pulse blur-xl"></div>
+      <div className="absolute top-3 left-16 w-12 h-12 bg-accent/10 rounded-full animate-bounce blur-xl"></div>
       
-      <div className="relative z-10 border-b border-white/10">
+      <div className="relative z-10 border-b border-border/10">
         {/* Main Header Container */}
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between h-16">
@@ -74,11 +74,11 @@ export const GlobalHeader = () => {
             <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               <div className="relative">
                 {/* Multiple animated background layers */}
-                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-700"></div>
-                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 animate-pulse transition-all duration-500" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl blur-xl opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-700"></div>
+                <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-accent to-secondary rounded-2xl blur-lg opacity-20 group-hover:opacity-40 animate-pulse transition-all duration-500" style={{animationDelay: '0.5s'}}></div>
                 
                 {/* Logo container with premium styling */}
-                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-400 via-teal-400 to-amber-400 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 border-2 border-white/30">
+                <div className="relative w-16 h-16 bg-gradient-to-br from-primary via-accent to-primary/80 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 border-2 border-border/30">
                   <img 
                     src={familyTreeLogo} 
                     alt={t('site.name', 'شجرة العائلة')} 
