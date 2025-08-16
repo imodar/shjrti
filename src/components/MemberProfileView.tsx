@@ -250,19 +250,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
         {/* Navigation Tabs */}
         <div className="bg-card rounded-lg border border-border mb-6">
-          <div className="flex">
+          <div className="flex overflow-x-auto scrollbar-hidden">
             {tabItems.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-all relative ${
+                className={`flex items-center gap-2 px-3 sm:px-6 py-3 sm:py-4 font-semibold transition-all relative whitespace-nowrap min-w-0 ${
                   activeTab === tab.id 
                     ? 'text-primary border-b-2 border-primary' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                 }`}
               >
-                <tab.icon className="h-5 w-5" />
-                {tab.label}
+                <tab.icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span className="text-sm sm:text-base">{tab.label}</span>
               </button>
             ))}
           </div>
