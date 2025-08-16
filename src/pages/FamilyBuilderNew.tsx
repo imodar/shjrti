@@ -889,35 +889,106 @@ const FamilyBuilderNew = () => {
     setShowHusbandForm(true);
   };
 
-  const handleWifeSave = () => {
+  const handleWifeSave = async () => {
     if (!currentWife) return;
     
-    // Check if we're editing an existing wife or adding a new one
-    const existingWifeIndex = wives.findIndex(w => w.id === currentWife.id);
-    
-    if (existingWifeIndex >= 0) {
-      // Update existing wife
-      const updatedWives = [...wives];
-      updatedWives[existingWifeIndex] = { ...currentWife, isSaved: true };
-      setWives(updatedWives);
-    } else {
-      // Add new wife
-      const newWife = { ...currentWife, isSaved: true };
-      setWives(prev => [...prev, newWife]);
+    try {
+      // Check if we're editing an existing wife or adding a new one
+      const existingWifeIndex = wives.findIndex(w => w.id === currentWife.id);
+      
+      if (existingWifeIndex >= 0) {
+        // Update existing wife
+        const updatedWives = [...wives];
+        updatedWives[existingWifeIndex] = { ...currentWife, isSaved: true };
+        setWives(updatedWives);
+      } else {
+        // Add new wife
+        const newWife = { ...currentWife, isSaved: true };
+        setWives(prev => [...prev, newWife]);
+      }
+
+      // If the spouse is from family and has an existing ID, update in database
+      if (currentWife.isFamilyMember && currentWife.existingFamilyMemberId) {
+        const wifeName = currentWife.name || (currentWife.firstName && currentWife.lastName ? `${currentWife.firstName} ${currentWife.lastName}` : currentWife.firstName || currentWife.lastName || '');
+        
+        await supabase
+          .from('family_tree_members')
+          .update({
+            name: wifeName,
+            first_name: currentWife.firstName || null,
+            last_name: currentWife.lastName || null,
+            birth_date: currentWife.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: currentWife.isAlive ?? true,
+            death_date: !currentWife.isAlive && currentWife.deathDate ? currentWife.deathDate.toISOString().split('T')[0] : null,
+            marital_status: 'married',
+            image_url: currentWife.croppedImage || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentWife.existingFamilyMemberId);
+      }
+      
+      setCurrentWife(null);
+      setShowWifeForm(false);
+      setWifeFamilyStatus(null);
+      
+      toast({
+        title: "تم حفظ البيانات",
+        description: "تم حفظ بيانات الزوجة بنجاح",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error saving wife data:', error);
+      toast({
+        title: "خطأ في الحفظ",
+        description: "حدث خطأ أثناء حفظ بيانات الزوجة",
+        variant: "destructive"
+      });
     }
-    
-    setCurrentWife(null);
-    setShowWifeForm(false);
-    setWifeFamilyStatus(null);
   };
 
-  const handleHusbandSave = () => {
+  const handleHusbandSave = async () => {
     if (!currentHusband) return;
     
-    setHusband({ ...currentHusband, isSaved: true });
-    setCurrentHusband(null);
-    setShowHusbandForm(false);
-    setHusbandFamilyStatus(null);
+    try {
+      setHusband({ ...currentHusband, isSaved: true });
+
+      // If the spouse is from family and has an existing ID, update in database
+      if (currentHusband.isFamilyMember && currentHusband.existingFamilyMemberId) {
+        const husbandName = currentHusband.name || (currentHusband.firstName && currentHusband.lastName ? `${currentHusband.firstName} ${currentHusband.lastName}` : currentHusband.firstName || currentHusband.lastName || '');
+        
+        await supabase
+          .from('family_tree_members')
+          .update({
+            name: husbandName,
+            first_name: currentHusband.firstName || null,
+            last_name: currentHusband.lastName || null,
+            birth_date: currentHusband.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: currentHusband.isAlive ?? true,
+            death_date: !currentHusband.isAlive && currentHusband.deathDate ? currentHusband.deathDate.toISOString().split('T')[0] : null,
+            marital_status: 'married',
+            image_url: currentHusband.croppedImage || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentHusband.existingFamilyMemberId);
+      }
+      
+      setCurrentHusband(null);
+      setShowHusbandForm(false);
+      setHusbandFamilyStatus(null);
+      
+      toast({
+        title: "تم حفظ البيانات",
+        description: "تم حفظ بيانات الزوج بنجاح",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error saving husband data:', error);
+      toast({
+        title: "خطأ في الحفظ",
+        description: "حدث خطأ أثناء حفظ بيانات الزوج",
+        variant: "destructive"
+      });
+    }
   };
 
   // Crop function helper
