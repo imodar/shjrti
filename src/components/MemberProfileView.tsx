@@ -216,7 +216,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
           {/* Profile Info Card */}
           <div className="relative -mt-8 mx-4">
-            <div className="bg-card/95 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl">
+            <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl">
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                   {/* Profile Avatar */}
@@ -292,7 +292,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-card rounded-lg border border-border mb-6">
+        <div className="bg-white rounded-lg border border-border mb-6">
           <div className="flex">
             {tabItems.map((tab) => (
               <button
@@ -319,7 +319,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {/* Personal Information */}
-                <div className="bg-card rounded-xl border border-border p-6">
+                <div className="bg-white rounded-xl border border-border p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-primary/10 rounded-xl">
@@ -438,7 +438,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {activeTab === 'family' && (
               <div className="space-y-6">
                 {/* Family content goes here */}
-                <div className="bg-card rounded-xl border border-border p-6">
+                <div className="bg-white rounded-xl border border-border p-6">
                   <h3 className="font-bold text-lg mb-4">معلومات العائلة</h3>
                   <p className="text-muted-foreground">سيتم عرض معلومات العائلة هنا</p>
                 </div>
@@ -449,7 +449,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {activeTab === 'timeline' && (
               <div className="space-y-6">
                 {/* Timeline content goes here */}
-                <div className="bg-card rounded-xl border border-border p-6">
+                <div className="bg-white rounded-xl border border-border p-6">
                   <h3 className="font-bold text-lg mb-4">الأحداث المهمة</h3>
                   <p className="text-muted-foreground">سيتم عرض الأحداث هنا</p>
                 </div>
@@ -460,7 +460,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {activeTab === 'media' && (
               <div className="space-y-6">
                 {/* Media content goes here */}
-                <div className="bg-card rounded-xl border border-border p-6">
+                <div className="bg-white rounded-xl border border-border p-6">
                   <h3 className="font-bold text-lg mb-4">الصور والذكريات</h3>
                   <div className="text-center py-12">
                     <Camera className="h-16 w-16 mx-auto text-gray-400 mb-4" />
@@ -478,7 +478,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           {/* Right Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="bg-card rounded-xl border border-border p-4">
+            <div className="bg-white rounded-xl border border-border p-4">
               <h4 className="font-bold text-sm mb-4">إجراءات سريعة</h4>
               <div className="space-y-3">
                 <Button 
@@ -509,7 +509,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             </div>
 
             {/* Family Stats */}
-            <div className="bg-card rounded-xl border border-border p-4">
+            <div className="bg-white rounded-xl border border-border p-4">
               <h4 className="font-bold text-sm mb-4">إحصائيات العائلة</h4>
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -530,7 +530,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             </div>
 
             {/* Delete Action */}
-            <div className="bg-card rounded-xl border border-destructive/20 p-4">
+            <div className="bg-white rounded-xl border border-destructive/20 p-4">
               <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
               <Button 
                 onClick={onDelete}
