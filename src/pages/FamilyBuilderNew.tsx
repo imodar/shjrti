@@ -1174,10 +1174,70 @@ const FamilyBuilderNew = () => {
   };
 
   const handleSpouseEditWarning = (spouseMember: any) => {
-    const partnerDetails = getSpousePartnerDetails(spouseMember);
-    setSpousePartnerName(partnerDetails.name);
-    setSpousePartnerDetails(partnerDetails);
-    setShowSpouseEditWarning(true);
+    // Close any active spouse editing forms first
+    closeActiveSpouseEdit();
+    
+    // Find the marriage where this spouse belongs
+    const marriage = familyMarriages.find((m: any) => 
+      m.husband?.id === spouseMember.id || m.wife?.id === spouseMember.id
+    );
+    
+    if (!marriage) {
+      toast({
+        title: "خطأ",
+        description: "لم يتم العثور على معلومات الزواج لهذا العضو",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Get the partner (the actual family member who can be edited)
+    const partner = marriage.husband?.id === spouseMember.id ? marriage.wife : marriage.husband;
+    
+    if (!partner) {
+      toast({
+        title: "خطأ", 
+        description: "لم يتم العثور على معلومات الشريك",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Find the partner in our editing member's context
+    if (!editingMember) {
+      toast({
+        title: "خطأ",
+        description: "يجب اختيار عضو أولاً لتعديل الزوج/الزوجة",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Check if this spouse is in the wives array or husband
+    if (spouseMember.gender === 'female') {
+      const wifeIndex = wives.findIndex(w => w.id === spouseMember.id);
+      if (wifeIndex !== -1) {
+        const wifeData = wives[wifeIndex];
+        handleSpouseEditAttempt('wife', wifeData, wifeIndex);
+      } else {
+        toast({
+          title: "خطأ",
+          description: "لم يتم العثور على بيانات الزوجة في القائمة",
+          variant: "destructive"
+        });
+      }
+    } else {
+      // It's a husband
+      if (husband && husband.id === spouseMember.id) {
+        handleSpouseEditAttempt('husband', husband, -1);
+      } else {
+        toast({
+          title: "خطأ", 
+          description: "لم يتم العثور على بيانات الزوج في القائمة",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const getChildrenCount = (parentId: string) => {
