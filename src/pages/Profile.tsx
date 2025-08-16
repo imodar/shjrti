@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+type DatePreference = 'gregorian' | 'hijri';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -12,11 +13,13 @@ import { Link } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDatePreference } from "@/contexts/DatePreferenceContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Profile() {
   const { user } = useAuth();
+  const { datePreference: globalDatePreference, setDatePreference: setGlobalDatePreference } = useDatePreference();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -37,8 +40,13 @@ export default function Profile() {
     email: "",
     phone: "",
     joinDate: "",
-    datePreference: "gregorian"
+    datePreference: globalDatePreference as DatePreference
   });
+
+  // Sync local state with global date preference
+  useEffect(() => {
+    setProfileData(prev => ({ ...prev, datePreference: globalDatePreference }));
+  }, [globalDatePreference]);
 
   useEffect(() => {
     if (user) {
@@ -193,7 +201,7 @@ export default function Profile() {
         email: profileData?.email || user?.email || "",
         phone: profileData?.phone || "",
         joinDate: profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ar-SA') : new Date().toLocaleDateString('ar-SA'),
-        datePreference: profileData?.date_preference || "gregorian"
+        datePreference: (profileData?.date_preference || "gregorian") as DatePreference
       };
 
       console.log('Setting profile data:', userData);
@@ -646,7 +654,7 @@ export default function Profile() {
                           {isEditing ? (
                             <Select
                               value={profileData.datePreference}
-                              onValueChange={(value) => setProfileData({...profileData, datePreference: value})}
+                              onValueChange={(value) => setProfileData({...profileData, datePreference: value as DatePreference})}
                             >
                               <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200">
                                 <SelectValue placeholder="اختر نوع التقويم" />
@@ -669,11 +677,21 @@ export default function Profile() {
                           ) : (
                             <div 
                               className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600"
-                              onClick={() => {
+                              onClick={async () => {
                                 const newPreference = profileData.datePreference === 'hijri' ? 'gregorian' : 'hijri';
-                                setProfileData({...profileData, datePreference: newPreference});
-                                // Auto-save the preference
-                                handleSave();
+                                try {
+                                  await setGlobalDatePreference(newPreference);
+                                  toast({
+                                    title: "تم التحديث",
+                                    description: `تم تغيير تفضيل التقويم إلى ${newPreference === 'hijri' ? 'الهجري' : 'الميلادي'}`
+                                  });
+                                } catch (error) {
+                                  toast({
+                                    title: "خطأ",
+                                    description: "حدث خطأ أثناء تحديث تفضيل التقويم",
+                                    variant: "destructive"
+                                  });
+                                }
                               }}
                             >
                               <div className="flex items-center justify-between">

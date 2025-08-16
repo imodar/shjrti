@@ -2,9 +2,18 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { AuthProvider } from './contexts/AuthContext'
+import { SubscriptionProvider } from './contexts/SubscriptionContext'
+import { DatePreferenceProvider } from './contexts/DatePreferenceContext'
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <DatePreferenceProvider>
+        <SubscriptionProvider>
+          <App />
+        </SubscriptionProvider>
+      </DatePreferenceProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
