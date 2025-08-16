@@ -32,7 +32,8 @@ import {
   Settings,
   FileText,
   Mail,
-  Code
+  Code,
+  Palette
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import PageEditor from '@/components/PageEditor';
@@ -41,6 +42,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 
@@ -131,6 +133,7 @@ interface UserSubscription {
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
   const { currentLanguage, direction } = useLanguage();
+  const { currentTheme, setCurrentTheme } = useTheme();
   const [packages, setPackages] = useState<PackageType[]>([]);
   const [editingPackages, setEditingPackages] = useState<Set<string>>(new Set());
   const [editingPackage, setEditingPackage] = useState<any>(null);
@@ -894,7 +897,7 @@ export default function EnhancedAdminPanel() {
         </div>
 
         <Tabs defaultValue="packages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+          <TabsList className="grid w-full grid-cols-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
             <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Package className="ml-2 h-4 w-4" />
               الباقات
@@ -910,6 +913,10 @@ export default function EnhancedAdminPanel() {
             <TabsTrigger value="languages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Languages className="ml-2 h-4 w-4" />
               اللغات
+            </TabsTrigger>
+            <TabsTrigger value="themes" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Palette className="ml-2 h-4 w-4" />
+              المظاهر
             </TabsTrigger>
             <TabsTrigger value="pages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <FileText className="ml-2 h-4 w-4" />
@@ -1530,6 +1537,89 @@ export default function EnhancedAdminPanel() {
                         → إدارة الاشتراكات
                       </button>
                     </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Themes Tab */}
+          <TabsContent value="themes" className="space-y-6">
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  إدارة المظاهر
+                </CardTitle>
+                <CardDescription>اختر مظهر الموقع بين النمط العصري والمهني</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Modern Theme Card */}
+                  <div 
+                    className={`p-6 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
+                      currentTheme === 'modern' 
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' 
+                        : 'border-gray-200 dark:border-gray-700 hover:border-emerald-300'
+                    }`}
+                    onClick={() => setCurrentTheme('modern')}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">النمط العصري</h3>
+                      {currentTheme === 'modern' && (
+                        <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <div className="h-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded"></div>
+                      <div className="h-3 bg-gray-700 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+                      <div className="flex space-x-2">
+                        <div className="h-8 bg-blue-500 rounded flex-1"></div>
+                        <div className="h-8 bg-gray-700 rounded flex-1"></div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                      تصميم عصري بألوان داكنة وتدرجات زرقاء جذابة
+                    </p>
+                  </div>
+
+                  {/* Professional Theme Card */}
+                  <div 
+                    className={`p-6 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
+                      currentTheme === 'professional' 
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' 
+                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                    }`}
+                    onClick={() => setCurrentTheme('professional')}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">النمط المهني</h3>
+                      {currentTheme === 'professional' && (
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <div className="h-4 bg-blue-500 rounded"></div>
+                      <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      <div className="flex space-x-2">
+                        <div className="h-8 bg-blue-500 rounded flex-1"></div>
+                        <div className="h-8 bg-gray-200 rounded flex-1"></div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                      تصميم مهني بألوان فاتحة شبيه بالمواقع الاجتماعية المشهورة
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
+                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">المظهر المحدد حالياً:</h4>
+                    <p className="text-blue-700 dark:text-blue-300">
+                      {currentTheme === 'modern' ? 'النمط العصري - تصميم داكن بألوان متدرجة' : 'النمط المهني - تصميم فاتح شبيه بالفيسبوك'}
+                    </p>
                   </div>
                 </div>
               </CardContent>
