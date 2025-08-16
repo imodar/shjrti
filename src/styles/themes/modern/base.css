@@ -7,8 +7,8 @@
 
 /* Modern Theme Base Styles */
 @layer base {
-  :root {
-    /* Background Colors */
+  .theme-modern {
+    /* Background Colors - Dark Mode */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --sidebar-background: 222.2 84% 4.9%;
@@ -67,7 +67,7 @@
     --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
   }
 
-  .light {
+  .theme-modern.light {
     /* Light mode overrides for modern theme */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

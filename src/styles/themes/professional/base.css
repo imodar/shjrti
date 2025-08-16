@@ -7,8 +7,8 @@
 
 /* Professional Theme Base Styles - Facebook-like Design */
 @layer base {
-  :root {
-    /* Facebook Color Scheme - Exact Match */
+  .theme-professional {
+    /* Facebook Color Scheme - Light Mode */
     --background: 240 10% 96%;
     --foreground: 0 0% 13%;
     --sidebar-background: 0 0% 100%;
@@ -91,7 +91,7 @@
     --tree-shadow: var(--shadow-card);
   }
 
-  .dark {
+  .theme-professional.dark {
     /* Facebook Dark Mode - Exact Match */
     --background: 240 6% 10%;
     --foreground: 0 0% 95%;
