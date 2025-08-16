@@ -9,60 +9,60 @@
 @layer base {
   :root {
     /* Background Colors */
-    --background: 225 57% 7%;
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --sidebar-background: 225 57% 7%;
+    --sidebar-background: 222.2 84% 4.9%;
     --sidebar-foreground: 210 40% 98%;
 
-    /* Primary Colors - Green Theme */
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 100%;
-    --sidebar-primary: 142 76% 36%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    /* Primary Colors - Emerald Green */
+    --primary: 160 84% 39%;
+    --primary-foreground: 210 40% 98%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 210 40% 98%;
 
-    /* Secondary Colors - Green Theme */
-    --secondary: 160 84% 39%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary Colors */
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    /* Accent Colors - Green Theme */
-    --accent: 158 64% 52%;
-    --accent-foreground: 0 0% 100%;
-    --sidebar-accent: 158 64% 52%;
-    --sidebar-accent-foreground: 0 0% 100%;
+    /* Accent Colors - Teal */
+    --accent: 173 80% 40%;
+    --accent-foreground: 210 40% 98%;
+    --sidebar-accent: 173 80% 40%;
+    --sidebar-accent-foreground: 210 40% 98%;
 
     /* Muted Colors */
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
     /* Card Colors */
-    --card: 225 57% 7%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
     /* Popover Colors */
-    --popover: 225 57% 7%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
     /* Border and Input */
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --sidebar-border: 217 32% 17%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --sidebar-border: 217.2 32.6% 17.5%;
 
-    /* Ring and Focus - Green Theme */
-    --ring: 142 76% 36%;
-    --sidebar-ring: 142 76% 36%;
+    /* Ring and Focus */
+    --ring: 160 84% 39%;
+    --sidebar-ring: 160 84% 39%;
 
     /* Destructive */
-    --destructive: 0 62% 50%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
     /* Radius */
     --radius: 0.5rem;
 
-    /* Family Tree Specific - Green Theme */
-    --tree-primary: 142 76% 36%;
-    --tree-secondary: 160 84% 39%;
+    /* Family Tree Specific */
+    --tree-primary: 160 84% 39%;
+    --tree-secondary: 173 80% 40%;
     --tree-accent: 158 64% 52%;
-    --tree-background: 225 57% 7%;
+    --tree-background: 222.2 84% 4.9%;
     --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
     --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
   }
@@ -80,8 +80,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
@@ -89,15 +89,15 @@
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 173 80% 40%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 36%;
+    --ring: 160 84% 39%;
 
     --tree-background: 0 0% 100%;
     --tree-foreground: 222.2 84% 4.9%;
