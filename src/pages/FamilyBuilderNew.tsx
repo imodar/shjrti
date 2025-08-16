@@ -2581,41 +2581,6 @@ const FamilyBuilderNew = () => {
                                                     </p>
                                                   </div>
                                                   
-                                                  {/* Additional Information */}
-                                                  <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 font-arabic">
-                                                     {/* Birth Date */}
-                                                     {wife.birthDate && (
-                                                       <>
-                                                         <Calendar className="h-4 w-4 text-cyan-500" />
-                                                         
-                                                       </>
-                                                     )}
-                                                    
-                                                    {/* Death Date */}
-                                                    {wife.deathDate && (
-                                                      <div className="flex items-center gap-2">
-                                                        <Calendar className="h-4 w-4 text-red-500" />
-                                                        <span>تاريخ الوفاة: {wife.deathDate.toLocaleDateString('ar-SA')}</span>
-                                                      </div>
-                                                    )}
-                                                    
-                                                    {/* Marital Status */}
-                                                    {wife.maritalStatus && (
-                                                      <div className="flex items-center gap-2">
-                                                        <Heart className="h-4 w-4 text-purple-500" />
-                                                        <span>الحالة الاجتماعية: {wife.maritalStatus === 'married' ? 'متزوجة' : 'مطلقة'}</span>
-                                                      </div>
-                                                    )}
-                                                    
-                                                    {/* Life Status */}
-                                                    <div className="flex items-center gap-2">
-                                                      <div className={cn(
-                                                        "h-4 w-4 rounded-full",
-                                                        wife.isAlive ? "bg-green-500" : "bg-gray-500"
-                                                      )} />
-                                                      <span>{wife.isAlive ? 'على قيد الحياة' : 'متوفية'}</span>
-                                                    </div>
-                                                  </div>
                                                   
                                                   {wife.isSaved && (
                                                     <p className="text-xs text-pink-600 font-arabic mt-2">
