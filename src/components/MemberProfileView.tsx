@@ -158,24 +158,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+    <div className={`min-h-[50vh] sm:min-h-screen transition-all duration-700 overflow-x-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
       {/* Header */}
       {/* Header removed */}
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 max-w-6xl">
+      <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 max-w-6xl">
         {/* Hero Section */}
-        <div className="relative mb-8">
+        <div className="relative mb-4 sm:mb-8">
           {/* Cover Ribbon */}
-          <div className="relative h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-xl overflow-hidden">
+          <div className="relative h-12 sm:h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-lg sm:rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
           </div>
 
           {/* Profile Info Card */}
-          <div className="relative -mt-8 mx-4">
-            <div className="bg-card/95 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl">
-              <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="relative -mt-6 sm:-mt-8 mx-2 sm:mx-4">
+            <div className="bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-xl">
+              <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
+                <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6">
                   {/* Profile Avatar */}
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
