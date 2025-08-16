@@ -2461,16 +2461,18 @@ const FamilyBuilderNew = () => {
                              {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
                            </span>
                         </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={currentStep === 1 ? handleCancelForm : prevStep}
-                          className="flex items-center gap-2 font-arabic"
-                          size="sm"
-                        >
-                          <ArrowLeft className="h-4 w-4" />
-                          {currentStep === 1 ? "إلغاء الإضافة" : "السابق"}
-                        </Button>
+                         {formMode === 'profile' && (
+                           <Button
+                             type="button"
+                             variant="outline"
+                             onClick={currentStep === 1 ? handleCancelForm : prevStep}
+                             className="flex items-center gap-2 font-arabic"
+                             size="sm"
+                           >
+                             <ArrowLeft className="h-4 w-4" />
+                             {editingMember?.name || 'العضو'}
+                           </Button>
+                         )}
                       </CardTitle>
 
                      {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
