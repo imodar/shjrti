@@ -84,7 +84,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   const spouseLabel = isWife ? 'الزوجة' : 'الزوج';
   const spouseGender = isWife ? 'female' : 'male';
   const addButtonText = isWife ? 'إضافة زوجة' : 'إضافة زوج';
-  const addFormTitle = isWife ? 'إضافة زوجة جديدة' : 'إضافة زوج جديد';
+  const addFormTitle = spouse.isSaved && spouse.name ? `تعديل ${spouse.name}` : (isWife ? 'إضافة زوجة جديدة' : 'إضافة زوج جديد');
   const saveButtonText = isWife ? 'حفظ بيانات الزوجة' : 'حفظ بيانات الزوج';
   
   // Color scheme based on spouse type
