@@ -35,7 +35,7 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SpouseForm, SpouseData } from "@/components/SpouseForm";
+import WifeForm from "@/components/WifeForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
@@ -59,13 +59,9 @@ const ImageUploadSection = ({
   onCropComplete,
   handleCropSave
 }: any) => {
-  const tooltipContent = isImageUploadEnabled 
-    ? "انقر لرفع صورة شخصية للعضو" 
-    : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
-
+  const tooltipContent = isImageUploadEnabled ? "انقر لرفع صورة شخصية للعضو" : "رفع الصور متاح فقط للمشتركين في الخطط المدفوعة. قم بترقية اشتراكك لتفعيل هذه الميزة.";
   if (uploadLoading) {
-    return (
-      <div className="space-y-3">
+    return <div className="space-y-3">
         <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
         <div className="relative border-2 border-dashed border-primary/30 rounded-xl p-8 text-center bg-gradient-to-br from-background to-muted/30 transition-all duration-300">
           <div className="space-y-3">
@@ -77,31 +73,28 @@ const ImageUploadSection = ({
             <div className="flex justify-center">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{
+                animationDelay: '0.1s'
+              }}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{
+                animationDelay: '0.2s'
+              }}></div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-  
-  return (
-    <div className="space-y-3">
+  return <div className="space-y-3">
       <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
       
-      {croppedImage ? (
-        // Enhanced uploaded image display - centered and compact
-        <div className="space-y-3">
+      {croppedImage ?
+    // Enhanced uploaded image display - centered and compact
+    <div className="space-y-3">
           <div className="relative group flex justify-center">
             <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3 transition-all duration-300 hover:border-primary/40 hover:shadow-lg">
               <div className="relative inline-block">
-                <img 
-                  src={croppedImage} 
-                  alt="صورة العضو" 
-                  className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
-                />
+                <img src={croppedImage} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               
@@ -115,48 +108,27 @@ const ImageUploadSection = ({
           
           {/* Action buttons - centered and improved */}
           <div className="flex justify-center gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={handleEditImage}
-              className="h-8 px-3 bg-white/90 hover:bg-white border border-gray-200 shadow-sm backdrop-blur-sm font-arabic"
-            >
+            <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3 bg-white/90 hover:bg-white border border-gray-200 shadow-sm backdrop-blur-sm font-arabic">
               <Edit2 className="h-3 w-3 ml-1" />
               تعديل
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="destructive"
-              onClick={handleDeleteImage}
-              className="h-8 px-3 bg-red-500/90 hover:bg-red-600 shadow-sm backdrop-blur-sm font-arabic"
-            >
+            <Button type="button" size="sm" variant="destructive" onClick={handleDeleteImage} className="h-8 px-3 bg-red-500/90 hover:bg-red-600 shadow-sm backdrop-blur-sm font-arabic">
               <Trash2 className="h-3 w-3 ml-1" />
               حذف
             </Button>
           </div>
           
           <p className="text-xs text-muted-foreground text-center font-arabic">انقر على الأزرار لتعديل أو حذف الصورة</p>
-        </div>
-      ) : (
-        // Enhanced upload area
-        <TooltipProvider>
+        </div> :
+    // Enhanced upload area
+    <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div 
-                className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 ${
-                  isImageUploadEnabled 
-                    ? 'border-primary/40 cursor-pointer hover:border-primary/60 hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10 hover:shadow-lg transform hover:-translate-y-1 active:translate-y-0' 
-                    : 'border-gray-300 opacity-70 cursor-not-allowed bg-gradient-to-br from-gray-50 to-gray-100'
-                }`}
-                onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
-              >
+              <div className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 ${isImageUploadEnabled ? 'border-primary/40 cursor-pointer hover:border-primary/60 hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10 hover:shadow-lg transform hover:-translate-y-1 active:translate-y-0' : 'border-gray-300 opacity-70 cursor-not-allowed bg-gradient-to-br from-gray-50 to-gray-100'}`} onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}>
                 {/* Background decoration */}
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-50"></div>
                 
-                {isImageUploadEnabled ? (
-                  <div className="relative space-y-2">
+                {isImageUploadEnabled ? <div className="relative space-y-2">
                     <div className="relative">
                       <div className="p-2 bg-gradient-to-br from-primary/10 to-primary/20 rounded-xl w-fit mx-auto">
                         <Upload className="h-8 w-8 text-primary" />
@@ -181,9 +153,7 @@ const ImageUploadSection = ({
                         <span className="font-arabic">قص تلقائي</span>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="relative space-y-2">
+                  </div> : <div className="relative space-y-2">
                     <div className="relative">
                       <div className="p-2 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl w-fit mx-auto">
                         <Upload className="h-8 w-8 text-gray-400" />
@@ -207,34 +177,20 @@ const ImageUploadSection = ({
                         <span className="font-arabic">ترقية الاشتراك</span>
                       </div>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
             </TooltipTrigger>
-            <TooltipContent 
-              side="top" 
-              className={`max-w-xs p-3 ${isImageUploadEnabled ? 'bg-primary text-primary-foreground' : 'bg-gradient-to-r from-primary to-primary/80 text-white'} border-0 shadow-xl`}
-            >
+            <TooltipContent side="top" className={`max-w-xs p-3 ${isImageUploadEnabled ? 'bg-primary text-primary-foreground' : 'bg-gradient-to-r from-primary to-primary/80 text-white'} border-0 shadow-xl`}>
               <div className="space-y-1">
                 <p className="font-medium">{tooltipContent}</p>
-                {!isImageUploadEnabled && (
-                  <p className="text-xs opacity-90">انقر لمعرفة المزيد عن الخطط المتاحة</p>
-                )}
+                {!isImageUploadEnabled && <p className="text-xs opacity-90">انقر لمعرفة المزيد عن الخطط المتاحة</p>}
               </div>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-      )}
+        </TooltipProvider>}
       
       {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleImageSelect}
-        className="hidden"
-        disabled={!isImageUploadEnabled}
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" disabled={!isImageUploadEnabled} />
       
       {/* Enhanced Crop Dialog */}
       <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
@@ -246,26 +202,15 @@ const ImageUploadSection = ({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
-            {selectedImage && (
-              <div className="relative h-64 bg-black rounded-xl overflow-hidden border-2 border-primary/20 shadow-xl">
-                <Cropper
-                  image={selectedImage}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                  style={{
-                    containerStyle: {
-                      width: '100%',
-                      height: '100%',
-                      position: 'relative'
-                    }
-                  }}
-                />
-              </div>
-            )}
+            {selectedImage && <div className="relative h-64 bg-black rounded-xl overflow-hidden border-2 border-primary/20 shadow-xl">
+                <Cropper image={selectedImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} style={{
+              containerStyle: {
+                width: '100%',
+                height: '100%',
+                position: 'relative'
+              }
+            }} />
+              </div>}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium">التكبير</Label>
@@ -273,74 +218,50 @@ const ImageUploadSection = ({
                   {Math.round(zoom * 100)}%
                 </span>
               </div>
-              <Slider
-                value={[zoom]}
-                onValueChange={(value) => setZoom(value[0])}
-                min={1}
-                max={3}
-                step={0.1}
-                className="w-full"
-              />
+              <Slider value={[zoom]} onValueChange={value => setZoom(value[0])} min={1} max={3} step={0.1} className="w-full" />
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowCropDialog(false)}
-              className="flex-1"
-            >
+            <Button variant="outline" onClick={() => setShowCropDialog(false)} className="flex-1">
               إلغاء
             </Button>
-            <Button 
-              onClick={handleCropSave}
-              className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-            >
+            <Button onClick={handleCropSave} className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
               <Save className="h-4 w-4 mr-2" />
               حفظ
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
-
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { hasAIFeatures } = useSubscription();
+  const {
+    hasAIFeatures
+  } = useSubscription();
   const isMobile = useIsMobile();
-
   const calculateGenerationCount = () => {
     if (familyMembers.length === 0) return 1;
-    
     const generationMap = new Map();
-    
     familyMembers.forEach(member => {
-      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+      if (member.isFounder || !member.fatherId && !member.motherId) {
         generationMap.set(member.id, 1);
       }
     });
-    
     let changed = true;
     let maxIterations = 50;
     let iterations = 0;
-    
     while (changed && iterations < maxIterations) {
       changed = false;
       iterations++;
-      
       familyMembers.forEach(member => {
         if (!generationMap.has(member.id)) {
           if (member.fatherId || member.motherId) {
             const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
             const motherGeneration = member.motherId ? generationMap.get(member.motherId) : undefined;
-            
             if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-              const parentGeneration = Math.max(
-                fatherGeneration || 0, 
-                motherGeneration || 0
-              );
+              const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
               generationMap.set(member.id, parentGeneration + 1);
               changed = true;
             }
@@ -351,52 +272,39 @@ const FamilyBuilderNew = () => {
         }
       });
     }
-    
     (familyMarriages || []).forEach(marriage => {
       const husbandGeneration = generationMap.get(marriage.husband?.id);
       const wifeGeneration = generationMap.get(marriage.wife?.id);
-      
       if (husbandGeneration && !wifeGeneration) {
         generationMap.set(marriage.wife?.id, husbandGeneration);
       } else if (wifeGeneration && !husbandGeneration) {
         generationMap.set(marriage.husband?.id, wifeGeneration);
       }
     });
-    
     const generations = Array.from(generationMap.values());
     return generations.length > 0 ? Math.max(...generations) : 1;
   };
-
   const getGenerationStats = () => {
     if (familyMembers.length === 0) return [];
-    
     const generationMap = new Map();
-    
     familyMembers.forEach(member => {
-      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+      if (member.isFounder || !member.fatherId && !member.motherId) {
         generationMap.set(member.id, 1);
       }
     });
-    
     let changed = true;
     let maxIterations = 50;
     let iterations = 0;
-    
     while (changed && iterations < maxIterations) {
       changed = false;
       iterations++;
-      
       familyMembers.forEach(member => {
         if (!generationMap.has(member.id)) {
           if (member.fatherId || member.motherId) {
             const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
             const motherGeneration = member.motherId ? generationMap.get(member.motherId) : undefined;
-            
             if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-              const parentGeneration = Math.max(
-                fatherGeneration || 0, 
-                motherGeneration || 0
-              );
+              const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
               generationMap.set(member.id, parentGeneration + 1);
               changed = true;
             }
@@ -407,23 +315,19 @@ const FamilyBuilderNew = () => {
         }
       });
     }
-    
     (familyMarriages || []).forEach(marriage => {
       const husbandGeneration = generationMap.get(marriage.husband?.id);
       const wifeGeneration = generationMap.get(marriage.wife?.id);
-      
       if (husbandGeneration && !wifeGeneration) {
         generationMap.set(marriage.wife?.id, husbandGeneration);
       } else if (wifeGeneration && !husbandGeneration) {
         generationMap.set(marriage.husband?.id, wifeGeneration);
       }
     });
-    
     const generationCounts = new Map();
-    generationMap.forEach((generation) => {
+    generationMap.forEach(generation => {
       generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
     });
-    
     return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
   };
 
@@ -431,44 +335,30 @@ const FamilyBuilderNew = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [showCropDialog, setShowCropDialog] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0
+  });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const createImage = (url: string): Promise<HTMLImageElement> =>
-    new Promise((resolve, reject) => {
-      const image = document.createElement('img');
-      image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', error => reject(error));
-      image.setAttribute('crossOrigin', 'anonymous');
-      image.src = url;
-    });
-
+  const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
+    const image = document.createElement('img');
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', error => reject(error));
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.src = url;
+  });
   const getCroppedImg = async (imageSrc: string, pixelCrop: any) => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
     if (!ctx) return null;
-
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
-
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      pixelCrop.width,
-      pixelCrop.height
-    );
-
-    return new Promise<string>((resolve) => {
-      canvas.toBlob((blob) => {
+    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+    return new Promise<string>(resolve => {
+      canvas.toBlob(blob => {
         if (!blob) return;
         const reader = new FileReader();
         reader.addEventListener('load', () => resolve(reader.result as string));
@@ -476,11 +366,9 @@ const FamilyBuilderNew = () => {
       }, 'image/jpeg', 0.95);
     });
   };
-
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
-
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -493,7 +381,6 @@ const FamilyBuilderNew = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleCropSave = async () => {
     if (selectedImage && croppedAreaPixels) {
       const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
@@ -503,7 +390,6 @@ const FamilyBuilderNew = () => {
       }
     }
   };
-
   const handleDeleteImage = () => {
     setCroppedImage(null);
     setSelectedImage(null);
@@ -511,7 +397,6 @@ const FamilyBuilderNew = () => {
       fileInputRef.current.value = '';
     }
   };
-
   const handleEditImage = () => {
     if (selectedImage) {
       setShowCropDialog(true);
@@ -519,12 +404,22 @@ const FamilyBuilderNew = () => {
   };
 
   // Get image upload permission state from top level
-  const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
+  const {
+    isImageUploadEnabled,
+    loading: uploadLoading
+  } = useImageUploadPermission();
+  const {
+    toast
+  } = useToast();
+  const {
+    t,
+    direction
+  } = useLanguage();
+  const {
+    notifications,
+    profile
+  } = useDashboardData();
 
-  const { toast } = useToast();
-  const { t, direction } = useLanguage();
-  const { notifications, profile } = useDashboardData();
-  
   // Package and subscription data
   const [packageData, setPackageData] = useState(null);
   const [subscriptionData, setSubscriptionData] = useState(null);
@@ -532,7 +427,6 @@ const FamilyBuilderNew = () => {
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
-  
   const [activeTab, setActiveTab] = useState("overview");
   const [familyMembers, setFamilyMembers] = useState([]);
   const [familyMarriages, setFamilyMarriages] = useState([]);
@@ -546,22 +440,23 @@ const FamilyBuilderNew = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
-  
+
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
-
   const fetchFamilyData = async () => {
     try {
       setLoading(true);
-        
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
-
       console.log('Loading package data for user:', user.id);
-
-      const { data: userSubscription, error: subError } = await supabase
-        .from('user_subscriptions')
-        .select(`
+      const {
+        data: userSubscription,
+        error: subError
+      } = await supabase.from('user_subscriptions').select(`
           *,
           packages:package_id (
             id,
@@ -570,62 +465,44 @@ const FamilyBuilderNew = () => {
             max_family_trees,
             features
           )
-        `)
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
+        `).eq('user_id', user.id).eq('status', 'active').order('created_at', {
+        ascending: false
+      }).limit(1).single();
       console.log('User subscription data:', userSubscription, 'Error:', subError);
-
       if (userSubscription && userSubscription.packages) {
         setPackageData(userSubscription.packages);
         setSubscriptionData(userSubscription);
       } else {
         console.log('No subscription found, using free package');
-        const { data: freePackage } = await supabase
-          .from('packages')
-          .select('*')
-          .ilike('name->en', 'Free')
-          .single();
+        const {
+          data: freePackage
+        } = await supabase.from('packages').select('*').ilike('name->en', 'Free').single();
         console.log('Free package fallback:', freePackage);
         if (freePackage) setPackageData(freePackage);
       }
-      
       if (!familyId) {
         throw new Error('No family ID provided');
       }
-
       console.log('🔍 Loading family with ID:', familyId);
-      
-      const { data: family, error: familyError } = await supabase
-        .from('families')
-        .select('*')
-        .eq('id', familyId)
-        .eq('creator_id', user.id)
-        .single();
-
+      const {
+        data: family,
+        error: familyError
+      } = await supabase.from('families').select('*').eq('id', familyId).eq('creator_id', user.id).single();
       if (familyError) {
         console.error('Error fetching family:', familyError);
         throw familyError;
       }
-
       if (!family) {
         throw new Error('Family not found or access denied');
       }
-
       console.log('✅ Loaded family:', family);
       const familyToUse = family;
       setFamilyData(familyToUse);
-      
-      const { data: members, error: membersError } = await supabase
-        .from('family_tree_members')
-        .select('*')
-        .eq('family_id', familyToUse.id);
-
+      const {
+        data: members,
+        error: membersError
+      } = await supabase.from('family_tree_members').select('*').eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
-
       if (members) {
         const transformedMembers = members.map(member => ({
           id: member.id,
@@ -643,32 +520,24 @@ const FamilyBuilderNew = () => {
           bio: member.biography || '',
           relation: ""
         }));
-        
         setFamilyMembers(transformedMembers);
       }
-
-      const { data: marriages, error: marriagesError } = await supabase
-        .from('marriages')
-        .select(`
+      const {
+        data: marriages,
+        error: marriagesError
+      } = await supabase.from('marriages').select(`
           id,
           husband_id,
           wife_id,
           is_active
-        `)
-        .eq('family_id', familyToUse.id)
-        .eq('is_active', true);
-
+        `).eq('family_id', familyToUse.id).eq('is_active', true);
       if (marriagesError) throw marriagesError;
 
       // Get detailed marriage data with member info
       let marriagesWithMembers = [];
       if (marriages) {
-        marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
-          const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
-          ]);
-          
+        marriagesWithMembers = await Promise.all(marriages.map(async marriage => {
+          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
           return {
             ...marriage,
             husband: husbandResult.data,
@@ -676,9 +545,7 @@ const FamilyBuilderNew = () => {
           };
         }));
       }
-
       if (marriagesError) throw marriagesError;
-
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
         console.log('Fetched marriages with members:', marriagesWithMembers);
@@ -694,36 +561,31 @@ const FamilyBuilderNew = () => {
       setLoading(false);
     }
   };
-
   const refreshFamilyData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
         return;
       }
-
       console.log('Refreshing family data...');
-
       const familyId = new URLSearchParams(window.location.search).get('family');
       if (!familyId) throw new Error('Family ID not found in URL');
-
-      const { data: family, error: familyError } = await supabase
-        .from('families')
-        .select('*')
-        .eq('id', familyId)
-        .single();
-
+      const {
+        data: family,
+        error: familyError
+      } = await supabase.from('families').select('*').eq('id', familyId).single();
       if (familyError) throw familyError;
       setFamilyData(family);
-
-      const { data: members, error: membersError } = await supabase
-        .from('family_tree_members')
-        .select('*')
-        .eq('family_id', family.id);
-
+      const {
+        data: members,
+        error: membersError
+      } = await supabase.from('family_tree_members').select('*').eq('family_id', family.id);
       if (membersError) throw membersError;
-
       const transformedMembers = members.map(member => ({
         id: member.id,
         name: member.name,
@@ -740,31 +602,23 @@ const FamilyBuilderNew = () => {
         bio: member.biography || "",
         relation: ""
       }));
-
       setFamilyMembers(transformedMembers);
-
-      const { data: marriages, error: marriagesError } = await supabase
-        .from('marriages')
-        .select(`
+      const {
+        data: marriages,
+        error: marriagesError
+      } = await supabase.from('marriages').select(`
           id,
           husband_id,
           wife_id,
           is_active
-        `)
-        .eq('family_id', family.id)
-        .eq('is_active', true);
-
+        `).eq('family_id', family.id).eq('is_active', true);
       if (marriagesError) throw marriagesError;
 
       // Get detailed marriage data with member info
       let marriagesWithMembers = [];
       if (marriages) {
-        marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
-          const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
-          ]);
-          
+        marriagesWithMembers = await Promise.all(marriages.map(async marriage => {
+          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
           return {
             ...marriage,
             husband: husbandResult.data,
@@ -772,17 +626,14 @@ const FamilyBuilderNew = () => {
           };
         }));
       }
-
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
       }
-
       console.log('Family data refreshed successfully');
     } catch (error) {
       console.error('Error refreshing family data:', error);
     }
   };
-
   useEffect(() => {
     fetchFamilyData();
   }, [toast]);
@@ -794,12 +645,12 @@ const FamilyBuilderNew = () => {
       loadExistingSpouses(editingMember);
     }
   }, [familyMarriages, familyMembers, editingMember]);
-  
+
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
-  
+
   // Form data states
   const [formData, setFormData] = useState({
     name: "",
@@ -815,10 +666,36 @@ const FamilyBuilderNew = () => {
     croppedImage: null as string | null,
     isFounder: false
   });
-
-  const [wives, setWives] = useState<SpouseData[]>([]);
-
-  const [husband, setHusband] = useState<SpouseData | null>(null);
+  const [wives, setWives] = useState<Array<{
+    id: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    isAlive: boolean;
+    birthDate: Date | null;
+    deathDate: Date | null;
+    maritalStatus?: string;
+    croppedImage?: string | null;
+    isFamilyMember?: boolean;
+    existingFamilyMemberId?: string;
+    isExistingFamilyMember?: boolean;
+    isSaved?: boolean;
+  }>>([]);
+  const [husband, setHusband] = useState<{
+    id: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    isAlive: boolean;
+    birthDate: Date | null;
+    deathDate: Date | null;
+    maritalStatus?: string;
+    croppedImage?: string | null;
+    isFamilyMember?: boolean;
+    existingFamilyMemberId?: string;
+    isExistingFamilyMember?: boolean;
+    isSaved?: boolean;
+  } | null>(null);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -832,136 +709,12 @@ const FamilyBuilderNew = () => {
 
   // Command states for search
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
-  const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
-  const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{ [key: number]: 'yes' | 'no' | null }>({});
-  
-  // Unified spouse form states
-  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
-  const [currentHusband, setCurrentHusband] = useState<SpouseData | null>(null);
-  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
-  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [husbandFamilyStatus, setHusbandFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [showWifeForm, setShowWifeForm] = useState(false);
-  const [showHusbandForm, setShowHusbandForm] = useState(false);
-
-  // Unified spouse form handlers
-  const handleWifeFamilyStatusChange = (status: string) => {
-    setWifeFamilyStatus(status as 'yes' | 'no');
-  };
-
-  const handleHusbandFamilyStatusChange = (status: string) => {
-    setHusbandFamilyStatus(status as 'yes' | 'no');
-  };
-
-  const handleAddWife = () => {
-    setCurrentWife({
-      id: '',
-      firstName: '',
-      lastName: '',
-      name: '',
-      isAlive: true,
-      birthDate: null,
-      deathDate: null,
-      maritalStatus: 'married',
-      isFamilyMember: false,
-      existingFamilyMemberId: '',
-      croppedImage: null,
-      isSaved: false
-    });
-    setShowWifeForm(true);
-  };
-
-  const handleAddHusband = () => {
-    setCurrentHusband({
-      id: '',
-      firstName: '',
-      lastName: '',
-      name: '',
-      isAlive: true,
-      birthDate: null,
-      deathDate: null,
-      maritalStatus: 'married',
-      isFamilyMember: false,
-      existingFamilyMemberId: '',
-      croppedImage: null,
-      isSaved: false
-    });
-    setShowHusbandForm(true);
-  };
-
-  const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
-    const currentSpouse = spouseType === 'wife' ? currentWife : currentHusband;
-    if (!currentSpouse) return;
-    
-    try {
-      if (spouseType === 'wife') {
-        // Check if we're editing an existing wife or adding a new one
-        const existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
-        
-        if (existingWifeIndex >= 0) {
-          // Update existing wife
-          const updatedWives = [...wives];
-          updatedWives[existingWifeIndex] = { ...currentSpouse, isSaved: true };
-          setWives(updatedWives);
-        } else {
-          // Add new wife
-          const newWife = { ...currentSpouse, isSaved: true };
-          setWives(prev => [...prev, newWife]);
-        }
-      } else {
-        // Update husband
-        setHusband({ ...currentSpouse, isSaved: true });
-      }
-
-      // If the spouse is from family and has an existing ID, update in database
-      if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
-        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-        
-        await supabase
-          .from('family_tree_members')
-          .update({
-            name: spouseName,
-            first_name: currentSpouse.firstName || null,
-            last_name: currentSpouse.lastName || null,
-            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: currentSpouse.isAlive ?? true,
-            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
-            marital_status: 'married',
-            image_url: currentSpouse.croppedImage || null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', currentSpouse.existingFamilyMemberId);
-      }
-      
-      // Reset form state
-      if (spouseType === 'wife') {
-        setCurrentWife(null);
-        setShowWifeForm(false);
-        setWifeFamilyStatus(null);
-      } else {
-        setCurrentHusband(null);
-        setShowHusbandForm(false);
-        setHusbandFamilyStatus(null);
-      }
-      
-      toast({
-        title: "تم حفظ البيانات",
-        description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
-        variant: "default"
-      });
-    } catch (error) {
-      console.error(`Error saving ${spouseType} data:`, error);
-      toast({
-        title: "خطأ في الحفظ",
-        description: `حدث خطأ أثناء حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'}`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  // Wrapper functions for backward compatibility
-  const handleWifeSave = () => handleSpouseSave('wife');
-  const handleHusbandSave = () => handleSpouseSave('husband');
+  const [wivesCommandOpen, setWivesCommandOpen] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{
+    [key: number]: 'yes' | 'no' | null;
+  }>({});
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
@@ -974,23 +727,10 @@ const FamilyBuilderNew = () => {
           reject(new Error('Failed to get canvas context'));
           return;
         }
-
         canvas.width = crop.width;
         canvas.height = crop.height;
-
-        ctx.drawImage(
-          image,
-          crop.x,
-          crop.y,
-          crop.width,
-          crop.height,
-          0,
-          0,
-          crop.width,
-          crop.height
-        );
-
-        canvas.toBlob((blob) => {
+        ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+        canvas.toBlob(blob => {
           if (!blob) {
             reject(new Error('Canvas is empty'));
             return;
@@ -1005,7 +745,7 @@ const FamilyBuilderNew = () => {
   };
 
   // Form states for member creation/editing
-  
+
   // Delete modal states (keep existing delete modal functionality)
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<any>(null);
@@ -1013,13 +753,20 @@ const FamilyBuilderNew = () => {
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
-  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "" });
-  
+  const [spousePartnerDetails, setSpousePartnerDetails] = useState({
+    name: "",
+    fatherName: "",
+    grandfatherName: ""
+  });
+
   // Spouse deletion modal states
   const [showSpouseDeleteModal, setShowSpouseDeleteModal] = useState(false);
-  const [spouseToDelete, setSpouseToDelete] = useState<{ wife: any; index: number } | null>(null);
+  const [spouseToDelete, setSpouseToDelete] = useState<{
+    wife: any;
+    index: number;
+  } | null>(null);
   const [spouseDeleteWarning, setSpouseDeleteWarning] = useState("");
-  
+
   // Track original wife data for change detection
   const [originalWivesData, setOriginalWivesData] = useState<any[]>([]);
 
@@ -1028,67 +775,59 @@ const FamilyBuilderNew = () => {
     // Spouse: no parents in this family and not a founder
     return !member?.fatherId && !member?.motherId && !member?.isFounder;
   };
-
   const getSpousePartnerName = (spouseMember: any) => {
-    const marriage = familyMarriages.find((marriage: any) => 
-      marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id
-    );
-    
+    const marriage = familyMarriages.find((marriage: any) => marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id);
     if (!marriage) return "";
-    
     if (marriage.husband?.id === spouseMember.id) {
       return marriage.wife?.name || "";
     } else {
       return marriage.husband?.name || "";
     }
   };
-
   const getSpousePartnerDetails = (spouseMember: any) => {
-    const marriage = familyMarriages.find((marriage: any) => 
-      marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id
-    );
-    
-    if (!marriage) return { name: "", fatherName: "", grandfatherName: "" };
-    
+    const marriage = familyMarriages.find((marriage: any) => marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id);
+    if (!marriage) return {
+      name: "",
+      fatherName: "",
+      grandfatherName: ""
+    };
     let partnerMember;
     if (marriage.husband?.id === spouseMember.id) {
       partnerMember = familyMembers.find(m => m.id === marriage.wife?.id);
     } else {
       partnerMember = familyMembers.find(m => m.id === marriage.husband?.id);
     }
-    
-    if (!partnerMember) return { name: "", fatherName: "", grandfatherName: "" };
-    
+    if (!partnerMember) return {
+      name: "",
+      fatherName: "",
+      grandfatherName: ""
+    };
+
     // Get father information
     const father = familyMembers.find(m => m.id === partnerMember.fatherId);
     const fatherName = father?.name || "";
-    
+
     // Get grandfather information
     const grandfather = father ? familyMembers.find(m => m.id === father.fatherId) : null;
     const grandfatherName = grandfather?.name || "";
-    
     return {
       name: partnerMember.name || "",
       fatherName,
       grandfatherName
     };
   };
-
   const handleSpouseEditAttempt = (spouseMember: any) => {
     const partnerDetails = getSpousePartnerDetails(spouseMember);
     setSpousePartnerName(partnerDetails.name);
     setSpousePartnerDetails(partnerDetails);
     setShowSpouseEditWarning(true);
   };
-
   const getChildrenCount = (parentId: string) => {
     return familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId).length;
   };
-
   const getSpousesCount = (memberId: string) => {
     return familyMarriages.filter((marriage: any) => marriage.husband?.id === memberId || marriage.wife?.id === memberId).length;
   };
-
   const performCascadingDelete = async (member: any) => {
     const membersToDelete = new Set<string>();
     const marriagesToDelete = new Set<string>();
@@ -1097,14 +836,12 @@ const FamilyBuilderNew = () => {
     membersToDelete.add(member.id);
 
     // Find all marriages involving this member
-    const memberMarriages = familyMarriages.filter((marriage: any) =>
-      marriage.husband?.id === member.id || marriage.wife?.id === member.id
-    );
+    const memberMarriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id);
 
     // Process each marriage
     memberMarriages.forEach((marriage: any) => {
       marriagesToDelete.add(marriage.id);
-      
+
       // If deleting a blood family member (not a spouse), also delete their spouse if the spouse is not a blood family member
       if (!checkIfMemberIsSpouse(member)) {
         const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
@@ -1121,18 +858,14 @@ const FamilyBuilderNew = () => {
     // Recursive function to find and delete all descendants
     const findDescendants = (parentId: string) => {
       const children = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
-      
       children.forEach(child => {
         membersToDelete.add(child.id);
-        
+
         // Find and delete marriages of this child
-        const childMarriages = familyMarriages.filter((marriage: any) =>
-          marriage.husband?.id === child.id || marriage.wife?.id === child.id
-        );
-        
+        const childMarriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === child.id || marriage.wife?.id === child.id);
         childMarriages.forEach((marriage: any) => {
           marriagesToDelete.add(marriage.id);
-          
+
           // If child's spouse is not a blood family member, delete them too
           const spouseId = marriage.husband?.id === child.id ? marriage.wife?.id : marriage.husband?.id;
           if (spouseId) {
@@ -1142,7 +875,7 @@ const FamilyBuilderNew = () => {
             }
           }
         });
-        
+
         // Recursively find descendants of this child
         findDescendants(child.id);
       });
@@ -1150,30 +883,26 @@ const FamilyBuilderNew = () => {
 
     // Start the recursive descent from the member being deleted
     findDescendants(member.id);
-
     try {
       // Delete marriages first (to avoid foreign key constraints)
       if (marriagesToDelete.size > 0) {
-        const { error: marriageError } = await supabase
-          .from('marriages')
-          .delete()
-          .in('id', Array.from(marriagesToDelete));
+        const {
+          error: marriageError
+        } = await supabase.from('marriages').delete().in('id', Array.from(marriagesToDelete));
         if (marriageError) throw marriageError;
       }
 
       // Then delete family members
       if (membersToDelete.size > 0) {
-        const { error: memberError } = await supabase
-          .from('family_tree_members')
-          .delete()
-          .in('id', Array.from(membersToDelete));
+        const {
+          error: memberError
+        } = await supabase.from('family_tree_members').delete().in('id', Array.from(membersToDelete));
         if (memberError) throw memberError;
       }
 
       // Update local state
       setFamilyMembers(familyMembers.filter(m => !membersToDelete.has(m.id)));
       setFamilyMarriages(familyMarriages.filter((marriage: any) => !marriagesToDelete.has(marriage.id)));
-
       toast({
         title: t('family_builder.deleted', 'تم الحذف بنجاح'),
         description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} علاقة زواج من شجرة العائلة`
@@ -1183,33 +912,34 @@ const FamilyBuilderNew = () => {
       throw error;
     }
   };
-
   const handleDeleteMember = async (memberOrId: any) => {
     const id = typeof memberOrId === 'string' ? memberOrId : memberOrId?.id;
     const member = familyMembers.find(m => m.id === id);
     if (!member) {
-      toast({ title: t('family_builder.error', 'خطأ'), description: t('family_builder.member_not_found', 'العضو غير موجود'), variant: 'destructive' });
+      toast({
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.member_not_found', 'العضو غير موجود'),
+        variant: 'destructive'
+      });
       return;
     }
-
     if (member.isFounder) {
-      toast({ title: t('family_builder.warning', 'تحذير'), description: t('family_builder.cannot_delete_founder', 'لا يمكن حذف مؤسس العائلة'), variant: 'destructive' });
+      toast({
+        title: t('family_builder.warning', 'تحذير'),
+        description: t('family_builder.cannot_delete_founder', 'لا يمكن حذف مؤسس العائلة'),
+        variant: 'destructive'
+      });
       return;
     }
-
     setMemberToDelete(member);
 
     // Get detailed information about what will be deleted
-    const spouses = familyMarriages
-      .filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id)
-      .map((marriage: any) => {
-        const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
-        return familyMembers.find(m => m.id === spouseId);
-      })
-      .filter(Boolean);
-
+    const spouses = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id).map((marriage: any) => {
+      const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
+      return familyMembers.find(m => m.id === spouseId);
+    }).filter(Boolean);
     const children = familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
-    
+
     // Count all descendants recursively
     const getAllDescendants = (parentId: string): any[] => {
       const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
@@ -1219,23 +949,12 @@ const FamilyBuilderNew = () => {
       });
       return allDescendants;
     };
-
     const allDescendants = getAllDescendants(member.id);
-    const marriages = familyMarriages.filter((marriage: any) => 
-      marriage.husband?.id === member.id || marriage.wife?.id === member.id
-    );
-
+    const marriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id);
     const isSpouse = checkIfMemberIsSpouse(member);
-    
     if (isSpouse) {
       setDeleteModalType('spouse');
-      setDeleteWarningMessage(
-        `تحذير: حذف هذا الزوج/الزوجة سيؤدي إلى:\n` +
-        `- حذف الشخص نفسه\n` +
-        `- إزالة علاقة الزواج\n` +
-        (children.length > 0 ? `- حذف ${children.length} من الأطفال وجميع أحفادهم (${allDescendants.length} شخص إجمالي)\n` : '') +
-        `هل أنت متأكد من المتابعة؟`
-      );
+      setDeleteWarningMessage(`تحذير: حذف هذا الزوج/الزوجة سيؤدي إلى:\n` + `- حذف الشخص نفسه\n` + `- إزالة علاقة الزواج\n` + (children.length > 0 ? `- حذف ${children.length} من الأطفال وجميع أحفادهم (${allDescendants.length} شخص إجمالي)\n` : '') + `هل أنت متأكد من المتابعة؟`);
     } else {
       let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
       warningMessage += `- الشخص نفسه (${member.name})\n`;
@@ -1252,13 +971,11 @@ const FamilyBuilderNew = () => {
         warningMessage += `- ${marriages.length} من علاقات الزواج\n`;
       }
       warningMessage += `\nهل أنت متأكد من المتابعة؟`;
-      
       setDeleteModalType('bloodMember');
       setDeleteWarningMessage(warningMessage);
     }
     setShowDeleteModal(true);
   };
-
   const confirmDelete = async () => {
     if (!memberToDelete) return;
     try {
@@ -1267,7 +984,11 @@ const FamilyBuilderNew = () => {
       setMemberToDelete(null);
     } catch (error) {
       console.error('Error deleting member:', error);
-      toast({ title: t('family_builder.error', 'خطأ'), description: t('family_builder.delete_error', 'حدث خطأ أثناء حذف العضو'), variant: 'destructive' });
+      toast({
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.delete_error', 'حدث خطأ أثناء حذف العضو'),
+        variant: 'destructive'
+      });
     }
   };
 
@@ -1276,53 +997,39 @@ const FamilyBuilderNew = () => {
     const original = originalWivesData[index];
     if (!original && wife.isSaved) return false; // New wife that's saved
     if (!original) return true; // New unsaved wife
-    
-    return (
-      wife.name !== original.name ||
-      wife.isAlive !== original.isAlive ||
-      wife.maritalStatus !== original.maritalStatus ||
-      wife.isFamilyMember !== original.isFamilyMember ||
-      (wife.birthDate?.getTime() || 0) !== (original.birthDate?.getTime() || 0) ||
-      (wife.deathDate?.getTime() || 0) !== (original.deathDate?.getTime() || 0)
-    );
+
+    return wife.name !== original.name || wife.isAlive !== original.isAlive || wife.maritalStatus !== original.maritalStatus || wife.isFamilyMember !== original.isFamilyMember || (wife.birthDate?.getTime() || 0) !== (original.birthDate?.getTime() || 0) || (wife.deathDate?.getTime() || 0) !== (original.deathDate?.getTime() || 0);
   };
 
   // Handle spouse deletion with modal
   const handleSpouseDelete = (wife: any, index: number) => {
     // Find children of this spouse
-    const spouseChildren = familyMembers.filter(member => 
-      member.mother_id === wife.id || member.father_id === wife.id
-    );
-    
+    const spouseChildren = familyMembers.filter(member => member.mother_id === wife.id || member.father_id === wife.id);
+
     // Get all descendants
     const getAllSpouseDescendants = (memberId: string): any[] => {
-      const children = familyMembers.filter(member => 
-        member.father_id === memberId || member.mother_id === memberId
-      );
+      const children = familyMembers.filter(member => member.father_id === memberId || member.mother_id === memberId);
       let descendants = [...children];
       children.forEach(child => {
         descendants = [...descendants, ...getAllSpouseDescendants(child.id)];
       });
       return descendants;
     };
-    
     const allDescendants = getAllSpouseDescendants(wife.id);
-    
     let warningMessage = `تحذير: حذف هذه الزوجة سيؤدي إلى:\n`;
     warningMessage += `- حذف الزوجة: ${wife.name}\n`;
     warningMessage += `- إزالة علاقة الزواج\n`;
-    
     if (spouseChildren.length > 0) {
       warningMessage += `- حذف ${spouseChildren.length} من الأطفال\n`;
     }
-    
     if (allDescendants.length > spouseChildren.length) {
       warningMessage += `- حذف جميع الأحفاد (${allDescendants.length} شخص إجمالي)\n`;
     }
-    
     warningMessage += `\nسيتم التأكيد النهائي عند حفظ بيانات العضو الحالي.\nهل تريد المتابعة؟`;
-    
-    setSpouseToDelete({ wife, index });
+    setSpouseToDelete({
+      wife,
+      index
+    });
     setSpouseDeleteWarning(warningMessage);
     setShowSpouseDeleteModal(true);
   };
@@ -1330,16 +1037,21 @@ const FamilyBuilderNew = () => {
   // Confirm spouse deletion (just mark for deletion)
   const confirmSpouseDelete = () => {
     if (!spouseToDelete) return;
-    
-    const { index } = spouseToDelete;
+    const {
+      index
+    } = spouseToDelete;
     const newWives = wives.filter((_, i) => i !== index);
     setWives(newWives);
-    
+
     // Update family status object
-    const newStatus = { ...wiveFamilyStatus };
+    const newStatus = {
+      ...wiveFamilyStatus
+    };
     delete newStatus[index];
     // Reindex the remaining statuses
-    const reindexedStatus: { [key: number]: 'yes' | 'no' | null } = {};
+    const reindexedStatus: {
+      [key: number]: 'yes' | 'no' | null;
+    } = {};
     Object.keys(newStatus).forEach((key, newIndex) => {
       const oldIndex = parseInt(key);
       if (oldIndex > index) {
@@ -1349,26 +1061,17 @@ const FamilyBuilderNew = () => {
       }
     });
     setWiveFamilyStatus(reindexedStatus);
-    
     setShowSpouseDeleteModal(false);
     setSpouseToDelete(null);
-    
     toast({
       title: "تم تحديد الزوجة للحذف",
       description: "سيتم حذف الزوجة نهائياً عند حفظ بيانات العضو",
       variant: "destructive"
     });
   };
-
   const filteredMembers = familyMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === "all" || 
-      (selectedFilter === "alive" && member.isAlive) ||
-      (selectedFilter === "deceased" && !member.isAlive) ||
-      (selectedFilter === "male" && member.gender === "male") ||
-      (selectedFilter === "female" && member.gender === "female") ||
-      (selectedFilter === "founders" && member.isFounder);
-    
+    const matchesFilter = selectedFilter === "all" || selectedFilter === "alive" && member.isAlive || selectedFilter === "deceased" && !member.isAlive || selectedFilter === "male" && member.gender === "male" || selectedFilter === "female" && member.gender === "female" || selectedFilter === "founders" && member.isFounder;
     return matchesSearch && matchesFilter;
   });
 
@@ -1380,13 +1083,11 @@ const FamilyBuilderNew = () => {
     resetFormData();
     if (isMobile) setIsMemberListOpen(false);
   };
-
   const handleViewMember = (member: any) => {
     setFormMode('profile');
     setEditingMember(member);
     if (isMobile) setIsMemberListOpen(false);
   };
-
   const handleEditMember = (member: any) => {
     setFormMode('edit');
     setEditingMember(member);
@@ -1394,14 +1095,12 @@ const FamilyBuilderNew = () => {
     populateFormData(member);
     if (isMobile) setIsMemberListOpen(false);
   };
-
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
     setCurrentStep(1);
     resetFormData();
   };
-
   const resetFormData = () => {
     setFormData({
       name: "",
@@ -1420,7 +1119,6 @@ const FamilyBuilderNew = () => {
     setWives([]);
     setHusband(null);
   };
-
   const populateFormData = (member: any) => {
     setFormData({
       name: member.name || "",
@@ -1436,44 +1134,35 @@ const FamilyBuilderNew = () => {
       croppedImage: member.image || null,
       isFounder: member.isFounder || false
     });
-    
+
     // Load existing spouses
     loadExistingSpouses(member);
   };
-
   const loadExistingSpouses = (member: any) => {
     if (!familyMarriages || familyMarriages.length === 0) return;
-    
+
     // Reset spouse states first
     setWives([]);
     setHusband(null);
-    
     if (member.gender === "male") {
       // Load wives for male member
       console.log('🔥 Debug - Loading wives for male member:', member.name, 'ID:', member.id);
       console.log('🔥 Debug - Available marriages:', familyMarriages);
-      
-      const memberMarriages = familyMarriages.filter(marriage => 
-        marriage.husband?.id === member.id
-      );
-      
+      const memberMarriages = familyMarriages.filter(marriage => marriage.husband?.id === member.id);
       console.log('🔥 Debug - Found marriages for this member:', memberMarriages);
-      
       if (memberMarriages.length > 0) {
         const memberWives = memberMarriages.map(marriage => {
           // Use the wife data from the marriage object directly (it already has all fields from the database)
           const wifeMember = marriage.wife || familyMembers.find(fm => fm.id === marriage.wife?.id);
-          
+
           // Determine if spouse is external: no father_id and not founder
-          const isExternalSpouse = wifeMember ? (!wifeMember.father_id && !wifeMember.is_founder) : true;
-          
+          const isExternalSpouse = wifeMember ? !wifeMember.father_id && !wifeMember.is_founder : true;
           console.log('🔥 Wife member debug:', {
             marriage_wife: marriage.wife,
             family_member: familyMembers.find(fm => fm.id === marriage.wife?.id),
             final_wife: wifeMember,
             is_alive: wifeMember?.is_alive
           });
-          
           return {
             id: marriage.wife?.id || '',
             name: marriage.wife?.name || '',
@@ -1484,10 +1173,13 @@ const FamilyBuilderNew = () => {
             isAlive: wifeMember?.is_alive ?? true,
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
-            isFamilyMember: !isExternalSpouse, // If external spouse, mark as not family member
+            isFamilyMember: !isExternalSpouse,
+            // If external spouse, mark as not family member
             existingFamilyMemberId: wifeMember ? wifeMember.id : '',
-            isSaved: true, // Mark existing wives as saved
-            originalData: wifeMember ? { // Store original data for change tracking
+            isSaved: true,
+            // Mark existing wives as saved
+            originalData: wifeMember ? {
+              // Store original data for change tracking
               name: marriage.wife?.name || '',
               firstName: wifeMember.first_name || '',
               lastName: wifeMember.last_name || '',
@@ -1500,13 +1192,17 @@ const FamilyBuilderNew = () => {
             } : null
           };
         }).filter(wife => wife.id); // Filter out wives without ID
-        
+
         console.log('🔥 Loading wives for male member:', memberWives);
         setWives(memberWives);
-        setOriginalWivesData(memberWives.map(wife => ({ ...wife }))); // Store original data
-        
+        setOriginalWivesData(memberWives.map(wife => ({
+          ...wife
+        }))); // Store original data
+
         // Initialize wife family status based on whether they are family members
-        const initialWiveFamilyStatus: { [key: number]: 'yes' | 'no' | null } = {};
+        const initialWiveFamilyStatus: {
+          [key: number]: 'yes' | 'no' | null;
+        } = {};
         memberWives.forEach((wife, index) => {
           initialWiveFamilyStatus[index] = wife.isFamilyMember ? 'yes' : 'no';
         });
@@ -1518,43 +1214,35 @@ const FamilyBuilderNew = () => {
       }
     } else if (member.gender === "female") {
       // Load husband for female member
-      const memberMarriages = familyMarriages.filter(marriage => 
-        marriage.wife?.id === member.id
-      );
-      
+      const memberMarriages = familyMarriages.filter(marriage => marriage.wife?.id === member.id);
       if (memberMarriages.length > 0) {
         const marriage = memberMarriages[0]; // Take the first marriage
         const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
-        
         const husbandData = {
           id: marriage.husband?.id || '',
-          firstName: husbandMember?.first_name || marriage.husband?.firstName || '',
-          lastName: husbandMember?.last_name || marriage.husband?.lastName || '',
           name: marriage.husband?.name || '',
           birthDate: husbandMember?.birth_date ? new Date(husbandMember.birth_date) : null,
           maritalStatus: 'married',
           isAlive: husbandMember?.is_alive ?? true,
           deathDate: husbandMember?.death_date ? new Date(husbandMember.death_date) : null,
           croppedImage: husbandMember?.image_url || null,
-          isFamilyMember: !!husbandMember, // If found in family members, it's a family member
+          isFamilyMember: !!husbandMember,
+          // If found in family members, it's a family member
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
-        
         console.log('🔥 Loading husband for female member:', husbandData);
         setHusband(husbandData);
       }
     }
   };
-
   const handleFormSubmit = async (submissionData: any) => {
     try {
       setIsSaving(true);
-      
+
       // Determine marital status based on presence of spouses
-      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
-                        submissionData.gender === "female" && husband;
-      
+      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || submissionData.gender === "female" && husband;
+
       // Prepare final submission data matching modal structure
       const finalData = {
         ...submissionData,
@@ -1562,15 +1250,14 @@ const FamilyBuilderNew = () => {
         wives: submissionData.gender === "male" ? wives : [],
         husband: submissionData.gender === "female" && husband ? husband : null
       };
-      
+
       // Call the existing submission logic (same as modal)
       console.log('🔥 Submitting form data:', finalData);
-      
+
       // Determine family relationship info based on selectedParent
       let fatherId = null;
       let motherId = null;
       let relatedPersonId = null;
-      
       if (submissionData.selectedParent && submissionData.selectedParent !== "none") {
         const selectedMarriage = familyMarriages.find(m => m.id === submissionData.selectedParent);
         console.log('🔥 Found selected marriage:', selectedMarriage);
@@ -1581,81 +1268,58 @@ const FamilyBuilderNew = () => {
           console.log('🔥 Setting parent IDs - Father:', fatherId, 'Mother:', motherId, 'RelatedPerson (Marriage):', relatedPersonId);
         }
       }
-
       let isEditMode = formMode === 'edit' && editingMember;
       let memberData;
-
       if (isEditMode) {
         // Update existing member
-        // Split the name into first and last name for proper storage
-        const nameParts = submissionData.name?.split(' ') || [''];
-        const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
-        
-        const { data: updatedMember, error: updateError } = await supabase
-          .from('family_tree_members')
-          .update({
-            name: submissionData.name || '',
-            first_name: firstName,
-            last_name: lastName || null,
-            gender: submissionData.gender,
-            birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: submissionData.isAlive,
-            death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
-            biography: submissionData.bio || null,
-            image_url: submissionData.croppedImage || null,
-            father_id: fatherId,
-            mother_id: motherId,
-            related_person_id: relatedPersonId,
-            marital_status: finalData.maritalStatus || 'single',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', editingMember.id)
-          .select()
-          .single();
-
+        const {
+          data: updatedMember,
+          error: updateError
+        } = await supabase.from('family_tree_members').update({
+          name: submissionData.name,
+          gender: submissionData.gender,
+          birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
+          is_alive: submissionData.isAlive,
+          death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
+          biography: submissionData.bio || null,
+          image_url: submissionData.croppedImage || null,
+          father_id: fatherId,
+          mother_id: motherId,
+          related_person_id: relatedPersonId,
+          marital_status: finalData.maritalStatus || 'single',
+          updated_at: new Date().toISOString()
+        }).eq('id', editingMember.id).select().single();
         if (updateError) {
           console.error('Error updating family member:', updateError);
           throw updateError;
         }
-
         memberData = updatedMember;
         console.log('🔥 Successfully updated family member:', updatedMember);
       } else {
         // Insert new family member into database
-        // Split the name into first and last name for proper storage
-        const nameParts = submissionData.name?.split(' ') || [''];
-        const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
-        
-        const { data: newMember, error: memberError } = await supabase
-          .from('family_tree_members')
-          .insert({
-            name: submissionData.name || '',
-            first_name: firstName,
-            last_name: lastName || null,
-            gender: submissionData.gender,
-            birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: submissionData.isAlive,
-            death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
-            biography: submissionData.bio || null,
-            image_url: submissionData.croppedImage || null,
-            father_id: fatherId,
-            mother_id: motherId,
-            related_person_id: relatedPersonId,
-            family_id: familyId,
-            created_by: familyData?.creator_id,
-            is_founder: submissionData.isFounder || false,
-            marital_status: finalData.maritalStatus || 'single'
-          })
-          .select()
-          .single();
-
+        const {
+          data: newMember,
+          error: memberError
+        } = await supabase.from('family_tree_members').insert({
+          name: submissionData.name,
+          gender: submissionData.gender,
+          birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
+          is_alive: submissionData.isAlive,
+          death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
+          biography: submissionData.bio || null,
+          image_url: submissionData.croppedImage || null,
+          father_id: fatherId,
+          mother_id: motherId,
+          related_person_id: relatedPersonId,
+          family_id: familyId,
+          created_by: familyData?.creator_id,
+          is_founder: submissionData.isFounder || false,
+          marital_status: finalData.maritalStatus || 'single'
+        }).select().single();
         if (memberError) {
           console.error('Error adding family member:', memberError);
           throw memberError;
         }
-
         memberData = newMember;
         console.log('🔥 Successfully added family member:', newMember);
       }
@@ -1667,136 +1331,118 @@ const FamilyBuilderNew = () => {
         details: []
       };
 
-       // Handle marriages if applicable
-       if (finalData.maritalStatus === 'married') {
-         // Keep track of marriages that should remain active
-         let activeMarriageIds = [];
-         
-         if (isEditMode) {
-           // We'll manage marriage activation/deactivation more carefully
-           // Don't deactivate all marriages upfront - we'll handle each case individually
-         }
+      // Handle marriages if applicable
+      if (finalData.maritalStatus === 'married') {
+        // Keep track of marriages that should remain active
+        let activeMarriageIds = [];
+        if (isEditMode) {
+          // We'll manage marriage activation/deactivation more carefully
+          // Don't deactivate all marriages upfront - we'll handle each case individually
+        }
 
-         // Handle wives for male members - process all saved wives
-         if (submissionData.gender === 'male' && wives.length > 0) {
-            const savedWives = wives.filter(wife => {
-              // Get the wife's index to check family status
-              const wifeIndex = wives.findIndex(w => w === wife);
-              const familyStatus = wiveFamilyStatus[wifeIndex];
-              
-              // Only save if:
-              // 1. Wife is marked as saved
-              // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
-              return wife.isSaved === true && 
-                     (familyStatus !== 'yes' || wife.existingFamilyMemberId);
-            });
-           for (const wife of savedWives) {
-             try {
-               let wifeId = wife.existingFamilyMemberId;
-               
-                // If wife has an existing ID, update the existing record
-                if (wife.existingFamilyMemberId && wife.id) {
-                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                  const { data: updatedWife, error: wifeUpdateError } = await supabase
-                    .from('family_tree_members')
-                     .update({
-                       name: wifeName,
-                      first_name: wife.firstName || null,
-                      last_name: wife.lastName || null,
-                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                      is_alive: wife.isAlive ?? true,
-                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                      marital_status: 'married',
-                      image_url: wife.croppedImage || null,
-                      updated_at: new Date().toISOString()
-                    })
-                   .eq('id', wife.existingFamilyMemberId)
-                   .select()
-                   .single();
+        // Handle wives for male members - process all saved wives
+        if (submissionData.gender === 'male' && wives.length > 0) {
+          const savedWives = wives.filter(wife => {
+            // Get the wife's index to check family status
+            const wifeIndex = wives.findIndex(w => w === wife);
+            const familyStatus = wiveFamilyStatus[wifeIndex];
 
-                 if (wifeUpdateError) {
-                   console.error('Error updating wife member:', wife.name, wifeUpdateError);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
-                   continue;
-                 }
-                 
-                 wifeId = updatedWife.id;
-                 console.log('🔥 Successfully updated wife member:', updatedWife);
-               } else {
-                  // If wife is not from existing family members, create new family member
-                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                  const { data: newWifeMember, error: wifeError } = await supabase
-                    .from('family_tree_members')
-                     .insert({
-                       name: wifeName,
-                       first_name: wife.firstName || null,
-                       last_name: wife.lastName || null,
-                      gender: 'female',
-                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                      is_alive: wife.isAlive ?? true,
-                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                      family_id: familyId,
-                      created_by: familyData?.creator_id,
-                      is_founder: false,
-                      marital_status: 'married',
-                      image_url: wife.croppedImage || null
-                    })
-                   .select()
-                   .single();
+            // Only save if:
+            // 1. Wife is marked as saved
+            // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
+            return wife.isSaved === true && (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+          });
+          for (const wife of savedWives) {
+            try {
+              let wifeId = wife.existingFamilyMemberId;
 
-                 if (wifeError) {
-                   console.error('Error creating wife member:', wife.name, wifeError);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
-                   continue;
-                 }
-                 
-                 wifeId = newWifeMember.id;
-                 console.log('🔥 Successfully created wife member:', newWifeMember);
-               }
+              // If wife has an existing ID, update the existing record
+              if (wife.existingFamilyMemberId && wife.id) {
+                const {
+                  data: updatedWife,
+                  error: wifeUpdateError
+                } = await supabase.from('family_tree_members').update({
+                  name: wife.name,
+                  first_name: wife.firstName || null,
+                  last_name: wife.lastName || null,
+                  birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                  is_alive: wife.isAlive ?? true,
+                  death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                  marital_status: 'married',
+                  image_url: wife.croppedImage || null,
+                  updated_at: new Date().toISOString()
+                }).eq('id', wife.existingFamilyMemberId).select().single();
+                if (wifeUpdateError) {
+                  console.error('Error updating wife member:', wife.name, wifeUpdateError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
+                  continue;
+                }
+                wifeId = updatedWife.id;
+                console.log('🔥 Successfully updated wife member:', updatedWife);
+              } else {
+                // If wife is not from existing family members, create new family member
+                const {
+                  data: newWifeMember,
+                  error: wifeError
+                } = await supabase.from('family_tree_members').insert({
+                  name: wife.name,
+                  first_name: wife.firstName || null,
+                  last_name: wife.lastName || null,
+                  gender: 'female',
+                  birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                  is_alive: wife.isAlive ?? true,
+                  death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                  family_id: familyId,
+                  created_by: familyData?.creator_id,
+                  is_founder: false,
+                  marital_status: 'married',
+                  image_url: wife.croppedImage || null
+                }).select().single();
+                if (wifeError) {
+                  console.error('Error creating wife member:', wife.name, wifeError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
+                  continue;
+                }
+                wifeId = newWifeMember.id;
+                console.log('🔥 Successfully created wife member:', newWifeMember);
+              }
 
-               // Check if marriage already exists and update it, otherwise create new one
-               const { data: existingMarriage } = await supabase
-                 .from('marriages')
-                 .select('id')
-                 .eq('husband_id', memberData.id)
-                 .eq('wife_id', wifeId)
-                 .maybeSingle();
-
-               let marriageError;
-               if (existingMarriage) {
-                 // Update existing marriage to ensure it's active
-                 const { error } = await supabase
-                   .from('marriages')
-                   .update({
-                     is_active: true,
-                     marital_status: 'married'
-                   })
-                   .eq('id', existingMarriage.id);
-                 marriageError = error;
-                 activeMarriageIds.push(existingMarriage.id);
-                 console.log('🔥 Updated existing marriage:', existingMarriage.id);
-               } else {
-                 // Create new marriage record
-                 const { data: newMarriage, error } = await supabase
-                   .from('marriages')
-                   .insert({
-                     family_id: familyId,
-                     husband_id: memberData.id,
-                     wife_id: wifeId,
-                     is_active: true,
-                     marital_status: 'married'
-                   })
-                   .select('id')
-                   .single();
-                 marriageError = error;
-                 if (newMarriage) {
-                   activeMarriageIds.push(newMarriage.id);
-                   console.log('🔥 Created new marriage:', newMarriage.id);
-                 }
-               }
-
+              // Check if marriage already exists and update it, otherwise create new one
+              const {
+                data: existingMarriage
+              } = await supabase.from('marriages').select('id').eq('husband_id', memberData.id).eq('wife_id', wifeId).maybeSingle();
+              let marriageError;
+              if (existingMarriage) {
+                // Update existing marriage to ensure it's active
+                const {
+                  error
+                } = await supabase.from('marriages').update({
+                  is_active: true,
+                  marital_status: 'married'
+                }).eq('id', existingMarriage.id);
+                marriageError = error;
+                activeMarriageIds.push(existingMarriage.id);
+                console.log('🔥 Updated existing marriage:', existingMarriage.id);
+              } else {
+                // Create new marriage record
+                const {
+                  data: newMarriage,
+                  error
+                } = await supabase.from('marriages').insert({
+                  family_id: familyId,
+                  husband_id: memberData.id,
+                  wife_id: wifeId,
+                  is_active: true,
+                  marital_status: 'married'
+                }).select('id').single();
+                marriageError = error;
+                if (newMarriage) {
+                  activeMarriageIds.push(newMarriage.id);
+                  console.log('🔥 Created new marriage:', newMarriage.id);
+                }
+              }
               if (marriageError) {
                 console.error('Error creating marriage with wife:', wife.name, marriageError);
                 marriageResults.failed++;
@@ -1818,29 +1464,24 @@ const FamilyBuilderNew = () => {
         if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
           try {
             let husbandId = husband.existingFamilyMemberId;
-            
+
             // If husband is not from existing family members, create new family member first
             if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
-              const husbandName = husband.name || (husband.firstName && husband.lastName ? `${husband.firstName} ${husband.lastName}` : husband.firstName || husband.lastName || '');
-              const { data: newHusbandMember, error: husbandError } = await supabase
-                .from('family_tree_members')
-                .insert({
-                  name: husbandName,
-                  first_name: husband.firstName || null,
-                  last_name: husband.lastName || null,
-                  gender: 'male',
-                  birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
-                  is_alive: husband.isAlive ?? true,
-                  death_date: !husband.isAlive && husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
-                  family_id: familyId,
-                  created_by: familyData?.creator_id,
-                  is_founder: false,
-                  marital_status: 'married',
-                  image_url: husband.croppedImage || null
-                })
-                .select()
-                .single();
-
+              const {
+                data: newHusbandMember,
+                error: husbandError
+              } = await supabase.from('family_tree_members').insert({
+                name: husband.name,
+                gender: 'male',
+                birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
+                is_alive: husband.isAlive ?? true,
+                death_date: !husband.isAlive && husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
+                family_id: familyId,
+                created_by: familyData?.creator_id,
+                is_founder: false,
+                marital_status: 'married',
+                image_url: husband.croppedImage || null
+              }).select().single();
               if (husbandError) {
                 console.error('Error creating husband member:', husband.name, husbandError);
                 marriageResults.failed++;
@@ -1854,38 +1495,32 @@ const FamilyBuilderNew = () => {
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
               // Check if marriage already exists and update it, otherwise create new one
-              const { data: existingMarriage } = await supabase
-                .from('marriages')
-                .select('id')
-                .eq('husband_id', husbandId)
-                .eq('wife_id', memberData.id)
-                .maybeSingle();
-
+              const {
+                data: existingMarriage
+              } = await supabase.from('marriages').select('id').eq('husband_id', husbandId).eq('wife_id', memberData.id).maybeSingle();
               let marriageError;
               if (existingMarriage) {
                 // Update existing marriage
-                const { error } = await supabase
-                  .from('marriages')
-                  .update({
-                    is_active: true,
-                    marital_status: 'married'
-                  })
-                  .eq('id', existingMarriage.id);
+                const {
+                  error
+                } = await supabase.from('marriages').update({
+                  is_active: true,
+                  marital_status: 'married'
+                }).eq('id', existingMarriage.id);
                 marriageError = error;
               } else {
                 // Create new marriage record
-                const { error } = await supabase
-                  .from('marriages')
-                  .insert({
-                    family_id: familyId,
-                    husband_id: husbandId,
-                    wife_id: memberData.id,
-                    is_active: true,
-                    marital_status: 'married'
-                  });
+                const {
+                  error
+                } = await supabase.from('marriages').insert({
+                  family_id: familyId,
+                  husband_id: husbandId,
+                  wife_id: memberData.id,
+                  is_active: true,
+                  marital_status: 'married'
+                });
                 marriageError = error;
               }
-
               if (marriageError) {
                 console.error('Error creating marriage with husband:', husband.name, marriageError);
                 marriageResults.failed++;
@@ -1900,44 +1535,40 @@ const FamilyBuilderNew = () => {
             console.error('Marriage creation error:', error);
             marriageResults.failed++;
             marriageResults.details.push(`خطأ في ربط الزواج مع ${husband.name}`);
-           }
-         }
-         
-         // If editing, deactivate marriages that are no longer needed
-         if (isEditMode && activeMarriageIds.length > 0) {
-           await supabase
-             .from('marriages')
-             .update({ is_active: false })
-             .or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`)
-             .not('id', 'in', `(${activeMarriageIds.join(',')})`);
-           console.log('🔥 Deactivated unused marriages for member:', editingMember.id);
-         }
-       }
-       
-       // Refresh family data to show updated information
+          }
+        }
+
+        // If editing, deactivate marriages that are no longer needed
+        if (isEditMode && activeMarriageIds.length > 0) {
+          await supabase.from('marriages').update({
+            is_active: false
+          }).or(`husband_id.eq.${editingMember.id},wife_id.eq.${editingMember.id}`).not('id', 'in', `(${activeMarriageIds.join(',')})`);
+          console.log('🔥 Deactivated unused marriages for member:', editingMember.id);
+        }
+      }
+
+      // Refresh family data to show updated information
       await refreshFamilyData();
-      
+
       // Reset form state
       setFormMode('view');
       setCurrentStep(1);
       resetFormData();
       setWives([]);
       setHusband(null);
-      
+
       // Show success toast with detailed information
       const actionText = isEditMode ? "تحديث" : "إضافة";
       const actionedText = isEditMode ? "تم تحديث" : "تم إضافة";
       let toastDescription = `${actionedText} العضو "${submissionData.name}" بنجاح`;
-      
+
       // Add marriage information to toast
       if (marriageResults.successful > 0) {
         toastDescription += `\n✅ تم ربط ${marriageResults.successful} زواج بنجاح`;
       }
-      
       if (marriageResults.failed > 0) {
         toastDescription += `\n❌ فشل في ربط ${marriageResults.failed} زواج`;
       }
-      
       toast({
         title: `تم ${actionText} العضو بنجاح`,
         description: toastDescription,
@@ -1954,12 +1585,10 @@ const FamilyBuilderNew = () => {
           });
         }, 1000);
       }
-      
     } catch (error) {
       console.error('Error submitting form:', error);
-      
       let errorMessage = "حدث خطأ أثناء حفظ البيانات";
-      
+
       // Provide more specific error messages
       if (error.message?.includes('duplicate')) {
         errorMessage = "يوجد عضو بنفس هذه البيانات مسبقاً";
@@ -1968,7 +1597,6 @@ const FamilyBuilderNew = () => {
       } else if (error.message?.includes('permission')) {
         errorMessage = "ليس لديك صلاحية لتنفيذ هذا الإجراء";
       }
-      
       toast({
         title: formMode === 'edit' ? "خطأ في التحديث" : "خطأ في الإضافة",
         description: errorMessage,
@@ -1978,7 +1606,6 @@ const FamilyBuilderNew = () => {
       setIsSaving(false);
     }
   };
-
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -1992,7 +1619,7 @@ const FamilyBuilderNew = () => {
       }
       if (!formData.gender) {
         toast({
-          title: "خطأ في البيانات", 
+          title: "خطأ في البيانات",
           description: "يرجى اختيار الجنس",
           variant: "destructive"
         });
@@ -2007,18 +1634,15 @@ const FamilyBuilderNew = () => {
         return;
       }
     }
-    
     if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
   };
-
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
-
   const getAdditionalInfo = (member: any) => {
     const parts = [];
     if (member.birthDate) parts.push(`مولود: ${member.birthDate}`);
@@ -2026,32 +1650,25 @@ const FamilyBuilderNew = () => {
     if (member.isFounder) parts.push("مؤسس العائلة");
     return parts.join(" • ");
   };
-
   const getFullName = (member: any) => {
     if (!member.relatedPersonId || !familyMembers.length) return member.name;
     const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
     if (!relatedPerson) return member.name;
     return `${member.name} (${member.relation} ${relatedPerson.name})`;
   };
-
   const getGenderColor = (gender: string) => {
     return gender === "female" ? "text-pink-600" : "text-blue-600";
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+    return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
         <GlobalHeader />
         <div className="container mx-auto px-4 py-6">
           <FamilyBuilderNewSkeleton />
         </div>
         <GlobalFooter />
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       
       {/* Floating Background Elements */}
@@ -2140,10 +1757,9 @@ const FamilyBuilderNew = () => {
                     <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 dark:text-teal-400" />
                     <div className="text-center">
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-teal-600 dark:text-teal-400">
-                        {familyData?.updated_at 
-                          ? format(new Date(familyData.updated_at), 'd MMM', { locale: ar })
-                          : t('family_builder.today', 'اليوم')
-                        }
+                        {familyData?.updated_at ? format(new Date(familyData.updated_at), 'd MMM', {
+                        locale: ar
+                      }) : t('family_builder.today', 'اليوم')}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.last_modified', 'آخر تعديل')}</div>
                     </div>
@@ -2159,30 +1775,21 @@ const FamilyBuilderNew = () => {
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
                   </div>
                   
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                  >
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <TreePine className="h-5 w-5" />
                     </div>
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
                   </div>
                   
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/store')}
-                  >
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Store className="h-5 w-5" />
                     </div>
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
                   </div>
                   
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate(`/family-statistics?family=${familyId}`)}
-                  >
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Star className="h-5 w-5" />
                     </div>
@@ -2198,15 +1805,9 @@ const FamilyBuilderNew = () => {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 py-6">
-          <div className={cn(
-            "grid gap-6",
-            isMobile ? "grid-cols-1" : "grid-cols-12"
-          )}>
+          <div className={cn("grid gap-6", isMobile ? "grid-cols-1" : "grid-cols-12")}>
             {/* Form Panel - Right Side on Desktop */}
-            <div className={cn(
-              "space-y-6",
-              isMobile ? "order-2" : "col-span-8 order-2"
-            )}>
+            <div className={cn("space-y-6", isMobile ? "order-2" : "col-span-8 order-2")}>
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                 <CardHeader className="pb-4 relative">
@@ -2224,93 +1825,54 @@ const FamilyBuilderNew = () => {
                      </CardTitle>
 
                      {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
-                     {(formMode === 'add' || formMode === 'edit') && (
-                      <div className="flex items-center gap-3 order-2 ms-auto">
-                        {[1, 2].map((step, index) => (
-                          <div key={step} className="flex items-center gap-2">
-                            <div
-                              className={cn(
-                                "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
-                                currentStep >= step
-                                  ? "bg-primary border-primary text-primary-foreground shadow-md"
-                                  : "bg-background border-muted-foreground/30 text-muted-foreground"
-                              )}
-                            >
-                              {currentStep > step ? (
-                                <Check className="h-4 w-4" />
-                              ) : (
-                                step
-                              )}
+                     {(formMode === 'add' || formMode === 'edit') && <div className="flex items-center gap-3 order-2 ms-auto">
+                        {[1, 2].map((step, index) => <div key={step} className="flex items-center gap-2">
+                            <div className={cn("flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200", currentStep >= step ? "bg-primary border-primary text-primary-foreground shadow-md" : "bg-background border-muted-foreground/30 text-muted-foreground")}>
+                              {currentStep > step ? <Check className="h-4 w-4" /> : step}
                             </div>
-                            <span className={cn(
-                              "text-sm font-medium",
-                              currentStep >= step ? "text-primary" : "text-muted-foreground"
-                            )}>
+                            <span className={cn("text-sm font-medium", currentStep >= step ? "text-primary" : "text-muted-foreground")}>
                               {step === 1 ? "المعلومات الأساسية" : "التفاصيل الإضافية"}
                             </span>
-                            {index < 1 && (
-                              <div className={cn(
-                                "w-12 h-0.5 mx-2 transition-all duration-200",
-                                currentStep > step ? "bg-primary" : "bg-muted-foreground/30"
-                              )} />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                     )}
+                            {index < 1 && <div className={cn("w-12 h-0.5 mx-2 transition-all duration-200", currentStep > step ? "bg-primary" : "bg-muted-foreground/30")} />}
+                          </div>)}
+                      </div>}
                       
-                       {formMode === 'view' && (
-                        <Button onClick={handleAddMember} className="flex items-center gap-2">
+                       {formMode === 'view' && <Button onClick={handleAddMember} className="flex items-center gap-2">
                           <Plus className="h-4 w-4" />
                           إضافة عضو
-                        </Button>
-                       )}
+                        </Button>}
                   </CardHeader>
                 <CardContent className="relative">
-                  {formMode === 'view' ? (
-                    <div className="text-center py-12 text-muted-foreground">
+                  {formMode === 'view' ? <div className="text-center py-12 text-muted-foreground">
                       <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>اختر عضواً من القائمة لعرض أو تعديل بياناته</p>
                       <p className="text-sm mt-2">أو اضغط "إضافة عضو" لإضافة عضو جديد</p>
-                    </div>
-                  ) : formMode === 'profile' ? (
-                    <MemberProfileView
-                      member={editingMember}
-                      onEdit={() => {
-                        setFormMode('edit');
-                        setCurrentStep(1);
-                        populateFormData(editingMember);
-                      }}
-                      onDelete={() => handleDeleteMember(editingMember)}
-                      onBack={() => setFormMode('view')}
-                      familyMembers={familyMembers}
-                      marriages={familyMarriages}
-                    />
-                  ) : (
-                    <div className="space-y-6">
+                    </div> : formMode === 'profile' ? <MemberProfileView member={editingMember} onEdit={() => {
+                  setFormMode('edit');
+                  setCurrentStep(1);
+                  populateFormData(editingMember);
+                }} onDelete={() => handleDeleteMember(editingMember)} onBack={() => setFormMode('view')} familyMembers={familyMembers} marriages={familyMarriages} /> : <div className="space-y-6">
 
                       {/* Step Content */}
-                      {currentStep === 1 && (
-                         <div className="space-y-4">
+                      {currentStep === 1 && <div className="space-y-4">
                            <h3 className="text-lg font-semibold font-arabic">المعلومات الأساسية</h3>
                            
                            {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                            <div className="grid grid-cols-12 gap-4">
                              <div className="col-span-12 md:col-span-6">
                                 <Label htmlFor="name" className="font-arabic">الاسم الكامل *</Label>
-                                 <Input
-                                   id="name"
-                                   value={formData.name}
-                                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                   placeholder="أدخل الاسم الكامل"
-                                   className="font-arabic"
-                                   required
-                                 />
+                                 <Input id="name" value={formData.name} onChange={e => setFormData({
+                          ...formData,
+                          name: e.target.value
+                        })} placeholder="أدخل الاسم الكامل" className="font-arabic" required />
                              </div>
                              
                              <div className="col-span-6 md:col-span-3">
                                 <Label htmlFor="gender" className="font-arabic">الجنس *</Label>
-                                <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                                <Select value={formData.gender} onValueChange={value => setFormData({
+                          ...formData,
+                          gender: value
+                        })}>
                                   <SelectTrigger className="font-arabic">
                                     <SelectValue placeholder="اختر الجنس" />
                                   </SelectTrigger>
@@ -2323,12 +1885,10 @@ const FamilyBuilderNew = () => {
                               
                              <div className="col-span-6 md:col-span-3">
                                 <Label className="font-arabic">تاريخ الميلاد</Label>
-                                <EnhancedDatePicker
-                                  value={formData.birthDate}
-                                  onChange={(date) => setFormData({...formData, birthDate: date})}
-                                  placeholder="اختر تاريخ الميلاد"
-                                  className="font-arabic"
-                                />
+                                <EnhancedDatePicker value={formData.birthDate} onChange={date => setFormData({
+                          ...formData,
+                          birthDate: date
+                        })} placeholder="اختر تاريخ الميلاد" className="font-arabic" />
                              </div>
                            </div>
                             
@@ -2337,123 +1897,101 @@ const FamilyBuilderNew = () => {
                               <div className="col-span-12 md:col-span-6">
                                 <Label htmlFor="parentRelation" className="font-arabic">
                                   العلاقة العائلية (الوالدين) *
-                                  {formData.isFounder && (
-                                    <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
-                                  )}
+                                  {formData.isFounder && <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>}
                                 </Label>
-                                 <Select 
-                                   value={formData.selectedParent || ""} 
-                                   onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
-                                   disabled={loading || !familyMarriages || !familyMembers || formData.isFounder}
-                                  >
+                                 <Select value={formData.selectedParent || ""} onValueChange={value => setFormData({
+                          ...formData,
+                          selectedParent: value === "none" ? null : value
+                        })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder}>
                                    <SelectTrigger className="font-arabic">
-                                      <SelectValue placeholder={
-                                        loading ? "جاري التحميل..." : 
-                                        formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : 
-                                        "اختر الوالدين"
-                                      } />
+                                      <SelectValue placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : "اختر الوالدين"} />
                                    </SelectTrigger>
                                   <SelectContent>
-                                    {loading || !familyMarriages || !familyMembers ? (
-                                      <SelectItem value="loading" disabled>جاري تحميل البيانات...</SelectItem>
-                                    ) : familyMarriages.length > 0 ? (
-                                      familyMarriages
-                                        .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
-                                        .map((marriage) => {
-                                          // Get full member details for proper naming
-                                          const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
-                                          const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
-                                          
-                                          let displayName = '';
-                                          
-                                          // Helper function to get father's name
-                                          const getFatherName = (member: any) => {
-                                            const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                            return father?.name || '';
-                                          };
-                                          
-                                          // Helper function to get grandfather's name
-                                          const getGrandfatherName = (member: any) => {
-                                            const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                            if (father) {
-                                              const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
-                                              return grandfather?.name || '';
-                                            }
-                                            return '';
-                                          };
-                                          
-                                          // Helper function to build full genealogical name
-                                          const getFullGenealogicalName = (member: any, isFounder: boolean) => {
-                                            if (isFounder) {
-                                              return `${member.name} ${familyData?.name || ''}`;
-                                            }
-                                            
-                                            const fatherName = getFatherName(member);
-                                            const grandfatherName = getGrandfatherName(member);
-                                            
-                                            if (member.gender === 'male') {
-                                              // Male: name + ابن + father + ابن + grandfather (if exists)
-                                              let result = member.name;
-                                              if (fatherName) {
-                                                result += ` ابن ${fatherName}`;
-                                                if (grandfatherName) {
-                                                  result += ` ابن ${grandfatherName}`;
-                                                }
-                                              }
-                                              return result;
-                                            } else {
-                                              // Female: name + بنت + father + ابن + grandfather (if exists)
-                                              let result = member.name;
-                                              if (fatherName) {
-                                                result += ` بنت ${fatherName}`;
-                                                if (grandfatherName) {
-                                                  result += ` ابن ${grandfatherName}`;
-                                                }
-                                              }
-                                              return result;
-                                            }
-                                          };
-                                          
-                                          if (husbandMember && wifeMember) {
-                                            // Both are family members
-                                            const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
-                                            const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
-                                            displayName = `${husbandFullName} ♥ ${wifeFullName}`;
-                                          } else if (husbandMember) {
-                                            // Only husband is family member
-                                            const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
-                                            displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                          } else if (wifeMember) {
-                                            // Only wife is family member
-                                            const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
-                                            displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
-                                          } else {
-                                            // Neither is family member (fallback)
-                                            displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
-                                          }
-                                          
-                                          return (
-                                            <SelectItem key={marriage.id} value={marriage.id}>
+                                    {loading || !familyMarriages || !familyMembers ? <SelectItem value="loading" disabled>جاري تحميل البيانات...</SelectItem> : familyMarriages.length > 0 ? familyMarriages.filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife).map(marriage => {
+                              // Get full member details for proper naming
+                              const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
+                              const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
+                              let displayName = '';
+
+                              // Helper function to get father's name
+                              const getFatherName = (member: any) => {
+                                const father = familyMembers.find(m => m?.id === member?.fatherId);
+                                return father?.name || '';
+                              };
+
+                              // Helper function to get grandfather's name
+                              const getGrandfatherName = (member: any) => {
+                                const father = familyMembers.find(m => m?.id === member?.fatherId);
+                                if (father) {
+                                  const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                                  return grandfather?.name || '';
+                                }
+                                return '';
+                              };
+
+                              // Helper function to build full genealogical name
+                              const getFullGenealogicalName = (member: any, isFounder: boolean) => {
+                                if (isFounder) {
+                                  return `${member.name} ${familyData?.name || ''}`;
+                                }
+                                const fatherName = getFatherName(member);
+                                const grandfatherName = getGrandfatherName(member);
+                                if (member.gender === 'male') {
+                                  // Male: name + ابن + father + ابن + grandfather (if exists)
+                                  let result = member.name;
+                                  if (fatherName) {
+                                    result += ` ابن ${fatherName}`;
+                                    if (grandfatherName) {
+                                      result += ` ابن ${grandfatherName}`;
+                                    }
+                                  }
+                                  return result;
+                                } else {
+                                  // Female: name + بنت + father + ابن + grandfather (if exists)
+                                  let result = member.name;
+                                  if (fatherName) {
+                                    result += ` بنت ${fatherName}`;
+                                    if (grandfatherName) {
+                                      result += ` ابن ${grandfatherName}`;
+                                    }
+                                  }
+                                  return result;
+                                }
+                              };
+                              if (husbandMember && wifeMember) {
+                                // Both are family members
+                                const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                displayName = `${husbandFullName} ♥ ${wifeFullName}`;
+                              } else if (husbandMember) {
+                                // Only husband is family member
+                                const husbandFullName = getFullGenealogicalName(husbandMember, husbandMember.isFounder);
+                                displayName = `${husbandFullName} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                              } else if (wifeMember) {
+                                // Only wife is family member
+                                const wifeFullName = getFullGenealogicalName(wifeMember, wifeMember.isFounder);
+                                displayName = `${wifeFullName} ♥ ${marriage.husband?.name || 'بدون اسم'}`;
+                              } else {
+                                // Neither is family member (fallback)
+                                displayName = `${marriage.husband?.name || 'بدون اسم'} ♥ ${marriage.wife?.name || 'بدون اسم'}`;
+                              }
+                              return <SelectItem key={marriage.id} value={marriage.id}>
                                               <div className="flex items-center">
                                                 <Heart className="h-3 w-3 text-red-500 mr-2" />
                                                 <span className="truncate">{displayName}</span>
                                               </div>
-                                            </SelectItem>
-                                          );
-                                        })
-                                    ) : (
-                                      <SelectItem value="no-data" disabled>لا توجد زيجات مسجلة في هذه العائلة</SelectItem>
-                                    )}
+                                            </SelectItem>;
+                            }) : <SelectItem value="no-data" disabled>لا توجد زيجات مسجلة في هذه العائلة</SelectItem>}
                                   </SelectContent>
                                 </Select>
                              </div>
                              
                              <div className="col-span-6 md:col-span-3">
                                <Label htmlFor="aliveStatus">الحالة الحيوية</Label>
-                               <Select 
-                                 value={formData.isAlive ? "alive" : "deceased"} 
-                                 onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
-                               >
+                               <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={value => setFormData({
+                          ...formData,
+                          isAlive: value === "alive"
+                        })}>
                                  <SelectTrigger>
                                    <SelectValue placeholder="اختر الحالة الحيوية" />
                                  </SelectTrigger>
@@ -2466,421 +2004,914 @@ const FamilyBuilderNew = () => {
 
                              <div className="col-span-6 md:col-span-3">
                                <Label>تاريخ الوفاة</Label>
-                               <EnhancedDatePicker
-                                 value={formData.deathDate}
-                                 onChange={(date) => setFormData({...formData, deathDate: date})}
-                                 placeholder="اختر تاريخ الوفاة"
-                                 disabled={formData.isAlive}
-                               />
+                               <EnhancedDatePicker value={formData.deathDate} onChange={date => setFormData({
+                          ...formData,
+                          deathDate: date
+                        })} placeholder="اختر تاريخ الوفاة" disabled={formData.isAlive} />
                              </div>
                            </div>
 
                            <div>
                              <Label htmlFor="bio">السيرة الذاتية</Label>
-                             <Textarea
-                               id="bio"
-                               value={formData.bio}
-                               onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                               placeholder="أدخل معلومات إضافية عن العضو"
-                               rows={3}
-                             />
+                             <Textarea id="bio" value={formData.bio} onChange={e => setFormData({
+                        ...formData,
+                        bio: e.target.value
+                      })} placeholder="أدخل معلومات إضافية عن العضو" rows={3} />
                            </div>
 
-                            <ImageUploadSection
-                              isImageUploadEnabled={isImageUploadEnabled}
-                              uploadLoading={uploadLoading}
-                              croppedImage={croppedImage}
-                              selectedImage={selectedImage}
-                              showCropDialog={showCropDialog}
-                              crop={crop}
-                              zoom={zoom}
-                              fileInputRef={fileInputRef}
-                              handleEditImage={handleEditImage}
-                              handleDeleteImage={handleDeleteImage}
-                              handleImageSelect={handleImageSelect}
-                              setShowCropDialog={setShowCropDialog}
-                              setCrop={setCrop}
-                              setZoom={setZoom}
-                              onCropComplete={onCropComplete}
-                              handleCropSave={handleCropSave}
-                            />
-                         </div>
-                      )}
+                            <ImageUploadSection isImageUploadEnabled={isImageUploadEnabled} uploadLoading={uploadLoading} croppedImage={croppedImage} selectedImage={selectedImage} showCropDialog={showCropDialog} crop={crop} zoom={zoom} fileInputRef={fileInputRef} handleEditImage={handleEditImage} handleDeleteImage={handleDeleteImage} handleImageSelect={handleImageSelect} setShowCropDialog={setShowCropDialog} setCrop={setCrop} setZoom={setZoom} onCropComplete={onCropComplete} handleCropSave={handleCropSave} />
+                         </div>}
 
-                       {currentStep === 2 && (
-                         <div className="space-y-4">
+                       {currentStep === 2 && <div className="space-y-4">
                            <h3 className="text-lg font-semibold">
                              {formData.gender === "male" ? "معلومات الزوجة/الزوجات" : "معلومات الزوج"}
                            </h3>
                            <p className="text-sm text-muted-foreground">
-                             {formData.gender === "male" 
-                               ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً"
-                               : "أضف معلومات الزوج إذا كانت متزوجة"
-                             }
+                             {formData.gender === "male" ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً" : "أضف معلومات الزوج إذا كانت متزوجة"}
                            </p>
                            
-                             {formData.gender === "male" ? (
-                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                 {/* Wives Display Panel */}
-                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-2 mb-4 w-full">
-                                     <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                       <Heart className="w-3 h-3 text-white" />
-                                     </div>
-                                     <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">الزوجات</h4>
-                                   </div>
-                                   
-                                   <div className="space-y-3">
-                                     {wives.length === 0 ? (
-                                       <div className="text-center py-8 text-muted-foreground">
-                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
-                                       </div>
-                                     ) : (
-                                       wives.map((wife, index) => (
-                                          <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
-                                            <div className="flex items-start justify-between h-full">
-                                              <div 
-                                                className={cn(
-                                                  "flex items-start gap-3 flex-1",
-                                                  wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                                )}
-                                               onClick={() => {
-                                                 if (wife.isSaved) {
-                                                   const updatedWives = [...wives];
-                                                   updatedWives[index] = { ...wife, isSaved: false };
-                                                   setWives(updatedWives);
-                                                   setCurrentWife(wife);
-                                                   setShowWifeForm(true);
-                                                   setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                   
-                                                   toast({
-                                                     title: "وضع التعديل",
-                                                     description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                     variant: "default"
-                                                   });
-                                                 }
-                                               }}
-                                              >
-                                                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                  {index + 1}
-                                                </div>
-                                                <div className="flex-1 space-y-2">
-                                                  <div>
-                                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic text-lg">
-                                                      {wife.name || `الزوجة ${index + 1}`}
-                                                    </h5>
-                                                    <p className="text-sm text-muted-foreground font-arabic flex items-center gap-2">
-                                                      {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                      {wife.isSaved && (
-                                                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                          <Check className="h-3 w-3" />
-                                                          محفوظة
-                                                        </span>
-                                                      )}
-                                                    </p>
+                            {formData.gender === "male" ? <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Right Panel - Add Wife Form */}
+                                <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg col-span-1 lg:col-span-2">
+                                  <div className="flex items-center gap-2 mb-6">
+                                    <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                      <UserPlus className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة جديدة</h4>
+                                  </div>
+
+                                  {/* Wife Form Content */}
+                                  <div className="space-y-6">
+                                    {wives.map((wife, index) => {
+                            const actualIndex = wives.findIndex(w => w === wife);
+                            return <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md mb-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                          <h5 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                                            <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg"></div>
+                                            الزوجة {wives.findIndex(w => w === wife) + 1}
+                                          </h5>
+                                        </div>
+                                        
+                                        <div className="space-y-6">
+                                          {/* Family Member Selection - Only from same family */}
+                                          <div>
+                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
+                                              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
+                                              هل الزوجة من أفراد العائلة ؟
+                                            </Label>
+                                            
+                                            <div className="flex items-center gap-6 mb-3">
+                                              <div className="flex items-center gap-2">
+                                                <input type="radio" id={`wife-family-yes-${wives.findIndex(w => w === wife)}`} name={`wife-family-${wives.findIndex(w => w === wife)}`} value="yes" checked={wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'yes'} onChange={e => {
+                                        const actualIndex = wives.findIndex(w => w === wife);
+                                        const newStatus = {
+                                          ...wiveFamilyStatus
+                                        };
+                                        newStatus[actualIndex] = 'yes';
+                                        setWiveFamilyStatus(newStatus);
+                                        const updatedWives = [...wives];
+                                        updatedWives[actualIndex] = {
+                                          ...wife,
+                                          isFamilyMember: true
+                                        };
+                                        setWives(updatedWives);
+                                      }} className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                                <Label htmlFor={`wife-family-yes-${wives.findIndex(w => w === wife)}`} className="text-sm font-arabic">
+                                                  نعم
+                                                </Label>
+                                              </div>
+                                              
+                                              <div className="flex items-center gap-2">
+                                                <input type="radio" id={`wife-family-no-${wives.findIndex(w => w === wife)}`} name={`wife-family-${wives.findIndex(w => w === wife)}`} value="no" checked={wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no'} onChange={e => {
+                                        const actualIndex = wives.findIndex(w => w === wife);
+                                        const newStatus = {
+                                          ...wiveFamilyStatus
+                                        };
+                                        newStatus[actualIndex] = 'no';
+                                        setWiveFamilyStatus(newStatus);
+                                        const updatedWives = [...wives];
+                                        updatedWives[actualIndex] = {
+                                          ...wife,
+                                          isFamilyMember: false,
+                                          existingFamilyMemberId: ''
+                                        };
+                                        setWives(updatedWives);
+                                      }} className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                                <Label htmlFor={`wife-family-no-${wives.findIndex(w => w === wife)}`} className="text-sm font-arabic">
+                                                  لا
+                                                </Label>
+                                              </div>
+                                            </div>
+                                            
+                                            <p className="text-xs text-muted-foreground mb-3 font-arabic">
+                                              يُسمح فقط باختيار الزوجة من أفراد العائلة المسجلين
+                                            </p>
+                                          </div>
+
+                                          {/* Conditional rendering based on radio button selection */}
+                                          {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'yes' && <>
+                                              {/* Select Existing Family Member */}
+                                              <div className="space-y-3">
+                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                                                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
+                                                  اختر الزوجة من القائمة
+                                                </Label>
+                                                <Popover open={wivesCommandOpen[wives.findIndex(w => w === wife)]} onOpenChange={open => {
+                                      const actualIndex = wives.findIndex(w => w === wife);
+                                      const newState = {
+                                        ...wivesCommandOpen
+                                      };
+                                      newState[actualIndex] = open;
+                                      setWivesCommandOpen(newState);
+                                    }}>
+                                                  <PopoverTrigger asChild>
+                                                    <Button variant="outline" role="combobox" aria-expanded={wivesCommandOpen[wives.findIndex(w => w === wife)]} className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic">
+اختر فرد من العائلة...
+                                                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                    </Button>
+                                                  </PopoverTrigger>
+                                                  <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
+                                                    <Command>
+                                                      <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
+                                                      <CommandList>
+                                                         <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
+                                                           لا توجد إناث متاحات (لديهن أب في العائلة وعازبات/مطلقات).
+                                                         </CommandEmpty>
+                                                        <CommandGroup>
+                                                           {familyMembers.filter(member => {
+                                                const hasValidGender = member.gender === "female";
+                                                const isNotSelf = member.id !== selectedMember?.id;
+                                                const isAvailableForMarriage = member.marital_status === "single" || member.marital_status === "divorced";
+                                                return hasValidGender && isNotSelf && isAvailableForMarriage;
+                                              }).map(member => <CommandItem key={member.id} value={member.name} onSelect={() => {
+                                                const actualIndex = wives.findIndex(w => w === wife);
+                                                const newWives = [...wives];
+                                                newWives[actualIndex] = {
+                                                  ...wife,
+                                                  existingFamilyMemberId: member.id,
+                                                  name: member.name,
+                                                  birthDate: member.birth_date ? new Date(member.birth_date) : null,
+                                                  isAlive: member.is_alive ?? true,
+                                                  deathDate: member.death_date ? new Date(member.death_date) : null,
+                                                  maritalStatus: member.marital_status || 'single',
+                                                  croppedImage: member.image_url || null
+                                                };
+                                                setWives(newWives);
+                                                const newState = {
+                                                  ...wivesCommandOpen
+                                                };
+                                                newState[actualIndex] = false;
+                                                setWivesCommandOpen(newState);
+                                              }} className="font-arabic">
+                                                                <Check className={cn("mr-2 h-4 w-4", wife.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0")} />
+                                                                {member.name}
+                                                              </CommandItem>)}
+                                                        </CommandGroup>
+                                                      </CommandList>
+                                                    </Command>
+                                                  </PopoverContent>
+                                                </Popover>
+                                              </div>
+
+                                              {/* Marital Status */}
+                                              <div className="group">
+                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                  <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                  الحالة الاجتماعية *
+                                                </Label>
+                                                <div className="relative">
+                                                  <Select value={wife.maritalStatus || "married"} onValueChange={value => {
+                                        const actualIndex = wives.findIndex(w => w === wife);
+                                        const newWives = [...wives];
+                                        newWives[actualIndex] = {
+                                          ...wife,
+                                          maritalStatus: value
+                                        };
+                                        setWives(newWives);
+                                      }}>
+                                                    <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                                      <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                                    </SelectTrigger>
+                                                    
+                                                  </Select>
+                                                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                                    <Heart className="h-3 w-3 text-white" />
                                                   </div>
-                                                  
-                                                  {/* Additional Information */}
-                                                  <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 font-arabic">
-                                                    {/* Birth Date */}
-                                                    {wife.birthDate && (
-                                                      <div className="flex items-center gap-2">
-                                                        <Calendar className="h-4 w-4 text-cyan-500" />
-                                                        <span>{wife.birthDate.toLocaleDateString('ar-SA')}</span>
-                                                      </div>
-                                                    )}
-                                                    
-                                                    {/* Death Date */}
-                                                    {wife.deathDate && (
-                                                      <div className="flex items-center gap-2">
-                                                        <Calendar className="h-4 w-4 text-red-500" />
-                                                        <span>تاريخ الوفاة: {wife.deathDate.toLocaleDateString('ar-SA')}</span>
-                                                      </div>
-                                                    )}
-                                                    
-                                                    {/* Marital Status */}
-                                                    {wife.maritalStatus && (
-                                                      <div className="flex items-center gap-2">
-                                                        <Heart className="h-4 w-4 text-purple-500" />
-                                                        <span>الحالة الاجتماعية: {wife.maritalStatus === 'married' ? 'متزوجة' : 'مطلقة'}</span>
-                                                      </div>
-                                                    )}
-                                                    
-                                                    {/* Life Status */}
-                                                    <div className="flex items-center gap-2">
-                                                      <div className={cn(
-                                                        "h-4 w-4 rounded-full",
-                                                        wife.isAlive ? "bg-green-500" : "bg-gray-500"
-                                                      )} />
-                                                      <span>{wife.isAlive ? 'على قيد الحياة' : 'متوفية'}</span>
+                                                </div>
+                                              </div>
+                                            </>}
+
+                                          {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no' && <>
+                                              {/* First Name and Last Name Inputs */}
+                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* First Name Input */}
+                                                <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    الاسم الأول *
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <Input value={wife.firstName || ''} onChange={e => {
+                                          const actualIndex = wives.findIndex(w => w === wife);
+                                          const newWives = [...wives];
+                                          const updatedWife = {
+                                            ...wife,
+                                            firstName: e.target.value
+                                          };
+                                          // Update the full name for display
+                                          updatedWife.name = `${e.target.value} ${wife.lastName || ''}`.trim();
+                                          newWives[actualIndex] = updatedWife;
+                                          setWives(newWives);
+                                        }} placeholder="أدخل الاسم الأول" className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" />
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                      <User className="h-3 w-3 text-white" />
                                                     </div>
                                                   </div>
-                                                  
-                                                  {wife.isSaved && (
-                                                    <p className="text-xs text-pink-600 font-arabic mt-2">
-                                                      انقر للتعديل
-                                                    </p>
-                                                  )}
                                                 </div>
-                                             </div>
-                                             <div className="flex gap-2">
-                                                {wife.isSaved && (
-                                                  <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                      const updatedWives = [...wives];
-                                                      updatedWives[index] = { ...wife, isSaved: false };
-                                                      setWives(updatedWives);
-                                                      setCurrentWife(wife);
-                                                      setShowWifeForm(true);
-                                                      setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                      
-                                                      toast({
-                                                        title: "وضع التعديل",
-                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                        variant: "default"
-                                                      });
-                                                    }}
-                                                    className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
-                                                  >
-                                                    <Edit className="h-3 w-3" />
-                                                  </Button>
-                                                )}
-                                               <Button
-                                                 variant="outline"
-                                                 size="sm"
-                                                 onClick={() => handleSpouseDelete(wife, index)}
-                                                 className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                               >
-                                                 <X className="h-3 w-3" />
-                                               </Button>
-                                             </div>
-                                           </div>
-                                         </div>
-                                       ))
-                                     )}
-                                   </div>
-                                 </div>
 
-                                 {/* Unified Wife Form */}
-                                 <SpouseForm
-                                   spouseType="wife"
-                                   spouse={currentWife || {
-                                     id: '',
-                                     firstName: '',
-                                     lastName: '',
-                                     name: '',
-                                     isAlive: true,
-                                     birthDate: null,
-                                     deathDate: null,
-                                     maritalStatus: 'married',
-                                     isFamilyMember: false,
-                                     existingFamilyMemberId: '',
-                                     croppedImage: null,
-                                     isSaved: false
-                                   }}
-                                   onSpouseChange={setCurrentWife}
-                                   familyMembers={familyMembers}
-                                   selectedMember={selectedMember}
-                                   commandOpen={wifeCommandOpen}
-                                   onCommandOpenChange={setWifeCommandOpen}
-                                   familyStatus={wifeFamilyStatus}
-                                   onFamilyStatusChange={handleWifeFamilyStatusChange}
-                                   onSave={handleWifeSave}
-                                   onAdd={handleAddWife}
-                                   showForm={showWifeForm}
-                                 />
-                               </div>
-                             ) : (
-                               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                 {/* Husband Display Panel */}
-                                 <div className="space-y-4">
-                                   <div className="flex items-center gap-2 mb-4">
-                                     <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                       <User className="w-3 h-3 text-white" />
-                                     </div>
-                                     <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
-                                   </div>
-                                   
-                                   <div className="space-y-3">
-                                     {!husband ? (
-                                       <div className="text-center py-8 text-muted-foreground">
-                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
-                                       </div>
-                                     ) : (
-                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
-                                         <div className="flex items-center justify-between">
-                                           <div 
-                                             className={cn(
-                                               "flex items-center gap-3 flex-1",
-                                               husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                             )}
-                                              onClick={() => {
-                                                if (husband.isSaved) {
-                                                  setHusband({ ...husband, isSaved: false });
-                                                  setCurrentHusband(husband);
-                                                  setShowHusbandForm(true);
-                                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
-                                                  
-                                                  toast({
-                                                    title: "وضع التعديل",
-                                                    description: "يمكنك الآن تعديل بيانات الزوج",
-                                                    variant: "default"
-                                                  });
-                                                }
-                                              }}
-                                           >
-                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                               <User className="w-4 h-4" />
-                                             </div>
-                                             <div>
-                                               <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                 {husband.name || 'الزوج'}
-                                               </h5>
-                                               <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                 {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                 {husband.isSaved && (
-                                                   <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                     <Check className="h-3 w-3" />
-                                                     محفوظ
-                                                   </span>
-                                                 )}
-                                               </p>
-                                               {husband.isSaved && (
-                                                 <p className="text-xs text-blue-600 font-arabic mt-1">
-                                                   انقر للتعديل
-                                                 </p>
-                                               )}
-                                             </div>
-                                           </div>
-                                           <div className="flex gap-2">
-                                              {husband.isSaved && (
-                                                <Button
-                                                  variant="outline"
-                                                  size="sm"
-                                                  onClick={() => {
-                                                    setHusband({ ...husband, isSaved: false });
-                                                    setCurrentHusband(husband);
-                                                    setShowHusbandForm(true);
-                                                    setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
-                                                    
-                                                    toast({
-                                                      title: "وضع التعديل",
-                                                      description: "يمكنك الآن تعديل بيانات الزوج",
-                                                     variant: "default"
-                                                   });
-                                                 }}
-                                                 className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
-                                               >
-                                                 <Edit className="h-3 w-3" />
-                                               </Button>
-                                             )}
-                                             <Button
-                                               variant="outline"
-                                               size="sm"
-                                               onClick={() => handleSpouseDelete(husband, -1)}
-                                               className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                             >
-                                               <X className="h-3 w-3" />
-                                             </Button>
-                                           </div>
-                                         </div>
-                                       </div>
-                                     )}
-                                   </div>
-                                 </div>
+                                                {/* Last Name Input */}
+                                                <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    اسم العائلة
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <Input value={wife.lastName || ''} onChange={e => {
+                                          const actualIndex = wives.findIndex(w => w === wife);
+                                          const newWives = [...wives];
+                                          const updatedWife = {
+                                            ...wife,
+                                            lastName: e.target.value
+                                          };
+                                          // Update the full name for display
+                                          updatedWife.name = `${wife.firstName || ''} ${e.target.value}`.trim();
+                                          newWives[actualIndex] = updatedWife;
+                                          setWives(newWives);
+                                        }} placeholder="أدخل اسم العائلة" className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" />
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                      <User className="h-3 w-3 text-white" />
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
 
-                                 {/* Unified Husband Form */}
-                                  <SpouseForm
-                                    spouseType="husband"
-                                    spouse={currentHusband || {
-                                      id: '',
-                                      firstName: '',
-                                      lastName: '',
-                                      name: '',
-                                      isAlive: true,
-                                      birthDate: null,
-                                      deathDate: null,
-                                      maritalStatus: 'married',
-                                      isFamilyMember: false,
-                                      existingFamilyMemberId: '',
-                                      croppedImage: null,
+                                              {/* Birth Date and Marital Status in grid */}
+                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* Birth Date */}
+                                                <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    تاريخ الميلاد
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <EnhancedDatePicker value={wife.birthDate} onChange={date => {
+                                          const actualIndex = wives.findIndex(w => w === wife);
+                                          const newWives = [...wives];
+                                          newWives[actualIndex] = {
+                                            ...wife,
+                                            birthDate: date
+                                          };
+                                          setWives(newWives);
+                                        }} placeholder="اختر تاريخ الميلاد" className="h-11 text-sm border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" />
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                                      <CalendarIcon className="h-3 w-3 text-white" />
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {/* Marital Status */}
+                                                <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    الحالة الاجتماعية *
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <Select value={wife.maritalStatus || "married"} onValueChange={value => {
+                                          const newWives = [...wives];
+                                          newWives[index] = {
+                                            ...wife,
+                                            maritalStatus: value
+                                          };
+                                          setWives(newWives);
+                                        }}>
+                                                      <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                                        <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                                      </SelectTrigger>
+                                                      <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                                        <SelectItem value="married" className="font-arabic text-sm">متزوجة</SelectItem>
+                                                        <SelectItem value="divorced" className="font-arabic text-sm">مطلقة</SelectItem>
+                                                        <SelectItem value="widowed" className="font-arabic text-sm">أرملة</SelectItem>
+                                                      </SelectContent>
+                                                    </Select>
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                                      <Heart className="h-3 w-3 text-white" />
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                              {/* Life Status and Death Date */}
+                                              <div className="space-y-6">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                  {/* Life Status */}
+                                                  <div className="group">
+                                                    <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                      <div className={`w-2 h-2 rounded-full shadow-lg group-hover:scale-110 transition-transform ${wife.isAlive ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}></div>
+                                                      الحالة الحيوية {!wife.isAlive && <span className="text-red-500 text-xs">(متوفاة)</span>}
+                                                    </Label>
+                                                    <div className="relative">
+                                                      <Select value={wife.isAlive ? "alive" : "deceased"} onValueChange={value => {
+                                            const newWives = [...wives];
+                                            newWives[index] = {
+                                              ...wife,
+                                              isAlive: value === "alive",
+                                              deathDate: value === "alive" ? null : wife.deathDate
+                                            };
+                                            setWives(newWives);
+                                          }}>
+                                                        <SelectTrigger className={`h-11 text-sm border-2 focus:ring-4 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic ${wife.isAlive ? 'border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-emerald-500/20' : 'border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-red-500/20'}`}>
+                                                          <SelectValue placeholder="اختر الحالة الحيوية" />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                                          <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                                          <SelectItem value="deceased" className="font-arabic text-sm">متوفاة</SelectItem>
+                                                        </SelectContent>
+                                                      </Select>
+                                                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                                        <Heart className="h-3 w-3 text-white" />
+                                                      </div>
+                                                    </div>
+                                                  </div>
+
+                                                  {/* Death Date - only show if deceased */}
+                                                  {!wife.isAlive && <div className="group">
+                                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                        <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                        تاريخ الوفاة
+                                                      </Label>
+                                                      <div className="relative">
+                                                        <EnhancedDatePicker value={wife.deathDate} onChange={date => {
+                                            const actualIndex = wives.findIndex(w => w === wife);
+                                            const newWives = [...wives];
+                                            newWives[actualIndex] = {
+                                              ...wife,
+                                              deathDate: date
+                                            };
+                                            setWives(newWives);
+                                          }} placeholder="اختر تاريخ الوفاة" className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" />
+                                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                          <CalendarIcon className="h-3 w-3 text-white" />
+                                                        </div>
+                                                      </div>
+                                                    </div>}
+                                                </div>
+                                              </div>
+
+                                              {/* Picture Upload with subscription check */}
+                                              <ImageUploadSection isImageUploadEnabled={isImageUploadEnabled} uploadLoading={uploadLoading} croppedImage={wife.croppedImage} selectedImage={selectedImage} showCropDialog={showCropDialog} crop={crop} zoom={zoom} fileInputRef={fileInputRef} handleEditImage={handleEditImage} handleDeleteImage={() => {
+                                    const actualIndex = wives.findIndex(w => w === wife);
+                                    const newWives = [...wives];
+                                    newWives[actualIndex] = {
+                                      ...wife,
+                                      croppedImage: null
+                                    };
+                                    setWives(newWives);
+                                  }} handleImageSelect={handleImageSelect} setShowCropDialog={setShowCropDialog} setCrop={setCrop} setZoom={setZoom} onCropComplete={onCropComplete} handleCropSave={() => {
+                                    if (croppedImage) {
+                                      const actualIndex = wives.findIndex(w => w === wife);
+                                      const newWives = [...wives];
+                                      newWives[actualIndex] = {
+                                        ...wife,
+                                        croppedImage: croppedImage
+                                      };
+                                      setWives(newWives);
+                                    }
+                                    setShowCropDialog(false);
+                                  }} />
+                                            </>}
+
+                                          {/* Save Wife Button */}
+                                          <div className="pt-4 border-t border-pink-200/30 dark:border-pink-700/30">
+                                            <Button type="button" onClick={() => {
+                                    // Validate wife data
+                                    const actualIndex = wives.findIndex(w => w === wife);
+                                    const isValid = wife.name.trim() && (wiveFamilyStatus[actualIndex] === 'yes' && wife.existingFamilyMemberId || wiveFamilyStatus[actualIndex] === 'no');
+                                    if (!isValid) {
+                                      toast({
+                                        title: "خطأ في البيانات",
+                                        description: "يرجى إكمال جميع البيانات المطلوبة للزوجة",
+                                        variant: "destructive"
+                                      });
+                                      return;
+                                    }
+
+                                    // Mark wife as saved and update original data
+                                    const newWives = [...wives];
+                                    newWives[actualIndex] = {
+                                      ...wife,
+                                      isSaved: true
+                                    };
+                                    setWives(newWives);
+
+                                    // Update original data to current state
+                                    const newOriginalData = [...originalWivesData];
+                                    newOriginalData[actualIndex] = {
+                                      ...wife
+                                    };
+                                    setOriginalWivesData(newOriginalData);
+                                    toast({
+                                      title: "تم الحفظ بنجاح",
+                                      description: `تم حفظ بيانات الزوجة ${actualIndex + 1} بنجاح`,
+                                      variant: "default"
+                                    });
+                                  }} disabled={wife.isSaved && !hasWifeDataChanged(wife, index)} className={cn("w-full h-12 font-arabic text-sm font-medium transition-all duration-300", wife.isSaved && !hasWifeDataChanged(wife, index) ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl")}>
+                                             {wife.isSaved && !hasWifeDataChanged(wife, index) ? <>
+                                                   <Check className="h-4 w-4 mr-2" />
+                                                   تم حفظ البيانات
+                                                 </> : <>
+                                                   <Save className="h-4 w-4 mr-2" />
+                                                   {wife.isSaved && hasWifeDataChanged(wife, index) ? 'حفظ التغييرات' : 'حفظ بيانات الزوجة'}
+                                                 </>}
+                                            </Button>
+                                          </div>
+                                        </div>
+                                        </div>;
+                          })}
+                                    
+                                    {/* Show Add Wife Button only if: no wives OR last wife is saved */}
+                                    {(wives.length === 0 || wives[wives.length - 1]?.isSaved) && <Button type="button" variant="outline" onClick={() => {
+                            setWives([...wives, {
+                              id: '',
+                              name: '',
+                              firstName: '',
+                              lastName: '',
+                              isAlive: true,
+                              birthDate: null,
+                              deathDate: null,
+                              maritalStatus: 'married',
+                              isFamilyMember: true,
+                              existingFamilyMemberId: '',
+                              croppedImage: null,
+                              isSaved: false
+                            }]);
+
+                            // Initialize family status for new wife based on isFamilyMember
+                            const newStatus = {
+                              ...wiveFamilyStatus
+                            };
+                            newStatus[wives.length] = 'yes'; // Default to 'yes' since isFamilyMember is true by default
+                            setWiveFamilyStatus(newStatus);
+
+                            // Initialize original data for new wife
+                            const newOriginalData = [...originalWivesData];
+                            newOriginalData[wives.length] = null; // No original data for new wife
+                            setOriginalWivesData(newOriginalData);
+                          }} className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl">
+                                        <Plus className="h-5 w-5 mr-2" />
+                                        {wives.length === 0 ? 'إضافة زوجة' : 'إضافة زوجة أخرى'}
+                                      </Button>}
+                                    
+                                    {/* Show message if last wife is not saved */}
+                                    {wives.length > 0 && !wives[wives.length - 1]?.isSaved && <div className="text-center py-4">
+                                        <p className="text-sm text-amber-600 dark:text-amber-400 font-arabic">
+                                          يرجى حفظ بيانات الزوجة الحالية قبل إضافة زوجة أخرى
+                                        </p>
+                                      </div>}
+                                  </div>
+                                </div>
+
+                                {/* Left Panel - Wives List */}
+                                <div className="space-y-4 col-span-1 lg:col-span-1">
+                                  <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                      <Heart className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">قائمة الزوجات ({wives.length})</h4>
+                                  </div>
+                                  
+                                  <div className="space-y-3 max-h-[70vh] overflow-y-auto">
+                                    {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
+                                        <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                        <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
+                                      </div> : wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
+                                            <div className="flex items-center justify-between">
+                                              <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                  {index + 1}
+                                                </div>
+                                                <div className={cn(wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
+                                  if (wife.isSaved) {
+                                    // Edit mode: Load wife data for editing
+                                    const updatedWives = [...wives];
+                                    updatedWives[index] = {
+                                      ...wife,
                                       isSaved: false
-                                    }}
-                                    onSpouseChange={setCurrentHusband}
-                                   familyMembers={familyMembers}
-                                   selectedMember={selectedMember}
-                                   commandOpen={husbandCommandOpen}
-                                   onCommandOpenChange={setHusbandCommandOpen}
-                                   familyStatus={husbandFamilyStatus}
-                                   onFamilyStatusChange={handleHusbandFamilyStatusChange}
-                                   onSave={handleHusbandSave}
-                                   onAdd={handleAddHusband}
-                                   showForm={showHusbandForm}
-                                 />
-                               </div>
-                              )}
-                          </div>
-                       )}
+                                    };
+                                    setWives(updatedWives);
+                                    toast({
+                                      title: "وضع التعديل",
+                                      description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                      variant: "default"
+                                    });
+                                  }
+                                }}>
+                                                  <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                    {wife.name || `الزوجة ${index + 1}`}
+                                                  </h5>
+                                                  <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                    {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                    {wife.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                        <Check className="h-3 w-3" />
+                                                        محفوظة
+                                                      </span>}
+                                                  </p>
+                                                  {wife.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                      انقر للتعديل
+                                                    </p>}
+                                                </div>
+                                              </div>
+                                              <div className="flex gap-2">
+                                                {wife.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                  const updatedWives = [...wives];
+                                  updatedWives[index] = {
+                                    ...wife,
+                                    isSaved: false
+                                  };
+                                  setWives(updatedWives);
+                                  toast({
+                                    title: "وضع التعديل",
+                                    description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                    variant: "default"
+                                  });
+                                }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
+                                                    <Edit className="h-3 w-3" />
+                                                  </Button>}
+                                                 <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                   <X className="h-3 w-3" />
+                                                 </Button>
+                                              </div>
+                                            </div>
+                                          </div>)}
+                                  </div>
+                                </div>
+                              </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Left Panel - Husband Display */}
+                                <div className="space-y-4">
+                                  <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                      <User className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                     {!husband ? <div className="text-center py-8 text-muted-foreground">
+                                        <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                        <p className="font-arabic">لم يتم إضافة زوج بعد</p>
+                                      </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
+                                        <div className="flex items-center justify-between">
+                                          <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
+                                if (husband.isSaved) {
+                                  // Edit mode: Load husband data for editing
+                                  setHusband({
+                                    ...husband,
+                                    isSaved: false
+                                  });
+                                  toast({
+                                    title: "وضع التعديل",
+                                    description: "يمكنك الآن تعديل بيانات الزوج",
+                                    variant: "default"
+                                  });
+                                }
+                              }}>
+                                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                              <User className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                              <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                {husband.name || 'الزوج'}
+                                              </h5>
+                                              <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                    <Check className="h-3 w-3" />
+                                                    محفوظ
+                                                  </span>}
+                                              </p>
+                                              {husband.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                  انقر للتعديل
+                                                </p>}
+                                            </div>
+                                          </div>
+                                          <div className="flex gap-2">
+                                            {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                  setHusband({
+                                    ...husband,
+                                    isSaved: false
+                                  });
+                                  toast({
+                                    title: "وضع التعديل",
+                                    description: "يمكنك الآن تعديل بيانات الزوج",
+                                    variant: "default"
+                                  });
+                                }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
+                                                <Edit className="h-3 w-3" />
+                                              </Button>}
+                                            <Button variant="outline" size="sm" onClick={() => setHusband(null)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                              <X className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>}
+                                  </div>
+                                </div>
+
+                                {/* Right Panel - Add Husband Form */}
+                                <div className="bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-950/30 dark:to-sky-900/30 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-lg">
+                                  <div className="flex items-center gap-2 mb-6">
+                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                      <UserPlus className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">{husband ? 'تعديل الزوج' : 'إضافة زوج'}</h4>
+                                  </div>
+
+                                  {husband ? <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/30 rounded-xl p-6 shadow-md">
+                                      <div className="space-y-6">
+                                        {/* Family Member Check */}
+                                        <div>
+                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
+                                            هل الزوج من نفس العائلة؟
+                                          </Label>
+                                          <div className="flex gap-3">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                              <input type="radio" name="husbandIsFamilyMember" checked={husband.isFamilyMember === true} onChange={() => setHusband({
+                                    ...husband,
+                                    isFamilyMember: true,
+                                    existingFamilyMemberId: ''
+                                  })} className="w-4 h-4 text-green-600" />
+                                              <span className="text-sm text-green-600 font-arabic">نعم</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                              <input type="radio" name="husbandIsFamilyMember" checked={husband.isFamilyMember === false} onChange={() => setHusband({
+                                    ...husband,
+                                    isFamilyMember: false,
+                                    existingFamilyMemberId: ''
+                                  })} className="w-4 h-4 text-red-600" />
+                                              <span className="text-sm text-red-600 font-arabic">لا</span>
+                                            </label>
+                                          </div>
+                                        </div>
+
+                                        {/* Select Existing Family Member */}
+                                        {husband.isFamilyMember && <div className="space-y-3">
+                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                                              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
+                                              اختر الزوج من قائمة أفراد العائلة
+                                            </Label>
+                                            <Popover open={husbandCommandOpen} onOpenChange={setHusbandCommandOpen}>
+                                              <PopoverTrigger asChild>
+                                                <Button variant="outline" role="combobox" aria-expanded={husbandCommandOpen} className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic">
+                                                  {husband.existingFamilyMemberId ? familyMembers.find(m => m.id === husband.existingFamilyMemberId)?.name || "اختر فرد من العائلة..." : "اختر فرد من العائلة..."}
+                                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                              </PopoverTrigger>
+                                              <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
+                                                <Command>
+                                                  <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
+                                                  <CommandList>
+                                                    <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
+                                                      لم يتم العثور على نتائج.
+                                                    </CommandEmpty>
+                                                    <CommandGroup>
+                                                       {familyMembers.filter(member => {
+                                          const hasValidGender = member.gender === "male";
+                                          const isNotSelf = member.id !== selectedMember?.id;
+                                          const hasFatherId = member.father_id; // غير فارغ
+                                          const isAvailableForMarriage = member.marital_status === "single" || member.marital_status === "divorced";
+                                          console.log(`🔍 Male member "${member.name}":`, {
+                                            gender: member.gender,
+                                            hasValidGender,
+                                            selectedMemberId: selectedMember?.id,
+                                            memberId: member.id,
+                                            isNotSelf,
+                                            fatherId: member.father_id,
+                                            hasFatherId: !!member.father_id,
+                                            maritalStatus: `"${member.marital_status}"`,
+                                            isAvailableForMarriage,
+                                            finalResult: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
+                                          });
+                                          return hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage;
+                                        }).map(member => <CommandItem key={member.id} value={member.name} onSelect={() => {
+                                          setHusband({
+                                            ...husband,
+                                            existingFamilyMemberId: member.id,
+                                            name: member.name
+                                          });
+                                          setHusbandCommandOpen(false);
+                                        }} className="font-arabic">
+                                                            <Check className={cn("mr-2 h-4 w-4", husband.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0")} />
+                                                            {member.name}
+                                                          </CommandItem>)}
+                                                    </CommandGroup>
+                                                  </CommandList>
+                                                </Command>
+                                              </PopoverContent>
+                                            </Popover>
+                                          </div>}
+
+                                        {/* Name Input - only if not family member or family member not selected */}
+                                        {(!husband.isFamilyMember || husband.isFamilyMember && !husband.existingFamilyMemberId) && <div className="group">
+                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                              اسم الزوج *
+                                            </Label>
+                                            <div className="relative">
+                                              <Input value={husband.name} onChange={e => setHusband({
+                                  ...husband,
+                                  name: e.target.value
+                                })} placeholder="أدخل اسم الزوج" className="h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" disabled={husband.isFamilyMember && !!husband.existingFamilyMemberId} />
+                                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
+                                                <User className="h-3 w-3 text-white" />
+                                              </div>
+                                            </div>
+                                          </div>}
+
+                                         {/* Birth Date and Marital Status in grid */}
+                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                           {/* Birth Date - only show if not family member */}
+                                           {!husband.isFamilyMember ? <div className="group">
+                                               <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                 <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                 تاريخ الميلاد
+                                               </Label>
+                                               <div className="relative">
+                                                 <EnhancedDatePicker value={husband.birthDate} onChange={date => setHusband({
+                                    ...husband,
+                                    birthDate: date
+                                  })} placeholder="اختر التاريخ" className="h-11 text-sm border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" disabled={husband.isFamilyMember && !!husband.existingFamilyMemberId} />
+                                                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                                   <CalendarIcon className="h-3 w-3 text-white" />
+                                                 </div>
+                                               </div>
+                                             </div> : <div></div>}
+
+                                           {/* Marital Status - always show */}
+                                           <div className="group">
+                                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                               الحالة الاجتماعية
+                                             </Label>
+                                             <div className="relative">
+                                               <Select value={husband.maritalStatus || "married"} onValueChange={value => setHusband({
+                                    ...husband,
+                                    maritalStatus: value
+                                  })}>
+                                                 <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                                   <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                                 </SelectTrigger>
+                                                 <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                                   <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
+                                                   <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
+                                                 </SelectContent>
+                                               </Select>
+                                               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
+                                                 <Heart className="h-3 w-3 text-white" />
+                                               </div>
+                                             </div>
+                                           </div>
+                                         </div>
+
+                                        {/* Life Status and Death Date - only show if not family member */}
+                                        {!husband.isFamilyMember && <div className="space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                              {/* Life Status */}
+                                              <div className="group">
+                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                  <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                  الحالة الحيوية
+                                                </Label>
+                                                <div className="relative">
+                                                  <Select value={husband.isAlive ? "alive" : "deceased"} onValueChange={value => setHusband({
+                                      ...husband,
+                                      isAlive: value === "alive",
+                                      deathDate: value === "alive" ? null : husband.deathDate
+                                    })}>
+                                                    <SelectTrigger className="h-11 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
+                                                      <SelectValue placeholder="اختر الحالة الحيوية" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                                      <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                                      <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                                                    </SelectContent>
+                                                  </Select>
+                                                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                                                    <Heart className="h-3 w-3 text-white" />
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                              {/* Death Date - only show if deceased */}
+                                              {!husband.isAlive && <div className="group">
+                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                                                    <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                                                    تاريخ الوفاة
+                                                  </Label>
+                                                  <div className="relative">
+                                                    <EnhancedDatePicker value={husband.deathDate} onChange={date => setHusband({
+                                      ...husband,
+                                      deathDate: date
+                                    })} placeholder="اختر تاريخ الوفاة" className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic" />
+                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+                                                      <CalendarIcon className="h-3 w-3 text-white" />
+                                                    </div>
+                                                  </div>
+                                                </div>}
+                                            </div>
+                                          </div>}
+
+                                         {/* Save Husband Button */}
+                                         <div className="pt-4 border-t border-blue-200/30 dark:border-blue-700/30">
+                                           <Button type="button" onClick={() => {
+                                // Validate husband data
+                                const isValid = husband.name.trim() && (husband.isFamilyMember && husband.existingFamilyMemberId || !husband.isFamilyMember);
+                                if (!isValid) {
+                                  toast({
+                                    title: "خطأ في البيانات",
+                                    description: "يرجى إكمال جميع البيانات المطلوبة للزوج",
+                                    variant: "destructive"
+                                  });
+                                  return;
+                                }
+
+                                // Mark husband as saved
+                                setHusband({
+                                  ...husband,
+                                  isSaved: true
+                                });
+                                toast({
+                                  title: "تم الحفظ بنجاح",
+                                  description: "تم حفظ بيانات الزوج بنجاح",
+                                  variant: "default"
+                                });
+                              }} disabled={husband.isSaved} className={cn("w-full h-12 font-arabic text-sm font-medium transition-all duration-300", husband.isSaved ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white shadow-lg hover:shadow-xl")}>
+                                             {husband.isSaved ? <>
+                                                 <Check className="h-4 w-4 mr-2" />
+                                                 تم حفظ البيانات
+                                               </> : <>
+                                                 <Save className="h-4 w-4 mr-2" />
+                                                 حفظ بيانات الزوج
+                                               </>}
+                                           </Button>
+                                         </div>
+                                      </div>
+                                    </div> : <Button type="button" variant="outline" onClick={() => setHusband({
+                          id: '',
+                          name: '',
+                          isAlive: true,
+                          birthDate: null,
+                          deathDate: null,
+                          maritalStatus: 'married',
+                          isFamilyMember: false,
+                          existingFamilyMemberId: '',
+                          croppedImage: null,
+                          isSaved: false
+                        })} className="w-full h-12 border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 rounded-xl">
+                                      <Plus className="h-5 w-5 mr-2" />
+                                      إضافة زوج
+                                    </Button>}
+                                </div>
+                              </div>}
+                          </div>}
 
                       {/* Navigation Buttons */}
                       <div className="flex justify-between pt-6">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={currentStep === 1 ? handleCancelForm : prevStep}
-                          className="flex items-center gap-2 font-arabic"
-                        >
+                        <Button type="button" variant="outline" onClick={currentStep === 1 ? handleCancelForm : prevStep} className="flex items-center gap-2 font-arabic">
                           <ArrowLeft className="h-4 w-4" />
                           {currentStep === 1 ? "إلغاء الإضافة" : "السابق"}
                         </Button>
                         
-                        {currentStep < 2 ? (
-                          <Button
-                            type="button"
-                            onClick={nextStep}
-                            className="flex items-center gap-2"
-                          >
+                        {currentStep < 2 ? <Button type="button" onClick={nextStep} className="flex items-center gap-2">
                             التالي
                             <ArrowRight className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <Button
-                            type="button"
-                            onClick={() => handleFormSubmit(formData)}
-                            disabled={isSaving}
-                            className="flex items-center gap-2"
-                          >
-                            {isSaving ? (
-                              <>
+                          </Button> : <Button type="button" onClick={() => handleFormSubmit(formData)} disabled={isSaving} className="flex items-center gap-2">
+                            {isSaving ? <>
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                                 جاري الحفظ...
-                              </>
-                            ) : (
-                              <>
+                              </> : <>
                                 <Save className="h-4 w-4" />
                                 حفظ
-                              </>
-                            )}
-                          </Button>
-                        )}
+                              </>}
+                          </Button>}
                       </div>
-                    </div>
-                  )}
+                    </div>}
                 </CardContent>
               </Card>
             </div>
 
             {/* Member List - Left Side on Desktop */}
-            <div className={cn(
-              "space-y-4",
-              isMobile ? "order-1" : "col-span-4 order-1"
-            )}>
-              {isMobile ? (
-                <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
+            <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
+              {isMobile ? <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
                   <DrawerTrigger asChild>
                     <Button variant="outline" className="w-full flex items-center gap-2">
                       <Menu className="h-4 w-4" />
@@ -2889,28 +2920,10 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                       <MemberList 
-                         members={filteredMembers}
-                        onEditMember={handleEditMember}
-                        onViewMember={handleViewMember}
-                         onDeleteMember={handleDeleteMember}
-                         onSpouseEditAttempt={handleSpouseEditAttempt}
-                         checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                         searchTerm={searchTerm}
-                         onSearchChange={setSearchTerm}
-                         selectedFilter={selectedFilter}
-                         onFilterChange={setSelectedFilter}
-                         getAdditionalInfo={getAdditionalInfo}
-                        getGenderColor={getGenderColor}
-                        familyMembers={familyMembers}
-                        marriages={familyMarriages}
-                        memberListLoading={memberListLoading}
-                      />
+                       <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditAttempt} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} />
                     </div>
                   </DrawerContent>
-                </Drawer>
-              ) : (
-                <Card className="bg-white/20 backdrop-blur-xl border-white/30 shadow-xl">
+                </Drawer> : <Card className="bg-white/20 backdrop-blur-xl border-white/30 shadow-xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
                   <CardHeader className="pb-4 relative">
                     <CardTitle className="flex items-center gap-2">
@@ -2921,26 +2934,9 @@ const FamilyBuilderNew = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                     <MemberList 
-                       members={filteredMembers}
-                        onEditMember={handleEditMember}
-                        onViewMember={handleViewMember}
-                       onDeleteMember={handleDeleteMember}
-                       onSpouseEditAttempt={handleSpouseEditAttempt}
-                       checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                       searchTerm={searchTerm}
-                       onSearchChange={setSearchTerm}
-                       selectedFilter={selectedFilter}
-                       onFilterChange={setSelectedFilter}
-                       getAdditionalInfo={getAdditionalInfo}
-                      getGenderColor={getGenderColor}
-                      familyMembers={familyMembers}
-                      marriages={familyMarriages}
-                      memberListLoading={memberListLoading}
-                    />
+                     <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditAttempt} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} />
                   </CardContent>
-                </Card>
-              )}
+                </Card>}
             </div>
           </div>
         </div>
@@ -2971,10 +2967,7 @@ const FamilyBuilderNew = () => {
               <AlertDialogCancel className="flex-1 h-12 text-base border-2 font-arabic hover:bg-gray-50 transition-all duration-300">
                 إلغاء
               </AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={confirmSpouseDelete}
-                className="flex-1 h-12 text-base bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-arabic shadow-lg hover:shadow-xl transition-all duration-300 border-0"
-              >
+              <AlertDialogAction onClick={confirmSpouseDelete} className="flex-1 h-12 text-base bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-arabic shadow-lg hover:shadow-xl transition-all duration-300 border-0">
                 تأكيد الحذف
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -2999,8 +2992,7 @@ const FamilyBuilderNew = () => {
               </AlertDialogTitle>
             </AlertDialogHeader>
 
-            {memberToDelete && (
-              <div className="space-y-4 px-2">
+            {memberToDelete && <div className="space-y-4 px-2">
                 {/* Member being deleted */}
                 <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border-2 border-red-200 animate-fade-in">
                   <div className="flex items-center gap-3 mb-3">
@@ -3025,32 +3017,22 @@ const FamilyBuilderNew = () => {
                   
                   <div className="p-4 space-y-3">
                     {(() => {
-                      const spouses = familyMarriages
-                        .filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id)
-                        .map((marriage: any) => {
-                          const spouseId = marriage.husband?.id === memberToDelete.id ? marriage.wife?.id : marriage.husband?.id;
-                          return familyMembers.find(m => m.id === spouseId);
-                        })
-                        .filter(Boolean);
-
-                      const children = familyMembers.filter(m => m.fatherId === memberToDelete.id || m.motherId === memberToDelete.id);
-                      
-                      const getAllDescendants = (parentId: string): any[] => {
-                        const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
-                        let allDescendants = [...directChildren];
-                        directChildren.forEach(child => {
-                          allDescendants = [...allDescendants, ...getAllDescendants(child.id)];
-                        });
-                        return allDescendants;
-                      };
-
-                      const allDescendants = getAllDescendants(memberToDelete.id);
-                      const marriages = familyMarriages.filter((marriage: any) => 
-                        marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id
-                      );
-
-                      return (
-                        <>
+                  const spouses = familyMarriages.filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id).map((marriage: any) => {
+                    const spouseId = marriage.husband?.id === memberToDelete.id ? marriage.wife?.id : marriage.husband?.id;
+                    return familyMembers.find(m => m.id === spouseId);
+                  }).filter(Boolean);
+                  const children = familyMembers.filter(m => m.fatherId === memberToDelete.id || m.motherId === memberToDelete.id);
+                  const getAllDescendants = (parentId: string): any[] => {
+                    const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
+                    let allDescendants = [...directChildren];
+                    directChildren.forEach(child => {
+                      allDescendants = [...allDescendants, ...getAllDescendants(child.id)];
+                    });
+                    return allDescendants;
+                  };
+                  const allDescendants = getAllDescendants(memberToDelete.id);
+                  const marriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id);
+                  return <>
                           {/* Main person */}
                           <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
                             <User className="h-4 w-4 text-red-600" />
@@ -3058,50 +3040,39 @@ const FamilyBuilderNew = () => {
                           </div>
 
                           {/* Spouses */}
-                          {spouses.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                          {spouses.length > 0 && <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
                               <Heart className="h-4 w-4 text-pink-600" />
                               <div>
                                 <span className="text-pink-800 font-medium">الأزواج: {spouses.length}</span>
                                 <div className="text-sm text-pink-700 mt-1">
-                                  {spouses.map((spouse, index) => (
-                                    <span key={index}>
+                                  {spouses.map((spouse, index) => <span key={index}>
                                       {spouse?.name || 'غير معروف'}
                                       {index < spouses.length - 1 && ', '}
-                                    </span>
-                                  ))}
+                                    </span>)}
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
                           {/* Children and descendants */}
-                          {children.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          {children.length > 0 && <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                               <Users className="h-4 w-4 text-blue-600" />
                               <div>
                                 <span className="text-blue-800 font-medium">
                                   الأطفال المباشرين: {children.length}
                                 </span>
-                                {allDescendants.length > children.length && (
-                                  <div className="text-sm text-blue-700 mt-1">
+                                {allDescendants.length > children.length && <div className="text-sm text-blue-700 mt-1">
                                     إجمالي الأحفاد: {allDescendants.length} شخص
-                                  </div>
-                                )}
+                                  </div>}
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
                           {/* Marriages */}
-                          {marriages.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                          {marriages.length > 0 && <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
                               <Heart className="h-4 w-4 text-purple-600" />
                               <span className="text-purple-800 font-medium">علاقات الزواج: {marriages.length}</span>
-                            </div>
-                          )}
-                        </>
-                      );
-                    })()}
+                            </div>}
+                        </>;
+                })()}
                   </div>
                 </div>
 
@@ -3117,8 +3088,7 @@ const FamilyBuilderNew = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
 
           <AlertDialogFooter className="gap-3 pt-6">
@@ -3126,10 +3096,7 @@ const FamilyBuilderNew = () => {
               <X className="h-4 w-4 mr-2" />
               إلغاء
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-medium shadow-lg"
-            >
+            <AlertDialogAction onClick={confirmDelete} className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-medium shadow-lg">
               <Trash2 className="h-4 w-4 mr-2" />
               تأكيد الحذف
             </AlertDialogAction>
@@ -3168,8 +3135,7 @@ const FamilyBuilderNew = () => {
               </div>
 
               {/* Partner name highlight */}
-              {spousePartnerDetails.name && (
-                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
+              {spousePartnerDetails.name && <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
                    <div className="flex items-center justify-center mb-2">
                      <Edit className="h-5 w-5 text-primary mr-2" />
                      <div className="text-sm text-gray-600">للتعديل، انتقل إلى:</div>
@@ -3178,19 +3144,14 @@ const FamilyBuilderNew = () => {
                      <div className="font-bold text-primary text-lg animate-pulse">
                        {spousePartnerDetails.name}
                      </div>
-                     {spousePartnerDetails.fatherName && (
-                       <div className="text-sm text-gray-600 mt-1">
+                     {spousePartnerDetails.fatherName && <div className="text-sm text-gray-600 mt-1">
                          ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                       </div>
-                     )}
-                     {spousePartnerDetails.grandfatherName && (
-                       <div className="text-xs text-gray-500 mt-1">
+                       </div>}
+                     {spousePartnerDetails.grandfatherName && <div className="text-xs text-gray-500 mt-1">
                          حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                       </div>
-                     )}
+                       </div>}
                    </div>
-                </div>
-              )}
+                </div>}
 
               {/* Info section */}
               <div className="bg-blue-50 rounded-lg p-3 border border-blue-200 animate-fade-in">
@@ -3217,39 +3178,32 @@ const FamilyBuilderNew = () => {
 
 
       <GlobalFooter />
-    </div>
-  );
+    </div>;
 };
 
 // Member List Component
-const MemberList = ({ 
-  members, 
+const MemberList = ({
+  members,
   onEditMember,
-  onViewMember, 
+  onViewMember,
   onDeleteMember,
   onSpouseEditAttempt,
   checkIfMemberIsSpouse,
-  searchTerm, 
-  onSearchChange, 
-  selectedFilter, 
+  searchTerm,
+  onSearchChange,
+  selectedFilter,
   onFilterChange,
   getAdditionalInfo,
   getGenderColor,
   familyMembers,
   marriages,
-  memberListLoading 
+  memberListLoading
 }: any) => {
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="ابحث عن عضو..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
-        />
+        <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
       </div>
 
       {/* Filter */}
@@ -3269,10 +3223,11 @@ const MemberList = ({
 
       {/* Member List */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
-        {memberListLoading ? (
-          // Loading skeletons
-          Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
+        {memberListLoading ?
+      // Loading skeletons
+      Array.from({
+        length: 3
+      }).map((_, index) => <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
               <div className="flex items-start gap-3">
                 <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
                 <div className="flex-1 space-y-2">
@@ -3285,20 +3240,10 @@ const MemberList = ({
                   <Skeleton className="h-8 w-8 rounded-full" />
                 </div>
               </div>
-            </div>
-          ))
-        ) : members.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+            </div>) : members.length === 0 ? <div className="text-center py-8 text-muted-foreground">
             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>لا توجد أعضاء</p>
-          </div>
-        ) : (
-          members.map((member: any) => (
-            <Card 
-              key={member.id} 
-              className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden"
-              onClick={() => onViewMember(member)}
-            >
+          </div> : members.map((member: any) => <Card key={member.id} className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-3 min-h-[80px]">
                   <div className="flex items-start gap-3 flex-1">
@@ -3312,142 +3257,111 @@ const MemberList = ({
                     <div className="flex-1 min-w-0 space-y-1">
                       {/* Name */}
                       <div className="flex items-center gap-2">
-                        {member.gender === 'male' ? (
-                          <User className="h-3 w-3 text-blue-500" />
-                        ) : (
-                          <UserIcon className="h-3 w-3 text-pink-500" />
-                        )}
+                        {member.gender === 'male' ? <User className="h-3 w-3 text-blue-500" /> : <UserIcon className="h-3 w-3 text-pink-500" />}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                           {member.name}
                         </h3>
                         {(() => {
-                          // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
-                          const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-                          const isDescendant = !member.isFounder && memberHasFamilyFather;
-                          
-                          if (isDescendant) {
-                            return (
-                              <span className="text-xs text-muted-foreground font-normal">
+                    // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
+                    const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
+                    const isDescendant = !member.isFounder && memberHasFamilyFather;
+                    if (isDescendant) {
+                      return <span className="text-xs text-muted-foreground font-normal">
                                 {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                              </span>
-                            );
-                          }
-                          return null;
-                        })()}
+                              </span>;
+                    }
+                    return null;
+                  })()}
                       </div>
                       
                       {/* Father + Grandfather names */}
                       {(() => {
-                        const father = familyMembers?.find(m => m?.id === member.fatherId);
-                        const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
-                        
-                        if (father && grandfather) {
-                          return (
-                            <p className="text-sm text-muted-foreground truncate font-arabic">
+                  const father = familyMembers?.find(m => m?.id === member.fatherId);
+                  const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
+                  if (father && grandfather) {
+                    return <p className="text-sm text-muted-foreground truncate font-arabic">
                               {father.name} ابن {grandfather.name}
-                            </p>
-                          );
-                        } else if (father) {
-                          return (
-                            <p className="text-sm text-muted-foreground truncate font-arabic">
+                            </p>;
+                  } else if (father) {
+                    return <p className="text-sm text-muted-foreground truncate font-arabic">
                               {father.name}
-                            </p>
-                          );
-                        }
-                        return null;
-                      })()}
+                            </p>;
+                  }
+                  return null;
+                })()}
                       
                       {/* Spouse information - show founder text for founders, spouse info for non-family members */}
                       {(() => {
-                        // Show founder text for founders
-                        if (member.isFounder) {
-                          return (
-                            <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                  // Show founder text for founders
+                  if (member.isFounder) {
+                    return <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
                               الجد الأكبر للعائلة
-                            </p>
-                          );
+                            </p>;
+                  }
+
+                  // Find marriage where this member is husband or wife
+                  const marriage = marriages?.find(m => m.husband?.id === member.id || m.wife?.id === member.id || m.husband_id === member.id || m.wife_id === member.id);
+                  if (marriage) {
+                    // Determine if this member is the husband or wife
+                    const isHusband = marriage.husband?.id === member.id || marriage.husband_id === member.id;
+
+                    // Get spouse data - try both nested object and direct ID approaches
+                    let spouse;
+                    let spouseId;
+                    if (isHusband) {
+                      spouse = marriage.wife;
+                      spouseId = marriage.wife_id;
+                    } else {
+                      spouse = marriage.husband;
+                      spouseId = marriage.husband_id;
+                    }
+
+                    // If spouse is not in nested object, find by ID
+                    if (!spouse && spouseId) {
+                      spouse = familyMembers?.find(m => m?.id === spouseId);
+                    }
+                    if (spouse) {
+                      // Check if current member is a non-family member (married into the family)
+                      // A non-family member would not have father/grandfather in the family tree
+                      const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
+
+                      // Only show spouse info for non-family members (those without family fathers)
+                      if (!memberHasFamilyFather) {
+                        // Get spouse's father and grandfather from familyMembers
+                        const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
+                        const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
+                        const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
+
+                        // Build the lineage string
+                        let spouseInfo = spouse.name || spouse.full_name;
+                        if (spouseFather) {
+                          // Use ابن for male, ابنة for female
+                          const spouseGender = spouseFullData?.gender || spouse.gender;
+                          const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
+                          spouseInfo += ` ${childOf} ${spouseFather.name}`;
+                          if (spouseGrandfather) {
+                            spouseInfo += ` ابن ${spouseGrandfather.name}`;
+                          }
                         }
 
-                        // Find marriage where this member is husband or wife
-                        const marriage = marriages?.find(m => 
-                          (m.husband?.id === member.id || m.wife?.id === member.id) ||
-                          (m.husband_id === member.id || m.wife_id === member.id)
-                        );
-                        
-                        if (marriage) {
-                          // Determine if this member is the husband or wife
-                          const isHusband = (marriage.husband?.id === member.id) || (marriage.husband_id === member.id);
-                          
-                          // Get spouse data - try both nested object and direct ID approaches
-                          let spouse;
-                          let spouseId;
-                          
-                          if (isHusband) {
-                            spouse = marriage.wife;
-                            spouseId = marriage.wife_id;
-                          } else {
-                            spouse = marriage.husband;
-                            spouseId = marriage.husband_id;
-                          }
-                          
-                          // If spouse is not in nested object, find by ID
-                          if (!spouse && spouseId) {
-                            spouse = familyMembers?.find(m => m?.id === spouseId);
-                          }
-                          
-                          if (spouse) {
-                            // Check if current member is a non-family member (married into the family)
-                            // A non-family member would not have father/grandfather in the family tree
-                            const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-                            
-                            // Only show spouse info for non-family members (those without family fathers)
-                            if (!memberHasFamilyFather) {
-                              // Get spouse's father and grandfather from familyMembers
-                              const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
-                              const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
-                              const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
-                              
-                              // Build the lineage string
-                              let spouseInfo = spouse.name || spouse.full_name;
-                              
-                              if (spouseFather) {
-                                // Use ابن for male, ابنة for female
-                                const spouseGender = spouseFullData?.gender || spouse.gender;
-                                const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
-                                spouseInfo += ` ${childOf} ${spouseFather.name}`;
-                                
-                                if (spouseGrandfather) {
-                                  spouseInfo += ` ابن ${spouseGrandfather.name}`;
-                                }
-                              }
-                              
-                              // Use زوج for husband, زوجة for wife (from member's perspective)
-                              const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-                              
-                              return (
-                                <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                        // Use زوج for husband, زوجة for wife (from member's perspective)
+                        const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+                        return <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
                                   {relationLabel} {spouseInfo}
-                                </p>
-                              );
-                            }
-                          }
-                        }
-                        return null;
-                      })()}
+                                </p>;
+                      }
+                    }
+                  }
+                  return null;
+                })()}
                       
                       {/* Birth date and other icons */}
                       <div className="flex items-center gap-2">
-                        {member.birthDate && (
-                          <span className="text-xs text-muted-foreground font-arabic">
+                        {member.birthDate && <span className="text-xs text-muted-foreground font-arabic">
                             {new Date(member.birthDate).toLocaleDateString('ar-SA')}
-                          </span>
-                        )}
-                        {member.isFounder && (
-                          <Crown className="h-3 w-3 text-yellow-500" />
-                        )}
-                        {!member.isAlive && (
-                          <Skull className="h-3 w-3 text-muted-foreground" />
-                        )}
+                          </span>}
+                        {member.isFounder && <Crown className="h-3 w-3 text-yellow-500" />}
+                        {!member.isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
                       </div>
                     </div>
                   </div>
@@ -3455,65 +3369,33 @@ const MemberList = ({
                    {/* Edit & Remove buttons at the most left */}
                   <div className="flex flex-col gap-1 flex-shrink-0">
                      {/* Only show edit button for non-spouse members */}
-                     {!checkIfMemberIsSpouse(member) ? (
-                       <Button
-                         type="button"
-                         size="sm"
-                         variant="outline"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             onEditMember(member);
-                           }}
-                         className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
-                       >
+                     {!checkIfMemberIsSpouse(member) ? <Button type="button" size="sm" variant="outline" onClick={e => {
+                e.stopPropagation();
+                onEditMember(member);
+              }} className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm">
                          <Edit2 className="h-3 w-3 text-gray-600" />
-                       </Button>
-                     ) : (
-                       <Button
-                         type="button"
-                         size="sm"
-                         variant="outline"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           onSpouseEditAttempt(member);
-                         }}
-                         className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm"
-                       >
+                       </Button> : <Button type="button" size="sm" variant="outline" onClick={e => {
+                e.stopPropagation();
+                onSpouseEditAttempt(member);
+              }} className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm">
                          <Edit2 className="h-3 w-3 text-yellow-600" />
-                       </Button>
-                     )}
+                       </Button>}
                     
-                     <Button
-                       type="button"
-                       size="sm"
-                       variant="outline"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           if (checkIfMemberIsSpouse(member)) {
-                             onSpouseEditAttempt(member);
-                           } else {
-                             onDeleteMember(member);
-                           }
-                         }}
-                       className={`h-7 w-7 p-0 border shadow-sm ${
-                         checkIfMemberIsSpouse(member) 
-                           ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' 
-                           : 'bg-red-50/80 hover:bg-red-100 border-red-200'
-                       }`}
-                     >
-                       <Trash2 className={`h-3 w-3 ${
-                         checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'
-                       }`} />
+                     <Button type="button" size="sm" variant="outline" onClick={e => {
+                e.stopPropagation();
+                if (checkIfMemberIsSpouse(member)) {
+                  onSpouseEditAttempt(member);
+                } else {
+                  onDeleteMember(member);
+                }
+              }} className={`h-7 w-7 p-0 border shadow-sm ${checkIfMemberIsSpouse(member) ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' : 'bg-red-50/80 hover:bg-red-100 border-red-200'}`}>
+                       <Trash2 className={`h-3 w-3 ${checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'}`} />
                      </Button>
                   </div>
                 </div>
               </CardContent>
-            </Card>
-          ))
-        )}
+            </Card>)}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default FamilyBuilderNew;
