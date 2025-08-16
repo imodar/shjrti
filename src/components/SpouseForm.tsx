@@ -8,7 +8,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { Check, ChevronsUpDown, Heart, UserPlus, CalendarIcon, Save, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export interface SpouseData {
   id: string;
@@ -307,7 +307,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 </div>
               </div>
             </>
-          ) : familyStatus === 'no' && (
+          ) : familyStatus === 'no' ? (
             <>
               {/* Name Fields for Non-Family Members */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -460,48 +460,65 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 </div>
               </div>
             </>
-          )}
-
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
-            {/* Close Button - Show if editing but no changes made */}
-            {spouse.isSaved && !hasChanges && onClose && (
+          ) : (
+            /* When no radio button is selected, show cancel option */
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground mb-4 font-arabic">
+                يرجى اختيار نوع {spouseLabel} أولاً
+              </p>
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+                className="w-full h-12 font-arabic text-sm font-medium border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-300"
               >
-                إغلاق
+                الغاء إضافة {isWife ? 'زوجة' : 'زوج'} جديدة
               </Button>
-            )}
-            
-            {/* Save Button */}
-            <Button
-              type="button"
-              onClick={handleValidationAndSave}
-              disabled={spouse.isSaved && !hasChanges}
-              className={cn(
-                "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
-                spouse.isSaved && !hasChanges
-                  ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
-                  : cn("bg-gradient-to-r text-white shadow-lg hover:shadow-xl", 
-                       isWife ? "from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600" : "from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600")
+            </div>
+          )}
+
+          {/* Action Buttons - Only show when radio button is selected */}
+          {(familyStatus === 'yes' || familyStatus === 'no') && (
+            <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
+              {/* Close Button - Show if editing but no changes made */}
+              {spouse.isSaved && !hasChanges && onClose && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+                >
+                  إغلاق
+                </Button>
               )}
-            >
-              {spouse.isSaved && !hasChanges ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  تم حفظ البيانات
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  {hasChanges ? `حفظ التغييرات ${isWife ? 'للزوجة' : 'للزوج'}` : saveButtonText}
-                </>
-              )}
-            </Button>
-          </div>
+              
+              {/* Save Button */}
+              <Button
+                type="button"
+                onClick={handleValidationAndSave}
+                disabled={spouse.isSaved && !hasChanges}
+                className={cn(
+                  "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
+                  spouse.isSaved && !hasChanges
+                    ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
+                    : cn("bg-gradient-to-r text-white shadow-lg hover:shadow-xl", 
+                         isWife ? "from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600" : "from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600")
+                )}
+              >
+                {spouse.isSaved && !hasChanges ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    تم حفظ البيانات
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    {hasChanges ? `حفظ التغييرات ${isWife ? 'للزوجة' : 'للزوج'}` : saveButtonText}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
