@@ -1,0 +1,121 @@
+/* Facebook Theme Button Overrides for existing components */
+
+/* Override shadcn button variants to match Facebook style */
+.theme-professional .btn,
+.theme-professional button {
+  font-family: var(--font-family-primary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  font-size: 15px;
+  line-height: 1.34;
+}
+
+.theme-professional [data-variant="default"],
+.theme-professional .bg-primary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  box-shadow: var(--shadow-card);
+}
+
+.theme-professional [data-variant="default"]:hover,
+.theme-professional .bg-primary:hover {
+  filter: brightness(0.95);
+  box-shadow: var(--shadow-hover);
+}
+
+.theme-professional [data-variant="outline"],
+.theme-professional [data-variant="secondary"] {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-card);
+}
+
+.theme-professional [data-variant="outline"]:hover,
+.theme-professional [data-variant="secondary"]:hover {
+  background: hsl(var(--muted));
+  box-shadow: var(--shadow-hover);
+}
+
+/* Facebook Card styling for existing components */
+.theme-professional .card,
+.theme-professional [data-role="card"] {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.theme-professional .card:hover,
+.theme-professional [data-role="card"]:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Facebook Input styling for existing components */
+.theme-professional input,
+.theme-professional textarea,
+.theme-professional select {
+  font-family: var(--font-family-primary);
+  font-size: 15px;
+  line-height: 1.34;
+  background: hsl(var(--input));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-professional input:focus,
+.theme-professional textarea:focus,
+.theme-professional select:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.theme-professional input::placeholder,
+.theme-professional textarea::placeholder {
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+}
+
+/* Facebook Navigation overrides */
+.theme-professional .nav-link,
+.theme-professional .navigation-menuitem {
+  font-family: var(--font-family-primary);
+  font-weight: 600;
+  font-size: 15px;
+  color: hsl(var(--muted-foreground));
+  transition: all 0.15s ease;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.theme-professional .nav-link:hover,
+.theme-professional .navigation-menuitem:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+.theme-professional .nav-link.active,
+.theme-professional .navigation-menuitem[data-active="true"] {
+  color: hsl(var(--primary));
+}
+
+.theme-professional .nav-link.active::after,
+.theme-professional .navigation-menuitem[data-active="true"]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: hsl(var(--primary));
+  border-radius: 2px;
+}

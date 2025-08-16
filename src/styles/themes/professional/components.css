@@ -1,4 +1,4 @@
-/* Professional Theme Components - Facebook-like Design */
+/* Facebook Theme Components - Exact Design Match */
 @layer components {
   .hero-gradient {
     background: var(--tree-gradient);
@@ -9,132 +9,257 @@
   }
   
   .fade-in {
-    animation: fadeIn 0.4s ease-out;
+    animation: fadeIn 0.3s ease-out;
   }
 
-  /* Professional Card Styling */
-  .professional-card {
-    @apply bg-card border border-border rounded-lg shadow-sm;
-    transition: all 0.2s ease;
+  /* Facebook Card Styling */
+  .facebook-card {
+    @apply bg-card rounded-lg;
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--border));
+    transition: box-shadow 0.2s ease;
   }
 
-  .professional-card:hover {
-    @apply shadow-md;
-    transform: translateY(-1px);
+  .facebook-card:hover {
+    box-shadow: var(--shadow-hover);
   }
 
-  /* Professional Button Styling */
-  .professional-button {
-    @apply font-medium rounded-md transition-all duration-200;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* Facebook Button Styling */
+  .facebook-button {
+    @apply font-semibold rounded-md transition-all duration-150;
+    font-family: var(--font-family-primary);
+    letter-spacing: 0.02em;
+    border: none;
+    cursor: pointer;
   }
 
-  .professional-button:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-  }
-
-  /* Professional Input Styling */
-  .professional-input {
-    @apply border border-border rounded-md bg-input px-3 py-2;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .professional-input:focus {
-    @apply outline-none ring-2 ring-ring border-primary;
-  }
-
-  /* Professional Navigation */
-  .professional-nav {
-    @apply bg-card border-b border-border;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  .professional-nav-item {
-    @apply text-muted-foreground hover:text-foreground;
-    transition: color 0.2s ease;
-    font-weight: 500;
-  }
-
-  .professional-nav-item.active {
-    @apply text-primary;
-    position: relative;
-  }
-
-  .professional-nav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: hsl(var(--primary));
-  }
-
-  /* Professional Sidebar */
-  .professional-sidebar {
-    @apply bg-sidebar-background border-r border-sidebar-border;
-    box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
-  }
-
-  .professional-sidebar-item {
-    @apply flex items-center px-3 py-2 rounded-md text-sidebar-foreground;
-    transition: all 0.2s ease;
-  }
-
-  .professional-sidebar-item:hover {
-    @apply bg-sidebar-accent text-sidebar-accent-foreground;
-  }
-
-  .professional-sidebar-item.active {
-    @apply bg-sidebar-primary text-sidebar-primary-foreground;
+  .facebook-button-primary {
+    @apply facebook-button bg-primary text-primary-foreground;
+    padding: 8px 16px;
+    font-size: 15px;
     font-weight: 600;
   }
 
-  /* Calendar-specific styles */
-  .calendar-month-spacing {
-    @apply space-y-3;
-  }
-  
-  .calendar-table-spacing {
-    @apply space-y-1;
-  }
-  
-  .rdp-caption {
-    @apply font-semibold;
+  .facebook-button-primary:hover {
+    filter: brightness(0.95);
   }
 
-  /* Professional Form Elements */
-  .professional-form-group {
-    @apply space-y-2;
+  .facebook-button-secondary {
+    @apply facebook-button bg-secondary text-secondary-foreground;
+    padding: 8px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid hsl(var(--border));
   }
 
-  .professional-form-label {
-    @apply text-sm font-medium text-foreground;
+  .facebook-button-secondary:hover {
+    @apply bg-muted;
   }
 
-  .professional-form-error {
-    @apply text-sm text-destructive;
+  /* Facebook Input Styling */
+  .facebook-input {
+    @apply bg-input border border-border rounded-md px-3 py-2;
+    font-family: var(--font-family-primary);
+    font-size: 15px;
+    line-height: 1.34;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
   }
 
-  /* Professional Modal/Dialog */
-  .professional-modal {
-    @apply bg-card border border-border rounded-lg shadow-lg;
+  .facebook-input:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: var(--shadow-focus);
   }
 
-  .professional-modal-header {
-    @apply border-b border-border px-6 py-4;
+  .facebook-input::placeholder {
+    color: hsl(var(--muted-foreground));
+    font-weight: 400;
   }
 
-  .professional-modal-title {
-    @apply text-lg font-semibold;
+  /* Facebook Header/Navigation */
+  .facebook-header {
+    @apply bg-card;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid hsl(var(--border));
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
   }
 
-  .professional-modal-content {
-    @apply px-6 py-4;
+  .facebook-nav-item {
+    @apply text-muted-foreground hover:text-foreground;
+    transition: all 0.15s ease;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
   }
 
-  .professional-modal-footer {
-    @apply border-t border-border px-6 py-4 flex justify-end space-x-2;
+  .facebook-nav-item:hover {
+    @apply bg-accent;
+  }
+
+  .facebook-nav-item.active {
+    @apply text-primary;
+  }
+
+  .facebook-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background: hsl(var(--primary));
+    border-radius: 2px;
+  }
+
+  /* Facebook Sidebar */
+  .facebook-sidebar {
+    @apply bg-card;
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 56px;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    border-right: 1px solid hsl(var(--border));
+  }
+
+  .facebook-sidebar-item {
+    @apply flex items-center px-2 py-2 rounded-lg text-foreground;
+    transition: all 0.15s ease;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 4px;
+  }
+
+  .facebook-sidebar-item:hover {
+    @apply bg-accent;
+  }
+
+  .facebook-sidebar-item.active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .facebook-sidebar-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: var(--spacing-md);
+    flex-shrink: 0;
+  }
+
+  /* Facebook Typography */
+  .facebook-text-heading {
+    font-family: var(--font-family-primary);
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    line-height: 1.2;
+  }
+
+  .facebook-text-body {
+    font-family: var(--font-family-primary);
+    font-weight: 400;
+    color: hsl(var(--foreground));
+    line-height: 1.34;
+    font-size: 15px;
+  }
+
+  .facebook-text-caption {
+    font-family: var(--font-family-primary);
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    font-size: 13px;
+    line-height: 1.34;
+  }
+
+  /* Facebook Form Elements */
+  .facebook-form-group {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .facebook-form-label {
+    @apply facebook-text-body font-semibold mb-1 block;
+    color: hsl(var(--foreground));
+  }
+
+  .facebook-form-error {
+    @apply facebook-text-caption;
+    color: hsl(var(--destructive));
+    margin-top: var(--spacing-xs);
+  }
+
+  /* Facebook Modal/Dialog */
+  .facebook-modal {
+    @apply bg-card rounded-lg;
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--border));
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .facebook-modal-header {
+    @apply border-b border-border px-4 py-4;
+  }
+
+  .facebook-modal-title {
+    @apply facebook-text-heading text-xl;
+  }
+
+  .facebook-modal-content {
+    @apply px-4 py-4;
+  }
+
+  .facebook-modal-footer {
+    @apply border-t border-border px-4 py-4 flex justify-end;
+    gap: var(--spacing-sm);
+  }
+
+  /* Facebook Feed/Content */
+  .facebook-post {
+    @apply facebook-card p-4 mb-4;
+  }
+
+  .facebook-post-header {
+    @apply flex items-center mb-3;
+  }
+
+  .facebook-post-author {
+    @apply facebook-text-body font-semibold;
+  }
+
+  .facebook-post-time {
+    @apply facebook-text-caption;
+  }
+
+  .facebook-post-content {
+    @apply facebook-text-body mb-3;
+  }
+
+  /* Facebook Avatar */
+  .facebook-avatar {
+    border-radius: 50%;
+    border: 2px solid hsl(var(--border));
+  }
+
+  .facebook-avatar-sm {
+    width: 32px;
+    height: 32px;
+  }
+
+  .facebook-avatar-md {
+    width: 40px;
+    height: 40px;
+  }
+
+  .facebook-avatar-lg {
+    width: 48px;
+    height: 48px;
   }
 }

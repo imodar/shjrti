@@ -1,72 +1,145 @@
-/* Professional Theme Layout Styles */
+/* Facebook Theme Layout Styles */
 
-/* Professional Scrollbar */
+/* Facebook Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
   background: hsl(var(--muted));
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 3px;
+  background: hsl(var(--muted-foreground) / 0.4);
+  border-radius: 4px;
   transition: background 0.2s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: hsl(var(--muted-foreground) / 0.6);
 }
 
-/* Professional Grid Layouts */
-.professional-grid {
+/* Facebook Main Layout */
+.facebook-layout {
+  display: flex;
+  min-height: 100vh;
+  background: hsl(var(--background));
+}
+
+.facebook-main-content {
+  margin-left: 280px;
+  margin-top: 56px;
+  flex: 1;
+  padding: var(--spacing-lg);
+  max-width: calc(100vw - 280px);
+}
+
+@media (max-width: 1100px) {
+  .facebook-main-content {
+    margin-left: 0;
+    max-width: 100vw;
+  }
+  
+  .facebook-sidebar {
+    display: none;
+  }
+}
+
+/* Facebook Grid Layouts */
+.facebook-grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--spacing-lg);
 }
 
-.professional-grid-2 {
+.facebook-grid-2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.professional-grid-3 {
+.facebook-grid-3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.professional-grid-4 {
+.facebook-grid-4 {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.facebook-feed-layout {
+  display: grid;
+  grid-template-columns: 1fr 600px 1fr;
+  gap: var(--spacing-xl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.facebook-feed-main {
+  grid-column: 2;
+}
+
+.facebook-feed-sidebar-left {
+  grid-column: 1;
+  position: sticky;
+  top: 76px;
+  height: fit-content;
+}
+
+.facebook-feed-sidebar-right {
+  grid-column: 3;
+  position: sticky;
+  top: 76px;
+  height: fit-content;
+}
+
+@media (max-width: 1200px) {
+  .facebook-feed-layout {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .facebook-feed-main {
+    grid-column: 1;
+  }
+  
+  .facebook-feed-sidebar-left,
+  .facebook-feed-sidebar-right {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
-  .professional-grid-2,
-  .professional-grid-3,
-  .professional-grid-4 {
+  .facebook-grid-2,
+  .facebook-grid-3,
+  .facebook-grid-4 {
     grid-template-columns: 1fr;
   }
 }
 
-/* Professional Container */
-.professional-container {
+/* Facebook Container */
+.facebook-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-lg);
 }
 
-/* Professional Section Spacing */
-.professional-section {
-  padding: 3rem 0;
+.facebook-container-fluid {
+  width: 100%;
+  padding: 0 var(--spacing-lg);
 }
 
-.professional-section-tight {
-  padding: 1.5rem 0;
+/* Facebook Section Spacing */
+.facebook-section {
+  padding: var(--spacing-xl) 0;
 }
 
-.professional-section-loose {
-  padding: 4rem 0;
+.facebook-section-tight {
+  padding: var(--spacing-lg) 0;
 }
 
-/* React Flow Professional Styles */
+.facebook-section-loose {
+  padding: calc(var(--spacing-xl) * 2) 0;
+}
+
+/* React Flow Facebook Styles */
 .react-flow__node-familyMember,
 .react-flow__node-addMember {
   background: transparent !important;
@@ -76,18 +149,21 @@
 }
 
 .react-flow__handle {
-  width: 6px !important;
-  height: 6px !important;
+  width: 8px !important;
+  height: 8px !important;
   background: hsl(var(--primary)) !important;
-  border: 2px solid hsl(var(--background)) !important;
+  border: 2px solid hsl(var(--card)) !important;
   border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 .react-flow__handle:hover {
-  background: hsl(var(--primary) / 0.8) !important;
+  background: hsl(var(--primary) / 0.9) !important;
+  transform: scale(1.1) !important;
+  transition: all 0.15s ease !important;
 }
 
-/* Professional Mobile Optimizations */
+/* Facebook Mobile Optimizations */
 .mobile-smooth-scroll {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -116,12 +192,20 @@
     -webkit-backface-visibility: hidden;
   }
 
-  .professional-container {
-    padding: 0 0.75rem;
+  .facebook-container {
+    padding: 0 var(--spacing-md);
   }
 
-  .professional-section {
-    padding: 2rem 0;
+  .facebook-section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .facebook-main-content {
+    padding: var(--spacing-md);
+  }
+  
+  .facebook-header {
+    height: 48px;
   }
 }
 
@@ -134,56 +218,93 @@
   display: none;
 }
 
-/* Professional Flexbox Utilities */
-.professional-flex-center {
+/* Facebook Flexbox Utilities */
+.facebook-flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.professional-flex-between {
+.facebook-flex-between {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.professional-flex-start {
+.facebook-flex-start {
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
 
-.professional-flex-end {
+.facebook-flex-end {
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
 
-/* Professional Card Layouts */
-.professional-card-grid {
+/* Facebook Card Layouts */
+.facebook-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
 }
 
-.professional-card-list {
+.facebook-card-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--spacing-lg);
 }
 
-/* Professional Header Layout */
-.professional-header {
-  @apply bg-card border-b border-border;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(8px);
+/* Facebook Header Layout */
+.facebook-header-layout {
+  @apply facebook-header facebook-flex-between;
+  padding: 0 var(--spacing-lg);
+  backdrop-filter: blur(10px);
   background: hsl(var(--card) / 0.95);
 }
 
-/* Professional Footer Layout */
-.professional-footer {
-  @apply bg-muted border-t border-border;
+.facebook-header-brand {
+  @apply facebook-flex-start;
+  gap: var(--spacing-md);
+}
+
+.facebook-header-actions {
+  @apply facebook-flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* Facebook Footer Layout */
+.facebook-footer {
+  @apply bg-card border-t border-border;
+  padding: var(--spacing-xl) 0;
   margin-top: auto;
+}
+
+/* Facebook Status/Notification Badges */
+.facebook-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.facebook-online-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: hsl(var(--success));
+  border: 2px solid hsl(var(--card));
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
 }
