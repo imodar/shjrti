@@ -28,6 +28,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const loadThemeCSS = (theme: ThemeVariant) => {
+    // Remove existing theme link if it exists
+    if (currentStyleElement) {
+      currentStyleElement.remove();
+    }
+
+    // Create new link element for the theme
+    const linkElement = document.createElement('link');
+    linkElement.rel = 'stylesheet';
+    linkElement.href = `/src/styles/themes/${theme}/index.css`;
+    document.head.appendChild(linkElement);
+    setCurrentStyleElement(linkElement);
+
     // Remove existing theme classes
     document.documentElement.classList.remove('theme-modern', 'theme-professional');
     // Apply new theme class
