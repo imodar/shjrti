@@ -28,6 +28,7 @@ import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
+import { DateDisplay } from "@/components/DateDisplay";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -3640,9 +3641,10 @@ const MemberList = ({
                       {/* Birth date and other icons */}
                       <div className="flex items-center gap-2">
                         {member.birthDate && (
-                          <span className="text-xs text-muted-foreground font-arabic">
-                            {new Date(member.birthDate).toLocaleDateString('ar-SA')}
-                          </span>
+                          <DateDisplay 
+                            date={member.birthDate} 
+                            className="text-xs text-muted-foreground font-arabic"
+                          />
                         )}
                         {member.isFounder && (
                           <Crown className="h-3 w-3 text-yellow-500" />
