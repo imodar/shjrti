@@ -9,98 +9,110 @@
 @layer base {
   .theme-modern {
     /* Background Colors */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
+    --background: 222.2 84% 4.9% !important;
+    --foreground: 210 40% 98% !important;
+    --sidebar-background: 222.2 84% 4.9% !important;
+    --sidebar-foreground: 210 40% 98% !important;
 
     /* Primary Colors - Emerald Green */
-    --primary: 160 84% 39%;
-    --primary-foreground: 210 40% 98%;
-    --sidebar-primary: 160 84% 39%;
-    --sidebar-primary-foreground: 210 40% 98%;
+    --primary: 160 84% 39% !important;
+    --primary-foreground: 210 40% 98% !important;
+    --sidebar-primary: 160 84% 39% !important;
+    --sidebar-primary-foreground: 210 40% 98% !important;
 
     /* Secondary Colors */
-    --secondary: 160 30% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 160 30% 15% !important;
+    --secondary-foreground: 210 40% 98% !important;
 
     /* Accent Colors - Teal */
-    --accent: 173 80% 40%;
-    --accent-foreground: 210 40% 98%;
-    --sidebar-accent: 173 80% 40%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    --accent: 173 80% 40% !important;
+    --accent-foreground: 210 40% 98% !important;
+    --sidebar-accent: 173 80% 40% !important;
+    --sidebar-accent-foreground: 210 40% 98% !important;
 
     /* Muted Colors */
-    --muted: 160 25% 15%;
-    --muted-foreground: 165 15% 65%;
+    --muted: 160 25% 15% !important;
+    --muted-foreground: 165 15% 65% !important;
 
     /* Card Colors */
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9% !important;
+    --card-foreground: 210 40% 98% !important;
 
     /* Popover Colors */
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9% !important;
+    --popover-foreground: 210 40% 98% !important;
 
     /* Border and Input */
-    --border: 160 25% 20%;
-    --input: 160 25% 18%;
-    --sidebar-border: 160 25% 20%;
+    --border: 160 25% 20% !important;
+    --input: 160 25% 18% !important;
+    --sidebar-border: 160 25% 20% !important;
 
     /* Ring and Focus */
-    --ring: 160 84% 39%;
-    --sidebar-ring: 160 84% 39%;
+    --ring: 160 84% 39% !important;
+    --sidebar-ring: 160 84% 39% !important;
 
     /* Destructive */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6% !important;
+    --destructive-foreground: 210 40% 98% !important;
 
     /* Radius */
     --radius: 0.5rem;
 
     /* Family Tree Specific */
-    --tree-primary: 160 84% 39%;
-    --tree-secondary: 173 80% 40%;
-    --tree-accent: 158 64% 52%;
-    --tree-background: 222.2 84% 4.9%;
-    --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
-    --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
+    --tree-primary: 160 84% 39% !important;
+    --tree-secondary: 173 80% 40% !important;
+    --tree-accent: 158 64% 52% !important;
+    --tree-background: 222.2 84% 4.9% !important;
+    --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary))) !important;
+    --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2) !important;
   }
 
   .theme-modern.light {
     /* Light mode overrides for modern theme */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 84% 4.9%;
+    --background: 0 0% 100% !important;
+    --foreground: 222.2 84% 4.9% !important;
+    --sidebar-background: 0 0% 100% !important;
+    --sidebar-foreground: 222.2 84% 4.9% !important;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100% !important;
+    --card-foreground: 222.2 84% 4.9% !important;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100% !important;
+    --popover-foreground: 222.2 84% 4.9% !important;
 
-    --primary: 160 84% 39%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 160 84% 39% !important;
+    --primary-foreground: 210 40% 98% !important;
 
-    --secondary: 160 15% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary: 160 15% 96% !important;
+    --secondary-foreground: 222.2 84% 4.9% !important;
 
-    --muted: 160 15% 96%;
-    --muted-foreground: 165 16% 47%;
+    --muted: 160 15% 96% !important;
+    --muted-foreground: 165 16% 47% !important;
 
-    --accent: 173 80% 40%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 173 80% 40% !important;
+    --accent-foreground: 210 40% 98% !important;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2% !important;
+    --destructive-foreground: 210 40% 98% !important;
 
-    --border: 160 20% 88%;
-    --input: 160 15% 94%;
-    --ring: 160 84% 39%;
+    --border: 160 20% 88% !important;
+    --input: 160 15% 94% !important;
+    --ring: 160 84% 39% !important;
 
-    --tree-background: 0 0% 100%;
-    --tree-foreground: 222.2 84% 4.9%;
+    --tree-background: 0 0% 100% !important;
+    --tree-foreground: 222.2 84% 4.9% !important;
+  }
+
+  /* Additional overrides for modern theme buttons */
+  .theme-modern .bg-primary,
+  .theme-modern button[class*="bg-primary"] {
+    background-color: hsl(160 84% 39%) !important;
+    color: hsl(210 40% 98%) !important;
+  }
+
+  .theme-modern .bg-primary:hover,
+  .theme-modern button[class*="bg-primary"]:hover {
+    background-color: hsl(160 84% 35%) !important;
   }
 
   * {
