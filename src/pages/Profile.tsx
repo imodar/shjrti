@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown, Gem, TreePine, Shield } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { User, Mail, Phone, Calendar, Edit, Save, X, Camera, Trash2, AlertTriangle, Heart, Users, Bell, Settings, LogOut, Crown, Gem, TreePine, Shield, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -35,7 +36,8 @@ export default function Profile() {
     lastName: "",
     email: "",
     phone: "",
-    joinDate: ""
+    joinDate: "",
+    datePreference: "gregorian"
   });
 
   useEffect(() => {
@@ -190,7 +192,8 @@ export default function Profile() {
         lastName: profileData?.last_name || "",
         email: profileData?.email || user?.email || "",
         phone: profileData?.phone || "",
-        joinDate: profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ar-SA') : new Date().toLocaleDateString('ar-SA')
+        joinDate: profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ar-SA') : new Date().toLocaleDateString('ar-SA'),
+        datePreference: profileData?.date_preference || "gregorian"
       };
 
       console.log('Setting profile data:', userData);
@@ -235,6 +238,7 @@ export default function Profile() {
             last_name: profileData.lastName,
             email: profileData.email,
             phone: profileData.phone,
+            date_preference: profileData.datePreference,
             updated_at: new Date().toISOString()
           })
           .eq('user_id', user?.id);
@@ -251,7 +255,8 @@ export default function Profile() {
             first_name: profileData.firstName,
             last_name: profileData.lastName,
             email: profileData.email,
-            phone: profileData.phone
+            phone: profileData.phone,
+            date_preference: profileData.datePreference
           });
         
         console.log('Insert result:', result);
@@ -618,6 +623,62 @@ export default function Profile() {
                     </CardHeader>
                     
                     <CardContent className="relative space-y-4 pb-8 pt-6">
+                      {/* Date Preference Section */}
+                      <div className="mb-6 pb-6 border-b border-gray-200/50 dark:border-gray-700/50">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Clock className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                              نوع التقويم المفضل
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              اختر نوع التقويم الذي تفضل عرض التواريخ به
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <Label htmlFor="datePreference" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            نوع التقويم
+                          </Label>
+                          {isEditing ? (
+                            <Select
+                              value={profileData.datePreference}
+                              onValueChange={(value) => setProfileData({...profileData, datePreference: value})}
+                            >
+                              <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200">
+                                <SelectValue placeholder="اختر نوع التقويم" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50">
+                                <SelectItem value="gregorian" className="hover:bg-blue-50 dark:hover:bg-blue-950">
+                                  <div className="flex items-center gap-2">
+                                    <span>📅</span>
+                                    <span>التقويم الميلادي (الغربي)</span>
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="hijri" className="hover:bg-emerald-50 dark:hover:bg-emerald-950">
+                                  <div className="flex items-center gap-2">
+                                    <span>🌙</span>
+                                    <span>التقويم الهجري (الإسلامي)</span>
+                                  </div>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50">
+                              <div className="flex items-center gap-2">
+                                <span>{profileData.datePreference === 'hijri' ? '🌙' : '📅'}</span>
+                                <span className="text-gray-700 dark:text-gray-300">
+                                  {profileData.datePreference === 'hijri' ? 'التقويم الهجري (الإسلامي)' : 'التقويم الميلادي (الغربي)'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Link to="/payments" className="group">
                           <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-700 border border-amber-200/70 dark:from-amber-950/40 dark:to-orange-950/40 dark:hover:from-amber-950/60 dark:hover:to-orange-950/60 dark:text-amber-300 dark:border-amber-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
