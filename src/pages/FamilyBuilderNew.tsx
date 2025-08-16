@@ -2462,10 +2462,10 @@ const FamilyBuilderNew = () => {
                                             <>
                                               {/* Select Existing Family Member */}
                                               <div className="space-y-3">
-                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
-                                                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
-                                                  اختر الزوجة من القائمة
-                                                </Label>
+                                                 <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                                                   <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
+                                                   اختر الزوجة من القائمة *
+                                                 </Label>
                                                 <Popover open={wivesCommandOpen[wives.findIndex(w => w === wife)]} onOpenChange={(open) => {
                                                   const actualIndex = wives.findIndex(w => w === wife);
                                                   const newState = {...wivesCommandOpen};

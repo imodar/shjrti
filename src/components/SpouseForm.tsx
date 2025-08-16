@@ -79,16 +79,21 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   };
 
   const handleValidationAndSave = () => {
-    // Validate spouse data
-    const isValid = (spouse.firstName.trim() && spouse.lastName.trim()) && (
-      (spouse.isFamilyMember && spouse.existingFamilyMemberId) ||
-      !spouse.isFamilyMember
+    // Enhanced validation logic
+    const isValid = (
+      familyStatus === 'yes' 
+        ? spouse.existingFamilyMemberId && spouse.existingFamilyMemberId.trim() !== ''
+        : spouse.firstName.trim() && spouse.lastName.trim()
     );
 
     if (!isValid) {
+      const errorMessage = familyStatus === 'yes' 
+        ? `يرجى اختيار ${spouseLabel} من قائمة أفراد العائلة`
+        : `يرجى إكمال الاسم الأول والأخير ${isWife ? 'للزوجة' : 'للزوج'}`;
+      
       toast({
         title: "خطأ في البيانات",
-        description: `يرجى إكمال جميع البيانات المطلوبة ${isWife ? 'للزوجة' : 'للزوج'}`,
+        description: errorMessage,
         variant: "destructive"
       });
       return;
@@ -184,7 +189,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
               <div className="space-y-3">
                 <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
                   <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
-                  اختر {spouseLabel} من القائمة
+                  اختر {spouseLabel} من القائمة *
                 </Label>
                 <Popover open={commandOpen} onOpenChange={onCommandOpenChange}>
                   <PopoverTrigger asChild>
