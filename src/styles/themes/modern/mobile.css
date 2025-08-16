@@ -1,0 +1,123 @@
+/* Modern Theme Mobile Styles */
+
+/* Mobile viewport fixes */
+@media (max-width: 768px) {
+  /* Ensure theme variables are applied on mobile */
+  .theme-modern {
+    /* Force light mode colors on mobile for better visibility */
+    --background: 0 0% 100% !important;
+    --foreground: 0 0% 20% !important;
+    --card: 0 0% 100% !important;
+    --card-foreground: 0 0% 20% !important;
+    --popover: 0 0% 100% !important;
+    --popover-foreground: 0 0% 20% !important;
+    --primary: 160 84% 39% !important;
+    --primary-foreground: 0 0% 100% !important;
+    --secondary: 160 15% 96% !important;
+    --secondary-foreground: 0 0% 20% !important;
+    --muted: 160 15% 96% !important;
+    --muted-foreground: 165 16% 47% !important;
+    --accent: 173 80% 40% !important;
+    --accent-foreground: 0 0% 100% !important;
+    --destructive: 0 62.8% 50% !important;
+    --destructive-foreground: 0 0% 100% !important;
+    --border: 160 20% 88% !important;
+    --input: 160 15% 94% !important;
+    --ring: 160 84% 39% !important;
+    
+    /* Sidebar colors for mobile */
+    --sidebar-background: 0 0% 100% !important;
+    --sidebar-foreground: 0 0% 20% !important;
+    --sidebar-primary: 160 84% 39% !important;
+    --sidebar-primary-foreground: 0 0% 100% !important;
+    --sidebar-accent: 173 80% 40% !important;
+    --sidebar-accent-foreground: 0 0% 100% !important;
+    --sidebar-border: 160 20% 88% !important;
+    --sidebar-ring: 160 84% 39% !important;
+  }
+
+  /* Override dark mode on mobile if needed */
+  .theme-modern.dark {
+    --background: 160 25% 15% !important;
+    --foreground: 210 40% 98% !important;
+    --card: 160 25% 15% !important;
+    --card-foreground: 210 40% 98% !important;
+    --popover: 160 25% 15% !important;
+    --popover-foreground: 210 40% 98% !important;
+    --secondary: 160 30% 20% !important;
+    --secondary-foreground: 210 40% 98% !important;
+    --muted: 160 25% 20% !important;
+    --muted-foreground: 165 15% 65% !important;
+    --border: 160 25% 25% !important;
+    --input: 160 25% 22% !important;
+    
+    --sidebar-background: 160 25% 15% !important;
+    --sidebar-foreground: 210 40% 98% !important;
+  }
+
+  /* Prevent black backgrounds on mobile */
+  body {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Fix header on mobile */
+  .mobile-header {
+    background-color: hsl(var(--background)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Fix mobile navigation */
+  .mobile-nav {
+    background-color: hsl(var(--popover)) !important;
+    color: hsl(var(--popover-foreground)) !important;
+  }
+
+  /* Fix mobile cards */
+  .mobile-card {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Ensure all elements follow theme */
+  * {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Fix any remaining hardcoded colors */
+  .bg-gray-900,
+  .bg-slate-900,
+  .bg-black {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  .text-white {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .text-gray-300,
+  .text-gray-400 {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+}
+
+/* Mobile-specific layout improvements */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+
+  .mobile-text-center {
+    text-align: center !important;
+  }
+
+  .mobile-flex-col {
+    flex-direction: column !important;
+  }
+}

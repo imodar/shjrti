@@ -156,7 +156,7 @@ export const GlobalHeader = () => {
                         
                         {/* Main avatar ring with premium styling */}
                         <div className="relative w-14 h-14 p-[3px] bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full group-hover:scale-110 transition-all duration-700">
-                          <div className="w-full h-full bg-gray-900 rounded-full p-[2px]">
+                          <div className="w-full h-full bg-sidebar-background rounded-full p-[2px]">
                             <Avatar className="h-full w-full">
                               <AvatarImage src={user.user_metadata?.avatar_url} />
                               <AvatarFallback className="bg-gradient-to-br from-emerald-400/30 to-teal-400/30 text-emerald-300 font-bold text-sm border border-emerald-400/30">
@@ -182,7 +182,7 @@ export const GlobalHeader = () => {
                     </DropdownMenuTrigger>
                     
                     <DropdownMenuContent 
-                      className="w-72 mt-3 bg-gray-900/95 backdrop-blur-xl border-2 border-emerald-400/30 shadow-2xl rounded-2xl p-3" 
+                      className="w-72 mt-3 bg-popover/95 backdrop-blur-xl border-2 border-primary/30 shadow-2xl rounded-2xl p-3" 
                       align="end"
                       sideOffset={10}
                     >
@@ -199,7 +199,7 @@ export const GlobalHeader = () => {
                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-gray-900"></div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">
+                            <p className="text-sm font-semibold text-popover-foreground truncate">
                               {user.user_metadata?.full_name || user.email?.split('@')[0]}
                             </p>
                             <p className="text-xs text-gray-400 truncate">
@@ -218,7 +218,7 @@ export const GlobalHeader = () => {
                             <TreePine className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.dashboard', 'لوحة التحكم')}</p>
+                            <p className="font-medium text-popover-foreground">{t('nav.dashboard', 'لوحة التحكم')}</p>
                             <p className="text-xs text-gray-400">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
                         </Link>
@@ -230,7 +230,7 @@ export const GlobalHeader = () => {
                             <Settings className="h-5 w-5 text-teal-300" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.settings', 'الإعدادات')}</p>
+                            <p className="font-medium text-popover-foreground">{t('nav.settings', 'الإعدادات')}</p>
                             <p className="text-xs text-gray-400">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
                           </div>
                         </Link>
@@ -242,7 +242,7 @@ export const GlobalHeader = () => {
                             <CreditCard className="h-5 w-5 text-amber-300" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.billing', 'الفواتير')}</p>
+                            <p className="font-medium text-popover-foreground">{t('nav.billing', 'الفواتير')}</p>
                             <p className="text-xs text-gray-400">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
                           </div>
                         </Link>
@@ -254,7 +254,7 @@ export const GlobalHeader = () => {
                             <HelpCircle className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.help', 'المساعدة')}</p>
+                            <p className="font-medium text-popover-foreground">{t('nav.help', 'المساعدة')}</p>
                             <p className="text-xs text-gray-400">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
                           </div>
                         </div>
@@ -272,7 +272,7 @@ export const GlobalHeader = () => {
                             <LogOut className="h-5 w-5 text-red-400" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.logout', 'تسجيل الخروج')}</p>
+                            <p className="font-medium text-popover-foreground">{t('nav.logout', 'تسجيل الخروج')}</p>
                             <p className="text-xs text-gray-400">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
                           </div>
                         </div>
@@ -304,7 +304,7 @@ export const GlobalHeader = () => {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="relative bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white border border-white/20 hover:border-white/40 rounded-xl px-4 py-3 backdrop-blur-sm transition-all duration-300 group-hover:scale-105"
+                      className="relative bg-sidebar-background/10 hover:bg-sidebar-background/20 text-muted-foreground hover:text-foreground border border-border rounded-xl px-4 py-3 backdrop-blur-sm transition-all duration-300 group-hover:scale-105"
                     >
                       <div className="flex items-center gap-2">
                         <Globe className="h-4 w-4 group-hover:rotate-12 transition-transform duration-300" />
@@ -328,7 +328,7 @@ export const GlobalHeader = () => {
                         onClick={() => setLanguage(language.code)}
                       >
                         <div className="flex items-center justify-center w-full">
-                          <span className="text-white font-medium">{language.name}</span>
+                          <span className="text-foreground font-medium">{language.name}</span>
                         </div>
                       </DropdownMenuItem>
                     ))}
@@ -345,7 +345,7 @@ export const GlobalHeader = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-3 py-2"
+                    className="bg-sidebar-background/10 hover:bg-sidebar-background/20 text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-2"
                   >
                     <Globe className="h-4 w-4" />
                   </Button>
@@ -362,7 +362,7 @@ export const GlobalHeader = () => {
                       className="group p-2 rounded-lg hover:bg-amber-400/5 transition-all duration-300 cursor-pointer"
                       onClick={() => setLanguage(language.code)}
                     >
-                      <span className="text-white text-sm">{language.name}</span>
+                      <span className="text-foreground text-sm">{language.name}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -374,7 +374,7 @@ export const GlobalHeader = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-3 py-2"
+                    className="bg-sidebar-background/10 hover:bg-sidebar-background/20 text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-2"
                   >
                     <Menu className="h-5 w-5" />
                   </Button>
@@ -387,12 +387,12 @@ export const GlobalHeader = () => {
                   {/* Mobile Sheet Header */}
                   <div className="p-6 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-semibold text-white">{t('nav.menu', 'القائمة')}</h2>
+                      <h2 className="text-lg font-semibold text-foreground">{t('nav.menu', 'القائمة')}</h2>
                       <Button 
                         variant="ghost" 
                         size="sm"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="text-gray-400 hover:text-white"
+                        className="text-muted-foreground hover:text-foreground"
                       >
                         <X className="h-5 w-5" />
                       </Button>
@@ -413,7 +413,7 @@ export const GlobalHeader = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">
+                            <p className="text-sm font-semibold text-foreground truncate">
                               {user.user_metadata?.full_name || user.email?.split('@')[0]}
                             </p>
                             <p className="text-xs text-gray-400 truncate">
@@ -425,7 +425,7 @@ export const GlobalHeader = () => {
                         {/* Mobile Navigation Links */}
                         <Link 
                           to="/dashboard" 
-                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
+                          className={`flex items-center gap-4 p-4 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-emerald-400/20 rounded-lg">
@@ -436,7 +436,7 @@ export const GlobalHeader = () => {
 
                         <Link 
                           to="/profile" 
-                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
+                          className={`flex items-center gap-4 p-4 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-teal-400/20 rounded-lg">
@@ -447,7 +447,7 @@ export const GlobalHeader = () => {
 
                         <Link 
                           to="/payments" 
-                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
+                          className={`flex items-center gap-4 p-4 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-amber-400/20 rounded-lg">
@@ -458,7 +458,7 @@ export const GlobalHeader = () => {
 
                         <a 
                           href="#contact" 
-                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
+                          className={`flex items-center gap-4 p-4 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-teal-400/20 rounded-lg">
@@ -468,7 +468,7 @@ export const GlobalHeader = () => {
                         </a>
 
                         <button 
-                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
+                          className={`flex items-center gap-4 p-4 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-emerald-400/20 rounded-lg">
@@ -512,7 +512,7 @@ export const GlobalHeader = () => {
 
                         <a 
                           href="#contact" 
-                          className={`flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
+                          className={`flex items-center gap-4 p-4 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-all duration-300 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <div className="p-2 bg-teal-400/20 rounded-lg">
