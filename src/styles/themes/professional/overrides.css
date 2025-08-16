@@ -1,121 +1,293 @@
-/* Facebook Theme Button Overrides for existing components */
+/* Facebook Theme Complete Visual Overrides */
 
-/* Override shadcn button variants to match Facebook style */
-.theme-professional .btn,
-.theme-professional button {
-  font-family: var(--font-family-primary);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-  font-size: 15px;
-  line-height: 1.34;
+/* Global Background and Body */
+.theme-professional,
+.theme-professional * {
+  --facebook-blue: hsl(214 89% 53%);
+  --facebook-gray: hsl(240 10% 96%);
+  --facebook-white: hsl(0 0% 100%);
+  --facebook-border: hsl(240 6% 90%);
+  --facebook-text: hsl(0 0% 13%);
+  --facebook-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.theme-professional [data-variant="default"],
-.theme-professional .bg-primary {
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border: none;
-  box-shadow: var(--shadow-card);
+.theme-professional {
+  background: var(--facebook-gray) !important;
 }
 
-.theme-professional [data-variant="default"]:hover,
-.theme-professional .bg-primary:hover {
-  filter: brightness(0.95);
-  box-shadow: var(--shadow-hover);
+.theme-professional body {
+  background: var(--facebook-gray) !important;
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  color: var(--facebook-text) !important;
 }
 
-.theme-professional [data-variant="outline"],
-.theme-professional [data-variant="secondary"] {
-  background: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  border: 1px solid hsl(var(--border));
-  box-shadow: var(--shadow-card);
+/* All Background Classes */
+.theme-professional .bg-background,
+.theme-professional .bg-gray-50,
+.theme-professional .bg-slate-50 {
+  background: var(--facebook-gray) !important;
 }
 
-.theme-professional [data-variant="outline"]:hover,
-.theme-professional [data-variant="secondary"]:hover {
-  background: hsl(var(--muted));
-  box-shadow: var(--shadow-hover);
+.theme-professional .bg-card,
+.theme-professional .bg-white {
+  background: var(--facebook-white) !important;
+  border: 1px solid var(--facebook-border) !important;
+  box-shadow: var(--facebook-shadow) !important;
 }
 
-/* Facebook Card styling for existing components */
+/* All Divs and Containers */
+.theme-professional div[class*="bg-"],
+.theme-professional section[class*="bg-"],
+.theme-professional header[class*="bg-"],
+.theme-professional main[class*="bg-"] {
+  border-color: var(--facebook-border) !important;
+}
+
+.theme-professional .container,
+.theme-professional .max-w-7xl,
+.theme-professional .max-w-6xl,
+.theme-professional .max-w-4xl,
+.theme-professional .max-w-2xl {
+  background: transparent !important;
+}
+
+/* Facebook Cards - All Variants */
 .theme-professional .card,
-.theme-professional [data-role="card"] {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 8px;
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s ease;
+.theme-professional [data-role="card"],
+.theme-professional .p-6,
+.theme-professional .p-8,
+.theme-professional .rounded-lg,
+.theme-professional .shadow-lg,
+.theme-professional .shadow-md {
+  background: var(--facebook-white) !important;
+  border: 1px solid var(--facebook-border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--facebook-shadow) !important;
+  transition: box-shadow 0.2s ease !important;
 }
 
 .theme-professional .card:hover,
 .theme-professional [data-role="card"]:hover {
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Facebook Input styling for existing components */
+/* Facebook Buttons - All Variants */
+.theme-professional button,
+.theme-professional .btn,
+.theme-professional [role="button"] {
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  line-height: 1.34 !important;
+  transition: all 0.15s ease !important;
+  letter-spacing: 0.02em !important;
+}
+
+.theme-professional .bg-primary,
+.theme-professional [class*="bg-primary"],
+.theme-professional [data-variant="default"] {
+  background: var(--facebook-blue) !important;
+  color: var(--facebook-white) !important;
+  border: none !important;
+  box-shadow: var(--facebook-shadow) !important;
+}
+
+.theme-professional .bg-primary:hover,
+.theme-professional [class*="bg-primary"]:hover,
+.theme-professional [data-variant="default"]:hover {
+  filter: brightness(0.95) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.theme-professional [data-variant="outline"],
+.theme-professional [data-variant="secondary"],
+.theme-professional .bg-secondary {
+  background: var(--facebook-white) !important;
+  color: var(--facebook-text) !important;
+  border: 1px solid var(--facebook-border) !important;
+  box-shadow: var(--facebook-shadow) !important;
+}
+
+.theme-professional [data-variant="outline"]:hover,
+.theme-professional [data-variant="secondary"]:hover,
+.theme-professional .bg-secondary:hover {
+  background: hsl(240 12% 95%) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Facebook Inputs - All Variants */
 .theme-professional input,
 .theme-professional textarea,
 .theme-professional select {
-  font-family: var(--font-family-primary);
-  font-size: 15px;
-  line-height: 1.34;
-  background: hsl(var(--input));
-  border: 1px solid hsl(var(--border));
-  border-radius: 6px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.34 !important;
+  background: var(--facebook-white) !important;
+  border: 1px solid var(--facebook-border) !important;
+  border-radius: 6px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  color: var(--facebook-text) !important;
 }
 
 .theme-professional input:focus,
 .theme-professional textarea:focus,
 .theme-professional select:focus {
-  border-color: hsl(var(--primary));
-  box-shadow: var(--shadow-focus);
-  outline: none;
+  border-color: var(--facebook-blue) !important;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2) !important;
+  outline: none !important;
 }
 
 .theme-professional input::placeholder,
 .theme-professional textarea::placeholder {
-  color: hsl(var(--muted-foreground));
-  font-weight: 400;
+  color: hsl(0 0% 45%) !important;
+  font-weight: 400 !important;
 }
 
-/* Facebook Navigation overrides */
+/* Facebook Navigation - All Variants */
 .theme-professional .nav-link,
-.theme-professional .navigation-menuitem {
-  font-family: var(--font-family-primary);
-  font-weight: 600;
-  font-size: 15px;
-  color: hsl(var(--muted-foreground));
-  transition: all 0.15s ease;
-  padding: 12px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  position: relative;
+.theme-professional .navigation-menuitem,
+.theme-professional [role="menuitem"] {
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  color: hsl(0 0% 45%) !important;
+  transition: all 0.15s ease !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  position: relative !important;
 }
 
 .theme-professional .nav-link:hover,
-.theme-professional .navigation-menuitem:hover {
-  background: hsl(var(--accent));
-  color: hsl(var(--foreground));
+.theme-professional .navigation-menuitem:hover,
+.theme-professional [role="menuitem"]:hover {
+  background: hsl(240 12% 95%) !important;
+  color: var(--facebook-text) !important;
 }
 
 .theme-professional .nav-link.active,
-.theme-professional .navigation-menuitem[data-active="true"] {
-  color: hsl(var(--primary));
+.theme-professional .navigation-menuitem[data-active="true"],
+.theme-professional [aria-current="page"] {
+  color: var(--facebook-blue) !important;
 }
 
 .theme-professional .nav-link.active::after,
-.theme-professional .navigation-menuitem[data-active="true"]::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 3px;
-  background: hsl(var(--primary));
-  border-radius: 2px;
+.theme-professional .navigation-menuitem[data-active="true"]::after,
+.theme-professional [aria-current="page"]::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 60% !important;
+  height: 3px !important;
+  background: var(--facebook-blue) !important;
+  border-radius: 2px !important;
+}
+
+/* Facebook Gradients - All Variants */
+.theme-professional .hero-gradient,
+.theme-professional .tree-gradient,
+.theme-professional .bg-gradient-to-r,
+.theme-professional .bg-gradient-to-br,
+.theme-professional .bg-gradient-to-l,
+.theme-professional [class*="gradient"] {
+  background: linear-gradient(135deg, var(--facebook-blue), hsl(158 64% 52%)) !important;
+}
+
+/* Facebook Typography */
+.theme-professional h1,
+.theme-professional h2,
+.theme-professional h3,
+.theme-professional h4,
+.theme-professional h5,
+.theme-professional h6 {
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--facebook-text) !important;
+  line-height: 1.2 !important;
+}
+
+.theme-professional p,
+.theme-professional span,
+.theme-professional div {
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  color: var(--facebook-text) !important;
+  line-height: 1.34 !important;
+}
+
+/* Facebook Borders - All Elements */
+.theme-professional .border,
+.theme-professional .border-t,
+.theme-professional .border-b,
+.theme-professional .border-l,
+.theme-professional .border-r,
+.theme-professional [class*="border"] {
+  border-color: var(--facebook-border) !important;
+}
+
+/* Facebook Rounded Corners */
+.theme-professional .rounded,
+.theme-professional .rounded-md {
+  border-radius: 6px !important;
+}
+
+.theme-professional .rounded-lg {
+  border-radius: 8px !important;
+}
+
+.theme-professional .rounded-xl {
+  border-radius: 12px !important;
+}
+
+/* Facebook Shadows */
+.theme-professional .shadow,
+.theme-professional .shadow-sm,
+.theme-professional .shadow-md,
+.theme-professional .shadow-lg {
+  box-shadow: var(--facebook-shadow) !important;
+}
+
+/* Facebook Text Colors */
+.theme-professional .text-foreground {
+  color: var(--facebook-text) !important;
+}
+
+.theme-professional .text-muted-foreground {
+  color: hsl(0 0% 45%) !important;
+}
+
+.theme-professional .text-primary {
+  color: var(--facebook-blue) !important;
+}
+
+/* Facebook Family Tree Specific */
+.theme-professional .tree-shadow {
+  box-shadow: var(--facebook-shadow) !important;
+}
+
+/* Facebook Page Background Override */
+.theme-professional #root,
+.theme-professional .app,
+.theme-professional main,
+.theme-professional .page {
+  background: var(--facebook-gray) !important;
+  min-height: 100vh !important;
+}
+
+/* Facebook Section Backgrounds */
+.theme-professional section,
+.theme-professional .section {
+  background: transparent !important;
+}
+
+/* Facebook Modal and Dialog Backgrounds */
+.theme-professional .modal,
+.theme-professional .dialog,
+.theme-professional [role="dialog"] {
+  background: var(--facebook-white) !important;
+  border: 1px solid var(--facebook-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
 }
