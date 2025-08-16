@@ -7,113 +7,100 @@
 
 /* Modern Theme Base Styles */
 @layer base {
-  .theme-modern {
-    /* Light Background Colors - Default */
-    --background: 0 0% 100% !important;
-    --foreground: 0 0% 20% !important;
-    --sidebar-background: 0 0% 100% !important;
-    --sidebar-foreground: 0 0% 20% !important;
+  :root {
+    /* Background Colors */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
 
     /* Primary Colors - Emerald Green */
-    --primary: 160 84% 39% !important;
-    --primary-foreground: 0 0% 100% !important;
-    --sidebar-primary: 160 84% 39% !important;
-    --sidebar-primary-foreground: 0 0% 100% !important;
+    --primary: 160 84% 39%;
+    --primary-foreground: 210 40% 98%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 210 40% 98%;
 
-    /* Secondary Colors - Light */
-    --secondary: 160 15% 96% !important;
-    --secondary-foreground: 0 0% 20% !important;
+    /* Secondary Colors */
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
     /* Accent Colors - Teal */
-    --accent: 173 80% 40% !important;
-    --accent-foreground: 0 0% 100% !important;
-    --sidebar-accent: 173 80% 40% !important;
-    --sidebar-accent-foreground: 0 0% 100% !important;
+    --accent: 173 80% 40%;
+    --accent-foreground: 210 40% 98%;
+    --sidebar-accent: 173 80% 40%;
+    --sidebar-accent-foreground: 210 40% 98%;
 
-    /* Muted Colors - Light */
-    --muted: 160 15% 96% !important;
-    --muted-foreground: 165 16% 47% !important;
+    /* Muted Colors */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    /* Card Colors - Light */
-    --card: 0 0% 100% !important;
-    --card-foreground: 0 0% 20% !important;
+    /* Card Colors */
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
 
-    /* Popover Colors - Light */
-    --popover: 0 0% 100% !important;
-    --popover-foreground: 0 0% 20% !important;
+    /* Popover Colors */
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Border and Input - Light */
-    --border: 160 20% 88% !important;
-    --input: 160 15% 94% !important;
-    --sidebar-border: 160 20% 88% !important;
+    /* Border and Input */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --sidebar-border: 217.2 32.6% 17.5%;
 
     /* Ring and Focus */
-    --ring: 160 84% 39% !important;
-    --sidebar-ring: 160 84% 39% !important;
+    --ring: 160 84% 39%;
+    --sidebar-ring: 160 84% 39%;
 
     /* Destructive */
-    --destructive: 0 62.8% 50% !important;
-    --destructive-foreground: 0 0% 100% !important;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
     /* Radius */
     --radius: 0.5rem;
 
-    /* Family Tree Specific - Light */
-    --tree-primary: 160 84% 39% !important;
-    --tree-secondary: 173 80% 40% !important;
-    --tree-accent: 158 64% 52% !important;
-    --tree-background: 0 0% 100% !important;
-    --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary))) !important;
-    --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2) !important;
+    /* Family Tree Specific */
+    --tree-primary: 160 84% 39%;
+    --tree-secondary: 173 80% 40%;
+    --tree-accent: 158 64% 52%;
+    --tree-background: 222.2 84% 4.9%;
+    --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
+    --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
   }
 
-  .theme-modern.dark,
-  .theme-modern[data-theme="dark"] {
-    /* Dark mode overrides for modern theme */
-    --background: 160 25% 12% !important;
-    --foreground: 210 40% 98% !important;
-    --sidebar-background: 160 25% 12% !important;
-    --sidebar-foreground: 210 40% 98% !important;
+  .light {
+    /* Light mode overrides for modern theme */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
 
-    --card: 160 25% 16% !important;
-    --card-foreground: 210 40% 98% !important;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 160 25% 16% !important;
-    --popover-foreground: 210 40% 98% !important;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 160 84% 39% !important;
-    --primary-foreground: 0 0% 100% !important;
+    --primary: 160 84% 39%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 160 30% 20% !important;
-    --secondary-foreground: 210 40% 98% !important;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 160 25% 20% !important;
-    --muted-foreground: 165 15% 65% !important;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 173 80% 40% !important;
-    --accent-foreground: 210 40% 98% !important;
+    --accent: 173 80% 40%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 50% !important;
-    --destructive-foreground: 210 40% 98% !important;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 160 25% 25% !important;
-    --input: 160 25% 22% !important;
-    --ring: 160 84% 39% !important;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 160 84% 39%;
 
-    --tree-background: 160 25% 12% !important;
-    --tree-foreground: 210 40% 98% !important;
-  }
-
-  /* Additional overrides for modern theme buttons */
-  .theme-modern .bg-primary,
-  .theme-modern button[class*="bg-primary"] {
-    background-color: hsl(160 84% 39%) !important;
-    color: hsl(210 40% 98%) !important;
-  }
-
-  .theme-modern .bg-primary:hover,
-  .theme-modern button[class*="bg-primary"]:hover {
-    background-color: hsl(160 84% 35%) !important;
+    --tree-background: 0 0% 100%;
+    --tree-foreground: 222.2 84% 4.9%;
   }
 
   * {
@@ -132,36 +119,5 @@
 
   [dir="rtl"] {
     text-align: right;
-  }
-
-  /* Override common dark mode gray classes with theme colors */
-  .theme-modern .dark\:bg-gray-800,
-  .theme-modern.dark .bg-gray-800 {
-    background-color: hsl(var(--card)) !important;
-  }
-
-  .theme-modern .dark\:bg-gray-900,
-  .theme-modern.dark .bg-gray-900 {
-    background-color: hsl(var(--background)) !important;
-  }
-
-  .theme-modern .dark\:bg-gray-700,
-  .theme-modern.dark .bg-gray-700 {
-    background-color: hsl(var(--muted)) !important;
-  }
-
-  .theme-modern .dark\:border-gray-700,
-  .theme-modern.dark .border-gray-700 {
-    border-color: hsl(var(--border)) !important;
-  }
-
-  .theme-modern .dark\:border-gray-600,
-  .theme-modern.dark .border-gray-600 {
-    border-color: hsl(var(--border)) !important;
-  }
-
-  .theme-modern .dark\:text-gray-300,
-  .theme-modern.dark .text-gray-300 {
-    color: hsl(var(--muted-foreground)) !important;
   }
 }

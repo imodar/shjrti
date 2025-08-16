@@ -62,7 +62,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   if (!member) return null;
 
   const getGenderColor = (gender: string) => {
-    return gender === 'male' ? 'bg-emerald-500' : 'bg-pink-500';
+    return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
 
   const getMaritalStatus = (spouse?: any) => {
@@ -160,7 +160,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   return (
     <div className={`min-h-screen transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
+      <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -211,7 +211,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         <div className="relative mb-8">
           {/* Cover Ribbon */}
           <div className="relative h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
           </div>
 
           {/* Profile Info Card */}
@@ -226,14 +226,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       {member.image_url ? (
                         <AvatarImage src={member.image_url} alt={member.name} className="object-cover" />
                       ) : (
-                        <AvatarFallback className={`text-4xl font-bold text-primary-foreground ${getGenderColor(member.gender)}`}>
+                        <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
                           {member.name.charAt(0)}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     {/* Status Indicator */}
-                    <div className="absolute -bottom-1 -right-1 p-2 bg-green-500 border-4 border-card rounded-full">
-                      <div className="w-3 h-3 bg-card rounded-full"></div>
+                    <div className="absolute -bottom-1 -right-1 p-2 bg-green-500 border-4 border-white rounded-full">
+                      <div className="w-3 h-3 bg-white rounded-full"></div>
                     </div>
                   </div>
 
@@ -312,9 +312,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
@@ -342,11 +342,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   
                   <div className="space-y-4">
                     {/* Essential Info Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl">
-                        <Calendar className="h-5 w-5 text-emerald-600" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
+                        <Calendar className="h-5 w-5 text-blue-600" />
                         <div>
-                          <div className="text-sm text-emerald-700">تاريخ الميلاد</div>
+                          <div className="text-sm text-blue-700">تاريخ الميلاد</div>
                           <div className="font-semibold">
                             {member.birthDate ? <DateDisplay date={member.birthDate} className="inline" /> : 'غير محدد'}
                           </div>
@@ -394,7 +394,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     {/* Additional Info - Expandable */}
                     {showAllInfo && (
                       <div className="space-y-4 border-t pt-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
                             <Phone className="h-5 w-5 text-gray-600" />
                             <div>
@@ -476,7 +476,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           </div>
 
           {/* Right Sidebar */}
-          <div className="space-y-4 sm:space-y-6 profile-sidebar">
+          <div className="space-y-6">
             {/* Quick Actions */}
             <div className="bg-card rounded-xl border border-border p-4">
               <h4 className="font-bold text-sm mb-4">إجراءات سريعة</h4>

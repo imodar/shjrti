@@ -327,7 +327,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50 dark:from-emerald-950 dark:via-teal-950/50 dark:to-cyan-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">جاري التحميل...</p>
@@ -337,7 +337,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
@@ -360,36 +360,36 @@ export default function Profile() {
         <GlobalHeader />
 
         <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
-            <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             
             {/* Profile Header Section */}
-            <div className="mb-6 sm:mb-8 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl floating-bg-elements"></div>
+            <div className="mb-8 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
               
-              <div className="relative bg-card/30 backdrop-blur-xl border border-border/40 rounded-2xl py-4 px-4 sm:py-6 sm:px-8 shadow-xl ring-1 ring-border/10">
-                <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 profile-header">
-                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-6">
                     {/* User Avatar */}
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
-                        <span className="text-lg sm:text-2xl font-bold text-white">
+                      <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
+                        <span className="text-2xl font-bold text-white">
                           {getInitials()}
                         </span>
                       </div>
-                      <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full border-2 sm:border-3 border-card flex items-center justify-center">
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full animate-ping"></div>
+                      <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
                       </div>
                     </div>
                     
                     {/* Welcome Text */}
-                    <div className="text-center sm:text-start">
-                      <h1 className="text-2xl sm:text-3xl font-bold mb-2">
+                    <div>
+                      <h1 className="text-3xl font-bold mb-2">
                         <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                           الملف الشخصي
                         </span>
                       </h1>
-                      <p className="text-muted-foreground flex items-center gap-2 justify-center sm:justify-start">
+                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                         إدارة معلوماتك الشخصية والحساب
                       </p>
@@ -397,15 +397,15 @@ export default function Profile() {
                   </div>
                   
                   {/* Package Status - Match Dashboard Logic */}
-                  <div className="flex flex-col items-center sm:items-start gap-2 profile-stats">
+                  <div className="flex flex-col items-start gap-2">
                     {currentPackage && currentPackage.name !== "الباقة المجانية" && currentPackage.status === "active" ? (
                       <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-2 rounded-full shadow-lg">
                         <Crown className="h-4 w-4" />
                         <span className="text-sm font-bold">{currentPackage.name}</span>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center gap-2 bg-card/60 backdrop-blur-xl rounded-xl p-3 border border-primary/20 shadow-lg">
-                        <div className="flex items-center gap-2 text-primary">
+                      <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl p-3 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
+                        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                           <Gem className="h-4 w-4" />
                           <span className="text-sm font-medium">{currentPackage?.name || "الباقة المجانية"}</span>
                         </div>
@@ -416,7 +416,7 @@ export default function Profile() {
                         </Link>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-xs text-primary">
+                    <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
                       <span>نشط منذ {profileData.joinDate}</span>
                     </div>
@@ -424,18 +424,18 @@ export default function Profile() {
                 </div>
                 
                 {/* Decorative Elements */}
-                <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-border/40"></div>
-                <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-border/40"></div>
+                <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
+                <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-emerald-300/40 dark:border-emerald-700/40"></div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
               {/* Stats Section */}
               <div className="space-y-6">
                 
                 {/* Account Stats */}
-                <Card className="bg-card/80 backdrop-blur-xl border border-border/30 shadow-xl">
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
@@ -484,7 +484,7 @@ export default function Profile() {
 
               {/* Personal Information and Quick Actions */}
               <div className="lg:col-span-2 space-y-8">
-                <Card className="bg-card/80 backdrop-blur-xl border border-border/30 shadow-xl">
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -495,7 +495,7 @@ export default function Profile() {
                           <CardTitle className="text-xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                             المعلومات الشخصية
                           </CardTitle>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             تحديث بياناتك الأساسية
                           </p>
                         </div>
@@ -525,7 +525,7 @@ export default function Profile() {
                   <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="text-foreground font-medium">الاسم الأول</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">الاسم الأول</Label>
                         <Input
                           value={profileData.firstName}
                           onChange={(e) => setProfileData(prev => ({...prev, firstName: e.target.value}))}
@@ -536,7 +536,7 @@ export default function Profile() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-foreground font-medium">اسم العائلة</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">اسم العائلة</Label>
                         <Input
                           value={profileData.lastName}
                           onChange={(e) => setProfileData(prev => ({...prev, lastName: e.target.value}))}
@@ -547,7 +547,7 @@ export default function Profile() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-foreground font-medium">البريد الإلكتروني</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">البريد الإلكتروني</Label>
                         <Input
                           value={profileData.email}
                           onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
@@ -559,7 +559,7 @@ export default function Profile() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-foreground font-medium">رقم الهاتف</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">رقم الهاتف</Label>
                         <Input
                           value={profileData.phone}
                           onChange={(e) => setProfileData(prev => ({...prev, phone: e.target.value}))}
@@ -602,7 +602,7 @@ export default function Profile() {
                   {/* Background Gradient Blur */}
                   <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-pink-500/20 rounded-2xl blur-xl"></div>
                   
-                  <Card className="relative bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl overflow-hidden">
+                  <Card className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-2xl overflow-hidden">
                     {/* Decorative Header Background */}
                     <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-r from-amber-400/20 via-orange-400/30 to-pink-400/20"></div>
                     
@@ -619,7 +619,7 @@ export default function Profile() {
                           <CardTitle className="text-xl bg-gradient-to-r from-amber-600 via-orange-600 to-pink-600 bg-clip-text text-transparent font-bold">
                             إجراءات سريعة
                           </CardTitle>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             الوصول السريع للخدمات المهمة
                           </p>
                         </div>
@@ -641,14 +641,14 @@ export default function Profile() {
                             <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                               نوع التقويم المفضل
                             </h3>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                               اختر نوع التقويم الذي تفضل عرض التواريخ به
                             </p>
                           </div>
                         </div>
                         
                         <div className="space-y-3">
-                          <Label htmlFor="datePreference" className="text-sm font-medium text-foreground">
+                          <Label htmlFor="datePreference" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             نوع التقويم
                           </Label>
                           {isEditing ? (

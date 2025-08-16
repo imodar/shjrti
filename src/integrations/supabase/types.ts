@@ -649,8 +649,6 @@ export type Database = {
           id: string
           last_name: string | null
           phone: string | null
-          theme_mode: string | null
-          theme_variant: string | null
           updated_at: string
           user_id: string | null
         }
@@ -662,8 +660,6 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
-          theme_mode?: string | null
-          theme_variant?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -675,8 +671,6 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
-          theme_mode?: string | null
-          theme_variant?: string | null
           updated_at?: string
           user_id?: string | null
         }

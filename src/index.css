@@ -30,4 +30,183 @@
   }
 }
 
-/* Theme-specific variables are now in their respective theme files */
+/* Professional Theme Variables */
+.theme-professional {
+  /* Facebook Background Colors - Exact Match */
+  --background: 240 10% 96%;
+  --foreground: 0 0% 13%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 0 0% 13%;
+
+  /* Facebook Primary Blue - #1877F2 */
+  --primary: 214 89% 53%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 214 89% 53%;
+  --sidebar-primary-foreground: 0 0% 100%;
+
+  /* Facebook Secondary Colors */
+  --secondary: 240 12% 95%;
+  --secondary-foreground: 0 0% 13%;
+
+  /* Facebook Accent Colors */
+  --accent: 240 12% 95%;
+  --accent-foreground: 0 0% 13%;
+  --sidebar-accent: 240 12% 95%;
+  --sidebar-accent-foreground: 0 0% 13%;
+
+  /* Facebook Muted Colors */
+  --muted: 240 10% 91%;
+  --muted-foreground: 0 0% 45%;
+
+  /* Facebook Card Colors - Pure white */
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 13%;
+
+  /* Popover Colors */
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 13%;
+
+  /* Facebook Border Colors */
+  --border: 240 6% 90%;
+  --input: 0 0% 100%;
+  --sidebar-border: 240 6% 90%;
+
+  /* Facebook Focus Ring */
+  --ring: 214 89% 53%;
+  --sidebar-ring: 214 89% 53%;
+
+  /* Facebook Error Red - #E41E3F */
+  --destructive: 348 86% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Facebook Radius - 8px */
+  --radius: 0.5rem;
+
+  /* Facebook Family Tree Colors */
+  --family-tree-primary: 214 89% 53%;
+  --family-tree-secondary: 240 12% 95%;
+  --family-tree-background: 240 10% 96%;
+  --family-tree-foreground: 0 0% 13%;
+  --family-tree-accent: 214 89% 53%;
+  --family-tree-muted: 0 0% 45%;
+  --family-tree-border: 240 6% 90%;
+}
+
+.theme-professional[data-theme="dark"] {
+  /* Facebook Dark Mode - Exact Match */
+  --background: 240 6% 10%;
+  --foreground: 0 0% 95%;
+  --sidebar-background: 240 8% 7%;
+  --sidebar-foreground: 0 0% 90%;
+
+  --card: 240 8% 12%;
+  --card-foreground: 0 0% 95%;
+
+  --popover: 240 8% 12%;
+  --popover-foreground: 0 0% 95%;
+
+  --primary: 214 89% 53%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 6% 15%;
+  --secondary-foreground: 0 0% 80%;
+
+  --muted: 240 6% 15%;
+  --muted-foreground: 0 0% 65%;
+
+  --accent: 240 6% 15%;
+  --accent-foreground: 0 0% 95%;
+
+  --destructive: 348 86% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 240 6% 20%;
+  --input: 240 6% 15%;
+  --ring: 214 89% 53%;
+
+  --family-tree-background: 240 6% 10%;
+  --family-tree-foreground: 0 0% 95%;
+  --family-tree-border: 240 6% 20%;
+}
+
+/* Facebook Theme Global Overrides */
+.theme-professional {
+  /* Global Background */
+  background: hsl(240 10% 96%) !important;
+}
+
+.theme-professional body {
+  background: hsl(240 10% 96%) !important;
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  color: hsl(0 0% 13%) !important;
+}
+
+.theme-professional .bg-background {
+  background: hsl(240 10% 96%) !important;
+}
+
+/* Facebook Card Styling Global */
+.theme-professional .card,
+.theme-professional .bg-card,
+.theme-professional [class*="bg-card"] {
+  background: hsl(0 0% 100%) !important;
+  border: 1px solid hsl(240 6% 90%) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Facebook Button Styling Global */
+.theme-professional button,
+.theme-professional .btn {
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  line-height: 1.34 !important;
+  transition: all 0.15s ease !important;
+}
+
+.theme-professional .bg-primary,
+.theme-professional [class*="bg-primary"] {
+  background: hsl(214 89% 53%) !important;
+  color: hsl(0 0% 100%) !important;
+  border: none !important;
+}
+
+.theme-professional .bg-primary:hover,
+.theme-professional [class*="bg-primary"]:hover {
+  filter: brightness(0.95) !important;
+}
+
+/* Facebook Divs and Containers */
+.theme-professional div {
+  border-color: hsl(240 6% 90%) !important;
+}
+
+.theme-professional .container,
+.theme-professional .max-w-7xl,
+.theme-professional .max-w-6xl {
+  background: transparent !important;
+}
+
+.theme-professional .rounded-lg {
+  border-radius: 8px !important;
+}
+
+.theme-professional .rounded-md {
+  border-radius: 6px !important;
+}
+
+/* Facebook Gradients */
+.theme-professional .hero-gradient,
+.theme-professional .tree-gradient {
+  background: linear-gradient(135deg, hsl(214 89% 53%), hsl(158 64% 52%)) !important;
+}
+
+.theme-professional .bg-gradient-to-r {
+  background: linear-gradient(135deg, hsl(214 89% 53%), hsl(158 64% 52%)) !important;
+}
+
+.theme-professional .bg-gradient-to-br {
+  background: linear-gradient(135deg, hsl(214 89% 53%) 0%, hsl(158 64% 52%) 100%) !important;
+}

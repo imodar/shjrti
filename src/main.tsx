@@ -2,7 +2,8 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-// Theme CSS will be loaded dynamically by ThemeContext
+import './styles/themes/modern/index.css'
+import './styles/themes/professional/index.css'
 import { AuthProvider } from './contexts/AuthContext'
 import { SubscriptionProvider } from './contexts/SubscriptionContext'
 import { DatePreferenceProvider } from './contexts/DatePreferenceContext'
@@ -10,14 +11,14 @@ import { ThemeProvider } from './contexts/ThemeContext'
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+      <AuthProvider>
         <DatePreferenceProvider>
           <SubscriptionProvider>
             <App />
           </SubscriptionProvider>
         </DatePreferenceProvider>
-      </ThemeProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

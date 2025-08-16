@@ -2401,7 +2401,7 @@ const FamilyBuilderNew = () => {
                     className="flex flex-col items-center cursor-pointer group"
                     onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-muted text-muted-foreground shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <TreePine className="h-5 w-5" />
                     </div>
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
@@ -2411,7 +2411,7 @@ const FamilyBuilderNew = () => {
                     className="flex flex-col items-center cursor-pointer group"
                     onClick={() => navigate('/store')}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-muted text-muted-foreground shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                    <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Store className="h-5 w-5" />
                     </div>
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
@@ -2828,7 +2828,7 @@ const FamilyBuilderNew = () => {
                                                         variant: "default"
                                                       });
                                                     }}
-                                                    className="gap-1 border-emerald-200/50 dark:border-emerald-700/50 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-all duration-300 h-8 px-2"
+                                                    className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
                                                   >
                                                     <Edit className="h-3 w-3" />
                                                   </Button>
@@ -2893,10 +2893,10 @@ const FamilyBuilderNew = () => {
                                  {/* Husband Display Panel */}
                                  <div className="space-y-4">
                                    <div className="flex items-center gap-2 mb-4">
-                                      <div className="w-6 h-6 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                                        <User className="w-3 h-3 text-white" />
-                                      </div>
-                                      <h4 className="text-lg font-semibold text-emerald-700 dark:text-emerald-300 font-arabic">معلومات الزوج</h4>
+                                     <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                       <User className="w-3 h-3 text-white" />
+                                     </div>
+                                     <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
                                    </div>
                                    
                                    <div className="space-y-3">
@@ -2906,12 +2906,12 @@ const FamilyBuilderNew = () => {
                                          <p className="font-arabic">لم يتم إضافة زوج بعد</p>
                                        </div>
                                      ) : (
-                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-emerald-400/60 dark:border-emerald-500/60">
+                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                          <div className="flex items-center justify-between">
                                            <div 
                                              className={cn(
                                                "flex items-center gap-3 flex-1",
-                                               husband.isSaved ? "cursor-pointer hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
+                                               husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
                                              )}
                                               onClick={() => {
                                                 if (husband.isSaved) {
@@ -2928,7 +2928,7 @@ const FamilyBuilderNew = () => {
                                                 }
                                               }}
                                            >
-                                             <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                <User className="w-4 h-4" />
                                              </div>
                                              <div>
@@ -2945,7 +2945,7 @@ const FamilyBuilderNew = () => {
                                                  )}
                                                </p>
                                                {husband.isSaved && (
-                                                 <p className="text-xs text-emerald-600 font-arabic mt-1">
+                                                 <p className="text-xs text-blue-600 font-arabic mt-1">
                                                    انقر للتعديل
                                                  </p>
                                                )}
@@ -2961,7 +2961,7 @@ const FamilyBuilderNew = () => {
                                                        handleSpouseEditAttempt('husband', husband, -1);
                                                      }
                                                    }}
-                                                 className="gap-1 border-emerald-200/50 dark:border-emerald-700/50 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-all duration-300 h-8 px-2"
+                                                 className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
                                                >
                                                  <Edit className="h-3 w-3" />
                                                </Button>
@@ -3464,7 +3464,7 @@ const MemberList = ({
 
       {/* Add Member Button */}
       {formMode === 'view' && (
-        <Button onClick={onAddMember} className="w-full flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
+        <Button onClick={onAddMember} className="w-full flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إضافة عضو جديد
         </Button>
