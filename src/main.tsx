@@ -10,14 +10,14 @@ import { ThemeProvider } from './contexts/ThemeContext'
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <DatePreferenceProvider>
           <SubscriptionProvider>
             <App />
           </SubscriptionProvider>
         </DatePreferenceProvider>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
