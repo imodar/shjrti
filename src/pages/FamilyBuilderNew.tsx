@@ -834,6 +834,63 @@ const FamilyBuilderNew = () => {
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
   const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
   const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{ [key: number]: 'yes' | 'no' | null }>({});
+  
+  // Unified spouse form states
+  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
+  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
+  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [husbandFamilyStatus, setHusbandFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [showWifeForm, setShowWifeForm] = useState(false);
+  const [showHusbandForm, setShowHusbandForm] = useState(false);
+
+  // Unified spouse form handlers
+  const handleWifeFamilyStatusChange = (status: string) => {
+    setWifeFamilyStatus(status as 'yes' | 'no');
+  };
+
+  const handleHusbandFamilyStatusChange = (status: string) => {
+    setHusbandFamilyStatus(status as 'yes' | 'no');
+  };
+
+  const handleAddWife = () => {
+    setCurrentWife({
+      id: '',
+      firstName: '',
+      lastName: '',
+      name: '',
+      isAlive: true,
+      birthDate: null,
+      deathDate: null,
+      maritalStatus: 'married',
+      isFamilyMember: false,
+      existingFamilyMemberId: '',
+      croppedImage: null,
+      isSaved: false
+    });
+    setShowWifeForm(true);
+  };
+
+  const handleAddHusband = () => {
+    setShowHusbandForm(true);
+  };
+
+  const handleWifeSave = () => {
+    if (!currentWife) return;
+    
+    const newWife = { ...currentWife, isSaved: true };
+    setWives(prev => [...prev, newWife]);
+    setCurrentWife(null);
+    setShowWifeForm(false);
+    setWifeFamilyStatus(null);
+  };
+
+  const handleHusbandSave = () => {
+    if (!husband) return;
+    
+    setHusband({ ...husband, isSaved: true });
+    setShowHusbandForm(false);
+    setHusbandFamilyStatus(null);
+  };
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
@@ -2391,1094 +2448,259 @@ const FamilyBuilderNew = () => {
                              }
                            </p>
                            
-                            {formData.gender === "male" ? (
-                              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* Right Panel - Add Wife Form */}
-                                <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-6 border border-pink-200/50 dark:border-pink-800/30 shadow-lg col-span-1 lg:col-span-2">
-                                  <div className="flex items-center gap-2 mb-6">
-                                    <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                      <UserPlus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة جديدة</h4>
-                                  </div>
-
-                                  {/* Wife Form Content */}
-                                  <div className="space-y-6">
-                                    {wives.map((wife, index) => {
-                                      const actualIndex = wives.findIndex(w => w === wife);
-                                      return (
-                                      <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-pink-200/50 dark:border-pink-800/30 rounded-xl p-6 shadow-md mb-4">
-                                        <div className="flex items-center justify-between mb-4">
-                                          <h5 className="font-bold text-lg flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
-                                            <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg"></div>
-                                            الزوجة {wives.findIndex(w => w === wife) + 1}
-                                          </h5>
-                                        </div>
-                                        
-                                        <div className="space-y-6">
-                                          {/* Family Member Selection - Only from same family */}
-                                          <div>
-                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
-                                              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-                                              هل الزوجة من أفراد العائلة ؟
-                                            </Label>
-                                            
-                                            <div className="flex items-center gap-6 mb-3">
-                                              <div className="flex items-center gap-2">
-                                                <input
-                                                  type="radio"
-                                                  id={`wife-family-yes-${wives.findIndex(w => w === wife)}`}
-                                                  name={`wife-family-${wives.findIndex(w => w === wife)}`}
-                                                  value="yes"
-                                                  checked={wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'yes'}
-                                                  onChange={(e) => {
-                                                    const actualIndex = wives.findIndex(w => w === wife);
-                                                    const newStatus = {...wiveFamilyStatus};
-                                                    newStatus[actualIndex] = 'yes';
-                                                    setWiveFamilyStatus(newStatus);
-                                                    const updatedWives = [...wives];
-                                                    updatedWives[actualIndex] = { ...wife, isFamilyMember: true };
-                                                    setWives(updatedWives);
-                                                  }}
-                                                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                />
-                                                <Label htmlFor={`wife-family-yes-${wives.findIndex(w => w === wife)}`} className="text-sm font-arabic">
-                                                  نعم
-                                                </Label>
-                                              </div>
-                                              
-                                              <div className="flex items-center gap-2">
-                                                <input
-                                                  type="radio"
-                                                  id={`wife-family-no-${wives.findIndex(w => w === wife)}`}
-                                                  name={`wife-family-${wives.findIndex(w => w === wife)}`}
-                                                  value="no"
-                                                  checked={wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no'}
-                                                  onChange={(e) => {
-                                                    const actualIndex = wives.findIndex(w => w === wife);
-                                                    const newStatus = {...wiveFamilyStatus};
-                                                    newStatus[actualIndex] = 'no';
-                                                    setWiveFamilyStatus(newStatus);
-                                                    const updatedWives = [...wives];
-                                                    updatedWives[actualIndex] = { ...wife, isFamilyMember: false, existingFamilyMemberId: '' };
-                                                    setWives(updatedWives);
-                                                  }}
-                                                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                />
-                                                <Label htmlFor={`wife-family-no-${wives.findIndex(w => w === wife)}`} className="text-sm font-arabic">
-                                                  لا
-                                                </Label>
-                                              </div>
-                                            </div>
-                                            
-                                            <p className="text-xs text-muted-foreground mb-3 font-arabic">
-                                              يُسمح فقط باختيار الزوجة من أفراد العائلة المسجلين
-                                            </p>
-                                          </div>
-
-                                          {/* Conditional rendering based on radio button selection */}
-                                          {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'yes' && (
-                                            <>
-                                              {/* Select Existing Family Member */}
-                                              <div className="space-y-3">
-                                                 <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
-                                                   <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
-                                                   اختر الزوجة من القائمة *
-                                                 </Label>
-                                                <Popover open={wivesCommandOpen[wives.findIndex(w => w === wife)]} onOpenChange={(open) => {
-                                                  const actualIndex = wives.findIndex(w => w === wife);
-                                                  const newState = {...wivesCommandOpen};
-                                                  newState[actualIndex] = open;
-                                                  setWivesCommandOpen(newState);
-                                                }}>
-                                                  <PopoverTrigger asChild>
-                                                    <Button
-                                                      variant="outline"
-                                                      role="combobox"
-                                                      aria-expanded={wivesCommandOpen[wives.findIndex(w => w === wife)]} 
-                                                      className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
-                                                    >
-اختر فرد من العائلة...
-                                                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                    </Button>
-                                                  </PopoverTrigger>
-                                                  <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
-                                                    <Command>
-                                                      <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
-                                                      <CommandList>
-                                                         <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                           لا توجد إناث متاحات (لديهن أب في العائلة وعازبات/مطلقات).
-                                                         </CommandEmpty>
-                                                        <CommandGroup>
-                                                           {familyMembers.filter(member => {
-                                                             const hasValidGender = member.gender === "female";
-                                                             const isNotSelf = member.id !== selectedMember?.id;
-                                                             const isAvailableForMarriage = 
-                                                               member.marital_status === "single" || 
-                                                               member.marital_status === "divorced";
-                                                             
-                                                             return hasValidGender && isNotSelf && isAvailableForMarriage;
-                                                           })
-                                                            .map((member) => (
-                                                              <CommandItem
-                                                                key={member.id}
-                                                                value={member.name}
-                                                                onSelect={() => {
-                                                                  const actualIndex = wives.findIndex(w => w === wife);
-                                                                  const newWives = [...wives];
-                                                                   newWives[actualIndex] = {
-                                                                     ...wife,
-                                                                     existingFamilyMemberId: member.id,
-                                                                     name: member.name,
-                                                                     birthDate: member.birth_date ? new Date(member.birth_date) : null,
-                                                                     isAlive: member.is_alive ?? true,
-                                                                     deathDate: member.death_date ? new Date(member.death_date) : null,
-                                                                     maritalStatus: member.marital_status || 'single',
-                                                                     croppedImage: member.image_url || null
-                                                                   };
-                                                                  setWives(newWives);
-                                                                  const newState = {...wivesCommandOpen};
-                                                                  newState[actualIndex] = false;
-                                                                  setWivesCommandOpen(newState);
-                                                                }}
-                                                                className="font-arabic"
-                                                              >
-                                                                <Check
-                                                                  className={cn(
-                                                                    "mr-2 h-4 w-4",
-                                                                    wife.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0"
-                                                                  )}
-                                                                />
-                                                                {member.name}
-                                                              </CommandItem>
-                                                            ))}
-                                                        </CommandGroup>
-                                                      </CommandList>
-                                                    </Command>
-                                                  </PopoverContent>
-                                                </Popover>
-                                              </div>
-
-                                              {/* Marital Status */}
-                                              <div className="group">
-                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                  <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                  الحالة الاجتماعية *
-                                                </Label>
-                                                <div className="relative">
-                                                  <Select
-                                                    value={wife.maritalStatus || "married"}
-                                                    onValueChange={(value) => {
-                                                      const actualIndex = wives.findIndex(w => w === wife);
-                                                      const newWives = [...wives];
-                                                      newWives[actualIndex] = { ...wife, maritalStatus: value };
-                                                      setWives(newWives);
-                                                    }}
-                                                  >
-                                                    <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
-                                                      <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                                      <SelectItem value="married" className="font-arabic text-sm">متزوجة</SelectItem>
-                                                      <SelectItem value="divorced" className="font-arabic text-sm">مطلقة</SelectItem>
-                                                    </SelectContent>
-                                                  </Select>
-                                                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
-                                                    <Heart className="h-3 w-3 text-white" />
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </>
-                                          )}
-
-                                          {wiveFamilyStatus[wives.findIndex(w => w === wife)] === 'no' && (
-                                            <>
-                                              {/* First Name and Last Name Inputs */}
-                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {/* First Name Input */}
-                                                <div className="group">
-                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                    الاسم الأول *
-                                                  </Label>
-                                                  <div className="relative">
-                                                    <Input
-                                                      value={wife.firstName || ''}
-                                                      onChange={(e) => {
-                                                        const actualIndex = wives.findIndex(w => w === wife);
-                                                        const newWives = [...wives];
-                                                        const updatedWife = { ...wife, firstName: e.target.value };
-                                                        // Update the full name for display
-                                                        updatedWife.name = `${e.target.value} ${wife.lastName || ''}`.trim();
-                                                        newWives[actualIndex] = updatedWife;
-                                                        setWives(newWives);
-                                                      }}
-                                                      placeholder="أدخل الاسم الأول"
-                                                      className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                    />
-                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                                      <User className="h-3 w-3 text-white" />
-                                                    </div>
-                                                  </div>
-                                                </div>
-
-                                                {/* Last Name Input */}
-                                                <div className="group">
-                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                    اسم العائلة
-                                                  </Label>
-                                                  <div className="relative">
-                                                    <Input
-                                                      value={wife.lastName || ''}
-                                                      onChange={(e) => {
-                                                        const actualIndex = wives.findIndex(w => w === wife);
-                                                        const newWives = [...wives];
-                                                        const updatedWife = { ...wife, lastName: e.target.value };
-                                                        // Update the full name for display
-                                                        updatedWife.name = `${wife.firstName || ''} ${e.target.value}`.trim();
-                                                        newWives[actualIndex] = updatedWife;
-                                                        setWives(newWives);
-                                                      }}
-                                                      placeholder="أدخل اسم العائلة"
-                                                      className="h-11 text-sm border-2 border-pink-200/50 dark:border-pink-700/50 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                    />
-                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                                      <User className="h-3 w-3 text-white" />
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-
-                                              {/* Birth Date and Marital Status in grid */}
-                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {/* Birth Date */}
-                                                <div className="group">
-                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                    <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                    تاريخ الميلاد
-                                                  </Label>
-                                                  <div className="relative">
-                                                    <EnhancedDatePicker
-                                                      value={wife.birthDate}
-                                                      onChange={(date) => {
-                                                        const actualIndex = wives.findIndex(w => w === wife);
-                                                        const newWives = [...wives];
-                                                        newWives[actualIndex] = { ...wife, birthDate: date };
-                                                        setWives(newWives);
-                                                      }}
-                                                      placeholder="اختر تاريخ الميلاد"
-                                                      className="h-11 text-sm border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                    />
-                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
-                                                      <CalendarIcon className="h-3 w-3 text-white" />
-                                                    </div>
-                                                  </div>
-                                                </div>
-
-                                                {/* Marital Status */}
-                                                <div className="group">
-                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                    <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                    الحالة الاجتماعية *
-                                                  </Label>
-                                                  <div className="relative">
-                                                    <Select
-                                                      value={wife.maritalStatus || "married"}
-                                                      onValueChange={(value) => {
-                                                        const newWives = [...wives];
-                                                        newWives[index] = { ...wife, maritalStatus: value };
-                                                        setWives(newWives);
-                                                      }}
-                                                    >
-                                                      <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
-                                                        <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                                      </SelectTrigger>
-                                                      <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                                        <SelectItem value="married" className="font-arabic text-sm">متزوجة</SelectItem>
-                                                        <SelectItem value="divorced" className="font-arabic text-sm">مطلقة</SelectItem>
-                                                        <SelectItem value="widowed" className="font-arabic text-sm">أرملة</SelectItem>
-                                                      </SelectContent>
-                                                    </Select>
-                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
-                                                      <Heart className="h-3 w-3 text-white" />
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-
-                                              {/* Life Status and Death Date */}
-                                              <div className="space-y-6">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                  {/* Life Status */}
-                                                  <div className="group">
-                                                    <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                      <div className={`w-2 h-2 rounded-full shadow-lg group-hover:scale-110 transition-transform ${
-                                                        wife.isAlive 
-                                                          ? 'bg-gradient-to-r from-emerald-500 to-green-500' 
-                                                          : 'bg-gradient-to-r from-red-500 to-rose-500'
-                                                      }`}></div>
-                                                      الحالة الحيوية {!wife.isAlive && <span className="text-red-500 text-xs">(متوفاة)</span>}
-                                                    </Label>
-                                                    <div className="relative">
-                                                      <Select
-                                                        value={wife.isAlive ? "alive" : "deceased"}
-                                                        onValueChange={(value) => {
-                                                          const newWives = [...wives];
-                                                          newWives[index] = { 
-                                                            ...wife, 
-                                                            isAlive: value === "alive",
-                                                            deathDate: value === "alive" ? null : wife.deathDate
-                                                          };
-                                                          setWives(newWives);
-                                                        }}
-                                                      >
-                                                        <SelectTrigger className={`h-11 text-sm border-2 focus:ring-4 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic ${
-                                                          wife.isAlive 
-                                                            ? 'border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-emerald-500/20' 
-                                                            : 'border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-red-500/20'
-                                                        }`}>
-                                                          <SelectValue placeholder="اختر الحالة الحيوية" />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                                          <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
-                                                          <SelectItem value="deceased" className="font-arabic text-sm">متوفاة</SelectItem>
-                                                        </SelectContent>
-                                                      </Select>
-                                                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
-                                                        <Heart className="h-3 w-3 text-white" />
-                                                      </div>
-                                                    </div>
-                                                  </div>
-
-                                                  {/* Death Date - only show if deceased */}
-                                                  {!wife.isAlive && (
-                                                    <div className="group">
-                                                      <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                        <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                        تاريخ الوفاة
-                                                      </Label>
-                                                      <div className="relative">
-                                                        <EnhancedDatePicker
-                                                          value={wife.deathDate}
-                                                      onChange={(date) => {
-                                                        const actualIndex = wives.findIndex(w => w === wife);
-                                                        const newWives = [...wives];
-                                                        newWives[actualIndex] = { ...wife, deathDate: date };
-                                                        setWives(newWives);
-                                                      }}
-                                                          placeholder="اختر تاريخ الوفاة"
-                                                          className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                        />
-                                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                                          <CalendarIcon className="h-3 w-3 text-white" />
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              </div>
-
-                                              {/* Picture Upload with subscription check */}
-                                              <ImageUploadSection
-                                                isImageUploadEnabled={isImageUploadEnabled}
-                                                uploadLoading={uploadLoading}
-                                                croppedImage={wife.croppedImage}
-                                                selectedImage={selectedImage}
-                                                showCropDialog={showCropDialog}
-                                                crop={crop}
-                                                zoom={zoom}
-                                                fileInputRef={fileInputRef}
-                                                handleEditImage={handleEditImage}
-                                                handleDeleteImage={() => {
-                                                  const actualIndex = wives.findIndex(w => w === wife);
-                                                  const newWives = [...wives];
-                                                  newWives[actualIndex] = { ...wife, croppedImage: null };
-                                                  setWives(newWives);
-                                                }}
-                                                handleImageSelect={handleImageSelect}
-                                                setShowCropDialog={setShowCropDialog}
-                                                setCrop={setCrop}
-                                                setZoom={setZoom}
-                                                onCropComplete={onCropComplete}
-                                                handleCropSave={() => {
-                                                  if (croppedImage) {
-                                                    const actualIndex = wives.findIndex(w => w === wife);
-                                                    const newWives = [...wives];
-                                                    newWives[actualIndex] = { ...wife, croppedImage: croppedImage };
-                                                    setWives(newWives);
-                                                  }
-                                                  setShowCropDialog(false);
-                                                }}
-                                              />
-                                            </>
-                                          )}
-
-                                          {/* Save Wife Button */}
-                                          <div className="pt-4 border-t border-pink-200/30 dark:border-pink-700/30">
-                                            <Button
-                                              type="button"
-                                              onClick={() => {
-                                                 // Validate wife data - Enhanced validation
-                                                 const actualIndex = wives.findIndex(w => w === wife);
-                                                 const familyStatus = wiveFamilyStatus[actualIndex];
-                                                 
-                                                 let isValid = false;
-                                                 let errorMessage = "يرجى إكمال جميع البيانات المطلوبة للزوجة";
-                                                 
-                                                 if (familyStatus === 'yes') {
-                                                   // If from family, must have selected a family member
-                                                   isValid = wife.existingFamilyMemberId && wife.existingFamilyMemberId.trim() !== '';
-                                                   if (!isValid) {
-                                                     errorMessage = "يرجى اختيار الزوجة من قائمة أفراد العائلة";
-                                                   }
-                                                 } else if (familyStatus === 'no') {
-                                                   // If not from family, must have first and last name
-                                                   isValid = wife.firstName && wife.firstName.trim() !== '' && 
-                                                           wife.lastName && wife.lastName.trim() !== '';
-                                                   if (!isValid) {
-                                                     errorMessage = "يرجى إكمال الاسم الأول والأخير للزوجة";
-                                                   }
-                                                 }
-
-                                                 if (!isValid) {
-                                                   toast({
-                                                     title: "خطأ في البيانات",
-                                                     description: errorMessage,
-                                                     variant: "destructive"
-                                                   });
-                                                   return;
-                                                 }
-
-                                                 // Mark wife as saved and update original data
-                                                 const newWives = [...wives];
-                                                 newWives[actualIndex] = { ...wife, isSaved: true };
-                                                 setWives(newWives);
-
-                                                 // Update original data to current state
-                                                 const newOriginalData = [...originalWivesData];
-                                                 newOriginalData[actualIndex] = { ...wife };
-                                                 setOriginalWivesData(newOriginalData);
-
-                                                 toast({
-                                                   title: "تم الحفظ بنجاح",
-                                                   description: `تم حفظ بيانات الزوجة ${actualIndex + 1} بنجاح`,
-                                                   variant: "default"
-                                                 });
-                                              }}
-                                              disabled={wife.isSaved && !hasWifeDataChanged(wife, index)}
+                             {formData.gender === "male" ? (
+                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                 {/* Wives Display Panel */}
+                                 <div className="space-y-4">
+                                   <div className="flex items-center gap-2 mb-4">
+                                     <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                       <Heart className="w-3 h-3 text-white" />
+                                     </div>
+                                     <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">الزوجات</h4>
+                                   </div>
+                                   
+                                   <div className="space-y-3">
+                                     {wives.length === 0 ? (
+                                       <div className="text-center py-8 text-muted-foreground">
+                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
+                                       </div>
+                                     ) : (
+                                       wives.map((wife, index) => (
+                                         <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
+                                           <div className="flex items-center justify-between">
+                                             <div 
                                                className={cn(
-                                                 "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
-                                                 (wife.isSaved && !hasWifeDataChanged(wife, index))
-                                                   ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
-                                                   : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl"
+                                                 "flex items-center gap-3 flex-1",
+                                                 wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
                                                )}
-                                            >
-                                             {(wife.isSaved && !hasWifeDataChanged(wife, index)) ? (
-                                                 <>
-                                                   <Check className="h-4 w-4 mr-2" />
-                                                   تم حفظ البيانات
-                                                 </>
-                                               ) : (
-                                                 <>
-                                                   <Save className="h-4 w-4 mr-2" />
-                                                   {wife.isSaved && hasWifeDataChanged(wife, index) ? 'حفظ التغييرات' : 'حفظ بيانات الزوجة'}
-                                                 </>
-                                               )}
-                                            </Button>
-                                          </div>
-                                        </div>
-                                        </div>
-                                      );
-                                    })}
-                                    
-                                    {/* Show Add Wife Button only if: no wives OR last wife is saved */}
-                                    {(wives.length === 0 || wives[wives.length - 1]?.isSaved) && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                          setWives([...wives, {
-                                            id: '',
-                                            name: '',
-                                            firstName: '',
-                                            lastName: '',
-                                            isAlive: true,
-                                            birthDate: null,
-                                            deathDate: null,
-                                            maritalStatus: 'married',
-                                            isFamilyMember: true,
-                                            existingFamilyMemberId: '',
-                                            croppedImage: null,
-                                            isSaved: false
-                                          }]);
-                                          
-                                           // Initialize family status for new wife based on isFamilyMember
-                                           const newStatus = {...wiveFamilyStatus};
-                                           newStatus[wives.length] = 'yes'; // Default to 'yes' since isFamilyMember is true by default
-                                           setWiveFamilyStatus(newStatus);
-                                           
-                                           // Initialize original data for new wife
-                                           const newOriginalData = [...originalWivesData];
-                                           newOriginalData[wives.length] = null; // No original data for new wife
-                                           setOriginalWivesData(newOriginalData);
-                                        }}
-                                        className="w-full h-12 border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-all duration-300 rounded-xl"
-                                      >
-                                        <Plus className="h-5 w-5 mr-2" />
-                                        {wives.length === 0 ? 'إضافة زوجة' : 'إضافة زوجة أخرى'}
-                                      </Button>
-                                    )}
-                                    
-                                    {/* Show message if last wife is not saved */}
-                                    {wives.length > 0 && !wives[wives.length - 1]?.isSaved && (
-                                      <div className="text-center py-4">
-                                        <p className="text-sm text-amber-600 dark:text-amber-400 font-arabic">
-                                          يرجى حفظ بيانات الزوجة الحالية قبل إضافة زوجة أخرى
-                                        </p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Left Panel - Wives List */}
-                                <div className="space-y-4 col-span-1 lg:col-span-1">
-                                  <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                      <Heart className="w-3 h-3 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">قائمة الزوجات ({wives.length})</h4>
-                                  </div>
-                                  
-                                  <div className="space-y-3 max-h-[70vh] overflow-y-auto">
-                                    {wives.length === 0 ? (
-                                      <div className="text-center py-8 text-muted-foreground">
-                                        <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                        <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
-                                      </div>
-                                    ) : (
-                                        wives.map((wife, index) => (
-                                          <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60">
-                                            <div className="flex items-center justify-between">
-                                              <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                  {index + 1}
-                                                </div>
-                                                <div 
-                                                  className={cn(
-                                                    wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                                  )}
-                                                  onClick={() => {
-                                                    if (wife.isSaved) {
-                                                      // Edit mode: Load wife data for editing
-                                                      const updatedWives = [...wives];
-                                                      updatedWives[index] = { ...wife, isSaved: false };
-                                                      setWives(updatedWives);
-                                                      
-                                                      toast({
-                                                        title: "وضع التعديل",
-                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                        variant: "default"
-                                                      });
-                                                    }
-                                                  }}
-                                                >
-                                                  <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                    {wife.name || `الزوجة ${index + 1}`}
-                                                  </h5>
-                                                  <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                    {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                    {wife.isSaved && (
-                                                      <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                        <Check className="h-3 w-3" />
-                                                        محفوظة
-                                                      </span>
-                                                    )}
-                                                  </p>
-                                                  {wife.isSaved && (
-                                                    <p className="text-xs text-blue-600 font-arabic mt-1">
-                                                      انقر للتعديل
-                                                    </p>
-                                                  )}
-                                                </div>
-                                              </div>
-                                              <div className="flex gap-2">
-                                                {wife.isSaved && (
-                                                  <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                      const updatedWives = [...wives];
-                                                      updatedWives[index] = { ...wife, isSaved: false };
-                                                      setWives(updatedWives);
-                                                      
-                                                      toast({
-                                                        title: "وضع التعديل",
-                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                        variant: "default"
-                                                      });
-                                                    }}
-                                                    className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
-                                                  >
-                                                    <Edit className="h-3 w-3" />
-                                                  </Button>
-                                                )}
+                                               onClick={() => {
+                                                 if (wife.isSaved) {
+                                                   const updatedWives = [...wives];
+                                                   updatedWives[index] = { ...wife, isSaved: false };
+                                                   setWives(updatedWives);
+                                                   
+                                                   toast({
+                                                     title: "وضع التعديل",
+                                                     description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                     variant: "default"
+                                                   });
+                                                 }
+                                               }}
+                                             >
+                                               <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                 {index + 1}
+                                               </div>
+                                               <div>
+                                                 <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                   {wife.name || `الزوجة ${index + 1}`}
+                                                 </h5>
+                                                 <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                   {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                   {wife.isSaved && (
+                                                     <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                       <Check className="h-3 w-3" />
+                                                       محفوظة
+                                                     </span>
+                                                   )}
+                                                 </p>
+                                                 {wife.isSaved && (
+                                                   <p className="text-xs text-pink-600 font-arabic mt-1">
+                                                     انقر للتعديل
+                                                   </p>
+                                                 )}
+                                               </div>
+                                             </div>
+                                             <div className="flex gap-2">
+                                               {wife.isSaved && (
                                                  <Button
                                                    variant="outline"
                                                    size="sm"
-                                                   onClick={() => handleSpouseDelete(wife, index)}
-                                                   className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                                   onClick={() => {
+                                                     const updatedWives = [...wives];
+                                                     updatedWives[index] = { ...wife, isSaved: false };
+                                                     setWives(updatedWives);
+                                                     
+                                                     toast({
+                                                       title: "وضع التعديل",
+                                                       description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                       variant: "default"
+                                                     });
+                                                   }}
+                                                   className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
                                                  >
-                                                   <X className="h-3 w-3" />
+                                                   <Edit className="h-3 w-3" />
                                                  </Button>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        ))
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Left Panel - Husband Display */}
-                                <div className="space-y-4">
-                                  <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                      <User className="w-3 h-3 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
-                                  </div>
-                                  
-                                  <div className="space-y-3">
-                                     {!husband ? (
-                                      <div className="text-center py-8 text-muted-foreground">
-                                        <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                        <p className="font-arabic">لم يتم إضافة زوج بعد</p>
-                                      </div>
-                                    ) : (
-                                      <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
-                                        <div className="flex items-center justify-between">
-                                          <div 
-                                            className={cn(
-                                              "flex items-center gap-3 flex-1",
-                                              husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                            )}
-                                            onClick={() => {
-                                              if (husband.isSaved) {
-                                                // Edit mode: Load husband data for editing
-                                                setHusband({ ...husband, isSaved: false });
-                                                
-                                                toast({
-                                                  title: "وضع التعديل",
-                                                  description: "يمكنك الآن تعديل بيانات الزوج",
-                                                  variant: "default"
-                                                });
-                                              }
-                                            }}
-                                          >
-                                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                              <User className="w-4 h-4" />
-                                            </div>
-                                            <div>
-                                              <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                {husband.name || 'الزوج'}
-                                              </h5>
-                                              <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                {husband.isSaved && (
-                                                  <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                    <Check className="h-3 w-3" />
-                                                    محفوظ
-                                                  </span>
-                                                )}
-                                              </p>
-                                              {husband.isSaved && (
-                                                <p className="text-xs text-blue-600 font-arabic mt-1">
-                                                  انقر للتعديل
-                                                </p>
-                                              )}
-                                            </div>
-                                          </div>
-                                          <div className="flex gap-2">
-                                            {husband.isSaved && (
-                                              <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                  setHusband({ ...husband, isSaved: false });
-                                                  
-                                                  toast({
-                                                    title: "وضع التعديل",
-                                                    description: "يمكنك الآن تعديل بيانات الزوج",
-                                                    variant: "default"
-                                                  });
-                                                }}
-                                                className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
-                                              >
-                                                <Edit className="h-3 w-3" />
-                                              </Button>
-                                            )}
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() => setHusband(null)}
-                                              className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                            >
-                                              <X className="h-3 w-3" />
-                                            </Button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Right Panel - Add Husband Form */}
-                                <div className="bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-950/30 dark:to-sky-900/30 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-lg">
-                                  <div className="flex items-center gap-2 mb-6">
-                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                      <UserPlus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">{husband ? 'تعديل الزوج' : 'إضافة زوج'}</h4>
-                                  </div>
-
-                                  {husband ? (
-                                    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/30 rounded-xl p-6 shadow-md">
-                                      <div className="space-y-6">
-                                        {/* Family Member Check */}
-                                        <div>
-                                          <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-                                            هل الزوج من نفس العائلة؟
-                                          </Label>
-                                          <div className="flex gap-3">
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                              <input 
-                                                type="radio" 
-                                                name="husbandIsFamilyMember" 
-                                                checked={husband.isFamilyMember === true} 
-                                                onChange={() => setHusband({
-                                                  ...husband,
-                                                  isFamilyMember: true,
-                                                  existingFamilyMemberId: ''
-                                                })}
-                                                className="w-4 h-4 text-green-600"
-                                              />
-                                              <span className="text-sm text-green-600 font-arabic">نعم</span>
-                                            </label>
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                              <input 
-                                                type="radio" 
-                                                name="husbandIsFamilyMember" 
-                                                checked={husband.isFamilyMember === false} 
-                                                onChange={() => setHusband({
-                                                  ...husband,
-                                                  isFamilyMember: false,
-                                                  existingFamilyMemberId: ''
-                                                })}
-                                                className="w-4 h-4 text-red-600"
-                                              />
-                                              <span className="text-sm text-red-600 font-arabic">لا</span>
-                                            </label>
-                                          </div>
-                                        </div>
-
-                                        {/* Select Existing Family Member */}
-                                        {husband.isFamilyMember && (
-                                          <div className="space-y-3">
-                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
-                                              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
-                                              اختر الزوج من قائمة أفراد العائلة
-                                            </Label>
-                                            <Popover open={husbandCommandOpen} onOpenChange={setHusbandCommandOpen}>
-                                              <PopoverTrigger asChild>
-                                                <Button
-                                                  variant="outline"
-                                                  role="combobox"
-                                                  aria-expanded={husbandCommandOpen} 
-                                                  className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
-                                                >
-                                                  {husband.existingFamilyMemberId ? 
-                                                    familyMembers.find(m => m.id === husband.existingFamilyMemberId)?.name || "اختر فرد من العائلة..."
-                                                    : "اختر فرد من العائلة..."
-                                                  }
-                                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                              </PopoverTrigger>
-                                              <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
-                                                <Command>
-                                                  <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
-                                                  <CommandList>
-                                                    <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                                                      لم يتم العثور على نتائج.
-                                                    </CommandEmpty>
-                                                    <CommandGroup>
-                                                       {familyMembers
-                                                         .filter(member => {
-                                                           const hasValidGender = member.gender === "male";
-                                                           const isNotSelf = member.id !== selectedMember?.id;
-                                                           const hasFatherId = member.father_id; // غير فارغ
-                                                           const isAvailableForMarriage = 
-                                                             member.marital_status === "single" || 
-                                                             member.marital_status === "divorced";
-                                                           
-                                                           console.log(`🔍 Male member "${member.name}":`, {
-                                                             gender: member.gender,
-                                                             hasValidGender,
-                                                             selectedMemberId: selectedMember?.id,
-                                                             memberId: member.id,
-                                                             isNotSelf,
-                                                             fatherId: member.father_id,
-                                                             hasFatherId: !!member.father_id,
-                                                             maritalStatus: `"${member.marital_status}"`,
-                                                             isAvailableForMarriage,
-                                                             finalResult: hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage
-                                                           });
-                                                           
-                                                           return hasValidGender && isNotSelf && hasFatherId && isAvailableForMarriage;
-                                                         })
-                                                        .map((member) => (
-                                                          <CommandItem
-                                                            key={member.id}
-                                                            value={member.name}
-                                                            onSelect={() => {
-                                                              setHusband({
-                                                                ...husband,
-                                                                existingFamilyMemberId: member.id,
-                                                                name: member.name
-                                                              });
-                                                              setHusbandCommandOpen(false);
-                                                            }}
-                                                            className="font-arabic"
-                                                          >
-                                                            <Check
-                                                              className={cn(
-                                                                "mr-2 h-4 w-4",
-                                                                husband.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0"
-                                                              )}
-                                                            />
-                                                            {member.name}
-                                                          </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                  </CommandList>
-                                                </Command>
-                                              </PopoverContent>
-                                            </Popover>
-                                          </div>
-                                        )}
-
-                                        {/* Name Input - only if not family member or family member not selected */}
-                                        {(!husband.isFamilyMember || (husband.isFamilyMember && !husband.existingFamilyMemberId)) && (
-                                          <div className="group">
-                                            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                              اسم الزوج *
-                                            </Label>
-                                            <div className="relative">
-                                              <Input
-                                                value={husband.name}
-                                                onChange={(e) => setHusband({...husband, name: e.target.value})}
-                                                placeholder="أدخل اسم الزوج"
-                                                className="h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                disabled={husband.isFamilyMember && !!husband.existingFamilyMemberId}
-                                              />
-                                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-blue-500 to-sky-500 rounded-lg flex items-center justify-center">
-                                                <User className="h-3 w-3 text-white" />
-                                              </div>
-                                            </div>
-                                          </div>
-                                        )}
-
-                                         {/* Birth Date and Marital Status in grid */}
-                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                           {/* Birth Date - only show if not family member */}
-                                           {!husband.isFamilyMember ? (
-                                             <div className="group">
-                                               <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                 <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                 تاريخ الميلاد
-                                               </Label>
-                                               <div className="relative">
-                                                 <EnhancedDatePicker
-                                                   value={husband.birthDate}
-                                                   onChange={(date) => setHusband({...husband, birthDate: date})}
-                                                   placeholder="اختر التاريخ"
-                                                   className="h-11 text-sm border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                   disabled={husband.isFamilyMember && !!husband.existingFamilyMemberId}
-                                                 />
-                                                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
-                                                   <CalendarIcon className="h-3 w-3 text-white" />
-                                                 </div>
-                                               </div>
-                                             </div>
-                                           ) : (
-                                             <div></div>
-                                           )}
-
-                                           {/* Marital Status - always show */}
-                                           <div className="group">
-                                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                               الحالة الاجتماعية
-                                             </Label>
-                                             <div className="relative">
-                                               <Select
-                                                 value={husband.maritalStatus || "married"}
-                                                 onValueChange={(value) => setHusband({...husband, maritalStatus: value})}
+                                               )}
+                                               <Button
+                                                 variant="outline"
+                                                 size="sm"
+                                                 onClick={() => handleSpouseDelete(wife, index)}
+                                                 className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
                                                >
-                                                 <SelectTrigger className="h-11 text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
-                                                   <SelectValue placeholder="اختر الحالة الاجتماعية" />
-                                                 </SelectTrigger>
-                                                 <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                                   <SelectItem value="married" className="font-arabic text-sm">متزوج</SelectItem>
-                                                   <SelectItem value="divorced" className="font-arabic text-sm">مطلق</SelectItem>
-                                                 </SelectContent>
-                                               </Select>
-                                               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
-                                                 <Heart className="h-3 w-3 text-white" />
-                                               </div>
+                                                 <X className="h-3 w-3" />
+                                               </Button>
                                              </div>
                                            </div>
                                          </div>
+                                       ))
+                                     )}
+                                   </div>
+                                 </div>
 
-                                        {/* Life Status and Death Date - only show if not family member */}
-                                        {!husband.isFamilyMember && (
-                                          <div className="space-y-6">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                              {/* Life Status */}
-                                              <div className="group">
-                                                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                  <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                  الحالة الحيوية
-                                                </Label>
-                                                <div className="relative">
-                                                  <Select
-                                                    value={husband.isAlive ? "alive" : "deceased"}
-                                                    onValueChange={(value) => setHusband({
-                                                      ...husband, 
-                                                      isAlive: value === "alive",
-                                                      deathDate: value === "alive" ? null : husband.deathDate
-                                                    })}
-                                                  >
-                                                    <SelectTrigger className="h-11 text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic">
-                                                      <SelectValue placeholder="اختر الحالة الحيوية" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                                                      <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
-                                                      <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
-                                                    </SelectContent>
-                                                  </Select>
-                                                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
-                                                    <Heart className="h-3 w-3 text-white" />
-                                                  </div>
-                                                </div>
-                                              </div>
-
-                                              {/* Death Date - only show if deceased */}
-                                              {!husband.isAlive && (
-                                                <div className="group">
-                                                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                                                    <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                                    تاريخ الوفاة
-                                                  </Label>
-                                                  <div className="relative">
-                                                    <EnhancedDatePicker
-                                                      value={husband.deathDate}
-                                                      onChange={(date) => setHusband({...husband, deathDate: date})}
-                                                      placeholder="اختر تاريخ الوفاة"
-                                                      className="h-11 text-sm border-2 border-red-200/50 dark:border-red-700/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
-                                                    />
-                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
-                                                      <CalendarIcon className="h-3 w-3 text-white" />
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                         )}
-
-                                         {/* Save Husband Button */}
-                                         <div className="pt-4 border-t border-blue-200/30 dark:border-blue-700/30">
-                                           <Button
-                                             type="button"
-                                             onClick={() => {
-                                               // Validate husband data
-                                               const isValid = husband.name.trim() && (
-                                                 (husband.isFamilyMember && husband.existingFamilyMemberId) ||
-                                                 !husband.isFamilyMember
-                                               );
-
-                                               if (!isValid) {
-                                                 toast({
-                                                   title: "خطأ في البيانات",
-                                                   description: "يرجى إكمال جميع البيانات المطلوبة للزوج",
-                                                   variant: "destructive"
-                                                 });
-                                                 return;
-                                               }
-
-                                               // Mark husband as saved
-                                               setHusband({ ...husband, isSaved: true });
-
-                                               toast({
-                                                 title: "تم الحفظ بنجاح",
-                                                 description: "تم حفظ بيانات الزوج بنجاح",
-                                                 variant: "default"
-                                               });
-                                             }}
-                                             disabled={husband.isSaved}
+                                 {/* Unified Wife Form */}
+                                 <SpouseForm
+                                   spouseType="wife"
+                                   spouse={currentWife || {
+                                     id: '',
+                                     firstName: '',
+                                     lastName: '',
+                                     name: '',
+                                     isAlive: true,
+                                     birthDate: null,
+                                     deathDate: null,
+                                     maritalStatus: 'married',
+                                     isFamilyMember: false,
+                                     existingFamilyMemberId: '',
+                                     croppedImage: null,
+                                     isSaved: false
+                                   }}
+                                   onSpouseChange={setCurrentWife}
+                                   familyMembers={familyMembers}
+                                   selectedMember={selectedMember}
+                                   commandOpen={wifeCommandOpen}
+                                   onCommandOpenChange={setWifeCommandOpen}
+                                   familyStatus={wifeFamilyStatus}
+                                   onFamilyStatusChange={handleWifeFamilyStatusChange}
+                                   onSave={handleWifeSave}
+                                   onAdd={handleAddWife}
+                                   showForm={showWifeForm}
+                                 />
+                               </div>
+                             ) : (
+                               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                 {/* Husband Display Panel */}
+                                 <div className="space-y-4">
+                                   <div className="flex items-center gap-2 mb-4">
+                                     <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                       <User className="w-3 h-3 text-white" />
+                                     </div>
+                                     <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
+                                   </div>
+                                   
+                                   <div className="space-y-3">
+                                     {!husband ? (
+                                       <div className="text-center py-8 text-muted-foreground">
+                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
+                                       </div>
+                                     ) : (
+                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
+                                         <div className="flex items-center justify-between">
+                                           <div 
                                              className={cn(
-                                               "w-full h-12 font-arabic text-sm font-medium transition-all duration-300",
-                                               husband.isSaved 
-                                                 ? "bg-green-100 text-green-700 border-green-300 cursor-not-allowed" 
-                                                 : "bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white shadow-lg hover:shadow-xl"
+                                               "flex items-center gap-3 flex-1",
+                                               husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
                                              )}
+                                             onClick={() => {
+                                               if (husband.isSaved) {
+                                                 setHusband({ ...husband, isSaved: false });
+                                                 
+                                                 toast({
+                                                   title: "وضع التعديل",
+                                                   description: "يمكنك الآن تعديل بيانات الزوج",
+                                                   variant: "default"
+                                                 });
+                                               }
+                                             }}
                                            >
-                                             {husband.isSaved ? (
-                                               <>
-                                                 <Check className="h-4 w-4 mr-2" />
-                                                 تم حفظ البيانات
-                                               </>
-                                             ) : (
-                                               <>
-                                                 <Save className="h-4 w-4 mr-2" />
-                                                 حفظ بيانات الزوج
-                                               </>
+                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                               <User className="w-4 h-4" />
+                                             </div>
+                                             <div>
+                                               <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                 {husband.name || 'الزوج'}
+                                               </h5>
+                                               <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                 {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                 {husband.isSaved && (
+                                                   <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                     <Check className="h-3 w-3" />
+                                                     محفوظ
+                                                   </span>
+                                                 )}
+                                               </p>
+                                               {husband.isSaved && (
+                                                 <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                   انقر للتعديل
+                                                 </p>
+                                               )}
+                                             </div>
+                                           </div>
+                                           <div className="flex gap-2">
+                                             {husband.isSaved && (
+                                               <Button
+                                                 variant="outline"
+                                                 size="sm"
+                                                 onClick={() => {
+                                                   setHusband({ ...husband, isSaved: false });
+                                                   
+                                                   toast({
+                                                     title: "وضع التعديل",
+                                                     description: "يمكنك الآن تعديل بيانات الزوج",
+                                                     variant: "default"
+                                                   });
+                                                 }}
+                                                 className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
+                                               >
+                                                 <Edit className="h-3 w-3" />
+                                               </Button>
                                              )}
-                                           </Button>
+                                             <Button
+                                               variant="outline"
+                                               size="sm"
+                                               onClick={() => handleSpouseDelete(husband, -1)}
+                                               className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                             >
+                                               <X className="h-3 w-3" />
+                                             </Button>
+                                           </div>
                                          </div>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => setHusband({
-                                        id: '',
-                                        firstName: '',
-                                        lastName: '',
-                                        name: '',
-                                        isAlive: true,
-                                        birthDate: null,
-                                        deathDate: null,
-                                        maritalStatus: 'married',
-                                        isFamilyMember: false,
-                                        existingFamilyMemberId: '',
-                                        croppedImage: null,
-                                        isSaved: false
-                                      })}
-                                      className="w-full h-12 border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 rounded-xl"
-                                    >
-                                      <Plus className="h-5 w-5 mr-2" />
-                                      إضافة زوج
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                             )}
+                                       </div>
+                                     )}
+                                   </div>
+                                 </div>
+
+                                 {/* Unified Husband Form */}
+                                 <SpouseForm
+                                   spouseType="husband"
+                                   spouse={husband || {
+                                     id: '',
+                                     firstName: '',
+                                     lastName: '',
+                                     name: '',
+                                     isAlive: true,
+                                     birthDate: null,
+                                     deathDate: null,
+                                     maritalStatus: 'married',
+                                     isFamilyMember: false,
+                                     existingFamilyMemberId: '',
+                                     croppedImage: null,
+                                     isSaved: false
+                                   }}
+                                   onSpouseChange={setHusband}
+                                   familyMembers={familyMembers}
+                                   selectedMember={selectedMember}
+                                   commandOpen={husbandCommandOpen}
+                                   onCommandOpenChange={setHusbandCommandOpen}
+                                   familyStatus={husbandFamilyStatus}
+                                   onFamilyStatusChange={handleHusbandFamilyStatusChange}
+                                   onSave={handleHusbandSave}
+                                   onAdd={handleAddHusband}
+                                   showForm={showHusbandForm}
+                                 />
+                               </div>
+                              )}
                           </div>
                        )}
 
