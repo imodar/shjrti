@@ -35,7 +35,7 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
-import WifeForm from "@/components/WifeForm";
+import { SpouseForm, SpouseData } from "@/components/SpouseForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
@@ -816,37 +816,9 @@ const FamilyBuilderNew = () => {
     isFounder: false
   });
 
-  const [wives, setWives] = useState<Array<{
-    id: string;
-    name: string;
-    firstName?: string;
-    lastName?: string;
-    isAlive: boolean;
-    birthDate: Date | null;
-    deathDate: Date | null;
-    maritalStatus?: string;
-    croppedImage?: string | null;
-    isFamilyMember?: boolean;
-    existingFamilyMemberId?: string;
-    isExistingFamilyMember?: boolean;
-    isSaved?: boolean;
-  }>>([]);
+  const [wives, setWives] = useState<SpouseData[]>([]);
 
-  const [husband, setHusband] = useState<{
-    id: string;
-    name: string;
-    firstName?: string;
-    lastName?: string;
-    isAlive: boolean;
-    birthDate: Date | null;
-    deathDate: Date | null;
-    maritalStatus?: string;
-    croppedImage?: string | null;
-    isFamilyMember?: boolean;
-    existingFamilyMemberId?: string;
-    isExistingFamilyMember?: boolean;
-    isSaved?: boolean;
-  } | null>(null);
+  const [husband, setHusband] = useState<SpouseData | null>(null);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -3450,6 +3422,8 @@ const FamilyBuilderNew = () => {
                                       variant="outline"
                                       onClick={() => setHusband({
                                         id: '',
+                                        firstName: '',
+                                        lastName: '',
                                         name: '',
                                         isAlive: true,
                                         birthDate: null,
