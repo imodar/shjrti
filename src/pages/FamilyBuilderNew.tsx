@@ -3108,7 +3108,8 @@ const FamilyBuilderNew = () => {
                          memberListLoading={memberListLoading}
                          formMode={formMode}
                          onAddMember={handleAddMember}
-                       />
+                         packageData={packageData}
+                        />
                     </div>
                   </DrawerContent>
                 </Drawer>
@@ -3142,6 +3143,7 @@ const FamilyBuilderNew = () => {
                        memberListLoading={memberListLoading}
                        formMode={formMode}
                        onAddMember={handleAddMember}
+                       packageData={packageData}
                      />
                   </CardContent>
                 </Card>
@@ -3444,7 +3446,8 @@ const MemberList = ({
   marriages,
   memberListLoading,
   formMode,
-  onAddMember
+  onAddMember,
+  packageData
 }: any) => {
   return (
     <div className="space-y-4">
@@ -3476,9 +3479,16 @@ const MemberList = ({
 
       {/* Add Member Button */}
       {formMode === 'view' && (
-        <Button onClick={onAddMember} className="w-full flex items-center gap-2">
+        <Button 
+          onClick={onAddMember} 
+          disabled={packageData && familyMembers.length >= packageData.max_family_members}
+          className="w-full flex items-center gap-2"
+        >
           <Plus className="h-4 w-4" />
-          إضافة عضو جديد
+          {packageData && familyMembers.length >= packageData.max_family_members 
+            ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
+            : 'إضافة عضو جديد'
+          }
         </Button>
       )}
 
