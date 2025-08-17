@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle } from "lucide-react";
 import { HierarchicalMemberList } from "@/components/HierarchicalMemberList";
+import { InnovativeFamilyView } from "@/components/InnovativeFamilyView";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -3091,7 +3092,7 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                        <HierarchicalMemberList 
+                        <InnovativeFamilyView 
                           members={filteredMembers}
                           familyMembers={familyMembers}
                           searchTerm={searchTerm}
@@ -3123,7 +3124,7 @@ const FamilyBuilderNew = () => {
                      </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                      <HierarchicalMemberList 
+                      <InnovativeFamilyView 
                         members={filteredMembers}
                         familyMembers={familyMembers}
                         searchTerm={searchTerm}
