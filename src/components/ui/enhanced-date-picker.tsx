@@ -141,29 +141,32 @@ export function EnhancedDatePicker({
       >
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 flex-1 justify-center">
+          <div className="text-center space-y-3">
+            <div className="flex items-center justify-center gap-2">
               <CalendarIcon className="h-5 w-5 text-white" />
-              <h4 className="text-white font-semibold text-center">
+              <h4 className="text-white font-semibold">
                 {placeholder}
               </h4>
             </div>
-            <Select 
-              value={datePreference} 
-              onValueChange={(value: 'gregorian' | 'hijri') => setDatePreference(value)}
-            >
-              <SelectTrigger className="w-24 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50 pointer-events-auto">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[100px] z-[10050] pointer-events-auto">
-                <SelectItem value="gregorian" className="text-right cursor-pointer">
-                  ميلادي
-                </SelectItem>
-                <SelectItem value="hijri" className="text-right cursor-pointer">
-                  هجري
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            
+            <div className="flex justify-center">
+              <Select 
+                value={datePreference} 
+                onValueChange={(value: 'gregorian' | 'hijri') => setDatePreference(value)}
+              >
+                <SelectTrigger className="w-24 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50 pointer-events-auto">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[100px] z-[10050] pointer-events-auto">
+                  <SelectItem value="gregorian" className="text-right cursor-pointer">
+                    ميلادي
+                  </SelectItem>
+                  <SelectItem value="hijri" className="text-right cursor-pointer">
+                    هجري
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           {value && (
             <p className="text-amber-100 text-xs text-center mt-1">
