@@ -877,25 +877,36 @@ export default function Payments() {
                           ${!isFeatured ? 'border-emerald-200/30 dark:border-emerald-700/30' : ''}
                         `}
                       >
-                        {/* Featured badge */}
-                        {isFeatured && (
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                            <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
-                              <Sparkles className="h-3 w-3 mr-1" />
-                              الأكثر شعبية
-                            </Badge>
-                          </div>
-                        )}
+                        {/* Badges Container - ترتيب ذكي للبادجات */}
+                        <div className="absolute -top-3 inset-x-0 z-10">
+                          {/* إذا كانت الباقة نشطة ومميزة معاً، نعرض بادج واحد مدمج */}
+                          {isFeatured && currentPlanActive ? (
+                            <div className="flex justify-center">
+                              <Badge className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-pulse">
+                                <Crown className="h-3 w-3 mr-1" />
+                                باقتك المميزة
+                              </Badge>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between items-start px-4">
+                              {/* Featured badge - الأكثر شعبية */}
+                              {isFeatured && (
+                                <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
+                                  <Sparkles className="h-3 w-3 mr-1" />
+                                  الأكثر شعبية
+                                </Badge>
+                              )}
 
-                        {/* Current plan badge */}
-                        {currentPlanActive && (
-                          <div className="absolute -top-3 right-4 z-10">
-                            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 text-xs shadow-lg">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              نشطة
-                            </Badge>
-                          </div>
-                        )}
+                              {/* Current plan badge - نشطة */}
+                              {currentPlanActive && (
+                                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs shadow-lg">
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  نشطة
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
                         
                         <CardHeader className="text-center pb-4 pt-8">
                           {/* Icon with dashboard-style gradient */}
