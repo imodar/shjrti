@@ -3494,8 +3494,8 @@ const MemberList = ({
                 }
               </Button>
             </TooltipTrigger>
-            {packageData && familyMembers.length >= packageData.max_family_members && (
-              <TooltipContent className="max-w-xs">
+            <TooltipContent className="max-w-xs" side="top">
+              {packageData && familyMembers.length >= packageData.max_family_members ? (
                 <div className="text-center">
                   <p className="font-semibold text-destructive mb-1">
                     🚫 تم الوصول للحد الأقصى
@@ -3507,8 +3507,10 @@ const MemberList = ({
                     قم بترقية باقتك لإضافة المزيد من الأعضاء
                   </p>
                 </div>
-              </TooltipContent>
-            )}
+              ) : (
+                <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>
+              )}
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       )}
