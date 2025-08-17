@@ -2454,7 +2454,7 @@ const FamilyBuilderNew = () => {
                           {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
                           {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
                           {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                           <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent leading-relaxed">
                              {formMode === 'view' && "معلومات العضو"}
                              {formMode === 'add' && "إضافة عضو جديد"}
                              {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
