@@ -1051,10 +1051,12 @@ export default function Payments() {
                             </p>
                             <p className="text-sm text-muted-foreground">{invoice.currency}</p>
                             <div className="flex gap-2 mt-2">
-                              <Button variant="outline" size="sm">
-                                <Download className="h-4 w-4 mr-1" />
-                                تحميل
-                              </Button>
+                              {invoice.amount > 0 && (
+                                <Button variant="outline" size="sm">
+                                  <Download className="h-4 w-4 mr-1" />
+                                  تحميل
+                                </Button>
+                              )}
                               {invoice.payment_status === 'pending' && (
                                 <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white">
                                   <CreditCard className="h-4 w-4 mr-1" />
