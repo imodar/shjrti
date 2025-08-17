@@ -209,12 +209,6 @@ export function EnhancedDatePicker({
           </div>
         ) : (
           <div className="p-4 space-y-4 bg-gradient-to-b from-amber-50/30 to-orange-50/30 dark:from-amber-950/30 dark:to-orange-950/30">
-            <div className="text-center">
-              <h5 className="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-3">
-                التقويم الهجري
-              </h5>
-            </div>
-            
             {/* Hijri Calendar Grid */}
             <div className="space-y-4">
               {/* Header with Month/Year Navigation */}
