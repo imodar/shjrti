@@ -152,14 +152,14 @@ export function EnhancedDatePicker({
               value={datePreference} 
               onValueChange={(value: 'gregorian' | 'hijri') => setDatePreference(value)}
             >
-              <SelectTrigger className="w-24 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50">
+              <SelectTrigger className="w-24 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50 pointer-events-auto">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[100px]">
-                <SelectItem value="gregorian" className="text-right">
+              <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[100px] z-[10050] pointer-events-auto">
+                <SelectItem value="gregorian" className="text-right cursor-pointer">
                   ميلادي
                 </SelectItem>
-                <SelectItem value="hijri" className="text-right">
+                <SelectItem value="hijri" className="text-right cursor-pointer">
                   هجري
                 </SelectItem>
               </SelectContent>
