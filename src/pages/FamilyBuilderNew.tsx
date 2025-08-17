@@ -1197,6 +1197,9 @@ const FamilyBuilderNew = () => {
   
   // Track original wife data for change detection
   const [originalWivesData, setOriginalWivesData] = useState<any[]>([]);
+  
+  // Upgrade modal state
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // --- Spouse rules helpers & delete handlers ---
   const checkIfMemberIsSpouse = (member: any) => {
@@ -1609,6 +1612,12 @@ const FamilyBuilderNew = () => {
 
   // Form panel actions
   const handleAddMember = () => {
+    // Check if user has reached package limit
+    if (packageData && familyMembers.length >= packageData.max_family_members) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    
     setFormMode('add');
     setEditingMember(null);
     setCurrentStep(1);
@@ -3433,6 +3442,60 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Upgrade Package Modal */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center">
+            <div className="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30">
+              <Crown className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+            </div>
+            <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              تطوير الباقة مطلوب
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400 mt-2">
+              لقد وصلت للحد الأقصى المسموح في باقتك الحالية
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <span className="font-semibold text-amber-800 dark:text-amber-300">
+                  الحد الأقصى: {packageData?.max_family_members || 0} عضو
+                </span>
+              </div>
+              <p className="text-sm text-amber-700 dark:text-amber-400">
+                باقتك الحالية تسمح بإضافة {packageData?.max_family_members || 0} أعضاء فقط.
+              </p>
+            </div>
+
+            <p className="text-gray-600 dark:text-gray-300">
+              لإضافة المزيد من أعضاء العائلة، يمكنك ترقية باقتك للحصول على المزيد من الميزات والإمكانيات.
+            </p>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowUpgradeModal(false)}
+              className="flex-1"
+            >
+              إلغاء
+            </Button>
+            <Button 
+              onClick={() => {
+                setShowUpgradeModal(false);
+                navigate('/plan-selection');
+              }}
+              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+            >
+              <Crown className="h-4 w-4 ml-2" />
+              ترقية الباقة
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <GlobalFooter />
     </div>
@@ -3495,7 +3558,6 @@ const MemberList = ({
             <TooltipTrigger asChild>
               <Button 
                 onClick={onAddMember} 
-                disabled={packageData && familyMembers.length >= packageData.max_family_members}
                 className="w-full flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
