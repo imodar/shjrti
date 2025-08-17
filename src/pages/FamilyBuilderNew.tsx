@@ -655,7 +655,8 @@ const FamilyBuilderNew = () => {
           id,
           husband_id,
           wife_id,
-          is_active
+          is_active,
+          marital_status
         `)
         .eq('family_id', familyToUse.id)
         .eq('is_active', true);
@@ -751,7 +752,8 @@ const FamilyBuilderNew = () => {
           id,
           husband_id,
           wife_id,
-          is_active
+          is_active,
+          marital_status
         `)
         .eq('family_id', family.id)
         .eq('is_active', true);
@@ -2645,21 +2647,16 @@ const FamilyBuilderNew = () => {
                                                  return fullName;
                                                };
                                                
-                                               if (husbandMember && wifeMember) {
-                                                 displayName = `${buildFullName(husbandMember)} و ${wifeMember.name || 'غير محدد'}`;
-                                               } else if (husbandMember) {
-                                                 displayName = buildFullName(husbandMember) + ' و غير محدد';
-                                               } else if (wifeMember) {
-                                                 displayName = 'غير محدد و ' + (wifeMember.name || 'غير محدد');
-                                               } else {
-                                                 displayName = 'غير محدد';
-                                               }
-                                               
-                                               return {
-                                                 value: marriage.id,
-                                                 label: displayName,
-                                                 icon: <Heart className="h-3 w-3 text-red-500" />
-                                               };
+                                                const familyMember = husbandMember ? buildFullName(husbandMember) : 'غير محدد';
+                                                const spouse = wifeMember ? (wifeMember.name || 'غير محدد') : 'غير محدد';
+                                                const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+                                                
+                                                return {
+                                                  value: marriage.id,
+                                                  familyMember,
+                                                  spouse,
+                                                  heartIcon
+                                                };
                                              }) :
                                            [{ value: "no-data", label: "لا توجد زيجات مسجلة في هذه العائلة", disabled: true }]
                                      }

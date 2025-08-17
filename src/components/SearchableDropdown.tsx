@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Search, X } from 'lucide-react';
+import { ChevronDown, Search, X, Heart, HeartCrack } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,9 +7,13 @@ import { cn } from '@/lib/utils';
 
 interface DropdownOption {
   value: string;
-  label: string;
+  label?: string;
   icon?: React.ReactNode;
   disabled?: boolean;
+  // New structured layout fields
+  familyMember?: string;
+  spouse?: string;
+  heartIcon?: 'heart' | 'heart-crack';
 }
 
 interface SearchableDropdownProps {
@@ -39,9 +43,17 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter options based on search query
-  const filteredOptions = options.filter(option =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredOptions = options.filter(option => {
+    const searchLower = searchQuery.toLowerCase();
+    // Search in label (backward compatibility) or in structured fields
+    if (option.label) {
+      return option.label.toLowerCase().includes(searchLower);
+    }
+    // Search in structured data
+    const familyMatch = option.familyMember?.toLowerCase().includes(searchLower);
+    const spouseMatch = option.spouse?.toLowerCase().includes(searchLower);
+    return familyMatch || spouseMatch;
+  });
 
   // Find selected option
   const selectedOption = options.find(option => option.value === value);
@@ -104,7 +116,25 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
           "truncate text-right flex-1",
           !selectedOption && "text-muted-foreground"
         )}>
-          {selectedOption ? selectedOption.label : placeholder}
+          {selectedOption ? (
+            selectedOption.familyMember ? (
+              <div className="flex items-center justify-between w-full text-sm">
+                <span className="text-right">{selectedOption.spouse || 'غير محدد'}</span>
+                <span className="mx-2">
+                  {selectedOption.heartIcon === 'heart-crack' ? (
+                    <HeartCrack className="h-3 w-3 text-muted-foreground" />
+                  ) : (
+                    <Heart className="h-3 w-3 text-pink-500" />
+                  )}
+                </span>
+                <span className="text-right">{selectedOption.familyMember}</span>
+              </div>
+            ) : (
+              selectedOption.label
+            )
+          ) : (
+            placeholder
+          )}
         </span>
         <ChevronDown className={cn(
           "h-4 w-4 ml-2 transition-transform duration-200",
@@ -152,13 +182,29 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                       className={cn(
                         "w-full px-3 py-2 text-right hover:bg-accent hover:text-accent-foreground",
                         "focus:bg-accent focus:text-accent-foreground outline-none transition-colors",
-                        "flex items-center justify-end gap-2 font-arabic",
+                        "flex items-center justify-between font-arabic",
                         option.disabled && "opacity-50 cursor-not-allowed hover:bg-transparent",
                         value === option.value && "bg-primary/10 text-primary font-medium"
                       )}
                     >
-                      <span className="truncate">{option.label}</span>
-                      {option.icon && <span className="flex-shrink-0">{option.icon}</span>}
+                      {option.familyMember ? (
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-right truncate">{option.spouse || 'غير محدد'}</span>
+                          <span className="mx-2 flex-shrink-0">
+                            {option.heartIcon === 'heart-crack' ? (
+                              <HeartCrack className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Heart className="h-4 w-4 text-pink-500" />
+                            )}
+                          </span>
+                          <span className="text-right truncate">{option.familyMember}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-2 w-full">
+                          <span className="truncate">{option.label}</span>
+                          {option.icon && <span className="flex-shrink-0">{option.icon}</span>}
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
