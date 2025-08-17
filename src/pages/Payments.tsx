@@ -233,12 +233,23 @@ export default function Payments() {
         throw new Error('Selected package not found');
       }
 
-      // Calculate amount based on current language
-      const amount = currentLanguage === 'ar' 
-        ? selectedPackage.price === "مجاني للأبد" ? 0 : parseFloat(selectedPackage.price)
-        : selectedPackage.price === "مجاني للأبد" ? 0 : parseFloat(selectedPackage.price);
-      
-      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
+      // إظهار رسالة تذكيرية للمستخدم
+      toast({
+        title: "ملاحظة مهمة",
+        description: "ستبقى على باقتك الحالية حتى يتم تسديد قيمة الباقة الجديدة بنجاح",
+        duration: 4000,
+      });
+
+      // Calculate amount based on package price_sar
+      const amount = selectedPackage.price_sar || 0;
+      const currency = 'SAR';
+
+      console.log('🔍 Package details:', {
+        packageId: planId,
+        amount: amount,
+        currency: currency,
+        packageName: selectedPackage.name
+      });
 
       // Create invoice for user subscription (no family needed)
       const { data: invoiceId, error: invoiceError } = await supabase.rpc('create_invoice', {
@@ -283,6 +294,13 @@ export default function Payments() {
         setProcessingPayment(planId);
         
         try {
+          console.log('🚀 Creating payment session with data:', {
+            packageId: planId,
+            amount: amount,
+            currency: currency,
+            userId: user.id
+          });
+
           const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment', {
             body: {
               packageId: planId,
@@ -291,8 +309,11 @@ export default function Payments() {
             }
           });
 
+          console.log('📊 Payment response:', { paymentData, paymentError });
+
           if (paymentError) {
-            throw new Error(paymentError.message || 'Failed to create payment session');
+            console.error('Payment Error Details:', paymentError);
+            throw new Error(paymentError.message || 'فشل في إنشاء جلسة الدفع');
           }
 
           if (paymentData?.url) {
@@ -307,18 +328,35 @@ export default function Payments() {
             
             toast({
               title: "تم توجيهك للدفع",
-              description: "سيتم فتح صفحة الدفع في نافذة جديدة",
-              duration: 3000,
+              description: "سيتم فتح صفحة الدفع في نافذة جديدة. ستبقى على باقتك الحالية حتى اكتمال الدفع.",
+              duration: 5000,
             });
           } else {
-            throw new Error('No payment URL received');
+            throw new Error('لم يتم الحصول على رابط الدفع من النظام');
           }
         } catch (paymentError) {
           console.error('Payment error:', paymentError);
+          
+          // معالجة أخطاء مختلفة
+          let errorMessage = "فشل في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى.";
+          
+          if (paymentError.message) {
+            if (paymentError.message.includes('Stripe')) {
+              errorMessage = "خطأ في نظام الدفع. يرجى التحقق من بياناتك والمحاولة مرة أخرى.";
+            } else if (paymentError.message.includes('authentication')) {
+              errorMessage = "خطأ في التحقق من الهوية. يرجى تسجيل الدخول مرة أخرى.";
+            } else if (paymentError.message.includes('invoice')) {
+              errorMessage = "خطأ في إنشاء الفاتورة. يرجى المحاولة مرة أخرى.";
+            } else {
+              errorMessage = paymentError.message;
+            }
+          }
+          
           toast({
-            title: "خطأ في الدفع",
-            description: "فشل في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى.",
+            title: "فشل في إنشاء الجلسة",
+            description: errorMessage + " ستبقى على باقتك الحالية.",
             variant: "destructive",
+            duration: 6000,
           });
         } finally {
           setProcessingPayment(null);

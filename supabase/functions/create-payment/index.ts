@@ -40,6 +40,8 @@ serve(async (req) => {
   }
 
   try {
+    console.log('🚀 Create payment function started');
+    
     // Create Supabase client using the anon key for user authentication
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -47,18 +49,48 @@ serve(async (req) => {
     );
 
     // Retrieve authenticated user
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("Authorization header missing");
+    }
+    
+    console.log('🔐 Authentication header found');
+    
     const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError) {
+      console.error('❌ Auth error:', authError);
+      throw new Error("Authentication failed: " + authError.message);
+    }
+    
     const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (!user?.email) {
+      console.error('❌ No user or email found');
+      throw new Error("User not authenticated or email not available");
+    }
+    
+    console.log('✅ User authenticated:', user.id);
 
     // Get request body
-    const { packageId, amount, currency = "SAR", invoiceId } = await req.json();
-    if (!packageId || !amount) throw new Error("Package ID and amount are required");
+    const requestBody = await req.json();
+    console.log('📋 Request body:', requestBody);
+    
+    const { packageId, amount, currency = "SAR", invoiceId } = requestBody;
+    if (!packageId || amount === undefined || amount === null) {
+      throw new Error("Package ID and amount are required");
+    }
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      console.error('❌ STRIPE_SECRET_KEY not found in environment variables');
+      throw new Error("Stripe configuration missing");
+    }
+    
+    console.log('🔑 Stripe key found, initializing Stripe...');
+    
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
 
