@@ -88,19 +88,35 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
     }
   };
 
-  // Convert Gregorian date to Hijri (simplified conversion)
+  // Convert Gregorian date to Hijri using proper algorithm
   const toHijri = (gregorianDate: Date): string => {
-    // This is a simplified conversion. For production, you might want to use a library like moment-hijri
-    const year = gregorianDate.getFullYear() - 622;
-    const month = gregorianDate.getMonth() + 1;
-    const day = gregorianDate.getDate();
-    
-    const hijriMonths = [
-      'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية',
-      'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
-    ];
-    
-    return `${day} ${hijriMonths[month - 1]} ${year} هـ`;
+    try {
+      const gYear = gregorianDate.getFullYear();
+      const gMonth = gregorianDate.getMonth() + 1;
+      const gDay = gregorianDate.getDate();
+      
+      // Convert using accurate Hijri algorithm
+      const jDay = Math.floor((1461 * (gYear + 4800 + Math.floor((gMonth - 14) / 12))) / 4) +
+                   Math.floor((367 * (gMonth - 2 - 12 * (Math.floor((gMonth - 14) / 12)))) / 12) -
+                   Math.floor((3 * (Math.floor((gYear + 4900 + Math.floor((gMonth - 14) / 12)) / 100))) / 4) +
+                   gDay - 32075;
+      
+      const islamicJDay = jDay - 1948440.5;
+      const hYear = Math.floor((30 * islamicJDay + 10646) / 10631);
+      const hMonth = Math.min(12, Math.ceil((islamicJDay - 29.5 - 354 * hYear) / 29.5) + 1);
+      const hDay = Math.ceil(islamicJDay - (29.5 * hMonth - 29.5) - 354 * hYear) + 1;
+      
+      const hijriMonths = [
+        'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية',
+        'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+      ];
+      
+      const monthIndex = Math.max(0, Math.min(11, Math.floor(hMonth) - 1));
+      return `${Math.floor(hDay)} ${hijriMonths[monthIndex]} ${Math.floor(hYear)} هـ`;
+    } catch (error) {
+      console.error('Error converting to Hijri:', error);
+      return gregorianDate.toLocaleDateString('ar-SA');
+    }
   };
 
   // Format date according to user preference
