@@ -240,9 +240,9 @@ export default function Payments() {
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'pending')
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error loading scheduled downgrade:', error);
         return;
       }
@@ -250,21 +250,22 @@ export default function Payments() {
       if (data) {
         // Get package details separately
         const [currentPackageData, targetPackageData] = await Promise.all([
-          supabase.from('packages').select('name').eq('id', data.current_package_id).single(),
-          supabase.from('packages').select('name').eq('id', data.target_package_id).single()
+          supabase.from('packages').select('name').eq('id', data.current_package_id).maybeSingle(),
+          supabase.from('packages').select('name').eq('id', data.target_package_id).maybeSingle()
         ]);
 
-        setScheduledDowngrade({
+        const scheduleData = {
           ...data,
           current_package: currentPackageData.data,
           target_package: targetPackageData.data
-        });
+        };
+
+        setScheduledDowngrade(scheduleData);
         
-        console.log('✅ Scheduled downgrade loaded:', {
-          ...data,
-          current_package: currentPackageData.data,
-          target_package: targetPackageData.data
-        });
+        console.log('✅ Scheduled downgrade loaded:', scheduleData);
+      } else {
+        console.log('❌ No scheduled downgrade found');
+        setScheduledDowngrade(null);
       }
     } catch (error) {
       console.error('Error in loadScheduledDowngrade:', error);
@@ -974,22 +975,24 @@ export default function Payments() {
                     const isFeatured = plan.popular;
                     const currentPlanActive = currentPlan === plan.id;
                     
+                    // إذا كان هناك تغيير مجدول، فقط الباقة الحالية تظهر كنشطة حتى التاريخ المحدد
+                    const shouldShowAsActive = currentPlanActive && (!scheduledDowngrade || scheduledDowngrade.current_package_id === plan.id);
+                    
                     return (
                       <Card 
                         key={plan.id} 
                         className={`
                           relative h-full transition-all duration-500 hover:scale-105 hover:shadow-xl
                           ${isFeatured ? 'ring-4 ring-gradient-to-r ring-orange-400 border-orange-300 dark:border-orange-600 scale-105 shadow-orange-200/50 dark:shadow-orange-800/50' : ''}
-                          ${currentPlanActive ? 'ring-2 ring-amber-200 dark:ring-amber-700' : ''}
+                          ${shouldShowAsActive ? 'ring-2 ring-amber-200 dark:ring-amber-700' : ''}
                           ${isFeatured ? 'bg-gradient-to-br from-orange-50/80 via-white/70 to-amber-50/80 dark:from-orange-950/20 dark:via-gray-800/70 dark:to-amber-950/20' : 'bg-white/70 dark:bg-gray-800/70'}
                           backdrop-blur-xl border shadow-xl
                           ${!isFeatured ? 'border-emerald-200/30 dark:border-emerald-700/30' : ''}
                         `}
                       >
-                        {/* Badges Container - ترتيب ذكي للبادجات */}
                         <div className="absolute -top-3 inset-x-0 z-10">
                           {/* إذا كانت الباقة نشطة ومميزة معاً، نعرض بادج واحد مدمج */}
-                          {isFeatured && currentPlanActive ? (
+                          {isFeatured && shouldShowAsActive ? (
                             <div className="flex justify-center">
                               <Badge className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-pulse">
                                 <Crown className="h-3 w-3 mr-1" />
@@ -1007,10 +1010,18 @@ export default function Payments() {
                               )}
 
                               {/* Current plan badge - نشطة */}
-                              {currentPlanActive && (
+                              {shouldShowAsActive && (
                                 <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs shadow-lg">
                                   <CheckCircle className="h-3 w-3 mr-1" />
                                   نشطة
+                                </Badge>
+                              )}
+                              
+                              {/* Scheduled downgrade badge للباقة المستهدفة */}
+                              {scheduledDowngrade && scheduledDowngrade.target_package_id === plan.id && (
+                                <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-1.5 text-xs shadow-lg">
+                                  <Calendar className="h-3 w-3 mr-1" />
+                                  مجدولة
                                 </Badge>
                               )}
                             </div>
@@ -1078,27 +1089,28 @@ export default function Payments() {
                           </div>
                           
                           {/* CTA Button */}
-                          <Button
-                            onClick={() => {
-                              console.log('🔍 Plan comparison:', {
-                                planId: plan.id,
-                                currentPlan: currentPlan,
-                                isEqual: currentPlan === plan.id,
-                                currentPlanType: typeof currentPlan,
-                                planIdType: typeof plan.id
-                              });
-                              
-                              if (currentPlan !== plan.id) {
-                                handlePlanSelect(plan.id);
-                              }
-                            }}
-                            disabled={currentPlanActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id}
-                            className={`
-                              w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
-                              ${currentPlanActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
-                                : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'
-                              }
+                            <Button 
+                              onClick={() => {
+                                console.log('🔍 Plan comparison:', {
+                                  planId: plan.id,
+                                  currentPlan: currentPlan,
+                                  isEqual: currentPlan === plan.id,
+                                  shouldShowAsActive,
+                                  scheduledDowngrade
+                                });
+                                
+                                // فقط إذا لم تكن الباقة نشطة حالياً أو إذا كانت هناك جدولة معلقة
+                                if (!shouldShowAsActive) {
+                                  handlePlanSelect(plan.id);
+                                }
+                              }}
+                              disabled={shouldShowAsActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id}
+                              className={`
+                                w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
+                                ${shouldShowAsActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id
+                                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'
+                                }
                             `}
                           >
                             <span className="flex items-center gap-2">
