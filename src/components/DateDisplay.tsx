@@ -20,25 +20,32 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
 }) => {
   const { format: formatDate, formatRelative, formatLifespan, loading } = useDateFormat();
 
+  // Show loading skeleton
   if (loading) {
     return <span className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-20 inline-block ${className}`}></span>;
   }
 
-  let formattedDate: string;
+  let formattedDate: string = '';
 
-  switch (format) {
-    case 'relative':
-      formattedDate = formatRelative(date);
-      break;
-    case 'lifespan':
-      formattedDate = formatLifespan(birthDate, deathDate, isAlive);
-      break;
-    default:
-      formattedDate = formatDate(date);
-      break;
+  try {
+    switch (format) {
+      case 'relative':
+        formattedDate = formatRelative(date);
+        break;
+      case 'lifespan':
+        formattedDate = formatLifespan(birthDate, deathDate, isAlive);
+        break;
+      default:
+        formattedDate = formatDate(date);
+        break;
+    }
+  } catch (error) {
+    console.error('Error in DateDisplay:', error);
+    formattedDate = '';
   }
 
-  if (!formattedDate) {
+  // Don't render anything if no valid date
+  if (!formattedDate || formattedDate === 'تاريخ غير صحيح') {
     return null;
   }
 
