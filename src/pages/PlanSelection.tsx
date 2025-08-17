@@ -401,25 +401,22 @@ const PlanSelection = () => {
         </div>
       </div>
       
+      {/* Creative Floating Back Button */}
+      <div className="fixed top-8 left-8 z-50">
+        <Button
+          onClick={() => window.history.back()}
+          size="lg"
+          className="w-14 h-14 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1"
+        >
+          {direction === 'rtl' ? (
+            <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
+          ) : (
+            <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
+          )}
+        </Button>
+      </div>
+      
       <div className="container mx-auto px-6 py-16 max-w-6xl relative z-10">
-        {/* Big Back Button */}
-        <div className="mb-8">
-          <Button
-            onClick={() => window.history.back()}
-            variant="outline"
-            size="lg"
-            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-emerald-200/30 dark:border-emerald-700/30 hover:bg-white/90 dark:hover:bg-gray-800/90 shadow-lg hover:shadow-xl transition-all duration-300 group"
-          >
-            {direction === 'rtl' ? (
-              <ChevronRight className="h-5 w-5 mr-2 group-hover:translate-x-1 transition-transform duration-200" />
-            ) : (
-              <ArrowLeft className="h-5 w-5 ml-2 group-hover:-translate-x-1 transition-transform duration-200" />
-            )}
-            <span className="font-medium">
-              {currentLanguage === 'ar' ? 'رجوع' : 'Back'}
-            </span>
-          </Button>
-        </div>
         {/* Header section matching dashboard style */}
         <div className="text-center mb-16 fade-in">
           <div className="flex flex-col items-center gap-8">
