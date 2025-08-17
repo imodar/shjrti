@@ -17,7 +17,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -2543,7 +2543,7 @@ const FamilyBuilderNew = () => {
                              <div className="grid grid-cols-12 gap-6">
                                <div className="col-span-12 md:col-span-6">
                                    <Label htmlFor="name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <span className="text-lg">👤</span>
+                                     <UserCircle className="h-4 w-4 text-primary" />
                                      الاسم الكامل *
                                   </Label>
                                    <Input
@@ -2558,7 +2558,7 @@ const FamilyBuilderNew = () => {
                                
                                <div className="col-span-6 md:col-span-3">
                                    <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <span className="text-lg">⚧</span>
+                                     <Zap className="h-4 w-4 text-primary" />
                                      الجنس *
                                   </Label>
                                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
@@ -2574,7 +2574,7 @@ const FamilyBuilderNew = () => {
                                 
                                <div className="col-span-6 md:col-span-3">
                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <span className="text-lg">📅</span>
+                                     <CalendarDays className="h-4 w-4 text-primary" />
                                      تاريخ الميلاد
                                   </Label>
                                   <EnhancedDatePicker
@@ -2590,7 +2590,7 @@ const FamilyBuilderNew = () => {
                              <div className="grid grid-cols-12 gap-6">
                                 <div className="col-span-12 md:col-span-6">
                                    <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <span className="text-lg">👨‍👩‍👧‍👦</span>
+                                     <UsersIcon className="h-4 w-4 text-primary" />
                                      العلاقة العائلية (الوالدين) *
                                     {formData.isFounder && (
                                       <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
@@ -2683,7 +2683,7 @@ const FamilyBuilderNew = () => {
                               
                                <div className="col-span-6 md:col-span-3">
                                   <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">💓</span>
+                                    <Activity className="h-4 w-4 text-primary" />
                                     الحالة الحيوية
                                  </Label>
                                  <Select 
@@ -2702,7 +2702,7 @@ const FamilyBuilderNew = () => {
 
                                <div className="col-span-6 md:col-span-3">
                                   <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">⚰️</span>
+                                    <Skull className="h-4 w-4 text-primary" />
                                     تاريخ الوفاة
                                  </Label>
                                  <EnhancedDatePicker
@@ -2717,7 +2717,7 @@ const FamilyBuilderNew = () => {
 
                              <div>
                                 <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                  <span className="text-lg">📝</span>
+                                  <FileText className="h-4 w-4 text-primary" />
                                   السيرة الذاتية
                                </Label>
                                <Textarea
