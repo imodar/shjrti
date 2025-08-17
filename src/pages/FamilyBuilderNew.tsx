@@ -2542,8 +2542,8 @@ const FamilyBuilderNew = () => {
                              {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                              <div className="grid grid-cols-12 gap-6">
                                <div className="col-span-12 md:col-span-6">
-                                  <Label htmlFor="name" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">👤</span>
+                                  <Label htmlFor="name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <User className="w-4 h-4 text-blue-600" />
                                     الاسم الكامل *
                                   </Label>
                                    <Input
@@ -2557,8 +2557,8 @@ const FamilyBuilderNew = () => {
                                </div>
                                
                                <div className="col-span-6 md:col-span-3">
-                                  <Label htmlFor="gender" className="font-arabic text-sm font-semibold bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">⚧</span>
+                                  <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <Users className="w-4 h-4 text-purple-600" />
                                     الجنس *
                                   </Label>
                                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
@@ -2573,8 +2573,8 @@ const FamilyBuilderNew = () => {
                                </div>
                                 
                                <div className="col-span-6 md:col-span-3">
-                                  <Label className="font-arabic text-sm font-semibold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">📅</span>
+                                  <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <Calendar className="w-4 h-4 text-green-600" />
                                     تاريخ الميلاد
                                   </Label>
                                   <EnhancedDatePicker
@@ -2589,8 +2589,8 @@ const FamilyBuilderNew = () => {
                              {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
                              <div className="grid grid-cols-12 gap-6">
                                 <div className="col-span-12 md:col-span-6">
-                                  <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">👨‍👩‍👧‍👦</span>
+                                  <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <Users className="w-4 h-4 text-orange-600" />
                                     العلاقة العائلية (الوالدين) *
                                     {formData.isFounder && (
                                       <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
@@ -2682,8 +2682,8 @@ const FamilyBuilderNew = () => {
                               </div>
                               
                                <div className="col-span-6 md:col-span-3">
-                                 <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                   <span className="text-lg">💓</span>
+                                 <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                   <Heart className="w-4 h-4 text-red-600" />
                                    الحالة الحيوية
                                  </Label>
                                  <Select 
@@ -2701,8 +2701,8 @@ const FamilyBuilderNew = () => {
                                </div>
 
                                <div className="col-span-6 md:col-span-3">
-                                 <Label className="font-arabic text-sm font-semibold bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                   <span className="text-lg">⚰️</span>
+                                 <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                   <Skull className="w-4 h-4 text-gray-600" />
                                    تاريخ الوفاة
                                  </Label>
                                  <EnhancedDatePicker
@@ -2716,8 +2716,8 @@ const FamilyBuilderNew = () => {
                              </div>
 
                              <div>
-                               <Label htmlFor="bio" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                 <span className="text-lg">📝</span>
+                               <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                 <FileText className="w-4 h-4 text-indigo-600" />
                                  السيرة الذاتية
                                </Label>
                                <Textarea
