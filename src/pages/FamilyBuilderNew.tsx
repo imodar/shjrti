@@ -2542,9 +2542,9 @@ const FamilyBuilderNew = () => {
                              {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                              <div className="grid grid-cols-12 gap-6">
                                <div className="col-span-12 md:col-span-6">
-                                  <Label htmlFor="name" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">👤</span>
-                                    الاسم الكامل *
+                                   <Label htmlFor="name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                     <span className="text-lg">👤</span>
+                                     الاسم الكامل *
                                   </Label>
                                    <Input
                                      id="name"
@@ -2557,9 +2557,9 @@ const FamilyBuilderNew = () => {
                                </div>
                                
                                <div className="col-span-6 md:col-span-3">
-                                  <Label htmlFor="gender" className="font-arabic text-sm font-semibold bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">⚧</span>
-                                    الجنس *
+                                   <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                     <span className="text-lg">⚧</span>
+                                     الجنس *
                                   </Label>
                                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
                                     <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
@@ -2573,9 +2573,9 @@ const FamilyBuilderNew = () => {
                                </div>
                                 
                                <div className="col-span-6 md:col-span-3">
-                                  <Label className="font-arabic text-sm font-semibold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">📅</span>
-                                    تاريخ الميلاد
+                                   <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                     <span className="text-lg">📅</span>
+                                     تاريخ الميلاد
                                   </Label>
                                   <EnhancedDatePicker
                                     value={formData.birthDate}
@@ -2589,9 +2589,9 @@ const FamilyBuilderNew = () => {
                              {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
                              <div className="grid grid-cols-12 gap-6">
                                 <div className="col-span-12 md:col-span-6">
-                                  <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                    <span className="text-lg">👨‍👩‍👧‍👦</span>
-                                    العلاقة العائلية (الوالدين) *
+                                   <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                     <span className="text-lg">👨‍👩‍👧‍👦</span>
+                                     العلاقة العائلية (الوالدين) *
                                     {formData.isFounder && (
                                       <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
                                     )}
@@ -2682,9 +2682,9 @@ const FamilyBuilderNew = () => {
                               </div>
                               
                                <div className="col-span-6 md:col-span-3">
-                                 <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                   <span className="text-lg">💓</span>
-                                   الحالة الحيوية
+                                  <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <span className="text-lg">💓</span>
+                                    الحالة الحيوية
                                  </Label>
                                  <Select 
                                    value={formData.isAlive ? "alive" : "deceased"} 
@@ -2701,9 +2701,9 @@ const FamilyBuilderNew = () => {
                                </div>
 
                                <div className="col-span-6 md:col-span-3">
-                                 <Label className="font-arabic text-sm font-semibold bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                   <span className="text-lg">⚰️</span>
-                                   تاريخ الوفاة
+                                  <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <span className="text-lg">⚰️</span>
+                                    تاريخ الوفاة
                                  </Label>
                                  <EnhancedDatePicker
                                    value={formData.deathDate}
@@ -2716,9 +2716,9 @@ const FamilyBuilderNew = () => {
                              </div>
 
                              <div>
-                               <Label htmlFor="bio" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
-                                 <span className="text-lg">📝</span>
-                                 السيرة الذاتية
+                                <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                  <span className="text-lg">📝</span>
+                                  السيرة الذاتية
                                </Label>
                                <Textarea
                                  id="bio"
