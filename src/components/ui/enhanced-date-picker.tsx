@@ -141,27 +141,29 @@ export function EnhancedDatePicker({
       >
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 flex-1 justify-center">
               <CalendarIcon className="h-5 w-5 text-white" />
               <h4 className="text-white font-semibold text-center">
                 {placeholder}
               </h4>
             </div>
-            <Button
-              onClick={() => setDatePreference(datePreference === 'gregorian' ? 'hijri' : 'gregorian')}
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 p-1 h-6 w-6"
-              title={datePreference === 'gregorian' ? 'تغيير إلى التقويم الهجري' : 'تغيير إلى التقويم الميلادي'}
+            <Select 
+              value={datePreference} 
+              onValueChange={(value: 'gregorian' | 'hijri') => setDatePreference(value)}
             >
-              <CalendarLucide className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="text-center mt-2">
-            <span className="text-amber-100 text-xs">
-              {datePreference === 'gregorian' ? 'ميلادي' : 'هجري'}
-            </span>
+              <SelectTrigger className="w-24 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[100px]">
+                <SelectItem value="gregorian" className="text-right">
+                  ميلادي
+                </SelectItem>
+                <SelectItem value="hijri" className="text-right">
+                  هجري
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           {value && (
             <p className="text-amber-100 text-xs text-center mt-1">
