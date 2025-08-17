@@ -3029,38 +3029,49 @@ const FamilyBuilderNew = () => {
                           </div>
                        )}
 
-                       {/* Navigation Buttons */}
-                       <div className="flex justify-end pt-6">
-                        
-                        {currentStep < 2 ? (
+                        {/* Navigation Buttons */}
+                        <div className="flex justify-between pt-6">
                           <Button
                             type="button"
-                            onClick={nextStep}
+                            variant="outline"
+                            onClick={() => setFormMode('view')}
+                            size="lg"
                             className="flex items-center gap-2"
                           >
-                            التالي
-                            <ArrowRight className="h-4 w-4" />
+                            إلغاء
                           </Button>
-                        ) : (
-                          <Button
-                            type="button"
-                            onClick={() => handleFormSubmit(formData)}
-                            disabled={isSaving}
-                            className="flex items-center gap-2"
-                          >
-                            {isSaving ? (
-                              <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                جاري الحفظ...
-                              </>
-                            ) : (
-                              <>
-                                <Save className="h-4 w-4" />
-                                حفظ
-                              </>
-                            )}
-                          </Button>
-                        )}
+                         
+                         {currentStep < 2 ? (
+                           <Button
+                             type="button"
+                             onClick={nextStep}
+                             size="lg"
+                             className="flex items-center gap-2"
+                           >
+                             التالي
+                             <ArrowLeft className="h-4 w-4" />
+                           </Button>
+                         ) : (
+                           <Button
+                             type="button"
+                             onClick={() => handleFormSubmit(formData)}
+                             disabled={isSaving}
+                             size="lg"
+                             className="flex items-center gap-2"
+                           >
+                             {isSaving ? (
+                               <>
+                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                 جاري الحفظ...
+                               </>
+                             ) : (
+                               <>
+                                 <Save className="h-4 w-4" />
+                                 حفظ
+                               </>
+                             )}
+                           </Button>
+                         )}
                       </div>
                     </div>
                   )}
