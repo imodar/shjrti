@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle } from "lucide-react";
+import { HierarchicalMemberList } from "@/components/HierarchicalMemberList";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -2272,8 +2273,8 @@ const FamilyBuilderNew = () => {
     return `${member.name} (${member.relation} ${relatedPerson.name})`;
   };
 
-  const getGenderColor = (gender: string) => {
-    return gender === "female" ? "text-pink-600" : "text-blue-600";
+  const getGenderColor = (member: any) => {
+    return member.gender === "female" ? "text-pink-600" : "text-blue-600";
   };
 
   if (loading) {
@@ -3090,25 +3091,22 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                        <MemberList 
+                        <HierarchicalMemberList 
                           members={filteredMembers}
-                         onEditMember={handleEditMember}
-                         onViewMember={handleViewMember}
-                          onDeleteMember={handleDeleteMember}
-                           onSpouseEditAttempt={handleSpouseEditWarning}
-                          checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                          familyMembers={familyMembers}
                           searchTerm={searchTerm}
                           onSearchChange={setSearchTerm}
                           selectedFilter={selectedFilter}
                           onFilterChange={setSelectedFilter}
                           getAdditionalInfo={getAdditionalInfo}
-                         getGenderColor={getGenderColor}
-                         familyMembers={familyMembers}
-                         marriages={familyMarriages}
-                         memberListLoading={memberListLoading}
-                         formMode={formMode}
-                         onAddMember={handleAddMember}
-                         packageData={packageData}
+                          getGenderColor={getGenderColor}
+                          memberListLoading={memberListLoading}
+                          formMode={formMode}
+                          onAddMember={handleAddMember}
+                          packageData={packageData}
+                          onMemberClick={handleViewMember}
+                          onEditMember={handleEditMember}
+                          onDeleteMember={handleDeleteMember}
                         />
                     </div>
                   </DrawerContent>
@@ -3125,26 +3123,23 @@ const FamilyBuilderNew = () => {
                      </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                      <MemberList 
+                      <HierarchicalMemberList 
                         members={filteredMembers}
-                         onEditMember={handleEditMember}
-                         onViewMember={handleViewMember}
-                        onDeleteMember={handleDeleteMember}
-                        onSpouseEditAttempt={handleSpouseEditWarning}
-                        checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                        familyMembers={familyMembers}
                         searchTerm={searchTerm}
                         onSearchChange={setSearchTerm}
                         selectedFilter={selectedFilter}
                         onFilterChange={setSelectedFilter}
                         getAdditionalInfo={getAdditionalInfo}
-                       getGenderColor={getGenderColor}
-                       familyMembers={familyMembers}
-                       marriages={familyMarriages}
-                       memberListLoading={memberListLoading}
-                       formMode={formMode}
-                       onAddMember={handleAddMember}
-                       packageData={packageData}
-                     />
+                        getGenderColor={getGenderColor}
+                        memberListLoading={memberListLoading}
+                        formMode={formMode}
+                        onAddMember={handleAddMember}
+                        packageData={packageData}
+                        onMemberClick={handleViewMember}
+                        onEditMember={handleEditMember}
+                        onDeleteMember={handleDeleteMember}
+                      />
                   </CardContent>
                 </Card>
               )}
@@ -3529,7 +3524,7 @@ const MemberList = ({
                   <div className="flex items-start gap-3 flex-1">
                     <Avatar className="h-12 w-12 flex-shrink-0">
                       <AvatarImage src={member.image} />
-                      <AvatarFallback className={getGenderColor(member.gender)}>
+                      <AvatarFallback className={getGenderColor(member)}>
                         {member.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
