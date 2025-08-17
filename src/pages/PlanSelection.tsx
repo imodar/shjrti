@@ -337,11 +337,12 @@ const PlanSelection = () => {
 
         if (error) throw error;
 
+        const packageName = getLocalizedValue(selectedPackage.name);
         toast({
           title: currentLanguage === 'ar' ? "تم بنجاح" : "Success",
           description: currentLanguage === 'ar' 
-            ? "تم تفعيل الخطة المجانية بنجاح" 
-            : "Free plan activated successfully",
+            ? `تم تفعيل باقة "${packageName}" بنجاح` 
+            : `"${packageName}" plan activated successfully`,
         });
 
         await refreshSubscription();
@@ -380,10 +381,10 @@ const PlanSelection = () => {
 
     const packagePrice = getPackagePrice(pkg);
     if (packagePrice === 0) {
-      return currentLanguage === 'ar' ? "ابدأ مجاناً" : "Start Free";
+      return currentLanguage === 'ar' ? "ادفع واشترك الآن" : "Pay and Subscribe Now";
     }
 
-    return currentLanguage === 'ar' ? "اختيار الخطة" : "Select Plan";
+    return currentLanguage === 'ar' ? "ادفع واشترك الآن" : "Pay and Subscribe Now";
   };
 
   const isButtonDisabled = (pkg: Package): boolean => {
