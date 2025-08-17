@@ -3479,17 +3479,38 @@ const MemberList = ({
 
       {/* Add Member Button */}
       {formMode === 'view' && (
-        <Button 
-          onClick={onAddMember} 
-          disabled={packageData && familyMembers.length >= packageData.max_family_members}
-          className="w-full flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          {packageData && familyMembers.length >= packageData.max_family_members 
-            ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
-            : 'إضافة عضو جديد'
-          }
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={onAddMember} 
+                disabled={packageData && familyMembers.length >= packageData.max_family_members}
+                className="w-full flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                {packageData && familyMembers.length >= packageData.max_family_members 
+                  ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
+                  : 'إضافة عضو جديد'
+                }
+              </Button>
+            </TooltipTrigger>
+            {packageData && familyMembers.length >= packageData.max_family_members && (
+              <TooltipContent className="max-w-xs">
+                <div className="text-center">
+                  <p className="font-semibold text-destructive mb-1">
+                    🚫 تم الوصول للحد الأقصى
+                  </p>
+                  <p className="text-sm">
+                    باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
+                  </p>
+                  <p className="text-xs mt-2 text-muted-foreground">
+                    قم بترقية باقتك لإضافة المزيد من الأعضاء
+                  </p>
+                </div>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       )}
 
       {/* Member List */}
