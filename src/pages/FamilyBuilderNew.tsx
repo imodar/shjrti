@@ -2336,7 +2336,7 @@ const FamilyBuilderNew = () => {
                   
                   <div className="text-center">
                     <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-relaxed">
                         {t('family_builder.family', 'عائلة')} {familyData?.name || t('family_builder.unspecified', 'غير محدد')}
                       </span>
                     </h1>
