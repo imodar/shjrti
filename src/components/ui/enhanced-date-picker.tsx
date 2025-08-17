@@ -12,6 +12,50 @@ import {
 } from "@/components/ui/popover";
 import { useDatePreference } from "@/contexts/DatePreferenceContext";
 
+// Hijri calendar conversion utilities
+const HIJRI_MONTHS = [
+  'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
+  'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+];
+
+const HIJRI_DAYS = [
+  'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'
+];
+
+// Enhanced Hijri conversion function
+const toHijri = (gregorianDate: Date) => {
+  const greg = new Date(gregorianDate);
+  const julianDay = Math.floor((greg.getTime() / 86400000) + 2440587.5);
+  
+  // Accurate Hijri conversion algorithm
+  const a = julianDay - 1948440.5;
+  const b = Math.floor((a * 30) / 10631);
+  const c = a - Math.floor((b * 10631) / 30);
+  const d = Math.floor((c * 11) / 325);
+  const e = c - Math.floor((d * 325) / 11);
+  const f = Math.floor(e / 30);
+  
+  const hijriYear = Math.floor(b) + 1;
+  const hijriMonth = Math.floor(d) + Math.floor(f) + 1;
+  const hijriDay = Math.floor(e - (f * 30)) + 1;
+  
+  // Adjust for valid ranges
+  const finalMonth = ((hijriMonth - 1) % 12) + 1;
+  const finalYear = hijriYear + Math.floor((hijriMonth - 1) / 12);
+  
+  return {
+    day: Math.max(1, Math.min(30, hijriDay)),
+    month: Math.max(1, Math.min(12, finalMonth)),
+    year: Math.max(1, finalYear)
+  };
+};
+
+const formatHijriDate = (date: Date) => {
+  const hijri = toHijri(date);
+  const monthName = HIJRI_MONTHS[hijri.month - 1];
+  return `${hijri.day} ${monthName} ${hijri.year} هـ`;
+};
+
 interface EnhancedDatePickerProps {
   value?: Date;
   onChange?: (date: Date | undefined) => void;
@@ -55,7 +99,9 @@ export function EnhancedDatePicker({
             className
           )}
         >
-          <span className="text-sm mr-2">{value ? formatDate(value) : placeholder}</span>
+          <span className="text-sm mr-2">
+            {value ? (datePreference === 'hijri' ? formatHijriDate(value) : format(value, "dd/MM/yyyy", { locale: ar })) : placeholder}
+          </span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
         </Button>
       </PopoverTrigger>
@@ -93,7 +139,7 @@ export function EnhancedDatePicker({
           </div>
           {value && (
             <p className="text-amber-100 text-xs text-center mt-1">
-              {formatDate(value)}
+              {datePreference === 'hijri' ? formatHijriDate(value) : format(value, "EEEE، dd MMMM yyyy", { locale: ar })}
             </p>
           )}
         </div>
