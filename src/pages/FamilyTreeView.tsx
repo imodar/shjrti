@@ -14,6 +14,7 @@ import {
   Maximize, 
   TreePine, 
   Heart,
+  HeartCrack,
   Star,
   Sparkles,
   Crown,
@@ -339,19 +340,6 @@ const FamilyTreeView = () => {
             <div className="flex items-center justify-center gap-4 mb-2">
               <div className="text-center">
                 <Avatar className="h-12 w-12 mx-auto mb-1">
-                  {husband.image_url ? (
-                    <AvatarImage src={husband.image_url} alt={husband.name} />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-blue-600/20">
-                      {husband.name.slice(0, 2)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <p className="text-sm font-medium">{husband.name}</p>
-              </div>
-              <Heart className="h-6 w-6 text-pink-500 mx-2" />
-              <div className="text-center">
-                <Avatar className="h-12 w-12 mx-auto mb-1">
                   {wife.image_url ? (
                     <AvatarImage src={wife.image_url} alt={wife.name} />
                   ) : (
@@ -361,6 +349,23 @@ const FamilyTreeView = () => {
                   )}
                 </Avatar>
                 <p className="text-sm font-medium">{wife.name}</p>
+              </div>
+              {(husband.marital_status === 'divorced' || wife.marital_status === 'divorced') ? (
+                <HeartCrack className="h-6 w-6 text-gray-500 mx-2" />
+              ) : (
+                <Heart className="h-6 w-6 text-pink-500 mx-2" />
+              )}
+              <div className="text-center">
+                <Avatar className="h-12 w-12 mx-auto mb-1">
+                  {husband.image_url ? (
+                    <AvatarImage src={husband.image_url} alt={husband.name} />
+                  ) : (
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-blue-600/20">
+                      {husband.name.slice(0, 2)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <p className="text-sm font-medium">{husband.name}</p>
               </div>
             </div>
             <Badge variant="outline" className="text-xs">

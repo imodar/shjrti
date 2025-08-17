@@ -94,27 +94,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           <Card className="p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-emerald-300 dark:border-emerald-600 shadow-xl min-w-[280px]">
             <div className="flex items-center justify-center gap-6">
               <div className="text-center">
-                <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-blue-300">
-                  {husband.image_url ? (
-                    <AvatarImage src={husband.image_url} alt={husband.name} />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500/30 to-blue-600/30 text-blue-800 font-bold">
-                      {husband.name.slice(0, 2)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{husband.name}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">الزوج</p>
-              </div>
-              
-              {/* Show broken heart if either spouse is divorced */}
-              {(husband.marital_status === 'divorced' || wife.marital_status === 'divorced') ? (
-                <HeartCrack className="h-8 w-8 text-gray-500 animate-pulse" />
-              ) : (
-                <Heart className="h-8 w-8 text-pink-500 animate-pulse" />
-              )}
-              
-              <div className="text-center">
                 <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-pink-300">
                   {wife.image_url ? (
                     <AvatarImage src={wife.image_url} alt={wife.name} />
@@ -126,6 +105,27 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 </Avatar>
                 <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{wife.name}</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">الزوجة</p>
+              </div>
+              
+              {/* Show broken heart if either spouse is divorced */}
+              {(husband.marital_status === 'divorced' || wife.marital_status === 'divorced') ? (
+                <HeartCrack className="h-8 w-8 text-gray-500 animate-pulse" />
+              ) : (
+                <Heart className="h-8 w-8 text-pink-500 animate-pulse" />
+              )}
+              
+              <div className="text-center">
+                <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-blue-300">
+                  {husband.image_url ? (
+                    <AvatarImage src={husband.image_url} alt={husband.name} />
+                  ) : (
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500/30 to-blue-600/30 text-blue-800 font-bold">
+                      {husband.name.slice(0, 2)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{husband.name}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">الزوج</p>
               </div>
             </div>
             
