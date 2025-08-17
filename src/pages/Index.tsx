@@ -128,7 +128,8 @@ const Home2 = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 ${currentLanguage === 'en' ? 'font-poppins' : ''}`}>
+    <>
+      <div className={`min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 ${currentLanguage === 'en' ? 'font-poppins' : ''}`}>
       <GlobalHeader />
 
       {/* Hero Section with Animated Elements */}
@@ -587,9 +588,10 @@ const Home2 = () => {
           </div>
         </div>
       </section>
-
-      <GlobalFooter />
     </div>
+    
+    <GlobalFooter />
+    </>
   );
 };
 
