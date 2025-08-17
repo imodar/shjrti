@@ -3051,27 +3051,39 @@ const FamilyBuilderNew = () => {
                              التالي
                              <ArrowLeft className="h-4 w-4" />
                            </Button>
-                         ) : (
-                           <Button
-                             type="button"
-                             onClick={() => handleFormSubmit(formData)}
-                             disabled={isSaving}
-                             size="lg"
-                             className="flex items-center gap-2"
-                           >
-                             {isSaving ? (
-                               <>
-                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                 جاري الحفظ...
-                               </>
-                             ) : (
-                               <>
-                                 <Save className="h-4 w-4" />
-                                 حفظ
-                               </>
-                             )}
-                           </Button>
-                         )}
+                          ) : (
+                            <div className="flex items-center gap-3">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={prevStep}
+                                size="lg"
+                                className="flex items-center gap-2"
+                              >
+                                <ArrowRight className="h-4 w-4" />
+                                العودة
+                              </Button>
+                              <Button
+                                type="button"
+                                onClick={() => handleFormSubmit(formData)}
+                                disabled={isSaving}
+                                size="lg"
+                                className="flex items-center gap-2"
+                              >
+                                {isSaving ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    جاري الحفظ...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Save className="h-4 w-4" />
+                                    حفظ
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          )}
                       </div>
                     </div>
                   )}
