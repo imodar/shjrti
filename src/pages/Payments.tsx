@@ -290,159 +290,6 @@ export default function Payments() {
     return packages.findIndex(p => p.id === planId);
   };
 
-  const handlePlanSelect = async (planId: string) => {
-    if (planId === currentPlan || !user) return;
-    
-    setSelectedPlan(planId);
-    setProcessingInvoice(true);
-
-    try {
-      // Get the selected package details
-      const selectedPackage = packages.find(p => p.id === planId);
-      if (!selectedPackage) {
-        throw new Error('Selected package not found');
-      }
-
-      // إظهار رسالة تذكيرية للمستخدم
-      toast({
-        title: "ملاحظة مهمة",
-        description: "ستبقى على باقتك الحالية حتى يتم تسديد قيمة الباقة الجديدة بنجاح",
-        duration: 4000,
-      });
-
-      // Calculate amount based on package price_sar
-      const amount = selectedPackage.price_sar || 0;
-      const currency = 'SAR';
-
-      console.log('🔍 Package details:', {
-        packageId: planId,
-        amount: amount,
-        currency: currency,
-        packageName: selectedPackage.name
-      });
-
-      // Create invoice for user subscription (no family needed)
-      const { data: invoiceId, error: invoiceError } = await supabase.rpc('create_invoice', {
-        p_user_id: user.id,
-        p_package_id: planId,
-        p_amount: amount,
-        p_currency: currency
-        // p_family_id is optional and defaults to null
-      });
-
-      if (invoiceError) {
-        console.error('Error creating invoice:', invoiceError);
-        throw new Error('Failed to create invoice');
-      }
-
-      // If it's a free plan, complete the upgrade immediately
-      if (amount === 0) {
-        const { data: success, error: upgradeError } = await supabase.rpc('complete_payment_and_upgrade', {
-          p_invoice_id: invoiceId,
-          p_stripe_payment_intent_id: null
-        });
-
-        if (upgradeError || !success) {
-          throw new Error('Failed to complete free plan upgrade');
-        }
-
-        // Reload subscription data and invoices
-        await loadUserSubscription();
-        
-        // إلغاء الفواتير المعلقة القديمة بعد تفعيل الباقة المجانية
-        await cancelOldPendingInvoices();
-        
-        await loadInvoices();
-        
-        toast({
-          title: "🎉 تم تفعيل الخطة المجانية",
-          description: `تم ترقية اشتراكك إلى ${getLocalizedPackageField(selectedPackage, 'name') || selectedPackage.name} بنجاح.`,
-          duration: 5000,
-        });
-      } else {
-        // For paid plans, process Stripe payment
-        setProcessingPayment(planId);
-        
-        try {
-          console.log('🚀 Creating payment session with data:', {
-            packageId: planId,
-            amount: amount,
-            currency: currency,
-            userId: user.id
-          });
-
-          const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment', {
-            body: {
-              packageId: planId,
-              amount: amount,
-              currency: currency
-            }
-          });
-
-          console.log('📊 Payment response:', { paymentData, paymentError });
-
-          if (paymentError) {
-            console.error('Payment Error Details:', paymentError);
-            throw new Error(paymentError.message || 'فشل في إنشاء جلسة الدفع');
-          }
-
-          if (paymentData?.url) {
-            // إلغاء الفواتير المعلقة القديمة بعد إنشاء فاتورة جديدة
-            await cancelOldPendingInvoices();
-            
-            // Open Stripe checkout in a new tab
-            window.open(paymentData.url, '_blank');
-            
-            // إعادة تحميل الفواتير لإظهار التحديثات
-            await loadInvoices();
-            
-            toast({
-              title: "تم توجيهك للدفع",
-              description: "سيتم فتح صفحة الدفع في نافذة جديدة. ستبقى على باقتك الحالية حتى اكتمال الدفع.",
-              duration: 5000,
-            });
-          } else {
-            throw new Error('لم يتم الحصول على رابط الدفع من النظام');
-          }
-        } catch (paymentError) {
-          console.error('Payment error:', paymentError);
-          
-          // معالجة أخطاء مختلفة
-          let errorMessage = "فشل في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى.";
-          
-          if (paymentError.message) {
-            if (paymentError.message.includes('Stripe')) {
-              errorMessage = "خطأ في نظام الدفع. يرجى التحقق من بياناتك والمحاولة مرة أخرى.";
-            } else if (paymentError.message.includes('authentication')) {
-              errorMessage = "خطأ في التحقق من الهوية. يرجى تسجيل الدخول مرة أخرى.";
-            } else if (paymentError.message.includes('invoice')) {
-              errorMessage = "خطأ في إنشاء الفاتورة. يرجى المحاولة مرة أخرى.";
-            } else {
-              errorMessage = paymentError.message;
-            }
-          }
-          
-          toast({
-            title: "فشل في إنشاء الجلسة",
-            description: errorMessage + " ستبقى على باقتك الحالية.",
-            variant: "destructive",
-            duration: 6000,
-          });
-        } finally {
-          setProcessingPayment(null);
-        }
-      }
-    } catch (error) {
-      console.error('Error processing plan selection:', error);
-      toast({
-        title: "خطأ",
-        description: "فشل في معالجة اختيار الخطة. يرجى المحاولة مرة أخرى.",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessingInvoice(false);
-      setSelectedPlan(null);
-    }
   // النسخة الجديدة المحدثة من handlePlanSelect مع usePackageTransition
   const handlePlanSelect = async (planId: string) => {
     if (!user) {
@@ -1595,13 +1442,12 @@ export default function Payments() {
         </Dialog>
       </div>
       
-      <GlobalFooter />
-      <Toaster />
           </div>
         </div>
       </div>
+      
+      <GlobalFooter />
+      <Toaster />
     </div>
   );
 }
-
-export default Payments;
