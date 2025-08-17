@@ -1,7 +1,7 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Calendar as CalendarLucide } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDatePreference } from "@/contexts/DatePreferenceContext";
 
 interface EnhancedDatePickerProps {
   value?: Date;
@@ -33,6 +34,7 @@ export function EnhancedDatePicker({
   disableFuture = true,
 }: EnhancedDatePickerProps) {
   const [open, setOpen] = React.useState(false);
+  const { datePreference, setDatePreference, formatDate } = useDatePreference();
 
   const handleSelect = (date: Date | undefined) => {
     onChange?.(date);
@@ -53,7 +55,7 @@ export function EnhancedDatePicker({
             className
           )}
         >
-          <span className="text-sm mr-2">{value ? format(value, "dd/MM/yyyy", { locale: ar }) : placeholder}</span>
+          <span className="text-sm mr-2">{value ? formatDate(value) : placeholder}</span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
         </Button>
       </PopoverTrigger>
@@ -67,15 +69,31 @@ export function EnhancedDatePicker({
       >
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
-          <div className="flex items-center justify-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-white" />
-            <h4 className="text-white font-semibold text-center">
-              {placeholder}
-            </h4>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 flex-1 justify-center">
+              <CalendarIcon className="h-5 w-5 text-white" />
+              <h4 className="text-white font-semibold text-center">
+                {placeholder}
+              </h4>
+            </div>
+            <Button
+              onClick={() => setDatePreference(datePreference === 'gregorian' ? 'hijri' : 'gregorian')}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 p-1 h-6 w-6"
+              title={datePreference === 'gregorian' ? 'تغيير إلى التقويم الهجري' : 'تغيير إلى التقويم الميلادي'}
+            >
+              <CalendarLucide className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="text-center mt-2">
+            <span className="text-amber-100 text-xs">
+              {datePreference === 'gregorian' ? 'ميلادي' : 'هجري'}
+            </span>
           </div>
           {value && (
-            <p className="text-amber-100 text-xs text-center mt-2">
-              {format(value, "EEEE، dd MMMM yyyy", { locale: ar })}
+            <p className="text-amber-100 text-xs text-center mt-1">
+              {formatDate(value)}
             </p>
           )}
         </div>
