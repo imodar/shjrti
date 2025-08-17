@@ -116,12 +116,37 @@ export default function Payments() {
     }
   };
 
+  // Cancel old pending invoices
+  const cancelOldPendingInvoices = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('cancel-pending-invoices');
+      
+      if (error) {
+        console.error('Error cancelling old pending invoices:', error);
+      } else if (data?.cancelledCount > 0) {
+        toast({
+          title: "تم إلغاء الفواتير القديمة",
+          description: data.message,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error('Error cancelling old pending invoices:', error);
+    }
+  };
+
   // Load user's invoices
   const loadInvoices = async () => {
     if (!user) return;
     
     try {
       setInvoicesLoading(true);
+      
+      // إلغاء الفواتير المعلقة القديمة أولاً
+      await cancelOldPendingInvoices();
+      
       const { data, error } = await supabase
         .from('invoices')
         .select(`
@@ -267,8 +292,14 @@ export default function Payments() {
           }
 
           if (paymentData?.url) {
+            // إلغاء الفواتير المعلقة القديمة بعد إنشاء فاتورة جديدة
+            await cancelOldPendingInvoices();
+            
             // Open Stripe checkout in a new tab
             window.open(paymentData.url, '_blank');
+            
+            // إعادة تحميل الفواتير لإظهار التحديثات
+            await loadInvoices();
             
             toast({
               title: "تم توجيهك للدفع",
@@ -952,7 +983,43 @@ export default function Payments() {
                 ) : (
                   <div className="space-y-4">
                     {invoices.map((invoice: any) => (
-                      <div key={invoice.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                      <div 
+                        key={invoice.id} 
+                        className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors ${
+                          invoice.payment_status === 'pending' 
+                            ? 'hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer border-yellow-200 dark:border-yellow-700' 
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                        }`}
+                        onClick={async () => {
+                          if (invoice.payment_status === 'pending') {
+                            // إذا كانت الفاتورة في انتظار الدفع، توجيه للدفع
+                            try {
+                              const { data, error } = await supabase.functions.invoke('create-payment', {
+                                body: { 
+                                  packageId: invoice.package_id,
+                                  amount: invoice.amount,
+                                  currency: invoice.currency,
+                                  invoiceId: invoice.id
+                                }
+                              });
+
+                              if (error) throw error;
+
+                              if (data.url) {
+                                // فتح صفحة الدفع في تبويب جديد
+                                window.open(data.url, '_blank');
+                              }
+                            } catch (error) {
+                              console.error('Error redirecting to payment:', error);
+                              toast({
+                                title: "خطأ في عملية الدفع",
+                                description: "حدث خطأ أثناء توجيهك لصفحة الدفع. يرجى المحاولة مرة أخرى.",
+                                variant: "destructive",
+                              });
+                            }
+                          }
+                        }}
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -960,6 +1027,11 @@ export default function Payments() {
                                 {invoice.invoice_number}
                               </span>
                               {getInvoiceStatusBadge(invoice.payment_status)}
+                              {invoice.payment_status === 'pending' && (
+                                <span className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                                  اضغط للدفع
+                                </span>
+                              )}
                             </div>
                             <div className="text-sm text-muted-foreground space-y-1">
                               <p>الخطة: {getLocalizedPackageField(invoice.packages, 'name') || 'غير محدد'}</p>
@@ -977,10 +1049,18 @@ export default function Payments() {
                               {formatPrice(invoice.amount)}
                             </p>
                             <p className="text-sm text-muted-foreground">{invoice.currency}</p>
-                            <Button variant="outline" size="sm" className="mt-2">
-                              <Download className="h-4 w-4 mr-1" />
-                              تحميل
-                            </Button>
+                            <div className="flex gap-2 mt-2">
+                              <Button variant="outline" size="sm">
+                                <Download className="h-4 w-4 mr-1" />
+                                تحميل
+                              </Button>
+                              {invoice.payment_status === 'pending' && (
+                                <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white">
+                                  <CreditCard className="h-4 w-4 mr-1" />
+                                  ادفع الآن
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -54,7 +54,7 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
     // Get request body
-    const { packageId, amount, currency = "SAR" } = await req.json();
+    const { packageId, amount, currency = "SAR", invoiceId } = await req.json();
     if (!packageId || !amount) throw new Error("Package ID and amount are required");
 
     // Initialize Stripe
@@ -69,15 +69,36 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create invoice in Supabase first
-    const { data: invoiceData, error: invoiceError } = await supabaseClient.rpc('create_invoice', {
-      p_user_id: user.id,
-      p_package_id: packageId,
-      p_amount: amount,
-      p_currency: currency
-    });
+    let finalInvoiceId;
 
-    if (invoiceError) throw new Error(`Failed to create invoice: ${invoiceError.message}`);
+    // If invoiceId is provided, use existing invoice, otherwise create new one
+    if (invoiceId) {
+      // Verify the invoice belongs to the user
+      const { data: existingInvoice, error: fetchError } = await supabaseClient
+        .from('invoices')
+        .select('*')
+        .eq('id', invoiceId)
+        .eq('user_id', user.id)
+        .eq('payment_status', 'pending')
+        .single();
+
+      if (fetchError || !existingInvoice) {
+        throw new Error("Invoice not found or not accessible");
+      }
+      
+      finalInvoiceId = invoiceId;
+    } else {
+      // Create new invoice in Supabase
+      const { data: invoiceData, error: invoiceError } = await supabaseClient.rpc('create_invoice', {
+        p_user_id: user.id,
+        p_package_id: packageId,
+        p_amount: amount,
+        p_currency: currency
+      });
+
+      if (invoiceError) throw new Error(`Failed to create invoice: ${invoiceError.message}`);
+      finalInvoiceId = invoiceData;
+    }
 
     // Create a one-time payment session
     const session = await stripe.checkout.sessions.create({
@@ -97,10 +118,10 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/payment-success?invoice_id=${invoiceData}`,
+      success_url: `${req.headers.get("origin")}/payment-success?invoice_id=${finalInvoiceId}`,
       cancel_url: `${req.headers.get("origin")}/payments`,
       metadata: {
-        invoice_id: invoiceData,
+        invoice_id: finalInvoiceId,
         user_id: user.id,
         package_id: packageId
       }
@@ -108,7 +129,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       url: session.url,
-      invoice_id: invoiceData,
+      invoice_id: finalInvoiceId,
       session_id: session.id
     }), {
       headers: { ...secureHeaders, "Content-Type": "application/json" },
