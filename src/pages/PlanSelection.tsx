@@ -402,6 +402,24 @@ const PlanSelection = () => {
       </div>
       
       <div className="container mx-auto px-6 py-16 max-w-6xl relative z-10">
+        {/* Big Back Button */}
+        <div className="mb-8">
+          <Button
+            onClick={() => window.history.back()}
+            variant="outline"
+            size="lg"
+            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-emerald-200/30 dark:border-emerald-700/30 hover:bg-white/90 dark:hover:bg-gray-800/90 shadow-lg hover:shadow-xl transition-all duration-300 group"
+          >
+            {direction === 'rtl' ? (
+              <ChevronRight className="h-5 w-5 mr-2 group-hover:translate-x-1 transition-transform duration-200" />
+            ) : (
+              <ArrowLeft className="h-5 w-5 ml-2 group-hover:-translate-x-1 transition-transform duration-200" />
+            )}
+            <span className="font-medium">
+              {currentLanguage === 'ar' ? 'رجوع' : 'Back'}
+            </span>
+          </Button>
+        </div>
         {/* Header section matching dashboard style */}
         <div className="text-center mb-16 fade-in">
           <div className="flex flex-col items-center gap-8">
