@@ -3449,7 +3449,7 @@ const FamilyBuilderNew = () => {
             <div className="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30">
               <Crown className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
-            <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-100 text-center">
               تطوير الباقة مطلوب
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-400 mt-2">
