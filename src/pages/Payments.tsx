@@ -1136,13 +1136,13 @@ export default function Payments() {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
-      
-      <GlobalFooter />
-      <Toaster />
           </div>
         </div>
+        
+        <GlobalFooter />
       </div>
+      
+      <Toaster />
     </div>
   );
 }
