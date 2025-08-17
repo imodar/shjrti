@@ -2701,19 +2701,20 @@ const FamilyBuilderNew = () => {
                                  </Select>
                                </div>
 
-                               <div className="col-span-6 md:col-span-3">
-                                  <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                    <Skull className="h-4 w-4 text-primary" />
-                                    تاريخ الوفاة
-                                 </Label>
-                                 <EnhancedDatePicker
-                                   value={formData.deathDate}
-                                   onChange={(date) => setFormData({...formData, deathDate: date})}
-                                   placeholder="اختر تاريخ الوفاة"
-                                   disabled={formData.isAlive}
-                                   className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                 />
-                               </div>
+                                {!formData.isAlive && (
+                                  <div className="col-span-6 md:col-span-3">
+                                     <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                       <Skull className="h-4 w-4 text-primary" />
+                                       تاريخ الوفاة
+                                    </Label>
+                                    <EnhancedDatePicker
+                                      value={formData.deathDate}
+                                      onChange={(date) => setFormData({...formData, deathDate: date})}
+                                      placeholder="اختر تاريخ الوفاة"
+                                      className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                    />
+                                  </div>
+                                )}
                              </div>
 
                              <div>
