@@ -1041,11 +1041,8 @@ export default function Payments() {
                               <p>الخطة: {getLocalizedPackageField(invoice.packages, 'name') || 'غير محدد'}</p>
                               <p className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
-                                تاريخ الإنشاء: {new Date(invoice.created_at).toLocaleDateString('ar-SA')}
+                                تاريخ الفاتورة: {new Date(invoice.created_at).toLocaleDateString('en-GB')}
                               </p>
-                              {invoice.due_date && (
-                                <p>تاريخ الاستحقاق: {new Date(invoice.due_date).toLocaleDateString('ar-SA')}</p>
-                              )}
                             </div>
                           </div>
                           <div className="text-right">
