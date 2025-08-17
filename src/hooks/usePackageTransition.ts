@@ -282,6 +282,7 @@ export function usePackageTransition() {
   return {
     analyzePackageTransition,
     processPackageTransition,
+    saveScheduledDowngrade,
     loading
   };
 }

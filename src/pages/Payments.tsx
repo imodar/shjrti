@@ -17,11 +17,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { DateDisplay } from "@/components/DateDisplay";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { usePackageTransition } from "@/hooks/usePackageTransition";
 
 export default function Payments() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { currentLanguage, formatPrice } = useLanguage();
+  const { refreshSubscription } = useSubscription();
+  const { processPackageTransition, loading: transitionLoading } = usePackageTransition();
   const navigate = useNavigate();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +43,26 @@ export default function Payments() {
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
   const [processingInvoice, setProcessingInvoice] = useState(false);
   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
+  const [packageWarning, setPackageWarning] = useState<string>("");
+  const [scheduledDowngrade, setScheduledDowngrade] = useState<any>(null);
+
+  // Function to get localized value
+  const getLocalizedValue = (value: string | object): string => {
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed[currentLanguage] || parsed['en'] || value;
+      } catch {
+        return value;
+      }
+    }
+    
+    if (typeof value === 'object' && value !== null) {
+      return (value as any)[currentLanguage] || (value as any)['en'] || '';
+    }
+    
+    return String(value || '');
+  };
 
   // Helper function to get localized package field
   const getLocalizedPackageField = (pkg: any, field: string, fallbackLang = 'en') => {
@@ -205,10 +230,40 @@ export default function Payments() {
     }
   };
 
+  // Function to load scheduled downgrades
+  const loadScheduledDowngrade = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_package_changes')
+        .select(`
+          *,
+          current_package:packages!scheduled_package_changes_current_package_id_fkey(name),
+          target_package:packages!scheduled_package_changes_target_package_id_fkey(name)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading scheduled downgrade:', error);
+        return;
+      }
+
+      setScheduledDowngrade(data);
+    } catch (error) {
+      console.error('Error in loadScheduledDowngrade:', error);
+    }
+  };
+
   useEffect(() => {
     loadPackages();
     loadUserSubscription();
     loadInvoices();
+    if (user) {
+      loadScheduledDowngrade();
+    }
   }, [user, currentLanguage]);
 
   const handleDeletePaymentMethod = (id: number) => {
@@ -835,6 +890,31 @@ export default function Payments() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative overflow-hidden py-12">
+                {/* شريط التحذير للتغيير المجدول */}
+                {scheduledDowngrade && (
+                  <div className="mb-8 mx-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-lg">
+                    <div className="flex items-start gap-3">
+                      <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                          {currentLanguage === 'ar' ? 'تغيير مجدول للباقة' : 'Scheduled Package Change'}
+                        </h4>
+                        <p className="text-amber-700 dark:text-amber-300 text-sm leading-relaxed">
+                          {currentLanguage === 'ar' 
+                            ? `قمت بجدولة تنزيل باقتك من "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" إلى "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". سيتم تطبيق هذا التغيير في تاريخ ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('ar-SA')} وسيتم إرسال فاتورة إليك عند الاستحقاق.`
+                            : `You have scheduled a downgrade from "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" to "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". This change will be applied on ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-US')} and you will be billed accordingly.`
+                          }
+                        </p>
+                        <div className="mt-3 flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+                            {currentLanguage === 'ar' ? 'ستستمر في الاستفادة من باقتك الحالية حتى التاريخ المحدد' : 'You will continue to enjoy your current plan until the scheduled date'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {/* Animated background elements */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-2xl animate-pulse"></div>
