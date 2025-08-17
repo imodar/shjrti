@@ -118,9 +118,9 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
         )}>
           {selectedOption ? (
             selectedOption.familyMember ? (
-              <div className="grid grid-cols-3 items-center w-full text-sm">
+              <div className="grid items-center w-full text-sm" style={{gridTemplateColumns: '1fr auto 1fr'}}>
                 <span className="text-right truncate">{selectedOption.spouse || 'غير محدد'}</span>
-                <span className="flex justify-center">
+                <span className="flex justify-center px-1">
                   {selectedOption.heartIcon === 'heart-crack' ? (
                     <HeartCrack className="h-3 w-3 text-muted-foreground" />
                   ) : (
@@ -188,9 +188,9 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                       )}
                     >
                       {option.familyMember ? (
-                        <div className="grid grid-cols-3 items-center w-full">
+                        <div className="grid items-center w-full" style={{gridTemplateColumns: '1fr auto 1fr'}}>
                           <span className="text-right truncate">{option.spouse || 'غير محدد'}</span>
-                          <span className="flex justify-center">
+                          <span className="flex justify-center px-1">
                             {option.heartIcon === 'heart-crack' ? (
                               <HeartCrack className="h-4 w-4 text-muted-foreground" />
                             ) : (
