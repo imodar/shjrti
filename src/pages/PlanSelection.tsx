@@ -416,7 +416,7 @@ const PlanSelection = () => {
         </Button>
       </div>
       
-      <div className="container mx-auto px-6 py-16 max-w-6xl relative z-10">
+      <div className="container mx-auto px-6 pt-8 pb-16 max-w-6xl relative z-10">
         {/* Header section matching dashboard style */}
         <div className="text-center mb-16 fade-in">
           <div className="flex flex-col items-center gap-8">
