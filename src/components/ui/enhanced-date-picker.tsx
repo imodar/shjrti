@@ -218,41 +218,38 @@ export function EnhancedDatePicker({
             {/* Hijri Calendar Grid */}
             <div className="space-y-4">
               {/* Header with Month/Year Navigation */}
-              <div className="flex items-center justify-between bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-amber-200/50 dark:border-amber-700/50">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const newMonth = currentHijri.month === 1 ? 12 : currentHijri.month - 1;
-                    const newYear = currentHijri.month === 1 ? currentHijri.year - 1 : currentHijri.year;
-                    handleHijriDateChange(newYear, newMonth, Math.min(currentHijri.day, 30));
-                  }}
-                  className="text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+              <div className="flex items-center justify-center gap-2 bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-amber-200/50 dark:border-amber-700/50">
+                <Select 
+                  value={currentHijri.month.toString()} 
+                  onValueChange={(value) => handleHijriDateChange(currentHijri.year, parseInt(value), Math.min(currentHijri.day, 30))}
                 >
-                  ←
-                </Button>
-                
-                <div className="text-center">
-                  <div className="font-semibold text-amber-700 dark:text-amber-300">
-                    {HIJRI_MONTHS[currentHijri.month - 1]}
-                  </div>
-                  <div className="text-sm text-amber-600 dark:text-amber-400">
-                    {currentHijri.year} هـ
-                  </div>
-                </div>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const newMonth = currentHijri.month === 12 ? 1 : currentHijri.month + 1;
-                    const newYear = currentHijri.month === 12 ? currentHijri.year + 1 : currentHijri.year;
-                    handleHijriDateChange(newYear, newMonth, Math.min(currentHijri.day, 30));
-                  }}
-                  className="text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                  <SelectTrigger className="w-32 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 focus:ring-amber-500 text-sm pointer-events-auto">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 z-[10060] pointer-events-auto">
+                    {HIJRI_MONTHS.map((month, index) => (
+                      <SelectItem key={index + 1} value={(index + 1).toString()} className="text-right cursor-pointer">
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select 
+                  value={currentHijri.year.toString()} 
+                  onValueChange={(value) => handleHijriDateChange(parseInt(value), currentHijri.month, currentHijri.day)}
                 >
-                  →
-                </Button>
+                  <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 focus:ring-amber-500 text-sm pointer-events-auto">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 z-[10060] pointer-events-auto max-h-48">
+                    {hijriYears.map(year => (
+                      <SelectItem key={year} value={year.toString()} className="text-right cursor-pointer">
+                        {year} هـ
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Days of Week Header */}
