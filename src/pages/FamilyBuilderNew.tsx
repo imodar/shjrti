@@ -2435,7 +2435,7 @@ const FamilyBuilderNew = () => {
         {/* Header Section */}
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-6">
+                <div className="container mx-auto px-4 pt-2 pb-6">
           <div className={cn(
             "grid gap-6",
             isMobile ? "grid-cols-1" : "grid-cols-12"
