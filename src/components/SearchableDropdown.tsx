@@ -118,16 +118,14 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
         )}>
           {selectedOption ? (
             selectedOption.familyMember ? (
-              <div className="grid items-center w-full text-sm" style={{gridTemplateColumns: '1fr auto 1fr'}}>
-                <span className="text-right truncate">{selectedOption.spouse || 'غير محدد'}</span>
-                <span className="flex justify-center px-1">
-                  {selectedOption.heartIcon === 'heart-crack' ? (
-                    <HeartCrack className="h-3 w-3 text-muted-foreground" />
-                  ) : (
-                    <Heart className="h-3 w-3 text-pink-500" />
-                  )}
-                </span>
-                <span className="text-right truncate">{selectedOption.familyMember}</span>
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <span className="truncate">{selectedOption.familyMember}</span>
+                {selectedOption.heartIcon === 'heart-crack' ? (
+                  <HeartCrack className="h-3 w-3 text-muted-foreground" />
+                ) : (
+                  <Heart className="h-3 w-3 text-pink-500" />
+                )}
+                <span className="truncate">{selectedOption.spouse || 'غير محدد'}</span>
               </div>
             ) : (
               selectedOption.label
@@ -188,16 +186,14 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                       )}
                     >
                       {option.familyMember ? (
-                        <div className="grid items-center w-full" style={{gridTemplateColumns: '1fr auto 1fr'}}>
-                          <span className="text-right truncate">{option.spouse || 'غير محدد'}</span>
-                          <span className="flex justify-center px-1">
-                            {option.heartIcon === 'heart-crack' ? (
-                              <HeartCrack className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <Heart className="h-4 w-4 text-pink-500" />
-                            )}
-                          </span>
-                          <span className="text-right truncate">{option.familyMember}</span>
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="truncate">{option.familyMember}</span>
+                          {option.heartIcon === 'heart-crack' ? (
+                            <HeartCrack className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Heart className="h-4 w-4 text-pink-500" />
+                          )}
+                          <span className="truncate">{option.spouse || 'غير محدد'}</span>
                         </div>
                       ) : (
                         <div className="flex items-center justify-end gap-2 w-full">
