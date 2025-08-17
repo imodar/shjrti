@@ -3475,7 +3475,7 @@ const FamilyBuilderNew = () => {
             </p>
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
             <Button 
               variant="outline" 
               onClick={() => setShowUpgradeModal(false)}
