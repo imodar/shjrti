@@ -443,6 +443,205 @@ export default function Payments() {
       setProcessingInvoice(false);
       setSelectedPlan(null);
     }
+  // النسخة الجديدة المحدثة من handlePlanSelect مع usePackageTransition
+  const handlePlanSelect = async (planId: string) => {
+    if (!user) {
+      toast({
+        title: currentLanguage === 'ar' ? "تسجيل الدخول مطلوب" : "Login Required",
+        description: currentLanguage === 'ar' 
+          ? "يجب تسجيل الدخول أولاً لاختيار باقة" 
+          : "Please login first to select a plan",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedPackage = packages.find(pkg => pkg.id === planId);
+    if (!selectedPackage) {
+      toast({
+        title: currentLanguage === 'ar' ? "خطأ" : "Error",
+        description: currentLanguage === 'ar' 
+          ? "الباقة المحددة غير موجودة" 
+          : "Selected package not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Convert current plan to subscription format for transition analysis
+    const currentSubscription = currentPlan ? {
+      id: 'current',
+      package_id: currentPlan,
+      status: 'active',
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // افتراض سنة من الآن
+    } : null;
+
+    console.log('🔍 Plan transition analysis:', {
+      selectedPackage: selectedPackage.name,
+      currentPlan,
+      currentSubscription,
+      packageId: planId
+    });
+
+    // تحليل عملية التنقل بين الباقات
+    const transitionResult = await processPackageTransition(selectedPackage, currentSubscription, packages);
+    
+    console.log('🔍 Transition result:', transitionResult);
+    
+    if (!transitionResult.canProceed) {
+      if (transitionResult.action === 'block_downgrade') {
+        setPackageWarning(transitionResult.message);
+        toast({
+          title: currentLanguage === 'ar' ? "تنبيه" : "Warning",
+          description: transitionResult.message + (transitionResult.requirements ? '\n' + transitionResult.requirements.join('\n') : ''),
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      toast({
+        title: currentLanguage === 'ar' ? "تنبيه" : "Notice",
+        description: transitionResult.message,
+        variant: "default",
+      });
+      return;
+    }
+
+    // عرض رسالة التنبيه للمستخدم
+    if (transitionResult.message) {
+      toast({
+        title: currentLanguage === 'ar' ? "تنبيه مهم" : "Important Notice",
+        description: transitionResult.message,
+        variant: "default",
+      });
+    }
+
+    // التعامل مع التنزيل المجدول
+    if (transitionResult.action === 'schedule_downgrade') {
+      console.log('✅ Scheduling downgrade, refreshing data...');
+      // تحديث حالة التغيير المجدول
+      setTimeout(async () => {
+        await loadScheduledDowngrade();
+        console.log('✅ Scheduled downgrade data refreshed');
+      }, 1000);
+      
+      toast({
+        title: currentLanguage === 'ar' ? "تم الجدولة" : "Scheduled",
+        description: currentLanguage === 'ar' 
+          ? "تم جدولة تغيير الباقة بنجاح. ستبقى على باقتك الحالية حتى التاريخ المحدد." 
+          : "Package change has been scheduled successfully. You will stay on your current plan until the scheduled date.",
+      });
+      return;
+    }
+
+    // Continue with payment process for upgrades
+    setSelectedPlan(planId);
+    setProcessingInvoice(true);
+
+    try {
+      // Calculate amount based on package price_sar
+      const amount = selectedPackage.price_sar || 0;
+      const currency = 'SAR';
+
+      console.log('🔍 Package details for payment:', {
+        packageId: planId,
+        amount: amount,
+        currency: currency,
+        packageName: selectedPackage.name
+      });
+
+      // Create invoice for user subscription (no family needed)
+      const { data: invoiceId, error: invoiceError } = await supabase.rpc('create_invoice', {
+        p_user_id: user.id,
+        p_package_id: planId,
+        p_amount: amount,
+        p_currency: currency
+        // p_family_id is optional and defaults to null
+      });
+
+      if (invoiceError) {
+        console.error('Error creating invoice:', invoiceError);
+        throw new Error('Failed to create invoice');
+      }
+
+      console.log('✅ Invoice created successfully:', invoiceId);
+
+      // For free plans, complete immediately
+      if (amount === 0) {
+        const { data: success, error: upgradeError } = await supabase.rpc('complete_payment_and_upgrade', {
+          p_invoice_id: invoiceId
+        });
+
+        if (upgradeError) {
+          console.error('Error completing free upgrade:', upgradeError);
+          throw new Error('Failed to complete free upgrade');
+        }
+
+        toast({
+          title: "تم تفعيل الخطة المجانية",
+          description: "تم تفعيل الخطة المجانية بنجاح",
+        });
+
+        // Reload data
+        loadUserSubscription();
+        loadInvoices();
+        return;
+      }
+
+      // Create payment session for paid plans
+      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment', {
+        body: {
+          packageId: planId,
+          amount: amount,
+          currency: currency,
+          invoiceId: invoiceId
+        }
+      });
+
+      if (paymentError) {
+        console.error('Payment session error:', paymentError);
+        throw new Error(`Payment session failed: ${paymentError.message}`);
+      }
+
+      if (!paymentData?.url) {
+        throw new Error('No payment URL received');
+      }
+
+      console.log('✅ Payment session created:', paymentData.url);
+
+      // Open payment in new tab
+      window.open(paymentData.url, '_blank');
+
+      toast({
+        title: "تم إنشاء جلسة الدفع",
+        description: "تم توجيهك لصفحة الدفع في نافذة جديدة",
+      });
+
+      // Reload invoices
+      loadInvoices();
+
+    } catch (error: any) {
+      console.error('Error in handlePlanSelect:', error);
+      
+      let errorMessage = "فشل في إنشاء جلسة الدفع";
+      
+      if (error?.message?.includes('STRIPE_SECRET_KEY')) {
+        errorMessage = "خطأ في إعداد نظام الدفع";
+      } else if (error?.message?.includes('Invoice')) {
+        errorMessage = "فشل في إنشاء الفاتورة";
+      } else if (error?.message?.includes('Payment')) {
+        errorMessage = "فشل في إنشاء جلسة الدفع";
+      }
+
+      toast({
+        title: "خطأ في الدفع",
+        description: `${errorMessage}. تفاصيل الخطأ: ${error?.message || 'Unknown error'}`,
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingInvoice(false);
+      setSelectedPlan(null);
+    }
   };
 
   const handlePaymentMethodChoice = (type: 'credit-card' | 'paypal') => {
@@ -1404,3 +1603,5 @@ export default function Payments() {
     </div>
   );
 }
+
+export default Payments;
