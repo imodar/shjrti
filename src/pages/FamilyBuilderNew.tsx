@@ -2536,68 +2536,78 @@ const FamilyBuilderNew = () => {
 
                       {/* Step Content */}
                       {currentStep === 1 && (
-                         <div className="space-y-6">
-                           <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
-                            
-                            {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
-                            <div className="grid grid-cols-12 gap-6">
-                              <div className="col-span-12 md:col-span-6">
-                                 <Label htmlFor="name" className="font-arabic text-sm font-semibold text-foreground mb-2 block">الاسم الكامل *</Label>
-                                  <Input
-                                    id="name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    placeholder="أدخل الاسم الكامل"
-                                    className="font-arabic border-2 border-border focus:border-primary transition-colors duration-200"
-                                    required
-                                  />
-                              </div>
-                              
-                              <div className="col-span-6 md:col-span-3">
-                                 <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-2 block">الجنس *</Label>
-                                 <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
-                                   <SelectTrigger className="font-arabic border-2 border-border focus:border-primary transition-colors duration-200">
-                                     <SelectValue placeholder="اختر الجنس" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     <SelectItem value="male" className="font-arabic">ذكر</SelectItem>
-                                     <SelectItem value="female" className="font-arabic">أنثى</SelectItem>
-                                   </SelectContent>
-                                 </Select>
-                              </div>
-                               
-                              <div className="col-span-6 md:col-span-3">
-                                 <Label className="font-arabic text-sm font-semibold text-foreground mb-2 block">تاريخ الميلاد</Label>
-                                 <EnhancedDatePicker
-                                   value={formData.birthDate}
-                                   onChange={(date) => setFormData({...formData, birthDate: date})}
-                                   placeholder="اختر تاريخ الميلاد"
-                                   className="font-arabic border-2 border-border focus:border-primary transition-colors duration-200"
-                                 />
-                              </div>
-                            </div>
-                            
-                            {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
-                            <div className="grid grid-cols-12 gap-6">
+                           <div className="space-y-6">
+                            <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
+                             
+                             {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
+                             <div className="grid grid-cols-12 gap-6">
                                <div className="col-span-12 md:col-span-6">
-                                 <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-2 block">
-                                   العلاقة العائلية (الوالدين) *
-                                   {formData.isFounder && (
-                                     <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
-                                   )}
-                                 </Label>
-                                  <Select 
-                                    value={formData.selectedParent || ""} 
-                                    onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
-                                    disabled={loading || !familyMarriages || !familyMembers || formData.isFounder}
-                                   >
-                                    <SelectTrigger className="font-arabic border-2 border-border focus:border-primary transition-colors duration-200">
-                                       <SelectValue placeholder={
-                                         loading ? "جاري التحميل..." : 
-                                         formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : 
-                                         "اختر الوالدين"
-                                       } />
+                                  <Label htmlFor="name" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                    <span className="text-lg">👤</span>
+                                    الاسم الكامل *
+                                  </Label>
+                                   <Input
+                                     id="name"
+                                     value={formData.name}
+                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                     placeholder="أدخل الاسم الكامل"
+                                     className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                     required
+                                   />
+                               </div>
+                               
+                               <div className="col-span-6 md:col-span-3">
+                                  <Label htmlFor="gender" className="font-arabic text-sm font-semibold bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                    <span className="text-lg">⚧</span>
+                                    الجنس *
+                                  </Label>
+                                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                                    <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                      <SelectValue placeholder="اختر الجنس" />
                                     </SelectTrigger>
+                                    <SelectContent className="rounded-lg border-2">
+                                      <SelectItem value="male" className="font-arabic rounded-md">ذكر</SelectItem>
+                                      <SelectItem value="female" className="font-arabic rounded-md">أنثى</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                               </div>
+                                
+                               <div className="col-span-6 md:col-span-3">
+                                  <Label className="font-arabic text-sm font-semibold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                    <span className="text-lg">📅</span>
+                                    تاريخ الميلاد
+                                  </Label>
+                                  <EnhancedDatePicker
+                                    value={formData.birthDate}
+                                    onChange={(date) => setFormData({...formData, birthDate: date})}
+                                    placeholder="اختر تاريخ الميلاد"
+                                    className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                  />
+                               </div>
+                             </div>
+                             
+                             {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
+                             <div className="grid grid-cols-12 gap-6">
+                                <div className="col-span-12 md:col-span-6">
+                                  <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                    <span className="text-lg">👨‍👩‍👧‍👦</span>
+                                    العلاقة العائلية (الوالدين) *
+                                    {formData.isFounder && (
+                                      <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
+                                    )}
+                                  </Label>
+                                   <Select 
+                                     value={formData.selectedParent || ""} 
+                                     onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
+                                     disabled={loading || !familyMarriages || !familyMembers || formData.isFounder}
+                                    >
+                                     <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                        <SelectValue placeholder={
+                                          loading ? "جاري التحميل..." : 
+                                          formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : 
+                                          "اختر الوالدين"
+                                        } />
+                                     </SelectTrigger>
                                    <SelectContent>
                                      {loading || !familyMarriages || !familyMembers ? (
                                        <SelectItem value="loading" disabled>جاري تحميل البيانات...</SelectItem>
@@ -2671,45 +2681,54 @@ const FamilyBuilderNew = () => {
                                  </Select>
                               </div>
                               
-                              <div className="col-span-6 md:col-span-3">
-                                <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-2 block">الحالة الحيوية</Label>
-                                <Select 
-                                  value={formData.isAlive ? "alive" : "deceased"} 
-                                  onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
-                                >
-                                  <SelectTrigger className="border-2 border-border focus:border-primary transition-colors duration-200">
-                                    <SelectValue placeholder="اختر الحالة الحيوية" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="alive">على قيد الحياة</SelectItem>
-                                    <SelectItem value="deceased">متوفى</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                               <div className="col-span-6 md:col-span-3">
+                                 <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                   <span className="text-lg">💓</span>
+                                   الحالة الحيوية
+                                 </Label>
+                                 <Select 
+                                   value={formData.isAlive ? "alive" : "deceased"} 
+                                   onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
+                                 >
+                                   <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                     <SelectValue placeholder="اختر الحالة الحيوية" />
+                                   </SelectTrigger>
+                                   <SelectContent className="rounded-lg border-2">
+                                     <SelectItem value="alive" className="font-arabic rounded-md">على قيد الحياة</SelectItem>
+                                     <SelectItem value="deceased" className="font-arabic rounded-md">متوفى</SelectItem>
+                                   </SelectContent>
+                                 </Select>
+                               </div>
 
-                              <div className="col-span-6 md:col-span-3">
-                                <Label className="font-arabic text-sm font-semibold text-foreground mb-2 block">تاريخ الوفاة</Label>
-                                <EnhancedDatePicker
-                                  value={formData.deathDate}
-                                  onChange={(date) => setFormData({...formData, deathDate: date})}
-                                  placeholder="اختر تاريخ الوفاة"
-                                  disabled={formData.isAlive}
-                                  className="border-2 border-border focus:border-primary transition-colors duration-200"
-                                />
-                              </div>
-                            </div>
-
-                            <div>
-                              <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-2 block">السيرة الذاتية</Label>
-                              <Textarea
-                                id="bio"
-                                value={formData.bio}
-                                onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                placeholder="أدخل معلومات إضافية عن العضو"
-                                rows={3}
-                                className="font-arabic border-2 border-border focus:border-primary transition-colors duration-200"
-                              />
+                               <div className="col-span-6 md:col-span-3">
+                                 <Label className="font-arabic text-sm font-semibold bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                   <span className="text-lg">⚰️</span>
+                                   تاريخ الوفاة
+                                 </Label>
+                                 <EnhancedDatePicker
+                                   value={formData.deathDate}
+                                   onChange={(date) => setFormData({...formData, deathDate: date})}
+                                   placeholder="اختر تاريخ الوفاة"
+                                   disabled={formData.isAlive}
+                                   className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                 />
+                               </div>
                              </div>
+
+                             <div>
+                               <Label htmlFor="bio" className="font-arabic text-sm font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-3 block flex items-center gap-2">
+                                 <span className="text-lg">📝</span>
+                                 السيرة الذاتية
+                               </Label>
+                               <Textarea
+                                 id="bio"
+                                 value={formData.bio}
+                                 onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                 placeholder="أدخل معلومات إضافية عن العضو"
+                                 rows={3}
+                                 className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none"
+                               />
+                              </div>
 
                              {/* Image Upload Section */}
                              {(formMode === 'add' || formMode === 'edit') && (
