@@ -215,84 +215,100 @@ export function EnhancedDatePicker({
               </h5>
             </div>
             
-            {/* Hijri Year Selector */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                السنة الهجرية
-              </label>
-              <Select 
-                value={currentHijri.year.toString()} 
-                onValueChange={(value) => handleHijriDateChange(parseInt(value), currentHijri.month, currentHijri.day)}
-              >
-                <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 border-amber-200 dark:border-amber-700 focus:ring-amber-500">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-48 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700">
-                  {hijriYears.map(year => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year} هـ
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Hijri Calendar Grid */}
+            <div className="space-y-4">
+              {/* Header with Month/Year Navigation */}
+              <div className="flex items-center justify-between bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-amber-200/50 dark:border-amber-700/50">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const newMonth = currentHijri.month === 1 ? 12 : currentHijri.month - 1;
+                    const newYear = currentHijri.month === 1 ? currentHijri.year - 1 : currentHijri.year;
+                    handleHijriDateChange(newYear, newMonth, Math.min(currentHijri.day, 30));
+                  }}
+                  className="text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                >
+                  ←
+                </Button>
+                
+                <div className="text-center">
+                  <div className="font-semibold text-amber-700 dark:text-amber-300">
+                    {HIJRI_MONTHS[currentHijri.month - 1]}
+                  </div>
+                  <div className="text-sm text-amber-600 dark:text-amber-400">
+                    {currentHijri.year} هـ
+                  </div>
+                </div>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const newMonth = currentHijri.month === 12 ? 1 : currentHijri.month + 1;
+                    const newYear = currentHijri.month === 12 ? currentHijri.year + 1 : currentHijri.year;
+                    handleHijriDateChange(newYear, newMonth, Math.min(currentHijri.day, 30));
+                  }}
+                  className="text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                >
+                  →
+                </Button>
+              </div>
 
-            {/* Hijri Month Selector */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                الشهر الهجري
-              </label>
-              <Select 
-                value={currentHijri.month.toString()} 
-                onValueChange={(value) => handleHijriDateChange(currentHijri.year, parseInt(value), currentHijri.day)}
-              >
-                <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 border-amber-200 dark:border-amber-700 focus:ring-amber-500">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-48 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700">
-                  {HIJRI_MONTHS.map((month, index) => (
-                    <SelectItem key={index + 1} value={(index + 1).toString()}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Days of Week Header */}
+              <div className="grid grid-cols-7 gap-1 text-center">
+                {HIJRI_DAYS.map((day, index) => (
+                  <div key={index} className="text-xs font-medium text-amber-600 dark:text-amber-400 py-2">
+                    {day.slice(0, 3)}
+                  </div>
+                ))}
+              </div>
 
-            {/* Hijri Day Selector */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                اليوم
-              </label>
-              <Select 
-                value={currentHijri.day.toString()} 
-                onValueChange={(value) => handleHijriDateChange(currentHijri.year, currentHijri.month, parseInt(value))}
-              >
-                <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 border-amber-200 dark:border-amber-700 focus:ring-amber-500">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-48 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700">
-                  {hijriDays.map(day => (
-                    <SelectItem key={day} value={day.toString()}>
+              {/* Calendar Days Grid */}
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: 30 }, (_, i) => {
+                  const day = i + 1;
+                  const isSelected = day === currentHijri.day;
+                  const isToday = (() => {
+                    const today = new Date();
+                    const todayHijri = toHijri(today);
+                    return day === todayHijri.day && 
+                           currentHijri.month === todayHijri.month && 
+                           currentHijri.year === todayHijri.year;
+                  })();
+                  
+                  return (
+                    <Button
+                      key={day}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleHijriDateChange(currentHijri.year, currentHijri.month, day)}
+                      className={cn(
+                        "h-8 w-8 p-0 text-sm font-medium rounded-lg transition-all duration-200",
+                        isSelected && "bg-amber-500 text-white hover:bg-amber-600 shadow-lg",
+                        !isSelected && isToday && "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold ring-2 ring-amber-300 dark:ring-amber-600",
+                        !isSelected && !isToday && "hover:bg-amber-100 dark:hover:bg-amber-900/30 text-gray-700 dark:text-gray-300"
+                      )}
+                    >
                       {day}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                    </Button>
+                  );
+                })}
+              </div>
 
-            {/* Current Selection Display */}
-            <div className="mt-4 p-3 bg-amber-100/50 dark:bg-amber-900/30 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
-              <div className="text-center">
-                <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
-                  التاريخ المحدد
-                </p>
-                <p className="text-lg font-bold text-amber-800 dark:text-amber-200 mt-1">
-                  {currentHijri.day} {HIJRI_MONTHS[currentHijri.month - 1]} {currentHijri.year} هـ
-                </p>
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                  {value && format(hijriToGregorian(currentHijri.year, currentHijri.month, currentHijri.day), "dd/MM/yyyy")} (ميلادي)
-                </p>
+              {/* Current Selection Display */}
+              <div className="mt-4 p-3 bg-amber-100/50 dark:bg-amber-900/30 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                    التاريخ المحدد
+                  </p>
+                  <p className="text-lg font-bold text-amber-800 dark:text-amber-200 mt-1">
+                    {currentHijri.day} {HIJRI_MONTHS[currentHijri.month - 1]} {currentHijri.year} هـ
+                  </p>
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                    {value && format(hijriToGregorian(currentHijri.year, currentHijri.month, currentHijri.day), "dd/MM/yyyy")} (ميلادي)
+                  </p>
+                </div>
               </div>
             </div>
           </div>
