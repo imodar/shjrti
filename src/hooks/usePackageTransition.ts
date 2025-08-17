@@ -11,6 +11,7 @@ interface Package {
   price_sar: number;
   max_family_trees: number;
   max_family_members: number;
+  display_order?: number;
 }
 
 interface UserSubscription {
@@ -123,6 +124,28 @@ export function usePackageTransition() {
 
     const currentPrice = getPackagePrice(currentPackage);
     const targetPrice = getPackagePrice(targetPackage);
+    const currentOrder = currentPackage.display_order || 0;
+    const targetOrder = targetPackage.display_order || 0;
+
+    console.log('🔍 Package comparison details:', {
+      currentPackage: {
+        id: currentPackage.id,
+        name: getLocalizedValue(currentPackage.name),
+        price: currentPrice,
+        order: currentOrder
+      },
+      targetPackage: {
+        id: targetPackage.id,
+        name: getLocalizedValue(targetPackage.name),
+        price: targetPrice,
+        order: targetOrder
+      },
+      comparison: {
+        isTargetOrderHigher: targetOrder > currentOrder,
+        isTargetOrderLower: targetOrder < currentOrder,
+        isPriceEqual: targetPrice === currentPrice
+      }
+    });
 
     // نفس الباقة
     if (currentSubscription.package_id === targetPackage.id) {
@@ -135,8 +158,8 @@ export function usePackageTransition() {
       };
     }
 
-    // ترقية
-    if (targetPrice > currentPrice) {
+    // ترقية - باقة أعلى في display_order أو بسعر أعلى
+    if (targetOrder > currentOrder || (targetOrder === currentOrder && targetPrice > currentPrice)) {
       return {
         canProceed: true,
         action: 'upgrade',
@@ -146,8 +169,8 @@ export function usePackageTransition() {
       };
     }
 
-    // تنزيل - نحتاج للتحقق من البيانات الحالية
-    if (targetPrice < currentPrice) {
+    // تنزيل - باقة أقل في display_order أو بسعر أقل
+    if (targetOrder < currentOrder || (targetOrder === currentOrder && targetPrice < currentPrice)) {
       const userStats = await fetchUserStats();
       
       // الحالة 3: التحقق من تجاوز الحدود
