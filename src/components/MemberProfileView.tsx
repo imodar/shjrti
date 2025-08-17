@@ -163,7 +163,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       {/* Header removed */}
 
       {/* Main Content */}
-      <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 max-w-6xl">
+      <div className="container mx-auto px-2 sm:px-4 pt-1 pb-3 sm:pt-2 sm:pb-6 max-w-6xl">
         {/* Hero Section */}
         <div className="relative mb-4 sm:mb-8">
           {/* Cover Ribbon */}
