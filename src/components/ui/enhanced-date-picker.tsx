@@ -10,6 +10,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDatePreference } from "@/contexts/DatePreferenceContext";
 
 // Hijri calendar conversion utilities
@@ -56,6 +63,13 @@ const formatHijriDate = (date: Date) => {
   return `${hijri.day} ${monthName} ${hijri.year} هـ`;
 };
 
+// Convert Hijri date back to Gregorian
+const hijriToGregorian = (hijriYear: number, hijriMonth: number, hijriDay: number) => {
+  const julianDay = Math.floor((hijriYear - 1) * 354.367) + Math.floor((hijriMonth - 1) * 29.53) + hijriDay + 1948440.5;
+  const gregorianDate = new Date((julianDay - 2440587.5) * 86400000);
+  return gregorianDate;
+};
+
 interface EnhancedDatePickerProps {
   value?: Date;
   onChange?: (date: Date | undefined) => void;
@@ -78,14 +92,26 @@ export function EnhancedDatePicker({
   disableFuture = true,
 }: EnhancedDatePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const { datePreference, setDatePreference, formatDate } = useDatePreference();
+  const { datePreference, setDatePreference } = useDatePreference();
+  const [hijriDate, setHijriDate] = React.useState(() => value ? toHijri(value) : null);
 
   const handleSelect = (date: Date | undefined) => {
     onChange?.(date);
     if (date) {
-      setOpen(false); // Close widget when date is selected
+      setHijriDate(toHijri(date));
+      setOpen(false);
     }
   };
+
+  const handleHijriDateChange = (year: number, month: number, day: number) => {
+    const gregorianDate = hijriToGregorian(year, month, day);
+    setHijriDate({ year, month, day });
+    onChange?.(gregorianDate);
+  };
+
+  const currentHijri = hijriDate || (value ? toHijri(value) : { year: 1445, month: 1, day: 1 });
+  const hijriYears = Array.from({ length: 100 }, (_, i) => 1400 + i);
+  const hijriDays = Array.from({ length: 30 }, (_, i) => i + 1);
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
@@ -144,39 +170,131 @@ export function EnhancedDatePicker({
           )}
         </div>
         
-        <div className="[&_.rdp-vhidden]:hidden">
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={handleSelect}
-            locale={ar}
-            initialFocus
-            className="rounded-md pointer-events-auto p-2 sm:p-4 touch-manipulation"
-            disabled={disableFuture ? (date) => date > new Date() : undefined}
-            captionLayout="dropdown-buttons"
-            fromYear={fromYear}
-            toYear={toYear}
-            classNames={{
-              months: "flex flex-col space-y-4",
-              month: "space-y-4",
-              caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
-              caption_dropdowns: "flex justify-center gap-2 sm:gap-3 flex-wrap",
-              dropdown: "px-2 sm:px-3 py-2 text-xs sm:text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[90px] sm:min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 cursor-pointer touch-manipulation appearance-none [&>option]:text-right [&>option]:cursor-pointer [&>option]:bg-white [&>option]:dark:bg-gray-800",
-              caption_label: "hidden",
-              nav: "hidden",
-              table: "w-full border-collapse space-y-1 mt-4",
-              head_row: "flex",
-              head_cell: "text-amber-600 dark:text-amber-400 rounded-md w-10 font-semibold text-xs text-center py-2",
-              row: "flex w-full mt-2",
-              cell: "h-10 w-10 text-center text-sm p-0 relative",
-              day: "h-10 w-10 p-0 font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-all duration-200 hover:scale-105",
-              day_selected: "bg-amber-500 text-white hover:bg-amber-600 shadow-lg transform scale-105",
-              day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold ring-2 ring-amber-300 dark:ring-amber-600",
-              day_outside: "text-gray-400 opacity-50",
-              day_disabled: "text-gray-300 opacity-30 cursor-not-allowed",
-            }}
-          />
-        </div>
+        
+        {datePreference === 'gregorian' ? (
+          <div className="[&_.rdp-vhidden]:hidden">
+            <Calendar
+              mode="single"
+              selected={value}
+              onSelect={handleSelect}
+              locale={ar}
+              initialFocus
+              className="rounded-md pointer-events-auto p-2 sm:p-4 touch-manipulation"
+              disabled={disableFuture ? (date) => date > new Date() : undefined}
+              captionLayout="dropdown-buttons"
+              fromYear={fromYear}
+              toYear={toYear}
+              classNames={{
+                months: "flex flex-col space-y-4",
+                month: "space-y-4",
+                caption: "flex justify-center pt-2 pb-4 relative items-center gap-2",
+                caption_dropdowns: "flex justify-center gap-2 sm:gap-3 flex-wrap",
+                dropdown: "px-2 sm:px-3 py-2 text-xs sm:text-sm border border-amber-200 dark:border-amber-700 rounded-lg bg-white dark:bg-gray-800 min-w-[90px] sm:min-w-[120px] font-medium text-amber-700 dark:text-amber-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 cursor-pointer touch-manipulation appearance-none [&>option]:text-right [&>option]:cursor-pointer [&>option]:bg-white [&>option]:dark:bg-gray-800",
+                caption_label: "hidden",
+                nav: "hidden",
+                table: "w-full border-collapse space-y-1 mt-4",
+                head_row: "flex",
+                head_cell: "text-amber-600 dark:text-amber-400 rounded-md w-10 font-semibold text-xs text-center py-2",
+                row: "flex w-full mt-2",
+                cell: "h-10 w-10 text-center text-sm p-0 relative",
+                day: "h-10 w-10 p-0 font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-all duration-200 hover:scale-105",
+                day_selected: "bg-amber-500 text-white hover:bg-amber-600 shadow-lg transform scale-105",
+                day_today: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold ring-2 ring-amber-300 dark:ring-amber-600",
+                day_outside: "text-gray-400 opacity-50",
+                day_disabled: "text-gray-300 opacity-30 cursor-not-allowed",
+              }}
+            />
+          </div>
+        ) : (
+          <div className="p-4 space-y-4 bg-gradient-to-b from-amber-50/30 to-orange-50/30 dark:from-amber-950/30 dark:to-orange-950/30">
+            <div className="text-center">
+              <h5 className="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-3">
+                التقويم الهجري
+              </h5>
+            </div>
+            
+            {/* Hijri Year Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                السنة الهجرية
+              </label>
+              <Select 
+                value={currentHijri.year.toString()} 
+                onValueChange={(value) => handleHijriDateChange(parseInt(value), currentHijri.month, currentHijri.day)}
+              >
+                <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 border-amber-200 dark:border-amber-700 focus:ring-amber-500">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-48 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700">
+                  {hijriYears.map(year => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year} هـ
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Hijri Month Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                الشهر الهجري
+              </label>
+              <Select 
+                value={currentHijri.month.toString()} 
+                onValueChange={(value) => handleHijriDateChange(currentHijri.year, parseInt(value), currentHijri.day)}
+              >
+                <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 border-amber-200 dark:border-amber-700 focus:ring-amber-500">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-48 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700">
+                  {HIJRI_MONTHS.map((month, index) => (
+                    <SelectItem key={index + 1} value={(index + 1).toString()}>
+                      {month}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Hijri Day Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                اليوم
+              </label>
+              <Select 
+                value={currentHijri.day.toString()} 
+                onValueChange={(value) => handleHijriDateChange(currentHijri.year, currentHijri.month, parseInt(value))}
+              >
+                <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 border-amber-200 dark:border-amber-700 focus:ring-amber-500">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-48 bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700">
+                  {hijriDays.map(day => (
+                    <SelectItem key={day} value={day.toString()}>
+                      {day}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Current Selection Display */}
+            <div className="mt-4 p-3 bg-amber-100/50 dark:bg-amber-900/30 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
+              <div className="text-center">
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                  التاريخ المحدد
+                </p>
+                <p className="text-lg font-bold text-amber-800 dark:text-amber-200 mt-1">
+                  {currentHijri.day} {HIJRI_MONTHS[currentHijri.month - 1]} {currentHijri.year} هـ
+                </p>
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                  {value && format(hijriToGregorian(currentHijri.year, currentHijri.month, currentHijri.day), "dd/MM/yyyy")} (ميلادي)
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Footer with close button */}
         <div className="p-3 border-t border-amber-200/50 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-950/50">
