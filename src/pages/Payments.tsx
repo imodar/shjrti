@@ -498,12 +498,17 @@ export default function Payments() {
                            currentPlan ? 'نشط' : 'مجاني'}
                         </span>
                       </div>
-                      {currentFamily?.subscription_end_date && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">تاريخ الانتهاء</span>
-                          <span>{new Date(currentFamily.subscription_end_date).toLocaleDateString('ar-SA')}</span>
-                        </div>
-                      )}
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">تاريخ التجديد</span>
+                        <span className="font-medium">
+                          {currentPlan && currentFamily?.subscription_end_date ? 
+                            new Date(currentFamily.subscription_end_date).toLocaleDateString('en-GB') :
+                            currentPlan ? 
+                              'غير محدد' : 
+                              <span className="text-emerald-600 font-bold">مجاناً للأبد</span>
+                          }
+                        </span>
+                      </div>
                     </div>
                   </>
                 )}
