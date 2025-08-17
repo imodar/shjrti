@@ -117,6 +117,18 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const getChildren = () => {
     return familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
   };
+
+  const getGrandchildren = () => {
+    const children = getChildren();
+    let grandchildren = [];
+    
+    children.forEach(child => {
+      const childGrandchildren = familyMembers.filter(m => m.fatherId === child.id || m.motherId === child.id);
+      grandchildren.push(...childGrandchildren);
+    });
+    
+    return grandchildren;
+  };
   
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
@@ -141,6 +153,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const mother = getMother();
   const spouses = getSpouses();
   const children = getChildren();
+  const grandchildren = getGrandchildren();
 
   const tabItems = [
     { id: 'overview', label: 'نظرة عامة', icon: User },
@@ -214,8 +227,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="text-sm text-muted-foreground">الأطفال</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-secondary">{spouses.length}</div>
+                        <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
                         <div className="text-sm text-muted-foreground">الأزواج</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
+                        <div className="text-sm text-muted-foreground">الأحفاد</div>
                       </div>
                       {getAge() && (
                         <div className="text-center">
@@ -476,6 +493,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">الأزواج</span>
                   <span className="font-semibold">{spouses.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">الأحفاد</span>
+                  <span className="font-semibold">{grandchildren.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">الجيل</span>
