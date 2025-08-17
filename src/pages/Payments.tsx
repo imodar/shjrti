@@ -116,15 +116,15 @@ export default function Payments() {
     }
   };
 
-  // Cancel old pending invoices
+  // Cancel old invoices with improved logic
   const cancelOldPendingInvoices = async () => {
     if (!user) return;
     
     try {
-      const { data, error } = await supabase.functions.invoke('cancel-pending-invoices');
+      const { data, error } = await supabase.functions.invoke('cleanup-old-invoices');
       
       if (error) {
-        console.error('Error cancelling old pending invoices:', error);
+        console.error('Error cleaning up old invoices:', error);
       } else if (data?.cancelledCount > 0) {
         toast({
           title: "تم إلغاء الفواتير القديمة",
@@ -133,7 +133,7 @@ export default function Payments() {
         });
       }
     } catch (error) {
-      console.error('Error cancelling old pending invoices:', error);
+      console.error('Error cleaning up old invoices:', error);
     }
   };
 
@@ -267,6 +267,10 @@ export default function Payments() {
 
         // Reload subscription data and invoices
         await loadUserSubscription();
+        
+        // إلغاء الفواتير المعلقة القديمة بعد تفعيل الباقة المجانية
+        await cancelOldPendingInvoices();
+        
         await loadInvoices();
         
         toast({

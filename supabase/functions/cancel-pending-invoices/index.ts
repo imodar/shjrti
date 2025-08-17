@@ -31,7 +31,7 @@ serve(async (req) => {
     }
 
     // Cancel old pending invoices when a new one is created or when a newer invoice is paid
-    const { data: invoices, error: fetchError } = await supabaseClient
+    const { data: pendingInvoices, error: fetchError } = await supabaseClient
       .from('invoices')
       .select('*')
       .eq('user_id', user.id)
@@ -42,31 +42,57 @@ serve(async (req) => {
       throw fetchError;
     }
 
-    // If there are multiple pending invoices, cancel all except the most recent one
-    if (invoices && invoices.length > 1) {
-      const invoicesToCancel = invoices.slice(1); // Keep the first (most recent) pending invoice
-      
-      const { error: updateError } = await supabaseClient
-        .from('invoices')
-        .update({ 
-          payment_status: 'cancelled',
-          status: 'cancelled',
-          updated_at: new Date().toISOString()
-        })
-        .in('id', invoicesToCancel.map(inv => inv.id));
+    // Get the latest invoice (regardless of status) to check if we should cancel old pending ones
+    const { data: latestInvoices, error: latestError } = await supabaseClient
+      .from('invoices')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(2);
 
-      if (updateError) {
-        throw updateError;
+    if (latestError) {
+      throw latestError;
+    }
+
+    // If there are pending invoices and there's a newer paid/active invoice, cancel all pending ones
+    if (pendingInvoices && pendingInvoices.length > 0 && latestInvoices && latestInvoices.length > 0) {
+      const latestInvoice = latestInvoices[0];
+      
+      // If the latest invoice is paid/completed, cancel all pending invoices
+      // OR if there are multiple pending invoices, cancel all except the most recent one
+      let invoicesToCancel = [];
+      
+      if (latestInvoice.payment_status === 'paid') {
+        // Cancel all pending invoices if the latest invoice is paid
+        invoicesToCancel = pendingInvoices;
+      } else if (pendingInvoices.length > 1) {
+        // Keep only the most recent pending invoice
+        invoicesToCancel = pendingInvoices.slice(1);
       }
 
-      return new Response(JSON.stringify({ 
-        success: true, 
-        cancelledCount: invoicesToCancel.length,
-        message: `تم إلغاء ${invoicesToCancel.length} فاتورة معلقة قديمة`
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      });
+      if (invoicesToCancel.length > 0) {
+        const { error: updateError } = await supabaseClient
+          .from('invoices')
+          .update({ 
+            payment_status: 'cancelled',
+            status: 'cancelled',
+            updated_at: new Date().toISOString()
+          })
+          .in('id', invoicesToCancel.map(inv => inv.id));
+
+        if (updateError) {
+          throw updateError;
+        }
+
+        return new Response(JSON.stringify({ 
+          success: true, 
+          cancelledCount: invoicesToCancel.length,
+          message: `تم إلغاء ${invoicesToCancel.length} فاتورة معلقة قديمة`
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
     }
 
     return new Response(JSON.stringify({ 
