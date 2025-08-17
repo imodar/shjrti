@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, Crown, Shield, Lock, ArrowLeft, CheckCircle, Users, TreePine, Sparkles, Gem, ChevronRight, ChevronLeft, Zap, Heart, Award, TrendingUp, BarChart3, PieChart, Rocket, Infinity, Target } from "lucide-react";
+import { Star, Crown, Shield, Lock, ArrowLeft, CheckCircle, Users, TreePine, Sparkles, Gem, ChevronRight, ChevronLeft, Zap, Heart, Award, TrendingUp, BarChart3, PieChart, Rocket, Infinity, Target, AlertTriangle } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
+import { usePackageTransition } from "@/hooks/usePackageTransition";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 interface Package {
@@ -48,11 +49,13 @@ const PlanSelection = () => {
   const { user, loading: authLoading } = useAuth();
   const { refreshSubscription } = useSubscription();
   const { toast } = useToast();
+  const { processPackageTransition, loading: transitionLoading } = usePackageTransition();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
   const [userStats, setUserStats] = useState<UserStats>({ familyTreesCount: 0, familyMembersCount: 0 });
+  const [packageWarning, setPackageWarning] = useState<string>("");
 
   useEffect(() => {
     fetchPackages();
@@ -261,12 +264,64 @@ const PlanSelection = () => {
       return;
     }
 
-    // Check if it's a free plan
     const selectedPackage = packages.find(pkg => pkg.id === planId);
-    const packagePrice = selectedPackage ? getPackagePrice(selectedPackage) : 0;
+    if (!selectedPackage) {
+      toast({
+        title: currentLanguage === 'ar' ? "خطأ" : "Error",
+        description: currentLanguage === 'ar' 
+          ? "الباقة المحددة غير موجودة" 
+          : "Selected package not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // تحليل عملية التنقل بين الباقات
+    const transitionResult = await processPackageTransition(selectedPackage, userSubscription, packages);
+    
+    if (!transitionResult.canProceed) {
+      if (transitionResult.action === 'block_downgrade') {
+        setPackageWarning(transitionResult.message);
+        toast({
+          title: currentLanguage === 'ar' ? "تنبيه" : "Warning",
+          description: transitionResult.message + (transitionResult.requirements ? '\n' + transitionResult.requirements.join('\n') : ''),
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      toast({
+        title: currentLanguage === 'ar' ? "تنبيه" : "Notice",
+        description: transitionResult.message,
+        variant: "default",
+      });
+      return;
+    }
+
+    // عرض رسالة التنبيه للمستخدم
+    if (transitionResult.message) {
+      toast({
+        title: currentLanguage === 'ar' ? "تنبيه مهم" : "Important Notice",
+        description: transitionResult.message,
+        variant: "default",
+      });
+    }
+
+    // التعامل مع التنزيل المجدول
+    if (transitionResult.action === 'schedule_downgrade') {
+      toast({
+        title: currentLanguage === 'ar' ? "تم الجدولة" : "Scheduled",
+        description: currentLanguage === 'ar' 
+          ? "تم جدولة تغيير الباقة بنجاح" 
+          : "Package change has been scheduled successfully",
+      });
+      return;
+    }
+
+    // التعامل مع الباقات المجانية
+    const packagePrice = getPackagePrice(selectedPackage);
     
     if (packagePrice === 0) {
-      // For free plans, create a subscription record directly
       try {
         const { error } = await supabase
           .from('user_subscriptions')
@@ -275,22 +330,12 @@ const PlanSelection = () => {
             package_id: planId,
             status: 'active',
             started_at: new Date().toISOString(),
-            expires_at: null // Free plans don't expire
+            expires_at: null
           }, {
             onConflict: 'user_id,status'
           });
 
-        if (error) {
-          console.error('Error creating free subscription:', error);
-          toast({
-            title: currentLanguage === 'ar' ? "خطأ" : "Error",
-            description: currentLanguage === 'ar' 
-              ? "حدث خطأ في تفعيل الخطة المجانية" 
-              : "Error activating free plan",
-            variant: "destructive",
-          });
-          return;
-        }
+        if (error) throw error;
 
         toast({
           title: currentLanguage === 'ar' ? "تم بنجاح" : "Success",
@@ -299,10 +344,7 @@ const PlanSelection = () => {
             : "Free plan activated successfully",
         });
 
-        // Refresh subscription context
         await refreshSubscription();
-        
-        // Redirect to dashboard
         navigate("/dashboard");
         return;
       } catch (error) {
@@ -316,18 +358,6 @@ const PlanSelection = () => {
         });
         return;
       }
-    }
-
-    const isExpired = userSubscription?.expires_at ? new Date(userSubscription.expires_at) < new Date() : true;
-    
-    if (isCurrentPackage(planId) && !isExpired) {
-      toast({
-        title: currentLanguage === 'ar' ? "خطتك الحالية" : "Current Plan",
-        description: currentLanguage === 'ar' 
-          ? "هذه هي خطتك الحالية النشطة" 
-          : "This is your current active plan",
-      });
-      return;
     }
 
     await createInvoiceAndRedirectToPayment(planId);
@@ -452,7 +482,18 @@ const PlanSelection = () => {
             </div>
           </div>
         </div>
-
+          
+          {/* تنبيه تغيير الباقة */}
+          {packageWarning && (
+            <div className="mb-8 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <p className="text-amber-800 dark:text-amber-200 font-medium">
+                  {packageWarning}
+                </p>
+              </div>
+            </div>
+          )}
         {/* Plans grid with smaller, elegant design */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {packages.map((pkg, index) => {

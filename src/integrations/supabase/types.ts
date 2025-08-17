@@ -649,6 +649,8 @@ export type Database = {
           id: string
           last_name: string | null
           phone: string | null
+          theme_mode: string | null
+          theme_variant: string | null
           updated_at: string
           user_id: string | null
         }
@@ -660,6 +662,8 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
+          theme_mode?: string | null
+          theme_variant?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -671,8 +675,43 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
+          theme_mode?: string | null
+          theme_variant?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      scheduled_package_changes: {
+        Row: {
+          created_at: string
+          current_package_id: string
+          id: string
+          scheduled_date: string
+          status: string
+          target_package_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_package_id: string
+          id?: string
+          scheduled_date: string
+          status?: string
+          target_package_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_package_id?: string
+          id?: string
+          scheduled_date?: string
+          status?: string
+          target_package_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

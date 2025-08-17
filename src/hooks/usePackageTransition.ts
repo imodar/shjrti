@@ -97,7 +97,7 @@ export function usePackageTransition() {
   ): Promise<PackageTransitionResult> => {
     
     // الحالة 1: مستخدم بدون اشتراك أو باقة مجانية يترقى
-    if (!currentSubscription || getPackagePrice(currentSubscription.package_id === 'free' ? { price_usd: 0, price_sar: 0 } as any : allPackages.find(p => p.id === currentSubscription.package_id) || { price_usd: 0, price_sar: 0 } as any) === 0) {
+    if (!currentSubscription) {
       if (getPackagePrice(targetPackage) > 0) {
         return {
           canProceed: true,
@@ -162,8 +162,8 @@ export function usePackageTransition() {
           const treesToDelete = userStats.familyTreesCount - targetPackage.max_family_trees;
           requirements.push(
             currentLanguage === 'ar' 
-              ? `يجب حذف ${treesToDelete} شجرة عائلة` 
-              : `Delete ${treesToDelete} family tree(s)`
+              ? `يجب حذف ${treesToDelete} شجرة عائلة (لديك ${userStats.familyTreesCount} والحد الأقصى ${targetPackage.max_family_trees})` 
+              : `Delete ${treesToDelete} family tree(s) (you have ${userStats.familyTreesCount}, limit is ${targetPackage.max_family_trees})`
           );
         }
 
@@ -171,8 +171,8 @@ export function usePackageTransition() {
           const membersToDelete = userStats.familyMembersCount - targetPackage.max_family_members;
           requirements.push(
             currentLanguage === 'ar' 
-              ? `يجب حذف ${membersToDelete} عضو من العائلة` 
-              : `Delete ${membersToDelete} family member(s)`
+              ? `يجب حذف ${membersToDelete} عضو من العائلة (لديك ${userStats.familyMembersCount} والحد الأقصى ${targetPackage.max_family_members})` 
+              : `Delete ${membersToDelete} family member(s) (you have ${userStats.familyMembersCount}, limit is ${targetPackage.max_family_members})`
           );
         }
 
@@ -207,6 +207,33 @@ export function usePackageTransition() {
     };
   };
 
+  const saveScheduledDowngrade = async (
+    targetPackage: Package,
+    currentSubscription: UserSubscription
+  ) => {
+    if (!user || !currentSubscription.expires_at) return;
+
+    try {
+      const { error } = await supabase
+        .from('scheduled_package_changes')
+        .upsert({
+          user_id: user.id,
+          current_package_id: currentSubscription.package_id,
+          target_package_id: targetPackage.id,
+          scheduled_date: currentSubscription.expires_at,
+          status: 'pending'
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) {
+        console.error('Error saving scheduled downgrade:', error);
+      }
+    } catch (error) {
+      console.error('Error in saveScheduledDowngrade:', error);
+    }
+  };
+
   const processPackageTransition = async (
     targetPackage: Package,
     currentSubscription: UserSubscription | null,
@@ -215,6 +242,11 @@ export function usePackageTransition() {
     setLoading(true);
     try {
       const analysis = await analyzePackageTransition(targetPackage, currentSubscription, allPackages);
+      
+      // حفظ التغيير المجدول في قاعدة البيانات
+      if (analysis.action === 'schedule_downgrade' && currentSubscription) {
+        await saveScheduledDowngrade(targetPackage, currentSubscription);
+      }
       
       // عرض التحذير للحالة 4: فشل التجديد
       if (analysis.action === 'upgrade' || analysis.action === 'schedule_downgrade') {
