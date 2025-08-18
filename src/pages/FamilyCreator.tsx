@@ -888,7 +888,7 @@ const FamilyCreator = () => {
                               <UserPlus className="h-5 w-5" />
                               معلومات المؤسس
                             </h3>
-                            <p className="text-sm text-emerald-600 dark:text-emerald-400 text-right">
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 text-right rtl:text-right ltr:text-left">
                               {t('founder_description', 'الشخص الأول الذي ستبدأ منه بناء شجرة العائلة')}
                             </p>
                           </div>
