@@ -270,6 +270,7 @@ const FamilyBuilderNew = () => {
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
+  const autoAdd = searchParams.get('autoAdd') === 'true';
   
   const [activeTab, setActiveTab] = useState("overview");
   const [familyMembers, setFamilyMembers] = useState([]);
@@ -526,6 +527,13 @@ const FamilyBuilderNew = () => {
   useEffect(() => {
     fetchFamilyData();
   }, [toast]);
+
+  // Auto-add member when autoAdd parameter is true and data is loaded
+  useEffect(() => {
+    if (autoAdd && !loading && familyData && formMode === 'view') {
+      handleAddMember();
+    }
+  }, [autoAdd, loading, familyData, formMode]);
 
   // Load spouses when data is updated and there's a member being edited
   useEffect(() => {

@@ -33,6 +33,7 @@ const FamilyCreator = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isCreatingFamily, setIsCreatingFamily] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [showWivesModal, setShowWivesModal] = useState(false);
   const [editingWife, setEditingWife] = useState<{ id: string; first_name: string; last_name: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null; maritalStatus?: string } | null>(null);
@@ -340,6 +341,9 @@ const FamilyCreator = () => {
 
       if (familyError) throw familyError;
 
+      // حفظ معرف العائلة المنشأة
+      setCreatedFamilyId(family.id);
+
       // إضافة المنشئ كعضو في العائلة
       console.log('Inserting family member for family:', family.id, 'user:', user.id);
       const { error: memberError } = await supabase
@@ -508,7 +512,15 @@ const FamilyCreator = () => {
 
   const handleAddMoreMembers = () => {
     setShowSuccessModal(false);
-    navigate("/family-builder?new=true");
+    if (createdFamilyId) {
+      navigate(`/family-builder-new?family=${createdFamilyId}&autoAdd=true`);
+    } else {
+      toast({
+        title: "خطأ",
+        description: "لم يتم العثور على معرف العائلة",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSkipTodashboard = () => {
