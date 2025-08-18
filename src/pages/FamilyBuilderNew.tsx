@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -938,10 +938,10 @@ const FamilyBuilderNew = () => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // --- Spouse rules helpers & delete handlers ---
-  const checkIfMemberIsSpouse = (member: any) => {
+  const checkIfMemberIsSpouse = useCallback((member: any) => {
     // Spouse: no parents in this family and not a founder
     return !member?.fatherId && !member?.motherId && !member?.isFounder;
-  };
+  }, []);
 
   const getSpousePartnerName = (spouseMember: any) => {
     const marriage = familyMarriages.find((marriage: any) => 
@@ -1158,7 +1158,7 @@ const FamilyBuilderNew = () => {
     }
   };
 
-  const handleDeleteMember = async (memberOrId: any) => {
+  const handleDeleteMember = useCallback(async (memberOrId: any) => {
     const id = typeof memberOrId === 'string' ? memberOrId : memberOrId?.id;
     const member = familyMembers.find(m => m.id === id);
     if (!member) {
@@ -1231,7 +1231,7 @@ const FamilyBuilderNew = () => {
       setDeleteWarningMessage(warningMessage);
     }
     setShowDeleteModal(true);
-  };
+  }, [familyMembers, familyMarriages, t]);
 
   const confirmDelete = async () => {
     if (!memberToDelete) return;
@@ -1361,19 +1361,19 @@ const FamilyBuilderNew = () => {
     if (isMobile) setIsMemberListOpen(false);
   };
 
-  const handleViewMember = (member: any) => {
+  const handleViewMember = useCallback((member: any) => {
     setFormMode('profile');
     setEditingMember(member);
     if (isMobile) setIsMemberListOpen(false);
-  };
+  }, [isMobile]);
 
-  const handleEditMember = (member: any) => {
+  const handleEditMember = useCallback((member: any) => {
     setFormMode('edit');
     setEditingMember(member);
     setCurrentStep(1);
     populateFormData(member);
     if (isMobile) setIsMemberListOpen(false);
-  };
+  }, [isMobile]);
 
   const handleCancelForm = () => {
     setFormMode('view');
@@ -1443,13 +1443,6 @@ const FamilyBuilderNew = () => {
           
           // Determine if spouse is external: no father_id and not founder
           const isExternalSpouse = wifeMember ? (!wifeMember.father_id && !wifeMember.is_founder) : true;
-          
-          console.log('🔥 Wife member debug:', {
-            marriage_wife: marriage.wife,
-            family_member: familyMembers.find(fm => fm.id === marriage.wife?.id),
-            final_wife: wifeMember,
-            is_alive: wifeMember?.is_alive
-          });
           
           return {
             id: marriage.wife?.id || '',
@@ -1524,7 +1517,7 @@ const FamilyBuilderNew = () => {
     }
   };
 
-  const handleFormSubmit = async (submissionData: any) => {
+  const handleFormSubmit = useCallback(async (submissionData: any) => {
     try {
       setIsSaving(true);
       
@@ -1960,7 +1953,7 @@ const FamilyBuilderNew = () => {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
 
   const nextStep = () => {
     // Validate required fields for step 1
