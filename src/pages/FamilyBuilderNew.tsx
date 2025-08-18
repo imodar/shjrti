@@ -1745,14 +1745,20 @@ const FamilyBuilderNew = () => {
                    
                    const preservedImageUrl = wife.croppedImage || currentWife?.image_url || null;
                    
-                   await supabase
-                     .from('family_tree_members')
-                     .update({ 
-                       marital_status: wife.maritalStatus,
-                       image_url: preservedImageUrl,
-                       biography: wife.biography || null
-                     })
-                     .eq('id', wife.existingFamilyMemberId);
+                    const { error: updateWifeError } = await supabase
+                      .from('family_tree_members')
+                      .update({ 
+                        marital_status: wife.maritalStatus,
+                        image_url: preservedImageUrl,
+                        biography: wife.biography || null
+                      })
+                      .eq('id', wife.existingFamilyMemberId);
+                    
+                    if (updateWifeError) {
+                      console.error('Error updating wife marital status:', updateWifeError);
+                    } else {
+                      console.log('Successfully updated wife marital status to:', wife.maritalStatus);
+                    }
                    
                  }
 
@@ -1858,7 +1864,7 @@ const FamilyBuilderNew = () => {
                 const preservedImageUrl = husband.croppedImage || 
                   familyMembers.find(m => m.id === husband.existingFamilyMemberId)?.image || null;
                 
-                await supabase
+                const { error: updateHusbandError } = await supabase
                   .from('family_tree_members')
                   .update({ 
                     marital_status: husband.maritalStatus,
@@ -1866,6 +1872,12 @@ const FamilyBuilderNew = () => {
                     biography: husband.biography || null
                   })
                   .eq('id', husband.existingFamilyMemberId);
+                
+                if (updateHusbandError) {
+                  console.error('Error updating husband marital status:', updateHusbandError);
+                } else {
+                  console.log('Successfully updated husband marital status to:', husband.maritalStatus);
+                }
                 
               }
 
