@@ -2464,15 +2464,15 @@ const FamilyBuilderNew = () => {
                              <div className="space-y-3">
                               <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
                               
-                              {croppedImage ? (
+                              {(croppedImage || (editingMember && editingMember.image)) ? (
                                 <div className="space-y-3">
                                   <div className="relative group flex justify-center">
                                     <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                      <img 
-                                        src={croppedImage} 
-                                        alt="صورة العضو" 
-                                        className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg"
-                                      />
+                                       <img 
+                                         src={croppedImage || (editingMember && editingMember.image)} 
+                                         alt="صورة العضو" 
+                                         className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg"
+                                       />
                                     </div>
                                   </div>
                                   
