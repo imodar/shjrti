@@ -145,8 +145,8 @@ export default function Payments() {
     }
   };
 
-  // Cancel old invoices with improved logic
-  const cancelOldPendingInvoices = async () => {
+  // Cancel old invoices with improved logic and retry mechanism
+  const cancelOldPendingInvoices = async (retryCount = 0) => {
     if (!user) return;
     
     try {
@@ -163,6 +163,10 @@ export default function Payments() {
       }
     } catch (error) {
       console.error('Error cleaning up old invoices:', error);
+      // Retry once on network errors
+      if (retryCount === 0 && error.message?.includes('Failed to fetch')) {
+        setTimeout(() => cancelOldPendingInvoices(1), 2000);
+      }
     }
   };
 
@@ -200,8 +204,8 @@ export default function Payments() {
     }
   };
 
-  // Load user's current family and subscription
-  const loadUserSubscription = async () => {
+  // Load user's current family and subscription with retry mechanism
+  const loadUserSubscription = async (retryCount = 0) => {
     if (!user) return;
     
     try {
@@ -229,13 +233,21 @@ export default function Payments() {
       }
     } catch (error) {
       console.error('❌ Error loading user subscription:', error);
+      
+      // Retry once on network errors
+      if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
+        console.log('🔄 Retrying user subscription load in 2 seconds...');
+        setTimeout(() => loadUserSubscription(1), 2000);
+        return;
+      }
+      
       // Default to free plan on error
       setCurrentPlan(null);
     }
   };
 
-  // Function to load scheduled downgrades
-  const loadScheduledDowngrade = async () => {
+  // Function to load scheduled downgrades with retry mechanism
+  const loadScheduledDowngrade = async (retryCount = 0) => {
     if (!user) return;
 
     try {
@@ -248,6 +260,13 @@ export default function Payments() {
 
       if (error) {
         console.error('Error loading scheduled downgrade:', error);
+        
+        // Retry once on network errors
+        if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
+          console.log('🔄 Retrying scheduled downgrade load in 2 seconds...');
+          setTimeout(() => loadScheduledDowngrade(1), 2000);
+          return;
+        }
         return;
       }
 
@@ -273,6 +292,13 @@ export default function Payments() {
       }
     } catch (error) {
       console.error('Error in loadScheduledDowngrade:', error);
+      
+      // Retry once on network errors
+      if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
+        console.log('🔄 Retrying scheduled downgrade load in 2 seconds...');
+        setTimeout(() => loadScheduledDowngrade(1), 2000);
+        return;
+      }
     }
   };
 
