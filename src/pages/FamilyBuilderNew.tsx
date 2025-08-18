@@ -1533,10 +1533,19 @@ const FamilyBuilderNew = () => {
         husband: submissionData.gender === "female" && husband ? husband : null
       };
       
-      // Preserve original image during edits
-      let finalImageUrl = submissionData.croppedImage;
-      if (formMode === 'edit' && editingMember && !submissionData.croppedImage && editingMember.image_url) {
-        finalImageUrl = editingMember.image_url;
+      // Handle image state properly for edits:
+      // - If image exists in submissionData.croppedImage, use it (user uploaded new image)
+      // - If submissionData.croppedImage is explicitly null/empty string, set to null (user removed image)
+      // - If submissionData.croppedImage is undefined, keep existing image
+      let finalImageUrl;
+      if (formMode === 'edit' && editingMember) {
+        if (submissionData.croppedImage !== undefined) {
+          finalImageUrl = submissionData.croppedImage || null;
+        } else {
+          finalImageUrl = editingMember.image_url || null;
+        }
+      } else {
+        finalImageUrl = submissionData.croppedImage || null;
       }
       
       // Call the existing submission logic (same as modal)
@@ -1566,20 +1575,23 @@ const FamilyBuilderNew = () => {
         // Split the name into first and last name for proper storage
         const nameParts = submissionData.name?.split(' ') || [''];
         const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
+        const lastName = nameParts.slice(1).join(' ') || familyData?.name || '';
+        
+        // Ensure name field is properly constructed
+        const fullName = firstName && lastName ? `${firstName} ${lastName}` : submissionData.name || '';
         
         const { data: updatedMember, error: updateError } = await supabase
           .from('family_tree_members')
           .update({
-            name: submissionData.name || '',
+            name: fullName,
             first_name: firstName,
-            last_name: lastName || null,
+            last_name: lastName,
             gender: submissionData.gender,
             birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
             is_alive: submissionData.isAlive,
             death_date: !submissionData.isAlive && submissionData.deathDate ? submissionData.deathDate.toISOString().split('T')[0] : null,
             biography: submissionData.bio || null,
-            image_url: finalImageUrl || null,
+            image_url: finalImageUrl,
             father_id: fatherId,
             mother_id: motherId,
             related_person_id: relatedPersonId,
@@ -1602,14 +1614,17 @@ const FamilyBuilderNew = () => {
         // Split the name into first and last name for proper storage
         const nameParts = submissionData.name?.split(' ') || [''];
         const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
+        const lastName = nameParts.slice(1).join(' ') || familyData?.name || '';
+        
+        // Ensure name field is properly constructed
+        const fullName = firstName && lastName ? `${firstName} ${lastName}` : submissionData.name || '';
         
         const { data: newMember, error: memberError } = await supabase
           .from('family_tree_members')
           .insert({
-            name: submissionData.name || '',
+            name: fullName,
             first_name: firstName,
-            last_name: lastName || null,
+            last_name: lastName,
             gender: submissionData.gender,
             birth_date: submissionData.birthDate?.toISOString().split('T')[0] || null,
             is_alive: submissionData.isAlive,
@@ -1670,26 +1685,44 @@ const FamilyBuilderNew = () => {
              try {
                let wifeId = wife.existingFamilyMemberId;
                
-                // If wife has an existing ID, update the existing record
-                if (wife.existingFamilyMemberId && wife.id) {
-                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                  const { data: updatedWife, error: wifeUpdateError } = await supabase
-                    .from('family_tree_members')
-                     .update({
-                       name: wifeName,
-                      first_name: wife.firstName || null,
-                      last_name: wife.lastName || null,
-                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                      is_alive: wife.isAlive ?? true,
-                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                       marital_status: 'married',
-                       image_url: wife.croppedImage || null,
-                       biography: wife.biography || null,
-                       updated_at: new Date().toISOString()
-                    })
-                   .eq('id', wife.existingFamilyMemberId)
-                   .select()
-                   .single();
+                 // If wife has an existing ID, update the existing record
+                 if (wife.existingFamilyMemberId && wife.id) {
+                   // Get current image to handle image state properly
+                   const { data: currentWife } = await supabase
+                     .from('family_tree_members')
+                     .select('image_url')
+                     .eq('id', wife.existingFamilyMemberId)
+                     .maybeSingle();
+                   
+                   // Handle image state properly:
+                   // - If image exists in wife.croppedImage, use it (user uploaded new image)
+                   // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
+                   // - If wife.croppedImage is undefined, keep existing image
+                   let imageUrl;
+                   if (wife.croppedImage !== undefined) {
+                     imageUrl = wife.croppedImage || null;
+                   } else {
+                     imageUrl = currentWife?.image_url || null;
+                   }
+                   
+                   const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
+                   const { data: updatedWife, error: wifeUpdateError } = await supabase
+                     .from('family_tree_members')
+                      .update({
+                        name: wifeName,
+                       first_name: wife.firstName || null,
+                       last_name: wife.lastName || familyData?.name || null,
+                       birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                       is_alive: wife.isAlive ?? true,
+                       death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                        marital_status: 'married',
+                        image_url: imageUrl,
+                        biography: wife.biography || null,
+                        updated_at: new Date().toISOString()
+                     })
+                    .eq('id', wife.existingFamilyMemberId)
+                    .select()
+                    .single();
 
                  if (wifeUpdateError) {
                    console.error('Error updating wife member:', wife.name, wifeUpdateError);
@@ -1701,27 +1734,30 @@ const FamilyBuilderNew = () => {
                  wifeId = updatedWife.id;
                  
                } else {
-                  // If wife is not from existing family members, create new family member
-                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                  const { data: newWifeMember, error: wifeError } = await supabase
-                    .from('family_tree_members')
-                     .insert({
-                       name: wifeName,
-                       first_name: wife.firstName || null,
-                       last_name: wife.lastName || null,
-                      gender: 'female',
-                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                      is_alive: wife.isAlive ?? true,
-                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                      family_id: familyId,
-                      created_by: familyData?.creator_id,
-                       is_founder: false,
-                       marital_status: 'married',
-                       image_url: wife.croppedImage || null,
-                       biography: wife.biography || null
-                    })
-                   .select()
-                   .single();
+                   // If wife is not from existing family members, create new family member
+                   const firstName = wife.firstName || '';
+                   const lastName = wife.lastName || familyData?.name || '';
+                   const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
+                   
+                   const { data: newWifeMember, error: wifeError } = await supabase
+                     .from('family_tree_members')
+                      .insert({
+                        name: wifeName,
+                        first_name: firstName,
+                        last_name: lastName,
+                       gender: 'female',
+                       birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                       is_alive: wife.isAlive ?? true,
+                       death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                       family_id: familyId,
+                       created_by: familyData?.creator_id,
+                        is_founder: false,
+                        marital_status: 'married',
+                        image_url: wife.croppedImage || null,
+                        biography: wife.biography || null
+                     })
+                    .select()
+                    .single();
 
                  if (wifeError) {
                    console.error('Error creating wife member:', wife.name, wifeError);
@@ -1734,25 +1770,34 @@ const FamilyBuilderNew = () => {
                  
                }
 
-                  // If wife is an existing family member, update their marital status and preserve image
-                  if (wife.isFamilyMember && wife.existingFamilyMemberId) {
-                   // Get current data to preserve image if no new one provided
-                   const { data: currentWife } = await supabase
-                     .from('family_tree_members')
-                     .select('image_url')
-                     .eq('id', wife.existingFamilyMemberId)
-                     .maybeSingle();
-                   
-                   const preservedImageUrl = wife.croppedImage || currentWife?.image_url || null;
-                   
-                    const { error: updateWifeError } = await supabase
+                   // If wife is an existing family member, update their marital status and handle image properly
+                   if (wife.isFamilyMember && wife.existingFamilyMemberId) {
+                    // Get current data to handle image state properly
+                    const { data: currentWife } = await supabase
                       .from('family_tree_members')
-                      .update({ 
-                        marital_status: wife.maritalStatus,
-                        image_url: preservedImageUrl,
-                        biography: wife.biography || null
-                      })
-                      .eq('id', wife.existingFamilyMemberId);
+                      .select('image_url')
+                      .eq('id', wife.existingFamilyMemberId)
+                      .maybeSingle();
+                    
+                    // Handle image state properly:
+                    // - If image exists in wife.croppedImage, use it (user uploaded new image)
+                    // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
+                    // - If wife.croppedImage is undefined, keep existing image
+                    let imageUrl;
+                    if (wife.croppedImage !== undefined) {
+                      imageUrl = wife.croppedImage || null;
+                    } else {
+                      imageUrl = currentWife?.image_url || null;
+                    }
+                    
+                     const { error: updateWifeError } = await supabase
+                       .from('family_tree_members')
+                       .update({ 
+                         marital_status: wife.maritalStatus,
+                         image_url: imageUrl,
+                         biography: wife.biography || null
+                       })
+                       .eq('id', wife.existingFamilyMemberId);
                     
                      if (updateWifeError) {
                        console.error('Error updating wife marital status:', updateWifeError);
@@ -1830,13 +1875,16 @@ const FamilyBuilderNew = () => {
             
             // If husband is not from existing family members, create new family member first
             if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
-              const husbandName = husband.name || (husband.firstName && husband.lastName ? `${husband.firstName} ${husband.lastName}` : husband.firstName || husband.lastName || '');
+              const firstName = husband.firstName || '';
+              const lastName = husband.lastName || familyData?.name || '';
+              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husband.name || firstName || lastName || '');
+              
               const { data: newHusbandMember, error: husbandError } = await supabase
                 .from('family_tree_members')
                 .insert({
                   name: husbandName,
-                  first_name: husband.firstName || null,
-                  last_name: husband.lastName || null,
+                  first_name: firstName,
+                  last_name: lastName,
                   gender: 'male',
                   birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
                   is_alive: husband.isAlive ?? true,
@@ -1863,17 +1911,31 @@ const FamilyBuilderNew = () => {
 
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
-              // If husband is an existing family member, update their marital status
+              // If husband is an existing family member, update their marital status and handle image properly
               if (husband.isFamilyMember && husband.existingFamilyMemberId) {
-                // Preserve existing image if no new image provided
-                const preservedImageUrl = husband.croppedImage || 
-                  familyMembers.find(m => m.id === husband.existingFamilyMemberId)?.image || null;
+                // Get current data to handle image state properly
+                const { data: currentHusband } = await supabase
+                  .from('family_tree_members')
+                  .select('image_url')
+                  .eq('id', husband.existingFamilyMemberId)
+                  .maybeSingle();
+                
+                // Handle image state properly:
+                // - If image exists in husband.croppedImage, use it (user uploaded new image)
+                // - If husband.croppedImage is explicitly null/empty string, set to null (user removed image)
+                // - If husband.croppedImage is undefined, keep existing image
+                let imageUrl;
+                if (husband.croppedImage !== undefined) {
+                  imageUrl = husband.croppedImage || null;
+                } else {
+                  imageUrl = currentHusband?.image_url || null;
+                }
                 
                 const { error: updateHusbandError } = await supabase
                   .from('family_tree_members')
                   .update({ 
                     marital_status: husband.maritalStatus,
-                    image_url: preservedImageUrl,
+                    image_url: imageUrl,
                     biography: husband.biography || null
                   })
                   .eq('id', husband.existingFamilyMemberId);
