@@ -2601,20 +2601,23 @@ const FamilyBuilderNew = () => {
                                                      <Button
                                                        variant="secondary"
                                                        size="sm"
-                                                       onClick={() => {
-                                                         const updatedWives = [...wives];
-                                                         updatedWives[index] = { ...wife, isSaved: false };
-                                                         setWives(updatedWives);
-                                                         setCurrentWife(wife);
-                                                         setShowWifeForm(true);
-                                                         setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                         
-                                                         toast({
-                                                           title: "وضع التعديل",
-                                                           description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                           variant: "default"
-                                                         });
-                                                       }}
+                                                        onClick={() => {
+                                                          // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                          const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                          // ثم تعيين الزوجة المحددة للتعديل
+                                                          const updatedWives = [...resetWives];
+                                                          updatedWives[index] = { ...wife, isSaved: false };
+                                                          setWives(updatedWives);
+                                                          setCurrentWife(wife);
+                                                          setShowWifeForm(true);
+                                                          setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                          
+                                                          toast({
+                                                            title: "وضع التعديل",
+                                                            description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                            variant: "default"
+                                                          });
+                                                        }}
                                                        className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                      >
                                                        <Edit className="h-3 w-3 ml-1" />
