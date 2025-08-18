@@ -255,16 +255,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <div className="flex gap-3 mt-6 lg:mt-0">
                   <Button 
                     onClick={() => {
-                      console.log('Edit button clicked', { 
-                        isSpouse, 
-                        hasSpouseEditWarning: !!onSpouseEditWarning,
-                        memberName: member?.name 
-                      });
                       if (isSpouse && onSpouseEditWarning) {
-                        console.log('Triggering spouse edit warning');
                         onSpouseEditWarning();
                       } else {
-                        console.log('Triggering normal edit');
                         onEdit();
                       }
                     }}

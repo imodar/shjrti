@@ -1027,41 +1027,16 @@ const FamilyBuilderNew = () => {
       return;
     }
     
-    // Find the partner in our editing member's context
-    if (!editingMember) {
-      toast({
-        title: "خطأ",
-        description: "يجب اختيار عضو أولاً لتعديل الزوج/الزوجة",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Set spouse partner details for the modal
+    setSpousePartnerName(partner.name || "غير محدد");
+    setSpousePartnerDetails({
+      name: partner.name || "غير محدد",
+      fatherName: partner.father_name || "غير محدد", 
+      grandfatherName: partner.grandfather_name || "غير محدد"
+    });
     
-    // Check if this spouse is in the wives array or husband
-    if (spouseMember.gender === 'female') {
-      const wifeIndex = wives.findIndex(w => w.id === spouseMember.id);
-      if (wifeIndex !== -1) {
-        const wifeData = wives[wifeIndex];
-        handleSpouseEditAttempt('wife', wifeData, wifeIndex);
-      } else {
-        toast({
-          title: "خطأ",
-          description: "لم يتم العثور على بيانات الزوجة في القائمة",
-          variant: "destructive"
-        });
-      }
-    } else {
-      // It's a husband
-      if (husband && husband.id === spouseMember.id) {
-        handleSpouseEditAttempt('husband', husband, -1);
-      } else {
-        toast({
-          title: "خطأ", 
-          description: "لم يتم العثور على بيانات الزوج في القائمة",
-          variant: "destructive"
-        });
-      }
-    }
+    // Show the spouse edit warning modal
+    setShowSpouseEditWarning(true);
   };
 
   const getChildrenCount = (parentId: string) => {
