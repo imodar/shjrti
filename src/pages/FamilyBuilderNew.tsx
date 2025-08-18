@@ -1454,6 +1454,7 @@ const FamilyBuilderNew = () => {
             isAlive: wifeMember?.is_alive ?? true,
             deathDate: wifeMember?.death_date ? new Date(wifeMember.death_date) : null,
             croppedImage: wifeMember?.image_url || null,
+            biography: wifeMember?.biography || '', // Add missing biography field
             isFamilyMember: !isExternalSpouse, // If external spouse, mark as not family member
             existingFamilyMemberId: wifeMember ? wifeMember.id : '',
             isSaved: true, // Mark existing wives as saved
@@ -1466,6 +1467,7 @@ const FamilyBuilderNew = () => {
               deathDate: wifeMember.death_date ? new Date(wifeMember.death_date) : null,
               maritalStatus: wifeMember.marital_status || 'married',
               croppedImage: wifeMember.image_url || null,
+              biography: wifeMember.biography || '', // Add missing biography field to original data too
               isFamilyMember: !isExternalSpouse
             } : null
           };
@@ -1506,6 +1508,7 @@ const FamilyBuilderNew = () => {
           isAlive: husbandMember?.is_alive ?? true,
           deathDate: husbandMember?.death_date ? new Date(husbandMember.death_date) : null,
           croppedImage: husbandMember?.image_url || null,
+          biography: husbandMember?.biography || '', // Add missing biography field
           isFamilyMember: !!husbandMember, // If found in family members, it's a family member
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
