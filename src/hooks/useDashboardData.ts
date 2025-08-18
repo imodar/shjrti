@@ -108,16 +108,16 @@ export function useDashboardData() {
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
     if (diffInMinutes < 1) return 'الآن';
-    if (diffInMinutes < 60) return `منذ ${diffInMinutes} دقيقة`;
+    if (diffInMinutes < 60) return `منذ ${diffInMinutes.toLocaleString('en')} دقيقة`;
     
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `منذ ${diffInHours} ساعة`;
+    if (diffInHours < 24) return `منذ ${diffInHours.toLocaleString('en')} ساعة`;
     
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `منذ ${diffInDays} يوم`;
+    if (diffInDays < 7) return `منذ ${diffInDays.toLocaleString('en')} يوم`;
     
     const diffInWeeks = Math.floor(diffInDays / 7);
-    return `منذ ${diffInWeeks} أسبوع`;
+    return `منذ ${diffInWeeks.toLocaleString('en')} أسبوع`;
   };
 
   const calculateTotalMembers = async () => {
