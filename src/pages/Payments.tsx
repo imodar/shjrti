@@ -1629,7 +1629,7 @@ export default function Payments() {
                         </CardTitle>
                         <div className="text-center">
                           <span className="text-2xl font-bold">
-                            {formatPrice(packages.find(p => p.id === currentPlan)?.price || 0)}
+                            {formatPrice(packages.find(p => p.id === currentPlan)?.price)}
                           </span>
                           <span className="text-muted-foreground">
                             /{currentLanguage === 'ar' ? 'شهر' : 'month'}
@@ -1677,7 +1677,7 @@ export default function Payments() {
                       </CardTitle>
                       <div className="text-center">
                         <span className="text-2xl font-bold">
-                          {formatPrice(selectedDowngradePlan?.price || 0)}
+                          {formatPrice(selectedDowngradePlan?.price)}
                         </span>
                         <span className="text-muted-foreground">
                           /{currentLanguage === 'ar' ? 'شهر' : 'month'}

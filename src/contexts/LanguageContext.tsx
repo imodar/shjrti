@@ -25,7 +25,7 @@ interface LanguageContextType {
   translations: Record<string, string>;
   setLanguage: (code: string) => void;
   t: (key: string, fallback?: string) => string;
-  formatPrice: (amount: number) => string;
+  formatPrice: (amount: number | string | undefined | null) => string;
   loading: boolean;
 }
 
@@ -175,7 +175,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     return translations[key] || fallback || key;
   };
 
-  const formatPrice = (amount: number): string => {
+  const formatPrice = (amount: number | string | undefined | null): string => {
+    // التحقق من صحة القيمة وتحويلها لرقم
+    const numericAmount = typeof amount === 'number' ? amount : parseFloat(String(amount || 0));
+    const validAmount = isNaN(numericAmount) ? 0 : numericAmount;
+
     const currencySymbols: Record<string, string> = {
       USD: '$',
       SAR: 'ر.س'
@@ -184,10 +188,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     const symbol = currencySymbols[currency] || currency;
     
     if (currency === 'SAR' && direction === 'rtl') {
-      return `${amount.toFixed(2)} ${symbol}`;
+      return `${validAmount.toFixed(2)} ${symbol}`;
     }
     
-    return `${symbol}${amount.toFixed(2)}`;
+    return `${symbol}${validAmount.toFixed(2)}`;
   };
 
   const value: LanguageContextType = {
