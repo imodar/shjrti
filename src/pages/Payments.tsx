@@ -1021,7 +1021,7 @@ export default function Payments() {
               <CardContent className="relative overflow-hidden py-12">
                 {/* شريط التحذير للتغيير المجدول */}
                 {scheduledDowngrade && (
-                  <div className="mb-8 mx-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-lg">
+                  <div className="relative z-50 mb-8 mx-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-lg">
                     <div className="flex items-start gap-3">
                       <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
@@ -1044,7 +1044,7 @@ export default function Payments() {
                           <button
                             onClick={cancelScheduledDowngrade}
                             disabled={cancellingDowngrade}
-                            className="self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm"
+                            className="relative z-50 self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm"
                           >
                             {cancellingDowngrade 
                               ? (currentLanguage === 'ar' ? "جاري الإلغاء..." : "Cancelling...")
