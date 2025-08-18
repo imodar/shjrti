@@ -3219,7 +3219,7 @@ const FamilyBuilderNew = () => {
                               e.preventDefault();
                               e.stopPropagation();
                               e.nativeEvent.stopImmediatePropagation();
-                              setFormMode('view');
+                              handleCancelForm();
                             }}
                             size="lg"
                             className="flex items-center gap-2"
