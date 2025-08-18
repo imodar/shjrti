@@ -256,12 +256,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <Edit className="h-4 w-4 ml-2" />
                     تعديل الملف الشخصي
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="facebook-button-secondary px-4 py-3"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
                 </div>
               </div>
             </div>
