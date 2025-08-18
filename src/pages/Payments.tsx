@@ -369,10 +369,14 @@ export default function Payments() {
     // التعامل مع التنزيل المجدول
     if (transitionResult.action === 'schedule_downgrade') {
       console.log('✅ Scheduling downgrade, refreshing data...');
-      // تحديث حالة التغيير المجدول
+      
+      // تحديث فوري أولاً
+      await loadScheduledDowngrade();
+      
+      // تحديث إضافي بعد ثانية للتأكد
       setTimeout(async () => {
         await loadScheduledDowngrade();
-        console.log('✅ Scheduled downgrade data refreshed');
+        console.log('✅ Scheduled downgrade data refreshed (delayed)');
       }, 1000);
       
       toast({
