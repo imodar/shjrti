@@ -3587,7 +3587,7 @@ const FamilyBuilderNew = () => {
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-4 animate-pulse shadow-lg">
                 <Heart className="h-8 w-8 text-white animate-fade-in" />
               </div>
-              <AlertDialogTitle className="font-arabic text-xl text-gray-800 font-bold">
+              <AlertDialogTitle className="font-arabic text-xl text-gray-800 font-bold text-center">
                 تعديل محمي
               </AlertDialogTitle>
             </AlertDialogHeader>
