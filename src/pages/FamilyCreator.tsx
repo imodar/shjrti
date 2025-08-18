@@ -425,6 +425,7 @@ const FamilyCreator = () => {
             family_id: family.id,
             husband_id: founder.id,
             wife_id: wifeData.id,
+            marital_status: wife.maritalStatus || 'married',
             is_active: true
           });
 
