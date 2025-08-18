@@ -366,7 +366,7 @@ const FamilyCreator = () => {
         .from('family_tree_members')
         .insert({
           family_id: family.id,
-          name: founderData.name,
+          name: founderData.name || 'مؤسس العائلة',
           first_name: founderData.name,
           gender: founderData.gender,
           birth_date: founderData.birthDate ? new Date(founderData.birthDate).toISOString().split('T')[0] : null,
