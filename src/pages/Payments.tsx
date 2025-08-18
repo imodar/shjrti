@@ -25,7 +25,7 @@ export default function Payments() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { currentLanguage, formatPrice } = useLanguage();
-  const { refreshSubscription } = useSubscription();
+  const { refreshSubscription, subscription } = useSubscription();
   const { processPackageTransition, loading: transitionLoading } = usePackageTransition();
   const navigate = useNavigate();
   const [packages, setPackages] = useState([]);
@@ -801,8 +801,8 @@ export default function Payments() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">تاريخ التجديد</span>
                         <span className="font-medium">
-                          {currentPlan && currentFamily?.subscription_end_date ? 
-                            new Date(currentFamily.subscription_end_date).toLocaleDateString('en-GB') :
+                          {currentPlan && subscription?.expires_at ? 
+                            new Date(subscription.expires_at).toLocaleDateString('en-GB') :
                             currentPlan ? 
                               'غير محدد' : 
                               <span className="text-emerald-600 font-bold">مجاناً للأبد</span>
