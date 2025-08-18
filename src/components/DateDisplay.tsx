@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDateFormat } from '@/hooks/useDateFormat';
 
 interface DateDisplayProps {
   date: Date | string | null | undefined;
@@ -10,6 +9,69 @@ interface DateDisplayProps {
   className?: string;
 }
 
+// Helper function to format Gregorian dates
+const formatGregorianDate = (date: Date | string | null | undefined): string => {
+  if (!date) return '';
+  
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) {
+      return '';
+    }
+    return dateObj.toLocaleDateString('en-GB');
+  } catch (error) {
+    return '';
+  }
+};
+
+// Helper function for relative time
+const formatRelativeTime = (date: Date | string | null | undefined): string => {
+  if (!date) return '';
+  
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) {
+      return '';
+    }
+    
+    const now = new Date();
+    const diffInMs = now.getTime() - dateObj.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) return 'Today';
+    if (diffInDays === 1) return 'Yesterday';
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+    if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
+    
+    return formatGregorianDate(date);
+  } catch (error) {
+    return formatGregorianDate(date);
+  }
+};
+
+// Helper function for lifespan
+const formatLifespanGregorian = (birthDate: Date | string | null, deathDate: Date | string | null, isAlive: boolean = true): string => {
+  if (!birthDate) return '';
+  
+  try {
+    const birth = formatGregorianDate(birthDate);
+    if (!birth) return '';
+    
+    if (isAlive) {
+      return `Born ${birth}`;
+    } else if (deathDate) {
+      const death = formatGregorianDate(deathDate);
+      if (death) {
+        return `${birth} - ${death}`;
+      }
+    }
+    return `Born ${birth}`;
+  } catch (error) {
+    return '';
+  }
+};
+
 export const DateDisplay: React.FC<DateDisplayProps> = ({
   date,
   format = 'default',
@@ -18,25 +80,18 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
   isAlive = true,
   className = ''
 }) => {
-  const { format: formatDate, formatRelative, formatLifespan, loading } = useDateFormat();
-
-  // Show loading skeleton
-  if (loading) {
-    return <span className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-20 inline-block ${className}`}></span>;
-  }
-
   let formattedDate: string = '';
 
   try {
     switch (format) {
       case 'relative':
-        formattedDate = formatRelative(date);
+        formattedDate = formatRelativeTime(date);
         break;
       case 'lifespan':
-        formattedDate = formatLifespan(birthDate, deathDate, isAlive);
+        formattedDate = formatLifespanGregorian(birthDate, deathDate, isAlive);
         break;
       default:
-        formattedDate = formatDate(date);
+        formattedDate = formatGregorianDate(date);
         break;
     }
   } catch (error) {
@@ -45,7 +100,7 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
   }
 
   // Don't render anything if no valid date
-  if (!formattedDate || formattedDate === 'تاريخ غير صحيح') {
+  if (!formattedDate) {
     return null;
   }
 
