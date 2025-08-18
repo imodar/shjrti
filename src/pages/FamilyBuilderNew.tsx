@@ -3218,7 +3218,7 @@ const FamilyBuilderNew = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              console.log('Cancel button clicked - preventing default behavior');
+                              e.nativeEvent.stopImmediatePropagation();
                               setFormMode('view');
                             }}
                             size="lg"
