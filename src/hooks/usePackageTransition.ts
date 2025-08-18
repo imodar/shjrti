@@ -199,8 +199,8 @@ export function usePackageTransition() {
           canProceed: false,
           action: 'block_downgrade',
           message: currentLanguage === 'ar' 
-            ? 'لا يمكن التنزيل لهذه الباقة بسبب تجاوز الحدود المسموحة' 
-            : 'Cannot downgrade to this plan due to exceeding limits',
+            ? `لا يمكن التنزيل لهذه الباقة بسبب تجاوز الحدود المسموحة. يجب عليك تقليل عدد الأشجار والأعضاء أولاً قبل المتابعة. لا يمكن الاستمرار بتنزيل الباقة حتى لو طلبت ذلك.` 
+            : `Cannot downgrade to this plan due to exceeding limits. You must reduce the number of trees and members first before proceeding. You cannot continue with the downgrade even if requested.`,
           requirements
         };
       }

@@ -275,6 +275,42 @@ export default function Payments() {
     }
   };
 
+  // Function to cancel scheduled downgrade
+  const cancelScheduledDowngrade = async () => {
+    if (!user || !scheduledDowngrade) return;
+
+    try {
+      const { error } = await supabase
+        .from('scheduled_package_changes')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('status', 'pending');
+
+      if (error) {
+        console.error('Error cancelling scheduled downgrade:', error);
+        toast({
+          title: currentLanguage === 'ar' ? "خطأ" : "Error",
+          description: currentLanguage === 'ar' 
+            ? "فشل في إلغاء التغيير المجدول" 
+            : "Failed to cancel scheduled change",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setScheduledDowngrade(null);
+      
+      toast({
+        title: currentLanguage === 'ar' ? "تم الإلغاء" : "Cancelled",
+        description: currentLanguage === 'ar' 
+          ? "تم إلغاء التغيير المجدول بنجاح. ستبقى على باقتك الحالية." 
+          : "Scheduled change has been cancelled successfully. You will stay on your current plan.",
+      });
+    } catch (error) {
+      console.error('Error in cancelScheduledDowngrade:', error);
+    }
+  };
+
   useEffect(() => {
     loadPackages();
     loadUserSubscription();
@@ -976,17 +1012,25 @@ export default function Payments() {
                         <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
                           {currentLanguage === 'ar' ? 'تغيير مجدول للباقة' : 'Scheduled Package Change'}
                         </h4>
-                        <p className="text-amber-700 dark:text-amber-300 text-sm leading-relaxed">
+                        <p className="text-amber-700 dark:text-amber-300 text-sm leading-relaxed mb-3">
                           {currentLanguage === 'ar' 
-                            ? `قمت بجدولة تنزيل باقتك من "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" إلى "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". سيتم تطبيق هذا التغيير في تاريخ ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('ar-SA')} وسيتم إرسال فاتورة إليك عند الاستحقاق.`
+                            ? `قمت بجدولة تنزيل باقتك من "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" إلى "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". سيتم تطبيق هذا التغيير في تاريخ ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-GB')} وسيتم إرسال فاتورة إليك عند الاستحقاق.`
                             : `You have scheduled a downgrade from "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" to "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". This change will be applied on ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-US')} and you will be billed accordingly.`
                           }
                         </p>
-                        <div className="mt-3 flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                          <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                            {currentLanguage === 'ar' ? 'ستستمر في الاستفادة من باقتك الحالية حتى التاريخ المحدد' : 'You will continue to enjoy your current plan until the scheduled date'}
-                          </span>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+                              {currentLanguage === 'ar' ? 'ستستمر في الاستفادة من باقتك الحالية حتى التاريخ المحدد' : 'You will continue to enjoy your current plan until the scheduled date'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={cancelScheduledDowngrade}
+                            className="self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm"
+                          >
+                            {currentLanguage === 'ar' ? "إلغاء التغيير المجدول" : "Cancel Scheduled Change"}
+                          </button>
                         </div>
                       </div>
                     </div>
