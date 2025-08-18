@@ -407,7 +407,7 @@ const FamilyCreator = () => {
             first_name: wife.first_name || wife.name || 'زوجة',
             last_name: wife.last_name || treeData.name,
             gender: 'female',
-            marital_status: 'married',
+            marital_status: wife.maritalStatus || 'married',
             birth_date: wife.birthDate ? new Date(wife.birthDate).toISOString().split('T')[0] : null,
             death_date: wife.deathDate ? new Date(wife.deathDate).toISOString().split('T')[0] : null,
             is_alive: wife.isAlive,
