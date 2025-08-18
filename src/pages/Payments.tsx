@@ -46,6 +46,8 @@ export default function Payments() {
   const [packageWarning, setPackageWarning] = useState<string>("");
   const [scheduledDowngrade, setScheduledDowngrade] = useState<any>(null);
   const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
+  const [showDowngradeModal, setShowDowngradeModal] = useState(false);
+  const [selectedDowngradePlan, setSelectedDowngradePlan] = useState<any>(null);
 
   // Function to get localized value
   const getLocalizedValue = (value: string | object): string => {
@@ -369,6 +371,45 @@ export default function Payments() {
   const getPlanIndex = (planId: string | null) => {
     if (!planId) return -1; // Free plan has lowest index
     return packages.findIndex(p => p.id === planId);
+  };
+
+  // وظيفة للتحقق من إمكانية التراجع وإظهار modal المقارنة
+  const checkDowngradeAndShowModal = (planId: string) => {
+    if (!user) {
+      toast({
+        title: currentLanguage === 'ar' ? "تسجيل الدخول مطلوب" : "Login Required",
+        description: currentLanguage === 'ar' 
+          ? "يجب تسجيل الدخول أولاً لاختيار باقة" 
+          : "Please login first to select a plan",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedPackage = packages.find(pkg => pkg.id === planId);
+    if (!selectedPackage) {
+      toast({
+        title: currentLanguage === 'ar' ? "خطأ" : "Error",
+        description: currentLanguage === 'ar' 
+          ? "الباقة المحددة غير موجودة" 
+          : "Selected package not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // التحقق من أن هذا تراجع (downgrade)
+    const currentPlanIndex = getPlanIndex(currentPlan);
+    const selectedPlanIndex = getPlanIndex(planId);
+    
+    if (currentPlan && selectedPlanIndex < currentPlanIndex) {
+      // هذا downgrade - إظهار modal
+      setSelectedDowngradePlan(selectedPackage);
+      setShowDowngradeModal(true);
+    } else {
+      // ليس downgrade - التنفيذ المباشر
+      handlePlanSelect(planId);
+    }
   };
 
   // النسخة الجديدة المحدثة من handlePlanSelect مع usePackageTransition
@@ -1239,7 +1280,7 @@ export default function Payments() {
                                 
                                 // فقط إذا لم تكن الباقة نشطة حالياً أو إذا كانت هناك جدولة معلقة
                                 if (!shouldShowAsActive) {
-                                  handlePlanSelect(plan.id);
+                                  checkDowngradeAndShowModal(plan.id);
                                 }
                               }}
                               disabled={shouldShowAsActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id}
@@ -1539,6 +1580,176 @@ export default function Payments() {
       </div>
       
       <GlobalFooter />
+      
+      {/* Modal مقارنة الباقات والتحذير من الـ Downgrade */}
+      <Dialog open={showDowngradeModal} onOpenChange={setShowDowngradeModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-center">
+              {currentLanguage === 'ar' ? 'تأكيد تغيير الباقة' : 'Confirm Plan Change'}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {currentLanguage === 'ar' 
+                ? 'أنت على وشك تخفيض باقتك. يرجى مراجعة المقارنة أدناه.'
+                : 'You are about to downgrade your plan. Please review the comparison below.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedDowngradePlan && (
+            <div className="space-y-6">
+              {/* تحذير مهم */}
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Shield className="h-6 w-6 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                      {currentLanguage === 'ar' ? 'تحذير مهم' : 'Important Warning'}
+                    </h4>
+                    <p className="text-amber-700 dark:text-amber-300 text-sm leading-relaxed">
+                      {currentLanguage === 'ar'
+                        ? 'في حال كانت الباقة الجديدة غير مستوفية لمتطلباتك الحالية (عدد العائلات، الأعضاء، إلخ)، سيتم الاحتفاظ بباقتك الحالية تلقائياً حتى تقوم بحل المشكلة.'
+                        : 'If the new plan does not meet your current requirements (number of families, members, etc.), your current plan will be automatically maintained until you resolve the issue.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* مقارنة الباقات */}
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* الباقة الحالية */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-center text-blue-600 dark:text-blue-400">
+                    {currentLanguage === 'ar' ? 'باقتك الحالية' : 'Your Current Plan'}
+                  </h3>
+                  {packages.find(p => p.id === currentPlan) && (
+                    <Card className="border-2 border-blue-200 dark:border-blue-800">
+                      <CardHeader>
+                        <CardTitle className="text-center">
+                          {getLocalizedValue(packages.find(p => p.id === currentPlan)?.name)}
+                        </CardTitle>
+                        <div className="text-center">
+                          <span className="text-2xl font-bold">
+                            {formatPrice(packages.find(p => p.id === currentPlan)?.price || 0)}
+                          </span>
+                          <span className="text-muted-foreground">
+                            /{currentLanguage === 'ar' ? 'شهر' : 'month'}
+                          </span>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-2">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">
+                              {currentLanguage === 'ar' ? 'عدد العائلات: ' : 'Families: '}
+                              {packages.find(p => p.id === currentPlan)?.family_limit || '∞'}
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">
+                              {currentLanguage === 'ar' ? 'عدد الأعضاء: ' : 'Members: '}
+                              {packages.find(p => p.id === currentPlan)?.member_limit || '∞'}
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">
+                              {currentLanguage === 'ar' ? 'مساحة تخزين: ' : 'Storage: '}
+                              {packages.find(p => p.id === currentPlan)?.storage_limit || '∞'} GB
+                            </span>
+                          </li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* الباقة الجديدة */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-center text-orange-600 dark:text-orange-400">
+                    {currentLanguage === 'ar' ? 'الباقة الجديدة' : 'New Plan'}
+                  </h3>
+                  <Card className="border-2 border-orange-200 dark:border-orange-800">
+                    <CardHeader>
+                      <CardTitle className="text-center">
+                        {getLocalizedValue(selectedDowngradePlan?.name)}
+                      </CardTitle>
+                      <div className="text-center">
+                        <span className="text-2xl font-bold">
+                          {formatPrice(selectedDowngradePlan?.price || 0)}
+                        </span>
+                        <span className="text-muted-foreground">
+                          /{currentLanguage === 'ar' ? 'شهر' : 'month'}
+                        </span>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm">
+                            {currentLanguage === 'ar' ? 'عدد العائلات: ' : 'Families: '}
+                            {selectedDowngradePlan?.family_limit || '∞'}
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm">
+                            {currentLanguage === 'ar' ? 'عدد الأعضاء: ' : 'Members: '}
+                            {selectedDowngradePlan?.member_limit || '∞'}
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm">
+                            {currentLanguage === 'ar' ? 'مساحة تخزين: ' : 'Storage: '}
+                            {selectedDowngradePlan?.storage_limit || '∞'} GB
+                          </span>
+                        </li>
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* أزرار التحكم */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDowngradeModal(false)}
+                  className="flex-1"
+                >
+                  {currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowDowngradeModal(false);
+                    if (selectedDowngradePlan) {
+                      handlePlanSelect(selectedDowngradePlan.id);
+                    }
+                  }}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                  disabled={transitionLoading}
+                >
+                  {transitionLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      {currentLanguage === 'ar' ? 'جاري المعالجة...' : 'Processing...'}
+                    </>
+                  ) : (
+                    <>
+                      {currentLanguage === 'ar' ? 'تأكيد التغيير' : 'Confirm Change'}
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      
       <Toaster />
     </div>
   );
