@@ -2651,6 +2651,8 @@ const FamilyBuilderNew = () => {
                       onBack={() => setFormMode('view')}
                       familyMembers={familyMembers}
                       marriages={familyMarriages}
+                      isSpouse={checkIfMemberIsSpouse(editingMember)}
+                      onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
                     />
                   ) : (
                     <div className="space-y-6">

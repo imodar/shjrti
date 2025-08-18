@@ -41,6 +41,8 @@ interface MemberProfileViewProps {
   onBack: () => void;
   familyMembers: any[];
   marriages?: any[];
+  isSpouse?: boolean;
+  onSpouseEditWarning?: () => void;
 }
 
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
@@ -49,7 +51,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   onDelete,
   onBack,
   familyMembers,
-  marriages = []
+  marriages = [],
+  isSpouse = false,
+  onSpouseEditWarning
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -250,7 +254,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 {/* Action Buttons */}
                 <div className="flex gap-3 mt-6 lg:mt-0">
                   <Button 
-                    onClick={onEdit} 
+                    onClick={() => {
+                      if (isSpouse && onSpouseEditWarning) {
+                        onSpouseEditWarning();
+                      } else {
+                        onEdit();
+                      }
+                    }}
                     className="facebook-button-primary px-6 py-3"
                   >
                     <Edit className="h-4 w-4 ml-2" />
