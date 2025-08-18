@@ -1706,32 +1706,32 @@ const FamilyBuilderNew = () => {
                    }
                    
                    const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                   const { data: updatedWife, error: wifeUpdateError } = await supabase
-                     .from('family_tree_members')
-                      .update({
-                        name: wifeName,
-                       first_name: wife.firstName || null,
-                       last_name: wife.lastName || familyData?.name || null,
-                       birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                       is_alive: wife.isAlive ?? true,
-                       death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                        marital_status: 'married',
-                        image_url: imageUrl,
-                        biography: wife.biography || null,
-                        updated_at: new Date().toISOString()
-                     })
-                    .eq('id', wife.existingFamilyMemberId)
-                    .select()
-                    .single();
+                     const { data: updatedWife, error: wifeUpdateError } = await supabase
+                       .from('family_tree_members')
+                        .update({
+                          name: wifeName,
+                         first_name: wife.firstName || null,
+                         last_name: wife.lastName || familyData?.name || null,
+                         birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                         is_alive: wife.isAlive ?? true,
+                         death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                          marital_status: wife.maritalStatus || 'married',
+                          image_url: imageUrl,
+                          biography: wife.biography || null,
+                          updated_at: new Date().toISOString()
+                       })
+                      .eq('id', wife.existingFamilyMemberId)
+                      .select()
+                      .single();
 
-                 if (wifeUpdateError) {
-                   console.error('Error updating wife member:', wife.name, wifeUpdateError);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
-                   continue;
-                 }
-                 
-                 wifeId = updatedWife.id;
+                    if (wifeUpdateError) {
+                      console.error('Error updating wife member:', wife.name, wifeUpdateError);
+                      marriageResults.failed++;
+                      marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
+                      continue;
+                    }
+                    
+                    wifeId = updatedWife.id;
                  
                } else {
                    // If wife is not from existing family members, create new family member
@@ -1752,19 +1752,19 @@ const FamilyBuilderNew = () => {
                        family_id: familyId,
                        created_by: familyData?.creator_id,
                         is_founder: false,
-                        marital_status: 'married',
+                        marital_status: wife.maritalStatus || 'married',
                         image_url: wife.croppedImage || null,
                         biography: wife.biography || null
                      })
                     .select()
                     .single();
 
-                 if (wifeError) {
-                   console.error('Error creating wife member:', wife.name, wifeError);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
-                   continue;
-                 }
+                  if (wifeError) {
+                    console.error('Error creating wife member:', wife.name, wifeError);
+                    marriageResults.failed++;
+                    marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
+                    continue;
+                  }
                  
                  wifeId = newWifeMember.id;
                  
@@ -1892,7 +1892,7 @@ const FamilyBuilderNew = () => {
                   family_id: familyId,
                   created_by: familyData?.creator_id,
                   is_founder: false,
-                  marital_status: 'married',
+                  marital_status: husband.maritalStatus || 'married',
                   image_url: husband.croppedImage || null,
                   biography: husband.biography || null
                 })
