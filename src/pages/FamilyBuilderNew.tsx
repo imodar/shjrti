@@ -3860,7 +3860,11 @@ const MemberList = ({
                           <UserIcon className="h-3 w-3 text-pink-500" />
                         )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
-                          {member.fatherId || member.motherId || member.isFounder ? member.first_name : member.name}
+                          {(() => {
+                            console.log('Member data:', { name: member.name, first_name: member.first_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
+                            const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
+                            return isSpouse ? member.name : (member.first_name || member.name);
+                          })()}
                         </h3>
                         {(() => {
                           // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
