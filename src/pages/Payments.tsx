@@ -1057,20 +1057,6 @@ export default function Payments() {
                   </div>
                 )}
                 
-                {/* شريط تجريبي للاختبار - يمكن حذفه لاحقاً */}
-                <div className="mb-8 mx-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-700 rounded-lg shadow-lg">
-                  <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
-                        شريط تجريبي - يظهر دائماً للاختبار
-                      </h4>
-                      <p className="text-blue-700 dark:text-blue-300 text-sm leading-relaxed">
-                        scheduledDowngrade value: {JSON.stringify(scheduledDowngrade)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
                 {/* Animated background elements */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-2xl animate-pulse"></div>
