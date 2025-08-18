@@ -43,6 +43,97 @@ import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSke
 import { MemberProfileView } from "@/components/MemberProfileView";
 
 
+// Member List Component - Moved here to avoid hoisting issues
+const MemberList = memo(({ 
+  members, 
+  onEditMember,
+  onViewMember, 
+  onDeleteMember,
+  onSpouseEditAttempt,
+  checkIfMemberIsSpouse,
+  searchTerm, 
+  onSearchChange, 
+  selectedFilter, 
+  onFilterChange,
+  getAdditionalInfo,
+  getGenderColor,
+  familyMembers,
+  marriages,
+  memberListLoading,
+  formMode,
+  onAddMember,
+  packageData
+}: any) => {
+  const { t } = useTranslation();
+
+  if (memberListLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full" />
+        {[...Array(3)].map((_, i) => (
+          <Skeleton key={i} className="h-20 w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Input
+          type="text"
+          placeholder="البحث في أعضاء العائلة..."
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-10 bg-white/50 border-white/30 backdrop-blur-sm"
+        />
+      </div>
+
+      <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+        {members.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>لا توجد أعضاء</p>
+          </div>
+        ) : (
+          members.map((member: any) => (
+            <Card key={member.id} className="bg-white/30 backdrop-blur-sm border-white/40">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3 space-x-reverse">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={member.image_url} />
+                      <AvatarFallback className={getGenderColor(member.gender)}>
+                        {member.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '؟'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{member.name}</h3>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-1 space-x-reverse">
+                    <Button variant="ghost" size="sm" onClick={() => onViewMember(member)}>
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => onEditMember(member)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => onDeleteMember(member)}>
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+});
+
 const FamilyBuilderNew = memo(() => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -1334,17 +1425,20 @@ const FamilyBuilderNew = memo(() => {
     });
   };
 
-  const filteredMembers = familyMembers.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === "all" || 
-      (selectedFilter === "alive" && member.isAlive) ||
-      (selectedFilter === "deceased" && !member.isAlive) ||
-      (selectedFilter === "male" && member.gender === "male") ||
-      (selectedFilter === "female" && member.gender === "female") ||
-      (selectedFilter === "founders" && member.isFounder);
-    
-    return matchesSearch && matchesFilter;
-  });
+  // Filter members based on search and display type - Memoized for performance
+  const filteredMembers = useMemo(() => {
+    return familyMembers.filter(member => {
+      const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesFilter = selectedFilter === "all" || 
+        (selectedFilter === "alive" && member.isAlive) ||
+        (selectedFilter === "deceased" && !member.isAlive) ||
+        (selectedFilter === "male" && member.gender === "male") ||
+        (selectedFilter === "female" && member.gender === "female") ||
+        (selectedFilter === "founders" && member.isFounder);
+      
+      return matchesSearch && matchesFilter;
+    });
+  }, [familyMembers, searchTerm, selectedFilter]);
 
   // Form panel actions
   const handleAddMember = () => {
@@ -2893,23 +2987,23 @@ const FamilyBuilderNew = memo(() => {
                     <div className="p-4">
                         <MemberList 
                           members={filteredMembers}
-                         onEditMember={handleEditMember}
-                         onViewMember={handleViewMember}
+                          onEditMember={handleEditMember}
+                          onViewMember={handleViewMember}
                           onDeleteMember={handleDeleteMember}
-                           onSpouseEditAttempt={handleSpouseEditWarning}
+                          onSpouseEditAttempt={handleSpouseEditWarning}
                           checkIfMemberIsSpouse={checkIfMemberIsSpouse}
                           searchTerm={searchTerm}
                           onSearchChange={setSearchTerm}
                           selectedFilter={selectedFilter}
                           onFilterChange={setSelectedFilter}
                           getAdditionalInfo={getAdditionalInfo}
-                         getGenderColor={getGenderColor}
-                         familyMembers={familyMembers}
-                         marriages={familyMarriages}
-                         memberListLoading={memberListLoading}
-                         formMode={formMode}
-                         onAddMember={handleAddMember}
-                         packageData={packageData}
+                          getGenderColor={getGenderColor}
+                          familyMembers={familyMembers}
+                          marriages={familyMarriages}
+                          memberListLoading={memberListLoading}
+                          formMode={formMode}
+                          onAddMember={handleAddMember}
+                          packageData={packageData}
                         />
                     </div>
                   </DrawerContent>
@@ -3281,10 +3375,9 @@ const FamilyBuilderNew = memo(() => {
       <GlobalFooter />
     </div>
   );
-};
 
 // Member List Component
-const MemberList = ({ 
+const MemberList = ({
   members, 
   onEditMember,
   onViewMember, 
