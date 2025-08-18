@@ -386,9 +386,9 @@ export default function Payments() {
     setProcessingInvoice(true);
 
     try {
-      // Calculate amount based on package price_sar
-      const amount = selectedPackage.price_sar || 0;
-      const currency = 'SAR';
+      // Calculate amount based on language - use the same logic as PlanSelection
+      const amount = currentLanguage === 'ar' ? (selectedPackage.price_sar || 0) : (selectedPackage.price_usd || 0);
+      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
 
       console.log('🔍 Package details for payment:', {
         packageId: planId,
