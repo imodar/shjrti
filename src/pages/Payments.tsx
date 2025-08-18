@@ -802,17 +802,25 @@ export default function Payments() {
                         <span className="text-muted-foreground">تاريخ التجديد</span>
                         <span className="font-medium">
                           {(() => {
-                            console.log('🔍 Subscription debug:', { 
-                              currentPlan, 
-                              subscription, 
-                              expires_at: subscription?.expires_at,
-                              hasCurrentPlan: !!currentPlan,
-                              hasExpiresAt: !!subscription?.expires_at
-                            });
+                            // إذا كان هناك اشتراك مجدول للتنزيل، استخدم تاريخه
+                            if (scheduledDowngrade) {
+                              const scheduledDate = new Date(scheduledDowngrade.scheduled_date);
+                              return scheduledDate.toLocaleDateString('ar-SA');
+                            }
                             
-                            if (currentPlan && subscription?.expires_at) {
-                              return new Date(subscription.expires_at).toLocaleDateString('ar-SA');
-                            } else if (currentPlan) {
+                            // إذا كان هناك اشتراك حالي، جلب تاريخ الانتهاء من قاعدة البيانات
+                            if (currentPlan) {
+                              // استخدام أحدث فاتورة مدفوعة لتحديد تاريخ الانتهاء
+                              const currentInvoice = invoices.find(inv => 
+                                inv.package_id === currentPlan && inv.payment_status === 'paid'
+                              );
+                              if (currentInvoice) {
+                                // حساب تاريخ الانتهاء: تاريخ إنشاء الفاتورة + سنة واحدة
+                                const startDate = new Date(currentInvoice.created_at);
+                                const endDate = new Date(startDate);
+                                endDate.setFullYear(endDate.getFullYear() + 1);
+                                return endDate.toLocaleDateString('ar-SA');
+                              }
                               return 'غير محدد';
                             } else {
                               return <span className="text-emerald-600 font-bold">مجاناً للأبد</span>;
