@@ -2336,7 +2336,7 @@ const FamilyBuilderNew = () => {
       if (!formData.name?.trim()) {
         toast({
           title: "خطأ في البيانات",
-          description: "يرجى إدخال الاسم الكامل",
+          description: "يرجى إدخال الاسم الأول",
           variant: "destructive"
         });
         return;
