@@ -933,6 +933,7 @@ const FamilyCreator = () => {
                                     value={founderData.birthDate}
                                     onChange={(date) => setFounderData({...founderData, birthDate: date})}
                                     placeholder="تاريخ الميلاد"
+                                    className="h-14"
                                   />
                                 </div>
 
@@ -964,7 +965,7 @@ const FamilyCreator = () => {
                                       value={founderData.deathDate}
                                       onChange={(date) => setFounderData({...founderData, deathDate: date})}
                                       placeholder="تاريخ الوفاة"
-                                      className="hover:border-red-500 focus:ring-red-500/20"
+                                      className="h-14 hover:border-red-500 focus:ring-red-500/20"
                                       disableFuture={true}
                                     />
                                   </div>
