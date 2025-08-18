@@ -3215,7 +3215,11 @@ const FamilyBuilderNew = () => {
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setFormMode('view')}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setFormMode('view');
+                            }}
                             size="lg"
                             className="flex items-center gap-2"
                           >
