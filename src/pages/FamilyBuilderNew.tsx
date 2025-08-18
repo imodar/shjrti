@@ -1834,7 +1834,8 @@ const FamilyBuilderNew = () => {
                   created_by: familyData?.creator_id,
                   is_founder: false,
                   marital_status: 'married',
-                  image_url: husband.croppedImage || null
+                  image_url: husband.croppedImage || null,
+                  biography: husband.biography || null
                 })
                 .select()
                 .single();
@@ -1853,9 +1854,17 @@ const FamilyBuilderNew = () => {
             if (husbandId) {
               // If husband is an existing family member, update their marital status
               if (husband.isFamilyMember && husband.existingFamilyMemberId && husband.maritalStatus) {
+                // Preserve existing image if no new image provided
+                const preservedImageUrl = husband.croppedImage || 
+                  familyMembers.find(m => m.id === husband.existingFamilyMemberId)?.image || null;
+                
                 await supabase
                   .from('family_tree_members')
-                  .update({ marital_status: husband.maritalStatus })
+                  .update({ 
+                    marital_status: husband.maritalStatus,
+                    image_url: preservedImageUrl,
+                    biography: husband.biography || null
+                  })
                   .eq('id', husband.existingFamilyMemberId);
                 
               }
