@@ -191,10 +191,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6">
                   {/* Profile Avatar */}
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
+                    {/* Show gradient background only when there's no profile picture */}
+                    {!member.image_url && !member.image && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
+                    )}
                     <Avatar className="relative h-32 w-32 border-4 border-white shadow-2xl">
-                      {member.image_url ? (
-                        <AvatarImage src={member.image_url} alt={member.name} className="object-cover" />
+                      {(member.image_url || member.image) ? (
+                        <AvatarImage 
+                          src={member.image_url || member.image} 
+                          alt={member.name} 
+                          className="object-cover w-full h-full"
+                        />
                       ) : (
                         <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
                           {member.name.charAt(0)}
