@@ -48,49 +48,7 @@ const FamilyBuilderNew = () => {
   const navigate = useNavigate();
   const { hasAIFeatures } = useSubscription();
   const isMobile = useIsMobile();
-  
-  const familyIdFromParams = searchParams.get('family');
-  const { 
-    familyId, 
-    familyData, 
-    familyMembers, 
-    familyMarriages, 
-    spousesData, 
-    loading: familyLoading,
-    refetchFamily,
-    addMember,
-    updateMember,
-    deleteMember 
-  } = useFamilyData(familyIdFromParams);
-  
-  const {
-    selectedImage,
-    croppedImage,
-    showCropDialog,
-    crop,
-    zoom,
-    fileInputRef,
-    uploadLoading: imageUploadLoading,
-    handleImageSelect,
-    handleEditImage,
-    handleDeleteImage,
-    setShowCropDialog,
-    setCrop,
-    setZoom,
-    onCropComplete,
-    handleCropSave,
-    resetImage
-  } = useImageCropping();
 
-  const {
-    generationCount,
-    totalMembersCount,
-    maleCount,
-    femaleCount,
-    generationStats
-  } = useFamilyStats(familyMembers, familyMarriages);
-  const isMobile = useIsMobile();
-  
   const calculateGenerationCount = () => {
     if (familyMembers.length === 0) return 1;
     
@@ -2510,24 +2468,78 @@ const FamilyBuilderNew = () => {
                              {/* Image Upload Section */}
                              {(formMode === 'add' || formMode === 'edit') && (
 
-                            <ImageUploadSection
-                              isImageUploadEnabled={isImageUploadEnabled}
-                              uploadLoading={uploadLoading}
-                              croppedImage={croppedImage}
-                              selectedImage={selectedImage}
-                              showCropDialog={showCropDialog}
-                              crop={crop}
-                              zoom={zoom}
-                              fileInputRef={fileInputRef}
-                              handleEditImage={handleEditImage}
-                              handleDeleteImage={handleDeleteImage}
-                              handleImageSelect={handleImageSelect}
-                              setShowCropDialog={setShowCropDialog}
-                              setCrop={setCrop}
-                              setZoom={setZoom}
-                              onCropComplete={onCropComplete}
-                              handleCropSave={handleCropSave}
-                             />
+                             <div className="space-y-3">
+                              <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
+                              
+                              {croppedImage ? (
+                                <div className="space-y-3">
+                                  <div className="relative group flex justify-center">
+                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
+                                      <img 
+                                        src={croppedImage} 
+                                        alt="صورة العضو" 
+                                        className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg"
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex justify-center gap-2">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="secondary"
+                                      onClick={handleEditImage}
+                                      className="h-8 px-3"
+                                    >
+                                      <Edit2 className="h-3 w-3 ml-1" />
+                                      تعديل
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={handleDeleteImage}
+                                      className="h-8 px-3"
+                                    >
+                                      <Trash2 className="h-3 w-3 ml-1" />
+                                      حذف
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div 
+                                  className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 ${
+                                    isImageUploadEnabled 
+                                      ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
+                                      : 'border-gray-300 opacity-70 cursor-not-allowed'
+                                  }`}
+                                  onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
+                                >
+                                  {isImageUploadEnabled ? (
+                                    <div className="space-y-2">
+                                      <Upload className="h-8 w-8 text-primary mx-auto" />
+                                      <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
+                                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-2">
+                                      <Upload className="h-8 w-8 text-gray-400 mx-auto" />
+                                      <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
+                                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageSelect}
+                                className="hidden"
+                                disabled={!isImageUploadEnabled}
+                              />
+                             </div>
                              )}
                          </div>
                        )}
