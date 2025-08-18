@@ -362,11 +362,16 @@ const FamilyCreator = () => {
 
       // إضافة المؤسس لشجرة العائلة
       console.log('Inserting founder for family:', family.id);
+      console.log('Founder data:', founderData);
+      console.log('Tree data:', treeData);
+      const founderName = `${founderData.name || 'مؤسس'} ${treeData.name || ''}`.trim() || 'مؤسس العائلة';
+      console.log('Computed founder name:', founderName);
+      
       const { data: founder, error: founderError } = await supabase
         .from('family_tree_members')
         .insert({
           family_id: family.id,
-          name: `${founderData.name || 'مؤسس'} ${treeData.name || ''}`.trim(),
+          name: founderName,
           first_name: founderData.name,
           last_name: treeData.name,
           gender: founderData.gender,
@@ -389,12 +394,16 @@ const FamilyCreator = () => {
 
       // إضافة الزوجات إلى شجرة العائلة وإنشاء سجلات الزواج
       for (const wife of wives) {
+        console.log('Inserting wife:', wife);
+        const wifeName = wife.name || 'زوجة غير محددة';
+        console.log('Wife name:', wifeName);
+        
         // إضافة الزوجة كعضو في شجرة العائلة
         const { data: wifeData, error: wifeError } = await supabase
           .from('family_tree_members')
           .insert({
             family_id: family.id,
-            name: wife.name,
+            name: wifeName,
             gender: 'female',
             birth_date: wife.birthDate ? new Date(wife.birthDate).toISOString().split('T')[0] : null,
             death_date: wife.deathDate ? new Date(wife.deathDate).toISOString().split('T')[0] : null,
