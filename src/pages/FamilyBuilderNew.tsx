@@ -2582,12 +2582,6 @@ const FamilyBuilderNew = () => {
                                                       </h5>
                                                       
                                                       <div className="space-y-2">
-                                                        {wife.birthDate && (
-                                                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                                            <Calendar className="h-4 w-4" />
-                                                            <span>تاريخ الميلاد: {new Date(wife.birthDate).toLocaleDateString('ar-SA')}</span>
-                                                          </div>
-                                                        )}
                                                         
                                                         <div className="flex items-center gap-2">
                                                           {wife.isSaved && (
