@@ -35,7 +35,7 @@ const FamilyCreator = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [showWivesModal, setShowWivesModal] = useState(false);
-  const [editingWife, setEditingWife] = useState<{ id: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null } | null>(null);
+  const [editingWife, setEditingWife] = useState<{ id: string; first_name: string; last_name: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null; maritalStatus?: string } | null>(null);
   const [isAddingWife, setIsAddingWife] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -60,6 +60,8 @@ const FamilyCreator = () => {
 
   const [wives, setWives] = useState<Array<{
     id: string;
+    first_name: string;
+    last_name: string;
     name: string;
     isAlive: boolean;
     birthDate: Date | null;
@@ -1239,13 +1241,16 @@ const FamilyCreator = () => {
               ref={wifeFormRef}
               initialData={editingWife}
               onAddWife={(wifeData) => {
+                const fullName = `${wifeData.first_name} ${wifeData.last_name}`.trim();
                 if (editingWife) {
                   // Update existing wife
                   setWives(wives.map(w => 
                     w.id === editingWife.id 
                       ? {
                           ...w,
-                          name: wifeData.name,
+                          first_name: wifeData.first_name,
+                          last_name: wifeData.last_name,
+                          name: fullName,
                           isAlive: wifeData.isAlive,
                           birthDate: wifeData.birthDate,
                           deathDate: wifeData.deathDate,
@@ -1255,14 +1260,16 @@ const FamilyCreator = () => {
                   ));
                   toast({
                     title: t('wife_updated_success', 'تم تحديث بيانات الزوجة بنجاح'),
-                    description: t('wife_updated_desc', `تم تحديث بيانات ${wifeData.name}`),
+                    description: t('wife_updated_desc', `تم تحديث بيانات ${fullName}`),
                     duration: 3000
                   });
                 } else {
                   // Add new wife
                   const newWife = {
                     id: crypto.randomUUID(),
-                    name: wifeData.name,
+                    first_name: wifeData.first_name,
+                    last_name: wifeData.last_name,
+                    name: fullName,
                     isAlive: wifeData.isAlive,
                     birthDate: wifeData.birthDate,
                     deathDate: wifeData.deathDate,
@@ -1271,7 +1278,7 @@ const FamilyCreator = () => {
                   setWives([...wives, newWife]);
                   toast({
                     title: t('wife_added_success', 'تم إضافة الزوجة بنجاح'),
-                    description: t('wife_added_desc', `تم إضافة ${wifeData.name} إلى قائمة الزوجات`),
+                    description: t('wife_added_desc', `تم إضافة ${fullName} إلى قائمة الزوجات`),
                     duration: 3000
                   });
                 }

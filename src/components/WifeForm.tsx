@@ -11,7 +11,8 @@ import { cn } from "@/lib/utils";
 
 interface WifeFormProps {
   onAddWife: (wifeData: {
-    name: string;
+    first_name: string;
+    last_name: string;
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
@@ -19,7 +20,8 @@ interface WifeFormProps {
   }) => void;
   initialData?: {
     id: string;
-    name: string;
+    first_name: string;
+    last_name: string;
     isAlive: boolean;
     birthDate: Date | null;
     deathDate: Date | null;
@@ -34,7 +36,8 @@ export interface WifeFormRef {
 
 const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialData }, ref) => {
   const [formData, setFormData] = useState({
-    name: "",
+    first_name: "",
+    last_name: "",
     isAlive: true,
     birthDate: null as Date | null,
     deathDate: null as Date | null,
@@ -45,7 +48,8 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialDat
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name,
+        first_name: initialData.first_name,
+        last_name: initialData.last_name,
         isAlive: initialData.isAlive,
         birthDate: initialData.birthDate,
         deathDate: initialData.deathDate,
@@ -54,7 +58,8 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialDat
     } else {
       // Reset form when not editing
       setFormData({
-        name: "",
+        first_name: "",
+        last_name: "",
         isAlive: true,
         birthDate: null,
         deathDate: null,
@@ -64,13 +69,14 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialDat
   }, [initialData]);
 
   const handleSubmit = () => {
-    if (!formData.name.trim()) {
+    if (!formData.first_name.trim() && !formData.last_name.trim()) {
       return;
     }
 
     onAddWife(formData);
     setFormData({
-      name: "",
+      first_name: "",
+      last_name: "",
       isAlive: true,
       birthDate: null,
       deathDate: null,
@@ -79,7 +85,7 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialDat
   };
 
   const isValid = () => {
-    return formData.name.trim().length > 0;
+    return formData.first_name.trim().length > 0 || formData.last_name.trim().length > 0;
   };
 
   useImperativeHandle(ref, () => ({
@@ -90,24 +96,39 @@ const WifeForm = forwardRef<WifeFormRef, WifeFormProps>(({ onAddWife, initialDat
   return (
     <div className="space-y-4">
       {/* Name and Birth Date Row */}
-      <div className="grid grid-cols-3 gap-3">
-        {/* Wife Name - Takes 2/3 of the width */}
-        <div className="col-span-2 space-y-2">
-          <Label htmlFor="wife-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+      <div className="grid grid-cols-4 gap-3">
+        {/* First Name */}
+        <div className="space-y-2">
+          <Label htmlFor="wife-first-name" className="text-sm font-medium text-foreground flex items-center gap-2">
             <div className="w-2 h-2 bg-accent rounded-full"></div>
-            اسم الزوجة *
+            الاسم الأول *
           </Label>
           <Input
-            id="wife-name"
-            value={formData.name}
-            onChange={(e) => setFormData({...formData, name: e.target.value})}
-            placeholder="أدخل اسم الزوجة"
+            id="wife-first-name"
+            value={formData.first_name}
+            onChange={(e) => setFormData({...formData, first_name: e.target.value})}
+            placeholder="الاسم الأول"
             className="h-10 rounded-lg bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
           />
         </div>
         
-        {/* Birth Date - Takes 1/3 of the width */}
+        {/* Last Name */}
         <div className="space-y-2">
+          <Label htmlFor="wife-last-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+            <div className="w-2 h-2 bg-accent rounded-full"></div>
+            الاسم الأخير
+          </Label>
+          <Input
+            id="wife-last-name"
+            value={formData.last_name}
+            onChange={(e) => setFormData({...formData, last_name: e.target.value})}
+            placeholder="الاسم الأخير"
+            className="h-10 rounded-lg bg-background border-2 border-input font-arabic transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
+          />
+        </div>
+        
+        {/* Birth Date - Takes remaining space */}
+        <div className="col-span-2 space-y-2">
           <Label className="text-sm font-medium text-foreground flex items-center gap-2">
             <CalendarIcon className="h-4 w-4 text-primary" />
             تاريخ الميلاد
