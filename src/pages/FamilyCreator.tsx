@@ -1145,7 +1145,7 @@ const FamilyCreator = () => {
               <Button
                 onClick={handlePrevStep}
                 variant="outline"
-                className="h-10 sm:h-12 md:h-16 px-4 sm:px-6 md:px-10 text-sm sm:text-base md:text-lg border-2 border-gray-200/50 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
+                className="h-10 sm:h-12 md:h-16 px-4 sm:px-6 md:px-10 text-sm sm:text-base md:text-lg border-2 border-gray-200/50 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/20 dark:hover:text-blue-300 transition-all duration-300 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
               >
                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" />
                 {currentStep === 1 ? "العودة للوحة التحكم" : "السابق"}
