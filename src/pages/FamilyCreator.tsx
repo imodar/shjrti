@@ -1330,14 +1330,8 @@ const FamilyCreator = () => {
             </Button>
             <Button 
               onClick={() => {
-                console.log('Add button clicked');
-                console.log('Form ref:', wifeFormRef.current);
-                console.log('Is form valid:', wifeFormRef.current?.isValid());
                 if (wifeFormRef.current?.isValid()) {
-                  console.log('Form is valid, calling handleSubmit');
                   wifeFormRef.current?.handleSubmit();
-                } else {
-                  console.log('Form is not valid - validation failed');
                 }
               }}
               className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
