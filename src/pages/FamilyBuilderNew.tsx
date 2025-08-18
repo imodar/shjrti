@@ -544,7 +544,6 @@ const FamilyBuilderNew = () => {
   const [formData, setFormData] = useState({
     name: "",
     first_name: "",
-    last_name: "",
     relation: "",
     relatedPersonId: null as string | null,
     selectedParent: null as string | null,
@@ -1388,7 +1387,6 @@ const FamilyBuilderNew = () => {
     setFormData({
       name: "",
       first_name: "",
-      last_name: "",
       relation: "",
       relatedPersonId: null,
       selectedParent: null,
@@ -1409,7 +1407,6 @@ const FamilyBuilderNew = () => {
     setFormData({
       name: member.name || "",
       first_name: member.first_name || "",
-      last_name: member.last_name || "",
       relation: member.relation || "",
       relatedPersonId: member.relatedPersonId,
       selectedParent: member.relatedPersonId || null,
@@ -1837,12 +1834,12 @@ const FamilyBuilderNew = () => {
 
       if (isEditMode) {
         // Update existing member
-        // Use first_name from formData directly, fall back to splitting name if needed
-        const firstName = submissionData.first_name || submissionData.name?.split(' ')[0] || '';
-        const lastName = submissionData.last_name || submissionData.name?.split(' ').slice(1).join(' ') || familyData?.name || '';
+        // Use first_name from formData directly
+        const firstName = submissionData.first_name || submissionData.name || '';
+        const lastName = familyData?.name || '';
         
         // Ensure name field is properly constructed
-        const fullName = firstName && lastName ? `${firstName} ${lastName}` : submissionData.name || '';
+        const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
         
         const { data: updatedMember, error: updateError } = await supabase
           .from('family_tree_members')
@@ -1875,12 +1872,12 @@ const FamilyBuilderNew = () => {
         
       } else {
         // Insert new family member into database
-        // Use first_name from formData directly, fall back to splitting name if needed
-        const firstName = submissionData.first_name || submissionData.name?.split(' ')[0] || '';
-        const lastName = submissionData.last_name || submissionData.name?.split(' ').slice(1).join(' ') || familyData?.name || '';
+        // Use first_name from formData directly
+        const firstName = submissionData.first_name || submissionData.name || '';
+        const lastName = familyData?.name || '';
         
         // Ensure name field is properly constructed
-        const fullName = firstName && lastName ? `${firstName} ${lastName}` : submissionData.name || '';
+        const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
         
         const { data: newMember, error: memberError } = await supabase
           .from('family_tree_members')
@@ -2669,20 +2666,6 @@ const FamilyBuilderNew = () => {
                                       placeholder="أدخل الاسم الأول"
                                       className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
                                       required
-                                    />
-                                </div>
-                                
-                                <div className="col-span-12 md:col-span-6">
-                                    <Label htmlFor="last_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                      <UserCircle className="h-4 w-4 text-primary" />
-                                      الاسم الأخير
-                                   </Label>
-                                    <Input
-                                      id="last_name"
-                                      value={formData.last_name}
-                                      onChange={(e) => setFormData({...formData, last_name: e.target.value})}
-                                      placeholder="أدخل الاسم الأخير"
-                                      className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
                                     />
                                 </div>
                               </div>
