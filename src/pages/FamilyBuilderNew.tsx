@@ -2568,81 +2568,85 @@ const FamilyBuilderNew = () => {
                                        </div>
                                      ) : (
                                        wives.map((wife, index) => (
-                                          <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
-                                            <div className="flex items-start justify-between h-full">
-                                              <div 
-                                                className={cn(
-                                                  "flex items-start gap-3 flex-1",
-                                                  wife.isSaved ? "cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                                )}
-                                               onClick={() => {
-                                                 if (wife.isSaved) {
-                                                   handleSpouseEditAttempt('wife', wife, index);
-                                                 }
-                                               }}
-                                              >
-                                                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                  {index + 1}
-                                                </div>
-                                                <div className="flex-1 space-y-2">
-                                                  <div>
-                                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic text-lg">
-                                                      {wife.name || `الزوجة ${index + 1}`}
-                                                    </h5>
-                                                    <p className="text-sm text-muted-foreground font-arabic flex items-center gap-2">
-                                                      {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                      {wife.isSaved && (
-                                                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                          <Check className="h-3 w-3" />
-                                                          محفوظة
-                                                        </span>
-                                                      )}
-                                                    </p>
-                                                  </div>
-                                                  
-                                                  
-                                                  {wife.isSaved && (
-                                                    <p className="text-xs text-pink-600 font-arabic mt-2">
-                                                      انقر للتعديل
-                                                    </p>
-                                                  )}
-                                                </div>
-                                             </div>
-                                             <div className="flex gap-2">
-                                                {wife.isSaved && (
+                                           <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
+                                             <div className="h-full">
+                                               {/* Header Section */}
+                                               <div className="flex items-center justify-between mb-4">
+                                                 <div className="flex items-center gap-3">
+                                                   <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
+                                                     {index + 1}
+                                                   </div>
+                                                   <div>
+                                                     <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg">
+                                                       {wife.name || `الزوجة ${index + 1}`}
+                                                     </h5>
+                                                     <div className="flex items-center gap-2 mt-1">
+                                                       <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                         <Heart className="h-3 w-3" />
+                                                         {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                       </span>
+                                                       {wife.isSaved && (
+                                                         <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                           <Check className="h-3 w-3" />
+                                                           محفوظة
+                                                         </span>
+                                                       )}
+                                                     </div>
+                                                   </div>
+                                                 </div>
+                                                 
+                                                 {/* Action Buttons */}
+                                                 <div className="flex gap-2">
+                                                   {wife.isSaved && (
+                                                     <Button
+                                                       variant="secondary"
+                                                       size="sm"
+                                                       onClick={() => {
+                                                         const updatedWives = [...wives];
+                                                         updatedWives[index] = { ...wife, isSaved: false };
+                                                         setWives(updatedWives);
+                                                         setCurrentWife(wife);
+                                                         setShowWifeForm(true);
+                                                         setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                         
+                                                         toast({
+                                                           title: "وضع التعديل",
+                                                           description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                           variant: "default"
+                                                         });
+                                                       }}
+                                                       className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
+                                                     >
+                                                       <Edit className="h-3 w-3 ml-1" />
+                                                       تعديل
+                                                     </Button>
+                                                   )}
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => {
-                                                      const updatedWives = [...wives];
-                                                      updatedWives[index] = { ...wife, isSaved: false };
-                                                      setWives(updatedWives);
-                                                      setCurrentWife(wife);
-                                                      setShowWifeForm(true);
-                                                      setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                      
-                                                      toast({
-                                                        title: "وضع التعديل",
-                                                        description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                        variant: "default"
-                                                      });
-                                                    }}
-                                                    className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
+                                                    onClick={() => handleSpouseDelete(wife, index)}
+                                                    className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300"
                                                   >
-                                                    <Edit className="h-3 w-3" />
+                                                    <X className="h-3 w-3 ml-1" />
+                                                    حذف
                                                   </Button>
-                                                )}
-                                               <Button
-                                                 variant="outline"
-                                                 size="sm"
-                                                 onClick={() => handleSpouseDelete(wife, index)}
-                                                 className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                               >
-                                                 <X className="h-3 w-3" />
-                                               </Button>
+                                                </div>
+                                               </div>
+                                               
+                                               {/* Interactive Area */}
+                                               {wife.isSaved && (
+                                                 <div 
+                                                   className="cursor-pointer hover:bg-pink-50/70 dark:hover:bg-pink-950/30 rounded-lg p-3 -m-1 transition-all duration-300 border border-transparent hover:border-pink-200 dark:hover:border-pink-700"
+                                                   onClick={() => handleSpouseEditAttempt('wife', wife, index)}
+                                                 >
+                                                   <p className="text-sm text-pink-600 dark:text-pink-400 font-arabic flex items-center gap-2">
+                                                     <Edit className="h-4 w-4" />
+                                                     انقر هنا لعرض وتعديل التفاصيل
+                                                   </p>
+                                                 </div>
+                                               )}
                                              </div>
                                            </div>
-                                         </div>
                                        ))
                                      )}
                                    </div>
