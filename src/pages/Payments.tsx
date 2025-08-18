@@ -1266,7 +1266,7 @@ export default function Payments() {
                                 </>
                               ) : (
                                 <>
-                                  ادفع واشترك الآن
+                                  اشترك الآن
                                   <CreditCard className="h-4 w-4" />
                                 </>
                               )}
