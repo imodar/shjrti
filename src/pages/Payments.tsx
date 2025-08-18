@@ -103,7 +103,18 @@ export default function Payments() {
       setLoading(true);
       const { data, error } = await supabase
         .from('packages')
-        .select('*')
+        .select(`
+          *,
+          name,
+          description,
+          features,
+          price_usd,
+          price_sar,
+          max_family_members,
+          max_family_trees,
+          ai_features_enabled,
+          image_upload_enabled
+        `)
         .eq('is_active', true)
         .order('display_order', { ascending: true });
 
@@ -1549,7 +1560,7 @@ export default function Payments() {
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                 <div className="flex items-center justify-between text-sm">
                   <span>خطة {selectedPlanData?.name}</span>
-                  <span className="font-bold">{selectedPlanData?.price} ريال/شهرياً</span>
+                  <span className="font-bold">{selectedPlanData?.price} ريال/سنوياً</span>
                 </div>
               </div>
             </div>
@@ -1632,33 +1643,42 @@ export default function Payments() {
                             {formatPrice(packages.find(p => p.id === currentPlan)?.price)}
                           </span>
                           <span className="text-muted-foreground">
-                            /{currentLanguage === 'ar' ? 'شهر' : 'month'}
+                            /{currentLanguage === 'ar' ? 'سنة' : 'year'}
                           </span>
                         </div>
                       </CardHeader>
                       <CardContent>
                         <ul className="space-y-2">
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">
-                              {currentLanguage === 'ar' ? 'عدد العائلات: ' : 'Families: '}
-                              {packages.find(p => p.id === currentPlan)?.family_limit || '∞'}
-                            </span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">
-                              {currentLanguage === 'ar' ? 'عدد الأعضاء: ' : 'Members: '}
-                              {packages.find(p => p.id === currentPlan)?.member_limit || '∞'}
-                            </span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">
-                              {currentLanguage === 'ar' ? 'مساحة تخزين: ' : 'Storage: '}
-                              {packages.find(p => p.id === currentPlan)?.storage_limit || '∞'} GB
-                            </span>
-                          </li>
+                          {packages.find(p => p.id === currentPlan)?.features?.map((feature, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">{feature}</span>
+                            </li>
+                          )) || (
+                            <>
+                              <li className="flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <span className="text-sm">
+                                  {currentLanguage === 'ar' ? 'عدد العائلات: ' : 'Families: '}
+                                  {packages.find(p => p.id === currentPlan)?.family_limit || '∞'}
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <span className="text-sm">
+                                  {currentLanguage === 'ar' ? 'عدد الأعضاء: ' : 'Members: '}
+                                  {packages.find(p => p.id === currentPlan)?.member_limit || '∞'}
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <span className="text-sm">
+                                  {currentLanguage === 'ar' ? 'مساحة تخزين: ' : 'Storage: '}
+                                  {packages.find(p => p.id === currentPlan)?.storage_limit || '∞'} GB
+                                </span>
+                              </li>
+                            </>
+                          )}
                         </ul>
                       </CardContent>
                     </Card>
@@ -1680,33 +1700,42 @@ export default function Payments() {
                           {formatPrice(selectedDowngradePlan?.price)}
                         </span>
                         <span className="text-muted-foreground">
-                          /{currentLanguage === 'ar' ? 'شهر' : 'month'}
+                          /{currentLanguage === 'ar' ? 'سنة' : 'year'}
                         </span>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2">
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span className="text-sm">
-                            {currentLanguage === 'ar' ? 'عدد العائلات: ' : 'Families: '}
-                            {selectedDowngradePlan?.family_limit || '∞'}
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span className="text-sm">
-                            {currentLanguage === 'ar' ? 'عدد الأعضاء: ' : 'Members: '}
-                            {selectedDowngradePlan?.member_limit || '∞'}
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span className="text-sm">
-                            {currentLanguage === 'ar' ? 'مساحة تخزين: ' : 'Storage: '}
-                            {selectedDowngradePlan?.storage_limit || '∞'} GB
-                          </span>
-                        </li>
+                        {selectedDowngradePlan?.features?.map((feature, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">{feature}</span>
+                          </li>
+                        )) || (
+                          <>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">
+                                {currentLanguage === 'ar' ? 'عدد العائلات: ' : 'Families: '}
+                                {selectedDowngradePlan?.family_limit || '∞'}
+                              </span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">
+                                {currentLanguage === 'ar' ? 'عدد الأعضاء: ' : 'Members: '}
+                                {selectedDowngradePlan?.member_limit || '∞'}
+                              </span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">
+                                {currentLanguage === 'ar' ? 'مساحة تخزين: ' : 'Storage: '}
+                                {selectedDowngradePlan?.storage_limit || '∞'} GB
+                              </span>
+                            </li>
+                          </>
+                        )}
                       </ul>
                     </CardContent>
                   </Card>
@@ -1740,7 +1769,11 @@ export default function Payments() {
                   ) : (
                     <>
                       {currentLanguage === 'ar' ? 'تأكيد التغيير' : 'Confirm Change'}
-                      <ChevronRight className="h-4 w-4 ml-2" />
+                      {currentLanguage === 'ar' ? (
+                        <ChevronLeft className="h-4 w-4 mr-2" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                      )}
                     </>
                   )}
                 </Button>
