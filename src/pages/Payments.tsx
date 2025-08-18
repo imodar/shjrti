@@ -1649,7 +1649,7 @@ export default function Payments() {
                       </CardHeader>
                       <CardContent>
                         <ul className="space-y-2">
-                          {(packages.find(p => p.id === currentPlan)?.features || []).map((feature, index) => (
+                          {getLocalizedFeatures(packages.find(p => p.id === currentPlan), currentLanguage).map((feature, index) => (
                             <li key={index} className="flex items-center gap-2">
                               <CheckCircle className="h-4 w-4 text-green-500" />
                               <span className="text-sm">{feature}</span>
@@ -1706,7 +1706,7 @@ export default function Payments() {
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2">
-                        {(selectedDowngradePlan?.features || []).map((feature, index) => (
+                        {getLocalizedFeatures(selectedDowngradePlan, currentLanguage).map((feature, index) => (
                           <li key={index} className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-green-500" />
                             <span className="text-sm">{feature}</span>
