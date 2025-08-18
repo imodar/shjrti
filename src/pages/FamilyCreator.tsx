@@ -1374,7 +1374,7 @@ const FamilyCreator = () => {
             <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent animate-fade-in text-center">
               🎉 تم إنشاء العائلة بنجاح!
             </DialogTitle>
-            <DialogDescription className="text-gray-600 dark:text-gray-300 mt-4 text-lg animate-fade-in">
+            <DialogDescription className="text-gray-600 dark:text-gray-300 mt-4 text-lg animate-fade-in text-center">
               تم حفظ بيانات شجرة العائلة بنجاح في قاعدة البيانات
             </DialogDescription>
           </DialogHeader>
