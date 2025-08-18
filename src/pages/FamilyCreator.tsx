@@ -1232,7 +1232,7 @@ const FamilyCreator = () => {
 
       {/* Creative Add Wife Modal */}
       <Dialog open={isAddingWife} onOpenChange={setIsAddingWife}>
-        <DialogContent className="max-w-xl border-0 bg-gradient-to-br from-green-50/90 via-emerald-50/90 to-teal-50/90 dark:from-green-950/90 dark:via-emerald-950/90 dark:to-teal-950/90 backdrop-blur-xl shadow-2xl">
+        <DialogContent className="w-[95vw] max-w-xl mx-4 sm:mx-auto border-0 bg-gradient-to-br from-green-50/90 via-emerald-50/90 to-teal-50/90 dark:from-green-950/90 dark:via-emerald-950/90 dark:to-teal-950/90 backdrop-blur-xl shadow-2xl">
           {/* Decorative Header */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></div>
           
