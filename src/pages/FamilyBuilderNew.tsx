@@ -43,7 +43,7 @@ import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSke
 import { MemberProfileView } from "@/components/MemberProfileView";
 
 
-const FamilyBuilderNew = () => {
+const FamilyBuilderNew = memo(() => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { hasAIFeatures } = useSubscription();
@@ -3618,5 +3618,7 @@ const MemberList = ({
     </div>
   );
 };
+
+});
 
 export default FamilyBuilderNew;
