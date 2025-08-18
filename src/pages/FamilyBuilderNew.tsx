@@ -1754,13 +1754,18 @@ const FamilyBuilderNew = () => {
                       })
                       .eq('id', wife.existingFamilyMemberId);
                     
-                    if (updateWifeError) {
-                      console.error('Error updating wife marital status:', updateWifeError);
-                    } else {
-                      console.log('Successfully updated wife marital status to:', wife.maritalStatus);
-                    }
-                   
-                 }
+                     if (updateWifeError) {
+                       console.error('Error updating wife marital status:', updateWifeError);
+                     } else {
+                       console.log('Successfully updated wife marital status to:', wife.maritalStatus);
+                     }
+
+                     // Also update marriage table marital status
+                     await supabase
+                       .from('marriages')
+                       .update({ marital_status: wife.maritalStatus })
+                       .eq('wife_id', wife.existingFamilyMemberId);
+                   }
 
                 // Check if marriage already exists and update it, otherwise create new one
                 const { data: existingMarriage } = await supabase
@@ -1878,6 +1883,12 @@ const FamilyBuilderNew = () => {
                 } else {
                   console.log('Successfully updated husband marital status to:', husband.maritalStatus);
                 }
+
+                // Also update marriage table marital status
+                await supabase
+                  .from('marriages')
+                  .update({ marital_status: husband.maritalStatus })
+                  .eq('husband_id', husband.existingFamilyMemberId);
                 
               }
 
