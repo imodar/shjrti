@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
-import { Check, ChevronsUpDown, Heart, UserPlus, CalendarIcon, Save, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Heart, UserPlus, CalendarIcon, Save, Plus, Upload, Image, Crop, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
+import Cropper from "react-easy-crop";
 
 export interface SpouseData {
   id: string;
@@ -22,6 +25,7 @@ export interface SpouseData {
   isFamilyMember: boolean;
   existingFamilyMemberId: string;
   croppedImage: string | null;
+  biography?: string;
   isSaved: boolean;
 }
 
@@ -57,9 +61,17 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   showForm
 }) => {
   const { toast } = useToast();
+  const { isImageUploadEnabled } = useImageUploadPermission();
   
   // Track original spouse data for change detection
   const [originalSpouse, setOriginalSpouse] = useState<SpouseData | null>(null);
+  
+  // Image upload states
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showImageCrop, setShowImageCrop] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   
   // Initialize original spouse data when spouse prop changes
   useEffect(() => {
@@ -79,8 +91,91 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
     originalSpouse.existingFamilyMemberId !== spouse.existingFamilyMemberId ||
     originalSpouse.birthDate?.getTime() !== spouse.birthDate?.getTime() ||
     originalSpouse.isAlive !== spouse.isAlive ||
-    originalSpouse.deathDate?.getTime() !== spouse.deathDate?.getTime()
+    originalSpouse.deathDate?.getTime() !== spouse.deathDate?.getTime() ||
+    originalSpouse.croppedImage !== spouse.croppedImage ||
+    originalSpouse.biography !== spouse.biography
   );
+  
+  // Image handling functions
+  const createCroppedImage = async (imageSrc: string, cropArea: any): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const image = new window.Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Unable to get canvas context'));
+          return;
+        }
+        
+        canvas.width = cropArea.width;
+        canvas.height = cropArea.height;
+        
+        ctx.drawImage(
+          image,
+          cropArea.x,
+          cropArea.y,
+          cropArea.width,
+          cropArea.height,
+          0,
+          0,
+          cropArea.width,
+          cropArea.height
+        );
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          } else {
+            reject(new Error('Canvas to blob conversion failed'));
+          }
+        }, 'image/jpeg', 0.8);
+      };
+      image.src = imageSrc;
+    });
+  };
+  
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result as string);
+        setShowImageCrop(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const handleCropComplete = async () => {
+    if (selectedImage && croppedAreaPixels) {
+      try {
+        const croppedImage = await createCroppedImage(selectedImage, croppedAreaPixels);
+        onSpouseChange({ ...spouse, croppedImage });
+        setShowImageCrop(false);
+        setSelectedImage(null);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        setCroppedAreaPixels(null);
+        
+        toast({
+          title: "تم رفع الصورة",
+          description: "تم تحديد صورة الزوج/الزوجة بنجاح",
+          variant: "default"
+        });
+      } catch (error) {
+        console.error('Crop error:', error);
+        toast({
+          title: "خطأ في قص الصورة",
+          description: "حدث خطأ أثناء معالجة الصورة",
+          variant: "destructive"
+        });
+      }
+    }
+  };
   
   const isWife = spouseType === 'wife';
   const spouseLabel = isWife ? 'الزوجة' : 'الزوج';
@@ -309,6 +404,61 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
             </>
           ) : familyStatus === 'no' ? (
             <>
+              {/* Image Upload Section - for non-family members and if package allows */}
+              {isImageUploadEnabled && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg"></div>
+                    صورة {spouseLabel}
+                  </Label>
+                  
+                  <div className="flex items-center gap-4">
+                    {spouse.croppedImage && (
+                      <div className="relative">
+                        <img 
+                          src={spouse.croppedImage} 
+                          alt={`صورة ${spouseLabel}`}
+                          className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById(`${spouseType}-image-input`)?.click()}
+                        className="flex items-center gap-2 font-arabic"
+                      >
+                        <Camera className="h-4 w-4" />
+                        {spouse.croppedImage ? 'تغيير الصورة' : 'إضافة صورة'}
+                      </Button>
+                      
+                      {spouse.croppedImage && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onSpouseChange({ ...spouse, croppedImage: null })}
+                          className="flex items-center gap-2 font-arabic text-red-600 hover:text-red-700"
+                        >
+                          حذف الصورة
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <input
+                      id={`${spouseType}-image-input`}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Name Fields for Non-Family Members */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="group">
@@ -459,6 +609,24 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   )}
                 </div>
               </div>
+              
+              {/* Biography/Notes Section */}
+              <div className="space-y-3">
+                <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                  <div className="w-2 h-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-lg"></div>
+                  معلومات إضافية عن {spouseLabel}
+                </Label>
+                <Textarea
+                  value={spouse.biography || ''}
+                  onChange={(e) => onSpouseChange({ ...spouse, biography: e.target.value })}
+                  placeholder={`أضف معلومات إضافية عن ${spouseLabel} (السيرة الذاتية، المهنة، الهوايات، إلخ...)`}
+                  className="min-h-[80px] border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic resize-none"
+                  rows={3}
+                />
+                <p className="text-xs text-muted-foreground font-arabic">
+                  يمكنك إضافة معلومات مثل: المهنة، التعليم، الإنجازات، الهوايات، أو أي معلومات مهمة أخرى
+                </p>
+              </div>
             </>
           ) : (
             /* When no radio button is selected, show cancel option */
@@ -518,9 +686,81 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 )}
               </Button>
             </div>
-          )}
+            )}
         </div>
       </div>
+      
+      {/* Image Crop Modal */}
+      {showImageCrop && selectedImage && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold font-arabic">قص وتعديل الصورة</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowImageCrop(false);
+                  setSelectedImage(null);
+                }}
+                className="font-arabic"
+              >
+                إلغاء
+              </Button>
+            </div>
+            
+            <div className="relative w-full h-80 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-4">
+              <Cropper
+                image={selectedImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+                cropShape="round"
+                showGrid={false}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-arabic">تكبير/تصغير</Label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleCropComplete}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-arabic"
+                >
+                  <Crop className="h-4 w-4 mr-2" />
+                  حفظ الصورة
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowImageCrop(false);
+                    setSelectedImage(null);
+                  }}
+                  className="font-arabic"
+                >
+                  إلغاء
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
