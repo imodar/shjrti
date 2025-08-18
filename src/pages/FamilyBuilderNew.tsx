@@ -1734,8 +1734,8 @@ const FamilyBuilderNew = () => {
                  
                }
 
-                 // If wife is an existing family member, update their marital status and preserve image
-                 if (wife.isFamilyMember && wife.existingFamilyMemberId && wife.maritalStatus) {
+                  // If wife is an existing family member, update their marital status and preserve image
+                  if (wife.isFamilyMember && wife.existingFamilyMemberId) {
                    // Get current data to preserve image if no new one provided
                    const { data: currentWife } = await supabase
                      .from('family_tree_members')
@@ -1853,7 +1853,7 @@ const FamilyBuilderNew = () => {
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
               // If husband is an existing family member, update their marital status
-              if (husband.isFamilyMember && husband.existingFamilyMemberId && husband.maritalStatus) {
+              if (husband.isFamilyMember && husband.existingFamilyMemberId) {
                 // Preserve existing image if no new image provided
                 const preservedImageUrl = husband.croppedImage || 
                   familyMembers.find(m => m.id === husband.existingFamilyMemberId)?.image || null;
