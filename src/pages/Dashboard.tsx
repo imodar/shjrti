@@ -98,29 +98,14 @@ const Dashboard = () => {
 
   // Fetch user's data
   useEffect(() => {
+    let isMounted = true;
+
     const fetchUserData = async () => {
       if (!user?.id) return;
       
       setLoading(true);
       try {
-        // Fetch non-archived family trees only
-        console.log('🔍 Fetching families for user:', user.id);
-        
-        // First try a simple query without the count aggregation
-        const { data: familiesSimple, error: familiesSimpleError } = await supabase
-          .from('families')
-          .select('id, name, created_at, updated_at')
-          .eq('creator_id', user.id)
-          .eq('is_archived', false);
-          
-        console.log('📊 Simple families query result:', { familiesSimple, familiesSimpleError });
-        
-        if (familiesSimpleError) {
-          console.error('❌ Error in simple families query:', familiesSimpleError);
-          throw familiesSimpleError;
-        }
-
-        // Now try the complex query with count
+        // Single optimized query for family trees with member count
         const { data: families, error: familiesError } = await supabase
           .from('families')
           .select(`
@@ -133,22 +118,11 @@ const Dashboard = () => {
           .eq('creator_id', user.id)
           .eq('is_archived', false);
 
-        console.log('📊 Complex families query result:', { families, familiesError });
         if (familiesError) {
-          console.error('❌ Error in complex families query:', familiesError);
-          // Fallback to simple query if complex one fails
-          const treesDataSimple = familiesSimple?.map(family => ({
-            id: family.id,
-            name: family.name,
-            members_count: 0, // We'll set this to 0 for now
-            created_at: family.created_at,
-            updated_at: family.updated_at
-          })) || [];
-          
-          console.log('🌳 Using fallback trees data:', treesDataSimple);
-          setFamilyTrees(treesDataSimple);
-          return; // Skip the complex processing
+          throw familiesError;
         }
+
+        if (!isMounted) return;
 
         const treesData = families?.map(family => ({
           id: family.id,
@@ -158,56 +132,59 @@ const Dashboard = () => {
           updated_at: family.updated_at
         })) || [];
 
-        console.log('🌳 Processed trees data:', treesData);
         setFamilyTrees(treesData);
 
-        // Fetch user profile
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('user_id', user.id)
-          .single();
+        // Parallel fetch for profile and subscription
+        const [profileResult, subscriptionResult] = await Promise.allSettled([
+          supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('user_id', user.id)
+            .single(),
+          supabase
+            .from('user_subscriptions')
+            .select(`
+              *,
+              packages (
+                name,
+                max_family_trees,
+                max_family_members,
+                price_sar,
+                price_usd
+              )
+            `)
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .maybeSingle()
+        ]);
 
-        if (!profileError && profile) {
-          setUserProfile(profile);
+        if (!isMounted) return;
+
+        // Handle profile data
+        if (profileResult.status === 'fulfilled' && profileResult.value.data) {
+          setUserProfile(profileResult.value.data);
         }
 
-        // Fetch user subscription with package details
-        const { data: subscription, error: subscriptionError } = await supabase
-          .from('user_subscriptions')
-          .select(`
-            *,
-            packages (
-              name,
-              max_family_trees,
-              max_family_members,
-              price_sar,
-              price_usd
-            )
-          `)
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .maybeSingle();
-
-        if (!subscriptionError && subscription) {
-          // Parse package name JSON
+        // Handle subscription data
+        if (subscriptionResult.status === 'fulfilled' && subscriptionResult.value.data) {
+          const subscription = subscriptionResult.value.data;
           let packageDisplayName = t('dashboard.free_package', 'Free Package');
+          
           if (subscription.packages?.name) {
-             try {
-               // Handle both string and object formats
-               const nameObj = typeof subscription.packages.name === 'string' 
-                 ? JSON.parse(subscription.packages.name)
-                 : subscription.packages.name;
-               packageDisplayName = nameObj[currentLanguage] || nameObj.ar || nameObj.en || t('dashboard.free_package', 'Free Package');
-             } catch (e) {
-               packageDisplayName = typeof subscription.packages.name === 'string' 
-                 ? subscription.packages.name 
-                 : t('dashboard.free_package', 'Free Package');
-             }
+            try {
+              const nameObj = typeof subscription.packages.name === 'string' 
+                ? JSON.parse(subscription.packages.name)
+                : subscription.packages.name;
+              packageDisplayName = nameObj[currentLanguage] || nameObj.ar || nameObj.en || packageDisplayName;
+            } catch (e) {
+              packageDisplayName = typeof subscription.packages.name === 'string' 
+                ? subscription.packages.name 
+                : packageDisplayName;
+            }
           }
           
-           setUserSubscription({
-             package_name: subscription.packages?.name,
+          setUserSubscription({
+            package_name: subscription.packages?.name,
             status: subscription.status,
             is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
             max_trees: subscription.packages?.max_family_trees || 1,
@@ -225,21 +202,29 @@ const Dashboard = () => {
             max_members: 50
           });
         }
-      } catch (error) {
-        console.error('❌ Error fetching data:', error);
+      } catch (error: any) {
+        if (!isMounted) return;
+        
+        console.error('Error fetching dashboard data:', error);
         toast({
           title: t('dashboard.error', 'Error'),
           description: t('dashboard.error_loading_data', 'Error occurred while loading data'),
           variant: "destructive"
         });
       } finally {
-        console.log('✅ Dashboard data loading completed. Final familyTrees:', familyTrees.length);
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchUserData();
-  }, [user?.id, toast]);
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id, currentLanguage, toast, t]);
 
   // Map progress to current step index
   useEffect(() => {
@@ -269,24 +254,14 @@ const Dashboard = () => {
   };
 
   const handleDeleteTreeClick = (treeId: string, treeName: string) => {
-    console.log('🗑️ Delete button clicked for tree:', { treeId, treeName });
     setDeleteTreeId(treeId);
     setDeleteTreeName(treeName);
     setDeleteConfirmText("");
     setShowDeleteModal(true);
-    console.log('📝 Delete modal should now be visible');
   };
 
   const handleConfirmDelete = async () => {
-    console.log('🔄 handleConfirmDelete called with:', { 
-      deleteTreeId, 
-      deleteConfirmText: deleteConfirmText.trim(), 
-      deleteTreeName: deleteTreeName.trim(),
-      matches: deleteConfirmText.trim() === deleteTreeName.trim()
-    });
-    
     if (!deleteTreeId || deleteConfirmText.trim() !== deleteTreeName.trim()) {
-      console.log('❌ Validation failed in handleConfirmDelete');
       toast({
         title: t('dashboard.confirmation_error', 'Confirmation Error'),
         description: t('dashboard.tree_name_confirmation', 'Tree name must be typed correctly for confirmation'),
@@ -302,34 +277,25 @@ const Dashboard = () => {
     setDeletionError(null);
     setProgress(0);
 
-    // Start a smooth progress animation up to 95%
-    const interval = setInterval(() => {
-      setProgress((prev) => Math.min(prev + 5, 95));
-    }, 400);
+    let progressInterval: NodeJS.Timeout | null = null;
 
-    console.log('🗑️ Attempting to delete tree:', deleteTreeId);
-    console.log('👤 Current user ID:', user?.id);
-    
     try {
-      console.log('🗑️ Starting delete operation for tree:', deleteTreeId);
-      console.log('👤 User ID for delete operation:', user?.id);
-      
+      // Start progress animation
+      progressInterval = setInterval(() => {
+        setProgress((prev) => Math.min(prev + 5, 95));
+      }, 400);
+
       // Perform deletion via secure function
       const { data, error } = await supabase
         .rpc('delete_family_complete', { family_uuid: deleteTreeId });
-
-      console.log('📊 Delete operation result:', { data, error });
       
       if (error || !data) {
         const message = error?.message || t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it');
-        console.error('❌ Delete error details:', message);
         setDeletionError(`${t('dashboard.tree_deletion_error', 'Error occurred while deleting family tree')}: ${message}`);
         return;
       }
 
-      console.log('✅ Tree and all related data deleted successfully');
-      
-      // Ensure progress completes
+      // Complete progress
       setProgress(100);
       
       // Update local state
@@ -343,14 +309,16 @@ const Dashboard = () => {
         description: t('dashboard.tree_deletion_success', 'Family tree deleted successfully')
       });
 
-      // Small delay for users to see 100%
-      await new Promise((res) => setTimeout(res, 600));
+      // Delay before closing modal
+      await new Promise((resolve) => setTimeout(resolve, 600));
       setShowProgressModal(false);
     } catch (error: any) {
-      console.error('❌ Unexpected error during deletion:', error);
+      console.error('Error during deletion:', error);
       setDeletionError(`${t('dashboard.unexpected_error', 'Unexpected error occurred')}: ${error?.message || ''}`);
     } finally {
-      clearInterval(interval);
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
       setIsDeleting(false);
     }
   };
