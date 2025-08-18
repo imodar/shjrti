@@ -2990,6 +2990,58 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Image Crop Dialog */}
+      <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>اقتصاص الصورة</DialogTitle>
+            <DialogDescription>
+              استخدم الأدوات أدناه لاقتصاص وتعديل الصورة كما تريد
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {selectedImage && (
+              <div className="relative h-96">
+                <Cropper
+                  image={selectedImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label>التكبير</Label>
+              <Slider
+                value={[zoom]}
+                onValueChange={(value) => setZoom(value[0])}
+                min={1}
+                max={3}
+                step={0.1}
+                className="w-full"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowCropDialog(false)}
+            >
+              إلغاء
+            </Button>
+            <Button onClick={handleCropSave}>
+              حفظ الصورة
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Keep existing delete modals */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <AlertDialogContent className="max-w-lg animate-scale-in">
