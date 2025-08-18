@@ -404,6 +404,8 @@ const FamilyCreator = () => {
           .insert({
             family_id: family.id,
             name: wifeName,
+            first_name: wife.first_name || wife.name || 'زوجة',
+            last_name: wife.last_name || treeData.name,
             gender: 'female',
             birth_date: wife.birthDate ? new Date(wife.birthDate).toISOString().split('T')[0] : null,
             death_date: wife.deathDate ? new Date(wife.deathDate).toISOString().split('T')[0] : null,
