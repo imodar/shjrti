@@ -801,12 +801,23 @@ export default function Payments() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">تاريخ التجديد</span>
                         <span className="font-medium">
-                          {currentPlan && subscription?.expires_at ? 
-                            new Date(subscription.expires_at).toLocaleDateString('en-GB') :
-                            currentPlan ? 
-                              'غير محدد' : 
-                              <span className="text-emerald-600 font-bold">مجاناً للأبد</span>
-                          }
+                          {(() => {
+                            console.log('🔍 Subscription debug:', { 
+                              currentPlan, 
+                              subscription, 
+                              expires_at: subscription?.expires_at,
+                              hasCurrentPlan: !!currentPlan,
+                              hasExpiresAt: !!subscription?.expires_at
+                            });
+                            
+                            if (currentPlan && subscription?.expires_at) {
+                              return new Date(subscription.expires_at).toLocaleDateString('ar-SA');
+                            } else if (currentPlan) {
+                              return 'غير محدد';
+                            } else {
+                              return <span className="text-emerald-600 font-bold">مجاناً للأبد</span>;
+                            }
+                          })()}
                         </span>
                       </div>
                     </div>
