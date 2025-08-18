@@ -805,7 +805,7 @@ export default function Payments() {
                             // إذا كان هناك اشتراك مجدول للتنزيل، استخدم تاريخه
                             if (scheduledDowngrade) {
                               const scheduledDate = new Date(scheduledDowngrade.scheduled_date);
-                              return scheduledDate.toLocaleDateString('ar-SA', { calendar: 'gregory' });
+                              return scheduledDate.toLocaleDateString('en-GB');
                             }
                             
                             // إذا كان هناك اشتراك حالي، جلب تاريخ الانتهاء من قاعدة البيانات
@@ -819,7 +819,7 @@ export default function Payments() {
                                 const startDate = new Date(currentInvoice.created_at);
                                 const endDate = new Date(startDate);
                                 endDate.setFullYear(endDate.getFullYear() + 1);
-                                return endDate.toLocaleDateString('ar-SA', { calendar: 'gregory' });
+                                return endDate.toLocaleDateString('en-GB');
                               }
                               return 'غير محدد';
                             } else {
