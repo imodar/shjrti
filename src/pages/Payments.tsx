@@ -106,9 +106,9 @@ export default function Payments() {
 
       if (error) throw error;
 
-      // Transform database data to match UI format with language-based pricing
+      // Transform database data to match UI format while preserving original pricing data
       const transformedPackages = data.map(pkg => {
-        // Select price based on current language
+        // Select price based on current language for display
         const price = currentLanguage === 'ar' ? (pkg.price_sar || 0) : (pkg.price_usd || 0);
         
         return {
@@ -120,6 +120,9 @@ export default function Payments() {
           features: pkg.features || [],
           maxMembers: pkg.max_family_members,
           maxTrees: pkg.max_family_trees,
+          // Preserve original pricing data
+          price_sar: pkg.price_sar,
+          price_usd: pkg.price_usd,
           icon: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? Shield :
                 getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? Star : Crown,
           color: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? "bg-gray-500" :
@@ -386,6 +389,15 @@ export default function Payments() {
     setProcessingInvoice(true);
 
     try {
+      // Log the package data for debugging
+      console.log('🔍 Selected package data:', {
+        id: selectedPackage.id,
+        name: selectedPackage.name,
+        price_sar: selectedPackage.price_sar,
+        price_usd: selectedPackage.price_usd,
+        currentLanguage: currentLanguage
+      });
+
       // Calculate amount based on language - use the same logic as PlanSelection
       const amount = currentLanguage === 'ar' ? (selectedPackage.price_sar || 0) : (selectedPackage.price_usd || 0);
       const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
