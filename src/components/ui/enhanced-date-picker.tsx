@@ -133,7 +133,7 @@ export function EnhancedDatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] bg-white dark:bg-gray-800" 
+        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] bg-white dark:bg-gray-800 sm:translate-y-0 -translate-y-8" 
         align="center" 
         sideOffset={5}
         avoidCollisions={true}
