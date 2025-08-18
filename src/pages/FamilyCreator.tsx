@@ -579,7 +579,7 @@ const FamilyCreator = () => {
                   {/* Text Content */}
                   <div className="text-right">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent text-right rtl:text-right">
                         إنشاء شجرة العائلة
                       </span>
                     </h1>
