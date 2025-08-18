@@ -45,6 +45,7 @@ export default function Payments() {
   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
   const [packageWarning, setPackageWarning] = useState<string>("");
   const [scheduledDowngrade, setScheduledDowngrade] = useState<any>(null);
+  const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
 
   // Function to get localized value
   const getLocalizedValue = (value: string | object): string => {
@@ -277,9 +278,13 @@ export default function Payments() {
 
   // Function to cancel scheduled downgrade
   const cancelScheduledDowngrade = async () => {
-    if (!user || !scheduledDowngrade) return;
+    if (!user || !scheduledDowngrade || cancellingDowngrade) return;
 
+    setCancellingDowngrade(true);
+    
     try {
+      console.log('🔄 Cancelling scheduled downgrade...');
+      
       const { error } = await supabase
         .from('scheduled_package_changes')
         .delete()
@@ -300,6 +305,8 @@ export default function Payments() {
 
       setScheduledDowngrade(null);
       
+      console.log('✅ Scheduled downgrade cancelled successfully');
+      
       toast({
         title: currentLanguage === 'ar' ? "تم الإلغاء" : "Cancelled",
         description: currentLanguage === 'ar' 
@@ -308,6 +315,15 @@ export default function Payments() {
       });
     } catch (error) {
       console.error('Error in cancelScheduledDowngrade:', error);
+      toast({
+        title: currentLanguage === 'ar' ? "خطأ" : "Error",
+        description: currentLanguage === 'ar' 
+          ? "حدث خطأ أثناء إلغاء التغيير المجدول" 
+          : "An error occurred while cancelling the scheduled change",
+        variant: "destructive",
+      });
+    } finally {
+      setCancellingDowngrade(false);
     }
   };
 
@@ -1027,9 +1043,13 @@ export default function Payments() {
                           </div>
                           <button
                             onClick={cancelScheduledDowngrade}
-                            className="self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm"
+                            disabled={cancellingDowngrade}
+                            className="self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm"
                           >
-                            {currentLanguage === 'ar' ? "إلغاء التغيير المجدول" : "Cancel Scheduled Change"}
+                            {cancellingDowngrade 
+                              ? (currentLanguage === 'ar' ? "جاري الإلغاء..." : "Cancelling...")
+                              : (currentLanguage === 'ar' ? "إلغاء التغيير المجدول" : "Cancel Scheduled Change")
+                            }
                           </button>
                         </div>
                       </div>
