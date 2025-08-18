@@ -543,6 +543,7 @@ const FamilyBuilderNew = () => {
   // Form data states
   const [formData, setFormData] = useState({
     name: "",
+    first_name: "",
     relation: "",
     relatedPersonId: null as string | null,
     selectedParent: null as string | null,
@@ -1385,6 +1386,7 @@ const FamilyBuilderNew = () => {
   const resetFormData = () => {
     setFormData({
       name: "",
+      first_name: "",
       relation: "",
       relatedPersonId: null,
       selectedParent: null,
@@ -1404,6 +1406,7 @@ const FamilyBuilderNew = () => {
   const populateFormData = (member: any) => {
     setFormData({
       name: member.name || "",
+      first_name: member.first_name || "",
       relation: member.relation || "",
       relatedPersonId: member.relatedPersonId,
       selectedParent: member.relatedPersonId || null,
@@ -2653,20 +2656,20 @@ const FamilyBuilderNew = () => {
                              
                              {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
                              <div className="grid grid-cols-12 gap-6">
-                               <div className="col-span-12 md:col-span-6">
-                                   <Label htmlFor="name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <UserCircle className="h-4 w-4 text-primary" />
-                                     الاسم الكامل *
-                                  </Label>
-                                   <Input
-                                     id="name"
-                                     value={formData.name}
-                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                     placeholder="أدخل الاسم الكامل"
-                                     className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                     required
-                                   />
-                               </div>
+                                <div className="col-span-12 md:col-span-6">
+                                    <Label htmlFor="first_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      <UserCircle className="h-4 w-4 text-primary" />
+                                      الاسم الأول *
+                                   </Label>
+                                    <Input
+                                      id="first_name"
+                                      value={formData.first_name}
+                                      onChange={(e) => setFormData({...formData, first_name: e.target.value})}
+                                      placeholder="أدخل الاسم الأول"
+                                      className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                      required
+                                    />
+                                </div>
                                
                                <div className="col-span-6 md:col-span-3">
                                    <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
