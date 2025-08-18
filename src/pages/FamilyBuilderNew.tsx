@@ -1406,7 +1406,7 @@ const FamilyBuilderNew = () => {
   const populateFormData = (member: any) => {
     setFormData({
       name: member.name || "",
-      first_name: member.first_name || "",
+      first_name: member.first_name || member.name?.split(' ')[0] || "",
       relation: member.relation || "",
       relatedPersonId: member.relatedPersonId,
       selectedParent: member.relatedPersonId || null,
@@ -2652,55 +2652,52 @@ const FamilyBuilderNew = () => {
                            <div className="space-y-6">
                             <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
                              
-                             {/* First row: Name (1/2), Gender (1/4), Birthdate (1/4) */}
-                             <div className="grid grid-cols-12 gap-6">
-                                <div className="col-span-12 md:col-span-6">
-                                    <Label htmlFor="first_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                      <UserCircle className="h-4 w-4 text-primary" />
-                                      الاسم الأول *
+                              {/* First row: First Name (1/2), Gender (1/4), Birthdate (1/4) */}
+                              <div className="grid grid-cols-12 gap-6">
+                                 <div className="col-span-12 md:col-span-6">
+                                     <Label htmlFor="first_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                       <UserCircle className="h-4 w-4 text-primary" />
+                                       الاسم الأول *
+                                    </Label>
+                                     <Input
+                                       id="first_name"
+                                       value={formData.first_name}
+                                       onChange={(e) => setFormData({...formData, first_name: e.target.value})}
+                                       placeholder="أدخل الاسم الأول"
+                                       className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                       required
+                                     />
+                                 </div>
+                                 
+                                 <div className="col-span-6 md:col-span-3">
+                                    <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      <Zap className="h-4 w-4 text-primary" />
+                                      الجنس *
                                    </Label>
-                                    <Input
-                                      id="first_name"
-                                      value={formData.first_name}
-                                      onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                                      placeholder="أدخل الاسم الأول"
-                                      className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                      required
-                                    />
+                                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                                     <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                       <SelectValue placeholder="اختر الجنس" />
+                                     </SelectTrigger>
+                                     <SelectContent className="rounded-lg border-2">
+                                       <SelectItem value="male" className="font-arabic rounded-md">ذكر</SelectItem>
+                                       <SelectItem value="female" className="font-arabic rounded-md">أنثى</SelectItem>
+                                     </SelectContent>
+                                   </Select>
+                                </div>
+                                 
+                                <div className="col-span-6 md:col-span-3">
+                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      <CalendarDays className="h-4 w-4 text-primary" />
+                                      تاريخ الميلاد
+                                   </Label>
+                                   <EnhancedDatePicker
+                                     value={formData.birthDate}
+                                     onChange={(date) => setFormData({...formData, birthDate: date})}
+                                     placeholder="اختر تاريخ الميلاد"
+                                     className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
+                                   />
                                 </div>
                               </div>
-                              
-                              {/* Second row: Gender (1/4), Birthdate (1/4) */}
-                              <div className="grid grid-cols-12 gap-6">
-                                <div className="col-span-6 md:col-span-3">
-                                   <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <Zap className="h-4 w-4 text-primary" />
-                                     الجنس *
-                                  </Label>
-                                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
-                                    <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
-                                      <SelectValue placeholder="اختر الجنس" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-lg border-2">
-                                      <SelectItem value="male" className="font-arabic rounded-md">ذكر</SelectItem>
-                                      <SelectItem value="female" className="font-arabic rounded-md">أنثى</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                               </div>
-                                
-                               <div className="col-span-6 md:col-span-3">
-                                   <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <CalendarDays className="h-4 w-4 text-primary" />
-                                     تاريخ الميلاد
-                                  </Label>
-                                  <EnhancedDatePicker
-                                    value={formData.birthDate}
-                                    onChange={(date) => setFormData({...formData, birthDate: date})}
-                                    placeholder="اختر تاريخ الميلاد"
-                                    className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                  />
-                               </div>
-                             </div>
                              
                              {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
                              <div className="grid grid-cols-12 gap-6">
