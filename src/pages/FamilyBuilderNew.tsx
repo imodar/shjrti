@@ -95,6 +95,12 @@ const MemberList = memo(({
           <div className="text-center py-8 text-gray-500">
             <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>لا توجد أعضاء</p>
+            {formMode === 'view' && (
+              <Button onClick={onAddMember} className="mt-4">
+                <Plus className="h-4 w-4 mr-2" />
+                إضافة العضو الأول
+              </Button>
+            )}
           </div>
         ) : (
           members.map((member: any) => (
@@ -110,6 +116,15 @@ const MemberList = memo(({
                     </Avatar>
                     <div>
                       <h3 className="font-semibold text-gray-900">{member.name}</h3>
+                      <div className="flex items-center space-x-2 space-x-reverse text-sm text-gray-600">
+                        {member.gender === 'male' ? (
+                          <User className="h-3 w-3 text-blue-500" />
+                        ) : (
+                          <User className="h-3 w-3 text-pink-500" />
+                        )}
+                        <span>{getAdditionalInfo ? getAdditionalInfo(member) : member.gender}</span>
+                        {!member.is_alive && <Skull className="h-3 w-3 text-gray-500" />}
+                      </div>
                     </div>
                   </div>
                   
@@ -117,7 +132,13 @@ const MemberList = memo(({
                     <Button variant="ghost" size="sm" onClick={() => onViewMember(member)}>
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => onEditMember(member)}>
+                    <Button variant="ghost" size="sm" onClick={() => {
+                      if (checkIfMemberIsSpouse && checkIfMemberIsSpouse(member)) {
+                        onSpouseEditAttempt && onSpouseEditAttempt(member);
+                      } else {
+                        onEditMember(member);
+                      }
+                    }}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => onDeleteMember(member)}>
@@ -2985,10 +3006,13 @@ const FamilyBuilderNew = memo(() => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                        {/* MemberList component will be rendered here - simplified for now */}
+                        {/* Member list temporarily disabled */}
                         <div className="text-center p-8">
                           <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p>قائمة الأعضاء ({familyMembers.length})</p>
+                          <p>قائمة الأعضاء ({familyMembers.length}) - مؤقتاً</p>
+                          <div className="mt-4 text-xs text-gray-500">
+                            المكون قيد الإصلاح
+                          </div>
                         </div>
                     </div>
                   </DrawerContent>
@@ -3005,10 +3029,13 @@ const FamilyBuilderNew = memo(() => {
                      </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                      {/* MemberList component will be rendered here - simplified for now */}
+                      {/* Member list temporarily disabled */}
                       <div className="text-center p-8">
                         <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>قائمة الأعضاء ({familyMembers.length})</p>
+                        <p>قائمة الأعضاء ({familyMembers.length}) - مؤقتاً</p>
+                        <div className="mt-4 text-xs text-gray-500">
+                          المكون قيد الإصلاح
+                        </div>
                       </div>
                   </CardContent>
                 </Card>
