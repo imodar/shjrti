@@ -3646,7 +3646,7 @@ const FamilyBuilderNew = () => {
             <AlertDialogFooter className="pt-6">
               <AlertDialogCancel className="font-arabic w-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border border-gray-300 text-gray-700 hover:text-gray-800 transition-all duration-200 hover-scale">
                 <Check className="h-4 w-4 mr-2" />
-                فهمت
+                عودة
               </AlertDialogCancel>
             </AlertDialogFooter>
           </div>
