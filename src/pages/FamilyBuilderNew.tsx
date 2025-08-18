@@ -933,7 +933,7 @@ const FamilyBuilderNew = () => {
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
-  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "" });
+  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "", isFounder: false });
   
   // Spouse deletion modal states
   const [showSpouseDeleteModal, setShowSpouseDeleteModal] = useState(false);
@@ -1032,7 +1032,8 @@ const FamilyBuilderNew = () => {
     setSpousePartnerDetails({
       name: partner.name || "غير محدد",
       fatherName: partner.father_name || "غير محدد", 
-      grandfatherName: partner.grandfather_name || "غير محدد"
+      grandfatherName: partner.grandfather_name || "غير محدد",
+      isFounder: partner.is_founder || false
     });
     
     // Show the spouse edit warning modal
@@ -3616,12 +3617,12 @@ const FamilyBuilderNew = () => {
                      <div className="font-bold text-primary text-lg animate-pulse">
                        {spousePartnerDetails.name}
                      </div>
-                     {spousePartnerDetails.fatherName && (
+                     {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && (
                        <div className="text-sm text-gray-600 mt-1">
                          ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
                        </div>
                      )}
-                     {spousePartnerDetails.grandfatherName && (
+                     {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && (
                        <div className="text-xs text-gray-500 mt-1">
                          حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
                        </div>
