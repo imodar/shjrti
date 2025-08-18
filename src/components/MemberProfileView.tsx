@@ -454,36 +454,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <div className="bg-card rounded-xl border border-border p-4">
-              <h4 className="font-bold text-sm mb-4">إجراءات سريعة</h4>
-              <div className="space-y-3">
-                <Button 
-                  onClick={onEdit} 
-                  className="facebook-button-primary w-full"
-                  size="sm"
-                >
-                  <Edit className="h-4 w-4 ml-2" />
-                  تعديل المعلومات
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="facebook-button-secondary w-full"
-                  size="sm"
-                >
-                  <MessageCircle className="h-4 w-4 ml-2" />
-                  إضافة ملاحظة
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="facebook-button-secondary w-full"
-                  size="sm"
-                >
-                  <Share2 className="h-4 w-4 ml-2" />
-                  مشاركة الملف
-                </Button>
-              </div>
-            </div>
 
             {/* Family Stats */}
             <div className="bg-card rounded-xl border border-border p-4">
