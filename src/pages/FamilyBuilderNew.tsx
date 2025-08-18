@@ -2629,6 +2629,7 @@ const FamilyBuilderNew = () => {
                       marriages={familyMarriages}
                       isSpouse={checkIfMemberIsSpouse(editingMember)}
                       onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
+                      onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
                     />
                   ) : (
                     <div className="space-y-6">

@@ -43,6 +43,7 @@ interface MemberProfileViewProps {
   marriages?: any[];
   isSpouse?: boolean;
   onSpouseEditWarning?: () => void;
+  onSpouseDeleteWarning?: () => void;
 }
 
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
@@ -53,7 +54,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   familyMembers,
   marriages = [],
   isSpouse = false,
-  onSpouseEditWarning
+  onSpouseEditWarning,
+  onSpouseDeleteWarning
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -488,7 +490,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             <div className="bg-card rounded-xl border border-destructive/20 p-4">
               <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
               <Button 
-                onClick={onDelete}
+                onClick={() => {
+                  if (isSpouse && onSpouseDeleteWarning) {
+                    onSpouseDeleteWarning();
+                  } else {
+                    onDelete();
+                  }
+                }}
                 variant="destructive" 
                 className="w-full"
                 size="sm"
