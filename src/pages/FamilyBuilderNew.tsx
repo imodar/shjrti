@@ -1687,11 +1687,14 @@ const FamilyBuilderNew = () => {
       .eq('id', spouse.existingFamilyMemberId)
       .maybeSingle();
     
-    // Handle image state properly
+    // Handle image state properly - preserve existing image if no new image provided
     let imageUrl;
-    if (spouse.croppedImage !== undefined) {
-      imageUrl = spouse.croppedImage || null;
+    // Check if there's a new image or if we should preserve the existing one
+    if (spouse.croppedImage && spouse.croppedImage !== currentSpouse?.image_url) {
+      // New image provided
+      imageUrl = spouse.croppedImage;
     } else {
+      // No new image, preserve existing
       imageUrl = currentSpouse?.image_url || null;
     }
     
