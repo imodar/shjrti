@@ -3039,22 +3039,23 @@ const FamilyBuilderNew = () => {
                                       <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
                                     </div>
                                     
-                                     <SpouseForm
-                                       spouseType="wife"
-                                       spouse={currentWife || {
-                                         id: '',
-                                         firstName: '',
-                                         lastName: '',
-                                         name: '',
-                                         isAlive: true,
-                                         birthDate: null,
-                                         deathDate: null,
-                                         maritalStatus: 'married',
-                                         isFamilyMember: false,
-                                         existingFamilyMemberId: '',
-                                         croppedImage: null,
-                                         isSaved: false
-                                       }}
+                                      <SpouseForm
+                                        spouseType="wife"
+                                        spouse={currentWife || {
+                                          id: '',
+                                          firstName: '',
+                                          lastName: '',
+                                          name: '',
+                                          isAlive: true,
+                                          birthDate: null,
+                                          deathDate: null,
+                                          maritalStatus: 'married',
+                                          isFamilyMember: false,
+                                          existingFamilyMemberId: '',
+                                          croppedImage: null,
+                                          biography: '',
+                                          isSaved: false
+                                        }}
                                        onSpouseChange={setCurrentWife}
                                        familyMembers={familyMembers}
                                        selectedMember={selectedMember}
@@ -3163,22 +3164,23 @@ const FamilyBuilderNew = () => {
                                  </div>
 
                                  {/* Unified Husband Form */}
-                                   <SpouseForm
-                                     spouseType="husband"
-                                     spouse={currentHusband || {
-                                       id: '',
-                                       firstName: '',
-                                       lastName: '',
-                                       name: '',
-                                       isAlive: true,
-                                       birthDate: null,
-                                       deathDate: null,
-                                       maritalStatus: 'married',
-                                       isFamilyMember: false,
-                                       existingFamilyMemberId: '',
-                                       croppedImage: null,
-                                       isSaved: false
-                                     }}
+                                    <SpouseForm
+                                      spouseType="husband"
+                                      spouse={currentHusband || {
+                                        id: '',
+                                        firstName: '',
+                                        lastName: '',
+                                        name: '',
+                                        isAlive: true,
+                                        birthDate: null,
+                                        deathDate: null,
+                                        maritalStatus: 'married',
+                                        isFamilyMember: false,
+                                        existingFamilyMemberId: '',
+                                        croppedImage: null,
+                                        biography: '',
+                                        isSaved: false
+                                      }}
                                      onSpouseChange={setCurrentHusband}
                                     familyMembers={familyMembers}
                                     selectedMember={selectedMember}
