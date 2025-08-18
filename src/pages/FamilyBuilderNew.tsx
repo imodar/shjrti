@@ -312,7 +312,7 @@ const FamilyBuilderNew = () => {
   const navigate = useNavigate();
   const { hasAIFeatures } = useSubscription();
   const isMobile = useIsMobile();
-
+  
   const calculateGenerationCount = () => {
     if (familyMembers.length === 0) return 1;
     
@@ -559,7 +559,7 @@ const FamilyBuilderNew = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      console.log('Loading package data for user:', user.id);
+      
 
       const { data: userSubscription, error: subError } = await supabase
         .from('user_subscriptions')
@@ -579,19 +579,19 @@ const FamilyBuilderNew = () => {
         .limit(1)
         .single();
 
-      console.log('User subscription data:', userSubscription, 'Error:', subError);
+      
 
       if (userSubscription && userSubscription.packages) {
         setPackageData(userSubscription.packages);
         setSubscriptionData(userSubscription);
       } else {
-        console.log('No subscription found, using free package');
+        
         const { data: freePackage } = await supabase
           .from('packages')
           .select('*')
           .ilike('name->en', 'Free')
           .single();
-        console.log('Free package fallback:', freePackage);
+        
         if (freePackage) setPackageData(freePackage);
       }
       
@@ -599,7 +599,7 @@ const FamilyBuilderNew = () => {
         throw new Error('No family ID provided');
       }
 
-      console.log('🔍 Loading family with ID:', familyId);
+      
       
       const { data: family, error: familyError } = await supabase
         .from('families')
@@ -617,7 +617,7 @@ const FamilyBuilderNew = () => {
         throw new Error('Family not found or access denied');
       }
 
-      console.log('✅ Loaded family:', family);
+      
       const familyToUse = family;
       setFamilyData(familyToUse);
       
@@ -684,7 +684,7 @@ const FamilyBuilderNew = () => {
 
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
-        console.log('Fetched marriages with members:', marriagesWithMembers);
+        
       }
     } catch (error) {
       console.error('Error fetching family data:', error);
@@ -706,7 +706,7 @@ const FamilyBuilderNew = () => {
         return;
       }
 
-      console.log('Refreshing family data...');
+      
 
       const familyId = new URLSearchParams(window.location.search).get('family');
       if (!familyId) throw new Error('Family ID not found in URL');
@@ -781,7 +781,7 @@ const FamilyBuilderNew = () => {
         setFamilyMarriages(marriagesWithMembers);
       }
 
-      console.log('Family data refreshed successfully');
+      
     } catch (error) {
       console.error('Error refreshing family data:', error);
     }
@@ -794,7 +794,7 @@ const FamilyBuilderNew = () => {
   // Load spouses when data is updated and there's a member being edited
   useEffect(() => {
     if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
-      console.log('🔥 Reloading spouses for editing member:', editingMember);
+      
       loadExistingSpouses(editingMember);
     }
   }, [familyMarriages, familyMembers, editingMember]);
