@@ -1517,6 +1517,259 @@ const FamilyBuilderNew = () => {
     }
   };
 
+  
+  // Unified spouse processing functions
+  const processSpouses = async (submissionData, memberData, familyId, familyData, marriageResults, activeMarriageIds) => {
+    // Handle wives for male members
+    if (submissionData.gender === 'male' && wives.length > 0) {
+      const savedWives = wives.filter(wife => {
+        const wifeIndex = wives.findIndex(w => w === wife);
+        const familyStatus = wiveFamilyStatus[wifeIndex];
+        
+        return wife.isSaved === true && 
+               (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+      });
+      
+      for (const wife of savedWives) {
+        await processSpouse({
+          spouse: wife,
+          spouseType: 'wife',
+          memberData,
+          familyId,
+          familyData,
+          marriageResults,
+          activeMarriageIds,
+          isMainMember: false
+        });
+      }
+    }
+
+    // Handle husband for female members
+    if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
+      await processSpouse({
+        spouse: husband,
+        spouseType: 'husband',
+        memberData,
+        familyId,
+        familyData,
+        marriageResults,
+        activeMarriageIds,
+        isMainMember: true
+      });
+    }
+  };
+
+  const processSpouse = async ({ spouse, spouseType, memberData, familyId, familyData, marriageResults, activeMarriageIds, isMainMember }) => {
+    try {
+      let spouseId = spouse.existingFamilyMemberId;
+      
+      // Create or update spouse member
+      spouseId = await createOrUpdateSpouseMember(spouse, spouseType, familyId, familyData);
+      
+      if (!spouseId) {
+        marriageResults.failed++;
+        marriageResults.details.push(`فشل في معالجة بيانات ${spouse.name}`);
+        return;
+      }
+
+      // Update existing family member spouse status if needed
+      if (spouse.isFamilyMember && spouse.existingFamilyMemberId) {
+        await updateSpouseMemberStatus(spouse, spouseType);
+      }
+
+      // Create or update marriage record
+      await createOrUpdateMarriage({
+        memberData,
+        spouseId,
+        spouseType,
+        spouse,
+        familyId,
+        activeMarriageIds,
+        marriageResults,
+        isMainMember
+      });
+
+    } catch (error) {
+      console.error(`Error processing ${spouseType}:`, error);
+      marriageResults.failed++;
+      marriageResults.details.push(`خطأ في معالجة ${spouse.name}`);
+    }
+  };
+
+  const createOrUpdateSpouseMember = async (spouse, spouseType, familyId, familyData) => {
+    const isWife = spouseType === 'wife';
+    
+    // If spouse has existing ID, update the record
+    if (spouse.existingFamilyMemberId && spouse.id) {
+      // Get current image to handle image state properly
+      const { data: currentSpouse } = await supabase
+        .from('family_tree_members')
+        .select('image_url')
+        .eq('id', spouse.existingFamilyMemberId)
+        .maybeSingle();
+      
+      // Handle image state properly
+      let imageUrl;
+      if (spouse.croppedImage !== undefined) {
+        imageUrl = spouse.croppedImage || null;
+      } else {
+        imageUrl = currentSpouse?.image_url || null;
+      }
+      
+      const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
+      const { data: updatedSpouse, error: spouseUpdateError } = await supabase
+        .from('family_tree_members')
+        .update({
+          name: spouseName,
+          first_name: spouse.firstName || null,
+          last_name: spouse.lastName || familyData?.name || null,
+          birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
+          is_alive: spouse.isAlive ?? true,
+          death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
+          marital_status: spouse.maritalStatus || 'married',
+          image_url: imageUrl,
+          biography: spouse.biography || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', spouse.existingFamilyMemberId)
+        .select()
+        .single();
+
+      if (spouseUpdateError) {
+        console.error(`Error updating ${spouseType} member:`, spouse.name, spouseUpdateError);
+        throw spouseUpdateError;
+      }
+      
+      return updatedSpouse.id;
+    } else {
+      // Create new spouse member
+      const firstName = spouse.firstName || '';
+      const lastName = spouse.lastName || familyData?.name || '';
+      const spouseName = firstName && lastName ? `${firstName} ${lastName}` : (spouse.name || firstName || lastName || '');
+      
+      const { data: newSpouseMember, error: spouseError } = await supabase
+        .from('family_tree_members')
+        .insert({
+          name: spouseName,
+          first_name: firstName,
+          last_name: lastName,
+          gender: isWife ? 'female' : 'male',
+          birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
+          is_alive: spouse.isAlive ?? true,
+          death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
+          family_id: familyId,
+          created_by: familyData?.creator_id,
+          is_founder: false,
+          marital_status: spouse.maritalStatus || 'married',
+          image_url: spouse.croppedImage || null,
+          biography: spouse.biography || null
+        })
+        .select()
+        .single();
+
+      if (spouseError) {
+        console.error(`Error creating ${spouseType} member:`, spouse.name, spouseError);
+        throw spouseError;
+      }
+      
+      return newSpouseMember.id;
+    }
+  };
+
+  const updateSpouseMemberStatus = async (spouse, spouseType) => {
+    // Get current data to handle image state properly
+    const { data: currentSpouse } = await supabase
+      .from('family_tree_members')
+      .select('image_url')
+      .eq('id', spouse.existingFamilyMemberId)
+      .maybeSingle();
+    
+    // Handle image state properly
+    let imageUrl;
+    if (spouse.croppedImage !== undefined) {
+      imageUrl = spouse.croppedImage || null;
+    } else {
+      imageUrl = currentSpouse?.image_url || null;
+    }
+    
+    const { error: updateSpouseError } = await supabase
+      .from('family_tree_members')
+      .update({ 
+        marital_status: spouse.maritalStatus,
+        image_url: imageUrl,
+        biography: spouse.biography || null
+      })
+      .eq('id', spouse.existingFamilyMemberId);
+    
+    if (updateSpouseError) {
+      console.error(`Error updating ${spouseType} marital status:`, updateSpouseError);
+    } else {
+      console.log(`Successfully updated ${spouseType} marital status to:`, spouse.maritalStatus);
+    }
+
+    // Also update marriage table marital status
+    const spouseColumn = spouseType === 'wife' ? 'wife_id' : 'husband_id';
+    await supabase
+      .from('marriages')
+      .update({ marital_status: spouse.maritalStatus })
+      .eq(spouseColumn, spouse.existingFamilyMemberId);
+  };
+
+  const createOrUpdateMarriage = async ({ memberData, spouseId, spouseType, spouse, familyId, activeMarriageIds, marriageResults, isMainMember }) => {
+    const isWife = spouseType === 'wife';
+    const husbandId = isWife ? memberData.id : spouseId;
+    const wifeId = isWife ? spouseId : memberData.id;
+
+    // Check if marriage already exists
+    const { data: existingMarriage } = await supabase
+      .from('marriages')
+      .select('id')
+      .eq('husband_id', husbandId)
+      .eq('wife_id', wifeId)
+      .maybeSingle();
+
+    let marriageError;
+    if (existingMarriage) {
+      // Update existing marriage to ensure it's active
+      const { error } = await supabase
+        .from('marriages')
+        .update({
+          is_active: true,
+          marital_status: spouse.maritalStatus || 'married'
+        })
+        .eq('id', existingMarriage.id);
+      marriageError = error;
+      activeMarriageIds.push(existingMarriage.id);
+    } else {
+      // Create new marriage record
+      const { data: newMarriage, error } = await supabase
+        .from('marriages')
+        .insert({
+          family_id: familyId,
+          husband_id: husbandId,
+          wife_id: wifeId,
+          is_active: true,
+          marital_status: spouse.maritalStatus || 'married'
+        })
+        .select('id')
+        .single();
+      
+      marriageError = error;
+      if (newMarriage) {
+        activeMarriageIds.push(newMarriage.id);
+      }
+    }
+
+    if (marriageError) {
+      console.error('Error creating/updating marriage:', marriageError);
+      marriageResults.failed++;
+      marriageResults.details.push(`خطأ في ربط الزواج مع ${spouse.name}`);
+    } else {
+      marriageResults.successful++;
+      console.log(`Successfully processed marriage with ${spouse.name}`);
+    }
+  };
+
   const handleFormSubmit = useCallback(async (submissionData: any) => {
     try {
       setIsSaving(true);
