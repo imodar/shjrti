@@ -208,10 +208,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         </AvatarFallback>
                       )}
                     </Avatar>
-                    {/* Status Indicator */}
-                    <div className="absolute -bottom-1 -right-1 p-2 bg-green-500 border-4 border-white rounded-full">
-                      <div className="w-3 h-3 bg-white rounded-full"></div>
-                    </div>
                   </div>
 
                   {/* Basic Info */}
