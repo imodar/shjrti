@@ -124,25 +124,21 @@ export function usePackageTransition() {
 
     const currentPrice = getPackagePrice(currentPackage);
     const targetPrice = getPackagePrice(targetPackage);
-    const currentOrder = currentPackage.display_order || 0;
-    const targetOrder = targetPackage.display_order || 0;
 
     console.log('🔍 Package comparison details:', {
       currentPackage: {
         id: currentPackage.id,
         name: getLocalizedValue(currentPackage.name),
-        price: currentPrice,
-        order: currentOrder
+        price: currentPrice
       },
       targetPackage: {
         id: targetPackage.id,
         name: getLocalizedValue(targetPackage.name),
-        price: targetPrice,
-        order: targetOrder
+        price: targetPrice
       },
       comparison: {
-        isTargetOrderHigher: targetOrder > currentOrder,
-        isTargetOrderLower: targetOrder < currentOrder,
+        isTargetPriceHigher: targetPrice > currentPrice,
+        isTargetPriceLower: targetPrice < currentPrice,
         isPriceEqual: targetPrice === currentPrice
       }
     });
@@ -158,8 +154,8 @@ export function usePackageTransition() {
       };
     }
 
-    // ترقية - باقة أعلى في display_order أو بسعر أعلى
-    if (targetOrder > currentOrder || (targetOrder === currentOrder && targetPrice > currentPrice)) {
+    // ترقية - باقة بسعر أعلى
+    if (targetPrice > currentPrice) {
       return {
         canProceed: true,
         action: 'upgrade',
@@ -169,8 +165,8 @@ export function usePackageTransition() {
       };
     }
 
-    // تنزيل - باقة أقل في display_order أو بسعر أقل
-    if (targetOrder < currentOrder || (targetOrder === currentOrder && targetPrice < currentPrice)) {
+    // تنزيل - باقة بسعر أقل
+    if (targetPrice < currentPrice) {
       const userStats = await fetchUserStats();
       
       // الحالة 3: التحقق من تجاوز الحدود
