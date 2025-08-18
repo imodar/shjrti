@@ -2333,7 +2333,7 @@ const FamilyBuilderNew = () => {
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
-      if (!formData.name?.trim()) {
+      if (!formData.first_name?.trim()) {
         toast({
           title: "خطأ في البيانات",
           description: "يرجى إدخال الاسم الأول",
