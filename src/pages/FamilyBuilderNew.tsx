@@ -1385,6 +1385,12 @@ const FamilyBuilderNew = () => {
     });
     setWives([]);
     setHusband(null);
+    // Clear image states
+    setCroppedImage(null);
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const populateFormData = (member: any) => {
