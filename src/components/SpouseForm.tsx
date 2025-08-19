@@ -222,6 +222,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
     // Mark spouse as saved locally (don't insert to DB yet)
     const updatedSpouse = { ...spouse, isSaved: true };
+    
+    // Update the spouse data locally first
+    onSpouseChange(updatedSpouse);
+    
+    // Then call onSave to handle any additional logic
     onSave(updatedSpouse, false); // Pass false to indicate don't save to DB yet
     
     // Close the form after successful save
