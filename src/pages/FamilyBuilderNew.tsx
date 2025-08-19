@@ -3962,12 +3962,13 @@ const MemberList = ({
                               const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
                               const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
                               
-                              // Build simplified spouse info: زوجة محمد ابن سعيد
-                              const spouseName = spouse.name || spouse.full_name;
+                              // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
+                              const spouseName = spouseFullData?.first_name || spouse.first_name || spouse.name?.split(' ')[0] || spouse.name;
                               
                               let spouseInfo = spouseName;
                               if (spouseFather) {
-                                spouseInfo += ` ابن ${spouseFather.name}`;
+                                const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
+                                spouseInfo += ` ابن ${fatherFirstName}`;
                               }
                               
                               // Use زوج for husband, زوجة for wife (from member's perspective)
