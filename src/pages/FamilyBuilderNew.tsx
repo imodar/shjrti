@@ -3862,11 +3862,14 @@ const MemberList = ({
                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
                             
                             if (isSpouse) {
-                              // For spouses: show first_name + last_name, or "Error" if either is missing
-                              if (!member.first_name || !member.last_name) {
-                                return "Error";
+                              // For spouses: show first_name + last_name, or name if missing
+                              const firstName = member.first_name?.value || member.first_name || '';
+                              const lastName = member.last_name?.value || member.last_name || '';
+                              
+                              if (firstName && lastName) {
+                                return `${firstName} ${lastName}`;
                               }
-                              return `${member.first_name} ${member.last_name}`;
+                              return member.name || "غير معروف";
                             } else {
                               // For founders and other native family members: show first_name, or "Error" if missing
                               return member.first_name || "Error";
