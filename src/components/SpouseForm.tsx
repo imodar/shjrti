@@ -39,7 +39,7 @@ interface SpouseFormProps {
   onCommandOpenChange: (open: boolean) => void;
   familyStatus: string;
   onFamilyStatusChange: (status: string) => void;
-  onSave: () => void;
+  onSave: (spouseData?: SpouseData, saveToDb?: boolean) => void;
   onAdd: () => void;
   onClose?: () => void;
   showForm: boolean;
@@ -220,11 +220,13 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
       return;
     }
 
-    onSave();
+    // Mark spouse as saved locally (don't insert to DB yet)
+    const updatedSpouse = { ...spouse, isSaved: true };
+    onSave(updatedSpouse, false); // Pass false to indicate don't save to DB yet
     
     toast({
-      title: "تم الحفظ بنجاح",
-      description: `تم حفظ بيانات ${spouseLabel} بنجاح`,
+      title: "تم تجهيز البيانات",
+      description: `تم تجهيز بيانات ${spouseLabel} للحفظ مع بيانات العضو`,
       variant: "default"
     });
   };

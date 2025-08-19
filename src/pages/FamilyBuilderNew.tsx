@@ -882,8 +882,22 @@ const FamilyBuilderNew = () => {
   };
 
   // Wrapper functions for backward compatibility
-  const handleWifeSave = () => handleSpouseSave('wife');
-  const handleHusbandSave = () => handleSpouseSave('husband');
+  const handleWifeSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
+    if (spouseData && !saveToDb) {
+      // Just update local state, don't save to DB
+      setCurrentWife(spouseData);
+      return;
+    }
+    handleSpouseSave('wife');
+  };
+  const handleHusbandSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
+    if (spouseData && !saveToDb) {
+      // Just update local state, don't save to DB
+      setCurrentHusband(spouseData);
+      return;
+    }
+    handleSpouseSave('husband');
+  };
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
