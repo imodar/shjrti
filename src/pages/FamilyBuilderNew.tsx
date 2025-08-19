@@ -2742,27 +2742,29 @@ const FamilyBuilderNew = () => {
                                                  return '';
                                                };
                                                
-                                               // Helper function to build full genealogical name
-                                               const buildFullName = (member: any) => {
-                                                 if (!member) return '';
-                                                 
-                                                 let fullName = member.name || '';
-                                                 const fatherName = getFatherName(member);
-                                                 const grandfatherName = getGrandfatherName(member);
-                                                 
-                                                 if (fatherName) {
-                                                   fullName += ` بن ${fatherName}`;
-                                                   if (grandfatherName) {
-                                                     fullName += ` بن ${grandfatherName}`;
-                                                   }
-                                                 }
-                                                 
-                                                 return fullName;
-                                               };
-                                               
-                                                const familyMember = husbandMember ? buildFullName(husbandMember) : 'غير محدد';
-                                                const spouse = wifeMember ? (wifeMember.name || 'غير محدد') : 'غير محدد';
-                                                const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+                                                // Helper function to build full genealogical name
+                                                const buildFullName = (member: any) => {
+                                                  if (!member) return '';
+                                                  
+                                                  // For non-founders, show first name + father's first name only
+                                                  if (!member.is_founder && member.fatherId) {
+                                                    const firstName = member.first_name || member.name?.split(' ')[0] || member.name;
+                                                    const father = familyMembers.find(m => m?.id === member.fatherId);
+                                                    const fatherFirstName = father?.first_name || father?.name?.split(' ')[0] || father?.name;
+                                                    
+                                                    if (fatherFirstName) {
+                                                      return `${firstName} بن ${fatherFirstName}`;
+                                                    }
+                                                    return firstName;
+                                                  }
+                                                  
+                                                  // For founders, just show the name
+                                                  return member.first_name || member.name?.split(' ')[0] || member.name;
+                                                };
+                                                
+                                                 const familyMember = husbandMember ? buildFullName(husbandMember) : 'غير محدد';
+                                                 const spouse = wifeMember ? buildFullName(wifeMember) : 'غير محدد';
+                                                 const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
                                                 
                                                 return {
                                                   value: marriage.id,
