@@ -656,22 +656,22 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
             </div>
           )}
 
-          {/* Action Buttons - Only show when radio button is selected */}
-          {(familyStatus === 'yes' || familyStatus === 'no') && (
-            <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
-              {/* Close Button - Always show when form is open */}
-              {onClose && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onClose}
-                  className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
-                >
-                  إغلاق
-                </Button>
-              )}
-              
-              {/* Save Button */}
+          {/* Action Buttons */}
+          <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
+            {/* Close Button - Always show when form is open */}
+            {onClose && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+              >
+                إغلاق
+              </Button>
+            )}
+            
+            {/* Save Button - Only show when family status is selected */}
+            {(familyStatus === 'yes' || familyStatus === 'no') && (
               <Button
                 type="button"
                 onClick={handleValidationAndSave}
@@ -696,8 +696,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   </>
                 )}
               </Button>
-            </div>
             )}
+          </div>
         </div>
       </div>
       
