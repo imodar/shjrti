@@ -2743,8 +2743,15 @@ const FamilyBuilderNew = () => {
                                                };
                                                
                                                 // Helper function to build full genealogical name
-                                                const buildFullName = (member: any) => {
+                                                const buildFullName = (member: any, isSpouse: boolean = false) => {
                                                   if (!member) return '';
+                                                  
+                                                  // For spouses, show first_name + last_name
+                                                  if (isSpouse) {
+                                                    const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                                                    const lastName = member.last_name || '';
+                                                    return firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '');
+                                                  }
                                                   
                                                   // For non-founders, show first name + father's first name only
                                                   if (!member.is_founder && member.fatherId) {
@@ -2762,8 +2769,8 @@ const FamilyBuilderNew = () => {
                                                   return member.first_name || member.name?.split(' ')[0] || member.name;
                                                 };
                                                 
-                                                 const familyMember = husbandMember ? buildFullName(husbandMember) : 'غير محدد';
-                                                 const spouse = wifeMember ? buildFullName(wifeMember) : 'غير محدد';
+                                                 const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
+                                                 const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
                                                  const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
                                                 
                                                 return {
