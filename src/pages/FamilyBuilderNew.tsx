@@ -2432,7 +2432,7 @@ const FamilyBuilderNew = () => {
                   </div>
                   
                   <div className="text-center">
-                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
+                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 leading-relaxed">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-relaxed" style={{ lineHeight: '1.8' }}>
                         {t('family_builder.family', 'عائلة')} {familyData?.name || t('family_builder.unspecified', 'غير محدد')}
                       </span>
