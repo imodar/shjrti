@@ -3907,15 +3907,18 @@ const MemberList = ({
                         const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
                         
                         if (father && grandfather) {
+                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                          const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
                           return (
                             <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {father.name} ابن {grandfather.name}
+                              {fatherFirstName} ابن {grandfatherFirstName}
                             </p>
                           );
                         } else if (father) {
+                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                           return (
                             <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {father.name}
+                              {fatherFirstName}
                             </p>
                           );
                         }
