@@ -2954,7 +2954,7 @@ const FamilyBuilderNew = () => {
                                                           )}
                                                           <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
                                                             <Heart className="h-3 w-3" />
-                                                            زوجة
+                                                            {wife.maritalStatus === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                                                           </span>
                                                         </div>
                                                       </div>
