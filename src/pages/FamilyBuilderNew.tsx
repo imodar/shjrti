@@ -2341,6 +2341,14 @@ const FamilyBuilderNew = () => {
         });
         return;
       }
+      
+      // Preserve image data when moving to next step
+      if (croppedImage && croppedImage !== formData.croppedImage) {
+        setFormData(prev => ({
+          ...prev,
+          croppedImage: croppedImage
+        }));
+      }
     }
     
     if (currentStep < 2) {
