@@ -13,12 +13,14 @@
   }
 
   body {
-    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  .font-arabic {
-    font-family: 'Noto Sans Arabic', sans-serif;
+  .font-arabic,
+  [dir="rtl"],
+  [dir="rtl"] * {
+    font-family: 'Noto Sans Arabic', sans-serif !important;
   }
 
   [dir="rtl"] {
