@@ -3963,18 +3963,14 @@ const MemberList = ({
                               const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
                               const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
                               
-                              // Build the lineage string
-                              let spouseInfo = spouse.name || spouse.full_name;
+                              // Build simplified spouse info: زوجة محمد ابن سعيد
+                              const spouseName = spouse.name || spouse.full_name;
+                              const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
+                              const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
                               
+                              let spouseInfo = spouseName;
                               if (spouseFather) {
-                                // Use ابن for male, ابنة for female
-                                const spouseGender = spouseFullData?.gender || spouse.gender;
-                                const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
-                                spouseInfo += ` ${childOf} ${spouseFather.name}`;
-                                
-                                if (spouseGrandfather) {
-                                  spouseInfo += ` ابن ${spouseGrandfather.name}`;
-                                }
+                                spouseInfo += ` ابن ${spouseFather.name}`;
                               }
                               
                               // Use زوج for husband, زوجة for wife (from member's perspective)
