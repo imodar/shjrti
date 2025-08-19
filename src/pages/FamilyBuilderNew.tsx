@@ -3009,19 +3009,8 @@ const FamilyBuilderNew = () => {
                                                    حذف
                                                  </Button>
                                                </div>
-                                               
-                                               {/* Interactive Area */}
-                                               {wife.isSaved && (
-                                                 <div 
-                                                   className="cursor-pointer hover:bg-pink-50/70 dark:hover:bg-pink-950/30 rounded-lg p-2 -m-1 transition-all duration-300 border border-transparent hover:border-pink-200 dark:hover:border-pink-700 mt-2"
-                                                   onClick={() => handleSpouseEditAttempt('wife', wife, index)}
-                                                 >
-                                                   <p className="text-sm text-pink-600 dark:text-pink-400 font-arabic flex items-center gap-2">
-                                                     <Edit className="h-4 w-4" />
-                                                     انقر هنا لعرض وتعديل التفاصيل
-                                                   </p>
-                                                 </div>
-                                               )}
+                                                
+                                                {/* Interactive Area removed - using edit button instead */}
                                               </div>
                                            </div>
                                        ))
