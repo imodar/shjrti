@@ -3880,8 +3880,8 @@ const MemberList = ({
                               }
                               return member.name || "غير معروف";
                             } else {
-                              // For founders and other native family members: show first_name, or "Error" if missing
-                              return member.first_name || "Error";
+                              // For founders and other native family members: show first_name, or split name if missing
+                              return member.first_name || member.name?.split(' ')[0] || member.name || "غير معروف";
                             }
                           })()}
                         </h3>
