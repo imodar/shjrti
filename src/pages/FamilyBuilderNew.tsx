@@ -369,6 +369,8 @@ const FamilyBuilderNew = () => {
         const transformedMembers = members.map(member => ({
           id: member.id,
           name: member.name,
+          first_name: member.first_name,
+          last_name: member.last_name,
           fatherId: member.father_id,
           motherId: member.mother_id,
           spouseId: member.spouse_id,
