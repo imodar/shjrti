@@ -3863,8 +3863,8 @@ const MemberList = ({
                             
                             if (isSpouse) {
                               // For spouses: show first_name + last_name, or name if missing
-                              const firstName = member.first_name?.value || member.first_name || '';
-                              const lastName = member.last_name?.value || member.last_name || '';
+                              const firstName = member.first_name || '';
+                              const lastName = member.last_name || '';
                               
                               if (firstName && lastName) {
                                 return `${firstName} ${lastName}`;
