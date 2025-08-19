@@ -3856,9 +3856,19 @@ const MemberList = ({
                         )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                           {(() => {
-                            console.log('Member data:', { name: member.name, first_name: member.first_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
+                            console.log('Member data:', { name: member.name, first_name: member.first_name, last_name: member.last_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
-                            return isSpouse ? member.name : (member.first_name || member.name);
+                            
+                            if (isSpouse) {
+                              // For spouses: show first_name + last_name, or "Error" if either is missing
+                              if (!member.first_name || !member.last_name) {
+                                return "Error";
+                              }
+                              return `${member.first_name} ${member.last_name}`;
+                            } else {
+                              // For founders and other native family members: show first_name, or "Error" if missing
+                              return member.first_name || "Error";
+                            }
                           })()}
                         </h3>
                         {(() => {
