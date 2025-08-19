@@ -785,7 +785,7 @@ const FamilyBuilderNew = () => {
     if (showWifeForm && editingWifeIndex !== null) {
       setShowWifeForm(false);
       setCurrentWife(null);
-      setWifeFamilyStatus(null);
+      setEditingWifeIndex(null);
       
       // Restore the original saved wife data
       const updatedWives = [...wives];
@@ -808,7 +808,7 @@ const FamilyBuilderNew = () => {
     if (showHusbandForm && husband) {
       setShowHusbandForm(false);
       setCurrentHusband(null);
-      setHusbandFamilyStatus(null);
+      setHusbandFamilyStatus('no');
       
       // Restore the original saved husband data
       const originalHusband = familyMarriages
@@ -2280,6 +2280,17 @@ const FamilyBuilderNew = () => {
       resetFormData();
       setWives([]);
       setHusband(null);
+      setCurrentWife(null);
+      setCurrentHusband(null);
+      setShowWifeForm(false);
+      setShowHusbandForm(false);
+      setWiveFamilyStatus([]);
+      setHusbandFamilyStatus('no');
+      
+      // Reset form mode to view
+      setFormMode('view');
+      setEditingMember(null);
+      setCurrentStep(1);
       
       // Show success toast with detailed information
       const actionText = isEditMode ? "تحديث" : "إضافة";
