@@ -224,6 +224,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
     const updatedSpouse = { ...spouse, isSaved: true };
     onSave(updatedSpouse, false); // Pass false to indicate don't save to DB yet
     
+    // Close the form after successful save
+    if (onClose) {
+      onClose();
+    }
+    
     toast({
       title: "تم تجهيز البيانات",
       description: `تم تجهيز بيانات ${spouseLabel} للحفظ مع بيانات العضو`,
