@@ -888,8 +888,18 @@ const FamilyBuilderNew = () => {
   // Wrapper functions for backward compatibility
   const handleWifeSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
     if (spouseData && !saveToDb) {
-      // Just update local state, don't save to DB
+      // Update current wife state
       setCurrentWife(spouseData);
+      
+      // Add or update wife in the wives array
+      const wifeIndex = editingWifeIndex !== null ? editingWifeIndex : wives.length;
+      const updatedWives = [...wives];
+      updatedWives[wifeIndex] = spouseData;
+      setWives(updatedWives);
+      
+      // Close the form
+      setShowWifeForm(false);
+      setEditingWifeIndex(null);
       return;
     }
     handleSpouseSave('wife');
