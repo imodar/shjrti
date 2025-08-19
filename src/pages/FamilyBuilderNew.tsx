@@ -782,7 +782,10 @@ const FamilyBuilderNew = () => {
   };
 
   const closeActiveSpouseEdit = () => {
-    if (showWifeForm && editingWifeIndex !== null) {
+    console.log('closeActiveSpouseEdit called, showWifeForm:', showWifeForm, 'editingWifeIndex:', editingWifeIndex);
+    
+    // Close wife form (both edit and new)
+    if (showWifeForm) {
       setShowWifeForm(false);
       setCurrentWife(null);
       setEditingWifeIndex(null);
@@ -864,6 +867,7 @@ const FamilyBuilderNew = () => {
 
   // Close functions for spouse forms
   const handleCloseWifeEdit = () => {
+    console.log('handleCloseWifeEdit called');
     closeActiveSpouseEdit();
     toast({
       title: "تم إغلاق التعديل",
