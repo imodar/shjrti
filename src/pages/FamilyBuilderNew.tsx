@@ -911,8 +911,14 @@ const FamilyBuilderNew = () => {
   };
   const handleHusbandSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
     if (spouseData && !saveToDb) {
-      // Just update local state, don't save to DB
+      // Update current husband state
       setCurrentHusband(spouseData);
+      
+      // Update the husband state to persist the changes (this was missing!)
+      setHusband(spouseData);
+      
+      // Close the form only after successful update
+      setShowHusbandForm(false);
       return;
     }
     handleSpouseSave('husband');
