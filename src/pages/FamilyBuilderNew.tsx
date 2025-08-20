@@ -581,7 +581,7 @@ const FamilyBuilderNew = () => {
     }
   }, [croppedImage, formData.croppedImage]);
 
-  // Command states for search
+  // Command states for search  
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
   const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
   const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{ [key: number]: 'yes' | 'no' | null }>({});
@@ -600,7 +600,7 @@ const FamilyBuilderNew = () => {
   const handleWifeFamilyStatusChange = (status: string) => {
     setWifeFamilyStatus(status as 'yes' | 'no');
   };
-
+  
   const handleHusbandFamilyStatusChange = (status: string) => {
     setHusbandFamilyStatus(status as 'yes' | 'no');
   };
@@ -618,11 +618,12 @@ const FamilyBuilderNew = () => {
       isFamilyMember: false,
       existingFamilyMemberId: '',
       croppedImage: null,
+      biography: '',
       isSaved: false
     });
     setShowWifeForm(true);
   };
-
+  
   const handleAddHusband = () => {
     setCurrentHusband({
       id: '',
@@ -636,6 +637,7 @@ const FamilyBuilderNew = () => {
       isFamilyMember: false,
       existingFamilyMemberId: '',
       croppedImage: null,
+      biography: '',
       isSaved: false
     });
     setShowHusbandForm(true);
@@ -887,42 +889,46 @@ const FamilyBuilderNew = () => {
     });
   };
 
+  // Unified spouse save handler - reduces code duplication
+  const handleSpouseSaveUnified = (spouseType: 'wife' | 'husband', spouseData?: SpouseData, saveToDb: boolean = true) => {
+    if (spouseData && !saveToDb) {
+      if (spouseType === 'wife') {
+        // Store the current editing index before any state changes
+        const currentEditingIndex = editingWifeIndex;
+        
+        // Update current wife state
+        setCurrentWife(spouseData);
+        
+        // Add or update wife in the wives array
+        const wifeIndex = currentEditingIndex !== null ? currentEditingIndex : wives.length;
+        const updatedWives = [...wives];
+        updatedWives[wifeIndex] = spouseData;
+        setWives(updatedWives);
+        
+        // Close the form only after successful update
+        setShowWifeForm(false);
+        setEditingWifeIndex(null);
+      } else {
+        // Update current husband state
+        setCurrentHusband(spouseData);
+        
+        // Update the husband state to persist the changes
+        setHusband(spouseData);
+        
+        // Close the form only after successful update
+        setShowHusbandForm(false);
+      }
+      return;
+    }
+    handleSpouseSave(spouseType);
+  };
+
   // Wrapper functions for backward compatibility
-  const handleWifeSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
-    if (spouseData && !saveToDb) {
-      // Store the current editing index before any state changes
-      const currentEditingIndex = editingWifeIndex;
-      
-      // Update current wife state
-      setCurrentWife(spouseData);
-      
-      // Add or update wife in the wives array
-      const wifeIndex = currentEditingIndex !== null ? currentEditingIndex : wives.length;
-      const updatedWives = [...wives];
-      updatedWives[wifeIndex] = spouseData;
-      setWives(updatedWives);
-      
-      // Close the form only after successful update
-      setShowWifeForm(false);
-      setEditingWifeIndex(null);
-      return;
-    }
-    handleSpouseSave('wife');
-  };
-  const handleHusbandSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
-    if (spouseData && !saveToDb) {
-      // Update current husband state
-      setCurrentHusband(spouseData);
-      
-      // Update the husband state to persist the changes (this was missing!)
-      setHusband(spouseData);
-      
-      // Close the form only after successful update
-      setShowHusbandForm(false);
-      return;
-    }
-    handleSpouseSave('husband');
-  };
+  const handleWifeSave = (spouseData?: SpouseData, saveToDb: boolean = true) => 
+    handleSpouseSaveUnified('wife', spouseData, saveToDb);
+    
+  const handleHusbandSave = (spouseData?: SpouseData, saveToDb: boolean = true) => 
+    handleSpouseSaveUnified('husband', spouseData, saveToDb);
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
