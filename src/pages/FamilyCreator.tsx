@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { supabase } from "@/integrations/supabase/client";
-import WifeForm, { WifeFormRef } from "@/components/WifeForm";
+import { SpouseForm, SpouseData } from "@/components/SpouseForm";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -29,8 +29,11 @@ const FamilyCreator = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const { isImageUploadEnabled, loading: imagePermissionLoading } = useImageUploadPermission();
-  const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
+  const [showWifeForm, setShowWifeForm] = useState(false);
+  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
   const [isCreatingFamily, setIsCreatingFamily] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
@@ -1266,24 +1269,39 @@ const FamilyCreator = () => {
           </DialogHeader>
           
           <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-            <WifeForm
-              ref={wifeFormRef}
-              initialData={editingWife}
-              onAddWife={(wifeData) => {
-                const fullName = `${wifeData.first_name} ${wifeData.last_name}`.trim();
+            <SpouseForm
+              spouseType="wife"
+              spouse={currentWife || {
+                id: editingWife?.id || '',
+                firstName: editingWife?.first_name || '',
+                lastName: editingWife?.last_name || '',
+                name: editingWife ? `${editingWife.first_name} ${editingWife.last_name}`.trim() : '',
+                isAlive: editingWife?.isAlive ?? true,
+                birthDate: editingWife?.birthDate || null,
+                deathDate: editingWife?.deathDate || null,
+                maritalStatus: editingWife?.maritalStatus || 'married',
+                isFamilyMember: false,
+                existingFamilyMemberId: '',
+                croppedImage: null,
+                biography: '',
+                isSaved: false
+              }}
+              onSpouseChange={(spouseData) => {
+                setCurrentWife(spouseData);
+                const fullName = `${spouseData.firstName} ${spouseData.lastName}`.trim();
                 if (editingWife) {
                   // Update existing wife
                   setWives(wives.map(w => 
                     w.id === editingWife.id 
                       ? {
                           ...w,
-                          first_name: wifeData.first_name,
-                          last_name: wifeData.last_name,
+                          first_name: spouseData.firstName,
+                          last_name: spouseData.lastName,
                           name: fullName,
-                          isAlive: wifeData.isAlive,
-                          birthDate: wifeData.birthDate,
-                          deathDate: wifeData.deathDate,
-                          maritalStatus: wifeData.maritalStatus
+                          isAlive: spouseData.isAlive,
+                          birthDate: spouseData.birthDate,
+                          deathDate: spouseData.deathDate,
+                          maritalStatus: spouseData.maritalStatus
                         }
                       : w
                   ));
@@ -1296,13 +1314,13 @@ const FamilyCreator = () => {
                   // Add new wife
                   const newWife = {
                     id: crypto.randomUUID(),
-                    first_name: wifeData.first_name,
-                    last_name: wifeData.last_name,
+                    first_name: spouseData.firstName,
+                    last_name: spouseData.lastName,
                     name: fullName,
-                    isAlive: wifeData.isAlive,
-                    birthDate: wifeData.birthDate,
-                    deathDate: wifeData.deathDate,
-                    maritalStatus: wifeData.maritalStatus
+                    isAlive: spouseData.isAlive,
+                    birthDate: spouseData.birthDate,
+                    deathDate: spouseData.deathDate,
+                    maritalStatus: spouseData.maritalStatus
                   };
                   setWives([...wives, newWife]);
                   toast({
@@ -1314,6 +1332,21 @@ const FamilyCreator = () => {
                 setIsAddingWife(false);
                 setEditingWife(null);
               }}
+              familyMembers={[]}
+              selectedMember={null}
+              commandOpen={wifeCommandOpen}
+              onCommandOpenChange={setWifeCommandOpen}
+              familyStatus={wifeFamilyStatus}
+              onFamilyStatusChange={(status) => setWifeFamilyStatus(status as 'yes' | 'no')}
+              onSave={(spouseData) => {
+                // Handle save logic here if needed
+              }}
+              onAdd={() => setShowWifeForm(true)}
+              onClose={() => {
+                setIsAddingWife(false);
+                setEditingWife(null);
+              }}
+              showForm={true}
             />
           </div>
           
@@ -1330,9 +1363,8 @@ const FamilyCreator = () => {
             </Button>
             <Button 
               onClick={() => {
-                if (wifeFormRef.current?.isValid()) {
-                  wifeFormRef.current?.handleSubmit();
-                }
+                setIsAddingWife(false);
+                setEditingWife(null);
               }}
               className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
             >
