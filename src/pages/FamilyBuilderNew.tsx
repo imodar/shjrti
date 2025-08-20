@@ -786,25 +786,27 @@ const FamilyBuilderNew = () => {
     
     // Close wife form (both edit and new)
     if (showWifeForm) {
-      setShowWifeForm(false);
-      setCurrentWife(null);
-      setEditingWifeIndex(null);
+      // Store the current editing index before resetting it
+      const currentEditingIndex = editingWifeIndex;
       
-      // Restore the original saved wife data
+      // Restore the original saved wife data BEFORE resetting the index
       const updatedWives = [...wives];
       const originalWife = familyMarriages
         .flatMap((m: any) => m.wife ? [m.wife] : [])
-        .find((w: any) => w.id === updatedWives[editingWifeIndex]?.id);
+        .find((w: any) => w.id === updatedWives[currentEditingIndex]?.id);
       
-      if (originalWife && updatedWives[editingWifeIndex]) {
-        updatedWives[editingWifeIndex] = {
+      if (originalWife && updatedWives[currentEditingIndex]) {
+        updatedWives[currentEditingIndex] = {
           ...originalWife,
           isSaved: true,
-          isFamilyMember: updatedWives[editingWifeIndex].isFamilyMember
+          isFamilyMember: updatedWives[currentEditingIndex].isFamilyMember
         };
         setWives(updatedWives);
       }
       
+      // Reset form state
+      setShowWifeForm(false);
+      setCurrentWife(null);
       setEditingWifeIndex(null);
     }
     
@@ -897,7 +899,7 @@ const FamilyBuilderNew = () => {
       updatedWives[wifeIndex] = spouseData;
       setWives(updatedWives);
       
-      // Close the form
+      // Close the form only after successful update
       setShowWifeForm(false);
       setEditingWifeIndex(null);
       return;
