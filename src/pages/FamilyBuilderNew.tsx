@@ -890,11 +890,14 @@ const FamilyBuilderNew = () => {
   // Wrapper functions for backward compatibility
   const handleWifeSave = (spouseData?: SpouseData, saveToDb: boolean = true) => {
     if (spouseData && !saveToDb) {
+      // Store the current editing index before any state changes
+      const currentEditingIndex = editingWifeIndex;
+      
       // Update current wife state
       setCurrentWife(spouseData);
       
       // Add or update wife in the wives array
-      const wifeIndex = editingWifeIndex !== null ? editingWifeIndex : wives.length;
+      const wifeIndex = currentEditingIndex !== null ? currentEditingIndex : wives.length;
       const updatedWives = [...wives];
       updatedWives[wifeIndex] = spouseData;
       setWives(updatedWives);
