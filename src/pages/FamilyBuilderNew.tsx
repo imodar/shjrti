@@ -1395,6 +1395,16 @@ const FamilyBuilderNew = () => {
     setEditingMember(null);
     setCurrentStep(1);
     resetFormData();
+    
+    // Clean up URL parameters if they exist
+    const currentParams = new URLSearchParams(searchParams);
+    if (currentParams.has('autoAdd')) {
+      currentParams.delete('autoAdd');
+      navigate({
+        pathname: window.location.pathname,
+        search: currentParams.toString()
+      }, { replace: true });
+    }
   };
 
   const resetFormData = () => {
