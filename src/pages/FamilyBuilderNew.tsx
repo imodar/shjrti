@@ -774,6 +774,14 @@ const FamilyBuilderNew = () => {
 
   // Helper functions for spouse editing conflict management
   const checkForActiveSpouseEdit = () => {
+    const result = {
+      wifeFormActive: showWifeForm,
+      editingWifeIndex: editingWifeIndex,
+      husbandFormActive: showHusbandForm
+    };
+    
+    console.log('🔍 checkForActiveSpouseEdit:', result);
+    
     if (showWifeForm && editingWifeIndex !== null) {
       return { type: 'wife', index: editingWifeIndex };
     }
@@ -833,29 +841,37 @@ const FamilyBuilderNew = () => {
   };
 
   const handleSpouseEditAttempt = (spouseType: 'wife' | 'husband', spouseData: any, index: number) => {
+    console.log('✏️ handleSpouseEditAttempt called:', { spouseType, spouseName: spouseData.name, index });
+    
     const activeEdit = checkForActiveSpouseEdit();
+    console.log('✏️ Active edit check result:', activeEdit);
     
     if (activeEdit) {
       // There's already an active edit session
       if (activeEdit.type === spouseType && activeEdit.index === index) {
         // Same spouse being edited, just return
+        console.log('✏️ Same spouse already being edited, returning');
         return;
       }
       
       // Different spouse, close the previous edit and proceed with new one
+      console.log('✏️ Different spouse being edited, closing previous edit');
       closeActiveSpouseEdit();
     }
     
     // No active edit, proceed with editing
     if (spouseType === 'wife') {
+      console.log('✏️ Starting wife edit - index:', index);
       const updatedWives = [...wives];
       updatedWives[index] = { ...spouseData, isSaved: false };
       setWives(updatedWives);
       setCurrentWife(spouseData);
       setShowWifeForm(true);
       setEditingWifeIndex(index);
+      console.log('✏️ Wife edit setup complete - editingWifeIndex set to:', index);
       setWifeFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
     } else {
+      console.log('✏️ Starting husband edit');
       setHusband({ ...spouseData, isSaved: false });
       setCurrentHusband(spouseData);
       setShowHusbandForm(true);
@@ -891,35 +907,48 @@ const FamilyBuilderNew = () => {
 
   // Unified spouse save handler - reduces code duplication
   const handleSpouseSaveUnified = (spouseType: 'wife' | 'husband', spouseData?: SpouseData, saveToDb: boolean = true) => {
+    console.log('🔍 handleSpouseSaveUnified called:', { spouseType, spouseData: spouseData?.name, saveToDb });
+    
     if (spouseData && !saveToDb) {
       if (spouseType === 'wife') {
         // Store the current editing index before any state changes
         const currentEditingIndex = editingWifeIndex;
+        console.log('💾 Wife save - currentEditingIndex:', currentEditingIndex);
+        console.log('💾 Wife save - current wives count:', wives.length);
+        console.log('💾 Wife save - existing wives:', wives.map(w => ({ name: w.name, id: w.id })));
         
         // Update current wife state
         setCurrentWife(spouseData);
         
         // Add or update wife in the wives array
         const wifeIndex = currentEditingIndex !== null ? currentEditingIndex : wives.length;
+        console.log('💾 Wife save - using wifeIndex:', wifeIndex);
+        
         const updatedWives = [...wives];
         updatedWives[wifeIndex] = spouseData;
+        console.log('💾 Wife save - updated wives after save:', updatedWives.map(w => ({ name: w.name, id: w.id })));
         setWives(updatedWives);
         
         // Close the form only after successful update
         setShowWifeForm(false);
         setEditingWifeIndex(null);
+        console.log('💾 Wife save - form closed, editing index reset');
       } else {
+        console.log('💾 Husband save - updating husband data');
         // Update current husband state
         setCurrentHusband(spouseData);
         
         // Update the husband state to persist the changes
         setHusband(spouseData);
+        console.log('💾 Husband save - husband updated:', spouseData.name);
         
         // Close the form only after successful update
         setShowHusbandForm(false);
+        console.log('💾 Husband save - form closed');
       }
       return;
     }
+    console.log('🚀 Calling handleSpouseSave for DB save');
     handleSpouseSave(spouseType);
   };
 
