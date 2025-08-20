@@ -920,9 +920,23 @@ const FamilyBuilderNew = () => {
         // Update current wife state
         setCurrentWife(spouseData);
         
-        // Add or update wife in the wives array
-        const wifeIndex = currentEditingIndex !== null ? currentEditingIndex : wives.length;
-        console.log('💾 Wife save - using wifeIndex:', wifeIndex);
+        // CRITICAL FIX: Better logic for determining wife index
+        let wifeIndex = -1;
+        if (currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < wives.length) {
+          // We're editing an existing wife at a valid index
+          wifeIndex = currentEditingIndex;
+          console.log('💾 Using editingWifeIndex:', wifeIndex);
+        } else if (spouseData.id && wives.some(w => w.id === spouseData.id)) {
+          // Find by ID as fallback (in case index was lost)
+          wifeIndex = wives.findIndex(w => w.id === spouseData.id);
+          console.log('💾 Found wife by ID at index:', wifeIndex);
+        } else {
+          // It's a new wife
+          wifeIndex = wives.length;
+          console.log('💾 Adding new wife at index:', wifeIndex);
+        }
+        
+        console.log('💾 Final wifeIndex being used:', wifeIndex);
         
         const updatedWives = [...wives];
         updatedWives[wifeIndex] = spouseData;
