@@ -2606,8 +2606,16 @@ const FamilyBuilderNew = () => {
         // 🚨 CRITICAL: Handle spouse deletion even when NOT in edit mode
         console.log('🚨 CHECKING FOR SPOUSE DELETIONS IN VIEW MODE');
         console.log('🚨 formMode:', formMode);
+        console.log('🚨 selectedMember:', selectedMember);
         console.log('🚨 husbands.length:', husbands.length);
         console.log('🚨 wives.length:', wives.length);
+        console.log('🚨 Condition checks:', {
+          formModeNotEdit: formMode !== 'edit',
+          hasSelectedMember: !!selectedMember,
+          husbandsEmpty: husbands.length === 0,
+          wivesEmpty: wives.length === 0,
+          shouldExecute: formMode !== 'edit' && selectedMember && (husbands.length === 0 || wives.length === 0)
+        });
         
         // If we're not in edit mode but spouses were removed, handle deletion
         if (formMode !== 'edit' && selectedMember && (husbands.length === 0 || wives.length === 0)) {
