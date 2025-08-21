@@ -44,6 +44,7 @@ interface SpouseFormProps {
   onClose?: () => void;
   onDelete?: (spouse: any, index: number) => void;
   showForm: boolean;
+  editingIndex?: number | null;
 }
 
 export const SpouseForm: React.FC<SpouseFormProps> = ({
@@ -60,7 +61,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   onAdd,
   onClose,
   onDelete,
-  showForm
+  showForm,
+  editingIndex
 }) => {
   const { toast } = useToast();
   const { isImageUploadEnabled } = useImageUploadPermission();
@@ -708,8 +710,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    // For wives, we need the index. For husbands, we use -1 as index
-                    const index = spouseType === 'wife' ? 0 : -1; // This will need to be improved to get actual index
+                    // Use the actual editing index passed from parent
+                    const index = editingIndex !== null && editingIndex !== undefined ? editingIndex : (spouseType === 'wife' ? 0 : -1);
                     onDelete(spouse, index);
                   }}
                   className="h-10 px-4 font-arabic text-sm border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-300"
