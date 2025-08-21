@@ -3019,18 +3019,21 @@ const FamilyBuilderNew = () => {
                                    </div>
                                    
                                     <div className="space-y-3">
-                                      {wives.length === 0 ? (
-                                        <div className="text-center py-8 text-muted-foreground">
-                                          <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                          <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
-                                          <Button 
-                                            onClick={() => handleAddSpouse('wife')}
-                                            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-arabic"
-                                          >
-                                            <Plus className="h-4 w-4" />
-                                            إضافة زوجة
-                                          </Button>
-                                        </div>
+                                       {wives.length === 0 ? (
+                                         <div className="text-center py-8 text-muted-foreground">
+                                           <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                           <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
+                                           <Button 
+                                             onClick={() => {
+                                               console.log("Add wife button clicked");
+                                               handleAddSpouse('wife');
+                                             }}
+                                             className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-arabic shadow-lg transform hover:scale-105 transition-all duration-200"
+                                           >
+                                             <Plus className="h-4 w-4" />
+                                             إضافة زوجة
+                                           </Button>
+                                         </div>
                                        ) : (
                                          wives.map((wife, index) => (
                                            <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
