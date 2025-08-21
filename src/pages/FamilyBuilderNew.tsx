@@ -1399,13 +1399,20 @@ const FamilyBuilderNew = () => {
 
   // Confirm spouse deletion (just mark for deletion)
   const confirmSpouseDelete = () => {
+    console.log('🚨 DELETION CONFIRMED - confirmSpouseDelete called');
+    console.log('🚨 spouseToDelete:', spouseToDelete);
+    
     if (!spouseToDelete) return;
     
     const { index } = spouseToDelete;
+    console.log('🚨 Deletion index:', index);
     
     // Handle husband deletion (index = -1)
     if (index === -1) {
+      console.log('🚨 DELETING HUSBAND - setting husbands array to empty');
+      console.log('🚨 Husbands before deletion:', husbands);
       setHusbands([]);
+      console.log('🚨 Husbands should now be empty');
       
       setShowSpouseDeleteModal(false);
       setSpouseToDelete(null);
@@ -1916,6 +1923,13 @@ const FamilyBuilderNew = () => {
   };
 
   const handleFormSubmit = useCallback(async (submissionData: any) => {
+    console.log('🚨🚨🚨 SAVE BUTTON CLICKED - handleFormSubmit called!');
+    console.log('🚨 Current husbands array:', husbands);
+    console.log('🚨 Current wives array:', wives);
+    console.log('🚨 Husbands length:', husbands.length);
+    console.log('🚨 Wives length:', wives.length);
+    console.log('🚨 Is saving:', isSaving);
+    
     try {
       setIsSaving(true);
       
