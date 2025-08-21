@@ -2389,21 +2389,54 @@ const FamilyBuilderNew = () => {
               return spouseId && !currentSpouseIds.has(spouseId);
             });
             
-            // Delete removed marriages
+            // Delete removed marriages and their associated spouses
             for (const marriage of marriagesToDelete) {
               try {
-                const { error: deleteError } = await supabase
-                  .from('marriages')
-                  .delete()
-                  .eq('id', marriage.id);
+                // Get the spouse ID that should be deleted
+                const spouseId = marriage.husband?.id === editingMember.id 
+                  ? marriage.wife?.id 
+                  : marriage.husband?.id;
                 
-                if (deleteError) {
-                  console.error('Error deleting marriage:', deleteError);
+                if (spouseId) {
+                  const spouseMember = familyMembers.find(m => m.id === spouseId);
+                  
+                  if (spouseMember) {
+                    // Check if this spouse is only connected through marriage (not a blood family member)
+                    const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
+                    
+                    if (isSpouseOnly) {
+                      console.log(`Performing cascade delete for removed spouse: ${spouseMember.name}`);
+                      // Use the existing cascade delete function for the spouse
+                      await performCascadingDelete(spouseMember);
+                    } else {
+                      // If it's a blood family member, just delete the marriage
+                      const { error: deleteError } = await supabase
+                        .from('marriages')
+                        .delete()
+                        .eq('id', marriage.id);
+                      
+                      if (deleteError) {
+                        console.error('Error deleting marriage:', deleteError);
+                      } else {
+                        console.log('Successfully deleted marriage:', marriage.id);
+                      }
+                    }
+                  }
                 } else {
-                  console.log('Successfully deleted marriage:', marriage.id);
+                  // Just delete the marriage if no spouse ID
+                  const { error: deleteError } = await supabase
+                    .from('marriages')
+                    .delete()
+                    .eq('id', marriage.id);
+                  
+                  if (deleteError) {
+                    console.error('Error deleting marriage:', deleteError);
+                  } else {
+                    console.log('Successfully deleted marriage:', marriage.id);
+                  }
                 }
               } catch (error) {
-                console.error('Error deleting marriage:', error);
+                console.error('Error deleting marriage/spouse:', error);
               }
             }
           }
