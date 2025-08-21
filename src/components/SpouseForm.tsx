@@ -509,11 +509,17 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                     <Input
                       type="text"
                       value={spouse.firstName}
-                      onChange={(e) => onSpouseChange({ 
-                        ...spouse, 
-                        firstName: e.target.value,
-                        name: `${e.target.value} ${spouse.lastName}`.trim()
-                      })}
+                      onChange={(e) => {
+                        const newFirstName = e.target.value;
+                        const newFullName = spouse.lastName 
+                          ? `${newFirstName} ${spouse.lastName}`.trim() 
+                          : newFirstName.trim();
+                        onSpouseChange({ 
+                          ...spouse, 
+                          firstName: newFirstName,
+                          name: newFullName
+                        });
+                      }}
                       placeholder={`أدخل الاسم الأول ${isWife ? 'للزوجة' : 'للزوج'}`}
                       className="h-11 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
                     />
@@ -532,11 +538,17 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                     <Input
                       type="text"
                       value={spouse.lastName}
-                      onChange={(e) => onSpouseChange({ 
-                        ...spouse, 
-                        lastName: e.target.value,
-                        name: `${spouse.firstName} ${e.target.value}`.trim()
-                      })}
+                      onChange={(e) => {
+                        const newLastName = e.target.value;
+                        const newFullName = spouse.firstName 
+                          ? `${spouse.firstName} ${newLastName}`.trim() 
+                          : newLastName.trim();
+                        onSpouseChange({ 
+                          ...spouse, 
+                          lastName: newLastName,
+                          name: newFullName
+                        });
+                      }}
                       placeholder={`أدخل الاسم الأخير ${isWife ? 'للزوجة' : 'للزوج'}`}
                       className="h-11 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
                     />

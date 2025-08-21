@@ -3610,38 +3610,42 @@ const FamilyBuilderNew = () => {
                                                        variant="secondary"
                                                        size="sm"
                                                        onClick={() => {
-                                                         console.log("🔥 EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
-                                                         console.log("🔥 Wife data:", wife);
-                                                         console.log("🔥 Current wives array:", wives);
-                                                         
-                                                         // Get the actual family member data to determine family membership
-                                                         const wifeMember = familyMembers.find(fm => fm.id === wife.id);
-                                                         console.log("Wife member data from DB:", wifeMember);
-                                                         
-                                                         // Determine family membership based on father_id or founder status
-                                                         const isFamilyMemberFromDB = wifeMember ? !!(wifeMember.father_id || wifeMember.is_founder) : false;
-                                                         console.log("Wife isFamilyMember from DB logic:", isFamilyMemberFromDB, {
-                                                           father_id: wifeMember?.father_id,
-                                                           is_founder: wifeMember?.is_founder
-                                                         });
-                                                         
-                                                         // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                         const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                         // ثم تعيين الزوجة المحددة للتعديل مع البيانات المحدثة
-                                                         const updatedWives = [...resetWives];
-                                                         updatedWives[index] = { 
-                                                           ...wife, 
-                                                           isSaved: false,
-                                                           isFamilyMember: isFamilyMemberFromDB,
-                                                           existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
-                                                         };
-                                                         setWives(updatedWives);
-                                                         setCurrentSpouseType('wife');
-                                                         setCurrentSpouse({ 
-                                                           ...wife, 
-                                                           isFamilyMember: isFamilyMemberFromDB,
-                                                           existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
-                                                         });
+                                                          console.log("🔥 EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
+                                                          console.log("🔥 Wife data:", wife);
+                                                          console.log("🔥 Current wives array:", wives);
+                                                          
+                                                          // Get the actual family member data to determine family membership
+                                                          const wifeMember = familyMembers.find(fm => fm.id === wife.id);
+                                                          console.log("Wife member data from DB:", wifeMember);
+                                                          
+                                                          // Determine family membership based on father_id or founder status
+                                                          const isFamilyMemberFromDB = wifeMember ? !!(wifeMember.father_id || wifeMember.is_founder) : false;
+                                                          console.log("Wife isFamilyMember from DB logic:", isFamilyMemberFromDB, {
+                                                            father_id: wifeMember?.father_id,
+                                                            is_founder: wifeMember?.is_founder
+                                                          });
+                                                          
+                                                          // Create fresh spouse data from DB source (prevent corruption)
+                                                          const freshSpouseData = {
+                                                            ...wife,
+                                                            firstName: wifeMember?.first_name || wife.firstName || '',
+                                                            lastName: wifeMember?.last_name || wife.lastName || '',
+                                                            name: wifeMember?.name || wife.name || '',
+                                                            isSaved: false,
+                                                            isFamilyMember: isFamilyMemberFromDB,
+                                                            existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
+                                                          };
+                                                          
+                                                          console.log("🔧 Fresh spouse data for editing:", freshSpouseData);
+                                                          
+                                                          // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                          const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                          // ثم تعيين الزوجة المحددة للتعديل مع البيانات المحدثة
+                                                          const updatedWives = [...resetWives];
+                                                          updatedWives[index] = freshSpouseData;
+                                                          setWives(updatedWives);
+                                                          setCurrentSpouseType('wife');
+                                                          setCurrentSpouse(freshSpouseData);
                                                          setShowSpouseForm(true);
                                                          
                                                          // CRITICAL FIX: Set the editing index
