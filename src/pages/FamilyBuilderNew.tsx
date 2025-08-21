@@ -2452,6 +2452,8 @@ const FamilyBuilderNew = () => {
     }
     
     if (currentStep < 2) {
+      // Close any opened spouse forms when transitioning to step 2
+      closeActiveSpouseEdit();
       setCurrentStep(currentStep + 1);
     }
   };
