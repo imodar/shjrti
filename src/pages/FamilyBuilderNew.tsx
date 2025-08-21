@@ -671,9 +671,53 @@ const FamilyBuilderNew = () => {
     try {
       let spouseId = currentSpouse.id;
       
-      // For new spouses without an ID or external spouses, handle database creation
-      if (!currentSpouse.isFamilyMember) {
-        // External spouse - create or update in database
+      // Check if this spouse already exists in database (either as family member or external)
+      const hasExistingDbRecord = currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId;
+      const hasValidExternalId = !currentSpouse.isFamilyMember && spouseId && !spouseId.startsWith('temp_');
+      
+      if (hasExistingDbRecord) {
+        // Update existing family member spouse
+        spouseId = currentSpouse.existingFamilyMemberId;
+        console.log('🚨 UPDATING EXISTING FAMILY MEMBER SPOUSE:', spouseId);
+        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+        
+        await supabase
+          .from('family_tree_members')
+          .update({
+            name: spouseName,
+            first_name: currentSpouse.firstName || null,
+            last_name: currentSpouse.lastName || null,
+            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: currentSpouse.isAlive ?? true,
+            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
+            marital_status: 'married',
+            image_url: currentSpouse.croppedImage || null,
+            biography: currentSpouse.biography || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', spouseId);
+      } else if (hasValidExternalId) {
+        // Update existing external spouse
+        console.log('🚨 UPDATING EXISTING EXTERNAL SPOUSE:', spouseId);
+        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+        
+        await supabase
+          .from('family_tree_members')
+          .update({
+            name: spouseName,
+            first_name: currentSpouse.firstName || null,
+            last_name: currentSpouse.lastName || null,
+            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: currentSpouse.isAlive ?? true,
+            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
+            marital_status: 'married',
+            image_url: currentSpouse.croppedImage || null,
+            biography: currentSpouse.biography || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', spouseId);
+      } else {
+        // Create new spouse (external only - family members should not reach this point)
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
           console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
           // Create new external spouse in database
@@ -728,27 +772,6 @@ const FamilyBuilderNew = () => {
             })
             .eq('id', spouseId);
         }
-      } else if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
-        // Update existing family member spouse
-        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-        
-        await supabase
-          .from('family_tree_members')
-          .update({
-            name: spouseName,
-            first_name: currentSpouse.firstName || null,
-            last_name: currentSpouse.lastName || null,
-            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: currentSpouse.isAlive ?? true,
-            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
-            marital_status: 'married',
-            image_url: currentSpouse.croppedImage || null,
-            biography: currentSpouse.biography || null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', currentSpouse.existingFamilyMemberId);
-          
-        spouseId = currentSpouse.existingFamilyMemberId;
       }
 
       // Update local state with the correct spouse ID
