@@ -186,6 +186,7 @@ export function EnhancedDatePicker({
               onSelect={handleSelect}
               locale={ar}
               initialFocus
+              defaultMonth={value || new Date()}
               className="rounded-md pointer-events-auto p-2 sm:p-4 touch-manipulation"
               disabled={disableFuture ? (date) => date > new Date() : undefined}
               captionLayout="dropdown-buttons"
