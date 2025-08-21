@@ -778,8 +778,8 @@ const FamilyBuilderNew = () => {
   const closeActiveSpouseEdit = () => {
     console.log('closeActiveSpouseEdit called, showSpouseForm:', showSpouseForm, 'currentSpouseType:', currentSpouseType, 'editingWifeIndex:', editingWifeIndex);
     
-    // Close spouse form (both edit and new)
-    if (showSpouseForm && currentSpouseType === 'wife') {
+    // If we're editing an existing spouse, restore the original data
+    if (showSpouseForm && currentSpouseType === 'wife' && editingWifeIndex !== null) {
       // Store the current editing index before resetting it
       const currentEditingIndex = editingWifeIndex;
       
@@ -797,14 +797,9 @@ const FamilyBuilderNew = () => {
         };
         setWives(updatedWives);
       }
-      
-      // Reset form state
-      setShowSpouseForm(false);
-      setCurrentSpouse(null);
-      setEditingWifeIndex(null);
     }
     
-    if (showSpouseForm && currentSpouseType === 'husband' && husbands.length > 0 && editingHusbandIndex !== null) {
+    if (showSpouseForm && currentSpouseType === 'husband' && editingHusbandIndex !== null) {
       const currentEditingIndex = editingHusbandIndex;
       
       // Restore the original saved husband data BEFORE resetting the index
@@ -823,12 +818,14 @@ const FamilyBuilderNew = () => {
           setHusbands(updatedHusbands);
         }
       }
-      
-      // Reset form state
-      setShowSpouseForm(false);
-      setCurrentSpouse(null);
-      setEditingHusbandIndex(null);
     }
+    
+    // Always reset form state to close the form
+    setShowSpouseForm(false);
+    setCurrentSpouse(null);
+    setEditingWifeIndex(null);
+    setEditingHusbandIndex(null);
+    setSpouseFamilyStatus(null);
   };
 
   const handleSpouseEditAttempt = (spouseType: 'wife' | 'husband', spouseData: any, index: number) => {
