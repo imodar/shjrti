@@ -3117,45 +3117,64 @@ const FamilyBuilderNew = () => {
                                  </div>
 
                                   {/* Unified Wife Form */}
-                                  <div className="space-y-4 lg:col-span-2">
-                                    <div className="flex items-center gap-2 mb-4 w-full">
-                                      <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                        <Heart className="w-3 h-3 text-white" />
-                                      </div>
-                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
-                                    </div>
-                                    
-                                      <SpouseForm
-                                        spouseType="wife"
-                                        spouse={currentSpouse && currentSpouseType === 'wife' ? currentSpouse : {
-                                          id: '',
-                                          firstName: '',
-                                          lastName: '',
-                                          name: '',
-                                          isAlive: true,
-                                          birthDate: null,
-                                          deathDate: null,
-                                          maritalStatus: 'married',
-                                          isFamilyMember: false,
-                                          existingFamilyMemberId: '',
-                                          croppedImage: null,
-                                          biography: '',
-                                          isSaved: false
-                                        }}
-                                       onSpouseChange={setCurrentSpouse}
-                                       familyMembers={familyMembers}
-                                       selectedMember={selectedMember}
-                                       commandOpen={wifeCommandOpen}
-                                       onCommandOpenChange={setWifeCommandOpen}
-                                       familyStatus={spouseFamilyStatus}
-                                       onFamilyStatusChange={handleSpouseFamilyStatusChange}
-                                       onSave={handleSpouseSaveWrapper}
-                                       onAdd={() => handleAddSpouse('wife')}
-                                       onClose={handleCloseWifeEdit}
-                                       showForm={showSpouseForm && currentSpouseType === 'wife'}
-                                    />
-                                  </div>
-                               </div>
+                                   {/* Single Unified Spouse Form Section */}
+                                   {showSpouseForm && (
+                                     <div className="space-y-4 lg:col-span-2">
+                                       <div className="flex items-center gap-2 mb-4 w-full">
+                                         <div className={cn(
+                                           "w-6 h-6 rounded-full flex items-center justify-center",
+                                           currentSpouseType === 'wife' 
+                                             ? "bg-gradient-to-r from-pink-500 to-rose-500" 
+                                             : "bg-gradient-to-r from-blue-500 to-sky-500"
+                                         )}>
+                                           {currentSpouseType === 'wife' ? (
+                                             <Heart className="w-3 h-3 text-white" />
+                                           ) : (
+                                             <User className="w-3 h-3 text-white" />
+                                           )}
+                                         </div>
+                                         <h4 className={cn(
+                                           "text-lg font-semibold font-arabic",
+                                           currentSpouseType === 'wife' 
+                                             ? "text-pink-700 dark:text-pink-300" 
+                                             : "text-blue-700 dark:text-blue-300"
+                                         )}>
+                                           {currentSpouseType === 'wife' ? 'إضافة زوجة' : 'إضافة زوج'}
+                                         </h4>
+                                       </div>
+                                       
+                                       <SpouseForm
+                                         spouseType={currentSpouseType}
+                                         spouse={currentSpouse || {
+                                           id: '',
+                                           firstName: '',
+                                           lastName: '',
+                                           name: '',
+                                           isAlive: true,
+                                           birthDate: null,
+                                           deathDate: null,
+                                           maritalStatus: 'married',
+                                           isFamilyMember: false,
+                                           existingFamilyMemberId: '',
+                                           croppedImage: null,
+                                           biography: '',
+                                           isSaved: false
+                                         }}
+                                        onSpouseChange={setCurrentSpouse}
+                                        familyMembers={familyMembers}
+                                        selectedMember={selectedMember}
+                                        commandOpen={currentSpouseType === 'wife' ? wifeCommandOpen : husbandCommandOpen}
+                                        onCommandOpenChange={currentSpouseType === 'wife' ? setWifeCommandOpen : setHusbandCommandOpen}
+                                        familyStatus={spouseFamilyStatus}
+                                        onFamilyStatusChange={handleSpouseFamilyStatusChange}
+                                        onSave={handleSpouseSaveWrapper}
+                                        onAdd={() => handleAddSpouse(currentSpouseType)}
+                                        onClose={currentSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit}
+                                        showForm={true}
+                                     />
+                                     </div>
+                                   )}
+                                </div>
                              ) : (
                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                  {/* Husband Display Panel */}
@@ -3250,37 +3269,15 @@ const FamilyBuilderNew = () => {
                                    </div>
                                  </div>
 
-                                 {/* Unified Husband Form */}
-                                    <SpouseForm
-                                      spouseType="husband"
-                                      spouse={currentSpouse && currentSpouseType === 'husband' ? currentSpouse : {
-                                        id: '',
-                                        firstName: '',
-                                        lastName: '',
-                                        name: '',
-                                        isAlive: true,
-                                        birthDate: null,
-                                        deathDate: null,
-                                        maritalStatus: 'married',
-                                        isFamilyMember: false,
-                                        existingFamilyMemberId: '',
-                                        croppedImage: null,
-                                        biography: '',
-                                        isSaved: false
-                                      }}
-                                     onSpouseChange={setCurrentSpouse}
-                                     familyMembers={familyMembers}
-                                     selectedMember={selectedMember}
-                                     commandOpen={husbandCommandOpen}
-                                     onCommandOpenChange={setHusbandCommandOpen}
-                                     familyStatus={spouseFamilyStatus}
-                                     onFamilyStatusChange={handleSpouseFamilyStatusChange}
-                                     onSave={handleSpouseSaveWrapper}
-                                     onAdd={() => handleAddSpouse('husband')}
-                                     onClose={handleCloseHusbandEdit}
-                                     showForm={showSpouseForm && currentSpouseType === 'husband'}
-                                 />
-                               </div>
+                                  {/* Single Unified Spouse Form will be displayed above when showSpouseForm is true */}
+                                  <div>
+                                    {showSpouseForm && (
+                                      <div className="p-4 border-2 border-dashed border-muted-foreground/20 rounded-lg text-center text-muted-foreground">
+                                        <p className="font-arabic">النموذج الموحد معروض في الأعلى</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               )}
                           </div>
                        )}
