@@ -2381,15 +2381,26 @@ const FamilyBuilderNew = () => {
               const shouldInclude = (wife.isSaved === true || (wife.id && wife.id.length > 0)) &&
                                    (familyStatus !== 'yes' || wife.existingFamilyMemberId);
               
-              console.log('🔍 Wife filter decision:', {
-                name: wife.name,
-                id: wife.id,
-                isSaved: wife.isSaved,
-                familyStatus: familyStatus,
-                existingFamilyMemberId: wife.existingFamilyMemberId,
-                shouldInclude: shouldInclude,
-                reason: shouldInclude ? (wife.isSaved ? 'newly created' : 'edited existing') : 'excluded'
-              });
+          console.log('🔍 Wife filter decision:', {
+            name: wife.name,
+            firstName: wife.firstName,
+            lastName: wife.lastName,
+            id: wife.id,
+            isSaved: wife.isSaved,
+            familyStatus: familyStatus,
+            existingFamilyMemberId: wife.existingFamilyMemberId,
+            shouldInclude: shouldInclude,
+            reason: shouldInclude ? (wife.isSaved ? 'newly created' : 'edited existing') : 'excluded',
+            fullWifeObject: wife
+          });
+          
+          console.log('🔍 Current wives array in filter:', wives.map(w => ({
+            name: w.name,
+            firstName: w.firstName,
+            lastName: w.lastName,
+            id: w.id,
+            isSaved: w.isSaved
+          })));
               
               return shouldInclude;
             });
