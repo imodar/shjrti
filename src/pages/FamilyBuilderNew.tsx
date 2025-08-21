@@ -3310,15 +3310,20 @@ const FamilyBuilderNew = () => {
                                                       تعديل
                                                     </Button>
                                                   )}
-                                                 <Button
-                                                   variant="outline"
-                                                   size="sm"
-                                                   onClick={() => handleSpouseDelete(wife, index)}
-                                                   className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300"
-                                                 >
-                                                   <X className="h-3 w-3 ml-1" />
-                                                   حذف
-                                                 </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                      // Close any open edit form first
+                                                      handleCloseWifeEdit();
+                                                      // Then show delete confirmation
+                                                      handleSpouseDelete(wife, index);
+                                                    }}
+                                                    className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300"
+                                                  >
+                                                    <X className="h-3 w-3 ml-1" />
+                                                    حذف
+                                                  </Button>
                                                </div>
                                                 
                                                 {/* Interactive Area removed - using edit button instead */}
@@ -3502,15 +3507,20 @@ const FamilyBuilderNew = () => {
                                                      تعديل
                                                    </Button>
                                                  )}
-                                               <Button
-                                                 variant="outline"
-                                                 size="sm"
-                                                onClick={() => handleSpouseDelete(husbands[0], -1)}
-                                                className="h-8 px-3 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50 border-red-200 dark:border-red-800 transition-all duration-300"
-                                              >
-                                                <X className="h-3 w-3 ml-1" />
-                                                حذف
-                                              </Button>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                 onClick={() => {
+                                                   // Close any open edit form first
+                                                   handleCloseHusbandEdit();
+                                                   // Then show delete confirmation
+                                                   handleSpouseDelete(husbands[0], -1);
+                                                 }}
+                                                 className="h-8 px-3 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50 border-red-200 dark:border-red-800 transition-all duration-300"
+                                               >
+                                                 <X className="h-3 w-3 ml-1" />
+                                                 حذف
+                                               </Button>
                                             </div>
                                           </div>
                                         </div>
