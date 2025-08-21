@@ -659,7 +659,8 @@ const FamilyBuilderNew = () => {
       currentSpouse: currentSpouse ? {
         id: currentSpouse.id,
         name: currentSpouse.name,
-        isFamilyMember: currentSpouse.isFamilyMember
+        isFamilyMember: currentSpouse.isFamilyMember,
+        existingFamilyMemberId: currentSpouse.existingFamilyMemberId
       } : null,
       editingWifeIndex,
       editingHusbandIndex
@@ -674,6 +675,15 @@ const FamilyBuilderNew = () => {
       // Check if this spouse already exists in database (either as family member or external)
       const hasExistingDbRecord = currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId;
       const hasValidExternalId = !currentSpouse.isFamilyMember && spouseId && !spouseId.startsWith('temp_');
+      
+      console.log('🔍 SPOUSE SAVE CONDITIONS:', {
+        hasExistingDbRecord,
+        hasValidExternalId,
+        isFamilyMember: currentSpouse.isFamilyMember,
+        existingFamilyMemberId: currentSpouse.existingFamilyMemberId,
+        spouseId,
+        spouseIdStartsWithTemp: spouseId?.startsWith('temp_')
+      });
       
       if (hasExistingDbRecord) {
         // Update existing family member spouse
