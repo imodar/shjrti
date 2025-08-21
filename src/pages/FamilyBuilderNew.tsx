@@ -1962,7 +1962,8 @@ const FamilyBuilderNew = () => {
     }
 
     // Handle husband for female members
-    if (submissionData.gender === 'female' && husbands && husbands.length > 0 && husbands[0]?.isSaved === true) {
+    if (submissionData.gender === 'female' && husbands && husbands.length > 0 && 
+        (husbands[0]?.isSaved === true || (husbands[0]?.id && husbands[0]?.id.length > 0))) {
       await processSpouse({
         spouse: husbands[0],
         spouseType: 'husband',
@@ -2374,11 +2375,23 @@ const FamilyBuilderNew = () => {
               const wifeIndex = wives.findIndex(w => w === wife);
               const familyStatus = wiveFamilyStatus[wifeIndex];
               
-              // Only save if:
-              // 1. Wife is marked as saved
-              // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
-              return wife.isSaved === true && 
-                     (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+              // Include wives that are:
+              // 1. Newly created (isSaved === true), OR
+              // 2. Edited existing wives (have valid id)
+              const shouldInclude = (wife.isSaved === true || (wife.id && wife.id.length > 0)) &&
+                                   (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+              
+              console.log('🔍 Wife filter decision:', {
+                name: wife.name,
+                id: wife.id,
+                isSaved: wife.isSaved,
+                familyStatus: familyStatus,
+                existingFamilyMemberId: wife.existingFamilyMemberId,
+                shouldInclude: shouldInclude,
+                reason: shouldInclude ? (wife.isSaved ? 'newly created' : 'edited existing') : 'excluded'
+              });
+              
+              return shouldInclude;
             });
            for (const wife of savedWives) {
              try {
@@ -2565,8 +2578,9 @@ const FamilyBuilderNew = () => {
           }
         }
 
-        // Handle husband for female members - process if saved
-        if (submissionData.gender === 'female' && husbands && husbands.length > 0 && husbands[0]?.isSaved === true) {
+        // Handle husband for female members - process if saved or edited
+        if (submissionData.gender === 'female' && husbands && husbands.length > 0 && 
+            (husbands[0]?.isSaved === true || (husbands[0]?.id && husbands[0]?.id.length > 0))) {
           try {
             let husbandId = husbands[0].existingFamilyMemberId;
             
