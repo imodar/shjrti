@@ -680,7 +680,8 @@ const FamilyBuilderNew = () => {
         isFamilyMember: currentSpouse.isFamilyMember,
         existingFamilyMemberId: currentSpouse.existingFamilyMemberId,
         spouseId,
-        spouseIdStartsWithTemp: spouseId?.startsWith('temp_')
+        spouseIdStartsWithTemp: spouseId?.startsWith('temp_'),
+        currentSpouseFullObject: currentSpouse
       });
       
       if (hasValidDbId) {
@@ -709,6 +710,14 @@ const FamilyBuilderNew = () => {
           .eq('id', updateId);
       } else {
         // Create new spouse
+        console.log('🚨 ENTERING CREATE NEW SPOUSE PATH');
+        console.log('🚨 CREATE CONDITIONS:', {
+          spouseId,
+          spouseIdEmpty: spouseId === '',
+          spouseIdStartsWithTemp: spouseId?.startsWith('temp_'),
+          currentSpouseObject: currentSpouse
+        });
+        
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
           console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
           // Create new external spouse in database
@@ -1011,6 +1020,13 @@ const FamilyBuilderNew = () => {
       editingWifeIndex,
       editingHusbandIndex
     });
+
+    console.log('🔍 CURRENT SPOUSE ARRAYS AT START:', {
+      husbands: husbands.map(h => ({id: h.id, name: h.name})),
+      wives: wives.map(w => ({id: w.id, name: w.name})),
+      editingHusbandIndex,
+      editingWifeIndex
+    });
     
     if (spouseData && !saveToDb) {
       if (spouseType === 'wife') {
@@ -1091,6 +1107,17 @@ const FamilyBuilderNew = () => {
       return;
     }
     console.log('🚀 Calling handleSpouseSave for DB save');
+    console.log('🚀 DB SAVE CONDITIONS:', {
+      spouseType,
+      currentSpouseArrays: {
+        wives: wives.map(w => ({id: w.id, name: w.name})),
+        husbands: husbands.map(h => ({id: h.id, name: h.name}))
+      },
+      editingIndexes: {
+        editingWifeIndex,
+        editingHusbandIndex
+      }
+    });
     handleSpouseSave(spouseType);
   };
 
