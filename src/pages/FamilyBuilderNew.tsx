@@ -741,21 +741,34 @@ const FamilyBuilderNew = () => {
         // Check if we're editing an existing wife or adding a new one
         let existingWifeIndex = -1;
         
+        console.log('🔍 WIFE SAVE DEBUG:', {
+          editingWifeIndex,
+          currentSpouseId: currentSpouse.id,
+          wivesCount: wives.length,
+          wives: wives.map(w => ({ id: w.id, name: w.name }))
+        });
+        
         if (editingWifeIndex !== null && editingWifeIndex >= 0) {
           // We're editing at a specific index
           existingWifeIndex = editingWifeIndex;
+          console.log('🔍 Using editingWifeIndex:', existingWifeIndex);
         } else if (currentSpouse.id && wives.findIndex(w => w.id === currentSpouse.id) >= 0) {
           // Find existing wife by ID
           existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
+          console.log('🔍 Found wife by ID at index:', existingWifeIndex);
         }
+        
+        console.log('🔍 Final existingWifeIndex:', existingWifeIndex);
         
         if (existingWifeIndex >= 0) {
           // Update existing wife
+          console.log('🔄 UPDATING existing wife at index:', existingWifeIndex);
           const updatedWives = [...wives];
           updatedWives[existingWifeIndex] = updatedSpouse;
           setWives(updatedWives);
         } else {
           // Add new wife
+          console.log('➕ ADDING new wife');
           setWives(prev => [...prev, updatedSpouse]);
         }
         setEditingWifeIndex(null);
@@ -763,21 +776,34 @@ const FamilyBuilderNew = () => {
         // Update husband
         let existingHusbandIndex = -1;
         
+        console.log('🔍 HUSBAND SAVE DEBUG:', {
+          editingHusbandIndex,
+          currentSpouseId: currentSpouse.id,
+          husbandsCount: husbands.length,
+          husbands: husbands.map(h => ({ id: h.id, name: h.name }))
+        });
+        
         if (editingHusbandIndex !== null && editingHusbandIndex >= 0) {
           // We're editing at a specific index
           existingHusbandIndex = editingHusbandIndex;
+          console.log('🔍 Using editingHusbandIndex:', existingHusbandIndex);
         } else if (currentSpouse.id && husbands.findIndex(h => h.id === currentSpouse.id) >= 0) {
           // Find existing husband by ID
           existingHusbandIndex = husbands.findIndex(h => h.id === currentSpouse.id);
+          console.log('🔍 Found husband by ID at index:', existingHusbandIndex);
         }
+        
+        console.log('🔍 Final existingHusbandIndex:', existingHusbandIndex);
         
         if (existingHusbandIndex >= 0) {
           // Update existing husband
+          console.log('🔄 UPDATING existing husband at index:', existingHusbandIndex);
           const updatedHusbands = [...husbands];
           updatedHusbands[existingHusbandIndex] = updatedSpouse;
           setHusbands(updatedHusbands);
         } else {
           // Add new husband
+          console.log('➕ ADDING new husband');
           setHusbands(prev => [...prev, updatedSpouse]);
         }
         setEditingHusbandIndex(null);
@@ -876,7 +902,7 @@ const FamilyBuilderNew = () => {
   };
 
   const handleSpouseEditAttempt = (spouseType: 'wife' | 'husband', spouseData: any, index: number) => {
-    console.log('✏️ handleSpouseEditAttempt called:', { spouseType, spouseName: spouseData.name, index });
+    console.log('✏️ handleSpouseEditAttempt called:', { spouseType, spouseName: spouseData.name, index, spouseId: spouseData.id });
     
     const activeEdit = checkForActiveSpouseEdit();
     console.log('✏️ Active edit check result:', activeEdit);
@@ -900,14 +926,14 @@ const FamilyBuilderNew = () => {
     setShowSpouseForm(true);
     
     if (spouseType === 'wife') {
-      console.log('✏️ Starting wife edit - index:', index);
+      console.log('✏️ Starting wife edit - index:', index, 'spouse:', spouseData);
       const updatedWives = [...wives];
       updatedWives[index] = { ...spouseData, isSaved: false };
       setWives(updatedWives);
       setEditingWifeIndex(index);
       console.log('✏️ Wife edit setup complete - editingWifeIndex set to:', index);
     } else {
-      console.log('✏️ Starting husband edit');
+      console.log('✏️ Starting husband edit - index:', index, 'spouse:', spouseData);
       const updatedHusbands = [...husbands];
       updatedHusbands[index] = { ...spouseData, isSaved: false };
       setHusbands(updatedHusbands);
@@ -946,7 +972,14 @@ const FamilyBuilderNew = () => {
 
   // Unified spouse save handler - reduces code duplication
   const handleSpouseSaveUnified = (spouseType: 'wife' | 'husband', spouseData?: SpouseData, saveToDb: boolean = true) => {
-    console.log('🔍 handleSpouseSaveUnified called:', { spouseType, spouseData: spouseData?.name, saveToDb });
+    console.log('🔍 handleSpouseSaveUnified called:', { 
+      spouseType, 
+      spouseName: spouseData?.name, 
+      spouseId: spouseData?.id,
+      saveToDb,
+      editingWifeIndex,
+      editingHusbandIndex
+    });
     
     if (spouseData && !saveToDb) {
       if (spouseType === 'wife') {
