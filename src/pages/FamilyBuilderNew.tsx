@@ -653,7 +653,7 @@ const FamilyBuilderNew = () => {
 
   // Note: handleAddWife and handleAddHusband are replaced by handleAddSpouse
 
-  const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
+  const handleSpouseSave = async (spouseType: 'wife' | 'husband', spouseDataParam?: SpouseData) => {
     console.log('🚨 handleSpouseSave called with:', {
       spouseType,
       currentSpouse: currentSpouse ? {
@@ -666,45 +666,46 @@ const FamilyBuilderNew = () => {
       editingHusbandIndex
     });
     
-    const spouse = currentSpouse;
-    if (!currentSpouse) return;
+    // CRITICAL FIX: Use the parameter data if provided, otherwise fall back to currentSpouse
+    const spouse = spouseDataParam || currentSpouse;
+    if (!spouse) return;
     
     try {
-      let spouseId = currentSpouse.id;
+      let spouseId = spouse.id;
       
       // Simplified logic: if spouse has a valid database ID (not temp), update; otherwise create new
       const hasValidDbId = spouseId && !spouseId.startsWith('temp_') && spouseId.trim() !== '';
       
       console.log('🔍 SPOUSE SAVE CONDITIONS:', {
         hasValidDbId,
-        isFamilyMember: currentSpouse.isFamilyMember,
-        existingFamilyMemberId: currentSpouse.existingFamilyMemberId,
+        isFamilyMember: spouse.isFamilyMember,
+        existingFamilyMemberId: spouse.existingFamilyMemberId,
         spouseId,
         spouseIdStartsWithTemp: spouseId?.startsWith('temp_'),
-        currentSpouseFullObject: currentSpouse
+        currentSpouseFullObject: spouse
       });
       
       if (hasValidDbId) {
         // Update existing spouse (whether family member or external)
-        const updateId = currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId 
-          ? currentSpouse.existingFamilyMemberId 
+        const updateId = spouse.isFamilyMember && spouse.existingFamilyMemberId 
+          ? spouse.existingFamilyMemberId 
           : spouseId;
         
         spouseId = updateId;
-        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+        const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
         
         await supabase
           .from('family_tree_members')
           .update({
             name: spouseName,
-            first_name: currentSpouse.firstName || null,
-            last_name: currentSpouse.lastName || null,
-            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: currentSpouse.isAlive ?? true,
-            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
+            first_name: spouse.firstName || null,
+            last_name: spouse.lastName || null,
+            birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: spouse.isAlive ?? true,
+            death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
             marital_status: 'married',
-            image_url: currentSpouse.croppedImage || null,
-            biography: currentSpouse.biography || null,
+            image_url: spouse.croppedImage || null,
+            biography: spouse.biography || null,
             updated_at: new Date().toISOString()
           })
           .eq('id', updateId);
@@ -715,13 +716,13 @@ const FamilyBuilderNew = () => {
           spouseId,
           spouseIdEmpty: spouseId === '',
           spouseIdStartsWithTemp: spouseId?.startsWith('temp_'),
-          currentSpouseObject: currentSpouse
+          currentSpouseObject: spouse
         });
         
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
           console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
           // Create new external spouse in database
-          const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+          const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
           
           const { data: { user } } = await supabase.auth.getUser();
           
@@ -730,15 +731,15 @@ const FamilyBuilderNew = () => {
             .insert({
               family_id: familyId,
               name: spouseName,
-              first_name: currentSpouse.firstName || null,
-              last_name: currentSpouse.lastName || null,
+              first_name: spouse.firstName || null,
+              last_name: spouse.lastName || null,
               gender: spouseType === 'wife' ? 'female' : 'male',
-              birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
-              is_alive: currentSpouse.isAlive ?? true,
-              death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
+              birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
+              is_alive: spouse.isAlive ?? true,
+              death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
               marital_status: 'married',
-              image_url: currentSpouse.croppedImage || null,
-              biography: currentSpouse.biography || null,
+              image_url: spouse.croppedImage || null,
+              biography: spouse.biography || null,
               created_by: user?.id,
               is_founder: false
             })
@@ -754,20 +755,20 @@ const FamilyBuilderNew = () => {
         } else {
           console.log('🚨 UPDATING EXISTING EXTERNAL SPOUSE:', spouseId);
           // Update existing external spouse
-          const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+          const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
           
           await supabase
             .from('family_tree_members')
             .update({
               name: spouseName,
-              first_name: currentSpouse.firstName || null,
-              last_name: currentSpouse.lastName || null,
-              birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
-              is_alive: currentSpouse.isAlive ?? true,
-              death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
+              first_name: spouse.firstName || null,
+              last_name: spouse.lastName || null,
+              birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
+              is_alive: spouse.isAlive ?? true,
+              death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
               marital_status: 'married',
-              image_url: currentSpouse.croppedImage || null,
-              biography: currentSpouse.biography || null,
+              image_url: spouse.croppedImage || null,
+              biography: spouse.biography || null,
               updated_at: new Date().toISOString()
             })
             .eq('id', spouseId);
@@ -775,7 +776,7 @@ const FamilyBuilderNew = () => {
       }
 
       // Update local state with the correct spouse ID
-      const updatedSpouse = { ...currentSpouse, id: spouseId, isSaved: true };
+      const updatedSpouse = { ...spouse, id: spouseId, isSaved: true };
       
       if (spouseType === 'wife') {
         // Check if we're editing an existing wife or adding a new one
@@ -783,7 +784,7 @@ const FamilyBuilderNew = () => {
         
         console.log('🔍 WIFE SAVE DEBUG:', {
           editingWifeIndex,
-          currentSpouseId: currentSpouse.id,
+          currentSpouseId: spouse.id,
           wivesCount: wives.length,
           wives: wives.map(w => ({ id: w.id, name: w.name }))
         });
@@ -792,9 +793,9 @@ const FamilyBuilderNew = () => {
           // We're editing at a specific index
           existingWifeIndex = editingWifeIndex;
           console.log('🔍 Using editingWifeIndex:', existingWifeIndex);
-        } else if (currentSpouse.id && wives.findIndex(w => w.id === currentSpouse.id) >= 0) {
+        } else if (spouse.id && wives.findIndex(w => w.id === spouse.id) >= 0) {
           // Find existing wife by ID
-          existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
+          existingWifeIndex = wives.findIndex(w => w.id === spouse.id);
           console.log('🔍 Found wife by ID at index:', existingWifeIndex);
         }
         
@@ -1036,7 +1037,7 @@ const FamilyBuilderNew = () => {
         console.log('💾 Wife save - current wives count:', wives.length);
         console.log('💾 Wife save - existing wives:', wives.map(w => ({ name: w.name, id: w.id })));
         
-        // Update current spouse state
+        // CRITICAL FIX: Update current spouse state with the new data
         setCurrentSpouse(spouseData);
         
         // CRITICAL FIX: Better logic for determining wife index
@@ -1073,7 +1074,7 @@ const FamilyBuilderNew = () => {
         console.log('💾 Husband save - current husbands count:', husbands.length);
         console.log('💾 Husband save - existing husbands:', husbands.map(h => ({ name: h.name, id: h.id })));
         
-        // Update current spouse state
+        // CRITICAL FIX: Update current spouse state with the new data
         setCurrentSpouse(spouseData);
         
         // CRITICAL FIX: Better logic for determining husband index
@@ -1106,19 +1107,29 @@ const FamilyBuilderNew = () => {
       }
       return;
     }
-    console.log('🚀 Calling handleSpouseSave for DB save');
-    console.log('🚀 DB SAVE CONDITIONS:', {
-      spouseType,
-      currentSpouseArrays: {
-        wives: wives.map(w => ({id: w.id, name: w.name})),
-        husbands: husbands.map(h => ({id: h.id, name: h.name}))
-      },
-      editingIndexes: {
-        editingWifeIndex,
-        editingHusbandIndex
-      }
-    });
-    handleSpouseSave(spouseType);
+    
+    // CRITICAL FIX: Ensure currentSpouse is updated before DB save
+    if (spouseData) {
+      setCurrentSpouse(spouseData);
+      // Use setTimeout to ensure state update is applied before DB operation
+      setTimeout(() => {
+        handleSpouseSave(spouseType, spouseData);
+      }, 0);
+    } else {
+      console.log('🚀 Calling handleSpouseSave for DB save');
+      console.log('🚀 DB SAVE CONDITIONS:', {
+        spouseType,
+        currentSpouseArrays: {
+          wives: wives.map(w => ({id: w.id, name: w.name})),
+          husbands: husbands.map(h => ({id: h.id, name: h.name}))
+        },
+        editingIndexes: {
+          editingWifeIndex,
+          editingHusbandIndex
+        }
+      });
+      handleSpouseSave(spouseType);
+    }
   };
 
   // Wrapper function for unified spouse save
@@ -1904,7 +1915,7 @@ const FamilyBuilderNew = () => {
         .update({
           name: spouseName,
           first_name: spouse.firstName || null,
-          last_name: spouse.lastName || familyData?.name || null,
+          last_name: spouse.lastName || null,
           birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
           is_alive: spouse.isAlive ?? true,
           death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
@@ -1926,7 +1937,7 @@ const FamilyBuilderNew = () => {
     } else {
       // Create new spouse member
       const firstName = spouse.firstName || '';
-      const lastName = spouse.lastName || familyData?.name || '';
+      const lastName = spouse.lastName || '';
       const spouseName = firstName && lastName ? `${firstName} ${lastName}` : (spouse.name || firstName || lastName || '');
       
       const { data: newSpouseMember, error: spouseError } = await supabase
@@ -2140,7 +2151,7 @@ const FamilyBuilderNew = () => {
         // Update existing member
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        const lastName = familyData?.name || '';
+        const lastName = '';
         
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
@@ -2178,7 +2189,7 @@ const FamilyBuilderNew = () => {
         // Insert new family member into database
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        const lastName = familyData?.name || '';
+        const lastName = '';
         
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
@@ -2274,7 +2285,7 @@ const FamilyBuilderNew = () => {
                         .update({
                           name: wifeName,
                          first_name: wife.firstName || null,
-                         last_name: wife.lastName || familyData?.name || null,
+                         last_name: wife.lastName || null,
                          birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
                          is_alive: wife.isAlive ?? true,
                          death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
@@ -2299,7 +2310,7 @@ const FamilyBuilderNew = () => {
                } else {
                    // If wife is not from existing family members, create new family member
                    const firstName = wife.firstName || '';
-                   const lastName = wife.lastName || familyData?.name || '';
+                   const lastName = wife.lastName || '';
                    const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
                    
                    const { data: newWifeMember, error: wifeError } = await supabase
@@ -2438,7 +2449,7 @@ const FamilyBuilderNew = () => {
             // If husband is not from existing family members, create new family member first
             if (!husbands[0].isFamilyMember || !husbands[0].existingFamilyMemberId) {
               const firstName = husbands[0].firstName || '';
-              const lastName = husbands[0].lastName || familyData?.name || '';
+              const lastName = husbands[0].lastName || '';
               const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husbands[0].name || firstName || lastName || '');
               
               const { data: newHusbandMember, error: husbandError } = await supabase
