@@ -1501,6 +1501,13 @@ const FamilyBuilderNew = () => {
   };
 
   const populateFormData = (member: any) => {
+    // Reset image states first to prevent showing previous member's image
+    setCroppedImage(null);
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    
     setFormData({
       name: member.name || "",
       first_name: member.first_name || member.name?.split(' ')[0] || "",
