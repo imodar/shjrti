@@ -606,6 +606,20 @@ const FamilyBuilderNew = () => {
     });
   }, [husbands, showSpouseForm, editingHusbandIndex]);
 
+  // Debug useEffect to track spouse form visibility
+  useEffect(() => {
+    console.log('🔧 SpouseForm render check:', { 
+      showSpouseForm, 
+      currentSpouseType, 
+      currentSpouse,
+      editingHusbandIndex,
+      editingWifeIndex
+    });
+    if (showSpouseForm) {
+      console.log('🔧 SpouseForm should be visible now!');
+    }
+  }, [showSpouseForm, currentSpouseType, currentSpouse, editingHusbandIndex, editingWifeIndex]);
+
   // Unified spouse form handlers
   const handleSpouseFamilyStatusChange = (status: string) => {
     setSpouseFamilyStatus(status as 'yes' | 'no');
@@ -3272,11 +3286,11 @@ const FamilyBuilderNew = () => {
                                       </div>
                                  </div>
 
-                                  {/* Unified Wife Form */}
-                                   {/* Single Unified Spouse Form Section */}
-                                   {showSpouseForm && (
-                                     <div className="space-y-4 lg:col-span-2">
-                                       <div className="flex items-center gap-2 mb-4 w-full">
+                                   {/* Unified Wife Form */}
+                                    {/* Single Unified Spouse Form Section */}
+                                    {showSpouseForm && (
+                                      <div className="space-y-4 lg:col-span-2">
+                                        <div className="flex items-center gap-2 mb-4 w-full">
                                          <div className={cn(
                                            "w-6 h-6 rounded-full flex items-center justify-center",
                                            currentSpouseType === 'wife' 
