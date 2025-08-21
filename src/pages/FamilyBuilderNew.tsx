@@ -1059,7 +1059,15 @@ const FamilyBuilderNew = () => {
         console.log('💾 Final wifeIndex being used:', wifeIndex);
         
         const updatedWives = [...wives];
-        updatedWives[wifeIndex] = spouseData;
+        // CRITICAL FIX: Ensure the database record is also updated with new name components
+        const existingWife = updatedWives[wifeIndex];
+        const updatedWife = {
+          ...existingWife,
+          name: spouseData.name,
+          first_name: spouseData.firstName,
+          last_name: spouseData.lastName
+        };
+        updatedWives[wifeIndex] = updatedWife;
         console.log('💾 Wife save - updated wives after save:', updatedWives.map(w => ({ name: w.name, id: w.id })));
         setWives(updatedWives);
         
@@ -1096,7 +1104,15 @@ const FamilyBuilderNew = () => {
         console.log('💾 Final husbandIndex being used:', husbandIndex);
         
         const updatedHusbands = [...husbands];
-        updatedHusbands[husbandIndex] = spouseData;
+        // CRITICAL FIX: Ensure the database record is also updated with new name components
+        const existingHusband = updatedHusbands[husbandIndex];
+        const updatedHusband = {
+          ...existingHusband,
+          name: spouseData.name,
+          first_name: spouseData.firstName,
+          last_name: spouseData.lastName
+        };
+        updatedHusbands[husbandIndex] = updatedHusband;
         console.log('💾 Husband save - updated husbands after save:', updatedHusbands.map(h => ({ name: h.name, id: h.id })));
         setHusbands(updatedHusbands);
         
