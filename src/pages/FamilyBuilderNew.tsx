@@ -2433,26 +2433,65 @@ const FamilyBuilderNew = () => {
             // Get current spouse IDs from local state
             const currentSpouseIds = new Set();
             
-            console.log('🔧 Checking spouse deletions for member:', editingMember.id);
-            console.log('🔧 Current wives array:', wives);
-            console.log('🔧 Current husbands array:', husbands);
+            console.log('🔧 Building current spouse IDs from local arrays:', {
+              editingMemberId: editingMember.id,
+              editingMemberGender: submissionData.gender,
+              wivesCount: wives.length,
+              husbandsCount: husbands.length,
+              wives: wives.map(w => ({ 
+                id: w.id, 
+                name: w.name, 
+                isSaved: w.isSaved,
+                existingFamilyMemberId: w.existingFamilyMemberId 
+              })),
+              husbands: husbands.map(h => ({ 
+                id: h.id, 
+                name: h.name, 
+                isSaved: h.isSaved,
+                existingFamilyMemberId: h.existingFamilyMemberId 
+              }))
+            });
             
             if (submissionData.gender === 'male') {
-              wives.forEach(wife => {
-                if (wife.existingFamilyMemberId || wife.id) {
-                  currentSpouseIds.add(wife.existingFamilyMemberId || wife.id);
+              wives.forEach((wife, index) => {
+                // Only consider saved wives for deletion detection
+                if (wife.isSaved && (wife.existingFamilyMemberId || wife.id)) {
+                  const spouseId = wife.existingFamilyMemberId || wife.id;
+                  currentSpouseIds.add(spouseId);
+                  console.log(`🔧 Added wife ${index} to current spouses:`, wife.name, spouseId);
+                } else {
+                  console.log(`🔧 Skipped wife ${index} (not saved or no ID):`, wife.name, {
+                    isSaved: wife.isSaved,
+                    id: wife.id,
+                    existingFamilyMemberId: wife.existingFamilyMemberId
+                  });
                 }
               });
             } else if (submissionData.gender === 'female') {
-              husbands.forEach(husband => {
-                if (husband.existingFamilyMemberId || husband.id) {
-                  currentSpouseIds.add(husband.existingFamilyMemberId || husband.id);
+              husbands.forEach((husband, index) => {
+                // Only consider saved husbands for deletion detection
+                if (husband.isSaved && (husband.existingFamilyMemberId || husband.id)) {
+                  const spouseId = husband.existingFamilyMemberId || husband.id;
+                  currentSpouseIds.add(spouseId);
+                  console.log(`🔧 Added husband ${index} to current spouses:`, husband.name, spouseId);
+                } else {
+                  console.log(`🔧 Skipped husband ${index} (not saved or no ID):`, husband.name, {
+                    isSaved: husband.isSaved,
+                    id: husband.id,
+                    existingFamilyMemberId: husband.existingFamilyMemberId
+                  });
                 }
               });
             }
             
             console.log('🔧 Current spouse IDs from local arrays:', Array.from(currentSpouseIds));
-            console.log('🔧 Existing marriages:', existingMarriages);
+            console.log('🔧 Existing marriages:', existingMarriages.map(m => ({
+              id: m.id,
+              husbandId: m.husband?.id,
+              wifeId: m.wife?.id,
+              husbandName: m.husband?.name,
+              wifeName: m.wife?.name
+            })));
             
             // Find marriages that should be deleted (spouse not in current state)
             const marriagesToDelete = existingMarriages.filter((marriage: any) => {
@@ -2460,7 +2499,7 @@ const FamilyBuilderNew = () => {
                 ? marriage.wife?.id 
                 : marriage.husband?.id;
               const shouldDelete = spouseId && !currentSpouseIds.has(spouseId);
-              console.log(`🔧 Marriage ${marriage.id}: spouse ${spouseId}, should delete: ${shouldDelete}`);
+              console.log(`🔧 Marriage ${marriage.id}: spouse ${spouseId} (${marriage.husband?.id === editingMember.id ? marriage.wife?.name : marriage.husband?.name}), should delete: ${shouldDelete}`);
               return shouldDelete;
             });
             
@@ -2472,23 +2511,29 @@ const FamilyBuilderNew = () => {
             // Delete removed marriages and their associated spouses
             for (const marriage of marriagesToDelete) {
               try {
+                console.log('🔧 Processing marriage deletion:', marriage.id);
                 // Get the spouse ID that should be deleted
                 const spouseId = marriage.husband?.id === editingMember.id 
                   ? marriage.wife?.id 
                   : marriage.husband?.id;
                 
+                console.log('🔧 Spouse to potentially delete:', spouseId);
+                
                 if (spouseId) {
                   const spouseMember = familyMembers.find(m => m.id === spouseId);
+                  console.log('🔧 Found spouse member:', spouseMember);
                   
                   if (spouseMember) {
                     // Check if this spouse is only connected through marriage (not a blood family member)
                     const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
+                    console.log('🔧 Is spouse only (not blood family):', isSpouseOnly);
                     
                     if (isSpouseOnly) {
-                      console.log(`Performing cascade delete for removed spouse: ${spouseMember.name}`);
+                      console.log(`🔧 Performing cascade delete for removed spouse: ${spouseMember.name}`);
                       // Use the existing cascade delete function for the spouse
                       await performCascadingDelete(spouseMember);
                     } else {
+                      console.log('🔧 Spouse is blood family member, only deleting marriage');
                       // If it's a blood family member, just delete the marriage
                       const { error: deleteError } = await supabase
                         .from('marriages')
@@ -2496,13 +2541,14 @@ const FamilyBuilderNew = () => {
                         .eq('id', marriage.id);
                       
                       if (deleteError) {
-                        console.error('Error deleting marriage:', deleteError);
+                        console.error('🔧 Error deleting marriage:', deleteError);
                       } else {
-                        console.log('Successfully deleted marriage:', marriage.id);
+                        console.log('🔧 Successfully deleted marriage:', marriage.id);
                       }
                     }
                   }
                 } else {
+                  console.log('🔧 No spouse ID found, just deleting marriage');
                   // Just delete the marriage if no spouse ID
                   const { error: deleteError } = await supabase
                     .from('marriages')
@@ -2510,13 +2556,13 @@ const FamilyBuilderNew = () => {
                     .eq('id', marriage.id);
                   
                   if (deleteError) {
-                    console.error('Error deleting marriage:', deleteError);
+                    console.error('🔧 Error deleting marriage:', deleteError);
                   } else {
-                    console.log('Successfully deleted marriage:', marriage.id);
+                    console.log('🔧 Successfully deleted marriage:', marriage.id);
                   }
                 }
               } catch (error) {
-                console.error('Error deleting marriage/spouse:', error);
+                console.error('🔧 Error deleting marriage/spouse:', error);
               }
             }
           }
