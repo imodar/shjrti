@@ -1647,7 +1647,8 @@ const FamilyBuilderNew = () => {
           deathDate: husbandMember?.death_date ? new Date(husbandMember.death_date) : null,
           croppedImage: husbandMember?.image_url || null,
           biography: husbandMember?.biography || '', // Add missing biography field
-          isFamilyMember: !!husbandMember, // If found in family members, it's a family member
+          // Determine if spouse is from family: has father_id OR is founder
+          isFamilyMember: husbandMember ? !!(husbandMember.father_id || husbandMember.is_founder) : false,
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
@@ -3278,32 +3279,51 @@ const FamilyBuilderNew = () => {
                                                      <Button
                                                        variant="secondary"
                                                        size="sm"
-                                                      onClick={() => {
-                                                        console.log("EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
-                                                        console.log("Wife data:", wife);
-                                                        console.log("Wife isFamilyMember:", wife.isFamilyMember);
-                                                        
-                                                        // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                        const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                        // ثم تعيين الزوجة المحددة للتعديل
-                                                        const updatedWives = [...resetWives];
-                                                        updatedWives[index] = { ...wife, isSaved: false };
-                                                        setWives(updatedWives);
-                                                        setCurrentSpouseType('wife');
-                                                        setCurrentSpouse(wife);
-                                                        setShowSpouseForm(true);
-                                                        
-                                                        // Set family status based on spouse data
-                                                        const newFamilyStatus = wife.isFamilyMember ? 'yes' : 'no';
-                                                        setSpouseFamilyStatus(newFamilyStatus);
-                                                        console.log("Setting familyStatus to:", newFamilyStatus);
-                                                        
-                                                        toast({
-                                                          title: "وضع التعديل",
-                                                          description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                          variant: "default"
-                                                        });
-                                                      }}
+                                                       onClick={() => {
+                                                         console.log("EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
+                                                         console.log("Wife data:", wife);
+                                                         
+                                                         // Get the actual family member data to determine family membership
+                                                         const wifeMember = familyMembers.find(fm => fm.id === wife.id);
+                                                         console.log("Wife member data from DB:", wifeMember);
+                                                         
+                                                         // Determine family membership based on father_id or founder status
+                                                         const isFamilyMemberFromDB = wifeMember ? !!(wifeMember.father_id || wifeMember.is_founder) : false;
+                                                         console.log("Wife isFamilyMember from DB logic:", isFamilyMemberFromDB, {
+                                                           father_id: wifeMember?.father_id,
+                                                           is_founder: wifeMember?.is_founder
+                                                         });
+                                                         
+                                                         // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                         const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                         // ثم تعيين الزوجة المحددة للتعديل مع البيانات المحدثة
+                                                         const updatedWives = [...resetWives];
+                                                         updatedWives[index] = { 
+                                                           ...wife, 
+                                                           isSaved: false,
+                                                           isFamilyMember: isFamilyMemberFromDB,
+                                                           existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
+                                                         };
+                                                         setWives(updatedWives);
+                                                         setCurrentSpouseType('wife');
+                                                         setCurrentSpouse({ 
+                                                           ...wife, 
+                                                           isFamilyMember: isFamilyMemberFromDB,
+                                                           existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
+                                                         });
+                                                         setShowSpouseForm(true);
+                                                         
+                                                         // Set family status based on actual DB data
+                                                         const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
+                                                         setSpouseFamilyStatus(newFamilyStatus);
+                                                         console.log("Setting familyStatus to:", newFamilyStatus);
+                                                         
+                                                         toast({
+                                                           title: "وضع التعديل",
+                                                           description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                           variant: "default"
+                                                         });
+                                                       }}
                                                       className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                     >
                                                       <Edit className="h-3 w-3 ml-1" />
@@ -3471,36 +3491,51 @@ const FamilyBuilderNew = () => {
                                                    <Button
                                                      variant="secondary"
                                                      size="sm"
-                                                      onClick={() => {
-                                                        console.log('🔧 Edit button clicked for husband');
-                                                        console.log('🔧 Husband data:', husbands[0]);
-                                                        console.log('🔧 Husband isFamilyMember:', husbands[0].isFamilyMember);
-                                                        console.log('🔧 Before state changes:', {
-                                                          showSpouseForm,
-                                                          editingHusbandIndex,
-                                                          currentSpouse,
-                                                          currentSpouseType
-                                                        });
+                                                       onClick={() => {
+                                                         console.log('🔧 Edit button clicked for husband');
+                                                         console.log('🔧 Husband data:', husbands[0]);
+                                                         
+                                                         // Get the actual family member data to determine family membership
+                                                         const husbandMember = familyMembers.find(fm => fm.id === husbands[0].id);
+                                                         console.log('🔧 Husband member data from DB:', husbandMember);
+                                                         
+                                                         // Determine family membership based on father_id or founder status
+                                                         const isFamilyMemberFromDB = husbandMember ? !!(husbandMember.father_id || husbandMember.is_founder) : false;
+                                                         console.log('🔧 Husband isFamilyMember from DB logic:', isFamilyMemberFromDB, {
+                                                           father_id: husbandMember?.father_id,
+                                                           is_founder: husbandMember?.is_founder
+                                                         });
+                                                         
+                                                         console.log('🔧 Before state changes:', {
+                                                           showSpouseForm,
+                                                           editingHusbandIndex,
+                                                           currentSpouse,
+                                                           currentSpouseType
+                                                         });
 
-                                                        // Don't modify husbands array - just set editing states
-                                                        setCurrentSpouseType('husband');
-                                                        setCurrentSpouse(husbands[0]);
-                                                        setShowSpouseForm(true);
-                                                        setEditingHusbandIndex(0);
+                                                         // Don't modify husbands array - just set editing states with corrected data
+                                                         setCurrentSpouseType('husband');
+                                                         setCurrentSpouse({
+                                                           ...husbands[0],
+                                                           isFamilyMember: isFamilyMemberFromDB,
+                                                           existingFamilyMemberId: isFamilyMemberFromDB ? husbands[0].id : ''
+                                                         });
+                                                         setShowSpouseForm(true);
+                                                         setEditingHusbandIndex(0);
+                                                         
+                                                         // Set family status based on actual DB data
+                                                         const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
+                                                         setSpouseFamilyStatus(newFamilyStatus);
+                                                         console.log("🔧 Setting familyStatus to:", newFamilyStatus);
+                                                         
+                                                         console.log('🔧 After state changes - spouse form should be visible');
                                                         
-                                                        // Set family status based on spouse data
-                                                        const newFamilyStatus = husbands[0].isFamilyMember ? 'yes' : 'no';
-                                                        setSpouseFamilyStatus(newFamilyStatus);
-                                                        console.log("🔧 Setting familyStatus to:", newFamilyStatus);
-                                                        
-                                                        console.log('🔧 After state changes - spouse form should be visible');
-                                                       
-                                                       toast({
-                                                         title: "وضع التعديل",
-                                                         description: "يمكنك الآن تعديل بيانات الزوج",
-                                                         variant: "default"
-                                                       });
-                                                      }}
+                                                        toast({
+                                                          title: "وضع التعديل",
+                                                          description: "يمكنك الآن تعديل بيانات الزوج",
+                                                          variant: "default"
+                                                        });
+                                                       }}
                                                      className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                    >
                                                      <Edit className="h-3 w-3 ml-1" />
