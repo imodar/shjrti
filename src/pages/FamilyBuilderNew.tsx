@@ -3386,12 +3386,22 @@ const FamilyBuilderNew = () => {
                                                   variant="secondary"
                                                   size="sm"
                                                    onClick={() => {
+                                                     console.log('🔧 Edit button clicked for husband');
+                                                     console.log('🔧 Before state changes:', {
+                                                       showSpouseForm,
+                                                       editingHusbandIndex,
+                                                       currentSpouse,
+                                                       currentSpouseType
+                                                     });
+
                                                      setHusbands([{ ...husbands[0], isSaved: false }]);
                                                      setCurrentSpouseType('husband');
                                                      setCurrentSpouse(husbands[0]);
                                                      setShowSpouseForm(true);
                                                      setEditingHusbandIndex(0);
                                                      setSpouseFamilyStatus(husbands[0].isFamilyMember ? 'yes' : 'no');
+                                                     
+                                                     console.log('🔧 After state changes - spouse form should be visible');
                                                     
                                                     toast({
                                                       title: "وضع التعديل",
