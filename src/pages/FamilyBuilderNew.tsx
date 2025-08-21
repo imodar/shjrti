@@ -1564,8 +1564,9 @@ const FamilyBuilderNew = () => {
   };
 
   const populateFormData = (member: any) => {
-    // Reset image states first to prevent showing previous member's image
-    setCroppedImage(null);
+    // Preserve existing image when editing (don't reset to null)
+    const existingImage = member.image_url || member.image || null;
+    setCroppedImage(existingImage);
     setSelectedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -1582,8 +1583,8 @@ const FamilyBuilderNew = () => {
       isAlive: member.isAlive ?? true,
       deathDate: member.deathDate ? new Date(member.deathDate) : null,
       bio: member.bio || "",
-      imageUrl: member.image || "",
-      croppedImage: member.image || null,
+      imageUrl: member.image_url || member.image || "",
+      croppedImage: existingImage,
       isFounder: member.isFounder || false
     });
     
