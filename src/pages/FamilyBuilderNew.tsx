@@ -1371,6 +1371,23 @@ const FamilyBuilderNew = () => {
     if (!spouseToDelete) return;
     
     const { index } = spouseToDelete;
+    
+    // Handle husband deletion (index = -1)
+    if (index === -1) {
+      setHusbands([]);
+      
+      setShowSpouseDeleteModal(false);
+      setSpouseToDelete(null);
+      
+      toast({
+        title: "تم تحديد الزوج للحذف",
+        description: "سيتم حذف الزوج نهائياً عند حفظ بيانات العضو",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Handle wife deletion (index >= 0)
     const newWives = wives.filter((_, i) => i !== index);
     setWives(newWives);
     
