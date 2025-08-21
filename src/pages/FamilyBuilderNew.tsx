@@ -569,7 +569,7 @@ const FamilyBuilderNew = () => {
 
   const [wives, setWives] = useState<SpouseData[]>([]);
 
-  const [husband, setHusband] = useState<SpouseData | null>(null);
+  const [husbands, setHusbands] = useState<SpouseData[]>([]);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -593,6 +593,7 @@ const FamilyBuilderNew = () => {
   const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
   const [showSpouseForm, setShowSpouseForm] = useState(false);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
+  const [editingHusbandIndex, setEditingHusbandIndex] = useState<number | null>(null);
 
   // Unified spouse form handlers
   const handleSpouseFamilyStatusChange = (status: string) => {
@@ -721,7 +722,18 @@ const FamilyBuilderNew = () => {
         setEditingWifeIndex(null);
       } else {
         // Update husband
-        setHusband(updatedSpouse);
+        const existingHusbandIndex = husbands.findIndex(h => h.id === currentSpouse.id || (editingHusbandIndex !== null && editingHusbandIndex >= 0));
+        
+        if (existingHusbandIndex >= 0) {
+          // Update existing husband
+          const updatedHusbands = [...husbands];
+          updatedHusbands[existingHusbandIndex] = updatedSpouse;
+          setHusbands(updatedHusbands);
+        } else {
+          // Add new husband
+          setHusbands(prev => [...prev, updatedSpouse]);
+        }
+        setEditingHusbandIndex(null);
       }
       
       // Reset form state
@@ -757,8 +769,8 @@ const FamilyBuilderNew = () => {
     if (showSpouseForm && currentSpouseType === 'wife' && editingWifeIndex !== null) {
       return { type: 'wife', index: editingWifeIndex };
     }
-    if (showSpouseForm && currentSpouseType === 'husband') {
-      return { type: 'husband', index: -1 };
+    if (showSpouseForm && currentSpouseType === 'husband' && editingHusbandIndex !== null) {
+      return { type: 'husband', index: editingHusbandIndex };
     }
     return null;
   };
@@ -792,23 +804,30 @@ const FamilyBuilderNew = () => {
       setEditingWifeIndex(null);
     }
     
-    if (showSpouseForm && currentSpouseType === 'husband' && husband) {
+    if (showSpouseForm && currentSpouseType === 'husband' && husbands.length > 0 && editingHusbandIndex !== null) {
+      const currentEditingIndex = editingHusbandIndex;
+      
+      // Restore the original saved husband data BEFORE resetting the index
+      if (currentEditingIndex >= 0 && currentEditingIndex < husbands.length) {
+        const updatedHusbands = [...husbands];
+        const originalHusband = familyMarriages
+          .flatMap((m: any) => m.husband ? [m.husband] : [])
+          .find((h: any) => h.id === updatedHusbands[currentEditingIndex]?.id);
+        
+        if (originalHusband && updatedHusbands[currentEditingIndex]) {
+          updatedHusbands[currentEditingIndex] = {
+            ...originalHusband,
+            isSaved: true,
+            isFamilyMember: updatedHusbands[currentEditingIndex].isFamilyMember
+          };
+          setHusbands(updatedHusbands);
+        }
+      }
+      
+      // Reset form state
       setShowSpouseForm(false);
       setCurrentSpouse(null);
-      setSpouseFamilyStatus('no');
-      
-      // Restore the original saved husband data
-      const originalHusband = familyMarriages
-        .flatMap((m: any) => m.husband ? [m.husband] : [])
-        .find((h: any) => h.id === husband.id);
-      
-      if (originalHusband) {
-        setHusband({
-          ...originalHusband,
-          isSaved: true,
-          isFamilyMember: husband.isFamilyMember
-        });
-      }
+      setEditingHusbandIndex(null);
     }
   };
 
@@ -845,7 +864,11 @@ const FamilyBuilderNew = () => {
       console.log('✏️ Wife edit setup complete - editingWifeIndex set to:', index);
     } else {
       console.log('✏️ Starting husband edit');
-      setHusband({ ...spouseData, isSaved: false });
+      const updatedHusbands = [...husbands];
+      updatedHusbands[index] = { ...spouseData, isSaved: false };
+      setHusbands(updatedHusbands);
+      setEditingHusbandIndex(index);
+      console.log('✏️ Husband edit setup complete - editingHusbandIndex set to:', index);
     }
     
     setSpouseFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
@@ -1001,6 +1024,7 @@ const FamilyBuilderNew = () => {
   
   // Track original wife data for change detection
   const [originalWivesData, setOriginalWivesData] = useState<any[]>([]);
+  const [originalHusbandsData, setOriginalHusbandsData] = useState<any[]>([]);
   
   // Upgrade modal state
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -3200,7 +3224,7 @@ const FamilyBuilderNew = () => {
                                     </div>
                                     
                                     <div className="space-y-3">
-                                      {!husband ? (
+                                      {!husbands || husbands.length === 0 ? (
                                         <div className="text-center py-8 text-muted-foreground">
                                           <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                           <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
