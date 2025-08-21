@@ -3237,27 +3237,32 @@ const FamilyBuilderNew = () => {
                                                      <Button
                                                        variant="secondary"
                                                        size="sm"
-                                                       onClick={() => {
-                                                         console.log("EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
-                                                         alert(`تم النقر على تعديل: ${wife.name || `الزوجة ${index + 1}`}`);
-                                                         
-                                                         // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                         const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                         // ثم تعيين الزوجة المحددة للتعديل
-                                                         const updatedWives = [...resetWives];
-                                                         updatedWives[index] = { ...wife, isSaved: false };
-                                                         setWives(updatedWives);
-                                                         setCurrentSpouseType('wife');
-                                                         setCurrentSpouse(wife);
-                                                         setShowSpouseForm(true);
-                                                         setSpouseFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                         
-                                                         toast({
-                                                           title: "وضع التعديل",
-                                                           description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                           variant: "default"
-                                                         });
-                                                       }}
+                                                      onClick={() => {
+                                                        console.log("EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
+                                                        console.log("Wife data:", wife);
+                                                        console.log("Wife isFamilyMember:", wife.isFamilyMember);
+                                                        
+                                                        // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                        const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                        // ثم تعيين الزوجة المحددة للتعديل
+                                                        const updatedWives = [...resetWives];
+                                                        updatedWives[index] = { ...wife, isSaved: false };
+                                                        setWives(updatedWives);
+                                                        setCurrentSpouseType('wife');
+                                                        setCurrentSpouse(wife);
+                                                        setShowSpouseForm(true);
+                                                        
+                                                        // Set family status based on spouse data
+                                                        const newFamilyStatus = wife.isFamilyMember ? 'yes' : 'no';
+                                                        setSpouseFamilyStatus(newFamilyStatus);
+                                                        console.log("Setting familyStatus to:", newFamilyStatus);
+                                                        
+                                                        toast({
+                                                          title: "وضع التعديل",
+                                                          description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                          variant: "default"
+                                                        });
+                                                      }}
                                                       className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                     >
                                                       <Edit className="h-3 w-3 ml-1" />
@@ -3419,31 +3424,36 @@ const FamilyBuilderNew = () => {
                                                    <Button
                                                      variant="secondary"
                                                      size="sm"
-                                                     onClick={() => {
-                                                       alert('BUTTON CLICKED!'); // Immediate feedback
-                                                       console.log('🔧 Edit button clicked for husband');
-                                                       console.log('🔧 Before state changes:', {
-                                                         showSpouseForm,
-                                                         editingHusbandIndex,
-                                                         currentSpouse,
-                                                         currentSpouseType
-                                                       });
+                                                      onClick={() => {
+                                                        console.log('🔧 Edit button clicked for husband');
+                                                        console.log('🔧 Husband data:', husbands[0]);
+                                                        console.log('🔧 Husband isFamilyMember:', husbands[0].isFamilyMember);
+                                                        console.log('🔧 Before state changes:', {
+                                                          showSpouseForm,
+                                                          editingHusbandIndex,
+                                                          currentSpouse,
+                                                          currentSpouseType
+                                                        });
 
-                                                       // Don't modify husbands array - just set editing states
-                                                       setCurrentSpouseType('husband');
-                                                       setCurrentSpouse(husbands[0]);
-                                                       setShowSpouseForm(true);
-                                                       setEditingHusbandIndex(0);
-                                                       setSpouseFamilyStatus(husbands[0].isFamilyMember ? 'yes' : 'no');
+                                                        // Don't modify husbands array - just set editing states
+                                                        setCurrentSpouseType('husband');
+                                                        setCurrentSpouse(husbands[0]);
+                                                        setShowSpouseForm(true);
+                                                        setEditingHusbandIndex(0);
+                                                        
+                                                        // Set family status based on spouse data
+                                                        const newFamilyStatus = husbands[0].isFamilyMember ? 'yes' : 'no';
+                                                        setSpouseFamilyStatus(newFamilyStatus);
+                                                        console.log("🔧 Setting familyStatus to:", newFamilyStatus);
+                                                        
+                                                        console.log('🔧 After state changes - spouse form should be visible');
                                                        
-                                                       console.log('🔧 After state changes - spouse form should be visible');
-                                                      
-                                                      toast({
-                                                        title: "وضع التعديل",
-                                                        description: "يمكنك الآن تعديل بيانات الزوج",
-                                                        variant: "default"
-                                                      });
-                                                     }}
+                                                       toast({
+                                                         title: "وضع التعديل",
+                                                         description: "يمكنك الآن تعديل بيانات الزوج",
+                                                         variant: "default"
+                                                       });
+                                                      }}
                                                      className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                    >
                                                      <Edit className="h-3 w-3 ml-1" />

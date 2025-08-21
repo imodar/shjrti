@@ -81,6 +81,17 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
       setOriginalSpouse(null);
     }
   }, [spouse.isSaved, spouse.id]);
+
+  // Initialize family status based on spouse data
+  useEffect(() => {
+    if (spouse && spouse.isFamilyMember !== undefined) {
+      const expectedStatus = spouse.isFamilyMember ? 'yes' : 'no';
+      if (familyStatus !== expectedStatus) {
+        console.log('🔧 SpouseForm: Initializing familyStatus from spouse data:', expectedStatus);
+        onFamilyStatusChange(expectedStatus);
+      }
+    }
+  }, [spouse.isFamilyMember, familyStatus, onFamilyStatusChange]);
   
   // Check if data has changed
   const hasChanges = originalSpouse && (
@@ -326,15 +337,18 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 </Label>
                 <Popover open={commandOpen} onOpenChange={onCommandOpenChange}>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={commandOpen}
-                      className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
-                    >
-                      اختر فرد من العائلة...
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
+                     <Button
+                       variant="outline"
+                       role="combobox"
+                       aria-expanded={commandOpen}
+                       className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
+                     >
+                       {spouse.existingFamilyMemberId ? 
+                         familyMembers.find(m => m.id === spouse.existingFamilyMemberId)?.name || 'اختر فرد من العائلة...' 
+                         : 'اختر فرد من العائلة...'
+                       }
+                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
                     <Command>
