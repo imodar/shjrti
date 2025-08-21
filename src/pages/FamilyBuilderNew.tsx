@@ -3368,35 +3368,36 @@ const FamilyBuilderNew = () => {
                                          </h4>
                                        </div>
                                        
-                                       <SpouseForm
-                                         spouseType={currentSpouseType}
-                                         spouse={currentSpouse || {
-                                           id: '',
-                                           firstName: '',
-                                           lastName: '',
-                                           name: '',
-                                           isAlive: true,
-                                           birthDate: null,
-                                           deathDate: null,
-                                           maritalStatus: 'married',
-                                           isFamilyMember: false,
-                                           existingFamilyMemberId: '',
-                                           croppedImage: null,
-                                           biography: '',
-                                           isSaved: false
-                                         }}
-                                        onSpouseChange={setCurrentSpouse}
-                                        familyMembers={familyMembers}
-                                        selectedMember={selectedMember}
-                                         commandOpen={currentSpouseType === 'wife' ? spouseCommandOpen : husbandCommandOpen}
-                                         onCommandOpenChange={currentSpouseType === 'wife' ? setSpouseCommandOpen : setHusbandCommandOpen}
-                                        familyStatus={spouseFamilyStatus}
-                                        onFamilyStatusChange={handleSpouseFamilyStatusChange}
-                                        onSave={handleSpouseSaveWrapper}
-                                        onAdd={() => handleAddSpouse(currentSpouseType)}
-                                        onClose={currentSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit}
-                                        showForm={true}
-                                     />
+                                        <SpouseForm
+                                          spouseType={currentSpouseType}
+                                          spouse={currentSpouse || {
+                                            id: '',
+                                            firstName: '',
+                                            lastName: '',
+                                            name: '',
+                                            isAlive: true,
+                                            birthDate: null,
+                                            deathDate: null,
+                                            maritalStatus: 'married',
+                                            isFamilyMember: false,
+                                            existingFamilyMemberId: '',
+                                            croppedImage: null,
+                                            biography: '',
+                                            isSaved: false
+                                          }}
+                                         onSpouseChange={setCurrentSpouse}
+                                         familyMembers={familyMembers}
+                                         selectedMember={selectedMember}
+                                          commandOpen={currentSpouseType === 'wife' ? spouseCommandOpen : husbandCommandOpen}
+                                          onCommandOpenChange={currentSpouseType === 'wife' ? setSpouseCommandOpen : setHusbandCommandOpen}
+                                         familyStatus={spouseFamilyStatus}
+                                         onFamilyStatusChange={handleSpouseFamilyStatusChange}
+                                         onSave={handleSpouseSaveWrapper}
+                                         onAdd={() => handleAddSpouse(currentSpouseType)}
+                                         onClose={currentSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit}
+                                         onDelete={handleSpouseDelete}
+                                         showForm={true}
+                                      />
                                      </div>
                                    )}
                                 </div>
@@ -3529,35 +3530,36 @@ const FamilyBuilderNew = () => {
                                         </h4>
                                       </div>
                                       
-                                      <SpouseForm
-                                        spouseType={currentSpouseType}
-                                        spouse={currentSpouse || {
-                                          id: '',
-                                          firstName: '',
-                                          lastName: '',
-                                          name: '',
-                                          isAlive: true,
-                                          birthDate: null,
-                                          deathDate: null,
-                                          maritalStatus: 'married',
-                                          isFamilyMember: false,
-                                          existingFamilyMemberId: '',
-                                          croppedImage: null,
-                                          biography: '',
-                                          isSaved: false
-                                        }}
-                                       onSpouseChange={setCurrentSpouse}
-                                       familyMembers={familyMembers}
-                                       selectedMember={selectedMember}
-                                        commandOpen={husbandCommandOpen}
-                                        onCommandOpenChange={setHusbandCommandOpen}
-                                       familyStatus={spouseFamilyStatus}
-                                       onFamilyStatusChange={handleSpouseFamilyStatusChange}
-                                       onSave={handleSpouseSaveWrapper}
-                                       onAdd={() => handleAddSpouse(currentSpouseType)}
-                                       onClose={handleCloseHusbandEdit}
-                                       showForm={true}
-                                    />
+                                       <SpouseForm
+                                         spouseType={currentSpouseType}
+                                         spouse={currentSpouse || {
+                                           id: '',
+                                           firstName: '',
+                                           lastName: '',
+                                           name: '',
+                                           isAlive: true,
+                                           birthDate: null,
+                                           deathDate: null,
+                                           maritalStatus: 'married',
+                                           isFamilyMember: false,
+                                           existingFamilyMemberId: '',
+                                           croppedImage: null,
+                                           biography: '',
+                                           isSaved: false
+                                         }}
+                                        onSpouseChange={setCurrentSpouse}
+                                        familyMembers={familyMembers}
+                                        selectedMember={selectedMember}
+                                         commandOpen={husbandCommandOpen}
+                                         onCommandOpenChange={setHusbandCommandOpen}
+                                        familyStatus={spouseFamilyStatus}
+                                        onFamilyStatusChange={handleSpouseFamilyStatusChange}
+                                        onSave={handleSpouseSaveWrapper}
+                                        onAdd={() => handleAddSpouse(currentSpouseType)}
+                                        onClose={handleCloseHusbandEdit}
+                                        onDelete={handleSpouseDelete}
+                                        showForm={true}
+                                     />
                                     </div>
                                   )}
 

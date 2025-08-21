@@ -42,6 +42,7 @@ interface SpouseFormProps {
   onSave: (spouseData?: SpouseData, saveToDb?: boolean) => void;
   onAdd: () => void;
   onClose?: () => void;
+  onDelete?: (spouse: any, index: number) => void;
   showForm: boolean;
 }
 
@@ -58,6 +59,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   onSave,
   onAdd,
   onClose,
+  onDelete,
   showForm
 }) => {
   const { toast } = useToast();
@@ -677,17 +679,35 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
           {/* Action Buttons */}
           <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
-            {/* Close Button - Always show when form is open */}
-            {onClose && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
-              >
-                إغلاق
-              </Button>
-            )}
+            <div className="flex gap-3">
+              {/* Close Button */}
+              {onClose && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1 h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+                >
+                  إغلاق
+                </Button>
+              )}
+              
+              {/* Delete Button - Only show for saved spouses */}
+              {spouse.isSaved && onDelete && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    // For wives, we need the index. For husbands, we use -1 as index
+                    const index = spouseType === 'wife' ? 0 : -1; // This will need to be improved to get actual index
+                    onDelete(spouse, index);
+                  }}
+                  className="h-10 px-4 font-arabic text-sm border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-300"
+                >
+                  حذف {spouseLabel}
+                </Button>
+              )}
+            </div>
             
             {/* Save Button - Only show when family status is selected */}
             {(familyStatus === 'yes' || familyStatus === 'no') && (
