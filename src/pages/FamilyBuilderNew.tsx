@@ -3562,6 +3562,10 @@ const FamilyBuilderNew = () => {
                                                          });
                                                          setShowSpouseForm(true);
                                                          
+                                                         // CRITICAL FIX: Set the editing index
+                                                         setEditingWifeIndex(index);
+                                                         console.log("✏️ FIXED: Set editingWifeIndex to:", index);
+                                                         
                                                          // Set family status based on actual DB data
                                                          const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
                                                          setSpouseFamilyStatus(newFamilyStatus);
