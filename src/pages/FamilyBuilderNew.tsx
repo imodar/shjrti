@@ -3018,15 +3018,22 @@ const FamilyBuilderNew = () => {
                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">الزوجات</h4>
                                    </div>
                                    
-                                   <div className="space-y-3">
-                                     {wives.length === 0 ? (
-                                       <div className="text-center py-8 text-muted-foreground">
-                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
-                                       </div>
-                                     ) : (
-                                       wives.map((wife, index) => (
-                                            <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
+                                    <div className="space-y-3">
+                                      {wives.length === 0 ? (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                          <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                          <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
+                                          <Button 
+                                            onClick={() => handleAddSpouse('wife')}
+                                            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-arabic"
+                                          >
+                                            <Plus className="h-4 w-4" />
+                                            إضافة زوجة
+                                          </Button>
+                                        </div>
+                                       ) : (
+                                         wives.map((wife, index) => (
+                                           <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
                                                 {/* Header Section */}
                                                 <div className="flex items-start justify-between">
@@ -3101,10 +3108,22 @@ const FamilyBuilderNew = () => {
                                                 
                                                 {/* Interactive Area removed - using edit button instead */}
                                               </div>
-                                           </div>
-                                       ))
-                                     )}
-                                   </div>
+                                            </div>
+                                          ))
+                                       )}
+                                       {wives.length > 0 && (
+                                         <div className="mt-4">
+                                           <Button 
+                                             onClick={() => handleAddSpouse('wife')}
+                                             variant="outline"
+                                             className="w-full flex items-center gap-2 border-2 border-dashed border-pink-400/60 text-pink-600 hover:bg-pink-50 dark:border-pink-500/60 dark:text-pink-400 dark:hover:bg-pink-950/20 font-arabic"
+                                           >
+                                             <Plus className="h-4 w-4" />
+                                             إضافة زوجة أخرى
+                                           </Button>
+                                         </div>
+                                        )}
+                                      </div>
                                  </div>
 
                                   {/* Unified Wife Form */}
@@ -3177,13 +3196,20 @@ const FamilyBuilderNew = () => {
                                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
                                    </div>
                                    
-                                   <div className="space-y-3">
-                                     {!husband ? (
-                                       <div className="text-center py-8 text-muted-foreground">
-                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
-                                       </div>
-                                     ) : (
+                                    <div className="space-y-3">
+                                      {!husband ? (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                          <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                          <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
+                                          <Button 
+                                            onClick={() => handleAddSpouse('husband')}
+                                            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white font-arabic"
+                                          >
+                                            <Plus className="h-4 w-4" />
+                                            إضافة زوج
+                                          </Button>
+                                        </div>
+                                      ) : (
                                        <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                          <div className="flex items-center justify-between">
                                            <div 
