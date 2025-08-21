@@ -1918,6 +1918,12 @@ const FamilyBuilderNew = () => {
     try {
       setIsSaving(true);
       
+      console.log('🔧 SAVE START - Current state:', {
+        wives: wives,
+        husbands: husbands,
+        submissionData: submissionData
+      });
+      
       // Determine marital status based on presence of spouses
       const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
                         submissionData.gender === "female" && husbands.length > 0;
@@ -1929,6 +1935,8 @@ const FamilyBuilderNew = () => {
         wives: submissionData.gender === "male" ? wives : [],
         husbands: submissionData.gender === "female" && husbands.length > 0 ? husbands : []
       };
+      
+      console.log('🔧 Final data prepared:', finalData);
       
       // Handle image state properly for edits:
       // - If image exists in submissionData.croppedImage, use it (user uploaded new image)
@@ -2404,10 +2412,22 @@ const FamilyBuilderNew = () => {
           
           // Handle marriage deletions for removed spouses (when user deletes spouses from UI)
           if (isEditMode && editingMember) {
+            console.log('🔧 DELETION LOGIC START');
+            console.log('🔧 Form mode:', formMode);
+            console.log('🔧 Editing member:', editingMember?.id);
+            
             // Get all existing marriages for this member
             const existingMarriages = familyMarriages.filter((marriage: any) => 
               marriage.husband?.id === editingMember.id || marriage.wife?.id === editingMember.id
             );
+            
+            console.log('🔧 Existing marriages in DB:', existingMarriages.map(m => ({
+              id: m.id,
+              husbandId: m.husband?.id,
+              wifeId: m.wife?.id,
+              husbandName: m.husband?.name,
+              wifeName: m.wife?.name
+            })));
             
             // Get current spouse IDs from local state
             const currentSpouseIds = new Set();
@@ -2430,7 +2450,7 @@ const FamilyBuilderNew = () => {
               });
             }
             
-            console.log('🔧 Current spouse IDs:', Array.from(currentSpouseIds));
+            console.log('🔧 Current spouse IDs from local arrays:', Array.from(currentSpouseIds));
             console.log('🔧 Existing marriages:', existingMarriages);
             
             // Find marriages that should be deleted (spouse not in current state)
@@ -2443,7 +2463,10 @@ const FamilyBuilderNew = () => {
               return shouldDelete;
             });
             
-            console.log('🔧 Marriages to delete:', marriagesToDelete);
+            console.log('🔧 Marriages to delete:', marriagesToDelete.map(m => ({
+              id: m.id,
+              spouseToDelete: m.husband?.id === editingMember.id ? m.wife?.name : m.husband?.name
+            })));
             
             // Delete removed marriages and their associated spouses
             for (const marriage of marriagesToDelete) {
