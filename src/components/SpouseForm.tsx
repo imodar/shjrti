@@ -100,10 +100,9 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
         });
         onFamilyStatusChange(expectedStatus);
       }
-    } else if (spouse && !spouse.id && familyStatus && familyStatus !== '') {
-      // For new spouses (no ID), reset to unchecked state
-      console.log('🔧 SpouseForm: New spouse detected, resetting familyStatus to unchecked');
-      onFamilyStatusChange('');
+    } else if (spouse && !spouse.id) {
+      // For new spouses (no ID), don't auto-set familyStatus - let user choose
+      console.log('🔧 SpouseForm: New spouse detected, leaving familyStatus for user choice');
     }
   }, [spouse.id, spouse.isFamilyMember, spouse.name, familyStatus, onFamilyStatusChange]);
   
