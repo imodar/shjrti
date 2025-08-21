@@ -3326,7 +3326,7 @@ const FamilyBuilderNew = () => {
                                         onFamilyStatusChange={handleSpouseFamilyStatusChange}
                                         onSave={handleSpouseSaveWrapper}
                                         onAdd={() => handleAddSpouse(currentSpouseType)}
-                                        onClose={handleCloseHusbandEdit}
+                                        onClose={currentSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit}
                                         showForm={true}
                                       />
                                     </div>
