@@ -1930,6 +1930,12 @@ const FamilyBuilderNew = () => {
     console.log('🚨 Wives length:', wives.length);
     console.log('🚨 Is saving:', isSaving);
     
+    // Check if Khalid should be deleted
+    const khalidId = 'dd05d323-de57-4455-8927-c0b6bc5dbe18';
+    const khalidInCurrentMembers = familyMembers.find(m => m.id === khalidId);
+    console.log('🚨 Khalid in current members:', khalidInCurrentMembers);
+    console.log('🚨 Should Khalid be deleted?', khalidInCurrentMembers && husbands.length === 0);
+    
     try {
       setIsSaving(true);
       
