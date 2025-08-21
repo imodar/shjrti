@@ -2602,6 +2602,78 @@ const FamilyBuilderNew = () => {
             }
           }
         }
+        
+        // 🚨 CRITICAL: Handle spouse deletion even when NOT in edit mode
+        console.log('🚨 CHECKING FOR SPOUSE DELETIONS IN VIEW MODE');
+        console.log('🚨 formMode:', formMode);
+        console.log('🚨 husbands.length:', husbands.length);
+        console.log('🚨 wives.length:', wives.length);
+        
+        // If we're not in edit mode but spouses were removed, handle deletion
+        if (formMode !== 'edit' && selectedMember && (husbands.length === 0 || wives.length === 0)) {
+          console.log('🚨 DELETING SPOUSES IN VIEW MODE for member:', selectedMember.name);
+          
+          // Get existing marriages for the selected member
+          const { data: existingMarriages } = await supabase
+            .from('marriages')
+            .select(`
+              id,
+              husband_id,
+              wife_id
+            `)
+            .eq('family_id', familyId)
+            .eq('is_active', true)
+            .or(`husband_id.eq.${selectedMember.id},wife_id.eq.${selectedMember.id}`);
+
+          console.log('🚨 Existing marriages for member:', existingMarriages);
+          
+          if (existingMarriages && existingMarriages.length > 0) {
+            // Delete all marriages and spouses for this member
+            for (const marriage of existingMarriages) {
+              try {
+                console.log('🚨 Deleting marriage:', marriage.id);
+                // Get the spouse ID that should be deleted
+                const spouseId = marriage.husband_id === selectedMember.id 
+                  ? marriage.wife_id 
+                  : marriage.husband_id;
+                
+                console.log('🚨 Spouse to delete:', spouseId);
+                
+                if (spouseId) {
+                  const spouseMember = familyMembers.find(m => m.id === spouseId);
+                  console.log('🚨 Found spouse member:', spouseMember);
+                  
+                  if (spouseMember) {
+                    // Check if this spouse is only connected through marriage (not a blood family member)
+                    const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
+                    console.log('🚨 Is spouse only (not blood family):', isSpouseOnly);
+                    
+                    if (isSpouseOnly) {
+                      console.log(`🚨 Performing cascade delete for removed spouse: ${spouseMember.name}`);
+                      // Use the existing cascade delete function for the spouse
+                      await performCascadingDelete(spouseMember);
+                    } else {
+                      console.log('🚨 Spouse is blood family member, only deleting marriage');
+                      // If it's a blood family member, just delete the marriage
+                      const { error: deleteError } = await supabase
+                        .from('marriages')
+                        .delete()
+                        .eq('id', marriage.id);
+                      
+                      if (deleteError) {
+                        console.error('🚨 Error deleting marriage:', deleteError);
+                      } else {
+                        console.log('🚨 Successfully deleted marriage:', marriage.id);
+                      }
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error('🚨 Error deleting marriage/spouse:', error);
+              }
+            }
+          }
+        }
        
        // Refresh family data to show updated information
       await refreshFamilyData();
