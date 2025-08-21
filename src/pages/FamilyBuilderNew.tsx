@@ -2355,10 +2355,59 @@ const FamilyBuilderNew = () => {
             marriageResults.failed++;
             marriageResults.details.push(`خطأ في ربط الزواج مع ${husbands[0].name}`);
            }
-         }
-         
-          // Note: No automatic marriage deactivation - user manually deletes incorrect marriages
-       }
+          }
+          
+          // Handle marriage deletions for removed spouses (when user deletes spouses from UI)
+          if (isEditMode && editingMember) {
+            // Get all existing marriages for this member
+            const existingMarriages = familyMarriages.filter((marriage: any) => 
+              marriage.husband?.id === editingMember.id || marriage.wife?.id === editingMember.id
+            );
+            
+            // Get current spouse IDs from local state
+            const currentSpouseIds = new Set();
+            
+            if (submissionData.gender === 'male') {
+              wives.forEach(wife => {
+                if (wife.existingFamilyMemberId || wife.id) {
+                  currentSpouseIds.add(wife.existingFamilyMemberId || wife.id);
+                }
+              });
+            } else if (submissionData.gender === 'female') {
+              husbands.forEach(husband => {
+                if (husband.existingFamilyMemberId || husband.id) {
+                  currentSpouseIds.add(husband.existingFamilyMemberId || husband.id);
+                }
+              });
+            }
+            
+            // Find marriages that should be deleted (spouse not in current state)
+            const marriagesToDelete = existingMarriages.filter((marriage: any) => {
+              const spouseId = marriage.husband?.id === editingMember.id 
+                ? marriage.wife?.id 
+                : marriage.husband?.id;
+              return spouseId && !currentSpouseIds.has(spouseId);
+            });
+            
+            // Delete removed marriages
+            for (const marriage of marriagesToDelete) {
+              try {
+                const { error: deleteError } = await supabase
+                  .from('marriages')
+                  .delete()
+                  .eq('id', marriage.id);
+                
+                if (deleteError) {
+                  console.error('Error deleting marriage:', deleteError);
+                } else {
+                  console.log('Successfully deleted marriage:', marriage.id);
+                }
+              } catch (error) {
+                console.error('Error deleting marriage:', error);
+              }
+            }
+          }
+        }
        
        // Refresh family data to show updated information
       await refreshFamilyData();
