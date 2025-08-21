@@ -4632,7 +4632,7 @@ const MemberList = ({
                         )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                           {(() => {
-                            console.log('Member data:', { name: member.name, first_name: member.first_name, last_name: member.last_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
+                            
                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
                             
                             if (isSpouse) {
