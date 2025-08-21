@@ -2433,6 +2433,15 @@ const FamilyBuilderNew = () => {
             // Get current spouse IDs from local state
             const currentSpouseIds = new Set();
             
+            console.log('🚨 CRITICAL DEBUG - Arrays at deletion check:', {
+              husbandsLength: husbands.length,
+              wivesLength: wives.length,
+              husbandsArray: husbands,
+              wivesArray: wives,
+              editingMemberGender: submissionData.gender,
+              expectedBehavior: submissionData.gender === 'female' ? 'Should check husbands array' : 'Should check wives array'
+            });
+            
             console.log('🔧 Building current spouse IDs from local arrays:', {
               editingMemberId: editingMember.id,
               editingMemberGender: submissionData.gender,
@@ -2485,6 +2494,12 @@ const FamilyBuilderNew = () => {
             }
             
             console.log('🔧 Current spouse IDs from local arrays:', Array.from(currentSpouseIds));
+            console.log('🚨 SHOULD DELETION HAPPEN?', {
+              currentSpouseIds: Array.from(currentSpouseIds),
+              currentSpouseIdsSize: currentSpouseIds.size,
+              existingMarriagesCount: existingMarriages.length,
+              shouldDeleteAll: currentSpouseIds.size === 0 && existingMarriages.length > 0
+            });
             console.log('🔧 Existing marriages:', existingMarriages.map(m => ({
               id: m.id,
               husbandId: m.husband?.id,
