@@ -1172,17 +1172,26 @@ const FamilyBuilderNew = () => {
         })));
         
         console.log("🔄 Setting wives state...");
-        setWives(updatedWives);
-        console.log("✅ Wives state updated successfully");
         
-        // Close the form only after successful update
-        console.log("🔄 Closing form and resetting editing state...");
-        setShowSpouseForm(false);
-        setEditingWifeIndex(null);
-        console.log('💾 ✅ Wife save - form closed, editing index reset');
-        console.log("========================================");
-        console.log("🎉 WIFE LOCAL SAVE COMPLETE");
-        console.log("========================================");
+        // Use functional update to ensure we have the latest state
+        setWives(prevWives => {
+          console.log("📊 State updater function called with prevWives:", prevWives.map(w => ({name: w.name, id: w.id})));
+          console.log("📊 Returning updatedWives:", updatedWives.map(w => ({name: w.name, id: w.id})));
+          return updatedWives;
+        });
+        
+        console.log("✅ Wives state update dispatched");
+        
+        // Use setTimeout to ensure state update has been processed
+        setTimeout(() => {
+          console.log("🔄 Delayed form close...");
+          setShowSpouseForm(false);
+          setEditingWifeIndex(null);
+          console.log('💾 ✅ Wife save - form closed, editing index reset');
+          console.log("========================================");
+          console.log("🎉 WIFE LOCAL SAVE COMPLETE");
+          console.log("========================================");
+        }, 0);
       } else {
         // Store the current editing index before any state changes
         const currentEditingIndex = editingHusbandIndex;
@@ -2198,6 +2207,16 @@ const FamilyBuilderNew = () => {
     console.log('🚨 Husbands length:', husbands.length);
     console.log('🚨 Wives length:', wives.length);
     console.log('🚨 Is saving:', isSaving);
+    
+    // Add a small delay to ensure any pending state updates have completed
+    await new Promise(resolve => setTimeout(resolve, 50));
+    console.log('🔧 After delay - Current wives array:', wives.map(w => ({
+      name: w.name,
+      firstName: w.firstName, 
+      lastName: w.lastName,
+      id: w.id,
+      isSaved: w.isSaved
+    })));
     
     // Check if Khalid should be deleted
     const khalidId = 'dd05d323-de57-4455-8927-c0b6bc5dbe18';
