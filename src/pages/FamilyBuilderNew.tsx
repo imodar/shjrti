@@ -2565,7 +2565,8 @@ const FamilyBuilderNew = () => {
           }
           
           // Handle marriage deletions for removed spouses (when user deletes spouses from UI)
-          if (isEditMode && editingMember) {
+          // Skip this deletion logic during spouse edit operations to prevent incorrect deletions
+          if (isEditMode && editingMember && editingWifeIndex === null && editingHusbandIndex === null) {
             console.log('🔧 DELETION LOGIC START');
             console.log('🔧 Form mode:', formMode);
             console.log('🔧 Editing member:', editingMember?.id);
@@ -2733,97 +2734,108 @@ const FamilyBuilderNew = () => {
                 console.error('🔧 Error deleting marriage/spouse:', error);
               }
             }
+          } else if (isEditMode && editingMember && (editingWifeIndex !== null || editingHusbandIndex !== null)) {
+            console.log('🔧 SKIPPING DELETION LOGIC - Currently editing a spouse');
+            console.log('🔧 editingWifeIndex:', editingWifeIndex);
+            console.log('🔧 editingHusbandIndex:', editingHusbandIndex);
           }
         }
         
         // 🚨 CRITICAL: Handle spouse deletion when spouses are removed - FIXED LOGIC
-        console.log('🚨 CHECKING FOR SPOUSE DELETIONS');
-        console.log('🚨 formMode:', formMode);
-        console.log('🚨 editingMember:', editingMember);
-        console.log('🚨 selectedMember:', selectedMember);
-        console.log('🚨 husbands.length:', husbands.length);
-        console.log('🚨 wives.length:', wives.length);
-        
-        const memberToCheck = editingMember || selectedMember;
-        console.log('🚨 Member to check for spouse deletion:', memberToCheck);
-        
-        // FIXED LOGIC: Only check relevant spouse arrays based on member's gender
-        let shouldDeleteSpouses = false;
-        if (memberToCheck) {
-          if (memberToCheck.gender === 'male') {
-            // For male members, only check if wives were removed
-            shouldDeleteSpouses = wives.length === 0;
-            console.log('🚨 Male member - checking wives deletion:', shouldDeleteSpouses);
-          } else if (memberToCheck.gender === 'female') {
-            // For female members, only check if husbands were removed
-            shouldDeleteSpouses = husbands.length === 0;
-            console.log('🚨 Female member - checking husbands deletion:', shouldDeleteSpouses);
+        // Skip this deletion check during spouse edit operations to prevent incorrect deletions
+        if (editingWifeIndex !== null || editingHusbandIndex !== null) {
+          console.log('🚨 SKIPPING SPOUSE DELETION CHECK - Currently editing a spouse');
+          console.log('🚨 editingWifeIndex:', editingWifeIndex);
+          console.log('🚨 editingHusbandIndex:', editingHusbandIndex);
+        } else {
+          console.log('🚨 CHECKING FOR SPOUSE DELETIONS');
+          console.log('🚨 formMode:', formMode);
+          console.log('🚨 editingMember:', editingMember);
+          console.log('🚨 selectedMember:', selectedMember);
+          console.log('🚨 husbands.length:', husbands.length);
+          console.log('🚨 wives.length:', wives.length);
+          
+          const memberToCheck = editingMember || selectedMember;
+          console.log('🚨 Member to check for spouse deletion:', memberToCheck);
+          
+          // FIXED LOGIC: Only check relevant spouse arrays based on member's gender
+          let shouldDeleteSpouses = false;
+          if (memberToCheck) {
+            if (memberToCheck.gender === 'male') {
+              // For male members, only check if wives were removed
+              shouldDeleteSpouses = wives.length === 0;
+              console.log('🚨 Male member - checking wives deletion:', shouldDeleteSpouses);
+            } else if (memberToCheck.gender === 'female') {
+              // For female members, only check if husbands were removed
+              shouldDeleteSpouses = husbands.length === 0;
+              console.log('🚨 Female member - checking husbands deletion:', shouldDeleteSpouses);
+            }
           }
-        }
-        
-        console.log('🚨 Final deletion decision:', shouldDeleteSpouses);
-        
-        // If spouses were removed, handle deletion
-        if (memberToCheck && shouldDeleteSpouses) {
-          console.log('🚨 DELETING SPOUSES for member:', memberToCheck.name);
           
-          // Get existing marriages for the member
-          const { data: existingMarriages } = await supabase
-            .from('marriages')
-            .select(`
-              id,
-              husband_id,
-              wife_id
-            `)
-            .eq('family_id', familyId)
-            .eq('is_active', true)
-            .or(`husband_id.eq.${memberToCheck.id},wife_id.eq.${memberToCheck.id}`);
+          console.log('🚨 Final deletion decision:', shouldDeleteSpouses);
+          
+          // If spouses were removed, handle deletion
+          if (memberToCheck && shouldDeleteSpouses) {
+            console.log('🚨 DELETING SPOUSES for member:', memberToCheck.name);
+            
+            // Get existing marriages for the member
+            const { data: existingMarriages } = await supabase
+              .from('marriages')
+              .select(`
+                id,
+                husband_id,
+                wife_id
+              `)
+              .eq('family_id', familyId)
+              .eq('is_active', true)
+              .or(`husband_id.eq.${memberToCheck.id},wife_id.eq.${memberToCheck.id}`);
 
-          console.log('🚨 Existing marriages for member:', existingMarriages);
-          
-          if (existingMarriages && existingMarriages.length > 0) {
-            // Delete all marriages and spouses for this member
-            for (const marriage of existingMarriages) {
-              try {
-                console.log('🚨 Deleting marriage:', marriage.id);
-                // Get the spouse ID that should be deleted
-                const spouseId = marriage.husband_id === memberToCheck.id 
-                  ? marriage.wife_id 
-                  : marriage.husband_id;
-                
-                console.log('🚨 Spouse to delete:', spouseId);
-                
-                if (spouseId) {
-                  const spouseMember = familyMembers.find(m => m.id === spouseId);
-                  console.log('🚨 Found spouse member:', spouseMember);
+            console.log('🚨 Existing marriages for member:', existingMarriages);
+            
+            if (existingMarriages && existingMarriages.length > 0) {
+              // Delete all marriages and spouses for this member
+              for (const marriage of existingMarriages) {
+                try {
+                  console.log('🚨 Deleting marriage:', marriage.id);
+                  // Get the spouse ID that should be deleted
+                  const spouseId = marriage.husband_id === memberToCheck.id 
+                    ? marriage.wife_id 
+                    : marriage.husband_id;
                   
-                  if (spouseMember) {
-                    // Check if this spouse is only connected through marriage (not a blood family member)
-                    const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
-                    console.log('🚨 Is spouse only (not blood family):', isSpouseOnly);
+                  console.log('🚨 Spouse to delete:', spouseId);
+                  
+                  if (spouseId) {
+                    const spouseMember = familyMembers.find(m => m.id === spouseId);
+                    console.log('🚨 Found spouse member:', spouseMember);
                     
-                    if (isSpouseOnly) {
-                      console.log(`🚨 Performing cascade delete for removed spouse: ${spouseMember.name}`);
-                      // Use the existing cascade delete function for the spouse
-                      await performCascadingDelete(spouseMember);
-                    } else {
-                      console.log('🚨 Spouse is blood family member, only deleting marriage');
-                      // If it's a blood family member, just delete the marriage
-                      const { error: deleteError } = await supabase
-                        .from('marriages')
-                        .delete()
-                        .eq('id', marriage.id);
+                    if (spouseMember) {
+                      // Check if this spouse is only connected through marriage (not a blood family member)
+                      const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
+                      console.log('🚨 Is spouse only (not blood family):', isSpouseOnly);
                       
-                      if (deleteError) {
-                        console.error('🚨 Error deleting marriage:', deleteError);
+                      if (isSpouseOnly) {
+                        console.log(`🚨 Performing cascade delete for removed spouse: ${spouseMember.name}`);
+                        // Use the existing cascade delete function for the spouse
+                        await performCascadingDelete(spouseMember);
                       } else {
-                        console.log('🚨 Successfully deleted marriage:', marriage.id);
+                        console.log('🚨 Spouse is blood family member, only deleting marriage');
+                        // If it's a blood family member, just delete the marriage
+                        const { error: deleteError } = await supabase
+                          .from('marriages')
+                          .delete()
+                          .eq('id', marriage.id);
+                        
+                        if (deleteError) {
+                          console.error('🚨 Error deleting marriage:', deleteError);
+                        } else {
+                          console.log('🚨 Successfully deleted marriage:', marriage.id);
+                        }
                       }
                     }
                   }
+                } catch (error) {
+                  console.error('🚨 Error deleting marriage/spouse:', error);
                 }
-              } catch (error) {
-                console.error('🚨 Error deleting marriage/spouse:', error);
               }
             }
           }
