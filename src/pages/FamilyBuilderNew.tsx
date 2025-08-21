@@ -3023,97 +3023,100 @@ const FamilyBuilderNew = () => {
                                 )}
                              </div>
 
-                             <div>
-                                <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                  <FileText className="h-4 w-4 text-primary" />
-                                  السيرة الذاتية
-                               </Label>
-                               <Textarea
-                                 id="bio"
-                                 value={formData.bio}
-                                 onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                 placeholder="أدخل معلومات إضافية عن العضو"
-                                 rows={3}
-                                 className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none"
-                               />
-                              </div>
-
-                             {/* Image Upload Section */}
-                             {(formMode === 'add' || formMode === 'edit') && (
-
-                             <div className="space-y-3">
-                              <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
-                              
-                              {(croppedImage || (editingMember && editingMember.image)) ? (
+                              {/* Biography and Profile Picture Section - Side by Side */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Biography Section - 1/2 */}
                                 <div className="space-y-3">
-                                  <div className="relative group flex justify-center">
-                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                       <img 
-                                         src={croppedImage || (editingMember && editingMember.image)} 
-                                         alt="صورة العضو" 
-                                         className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg"
-                                       />
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex justify-center gap-2">
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="secondary"
-                                      onClick={handleEditImage}
-                                      className="h-8 px-3"
-                                    >
-                                      <Edit2 className="h-3 w-3 ml-1" />
-                                      تعديل
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="destructive"
-                                      onClick={handleDeleteImage}
-                                      className="h-8 px-3"
-                                    >
-                                      <Trash2 className="h-3 w-3 ml-1" />
-                                      حذف
-                                    </Button>
-                                  </div>
+                                  <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-primary" />
+                                    السيرة الذاتية
+                                  </Label>
+                                  <Textarea
+                                    id="bio"
+                                    value={formData.bio}
+                                    onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                    placeholder="أدخل معلومات إضافية عن العضو"
+                                    rows={6}
+                                    className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none h-full"
+                                  />
                                 </div>
-                              ) : (
-                                <div 
-                                  className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 ${
-                                    isImageUploadEnabled 
-                                      ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
-                                      : 'border-gray-300 opacity-70 cursor-not-allowed'
-                                  }`}
-                                  onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
-                                >
-                                  {isImageUploadEnabled ? (
-                                    <div className="space-y-2">
-                                      <Upload className="h-8 w-8 text-primary mx-auto" />
-                                      <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
-                                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
-                                    </div>
-                                  ) : (
-                                    <div className="space-y-2">
-                                      <Upload className="h-8 w-8 text-gray-400 mx-auto" />
-                                      <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
-                                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              
-                              <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageSelect}
-                                className="hidden"
-                                disabled={!isImageUploadEnabled}
-                              />
-                             </div>
-                             )}
+
+                                {/* Profile Picture Section - 1/2 */}
+                                {(formMode === 'add' || formMode === 'edit') && (
+                                  <div className="space-y-3">
+                                    <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
+                                    
+                                    {(croppedImage || (editingMember && editingMember.image)) ? (
+                                      <div className="space-y-3">
+                                        <div className="relative group flex justify-center">
+                                          <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
+                                            <img 
+                                              src={croppedImage || (editingMember && editingMember.image)} 
+                                              alt="صورة العضو" 
+                                              className="w-32 h-32 object-cover rounded-xl border-2 border-white shadow-lg"
+                                            />
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="flex justify-center gap-2">
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="secondary"
+                                            onClick={handleEditImage}
+                                            className="h-8 px-3"
+                                          >
+                                            <Edit2 className="h-3 w-3 ml-1" />
+                                            تعديل
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="destructive"
+                                            onClick={handleDeleteImage}
+                                            className="h-8 px-3"
+                                          >
+                                            <Trash2 className="h-3 w-3 ml-1" />
+                                            حذف
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div 
+                                        className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 h-48 flex flex-col justify-center ${
+                                          isImageUploadEnabled 
+                                            ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
+                                            : 'border-gray-300 opacity-70 cursor-not-allowed'
+                                        }`}
+                                        onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
+                                      >
+                                        {isImageUploadEnabled ? (
+                                          <div className="space-y-2">
+                                            <Upload className="h-12 w-12 text-primary mx-auto" />
+                                            <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
+                                            <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
+                                          </div>
+                                        ) : (
+                                          <div className="space-y-2">
+                                            <Upload className="h-12 w-12 text-gray-400 mx-auto" />
+                                            <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
+                                            <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                    
+                                    <input
+                                      ref={fileInputRef}
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={handleImageSelect}
+                                      className="hidden"
+                                      disabled={!isImageUploadEnabled}
+                                    />
+                                  </div>
+                                )}
+                              </div>
                          </div>
                        )}
 
