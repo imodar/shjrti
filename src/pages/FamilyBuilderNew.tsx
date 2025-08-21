@@ -2603,25 +2603,28 @@ const FamilyBuilderNew = () => {
           }
         }
         
-        // 🚨 CRITICAL: Handle spouse deletion even when NOT in edit mode
-        console.log('🚨 CHECKING FOR SPOUSE DELETIONS IN VIEW MODE');
+        // 🚨 CRITICAL: Handle spouse deletion when spouses are removed
+        console.log('🚨 CHECKING FOR SPOUSE DELETIONS');
         console.log('🚨 formMode:', formMode);
+        console.log('🚨 editingMember:', editingMember);
         console.log('🚨 selectedMember:', selectedMember);
         console.log('🚨 husbands.length:', husbands.length);
         console.log('🚨 wives.length:', wives.length);
+        
+        const memberToCheck = editingMember || selectedMember;
+        console.log('🚨 Member to check for spouse deletion:', memberToCheck);
         console.log('🚨 Condition checks:', {
-          formModeNotEdit: formMode !== 'edit',
-          hasSelectedMember: !!selectedMember,
+          hasMember: !!memberToCheck,
           husbandsEmpty: husbands.length === 0,
           wivesEmpty: wives.length === 0,
-          shouldExecute: formMode !== 'edit' && selectedMember && (husbands.length === 0 || wives.length === 0)
+          shouldExecute: memberToCheck && (husbands.length === 0 || wives.length === 0)
         });
         
-        // If we're not in edit mode but spouses were removed, handle deletion
-        if (formMode !== 'edit' && selectedMember && (husbands.length === 0 || wives.length === 0)) {
-          console.log('🚨 DELETING SPOUSES IN VIEW MODE for member:', selectedMember.name);
+        // If spouses were removed, handle deletion
+        if (memberToCheck && (husbands.length === 0 || wives.length === 0)) {
+          console.log('🚨 DELETING SPOUSES for member:', memberToCheck.name);
           
-          // Get existing marriages for the selected member
+          // Get existing marriages for the member
           const { data: existingMarriages } = await supabase
             .from('marriages')
             .select(`
@@ -2631,7 +2634,7 @@ const FamilyBuilderNew = () => {
             `)
             .eq('family_id', familyId)
             .eq('is_active', true)
-            .or(`husband_id.eq.${selectedMember.id},wife_id.eq.${selectedMember.id}`);
+            .or(`husband_id.eq.${memberToCheck.id},wife_id.eq.${memberToCheck.id}`);
 
           console.log('🚨 Existing marriages for member:', existingMarriages);
           
@@ -2641,7 +2644,7 @@ const FamilyBuilderNew = () => {
               try {
                 console.log('🚨 Deleting marriage:', marriage.id);
                 // Get the spouse ID that should be deleted
-                const spouseId = marriage.husband_id === selectedMember.id 
+                const spouseId = marriage.husband_id === memberToCheck.id 
                   ? marriage.wife_id 
                   : marriage.husband_id;
                 
