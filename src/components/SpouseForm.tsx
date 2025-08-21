@@ -86,14 +86,24 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
   // Initialize family status based on spouse data
   useEffect(() => {
-    if (spouse && spouse.isFamilyMember !== undefined) {
+    if (spouse && spouse.id && spouse.isFamilyMember !== undefined) {
       const expectedStatus = spouse.isFamilyMember ? 'yes' : 'no';
       if (familyStatus !== expectedStatus) {
-        console.log('🔧 SpouseForm: Initializing familyStatus from spouse data:', expectedStatus);
+        console.log('🔧 SpouseForm: Initializing familyStatus from spouse data:', {
+          spouseId: spouse.id,
+          spouseName: spouse.name,
+          isFamilyMember: spouse.isFamilyMember,
+          currentFamilyStatus: familyStatus,
+          expectedStatus: expectedStatus
+        });
         onFamilyStatusChange(expectedStatus);
       }
+    } else if (spouse && !spouse.id && familyStatus !== 'no') {
+      // For new spouses (no ID), default to 'no'
+      console.log('🔧 SpouseForm: New spouse detected, setting familyStatus to "no"');
+      onFamilyStatusChange('no');
     }
-  }, [spouse.isFamilyMember, familyStatus, onFamilyStatusChange]);
+  }, [spouse.id, spouse.isFamilyMember, spouse.name, familyStatus, onFamilyStatusChange]);
   
   // Check if data has changed
   const hasChanges = originalSpouse && (
