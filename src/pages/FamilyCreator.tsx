@@ -30,10 +30,11 @@ const FamilyCreator = () => {
   const { t } = useLanguage();
   const { isImageUploadEnabled, loading: imagePermissionLoading } = useImageUploadPermission();
   const [currentStep, setCurrentStep] = useState(1);
-  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
-  const [showWifeForm, setShowWifeForm] = useState(false);
-  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
+  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
+  const [showSpouseForm, setShowSpouseForm] = useState(false);
+  const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
+  const [currentSpouseType, setCurrentSpouseType] = useState<'wife' | 'husband'>('wife');
   const [isCreatingFamily, setIsCreatingFamily] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
@@ -1110,10 +1111,11 @@ const FamilyCreator = () => {
                                           </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                          <DropdownMenuItem onClick={() => {
-                                            setEditingWife(wife);
-                                            setIsAddingWife(true);
-                                          }}>
+                                           <DropdownMenuItem onClick={() => {
+                                             setEditingWife(wife);
+                                             setCurrentSpouseType('wife');
+                                             setIsAddingWife(true);
+                                           }}>
                                             <Edit className="h-4 w-4 mr-2" />
                                             {t('edit', 'تعديل')}
                                           </DropdownMenuItem>
@@ -1151,7 +1153,10 @@ const FamilyCreator = () => {
                             )}
                             
                             <Button
-                              onClick={() => setIsAddingWife(true)}
+                              onClick={() => {
+                                setCurrentSpouseType('wife');
+                                setIsAddingWife(true);
+                              }}
                               variant="outline"
                               className="w-full h-16 border-2 border-dashed border-rose-300/50 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:border-rose-500 transition-all duration-300 group rounded-xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm"
                             >
@@ -1270,8 +1275,8 @@ const FamilyCreator = () => {
           
           <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
             <SpouseForm
-              spouseType="wife"
-              spouse={currentWife || {
+              spouseType={currentSpouseType}
+              spouse={currentSpouse || {
                 id: editingWife?.id || '',
                 firstName: editingWife?.first_name || '',
                 lastName: editingWife?.last_name || '',
@@ -1287,7 +1292,7 @@ const FamilyCreator = () => {
                 isSaved: false
               }}
               onSpouseChange={(spouseData) => {
-                setCurrentWife(spouseData);
+                setCurrentSpouse(spouseData);
                 const fullName = `${spouseData.firstName} ${spouseData.lastName}`.trim();
                 if (editingWife) {
                   // Update existing wife
@@ -1334,14 +1339,14 @@ const FamilyCreator = () => {
               }}
               familyMembers={[]}
               selectedMember={null}
-              commandOpen={wifeCommandOpen}
-              onCommandOpenChange={setWifeCommandOpen}
-              familyStatus={wifeFamilyStatus}
-              onFamilyStatusChange={(status) => setWifeFamilyStatus(status as 'yes' | 'no')}
+              commandOpen={spouseCommandOpen}
+              onCommandOpenChange={setSpouseCommandOpen}
+              familyStatus={spouseFamilyStatus}
+              onFamilyStatusChange={(status) => setSpouseFamilyStatus(status as 'yes' | 'no')}
               onSave={(spouseData) => {
                 // Handle save logic here if needed
               }}
-              onAdd={() => setShowWifeForm(true)}
+              onAdd={() => setShowSpouseForm(true)}
               onClose={() => {
                 setIsAddingWife(false);
                 setEditingWife(null);

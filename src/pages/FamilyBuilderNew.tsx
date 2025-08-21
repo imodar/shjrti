@@ -589,7 +589,7 @@ const FamilyBuilderNew = () => {
   // Unified spouse management states
   const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
   const [currentSpouseType, setCurrentSpouseType] = useState<'wife' | 'husband'>('wife');
-  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
+  const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
   const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
   const [showSpouseForm, setShowSpouseForm] = useState(false);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
@@ -941,13 +941,6 @@ const FamilyBuilderNew = () => {
   // Wrapper function for unified spouse save
   const handleSpouseSaveWrapper = (spouseData?: SpouseData, saveToDb: boolean = true) => 
     handleSpouseSaveUnified(currentSpouseType, spouseData, saveToDb);
-
-  // Wrapper functions for backward compatibility
-  const handleWifeSave = (spouseData?: SpouseData, saveToDb: boolean = true) => 
-    handleSpouseSaveUnified('wife', spouseData, saveToDb);
-    
-  const handleHusbandSave = (spouseData?: SpouseData, saveToDb: boolean = true) => 
-    handleSpouseSaveUnified('husband', spouseData, saveToDb);
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
@@ -2014,21 +2007,20 @@ const FamilyBuilderNew = () => {
                  // If wife has an existing ID, update the existing record
                  if (wife.existingFamilyMemberId && wife.id) {
                    // Get current image to handle image state properly
-                   const { data: currentWife } = await supabase
+                   const { data: currentSpouseMember } = await supabase
                      .from('family_tree_members')
                      .select('image_url')
                      .eq('id', wife.existingFamilyMemberId)
-                     .maybeSingle();
+                     .single();
+
+                   let imageUrl: string | null = null;
                    
-                   // Handle image state properly:
-                   // - If image exists in wife.croppedImage, use it (user uploaded new image)
-                   // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
-                   // - If wife.croppedImage is undefined, keep existing image
-                   let imageUrl;
-                   if (wife.croppedImage !== undefined) {
+                   // Handle image updates
+                   if (wife.croppedImage !== null) {
+                     // User either added a new image or explicitly removed it
                      imageUrl = wife.croppedImage || null;
                    } else {
-                     imageUrl = currentWife?.image_url || null;
+                     imageUrl = currentSpouseMember?.image_url || null;
                    }
                    
                    const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
@@ -2099,21 +2091,20 @@ const FamilyBuilderNew = () => {
                    // If wife is an existing family member, update their marital status and handle image properly
                    if (wife.isFamilyMember && wife.existingFamilyMemberId) {
                     // Get current data to handle image state properly
-                    const { data: currentWife } = await supabase
+                    const { data: currentSpouseMember } = await supabase
                       .from('family_tree_members')
                       .select('image_url')
                       .eq('id', wife.existingFamilyMemberId)
-                      .maybeSingle();
+                      .single();
+
+                    let imageUrl: string | null = null;
                     
-                    // Handle image state properly:
-                    // - If image exists in wife.croppedImage, use it (user uploaded new image)
-                    // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
-                    // - If wife.croppedImage is undefined, keep existing image
-                    let imageUrl;
-                    if (wife.croppedImage !== undefined) {
+                    // Handle image updates
+                    if (wife.croppedImage !== null) {
+                      // User either added a new image or explicitly removed it
                       imageUrl = wife.croppedImage || null;
                     } else {
-                      imageUrl = currentWife?.image_url || null;
+                      imageUrl = currentSpouseMember?.image_url || null;
                     }
                     
                      const { error: updateWifeError } = await supabase
@@ -3163,8 +3154,8 @@ const FamilyBuilderNew = () => {
                                         onSpouseChange={setCurrentSpouse}
                                         familyMembers={familyMembers}
                                         selectedMember={selectedMember}
-                                        commandOpen={currentSpouseType === 'wife' ? wifeCommandOpen : husbandCommandOpen}
-                                        onCommandOpenChange={currentSpouseType === 'wife' ? setWifeCommandOpen : setHusbandCommandOpen}
+                                         commandOpen={currentSpouseType === 'wife' ? spouseCommandOpen : husbandCommandOpen}
+                                         onCommandOpenChange={currentSpouseType === 'wife' ? setSpouseCommandOpen : setHusbandCommandOpen}
                                         familyStatus={spouseFamilyStatus}
                                         onFamilyStatusChange={handleSpouseFamilyStatusChange}
                                         onSave={handleSpouseSaveWrapper}
