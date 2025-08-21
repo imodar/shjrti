@@ -685,16 +685,47 @@ const FamilyBuilderNew = () => {
         currentSpouseFullObject: spouse
       });
       
+      console.log("========================================");
+      console.log("🚀 DATABASE SAVE OPERATION STARTING");
+      console.log("========================================");  
+      console.log("📋 Database operation input:");
+      console.log("   - Spouse name:", spouse.name);
+      console.log("   - Spouse ID:", spouseId);
+      console.log("   - Spouse firstName:", spouse.firstName);
+      console.log("   - Spouse lastName:", spouse.lastName);
+      console.log("   - Has valid DB ID:", hasValidDbId);
+      console.log("   - Is family member:", spouse.isFamilyMember);
+      console.log("   - Existing family member ID:", spouse.existingFamilyMemberId);
+      console.log("   - Full spouse object:", JSON.stringify(spouse, null, 2));
+      
       if (hasValidDbId) {
+        console.log("----------------------------------------");
+        console.log("🚀 UPDATE EXISTING SPOUSE PATH");
+        console.log("----------------------------------------");
         // Update existing spouse (whether family member or external)
         const updateId = spouse.isFamilyMember && spouse.existingFamilyMemberId 
           ? spouse.existingFamilyMemberId 
           : spouseId;
         
+        console.log("🔍 Update ID calculation:");
+        console.log("   - spouse.isFamilyMember:", spouse.isFamilyMember);
+        console.log("   - spouse.existingFamilyMemberId:", spouse.existingFamilyMemberId);
+        console.log("   - spouseId:", spouseId);
+        console.log("   - Final updateId:", updateId);
+        
         spouseId = updateId;
         const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
         
-        await supabase
+        console.log("🔄 Preparing UPDATE operation:");
+        console.log("   - Final spouse name:", spouseName);
+        console.log("   - firstName being saved:", spouse.firstName || null);
+        console.log("   - lastName being saved:", spouse.lastName || null);
+        console.log("   - Birth date:", spouse.birthDate?.toISOString().split('T')[0] || null);
+        console.log("   - Is alive:", spouse.isAlive ?? true);
+        console.log("   - Death date:", !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null);
+        console.log("   - Updating record with ID:", updateId);
+        
+        const updateResult = await supabase
           .from('family_tree_members')
           .update({
             name: spouseName,
@@ -709,7 +740,17 @@ const FamilyBuilderNew = () => {
             updated_at: new Date().toISOString()
           })
           .eq('id', updateId);
+          
+        console.log("✅ UPDATE operation result:", updateResult);
+        if (updateResult.error) {
+          console.log("❌ UPDATE ERROR:", updateResult.error);
+        } else {
+          console.log("✅ UPDATE SUCCESS - Spouse updated in database");
+        }
       } else {
+        console.log("----------------------------------------");
+        console.log("🚀 CREATE NEW SPOUSE PATH");
+        console.log("----------------------------------------");
         // Create new spouse
         console.log('🚨 ENTERING CREATE NEW SPOUSE PATH');
         console.log('🚨 CREATE CONDITIONS:', {
@@ -721,10 +762,20 @@ const FamilyBuilderNew = () => {
         
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
           console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
+          console.log("🔄 Preparing CREATE operation:");
           // Create new external spouse in database
           const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
+          console.log("   - Spouse name for DB:", spouseName);
+          console.log("   - firstName for DB:", spouse.firstName || null);
+          console.log("   - lastName for DB:", spouse.lastName || null);
+          console.log("   - Gender:", spouseType === 'wife' ? 'female' : 'male');
+          console.log("   - Birth date:", spouse.birthDate?.toISOString().split('T')[0] || null);
+          console.log("   - Is alive:", spouse.isAlive ?? true);
+          console.log("   - Death date:", !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null);
+          console.log("   - Family ID:", familyId);
           
           const { data: { user } } = await supabase.auth.getUser();
+          console.log("   - Created by user:", user?.id);
           
           const { data: newSpouseData, error: insertError } = await supabase
             .from('family_tree_members')
@@ -746,18 +797,29 @@ const FamilyBuilderNew = () => {
             .select()
             .single();
             
+          console.log("📊 CREATE operation result:");
+          console.log("   - New spouse data:", newSpouseData);
+          console.log("   - Insert error:", insertError);
+            
           if (insertError) {
+            console.log("❌ CREATE ERROR:", insertError);
             throw insertError;
           }
           
           spouseId = newSpouseData.id;
           console.log('🚨 NEW SPOUSE CREATED WITH ID:', spouseId);
+          console.log("✅ CREATE SUCCESS - New spouse created in database");
         } else {
           console.log('🚨 UPDATING EXISTING EXTERNAL SPOUSE:', spouseId);
+          console.log("🔄 Preparing UPDATE operation for existing external spouse:");
           // Update existing external spouse
           const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
+          console.log("   - Spouse name for update:", spouseName);
+          console.log("   - firstName for update:", spouse.firstName || null);
+          console.log("   - lastName for update:", spouse.lastName || null);
+          console.log("   - Updating spouse with ID:", spouseId);
           
-          await supabase
+          const updateResult = await supabase
             .from('family_tree_members')
             .update({
               name: spouseName,
@@ -1030,51 +1092,97 @@ const FamilyBuilderNew = () => {
     });
     
     if (spouseData && !saveToDb) {
+      console.log("========================================");
+      console.log("🚀 LOCAL SAVE OPERATION STARTING");
+      console.log("========================================");
+      console.log("📋 Input parameters:");
+      console.log("   - spouseData:", JSON.stringify(spouseData, null, 2));
+      console.log("   - spouseType:", spouseType);
+      console.log("   - saveToDb:", saveToDb);
+      
       if (spouseType === 'wife') {
+        console.log("----------------------------------------");
+        console.log("🚀 PROCESSING WIFE LOCAL SAVE");
+        console.log("----------------------------------------");
         // Store the current editing index before any state changes
         const currentEditingIndex = editingWifeIndex;
         console.log('💾 Wife save - currentEditingIndex:', currentEditingIndex);
         console.log('💾 Wife save - current wives count:', wives.length);
-        console.log('💾 Wife save - existing wives:', wives.map(w => ({ name: w.name, id: w.id })));
+        console.log('💾 Wife save - existing wives BEFORE update:', wives.map((w, idx) => ({ 
+          index: idx,
+          name: w.name, 
+          id: w.id,
+          firstName: w.firstName,
+          lastName: w.lastName,
+          isSaved: w.isSaved,
+          isFamilyMember: w.isFamilyMember
+        })));
         
+        console.log("🔄 Updating currentSpouse state...");
         // CRITICAL FIX: Update current spouse state with the new data
         setCurrentSpouse(spouseData);
+        console.log("✅ currentSpouse updated with:", JSON.stringify(spouseData, null, 2));
         
+        console.log("🔍 Determining wife index logic...");
         // CRITICAL FIX: Better logic for determining wife index
         let wifeIndex = -1;
         if (currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < wives.length) {
           // We're editing an existing wife at a valid index
           wifeIndex = currentEditingIndex;
-          console.log('💾 Using editingWifeIndex:', wifeIndex);
+          console.log('💾 ✅ Using editingWifeIndex (EXISTING WIFE):', wifeIndex);
         } else if (spouseData.id && wives.some(w => w.id === spouseData.id)) {
           // Find by ID as fallback (in case index was lost)
           wifeIndex = wives.findIndex(w => w.id === spouseData.id);
-          console.log('💾 Found wife by ID at index:', wifeIndex);
+          console.log('💾 ⚠️  Found wife by ID at index (FALLBACK):', wifeIndex);
         } else {
           // It's a new wife
           wifeIndex = wives.length;
-          console.log('💾 Adding new wife at index:', wifeIndex);
+          console.log('💾 🆕 Adding NEW wife at index:', wifeIndex);
         }
         
-        console.log('💾 Final wifeIndex being used:', wifeIndex);
+        console.log('💾 🎯 FINAL wifeIndex being used:', wifeIndex);
+        console.log('💾 🔍 Index type analysis:', {
+          isExistingEdit: currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < wives.length,
+          foundById: spouseData.id && wives.some(w => w.id === spouseData.id),
+          isNewWife: wifeIndex === wives.length
+        });
         
+        console.log("🔄 Creating updated wives array...");
         const updatedWives = [...wives];
         // CRITICAL FIX: Ensure the database record is also updated with new name components
         const existingWife = updatedWives[wifeIndex];
+        console.log('💾 Existing wife at index', wifeIndex, ':', existingWife);
+        
         const updatedWife = {
           ...existingWife,
           name: spouseData.name,
-          first_name: spouseData.firstName,
-          last_name: spouseData.lastName
+          firstName: spouseData.firstName,
+          lastName: spouseData.lastName
         };
+        console.log('💾 Updated wife object:', JSON.stringify(updatedWife, null, 2));
+        
         updatedWives[wifeIndex] = updatedWife;
-        console.log('💾 Wife save - updated wives after save:', updatedWives.map(w => ({ name: w.name, id: w.id })));
+        console.log('💾 Wife save - updated wives array AFTER update:', updatedWives.map((w, idx) => ({ 
+          index: idx,
+          name: w.name, 
+          id: w.id,
+          firstName: w.firstName,
+          lastName: w.lastName,
+          isSaved: w.isSaved
+        })));
+        
+        console.log("🔄 Setting wives state...");
         setWives(updatedWives);
+        console.log("✅ Wives state updated successfully");
         
         // Close the form only after successful update
+        console.log("🔄 Closing form and resetting editing state...");
         setShowSpouseForm(false);
         setEditingWifeIndex(null);
-        console.log('💾 Wife save - form closed, editing index reset');
+        console.log('💾 ✅ Wife save - form closed, editing index reset');
+        console.log("========================================");
+        console.log("🎉 WIFE LOCAL SAVE COMPLETE");
+        console.log("========================================");
       } else {
         // Store the current editing index before any state changes
         const currentEditingIndex = editingHusbandIndex;
@@ -1109,8 +1217,8 @@ const FamilyBuilderNew = () => {
         const updatedHusband = {
           ...existingHusband,
           name: spouseData.name,
-          first_name: spouseData.firstName,
-          last_name: spouseData.lastName
+          firstName: spouseData.firstName,
+          lastName: spouseData.lastName
         };
         updatedHusbands[husbandIndex] = updatedHusband;
         console.log('💾 Husband save - updated husbands after save:', updatedHusbands.map(h => ({ name: h.name, id: h.id })));
@@ -3625,59 +3733,131 @@ const FamilyBuilderNew = () => {
                                                      <Button
                                                        variant="secondary"
                                                        size="sm"
-                                                       onClick={() => {
-                                                          console.log("🔥 EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
-                                                          console.log("🔥 Wife data:", wife);
-                                                          console.log("🔥 Current wives array:", wives);
+                                                        onClick={() => {
+                                                           console.log("========================================");
+                                                           console.log("🚀 STEP 1: EDIT BUTTON CLICKED FOR WIFE");
+                                                           console.log("========================================");
+                                                           console.log("🔥 Wife index being edited:", index);
+                                                           console.log("🔥 Wife name:", wife.name || `الزوجة ${index + 1}`);
+                                                           console.log("🔥 Wife ID:", wife.id);
+                                                           console.log("🔥 Full wife data object:", JSON.stringify(wife, null, 2));
+                                                           console.log("🔥 Current wives array (before edit):", wives.map((w, idx) => ({ 
+                                                             index: idx, 
+                                                             name: w.name, 
+                                                             id: w.id,
+                                                             firstName: w.firstName,
+                                                             lastName: w.lastName,
+                                                             isSaved: w.isSaved 
+                                                           })));
+                                                           console.log("🔥 Current editingWifeIndex:", editingWifeIndex);
+                                                           
+                                                           console.log("----------------------------------------");
+                                                           console.log("🚀 STEP 2: FETCHING DB DATA FOR WIFE");
+                                                           console.log("----------------------------------------");
+                                                           // Get the actual family member data to determine family membership
+                                                           const wifeMember = familyMembers.find(fm => fm.id === wife.id);
+                                                           console.log("🔍 Wife member data from DB:", JSON.stringify(wifeMember, null, 2));
+                                                           console.log("🔍 Total family members count:", familyMembers.length);
+                                                           
+                                                           // Determine family membership based on father_id or founder status
+                                                           const isFamilyMemberFromDB = wifeMember ? !!(wifeMember.father_id || wifeMember.is_founder) : false;
+                                                           console.log("🔍 isFamilyMemberFromDB calculation:", {
+                                                             result: isFamilyMemberFromDB,
+                                                             father_id: wifeMember?.father_id,
+                                                             is_founder: wifeMember?.is_founder,
+                                                             hasWifeMember: !!wifeMember
+                                                           });
+                                                           
+                                                           console.log("----------------------------------------");
+                                                           console.log("🚀 STEP 3: CREATING FRESH SPOUSE DATA");
+                                                           console.log("----------------------------------------");
+                                                           // Create fresh spouse data from DB source (prevent corruption)
+                                                           const freshSpouseData = {
+                                                             ...wife,
+                                                             firstName: wifeMember?.first_name || wife.firstName || '',
+                                                             lastName: wifeMember?.last_name || wife.lastName || '',
+                                                             name: wifeMember?.name || wife.name || '',
+                                                             isSaved: false,
+                                                             isFamilyMember: isFamilyMemberFromDB,
+                                                             existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
+                                                           };
+                                                           
+                                                           console.log("🔧 Fresh spouse data for editing:", JSON.stringify(freshSpouseData, null, 2));
+                                                           console.log("🔧 Name comparison:", {
+                                                             originalWifeName: wife.name,
+                                                             dbMemberName: wifeMember?.name,
+                                                             freshDataName: freshSpouseData.name,
+                                                             originalFirstName: wife.firstName,
+                                                             dbFirstName: wifeMember?.first_name,
+                                                             freshFirstName: freshSpouseData.firstName,
+                                                             originalLastName: wife.lastName,
+                                                             dbLastName: wifeMember?.last_name,
+                                                             freshLastName: freshSpouseData.lastName
+                                                           });
+                                                           
+                                                           console.log("----------------------------------------");
+                                                           console.log("🚀 STEP 4: UPDATING WIVES ARRAY");
+                                                           console.log("----------------------------------------");
+                                                           // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                           const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                           console.log("🔄 Reset wives (all marked as saved):", resetWives.map((w, idx) => ({ 
+                                                             index: idx, name: w.name, id: w.id, isSaved: w.isSaved 
+                                                           })));
+                                                           
+                                                           // ثم تعيين الزوجة المحددة للتعديل مع البيانات المحدثة
+                                                           const updatedWives = [...resetWives];
+                                                           updatedWives[index] = freshSpouseData;
+                                                           console.log("📝 Updated wives array (fresh data at index " + index + "):", updatedWives.map((w, idx) => ({ 
+                                                             index: idx, 
+                                                             name: w.name, 
+                                                             id: w.id,
+                                                             firstName: w.firstName,
+                                                             lastName: w.lastName,
+                                                             isSaved: w.isSaved,
+                                                             isFamilyMember: w.isFamilyMember
+                                                           })));
+                                                           
+                                                           console.log("----------------------------------------");
+                                                           console.log("🚀 STEP 5: SETTING STATE VALUES");
+                                                           console.log("----------------------------------------");
+                                                           setWives(updatedWives);
+                                                           console.log("✅ Wives array updated in state");
+                                                           
+                                                           setCurrentSpouseType('wife');
+                                                           console.log("✅ Current spouse type set to: wife");
+                                                           
+                                                           setCurrentSpouse(freshSpouseData);
+                                                           console.log("✅ Current spouse set to:", JSON.stringify(freshSpouseData, null, 2));
+                                                           
+                                                          setShowSpouseForm(true);
+                                                          console.log("✅ Spouse form shown");
                                                           
-                                                          // Get the actual family member data to determine family membership
-                                                          const wifeMember = familyMembers.find(fm => fm.id === wife.id);
-                                                          console.log("Wife member data from DB:", wifeMember);
+                                                          // CRITICAL FIX: Set the editing index
+                                                          setEditingWifeIndex(index);
+                                                          console.log("✅ CRITICAL: Set editingWifeIndex to:", index);
                                                           
-                                                          // Determine family membership based on father_id or founder status
-                                                          const isFamilyMemberFromDB = wifeMember ? !!(wifeMember.father_id || wifeMember.is_founder) : false;
-                                                          console.log("Wife isFamilyMember from DB logic:", isFamilyMemberFromDB, {
-                                                            father_id: wifeMember?.father_id,
-                                                            is_founder: wifeMember?.is_founder
+                                                          // Set family status based on actual DB data
+                                                          const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
+                                                          setSpouseFamilyStatus(newFamilyStatus);
+                                                          console.log("✅ Family status set to:", newFamilyStatus);
+                                                          
+                                                          console.log("========================================");
+                                                          console.log("🎉 EDIT WIFE SETUP COMPLETE");
+                                                          console.log("========================================");
+                                                          console.log("📊 Final State Summary:");
+                                                          console.log("   - editingWifeIndex:", index);
+                                                          console.log("   - currentSpouseType: wife");
+                                                          console.log("   - spouseFamilyStatus:", newFamilyStatus);
+                                                          console.log("   - showSpouseForm: true");
+                                                          console.log("   - currentSpouse name:", freshSpouseData.name);
+                                                          console.log("   - currentSpouse id:", freshSpouseData.id);
+                                                          console.log("========================================");
+                                                          
+                                                          toast({
+                                                            title: "وضع التعديل",
+                                                            description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                            variant: "default"
                                                           });
-                                                          
-                                                          // Create fresh spouse data from DB source (prevent corruption)
-                                                          const freshSpouseData = {
-                                                            ...wife,
-                                                            firstName: wifeMember?.first_name || wife.firstName || '',
-                                                            lastName: wifeMember?.last_name || wife.lastName || '',
-                                                            name: wifeMember?.name || wife.name || '',
-                                                            isSaved: false,
-                                                            isFamilyMember: isFamilyMemberFromDB,
-                                                            existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
-                                                          };
-                                                          
-                                                          console.log("🔧 Fresh spouse data for editing:", freshSpouseData);
-                                                          
-                                                          // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                          const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                          // ثم تعيين الزوجة المحددة للتعديل مع البيانات المحدثة
-                                                          const updatedWives = [...resetWives];
-                                                          updatedWives[index] = freshSpouseData;
-                                                          setWives(updatedWives);
-                                                          setCurrentSpouseType('wife');
-                                                          setCurrentSpouse(freshSpouseData);
-                                                         setShowSpouseForm(true);
-                                                         
-                                                         // CRITICAL FIX: Set the editing index
-                                                         setEditingWifeIndex(index);
-                                                         console.log("✏️ FIXED: Set editingWifeIndex to:", index);
-                                                         
-                                                         // Set family status based on actual DB data
-                                                         const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
-                                                         setSpouseFamilyStatus(newFamilyStatus);
-                                                         console.log("Setting familyStatus to:", newFamilyStatus);
-                                                         
-                                                         toast({
-                                                           title: "وضع التعديل",
-                                                           description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                           variant: "default"
-                                                         });
                                                        }}
                                                       className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                     >
