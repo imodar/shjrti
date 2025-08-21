@@ -586,65 +586,42 @@ const FamilyBuilderNew = () => {
   const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
   const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{ [key: number]: 'yes' | 'no' | null }>({});
   
-  // Unified spouse form states
-  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
-  const [currentHusband, setCurrentHusband] = useState<SpouseData | null>(null);
+  // Unified spouse management states
+  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
+  const [currentSpouseType, setCurrentSpouseType] = useState<'wife' | 'husband'>('wife');
   const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
-  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [husbandFamilyStatus, setHusbandFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [showWifeForm, setShowWifeForm] = useState(false);
-  const [showHusbandForm, setShowHusbandForm] = useState(false);
+  const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [showSpouseForm, setShowSpouseForm] = useState(false);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
 
   // Unified spouse form handlers
-  const handleWifeFamilyStatusChange = (status: string) => {
-    setWifeFamilyStatus(status as 'yes' | 'no');
-  };
-  
-  const handleHusbandFamilyStatusChange = (status: string) => {
-    setHusbandFamilyStatus(status as 'yes' | 'no');
+  const handleSpouseFamilyStatusChange = (status: string) => {
+    setSpouseFamilyStatus(status as 'yes' | 'no');
   };
 
-  const handleAddWife = () => {
-    setCurrentWife({
-      id: '',
-      firstName: '',
-      lastName: '',
-      name: '',
+  const handleAddSpouse = (spouseType: 'wife' | 'husband') => {
+    setCurrentSpouseType(spouseType);
+    setCurrentSpouse({
+      id: "",
+      name: "",
+      first_name: "",
+      last_name: "",
+      gender: spouseType === 'wife' ? "female" : "male",
+      birthDate: "",
       isAlive: true,
-      birthDate: null,
       deathDate: null,
-      maritalStatus: 'married',
+      image: null,
+      bio: "",
       isFamilyMember: false,
-      existingFamilyMemberId: '',
-      croppedImage: null,
-      biography: '',
-      isSaved: false
+      maritalStatus: "married"
     });
-    setShowWifeForm(true);
+    setShowSpouseForm(true);
   };
-  
-  const handleAddHusband = () => {
-    setCurrentHusband({
-      id: '',
-      firstName: '',
-      lastName: '',
-      name: '',
-      isAlive: true,
-      birthDate: null,
-      deathDate: null,
-      maritalStatus: 'married',
-      isFamilyMember: false,
-      existingFamilyMemberId: '',
-      croppedImage: null,
-      biography: '',
-      isSaved: false
-    });
-    setShowHusbandForm(true);
-  };
+
+  // Note: handleAddWife and handleAddHusband are replaced by handleAddSpouse
 
   const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
-    const currentSpouse = spouseType === 'wife' ? currentWife : currentHusband;
+    const spouse = currentSpouse;
     if (!currentSpouse) return;
     
     try {
@@ -747,15 +724,9 @@ const FamilyBuilderNew = () => {
       }
       
       // Reset form state
-      if (spouseType === 'wife') {
-        setCurrentWife(null);
-        setShowWifeForm(false);
-        setWifeFamilyStatus(null);
-      } else {
-        setCurrentHusband(null);
-        setShowHusbandForm(false);
-        setHusbandFamilyStatus(null);
-      }
+      setCurrentSpouse(null);
+      setShowSpouseForm(false);
+      setSpouseFamilyStatus(null);
       
       toast({
         title: "تم حفظ البيانات",
@@ -3109,9 +3080,10 @@ const FamilyBuilderNew = () => {
                                                         const updatedWives = [...resetWives];
                                                         updatedWives[index] = { ...wife, isSaved: false };
                                                         setWives(updatedWives);
-                                                        setCurrentWife(wife);
-                                                        setShowWifeForm(true);
-                                                        setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                        setCurrentSpouseType('wife');
+                                                        setCurrentSpouse(wife);
+                                                        setShowSpouseForm(true);
+                                                        setSpouseFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
                                                         
                                                         toast({
                                                           title: "وضع التعديل",
@@ -3212,9 +3184,10 @@ const FamilyBuilderNew = () => {
                                               onClick={() => {
                                                 if (husband.isSaved) {
                                                   setHusband({ ...husband, isSaved: false });
-                                                  setCurrentHusband(husband);
-                                                  setShowHusbandForm(true);
-                                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
+                                                   setCurrentSpouseType('husband');
+                                                   setCurrentSpouse(husband);
+                                                   setShowSpouseForm(true);
+                                                   setSpouseFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
                                                   
                                                   toast({
                                                     title: "وضع التعديل",
