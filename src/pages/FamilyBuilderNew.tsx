@@ -672,23 +672,24 @@ const FamilyBuilderNew = () => {
     try {
       let spouseId = currentSpouse.id;
       
-      // Check if this spouse already exists in database (either as family member or external)
-      const hasExistingDbRecord = currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId;
-      const hasValidExternalId = !currentSpouse.isFamilyMember && spouseId && !spouseId.startsWith('temp_');
+      // Simplified logic: if spouse has a valid database ID (not temp), update; otherwise create new
+      const hasValidDbId = spouseId && !spouseId.startsWith('temp_') && spouseId.trim() !== '';
       
       console.log('🔍 SPOUSE SAVE CONDITIONS:', {
-        hasExistingDbRecord,
-        hasValidExternalId,
+        hasValidDbId,
         isFamilyMember: currentSpouse.isFamilyMember,
         existingFamilyMemberId: currentSpouse.existingFamilyMemberId,
         spouseId,
         spouseIdStartsWithTemp: spouseId?.startsWith('temp_')
       });
       
-      if (hasExistingDbRecord) {
-        // Update existing family member spouse
-        spouseId = currentSpouse.existingFamilyMemberId;
-        console.log('🚨 UPDATING EXISTING FAMILY MEMBER SPOUSE:', spouseId);
+      if (hasValidDbId) {
+        // Update existing spouse (whether family member or external)
+        const updateId = currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId 
+          ? currentSpouse.existingFamilyMemberId 
+          : spouseId;
+        
+        spouseId = updateId;
         const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
         
         await supabase
@@ -705,29 +706,9 @@ const FamilyBuilderNew = () => {
             biography: currentSpouse.biography || null,
             updated_at: new Date().toISOString()
           })
-          .eq('id', spouseId);
-      } else if (hasValidExternalId) {
-        // Update existing external spouse
-        console.log('🚨 UPDATING EXISTING EXTERNAL SPOUSE:', spouseId);
-        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-        
-        await supabase
-          .from('family_tree_members')
-          .update({
-            name: spouseName,
-            first_name: currentSpouse.firstName || null,
-            last_name: currentSpouse.lastName || null,
-            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: currentSpouse.isAlive ?? true,
-            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
-            marital_status: 'married',
-            image_url: currentSpouse.croppedImage || null,
-            biography: currentSpouse.biography || null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', spouseId);
+          .eq('id', updateId);
       } else {
-        // Create new spouse (external only - family members should not reach this point)
+        // Create new spouse
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
           console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
           // Create new external spouse in database
