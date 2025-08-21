@@ -3385,11 +3385,12 @@ const FamilyBuilderNew = () => {
                                                 <Button
                                                   variant="secondary"
                                                   size="sm"
-                                                  onClick={() => {
+                                                   onClick={() => {
                                                      setHusbands([{ ...husbands[0], isSaved: false }]);
                                                      setCurrentSpouseType('husband');
                                                      setCurrentSpouse(husbands[0]);
                                                      setShowSpouseForm(true);
+                                                     setEditingHusbandIndex(0);
                                                      setSpouseFamilyStatus(husbands[0].isFamilyMember ? 'yes' : 'no');
                                                     
                                                     toast({
