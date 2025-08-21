@@ -1932,18 +1932,25 @@ const FamilyBuilderNew = () => {
       
       // Handle image state properly for edits:
       // - If image exists in submissionData.croppedImage, use it (user uploaded new image)
-      // - If submissionData.croppedImage is explicitly null/empty string, set to null (user removed image)
+      // - If submissionData.croppedImage is explicitly null, set to null (user removed image)
       // - If submissionData.croppedImage is undefined, keep existing image
       let finalImageUrl;
+      console.log('🔧 Image handling - submissionData.croppedImage:', submissionData.croppedImage);
+      console.log('🔧 Image handling - editingMember?.image_url:', editingMember?.image_url);
+      
       if (formMode === 'edit' && editingMember) {
         if (submissionData.croppedImage !== undefined) {
-          finalImageUrl = submissionData.croppedImage || null;
+          // User explicitly set or removed image
+          finalImageUrl = submissionData.croppedImage; // This can be null (deleted) or string (new image)
         } else {
+          // No image changes, keep existing
           finalImageUrl = editingMember.image_url || null;
         }
       } else {
         finalImageUrl = submissionData.croppedImage || null;
       }
+      
+      console.log('🔧 Final image URL:', finalImageUrl);
       
       // Call the existing submission logic (same as modal)
       
@@ -2405,6 +2412,10 @@ const FamilyBuilderNew = () => {
             // Get current spouse IDs from local state
             const currentSpouseIds = new Set();
             
+            console.log('🔧 Checking spouse deletions for member:', editingMember.id);
+            console.log('🔧 Current wives array:', wives);
+            console.log('🔧 Current husbands array:', husbands);
+            
             if (submissionData.gender === 'male') {
               wives.forEach(wife => {
                 if (wife.existingFamilyMemberId || wife.id) {
@@ -2419,13 +2430,20 @@ const FamilyBuilderNew = () => {
               });
             }
             
+            console.log('🔧 Current spouse IDs:', Array.from(currentSpouseIds));
+            console.log('🔧 Existing marriages:', existingMarriages);
+            
             // Find marriages that should be deleted (spouse not in current state)
             const marriagesToDelete = existingMarriages.filter((marriage: any) => {
               const spouseId = marriage.husband?.id === editingMember.id 
                 ? marriage.wife?.id 
                 : marriage.husband?.id;
-              return spouseId && !currentSpouseIds.has(spouseId);
+              const shouldDelete = spouseId && !currentSpouseIds.has(spouseId);
+              console.log(`🔧 Marriage ${marriage.id}: spouse ${spouseId}, should delete: ${shouldDelete}`);
+              return shouldDelete;
             });
+            
+            console.log('🔧 Marriages to delete:', marriagesToDelete);
             
             // Delete removed marriages and their associated spouses
             for (const marriage of marriagesToDelete) {
