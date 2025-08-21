@@ -597,6 +597,12 @@ const FamilyBuilderNew = () => {
 
   // Debug useEffect to check button rendering condition
   useEffect(() => {
+    console.log('🔧🔧 BUTTON RENDER CONDITIONS:', {
+      husbandsLength: husbands.length,
+      firstHusband: husbands[0],
+      firstHusbandSaved: husbands[0]?.isSaved,
+      shouldRenderButton: husbands.length > 0 && husbands[0]?.isSaved
+    });
     console.log('🔧 Button render check:', { 
       husbandsLength: husbands.length, 
       firstHusbandSaved: husbands[0]?.isSaved, 
@@ -3404,42 +3410,43 @@ const FamilyBuilderNew = () => {
                                               </div>
                                             </div>
                                             
-                                             {/* Action Buttons at bottom */}
-                                             <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
-                                               {husbands.length > 0 && husbands[0].isSaved && (
-                                                 <Button
-                                                   variant="secondary"
-                                                   size="sm"
-                                                   onClick={() => {
-                                                     console.log('🔧 Edit button clicked for husband');
-                                                     console.log('🔧 Before state changes:', {
-                                                       showSpouseForm,
-                                                       editingHusbandIndex,
-                                                       currentSpouse,
-                                                       currentSpouseType
-                                                     });
+                                               {/* Action Buttons at bottom */}
+                                               <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
+                                                 {husbands.length > 0 && husbands[0].isSaved && (
+                                                   <Button
+                                                     variant="secondary"
+                                                     size="sm"
+                                                     onClick={() => {
+                                                       alert('BUTTON CLICKED!'); // Immediate feedback
+                                                       console.log('🔧 Edit button clicked for husband');
+                                                       console.log('🔧 Before state changes:', {
+                                                         showSpouseForm,
+                                                         editingHusbandIndex,
+                                                         currentSpouse,
+                                                         currentSpouseType
+                                                       });
 
-                                                     // Don't modify husbands array - just set editing states
-                                                     setCurrentSpouseType('husband');
-                                                     setCurrentSpouse(husbands[0]);
-                                                     setShowSpouseForm(true);
-                                                     setEditingHusbandIndex(0);
-                                                     setSpouseFamilyStatus(husbands[0].isFamilyMember ? 'yes' : 'no');
-                                                     
-                                                     console.log('🔧 After state changes - spouse form should be visible');
-                                                    
-                                                    toast({
-                                                      title: "وضع التعديل",
-                                                      description: "يمكنك الآن تعديل بيانات الزوج",
-                                                      variant: "default"
-                                                    });
-                                                   }}
-                                                   className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
-                                                 >
-                                                   <Edit className="h-3 w-3 ml-1" />
-                                                   تعديل
-                                                 </Button>
-                                               )}
+                                                       // Don't modify husbands array - just set editing states
+                                                       setCurrentSpouseType('husband');
+                                                       setCurrentSpouse(husbands[0]);
+                                                       setShowSpouseForm(true);
+                                                       setEditingHusbandIndex(0);
+                                                       setSpouseFamilyStatus(husbands[0].isFamilyMember ? 'yes' : 'no');
+                                                       
+                                                       console.log('🔧 After state changes - spouse form should be visible');
+                                                      
+                                                      toast({
+                                                        title: "وضع التعديل",
+                                                        description: "يمكنك الآن تعديل بيانات الزوج",
+                                                        variant: "default"
+                                                      });
+                                                     }}
+                                                     className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
+                                                   >
+                                                     <Edit className="h-3 w-3 ml-1" />
+                                                     تعديل
+                                                   </Button>
+                                                 )}
                                                <Button
                                                  variant="outline"
                                                  size="sm"
