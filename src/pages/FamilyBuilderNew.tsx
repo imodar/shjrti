@@ -739,7 +739,15 @@ const FamilyBuilderNew = () => {
       
       if (spouseType === 'wife') {
         // Check if we're editing an existing wife or adding a new one
-        const existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id || (editingWifeIndex !== null && editingWifeIndex >= 0));
+        let existingWifeIndex = -1;
+        
+        if (editingWifeIndex !== null && editingWifeIndex >= 0) {
+          // We're editing at a specific index
+          existingWifeIndex = editingWifeIndex;
+        } else if (currentSpouse.id && wives.findIndex(w => w.id === currentSpouse.id) >= 0) {
+          // Find existing wife by ID
+          existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
+        }
         
         if (existingWifeIndex >= 0) {
           // Update existing wife
@@ -753,7 +761,15 @@ const FamilyBuilderNew = () => {
         setEditingWifeIndex(null);
       } else {
         // Update husband
-        const existingHusbandIndex = husbands.findIndex(h => h.id === currentSpouse.id || (editingHusbandIndex !== null && editingHusbandIndex >= 0));
+        let existingHusbandIndex = -1;
+        
+        if (editingHusbandIndex !== null && editingHusbandIndex >= 0) {
+          // We're editing at a specific index
+          existingHusbandIndex = editingHusbandIndex;
+        } else if (currentSpouse.id && husbands.findIndex(h => h.id === currentSpouse.id) >= 0) {
+          // Find existing husband by ID
+          existingHusbandIndex = husbands.findIndex(h => h.id === currentSpouse.id);
+        }
         
         if (existingHusbandIndex >= 0) {
           // Update existing husband
