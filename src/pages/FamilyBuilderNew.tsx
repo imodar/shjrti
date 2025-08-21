@@ -948,7 +948,7 @@ const FamilyBuilderNew = () => {
         setCurrentSpouse(spouseData);
         
         // Update the husband state to persist the changes
-        setHusband(spouseData);
+        setHusbands([spouseData]);
         console.log('💾 Husband save - husband updated:', spouseData.name);
         
         // Close the form only after successful update
@@ -1477,7 +1477,7 @@ const FamilyBuilderNew = () => {
       isFounder: false
     });
     setWives([]);
-    setHusband(null);
+      setHusbands([]);
     // Clear image states
     setCroppedImage(null);
     setSelectedImage(null);
@@ -1512,7 +1512,7 @@ const FamilyBuilderNew = () => {
     
     // Reset spouse states first
     setWives([]);
-    setHusband(null);
+    setHusbands([]);
     
     if (member.gender === "male") {
       // Load wives for male member
@@ -1601,7 +1601,7 @@ const FamilyBuilderNew = () => {
         };
         
         
-        setHusband(husbandData);
+        setHusbands([husbandData]);
       }
     }
   };
@@ -1634,9 +1634,9 @@ const FamilyBuilderNew = () => {
     }
 
     // Handle husband for female members
-    if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
+    if (submissionData.gender === 'female' && husbands && husbands.length > 0 && husbands[0]?.isSaved === true) {
       await processSpouse({
-        spouse: husband,
+        spouse: husbands[0],
         spouseType: 'husband',
         memberData,
         familyId,
@@ -1868,14 +1868,14 @@ const FamilyBuilderNew = () => {
       
       // Determine marital status based on presence of spouses
       const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
-                        submissionData.gender === "female" && husband;
+                        submissionData.gender === "female" && husbands.length > 0;
       
       // Prepare final submission data matching modal structure
       const finalData = {
         ...submissionData,
         maritalStatus: hasSpouses ? "married" : "single",
         wives: submissionData.gender === "male" ? wives : [],
-        husband: submissionData.gender === "female" && husband ? husband : null
+        husbands: submissionData.gender === "female" && husbands.length > 0 ? husbands : []
       };
       
       // Handle image state properly for edits:
@@ -2210,15 +2210,15 @@ const FamilyBuilderNew = () => {
         }
 
         // Handle husband for female members - process if saved
-        if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
+        if (submissionData.gender === 'female' && husbands && husbands.length > 0 && husbands[0]?.isSaved === true) {
           try {
-            let husbandId = husband.existingFamilyMemberId;
+            let husbandId = husbands[0].existingFamilyMemberId;
             
             // If husband is not from existing family members, create new family member first
-            if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
-              const firstName = husband.firstName || '';
-              const lastName = husband.lastName || familyData?.name || '';
-              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husband.name || firstName || lastName || '');
+            if (!husbands[0].isFamilyMember || !husbands[0].existingFamilyMemberId) {
+              const firstName = husbands[0].firstName || '';
+              const lastName = husbands[0].lastName || familyData?.name || '';
+              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husbands[0].name || firstName || lastName || '');
               
               const { data: newHusbandMember, error: husbandError } = await supabase
                 .from('family_tree_members')
@@ -2227,23 +2227,23 @@ const FamilyBuilderNew = () => {
                   first_name: firstName,
                   last_name: lastName,
                   gender: 'male',
-                  birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
-                  is_alive: husband.isAlive ?? true,
-                  death_date: !husband.isAlive && husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
+                  birth_date: husbands[0].birthDate?.toISOString().split('T')[0] || null,
+                  is_alive: husbands[0].isAlive ?? true,
+                  death_date: !husbands[0].isAlive && husbands[0].deathDate ? husbands[0].deathDate.toISOString().split('T')[0] : null,
                   family_id: familyId,
                   created_by: familyData?.creator_id,
                   is_founder: false,
-                  marital_status: husband.maritalStatus || 'married',
-                  image_url: husband.croppedImage || null,
-                  biography: husband.biography || null
+                  marital_status: husbands[0].maritalStatus || 'married',
+                  image_url: husbands[0].croppedImage || null,
+                  biography: husbands[0].biography || null
                 })
                 .select()
                 .single();
 
               if (husbandError) {
-                console.error('Error creating husband member:', husband.name, husbandError);
+                console.error('Error creating husband member:', husbands[0].name, husbandError);
                 marriageResults.failed++;
-                marriageResults.details.push(`فشل في إنشاء العضو ${husband.name}`);
+                marriageResults.details.push(`فشل في إنشاء العضو ${husbands[0].name}`);
               } else {
                 husbandId = newHusbandMember.id;
                 
@@ -2253,12 +2253,12 @@ const FamilyBuilderNew = () => {
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
               // If husband is an existing family member, update their marital status and handle image properly
-              if (husband.isFamilyMember && husband.existingFamilyMemberId) {
+              if (husbands[0].isFamilyMember && husbands[0].existingFamilyMemberId) {
                 // Get current data to handle image state properly
                 const { data: currentHusband } = await supabase
                   .from('family_tree_members')
                   .select('image_url')
-                  .eq('id', husband.existingFamilyMemberId)
+                  .eq('id', husbands[0].existingFamilyMemberId)
                   .maybeSingle();
                 
                 // Handle image state properly:
@@ -2266,8 +2266,8 @@ const FamilyBuilderNew = () => {
                 // - If husband.croppedImage is explicitly null/empty string, set to null (user removed image)
                 // - If husband.croppedImage is undefined, keep existing image
                 let imageUrl;
-                if (husband.croppedImage !== undefined) {
-                  imageUrl = husband.croppedImage || null;
+                if (husbands[0].croppedImage !== undefined) {
+                  imageUrl = husbands[0].croppedImage || null;
                 } else {
                   imageUrl = currentHusband?.image_url || null;
                 }
@@ -2275,23 +2275,23 @@ const FamilyBuilderNew = () => {
                 const { error: updateHusbandError } = await supabase
                   .from('family_tree_members')
                   .update({ 
-                    marital_status: husband.maritalStatus,
+                    marital_status: husbands[0].maritalStatus,
                     image_url: imageUrl,
-                    biography: husband.biography || null
+                    biography: husbands[0].biography || null
                   })
-                  .eq('id', husband.existingFamilyMemberId);
+                  .eq('id', husbands[0].existingFamilyMemberId);
                 
                 if (updateHusbandError) {
                   console.error('Error updating husband marital status:', updateHusbandError);
                 } else {
-                  console.log('Successfully updated husband marital status to:', husband.maritalStatus);
+                  console.log('Successfully updated husband marital status to:', husbands[0].maritalStatus);
                 }
 
                 // Also update marriage table marital status
                 await supabase
                   .from('marriages')
-                  .update({ marital_status: husband.maritalStatus })
-                  .eq('husband_id', husband.existingFamilyMemberId);
+                  .update({ marital_status: husbands[0].maritalStatus })
+                  .eq('husband_id', husbands[0].existingFamilyMemberId);
                 
               }
 
@@ -2327,19 +2327,19 @@ const FamilyBuilderNew = () => {
               }
 
               if (marriageError) {
-                console.error('Error creating marriage with husband:', husband.name, marriageError);
+                console.error('Error creating marriage with husband:', husbands[0].name, marriageError);
                 marriageResults.failed++;
-                marriageResults.details.push(`فشل ربط الزواج مع ${husband.name}`);
+                marriageResults.details.push(`فشل ربط الزواج مع ${husbands[0].name}`);
               } else {
                 marriageResults.successful++;
-                marriageResults.details.push(`تم ربط الزواج مع ${husband.name}`);
+                marriageResults.details.push(`تم ربط الزواج مع ${husbands[0].name}`);
                 
               }
             }
           } catch (error) {
             console.error('Marriage creation error:', error);
             marriageResults.failed++;
-            marriageResults.details.push(`خطأ في ربط الزواج مع ${husband.name}`);
+            marriageResults.details.push(`خطأ في ربط الزواج مع ${husbands[0].name}`);
            }
          }
          
@@ -2351,7 +2351,7 @@ const FamilyBuilderNew = () => {
       
       // Reset spouse form state
       setWives([]);
-      setHusband(null);
+      setHusbands([]);
       setCurrentSpouse(null);
       setShowSpouseForm(false);
       setWiveFamilyStatus([]);
@@ -2415,7 +2415,7 @@ const FamilyBuilderNew = () => {
     } finally {
       setIsSaving(false);
     }
-  }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
+  }, [formData, familyData, wives, husbands, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
 
   const nextStep = () => {
     // Validate required fields for step 1
@@ -3250,12 +3250,12 @@ const FamilyBuilderNew = () => {
                                                 </div>
                                                 <div className="flex-1">
                                                   <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
-                                                    {husband.name || 'الزوج'}
+                                                    {husbands.length > 0 ? husbands[0].name : 'الزوج'}
                                                   </h5>
                                                   
                                                   <div className="space-y-2">
                                                     <div className="flex items-center gap-2">
-                                                      {husband.isSaved && (
+                                                       {husbands.length > 0 && husbands[0].isSaved && (
                                                         <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
                                                           <Check className="h-3 w-3" />
                                                           محفوظ
@@ -3273,16 +3273,16 @@ const FamilyBuilderNew = () => {
                                             
                                             {/* Action Buttons at bottom */}
                                             <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
-                                              {husband.isSaved && (
+                                              {husbands.length > 0 && husbands[0].isSaved && (
                                                 <Button
                                                   variant="secondary"
                                                   size="sm"
                                                   onClick={() => {
-                                                    setHusband({ ...husband, isSaved: false });
-                                                    setCurrentSpouseType('husband');
-                                                    setCurrentSpouse(husband);
-                                                    setShowSpouseForm(true);
-                                                    setSpouseFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
+                                                     setHusbands([{ ...husbands[0], isSaved: false }]);
+                                                     setCurrentSpouseType('husband');
+                                                     setCurrentSpouse(husbands[0]);
+                                                     setShowSpouseForm(true);
+                                                     setSpouseFamilyStatus(husbands[0].isFamilyMember ? 'yes' : 'no');
                                                     
                                                     toast({
                                                       title: "وضع التعديل",
@@ -3299,7 +3299,7 @@ const FamilyBuilderNew = () => {
                                               <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => handleSpouseDelete(husband, -1)}
+                                                onClick={() => handleSpouseDelete(husbands[0], -1)}
                                                 className="h-8 px-3 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50 border-red-200 dark:border-red-800 transition-all duration-300"
                                               >
                                                 <X className="h-3 w-3 ml-1" />
