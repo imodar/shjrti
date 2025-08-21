@@ -694,6 +694,7 @@ const FamilyBuilderNew = () => {
               death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
               marital_status: 'married',
               image_url: currentSpouse.croppedImage || null,
+              biography: currentSpouse.biography || null,
               created_by: user?.id,
               is_founder: false
             })
@@ -722,6 +723,7 @@ const FamilyBuilderNew = () => {
               death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
               marital_status: 'married',
               image_url: currentSpouse.croppedImage || null,
+              biography: currentSpouse.biography || null,
               updated_at: new Date().toISOString()
             })
             .eq('id', spouseId);
@@ -741,6 +743,7 @@ const FamilyBuilderNew = () => {
             death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
             marital_status: 'married',
             image_url: currentSpouse.croppedImage || null,
+            biography: currentSpouse.biography || null,
             updated_at: new Date().toISOString()
           })
           .eq('id', currentSpouse.existingFamilyMemberId);
