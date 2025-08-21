@@ -2628,7 +2628,7 @@ const FamilyBuilderNew = () => {
           }
         }
         
-        // 🚨 CRITICAL: Handle spouse deletion when spouses are removed
+        // 🚨 CRITICAL: Handle spouse deletion when spouses are removed - FIXED LOGIC
         console.log('🚨 CHECKING FOR SPOUSE DELETIONS');
         console.log('🚨 formMode:', formMode);
         console.log('🚨 editingMember:', editingMember);
@@ -2638,15 +2638,25 @@ const FamilyBuilderNew = () => {
         
         const memberToCheck = editingMember || selectedMember;
         console.log('🚨 Member to check for spouse deletion:', memberToCheck);
-        console.log('🚨 Condition checks:', {
-          hasMember: !!memberToCheck,
-          husbandsEmpty: husbands.length === 0,
-          wivesEmpty: wives.length === 0,
-          shouldExecute: memberToCheck && (husbands.length === 0 || wives.length === 0)
-        });
+        
+        // FIXED LOGIC: Only check relevant spouse arrays based on member's gender
+        let shouldDeleteSpouses = false;
+        if (memberToCheck) {
+          if (memberToCheck.gender === 'male') {
+            // For male members, only check if wives were removed
+            shouldDeleteSpouses = wives.length === 0;
+            console.log('🚨 Male member - checking wives deletion:', shouldDeleteSpouses);
+          } else if (memberToCheck.gender === 'female') {
+            // For female members, only check if husbands were removed
+            shouldDeleteSpouses = husbands.length === 0;
+            console.log('🚨 Female member - checking husbands deletion:', shouldDeleteSpouses);
+          }
+        }
+        
+        console.log('🚨 Final deletion decision:', shouldDeleteSpouses);
         
         // If spouses were removed, handle deletion
-        if (memberToCheck && (husbands.length === 0 || wives.length === 0)) {
+        if (memberToCheck && shouldDeleteSpouses) {
           console.log('🚨 DELETING SPOUSES for member:', memberToCheck.name);
           
           // Get existing marriages for the member
