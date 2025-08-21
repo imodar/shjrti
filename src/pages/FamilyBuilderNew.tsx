@@ -654,6 +654,17 @@ const FamilyBuilderNew = () => {
   // Note: handleAddWife and handleAddHusband are replaced by handleAddSpouse
 
   const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
+    console.log('🚨 handleSpouseSave called with:', {
+      spouseType,
+      currentSpouse: currentSpouse ? {
+        id: currentSpouse.id,
+        name: currentSpouse.name,
+        isFamilyMember: currentSpouse.isFamilyMember
+      } : null,
+      editingWifeIndex,
+      editingHusbandIndex
+    });
+    
     const spouse = currentSpouse;
     if (!currentSpouse) return;
     
@@ -664,6 +675,7 @@ const FamilyBuilderNew = () => {
       if (!currentSpouse.isFamilyMember) {
         // External spouse - create or update in database
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
+          console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
           // Create new external spouse in database
           const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
           
@@ -693,7 +705,9 @@ const FamilyBuilderNew = () => {
           }
           
           spouseId = newSpouseData.id;
+          console.log('🚨 NEW SPOUSE CREATED WITH ID:', spouseId);
         } else {
+          console.log('🚨 UPDATING EXISTING EXTERNAL SPOUSE:', spouseId);
           // Update existing external spouse
           const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
           
@@ -3529,8 +3543,9 @@ const FamilyBuilderNew = () => {
                                                        variant="secondary"
                                                        size="sm"
                                                        onClick={() => {
-                                                         console.log("EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
-                                                         console.log("Wife data:", wife);
+                                                         console.log("🔥 EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
+                                                         console.log("🔥 Wife data:", wife);
+                                                         console.log("🔥 Current wives array:", wives);
                                                          
                                                          // Get the actual family member data to determine family membership
                                                          const wifeMember = familyMembers.find(fm => fm.id === wife.id);
