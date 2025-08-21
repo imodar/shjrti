@@ -3848,42 +3848,41 @@ const MemberList = ({
         </SelectContent>
       </Select>
 
-      {/* Add Member Button */}
-      {formMode === 'view' && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                onClick={onAddMember} 
-                className="w-full flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                {packageData && familyMembers.length >= packageData.max_family_members 
-                  ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
-                  : 'إضافة عضو جديد'
-                }
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs" side="top">
-              {packageData && familyMembers.length >= packageData.max_family_members ? (
-                <div className="text-center">
-                  <p className="font-semibold text-destructive mb-1">
-                    🚫 تم الوصول للحد الأقصى
-                  </p>
-                  <p className="text-sm">
-                    باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
-                  </p>
-                  <p className="text-xs mt-2 text-muted-foreground">
-                    قم بترقية باقتك لإضافة المزيد من الأعضاء
-                  </p>
-                </div>
-              ) : (
-                <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>
-              )}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
+      {/* Add Member Button - Always visible */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              onClick={onAddMember} 
+              className="w-full flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+              variant="default"
+            >
+              <Plus className="h-4 w-4" />
+              {packageData && familyMembers.length >= packageData.max_family_members 
+                ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
+                : 'إضافة عضو جديد'
+              }
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs" side="top">
+            {packageData && familyMembers.length >= packageData.max_family_members ? (
+              <div className="text-center">
+                <p className="font-semibold text-destructive mb-1">
+                  🚫 تم الوصول للحد الأقصى
+                </p>
+                <p className="text-sm">
+                  باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
+                </p>
+                <p className="text-xs mt-2 text-muted-foreground">
+                  قم بترقية باقتك لإضافة المزيد من الأعضاء
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {/* Member List */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
