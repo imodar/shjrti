@@ -3234,27 +3234,30 @@ const FamilyBuilderNew = () => {
                                                 {/* Action Buttons at bottom */}
                                                 <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
                                                   {wife.isSaved && (
-                                                    <Button
-                                                      variant="secondary"
-                                                      size="sm"
-                                                      onClick={() => {
-                                                        // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                        const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                        // ثم تعيين الزوجة المحددة للتعديل
-                                                        const updatedWives = [...resetWives];
-                                                        updatedWives[index] = { ...wife, isSaved: false };
-                                                        setWives(updatedWives);
-                                                        setCurrentSpouseType('wife');
-                                                        setCurrentSpouse(wife);
-                                                        setShowSpouseForm(true);
-                                                        setSpouseFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                        
-                                                        toast({
-                                                          title: "وضع التعديل",
-                                                          description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                          variant: "default"
-                                                        });
-                                                      }}
+                                                     <Button
+                                                       variant="secondary"
+                                                       size="sm"
+                                                       onClick={() => {
+                                                         console.log("EDIT BUTTON CLICKED FOR:", wife.name || `الزوجة ${index + 1}`);
+                                                         alert(`تم النقر على تعديل: ${wife.name || `الزوجة ${index + 1}`}`);
+                                                         
+                                                         // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                         const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                         // ثم تعيين الزوجة المحددة للتعديل
+                                                         const updatedWives = [...resetWives];
+                                                         updatedWives[index] = { ...wife, isSaved: false };
+                                                         setWives(updatedWives);
+                                                         setCurrentSpouseType('wife');
+                                                         setCurrentSpouse(wife);
+                                                         setShowSpouseForm(true);
+                                                         setSpouseFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                         
+                                                         toast({
+                                                           title: "وضع التعديل",
+                                                           description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                           variant: "default"
+                                                         });
+                                                       }}
                                                       className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                     >
                                                       <Edit className="h-3 w-3 ml-1" />
