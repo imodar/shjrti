@@ -971,17 +971,42 @@ const FamilyBuilderNew = () => {
         setEditingWifeIndex(null);
         console.log('💾 Wife save - form closed, editing index reset');
       } else {
-        console.log('💾 Husband save - updating husband data');
+        // Store the current editing index before any state changes
+        const currentEditingIndex = editingHusbandIndex;
+        console.log('💾 Husband save - currentEditingIndex:', currentEditingIndex);
+        console.log('💾 Husband save - current husbands count:', husbands.length);
+        console.log('💾 Husband save - existing husbands:', husbands.map(h => ({ name: h.name, id: h.id })));
+        
         // Update current spouse state
         setCurrentSpouse(spouseData);
         
-        // Update the husband state to persist the changes
-        setHusbands([spouseData]);
-        console.log('💾 Husband save - husband updated:', spouseData.name);
+        // CRITICAL FIX: Better logic for determining husband index
+        let husbandIndex = -1;
+        if (currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < husbands.length) {
+          // We're editing an existing husband at a valid index
+          husbandIndex = currentEditingIndex;
+          console.log('💾 Using editingHusbandIndex:', husbandIndex);
+        } else if (spouseData.id && husbands.some(h => h.id === spouseData.id)) {
+          // Find by ID as fallback (in case index was lost)
+          husbandIndex = husbands.findIndex(h => h.id === spouseData.id);
+          console.log('💾 Found husband by ID at index:', husbandIndex);
+        } else {
+          // It's a new husband
+          husbandIndex = husbands.length;
+          console.log('💾 Adding new husband at index:', husbandIndex);
+        }
+        
+        console.log('💾 Final husbandIndex being used:', husbandIndex);
+        
+        const updatedHusbands = [...husbands];
+        updatedHusbands[husbandIndex] = spouseData;
+        console.log('💾 Husband save - updated husbands after save:', updatedHusbands.map(h => ({ name: h.name, id: h.id })));
+        setHusbands(updatedHusbands);
         
         // Close the form only after successful update
         setShowSpouseForm(false);
-        console.log('💾 Husband save - form closed');
+        setEditingHusbandIndex(null);
+        console.log('💾 Husband save - form closed, editing index reset');
       }
       return;
     }
