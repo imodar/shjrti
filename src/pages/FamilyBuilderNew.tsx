@@ -1191,7 +1191,7 @@ const FamilyBuilderNew = () => {
           console.log("========================================");
           console.log("🎉 WIFE LOCAL SAVE COMPLETE");
           console.log("========================================");
-        }, 0);
+        }, 50);
       } else {
         // Store the current editing index before any state changes
         const currentEditingIndex = editingHusbandIndex;
@@ -2236,7 +2236,7 @@ const FamilyBuilderNew = () => {
     })));
     
     // Add a small delay to ensure any pending state updates have completed
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // Check if Khalid should be deleted
     const khalidId = 'dd05d323-de57-4455-8927-c0b6bc5dbe18';
