@@ -637,11 +637,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
               <Button
                 type="button"
                 variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onClose?.();
-                }}
+                onClick={onClose}
                 className="w-full h-12 font-arabic text-sm font-medium border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-300"
               >
                 الغاء إضافة {isWife ? 'زوجة' : 'زوج'} جديدة
@@ -703,9 +699,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                onClick={() => {
                   setShowImageCrop(false);
                   setSelectedImage(null);
                 }}
@@ -754,9 +748,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 
                 <Button
                   variant="outline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  onClick={() => {
                     setShowImageCrop(false);
                     setSelectedImage(null);
                   }}
