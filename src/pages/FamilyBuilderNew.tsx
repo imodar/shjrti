@@ -537,15 +537,13 @@ const FamilyBuilderNew = () => {
     }
   }, [autoAdd, loading, familyData, formMode]);
 
-  // DISABLED: This useEffect was overwriting local spouse changes
   // Load spouses when data is updated and there's a member being edited
-  /*
   useEffect(() => {
     if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
+      
       loadExistingSpouses(editingMember);
     }
   }, [familyMarriages, familyMembers, editingMember]);
-  */
   
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -571,7 +569,7 @@ const FamilyBuilderNew = () => {
 
   const [wives, setWives] = useState<SpouseData[]>([]);
 
-  const [husbands, setHusbands] = useState<SpouseData[]>([]);
+  const [husband, setHusband] = useState<SpouseData | null>(null);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -583,377 +581,185 @@ const FamilyBuilderNew = () => {
     }
   }, [croppedImage, formData.croppedImage]);
 
-  // Command states for search  
+  // Command states for search
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
   const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
   const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{ [key: number]: 'yes' | 'no' | null }>({});
   
-  // Unified spouse management states
-  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
-  const [currentSpouseType, setCurrentSpouseType] = useState<'wife' | 'husband'>('wife');
-  const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
-  const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [showSpouseForm, setShowSpouseForm] = useState(false);
+  // Unified spouse form states
+  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
+  const [currentHusband, setCurrentHusband] = useState<SpouseData | null>(null);
+  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
+  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [husbandFamilyStatus, setHusbandFamilyStatus] = useState<'yes' | 'no' | null>(null);
+  const [showWifeForm, setShowWifeForm] = useState(false);
+  const [showHusbandForm, setShowHusbandForm] = useState(false);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
-  const [editingHusbandIndex, setEditingHusbandIndex] = useState<number | null>(null);
-  const [hasUnsavedLocalChanges, setHasUnsavedLocalChanges] = useState(false);
-
-  // Load spouses when data is updated and there's a member being edited
-  // CRITICAL FIX: Don't reload spouses if we're currently editing or have unsaved changes
-  useEffect(() => {
-    if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
-      // Don't reload if we have unsaved spouse changes or local changes
-      const hasUnsavedWifeChanges = wives.some(w => !w.isSaved);
-      const hasUnsavedHusbandChanges = husbands.some(h => !h.isSaved);
-      const isCurrentlyEditing = showSpouseForm || editingWifeIndex !== null || editingHusbandIndex !== null;
-      
-      if (!hasUnsavedWifeChanges && !hasUnsavedHusbandChanges && !isCurrentlyEditing && !hasUnsavedLocalChanges) {
-        console.log('🔄 Loading existing spouses for member:', editingMember.name);
-        loadExistingSpouses(editingMember);
-      } else {
-        console.log('⏸️ Skipping spouse reload - unsaved changes detected:', {
-          hasUnsavedWifeChanges,
-          hasUnsavedHusbandChanges,
-          isCurrentlyEditing,
-          hasUnsavedLocalChanges,
-          showSpouseForm,
-          editingWifeIndex,
-          editingHusbandIndex
-        });
-      }
-    }
-  }, [familyMarriages, familyMembers, editingMember, showSpouseForm, editingWifeIndex, editingHusbandIndex, hasUnsavedLocalChanges]);
-
-  // Debug useEffect to check button rendering condition
-  useEffect(() => {
-    console.log('🔧🔧 BUTTON RENDER CONDITIONS:', {
-      husbandsLength: husbands.length,
-      firstHusband: husbands[0],
-      firstHusbandSaved: husbands[0]?.isSaved,
-      shouldRenderButton: husbands.length > 0 && husbands[0]?.isSaved
-    });
-    console.log('🔧 Button render check:', { 
-      husbandsLength: husbands.length, 
-      firstHusbandSaved: husbands[0]?.isSaved, 
-      husbands,
-      showSpouseForm,
-      editingHusbandIndex
-    });
-  }, [husbands, showSpouseForm, editingHusbandIndex]);
-
-  // Debug useEffect to track spouse form visibility
-  useEffect(() => {
-    console.log('🔧 SpouseForm render check:', { 
-      showSpouseForm, 
-      currentSpouseType, 
-      currentSpouse,
-      editingHusbandIndex,
-      editingWifeIndex
-    });
-    if (showSpouseForm) {
-      console.log('🔧 SpouseForm should be visible now!');
-    }
-  }, [showSpouseForm, currentSpouseType, currentSpouse, editingHusbandIndex, editingWifeIndex]);
 
   // Unified spouse form handlers
-  const handleSpouseFamilyStatusChange = (status: string) => {
-    setSpouseFamilyStatus(status as 'yes' | 'no');
+  const handleWifeFamilyStatusChange = (status: string) => {
+    setWifeFamilyStatus(status as 'yes' | 'no');
   };
 
-  const handleAddSpouse = (spouseType: 'wife' | 'husband') => {
-    setCurrentSpouseType(spouseType);
-    setCurrentSpouse({
-      id: "",
-      name: "",
-      firstName: "",
-      lastName: "",
-      birthDate: null,
+  const handleHusbandFamilyStatusChange = (status: string) => {
+    setHusbandFamilyStatus(status as 'yes' | 'no');
+  };
+
+  const handleAddWife = () => {
+    setCurrentWife({
+      id: '',
+      firstName: '',
+      lastName: '',
+      name: '',
       isAlive: true,
+      birthDate: null,
       deathDate: null,
-      maritalStatus: "married",
+      maritalStatus: 'married',
       isFamilyMember: false,
-      existingFamilyMemberId: "",
+      existingFamilyMemberId: '',
       croppedImage: null,
-      biography: "",
       isSaved: false
     });
-    setShowSpouseForm(true);
+    setShowWifeForm(true);
   };
 
-  // Note: handleAddWife and handleAddHusband are replaced by handleAddSpouse
-
-  const handleSpouseSave = async (spouseType: 'wife' | 'husband', spouseDataParam?: SpouseData) => {
-    console.log('🚨 handleSpouseSave called with:', {
-      spouseType,
-      currentSpouse: currentSpouse ? {
-        id: currentSpouse.id,
-        name: currentSpouse.name,
-        isFamilyMember: currentSpouse.isFamilyMember,
-        existingFamilyMemberId: currentSpouse.existingFamilyMemberId
-      } : null,
-      editingWifeIndex,
-      editingHusbandIndex
+  const handleAddHusband = () => {
+    setCurrentHusband({
+      id: '',
+      firstName: '',
+      lastName: '',
+      name: '',
+      isAlive: true,
+      birthDate: null,
+      deathDate: null,
+      maritalStatus: 'married',
+      isFamilyMember: false,
+      existingFamilyMemberId: '',
+      croppedImage: null,
+      isSaved: false
     });
-    
-    // CRITICAL FIX: Use the parameter data if provided, otherwise fall back to currentSpouse
-    const spouse = spouseDataParam || currentSpouse;
-    if (!spouse) return;
+    setShowHusbandForm(true);
+  };
+
+  const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
+    const currentSpouse = spouseType === 'wife' ? currentWife : currentHusband;
+    if (!currentSpouse) return;
     
     try {
-      let spouseId = spouse.id;
+      let spouseId = currentSpouse.id;
       
-      // Simplified logic: if spouse has a valid database ID (not temp), update; otherwise create new
-      const hasValidDbId = spouseId && !spouseId.startsWith('temp_') && spouseId.trim() !== '';
-      
-      console.log('🔍 SPOUSE SAVE CONDITIONS:', {
-        hasValidDbId,
-        isFamilyMember: spouse.isFamilyMember,
-        existingFamilyMemberId: spouse.existingFamilyMemberId,
-        spouseId,
-        spouseIdStartsWithTemp: spouseId?.startsWith('temp_'),
-        currentSpouseFullObject: spouse
-      });
-      
-      console.log("========================================");
-      console.log("🚀 DATABASE SAVE OPERATION STARTING");
-      console.log("========================================");  
-      console.log("📋 Database operation input:");
-      console.log("   - Spouse name:", spouse.name);
-      console.log("   - Spouse ID:", spouseId);
-      console.log("   - Spouse firstName:", spouse.firstName);
-      console.log("   - Spouse lastName:", spouse.lastName);
-      console.log("   - Has valid DB ID:", hasValidDbId);
-      console.log("   - Is family member:", spouse.isFamilyMember);
-      console.log("   - Existing family member ID:", spouse.existingFamilyMemberId);
-      console.log("   - Full spouse object:", JSON.stringify(spouse, null, 2));
-      
-      if (hasValidDbId) {
-        console.log("----------------------------------------");
-        console.log("🚀 UPDATE EXISTING SPOUSE PATH");
-        console.log("----------------------------------------");
-        // Update existing spouse (whether family member or external)
-        const updateId = spouse.isFamilyMember && spouse.existingFamilyMemberId 
-          ? spouse.existingFamilyMemberId 
-          : spouseId;
-        
-        console.log("🔍 Update ID calculation:");
-        console.log("   - spouse.isFamilyMember:", spouse.isFamilyMember);
-        console.log("   - spouse.existingFamilyMemberId:", spouse.existingFamilyMemberId);
-        console.log("   - spouseId:", spouseId);
-        console.log("   - Final updateId:", updateId);
-        
-        spouseId = updateId;
-        const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
-        
-        console.log("🔄 Preparing UPDATE operation:");
-        console.log("   - Final spouse name:", spouseName);
-        console.log("   - firstName being saved:", spouse.firstName || null);
-        console.log("   - lastName being saved:", spouse.lastName || null);
-        console.log("   - Birth date:", spouse.birthDate?.toISOString().split('T')[0] || null);
-        console.log("   - Is alive:", spouse.isAlive ?? true);
-        console.log("   - Death date:", !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null);
-        console.log("   - Updating record with ID:", updateId);
-        
-        const updateResult = await supabase
-          .from('family_tree_members')
-          .update({
-            name: spouseName,
-            first_name: spouse.firstName || null,
-            last_name: spouse.lastName || null,
-            birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
-            is_alive: spouse.isAlive ?? true,
-            death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
-            marital_status: 'married',
-            image_url: spouse.croppedImage || null,
-            biography: spouse.biography || null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', updateId);
-          
-        console.log("✅ UPDATE operation result:", updateResult);
-        if (updateResult.error) {
-          console.log("❌ UPDATE ERROR:", updateResult.error);
-        } else {
-          console.log("✅ UPDATE SUCCESS - Spouse updated in database");
-        }
-      } else {
-        console.log("----------------------------------------");
-        console.log("🚀 CREATE NEW SPOUSE PATH");
-        console.log("----------------------------------------");
-        // Create new spouse
-        console.log('🚨 ENTERING CREATE NEW SPOUSE PATH');
-        console.log('🚨 CREATE CONDITIONS:', {
-          spouseId,
-          spouseIdEmpty: spouseId === '',
-          spouseIdStartsWithTemp: spouseId?.startsWith('temp_'),
-          currentSpouseObject: spouse
-        });
-        
+      // For new spouses without an ID or external spouses, handle database creation
+      if (!currentSpouse.isFamilyMember) {
+        // External spouse - create or update in database
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
-          console.log('🚨 CREATING NEW EXTERNAL SPOUSE in DB - ID will be generated');
-          console.log("🔄 Preparing CREATE operation:");
           // Create new external spouse in database
-          const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
-          console.log("   - Spouse name for DB:", spouseName);
-          console.log("   - firstName for DB:", spouse.firstName || null);
-          console.log("   - lastName for DB:", spouse.lastName || null);
-          console.log("   - Gender:", spouseType === 'wife' ? 'female' : 'male');
-          console.log("   - Birth date:", spouse.birthDate?.toISOString().split('T')[0] || null);
-          console.log("   - Is alive:", spouse.isAlive ?? true);
-          console.log("   - Death date:", !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null);
-          console.log("   - Family ID:", familyId);
+          const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
           
           const { data: { user } } = await supabase.auth.getUser();
-          console.log("   - Created by user:", user?.id);
           
           const { data: newSpouseData, error: insertError } = await supabase
             .from('family_tree_members')
             .insert({
               family_id: familyId,
               name: spouseName,
-              first_name: spouse.firstName || null,
-              last_name: spouse.lastName || null,
+              first_name: currentSpouse.firstName || null,
+              last_name: currentSpouse.lastName || null,
               gender: spouseType === 'wife' ? 'female' : 'male',
-              birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
-              is_alive: spouse.isAlive ?? true,
-              death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
+              birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
+              is_alive: currentSpouse.isAlive ?? true,
+              death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
               marital_status: 'married',
-              image_url: spouse.croppedImage || null,
-              biography: spouse.biography || null,
+              image_url: currentSpouse.croppedImage || null,
               created_by: user?.id,
               is_founder: false
             })
             .select()
             .single();
             
-          console.log("📊 CREATE operation result:");
-          console.log("   - New spouse data:", newSpouseData);
-          console.log("   - Insert error:", insertError);
-            
           if (insertError) {
-            console.log("❌ CREATE ERROR:", insertError);
             throw insertError;
           }
           
           spouseId = newSpouseData.id;
-          console.log('🚨 NEW SPOUSE CREATED WITH ID:', spouseId);
-          console.log("✅ CREATE SUCCESS - New spouse created in database");
         } else {
-          console.log('🚨 UPDATING EXISTING EXTERNAL SPOUSE:', spouseId);
-          console.log("🔄 Preparing UPDATE operation for existing external spouse:");
           // Update existing external spouse
-          const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
-          console.log("   - Spouse name for update:", spouseName);
-          console.log("   - firstName for update:", spouse.firstName || null);
-          console.log("   - lastName for update:", spouse.lastName || null);
-          console.log("   - Updating spouse with ID:", spouseId);
+          const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
           
-          const updateResult = await supabase
+          await supabase
             .from('family_tree_members')
             .update({
               name: spouseName,
-              first_name: spouse.firstName || null,
-              last_name: spouse.lastName || null,
-              birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
-              is_alive: spouse.isAlive ?? true,
-              death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
+              first_name: currentSpouse.firstName || null,
+              last_name: currentSpouse.lastName || null,
+              birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
+              is_alive: currentSpouse.isAlive ?? true,
+              death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
               marital_status: 'married',
-              image_url: spouse.croppedImage || null,
-              biography: spouse.biography || null,
+              image_url: currentSpouse.croppedImage || null,
               updated_at: new Date().toISOString()
             })
             .eq('id', spouseId);
         }
+      } else if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
+        // Update existing family member spouse
+        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+        
+        await supabase
+          .from('family_tree_members')
+          .update({
+            name: spouseName,
+            first_name: currentSpouse.firstName || null,
+            last_name: currentSpouse.lastName || null,
+            birth_date: currentSpouse.birthDate?.toISOString().split('T')[0] || null,
+            is_alive: currentSpouse.isAlive ?? true,
+            death_date: !currentSpouse.isAlive && currentSpouse.deathDate ? currentSpouse.deathDate.toISOString().split('T')[0] : null,
+            marital_status: 'married',
+            image_url: currentSpouse.croppedImage || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentSpouse.existingFamilyMemberId);
+          
+        spouseId = currentSpouse.existingFamilyMemberId;
       }
 
       // Update local state with the correct spouse ID
-      const updatedSpouse = { ...spouse, id: spouseId, isSaved: true };
+      const updatedSpouse = { ...currentSpouse, id: spouseId, isSaved: true };
       
       if (spouseType === 'wife') {
         // Check if we're editing an existing wife or adding a new one
-        let existingWifeIndex = -1;
-        
-        console.log('🔍 WIFE SAVE DEBUG:', {
-          editingWifeIndex,
-          currentSpouseId: spouse.id,
-          wivesCount: wives.length,
-          wives: wives.map(w => ({ id: w.id, name: w.name }))
-        });
-        
-        if (editingWifeIndex !== null && editingWifeIndex >= 0) {
-          // We're editing at a specific index
-          existingWifeIndex = editingWifeIndex;
-          console.log('🔍 Using editingWifeIndex:', existingWifeIndex);
-        } else if (spouse.id && wives.findIndex(w => w.id === spouse.id) >= 0) {
-          // Find existing wife by ID
-          existingWifeIndex = wives.findIndex(w => w.id === spouse.id);
-          console.log('🔍 Found wife by ID at index:', existingWifeIndex);
-        }
-        
-        console.log('🔍 Final existingWifeIndex:', existingWifeIndex);
+        const existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id || (editingWifeIndex !== null && editingWifeIndex >= 0));
         
         if (existingWifeIndex >= 0) {
           // Update existing wife
-          console.log('🔄 UPDATING existing wife at index:', existingWifeIndex);
           const updatedWives = [...wives];
           updatedWives[existingWifeIndex] = updatedSpouse;
           setWives(updatedWives);
         } else {
           // Add new wife
-          console.log('➕ ADDING new wife');
           setWives(prev => [...prev, updatedSpouse]);
         }
         setEditingWifeIndex(null);
       } else {
         // Update husband
-        let existingHusbandIndex = -1;
-        
-        console.log('🔍 HUSBAND SAVE DEBUG:', {
-          editingHusbandIndex,
-          currentSpouseId: currentSpouse.id,
-          husbandsCount: husbands.length,
-          husbands: husbands.map(h => ({ id: h.id, name: h.name }))
-        });
-        
-        if (editingHusbandIndex !== null && editingHusbandIndex >= 0) {
-          // We're editing at a specific index
-          existingHusbandIndex = editingHusbandIndex;
-          console.log('🔍 Using editingHusbandIndex:', existingHusbandIndex);
-        } else if (currentSpouse.id && husbands.findIndex(h => h.id === currentSpouse.id) >= 0) {
-          // Find existing husband by ID
-          existingHusbandIndex = husbands.findIndex(h => h.id === currentSpouse.id);
-          console.log('🔍 Found husband by ID at index:', existingHusbandIndex);
-        }
-        
-        console.log('🔍 Final existingHusbandIndex:', existingHusbandIndex);
-        
-        if (existingHusbandIndex >= 0) {
-          // Update existing husband
-          console.log('🔄 UPDATING existing husband at index:', existingHusbandIndex);
-          const updatedHusbands = [...husbands];
-          updatedHusbands[existingHusbandIndex] = updatedSpouse;
-          setHusbands(updatedHusbands);
-        } else {
-          // Add new husband
-          console.log('➕ ADDING new husband');
-          setHusbands(prev => [...prev, updatedSpouse]);
-        }
-        setEditingHusbandIndex(null);
+        setHusband(updatedSpouse);
       }
       
       // Reset form state
-      setCurrentSpouse(null);
-      setShowSpouseForm(false);
-      setSpouseFamilyStatus(null);
+      if (spouseType === 'wife') {
+        setCurrentWife(null);
+        setShowWifeForm(false);
+        setWifeFamilyStatus(null);
+      } else {
+        setCurrentHusband(null);
+        setShowHusbandForm(false);
+        setHusbandFamilyStatus(null);
+      }
       
       toast({
         title: "تم حفظ البيانات",
         description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
         variant: "default"
       });
-      
-      // Clear the unsaved local changes flag after successful database save
-      setHasUnsavedLocalChanges(false);
     } catch (error) {
       console.error(`Error saving ${spouseType} data:`, error);
       toast({
@@ -966,117 +772,88 @@ const FamilyBuilderNew = () => {
 
   // Helper functions for spouse editing conflict management
   const checkForActiveSpouseEdit = () => {
-    const result = {
-      spouseFormActive: showSpouseForm,
-      editingWifeIndex: editingWifeIndex,
-      spouseType: currentSpouseType
-    };
-    
-    console.log('🔍 checkForActiveSpouseEdit:', result);
-    
-    if (showSpouseForm && currentSpouseType === 'wife' && editingWifeIndex !== null) {
+    if (showWifeForm && editingWifeIndex !== null) {
       return { type: 'wife', index: editingWifeIndex };
     }
-    if (showSpouseForm && currentSpouseType === 'husband' && editingHusbandIndex !== null) {
-      return { type: 'husband', index: editingHusbandIndex };
+    if (showHusbandForm) {
+      return { type: 'husband', index: -1 };
     }
     return null;
   };
 
   const closeActiveSpouseEdit = () => {
-    console.log('closeActiveSpouseEdit called, showSpouseForm:', showSpouseForm, 'currentSpouseType:', currentSpouseType, 'editingWifeIndex:', editingWifeIndex);
-    
-    // If we're editing an existing spouse, restore the original data
-    if (showSpouseForm && currentSpouseType === 'wife' && editingWifeIndex !== null) {
-      // Store the current editing index before resetting it
-      const currentEditingIndex = editingWifeIndex;
+    if (showWifeForm && editingWifeIndex !== null) {
+      setShowWifeForm(false);
+      setCurrentWife(null);
+      setWifeFamilyStatus(null);
       
-      // Restore the original saved wife data BEFORE resetting the index
+      // Restore the original saved wife data
       const updatedWives = [...wives];
       const originalWife = familyMarriages
         .flatMap((m: any) => m.wife ? [m.wife] : [])
-        .find((w: any) => w.id === updatedWives[currentEditingIndex]?.id);
+        .find((w: any) => w.id === updatedWives[editingWifeIndex]?.id);
       
-      if (originalWife && updatedWives[currentEditingIndex]) {
-        updatedWives[currentEditingIndex] = {
+      if (originalWife && updatedWives[editingWifeIndex]) {
+        updatedWives[editingWifeIndex] = {
           ...originalWife,
           isSaved: true,
-          isFamilyMember: updatedWives[currentEditingIndex].isFamilyMember
+          isFamilyMember: updatedWives[editingWifeIndex].isFamilyMember
         };
         setWives(updatedWives);
       }
+      
+      setEditingWifeIndex(null);
     }
     
-    if (showSpouseForm && currentSpouseType === 'husband' && editingHusbandIndex !== null) {
-      const currentEditingIndex = editingHusbandIndex;
+    if (showHusbandForm && husband) {
+      setShowHusbandForm(false);
+      setCurrentHusband(null);
+      setHusbandFamilyStatus(null);
       
-      // Restore the original saved husband data BEFORE resetting the index
-      if (currentEditingIndex >= 0 && currentEditingIndex < husbands.length) {
-        const updatedHusbands = [...husbands];
-        const originalHusband = familyMarriages
-          .flatMap((m: any) => m.husband ? [m.husband] : [])
-          .find((h: any) => h.id === updatedHusbands[currentEditingIndex]?.id);
-        
-        if (originalHusband && updatedHusbands[currentEditingIndex]) {
-          updatedHusbands[currentEditingIndex] = {
-            ...originalHusband,
-            isSaved: true,
-            isFamilyMember: updatedHusbands[currentEditingIndex].isFamilyMember
-          };
-          setHusbands(updatedHusbands);
-        }
+      // Restore the original saved husband data
+      const originalHusband = familyMarriages
+        .flatMap((m: any) => m.husband ? [m.husband] : [])
+        .find((h: any) => h.id === husband.id);
+      
+      if (originalHusband) {
+        setHusband({
+          ...originalHusband,
+          isSaved: true,
+          isFamilyMember: husband.isFamilyMember
+        });
       }
     }
-    
-    // Always reset form state to close the form
-    setShowSpouseForm(false);
-    setCurrentSpouse(null);
-    setEditingWifeIndex(null);
-    setEditingHusbandIndex(null);
-    setSpouseFamilyStatus(null);
   };
 
   const handleSpouseEditAttempt = (spouseType: 'wife' | 'husband', spouseData: any, index: number) => {
-    console.log('✏️ handleSpouseEditAttempt called:', { spouseType, spouseName: spouseData.name, index, spouseId: spouseData.id });
-    
     const activeEdit = checkForActiveSpouseEdit();
-    console.log('✏️ Active edit check result:', activeEdit);
     
     if (activeEdit) {
       // There's already an active edit session
       if (activeEdit.type === spouseType && activeEdit.index === index) {
         // Same spouse being edited, just return
-        console.log('✏️ Same spouse already being edited, returning');
         return;
       }
       
       // Different spouse, close the previous edit and proceed with new one
-      console.log('✏️ Different spouse being edited, closing previous edit');
       closeActiveSpouseEdit();
     }
     
     // No active edit, proceed with editing
-    setCurrentSpouseType(spouseType);
-    setCurrentSpouse(spouseData);
-    setShowSpouseForm(true);
-    
     if (spouseType === 'wife') {
-      console.log('✏️ Starting wife edit - index:', index, 'spouse:', spouseData);
       const updatedWives = [...wives];
       updatedWives[index] = { ...spouseData, isSaved: false };
       setWives(updatedWives);
+      setCurrentWife(spouseData);
+      setShowWifeForm(true);
       setEditingWifeIndex(index);
-      console.log('✏️ Wife edit setup complete - editingWifeIndex set to:', index);
+      setWifeFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
     } else {
-      console.log('✏️ Starting husband edit - index:', index, 'spouse:', spouseData);
-      const updatedHusbands = [...husbands];
-      updatedHusbands[index] = { ...spouseData, isSaved: false };
-      setHusbands(updatedHusbands);
-      setEditingHusbandIndex(index);
-      console.log('✏️ Husband edit setup complete - editingHusbandIndex set to:', index);
+      setHusband({ ...spouseData, isSaved: false });
+      setCurrentHusband(spouseData);
+      setShowHusbandForm(true);
+      setHusbandFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
     }
-    
-    setSpouseFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
     
     toast({
       title: "وضع التعديل",
@@ -1087,7 +864,6 @@ const FamilyBuilderNew = () => {
 
   // Close functions for spouse forms
   const handleCloseWifeEdit = () => {
-    console.log('handleCloseWifeEdit called');
     closeActiveSpouseEdit();
     toast({
       title: "تم إغلاق التعديل",
@@ -1105,208 +881,9 @@ const FamilyBuilderNew = () => {
     });
   };
 
-  // Unified spouse save handler - reduces code duplication
-  const handleSpouseSaveUnified = (spouseType: 'wife' | 'husband', spouseData?: SpouseData, saveToDb: boolean = true) => {
-    console.log('🔍 handleSpouseSaveUnified called:', { 
-      spouseType, 
-      spouseName: spouseData?.name, 
-      spouseId: spouseData?.id,
-      saveToDb,
-      editingWifeIndex,
-      editingHusbandIndex
-    });
-
-    console.log('🔍 CURRENT SPOUSE ARRAYS AT START:', {
-      husbands: husbands.map(h => ({id: h.id, name: h.name})),
-      wives: wives.map(w => ({id: w.id, name: w.name})),
-      editingHusbandIndex,
-      editingWifeIndex
-    });
-    
-    if (spouseData && !saveToDb) {
-      console.log("========================================");
-      console.log("🚀 LOCAL SAVE OPERATION STARTING");
-      console.log("========================================");
-      console.log("📋 Input parameters:");
-      console.log("   - spouseData:", JSON.stringify(spouseData, null, 2));
-      console.log("   - spouseType:", spouseType);
-      console.log("   - saveToDb:", saveToDb);
-      
-      if (spouseType === 'wife') {
-        console.log("----------------------------------------");
-        console.log("🚀 PROCESSING WIFE LOCAL SAVE");
-        console.log("----------------------------------------");
-        // Store the current editing index before any state changes
-        const currentEditingIndex = editingWifeIndex;
-        console.log('💾 Wife save - currentEditingIndex:', currentEditingIndex);
-        console.log('💾 Wife save - current wives count:', wives.length);
-        console.log('💾 Wife save - existing wives BEFORE update:', wives.map((w, idx) => ({ 
-          index: idx,
-          name: w.name, 
-          id: w.id,
-          firstName: w.firstName,
-          lastName: w.lastName,
-          isSaved: w.isSaved,
-          isFamilyMember: w.isFamilyMember
-        })));
-        
-        console.log("🔄 Updating currentSpouse state...");
-        // CRITICAL FIX: Update current spouse state with the new data
-        setCurrentSpouse(spouseData);
-        console.log("✅ currentSpouse updated with:", JSON.stringify(spouseData, null, 2));
-        
-        console.log("🔍 Determining wife index logic...");
-        // CRITICAL FIX: Better logic for determining wife index
-        let wifeIndex = -1;
-        if (currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < wives.length) {
-          // We're editing an existing wife at a valid index
-          wifeIndex = currentEditingIndex;
-          console.log('💾 ✅ Using editingWifeIndex (EXISTING WIFE):', wifeIndex);
-        } else if (spouseData.id && wives.some(w => w.id === spouseData.id)) {
-          // Find by ID as fallback (in case index was lost)
-          wifeIndex = wives.findIndex(w => w.id === spouseData.id);
-          console.log('💾 ⚠️  Found wife by ID at index (FALLBACK):', wifeIndex);
-        } else {
-          // It's a new wife
-          wifeIndex = wives.length;
-          console.log('💾 🆕 Adding NEW wife at index:', wifeIndex);
-        }
-        
-        console.log('💾 🎯 FINAL wifeIndex being used:', wifeIndex);
-        console.log('💾 🔍 Index type analysis:', {
-          isExistingEdit: currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < wives.length,
-          foundById: spouseData.id && wives.some(w => w.id === spouseData.id),
-          isNewWife: wifeIndex === wives.length
-        });
-        
-        console.log("🔄 Creating updated wives array...");
-        const updatedWives = [...wives];
-        // CRITICAL FIX: Ensure the database record is also updated with new name components
-        const existingWife = updatedWives[wifeIndex];
-        console.log('💾 Existing wife at index', wifeIndex, ':', existingWife);
-        
-        const updatedWife = {
-          ...existingWife,
-          ...spouseData,
-          // Preserve the ID if it exists
-          id: existingWife?.id || spouseData.id
-        };
-        console.log('💾 Updated wife object:', JSON.stringify(updatedWife, null, 2));
-        
-        updatedWives[wifeIndex] = updatedWife;
-        console.log('💾 Wife save - updated wives array AFTER update:', updatedWives.map((w, idx) => ({ 
-          index: idx,
-          name: w.name, 
-          id: w.id,
-          firstName: w.firstName,
-          lastName: w.lastName,
-          isSaved: w.isSaved
-        })));
-        
-        console.log("🔄 Setting wives state...");
-        
-        // Mark that we have unsaved local changes
-        setHasUnsavedLocalChanges(true);
-        
-        // Use functional update to ensure we have the latest state
-        setWives(prevWives => {
-          console.log("📊 State updater function called with prevWives:", prevWives.map(w => ({name: w.name, id: w.id})));
-          console.log("📊 Returning updatedWives:", updatedWives.map(w => ({name: w.name, id: w.id})));
-          return updatedWives;
-        });
-        
-        console.log("✅ Wives state update dispatched");
-        
-        // Use setTimeout to ensure state update has been processed
-        setTimeout(() => {
-          console.log("🔄 Delayed form close...");
-          setShowSpouseForm(false);
-          setEditingWifeIndex(null);
-          console.log('💾 ✅ Wife save - form closed, editing index reset');
-          console.log("========================================");
-          console.log("🎉 WIFE LOCAL SAVE COMPLETE");
-          console.log("========================================");
-        }, 50);
-      } else {
-        // Store the current editing index before any state changes
-        const currentEditingIndex = editingHusbandIndex;
-        console.log('💾 Husband save - currentEditingIndex:', currentEditingIndex);
-        console.log('💾 Husband save - current husbands count:', husbands.length);
-        console.log('💾 Husband save - existing husbands:', husbands.map(h => ({ name: h.name, id: h.id })));
-        
-        // CRITICAL FIX: Update current spouse state with the new data
-        setCurrentSpouse(spouseData);
-        
-        // CRITICAL FIX: Better logic for determining husband index
-        let husbandIndex = -1;
-        if (currentEditingIndex !== null && currentEditingIndex >= 0 && currentEditingIndex < husbands.length) {
-          // We're editing an existing husband at a valid index
-          husbandIndex = currentEditingIndex;
-          console.log('💾 Using editingHusbandIndex:', husbandIndex);
-        } else if (spouseData.id && husbands.some(h => h.id === spouseData.id)) {
-          // Find by ID as fallback (in case index was lost)
-          husbandIndex = husbands.findIndex(h => h.id === spouseData.id);
-          console.log('💾 Found husband by ID at index:', husbandIndex);
-        } else {
-          // It's a new husband
-          husbandIndex = husbands.length;
-          console.log('💾 Adding new husband at index:', husbandIndex);
-        }
-        
-        console.log('💾 Final husbandIndex being used:', husbandIndex);
-        
-        const updatedHusbands = [...husbands];
-        // CRITICAL FIX: Ensure the database record is also updated with new name components
-        const existingHusband = updatedHusbands[husbandIndex];
-        const updatedHusband = {
-          ...existingHusband,
-          ...spouseData,
-          // Preserve the ID if it exists
-          id: existingHusband?.id || spouseData.id
-        };
-        updatedHusbands[husbandIndex] = updatedHusband;
-        console.log('💾 Husband save - updated husbands after save:', updatedHusbands.map(h => ({ name: h.name, id: h.id })));
-        
-        // Mark that we have unsaved local changes
-        setHasUnsavedLocalChanges(true);
-        
-        setHusbands(updatedHusbands);
-        
-        // Close the form only after successful update
-        setShowSpouseForm(false);
-        setEditingHusbandIndex(null);
-        console.log('💾 Husband save - form closed, editing index reset');
-      }
-      return;
-    }
-    
-    // CRITICAL FIX: Ensure currentSpouse is updated before DB save
-    if (spouseData) {
-      setCurrentSpouse(spouseData);
-      // Use setTimeout to ensure state update is applied before DB operation
-      setTimeout(() => {
-        handleSpouseSave(spouseType, spouseData);
-      }, 0);
-    } else {
-      console.log('🚀 Calling handleSpouseSave for DB save');
-      console.log('🚀 DB SAVE CONDITIONS:', {
-        spouseType,
-        currentSpouseArrays: {
-          wives: wives.map(w => ({id: w.id, name: w.name})),
-          husbands: husbands.map(h => ({id: h.id, name: h.name}))
-        },
-        editingIndexes: {
-          editingWifeIndex,
-          editingHusbandIndex
-        }
-      });
-      handleSpouseSave(spouseType);
-    }
-  };
-
-  // Wrapper function for unified spouse save
-  const handleSpouseSaveWrapper = (spouseData?: SpouseData, saveToDb: boolean = true) => 
-    handleSpouseSaveUnified(currentSpouseType, spouseData, saveToDb);
+  // Wrapper functions for backward compatibility
+  const handleWifeSave = () => handleSpouseSave('wife');
+  const handleHusbandSave = () => handleSpouseSave('husband');
 
   // Crop function helper
   const createCroppedImage = async (imageSrc: string, crop: any): Promise<string> => {
@@ -1367,7 +944,6 @@ const FamilyBuilderNew = () => {
   
   // Track original wife data for change detection
   const [originalWivesData, setOriginalWivesData] = useState<any[]>([]);
-  const [originalHusbandsData, setOriginalHusbandsData] = useState<any[]>([]);
   
   // Upgrade modal state
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -1714,33 +1290,9 @@ const FamilyBuilderNew = () => {
 
   // Confirm spouse deletion (just mark for deletion)
   const confirmSpouseDelete = () => {
-    console.log('🚨 DELETION CONFIRMED - confirmSpouseDelete called');
-    console.log('🚨 spouseToDelete:', spouseToDelete);
-    
     if (!spouseToDelete) return;
     
     const { index } = spouseToDelete;
-    console.log('🚨 Deletion index:', index);
-    
-    // Handle husband deletion (index = -1)
-    if (index === -1) {
-      console.log('🚨 DELETING HUSBAND - setting husbands array to empty');
-      console.log('🚨 Husbands before deletion:', husbands);
-      setHusbands([]);
-      console.log('🚨 Husbands should now be empty');
-      
-      setShowSpouseDeleteModal(false);
-      setSpouseToDelete(null);
-      
-      toast({
-        title: "تم تحديد الزوج للحذف",
-        description: "سيتم حذف الزوج نهائياً عند حفظ بيانات العضو",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Handle wife deletion (index >= 0)
     const newWives = wives.filter((_, i) => i !== index);
     setWives(newWives);
     
@@ -1807,8 +1359,6 @@ const FamilyBuilderNew = () => {
     setEditingMember(member);
     setCurrentStep(1);
     populateFormData(member);
-    // Clear any unsaved local changes when switching to a different member
-    setHasUnsavedLocalChanges(false);
     if (isMobile) setIsMemberListOpen(false);
   }, [isMobile]);
 
@@ -1817,16 +1367,6 @@ const FamilyBuilderNew = () => {
     setEditingMember(null);
     setCurrentStep(1);
     resetFormData();
-    
-    // Clean up URL parameters if they exist
-    const currentParams = new URLSearchParams(searchParams);
-    if (currentParams.has('autoAdd')) {
-      currentParams.delete('autoAdd');
-      navigate({
-        pathname: window.location.pathname,
-        search: currentParams.toString()
-      }, { replace: true });
-    }
   };
 
   const resetFormData = () => {
@@ -1846,7 +1386,7 @@ const FamilyBuilderNew = () => {
       isFounder: false
     });
     setWives([]);
-      setHusbands([]);
+    setHusband(null);
     // Clear image states
     setCroppedImage(null);
     setSelectedImage(null);
@@ -1856,14 +1396,6 @@ const FamilyBuilderNew = () => {
   };
 
   const populateFormData = (member: any) => {
-    // Preserve existing image when editing (don't reset to null)
-    const existingImage = member.image_url || member.image || null;
-    setCroppedImage(existingImage);
-    setSelectedImage(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    
     setFormData({
       name: member.name || "",
       first_name: member.first_name || member.name?.split(' ')[0] || "",
@@ -1875,30 +1407,13 @@ const FamilyBuilderNew = () => {
       isAlive: member.isAlive ?? true,
       deathDate: member.deathDate ? new Date(member.deathDate) : null,
       bio: member.bio || "",
-      imageUrl: member.image_url || member.image || "",
-      croppedImage: existingImage,
+      imageUrl: member.image || "",
+      croppedImage: member.image || null,
       isFounder: member.isFounder || false
     });
     
-    // Load existing spouses only if we don't have unsaved local changes
-    const hasUnsavedWifeChanges = wives.some(w => !w.isSaved);
-    const hasUnsavedHusbandChanges = husbands.some(h => !h.isSaved);
-    const isCurrentlyEditing = showSpouseForm || editingWifeIndex !== null || editingHusbandIndex !== null;
-    
-    if (!hasUnsavedWifeChanges && !hasUnsavedHusbandChanges && !isCurrentlyEditing && !hasUnsavedLocalChanges) {
-      console.log('🔄 populateFormData: Loading existing spouses for member:', member.name);
-      loadExistingSpouses(member);
-    } else {
-      console.log('⏸️ populateFormData: Skipping spouse reload - unsaved changes detected:', {
-        hasUnsavedWifeChanges,
-        hasUnsavedHusbandChanges,
-        isCurrentlyEditing,
-        hasUnsavedLocalChanges,
-        showSpouseForm,
-        editingWifeIndex,
-        editingHusbandIndex
-      });
-    }
+    // Load existing spouses
+    loadExistingSpouses(member);
   };
 
   const loadExistingSpouses = (member: any) => {
@@ -1906,7 +1421,7 @@ const FamilyBuilderNew = () => {
     
     // Reset spouse states first
     setWives([]);
-    setHusbands([]);
+    setHusband(null);
     
     if (member.gender === "male") {
       // Load wives for male member
@@ -1989,14 +1504,13 @@ const FamilyBuilderNew = () => {
           deathDate: husbandMember?.death_date ? new Date(husbandMember.death_date) : null,
           croppedImage: husbandMember?.image_url || null,
           biography: husbandMember?.biography || '', // Add missing biography field
-          // Determine if spouse is from family: has father_id OR is founder
-          isFamilyMember: husbandMember ? !!(husbandMember.father_id || husbandMember.is_founder) : false,
+          isFamilyMember: !!husbandMember, // If found in family members, it's a family member
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
         
         
-        setHusbands([husbandData]);
+        setHusband(husbandData);
       }
     }
   };
@@ -2029,10 +1543,9 @@ const FamilyBuilderNew = () => {
     }
 
     // Handle husband for female members
-    if (submissionData.gender === 'female' && husbands && husbands.length > 0 && 
-        (husbands[0]?.isSaved === true || (husbands[0]?.id && husbands[0]?.id.length > 0))) {
+    if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
       await processSpouse({
-        spouse: husbands[0],
+        spouse: husband,
         spouseType: 'husband',
         memberData,
         familyId,
@@ -2107,7 +1620,7 @@ const FamilyBuilderNew = () => {
         .update({
           name: spouseName,
           first_name: spouse.firstName || null,
-          last_name: spouse.lastName || null,
+          last_name: spouse.lastName || familyData?.name || null,
           birth_date: spouse.birthDate?.toISOString().split('T')[0] || null,
           is_alive: spouse.isAlive ?? true,
           death_date: !spouse.isAlive && spouse.deathDate ? spouse.deathDate.toISOString().split('T')[0] : null,
@@ -2129,7 +1642,7 @@ const FamilyBuilderNew = () => {
     } else {
       // Create new spouse member
       const firstName = spouse.firstName || '';
-      const lastName = spouse.lastName || '';
+      const lastName = spouse.lastName || familyData?.name || '';
       const spouseName = firstName && lastName ? `${firstName} ${lastName}` : (spouse.name || firstName || lastName || '');
       
       const { data: newSpouseMember, error: spouseError } = await supabase
@@ -2259,93 +1772,35 @@ const FamilyBuilderNew = () => {
   };
 
   const handleFormSubmit = useCallback(async (submissionData: any) => {
-    console.log('🚨🚨🚨 SAVE BUTTON CLICKED - handleFormSubmit called!');
-    
-    // Get fresh state data to avoid stale closures
-    let currentWivesData: any[] = [];
-    let currentHusbandsData: any[] = [];
-    
-    // Use functional state updates to get the current data
-    setWives(currentWives => {
-      currentWivesData = [...currentWives];
-      return currentWives;
-    });
-    
-    setHusbands(currentHusbands => {
-      currentHusbandsData = [...currentHusbands];
-      return currentHusbands;
-    });
-    
-    console.log('🚨 Fresh husbands array:', currentHusbandsData);
-    console.log('🚨 Fresh wives array:', currentWivesData);
-    console.log('🚨 Husbands length:', currentHusbandsData.length);
-    console.log('🚨 Wives length:', currentWivesData.length);
-    console.log('🚨 Is saving:', isSaving);
-    
-    // Debug wife data structure
-    console.log('🚨 CRITICAL DEBUG - Fresh wife array structure:', currentWivesData.map(w => ({
-      id: w.id,
-      name: w.name,
-      firstName: w.firstName,
-      lastName: w.lastName,
-      isSaved: w.isSaved,
-      hasOriginalData: !!w.originalData,
-      dataType: (w as any).family_id ? 'database-format' : 'spouse-format'
-    })));
-    
-    // Add a small delay to ensure any pending state updates have completed
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    // Check if Khalid should be deleted
-    const khalidId = 'dd05d323-de57-4455-8927-c0b6bc5dbe18';
-    const khalidInCurrentMembers = familyMembers.find(m => m.id === khalidId);
-    console.log('🚨 Khalid in current members:', khalidInCurrentMembers);
-    console.log('🚨 Should Khalid be deleted?', khalidInCurrentMembers && currentHusbandsData.length === 0);
-    
     try {
       setIsSaving(true);
       
-      console.log('🔧 SAVE START - Current state:', {
-        wives: currentWivesData,
-        husbands: currentHusbandsData,
-        submissionData: submissionData
-      });
-      
       // Determine marital status based on presence of spouses
-      const hasSpouses = submissionData.gender === "male" && currentWivesData.length > 0 || 
-                        submissionData.gender === "female" && currentHusbandsData.length > 0;
+      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
+                        submissionData.gender === "female" && husband;
       
       // Prepare final submission data matching modal structure
       const finalData = {
         ...submissionData,
         maritalStatus: hasSpouses ? "married" : "single",
-        wives: submissionData.gender === "male" ? currentWivesData : [],
-        husbands: submissionData.gender === "female" && currentHusbandsData.length > 0 ? currentHusbandsData : []
+        wives: submissionData.gender === "male" ? wives : [],
+        husband: submissionData.gender === "female" && husband ? husband : null
       };
-      
-      console.log('🔧 Final data prepared:', finalData);
       
       // Handle image state properly for edits:
       // - If image exists in submissionData.croppedImage, use it (user uploaded new image)
-      // - If submissionData.croppedImage is explicitly null, set to null (user removed image)
+      // - If submissionData.croppedImage is explicitly null/empty string, set to null (user removed image)
       // - If submissionData.croppedImage is undefined, keep existing image
       let finalImageUrl;
-      console.log('🔧 Image handling - submissionData.croppedImage:', submissionData.croppedImage);
-      console.log('🔧 Image handling - editingMember?.image_url:', editingMember?.image_url);
-      
       if (formMode === 'edit' && editingMember) {
         if (submissionData.croppedImage !== undefined) {
-          // User explicitly set or removed image
-          finalImageUrl = submissionData.croppedImage; // This can be null (deleted) or string (new image)
+          finalImageUrl = submissionData.croppedImage || null;
         } else {
-          // No image changes, keep existing
           finalImageUrl = editingMember.image_url || null;
         }
       } else {
         finalImageUrl = submissionData.croppedImage || null;
       }
-      
-      console.log('🔧 Final image URL:', finalImageUrl);
       
       // Call the existing submission logic (same as modal)
       
@@ -2373,7 +1828,7 @@ const FamilyBuilderNew = () => {
         // Update existing member
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        const lastName = '';
+        const lastName = familyData?.name || '';
         
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
@@ -2411,7 +1866,7 @@ const FamilyBuilderNew = () => {
         // Insert new family member into database
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        const lastName = '';
+        const lastName = familyData?.name || '';
         
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
@@ -2465,41 +1920,18 @@ const FamilyBuilderNew = () => {
            // Don't deactivate all marriages upfront - we'll handle each case individually
          }
 
-          // Handle wives for male members - process all saved wives
-          if (submissionData.gender === 'male' && currentWivesData.length > 0) {
-             const savedWives = currentWivesData.filter(wife => {
-               // Get the wife's index to check family status
-               const wifeIndex = currentWivesData.findIndex(w => w === wife);
-               const familyStatus = wiveFamilyStatus[wifeIndex];
-               
-               // Include wives that are:
-               // 1. Newly created (isSaved === true), OR
-               // 2. Edited existing wives (have valid id)
-               const shouldInclude = (wife.isSaved === true || (wife.id && wife.id.length > 0)) &&
-                                    (familyStatus !== 'yes' || wife.existingFamilyMemberId);
-               
-           console.log('🔍 Wife filter decision:', {
-             name: wife.name,
-             firstName: wife.firstName,
-             lastName: wife.lastName,
-             id: wife.id,
-             isSaved: wife.isSaved,
-             familyStatus: familyStatus,
-             existingFamilyMemberId: wife.existingFamilyMemberId,
-             shouldInclude: shouldInclude,
-             reason: shouldInclude ? (wife.isSaved ? 'newly created' : 'edited existing') : 'excluded',
-             fullWifeObject: wife
-           });
-           
-           console.log('🔍 Current wives array in filter:', currentWivesData.map(w => ({
-             name: w.name,
-             firstName: w.firstName,
-             lastName: w.lastName,
-             id: w.id,
-             isSaved: w.isSaved
-           })));
+         // Handle wives for male members - process all saved wives
+         if (submissionData.gender === 'male' && wives.length > 0) {
+            const savedWives = wives.filter(wife => {
+              // Get the wife's index to check family status
+              const wifeIndex = wives.findIndex(w => w === wife);
+              const familyStatus = wiveFamilyStatus[wifeIndex];
               
-              return shouldInclude;
+              // Only save if:
+              // 1. Wife is marked as saved
+              // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
+              return wife.isSaved === true && 
+                     (familyStatus !== 'yes' || wife.existingFamilyMemberId);
             });
            for (const wife of savedWives) {
              try {
@@ -2508,20 +1940,21 @@ const FamilyBuilderNew = () => {
                  // If wife has an existing ID, update the existing record
                  if (wife.existingFamilyMemberId && wife.id) {
                    // Get current image to handle image state properly
-                   const { data: currentSpouseMember } = await supabase
+                   const { data: currentWife } = await supabase
                      .from('family_tree_members')
                      .select('image_url')
                      .eq('id', wife.existingFamilyMemberId)
-                     .single();
-
-                   let imageUrl: string | null = null;
+                     .maybeSingle();
                    
-                   // Handle image updates
-                   if (wife.croppedImage !== null) {
-                     // User either added a new image or explicitly removed it
+                   // Handle image state properly:
+                   // - If image exists in wife.croppedImage, use it (user uploaded new image)
+                   // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
+                   // - If wife.croppedImage is undefined, keep existing image
+                   let imageUrl;
+                   if (wife.croppedImage !== undefined) {
                      imageUrl = wife.croppedImage || null;
                    } else {
-                     imageUrl = currentSpouseMember?.image_url || null;
+                     imageUrl = currentWife?.image_url || null;
                    }
                    
                    const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
@@ -2530,7 +1963,7 @@ const FamilyBuilderNew = () => {
                         .update({
                           name: wifeName,
                          first_name: wife.firstName || null,
-                         last_name: wife.lastName || null,
+                         last_name: wife.lastName || familyData?.name || null,
                          birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
                          is_alive: wife.isAlive ?? true,
                          death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
@@ -2555,7 +1988,7 @@ const FamilyBuilderNew = () => {
                } else {
                    // If wife is not from existing family members, create new family member
                    const firstName = wife.firstName || '';
-                   const lastName = wife.lastName || '';
+                   const lastName = wife.lastName || familyData?.name || '';
                    const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
                    
                    const { data: newWifeMember, error: wifeError } = await supabase
@@ -2592,20 +2025,21 @@ const FamilyBuilderNew = () => {
                    // If wife is an existing family member, update their marital status and handle image properly
                    if (wife.isFamilyMember && wife.existingFamilyMemberId) {
                     // Get current data to handle image state properly
-                    const { data: currentSpouseMember } = await supabase
+                    const { data: currentWife } = await supabase
                       .from('family_tree_members')
                       .select('image_url')
                       .eq('id', wife.existingFamilyMemberId)
-                      .single();
-
-                    let imageUrl: string | null = null;
+                      .maybeSingle();
                     
-                    // Handle image updates
-                    if (wife.croppedImage !== null) {
-                      // User either added a new image or explicitly removed it
+                    // Handle image state properly:
+                    // - If image exists in wife.croppedImage, use it (user uploaded new image)
+                    // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
+                    // - If wife.croppedImage is undefined, keep existing image
+                    let imageUrl;
+                    if (wife.croppedImage !== undefined) {
                       imageUrl = wife.croppedImage || null;
                     } else {
-                      imageUrl = currentSpouseMember?.image_url || null;
+                      imageUrl = currentWife?.image_url || null;
                     }
                     
                      const { error: updateWifeError } = await supabase
@@ -2686,17 +2120,16 @@ const FamilyBuilderNew = () => {
           }
         }
 
-        // Handle husband for female members - process if saved or edited
-        if (submissionData.gender === 'female' && currentHusbandsData && currentHusbandsData.length > 0 && 
-            (currentHusbandsData[0]?.isSaved === true || (currentHusbandsData[0]?.id && currentHusbandsData[0]?.id.length > 0))) {
+        // Handle husband for female members - process if saved
+        if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
           try {
-            let husbandId = currentHusbandsData[0].existingFamilyMemberId;
+            let husbandId = husband.existingFamilyMemberId;
             
             // If husband is not from existing family members, create new family member first
-            if (!currentHusbandsData[0].isFamilyMember || !currentHusbandsData[0].existingFamilyMemberId) {
-              const firstName = currentHusbandsData[0].firstName || '';
-              const lastName = currentHusbandsData[0].lastName || '';
-              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (currentHusbandsData[0].name || firstName || lastName || '');
+            if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
+              const firstName = husband.firstName || '';
+              const lastName = husband.lastName || familyData?.name || '';
+              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husband.name || firstName || lastName || '');
               
               const { data: newHusbandMember, error: husbandError } = await supabase
                 .from('family_tree_members')
@@ -2705,23 +2138,23 @@ const FamilyBuilderNew = () => {
                   first_name: firstName,
                   last_name: lastName,
                   gender: 'male',
-                  birth_date: currentHusbandsData[0].birthDate?.toISOString().split('T')[0] || null,
-                  is_alive: currentHusbandsData[0].isAlive ?? true,
-                  death_date: !currentHusbandsData[0].isAlive && currentHusbandsData[0].deathDate ? currentHusbandsData[0].deathDate.toISOString().split('T')[0] : null,
+                  birth_date: husband.birthDate?.toISOString().split('T')[0] || null,
+                  is_alive: husband.isAlive ?? true,
+                  death_date: !husband.isAlive && husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
                   family_id: familyId,
                   created_by: familyData?.creator_id,
                   is_founder: false,
-                  marital_status: currentHusbandsData[0].maritalStatus || 'married',
-                  image_url: currentHusbandsData[0].croppedImage || null,
-                  biography: currentHusbandsData[0].biography || null
+                  marital_status: husband.maritalStatus || 'married',
+                  image_url: husband.croppedImage || null,
+                  biography: husband.biography || null
                 })
                 .select()
                 .single();
 
               if (husbandError) {
-                console.error('Error creating husband member:', currentHusbandsData[0].name, husbandError);
+                console.error('Error creating husband member:', husband.name, husbandError);
                 marriageResults.failed++;
-                marriageResults.details.push(`فشل في إنشاء العضو ${currentHusbandsData[0].name}`);
+                marriageResults.details.push(`فشل في إنشاء العضو ${husband.name}`);
               } else {
                 husbandId = newHusbandMember.id;
                 
@@ -2731,12 +2164,12 @@ const FamilyBuilderNew = () => {
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
               // If husband is an existing family member, update their marital status and handle image properly
-              if (currentHusbandsData[0].isFamilyMember && currentHusbandsData[0].existingFamilyMemberId) {
+              if (husband.isFamilyMember && husband.existingFamilyMemberId) {
                 // Get current data to handle image state properly
                 const { data: currentHusband } = await supabase
                   .from('family_tree_members')
                   .select('image_url')
-                  .eq('id', currentHusbandsData[0].existingFamilyMemberId)
+                  .eq('id', husband.existingFamilyMemberId)
                   .maybeSingle();
                 
                 // Handle image state properly:
@@ -2744,8 +2177,8 @@ const FamilyBuilderNew = () => {
                 // - If husband.croppedImage is explicitly null/empty string, set to null (user removed image)
                 // - If husband.croppedImage is undefined, keep existing image
                 let imageUrl;
-                if (currentHusbandsData[0].croppedImage !== undefined) {
-                  imageUrl = currentHusbandsData[0].croppedImage || null;
+                if (husband.croppedImage !== undefined) {
+                  imageUrl = husband.croppedImage || null;
                 } else {
                   imageUrl = currentHusband?.image_url || null;
                 }
@@ -2753,23 +2186,23 @@ const FamilyBuilderNew = () => {
                 const { error: updateHusbandError } = await supabase
                   .from('family_tree_members')
                   .update({ 
-                    marital_status: currentHusbandsData[0].maritalStatus,
+                    marital_status: husband.maritalStatus,
                     image_url: imageUrl,
-                    biography: currentHusbandsData[0].biography || null
+                    biography: husband.biography || null
                   })
-                  .eq('id', currentHusbandsData[0].existingFamilyMemberId);
+                  .eq('id', husband.existingFamilyMemberId);
                 
                 if (updateHusbandError) {
                   console.error('Error updating husband marital status:', updateHusbandError);
                 } else {
-                  console.log('Successfully updated husband marital status to:', currentHusbandsData[0].maritalStatus);
+                  console.log('Successfully updated husband marital status to:', husband.maritalStatus);
                 }
 
                 // Also update marriage table marital status
                 await supabase
                   .from('marriages')
-                  .update({ marital_status: currentHusbandsData[0].maritalStatus })
-                  .eq('husband_id', currentHusbandsData[0].existingFamilyMemberId);
+                  .update({ marital_status: husband.maritalStatus })
+                  .eq('husband_id', husband.existingFamilyMemberId);
                 
               }
 
@@ -2805,314 +2238,34 @@ const FamilyBuilderNew = () => {
               }
 
               if (marriageError) {
-                console.error('Error creating marriage with husband:', husbands[0].name, marriageError);
+                console.error('Error creating marriage with husband:', husband.name, marriageError);
                 marriageResults.failed++;
-                marriageResults.details.push(`فشل ربط الزواج مع ${husbands[0].name}`);
+                marriageResults.details.push(`فشل ربط الزواج مع ${husband.name}`);
               } else {
                 marriageResults.successful++;
-                marriageResults.details.push(`تم ربط الزواج مع ${husbands[0].name}`);
+                marriageResults.details.push(`تم ربط الزواج مع ${husband.name}`);
                 
               }
             }
           } catch (error) {
             console.error('Marriage creation error:', error);
             marriageResults.failed++;
-            marriageResults.details.push(`خطأ في ربط الزواج مع ${husbands[0].name}`);
+            marriageResults.details.push(`خطأ في ربط الزواج مع ${husband.name}`);
            }
-          }
-          
-          // Handle marriage deletions for removed spouses (when user deletes spouses from UI)
-          // Skip this deletion logic during spouse edit operations to prevent incorrect deletions
-          if (isEditMode && editingMember && editingWifeIndex === null && editingHusbandIndex === null) {
-            console.log('🔧 DELETION LOGIC START');
-            console.log('🔧 Form mode:', formMode);
-            console.log('🔧 Editing member:', editingMember?.id);
-            
-            // Get all existing marriages for this member
-            const existingMarriages = familyMarriages.filter((marriage: any) => 
-              marriage.husband?.id === editingMember.id || marriage.wife?.id === editingMember.id
-            );
-            
-            console.log('🔧 Existing marriages in DB:', existingMarriages.map(m => ({
-              id: m.id,
-              husbandId: m.husband?.id,
-              wifeId: m.wife?.id,
-              husbandName: m.husband?.name,
-              wifeName: m.wife?.name
-            })));
-            
-            // Get current spouse IDs from local state
-            const currentSpouseIds = new Set();
-            
-            console.log('🚨 CRITICAL DEBUG - Arrays at deletion check:', {
-              husbandsLength: currentHusbandsData.length,
-              wivesLength: currentWivesData.length,
-              husbandsArray: currentHusbandsData,
-              wivesArray: currentWivesData,
-              editingMemberGender: submissionData.gender,
-              expectedBehavior: submissionData.gender === 'female' ? 'Should check husbands array' : 'Should check wives array'
-            });
-            
-            console.log('🔧 Building current spouse IDs from local arrays:', {
-              editingMemberId: editingMember.id,
-              editingMemberGender: submissionData.gender,
-              wivesCount: currentWivesData.length,
-              husbandsCount: currentHusbandsData.length,
-              wives: currentWivesData.map(w => ({ 
-                id: w.id, 
-                name: w.name, 
-                isSaved: w.isSaved,
-                existingFamilyMemberId: w.existingFamilyMemberId 
-              })),
-              husbands: currentHusbandsData.map(h => ({ 
-                id: h.id, 
-                name: h.name, 
-                isSaved: h.isSaved,
-                existingFamilyMemberId: h.existingFamilyMemberId 
-              }))
-            });
-            
-            if (submissionData.gender === 'male') {
-              currentWivesData.forEach((wife, index) => {
-                // Only consider saved wives for deletion detection
-                if (wife.isSaved && (wife.existingFamilyMemberId || wife.id)) {
-                  const spouseId = wife.existingFamilyMemberId || wife.id;
-                  currentSpouseIds.add(spouseId);
-                  console.log(`🔧 Added wife ${index} to current spouses:`, wife.name, spouseId);
-                } else {
-                  console.log(`🔧 Skipped wife ${index} (not saved or no ID):`, wife.name, {
-                    isSaved: wife.isSaved,
-                    id: wife.id,
-                    existingFamilyMemberId: wife.existingFamilyMemberId
-                  });
-                }
-              });
-            } else if (submissionData.gender === 'female') {
-              currentHusbandsData.forEach((husband, index) => {
-                // Only consider saved husbands for deletion detection
-                if (husband.isSaved && (husband.existingFamilyMemberId || husband.id)) {
-                  const spouseId = husband.existingFamilyMemberId || husband.id;
-                  currentSpouseIds.add(spouseId);
-                  console.log(`🔧 Added husband ${index} to current spouses:`, husband.name, spouseId);
-                } else {
-                  console.log(`🔧 Skipped husband ${index} (not saved or no ID):`, husband.name, {
-                    isSaved: husband.isSaved,
-                    id: husband.id,
-                    existingFamilyMemberId: husband.existingFamilyMemberId
-                  });
-                }
-              });
-            }
-            
-            console.log('🔧 Current spouse IDs from local arrays:', Array.from(currentSpouseIds));
-            console.log('🚨 SHOULD DELETION HAPPEN?', {
-              currentSpouseIds: Array.from(currentSpouseIds),
-              currentSpouseIdsSize: currentSpouseIds.size,
-              existingMarriagesCount: existingMarriages.length,
-              shouldDeleteAll: currentSpouseIds.size === 0 && existingMarriages.length > 0
-            });
-            console.log('🔧 Existing marriages:', existingMarriages.map(m => ({
-              id: m.id,
-              husbandId: m.husband?.id,
-              wifeId: m.wife?.id,
-              husbandName: m.husband?.name,
-              wifeName: m.wife?.name
-            })));
-            
-            // Find marriages that should be deleted (spouse not in current state)
-            const marriagesToDelete = existingMarriages.filter((marriage: any) => {
-              const spouseId = marriage.husband?.id === editingMember.id 
-                ? marriage.wife?.id 
-                : marriage.husband?.id;
-              const shouldDelete = spouseId && !currentSpouseIds.has(spouseId);
-              console.log(`🔧 Marriage ${marriage.id}: spouse ${spouseId} (${marriage.husband?.id === editingMember.id ? marriage.wife?.name : marriage.husband?.name}), should delete: ${shouldDelete}`);
-              return shouldDelete;
-            });
-            
-            console.log('🔧 Marriages to delete:', marriagesToDelete.map(m => ({
-              id: m.id,
-              spouseToDelete: m.husband?.id === editingMember.id ? m.wife?.name : m.husband?.name
-            })));
-            
-            // Delete removed marriages and their associated spouses
-            for (const marriage of marriagesToDelete) {
-              try {
-                console.log('🔧 Processing marriage deletion:', marriage.id);
-                // Get the spouse ID that should be deleted
-                const spouseId = marriage.husband?.id === editingMember.id 
-                  ? marriage.wife?.id 
-                  : marriage.husband?.id;
-                
-                console.log('🔧 Spouse to potentially delete:', spouseId);
-                
-                if (spouseId) {
-                  const spouseMember = familyMembers.find(m => m.id === spouseId);
-                  console.log('🔧 Found spouse member:', spouseMember);
-                  
-                  if (spouseMember) {
-                    // Check if this spouse is only connected through marriage (not a blood family member)
-                    const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
-                    console.log('🔧 Is spouse only (not blood family):', isSpouseOnly);
-                    
-                    if (isSpouseOnly) {
-                      console.log(`🔧 Performing cascade delete for removed spouse: ${spouseMember.name}`);
-                      // Use the existing cascade delete function for the spouse
-                      await performCascadingDelete(spouseMember);
-                    } else {
-                      console.log('🔧 Spouse is blood family member, only deleting marriage');
-                      // If it's a blood family member, just delete the marriage
-                      const { error: deleteError } = await supabase
-                        .from('marriages')
-                        .delete()
-                        .eq('id', marriage.id);
-                      
-                      if (deleteError) {
-                        console.error('🔧 Error deleting marriage:', deleteError);
-                      } else {
-                        console.log('🔧 Successfully deleted marriage:', marriage.id);
-                      }
-                    }
-                  }
-                } else {
-                  console.log('🔧 No spouse ID found, just deleting marriage');
-                  // Just delete the marriage if no spouse ID
-                  const { error: deleteError } = await supabase
-                    .from('marriages')
-                    .delete()
-                    .eq('id', marriage.id);
-                  
-                  if (deleteError) {
-                    console.error('🔧 Error deleting marriage:', deleteError);
-                  } else {
-                    console.log('🔧 Successfully deleted marriage:', marriage.id);
-                  }
-                }
-              } catch (error) {
-                console.error('🔧 Error deleting marriage/spouse:', error);
-              }
-            }
-          } else if (isEditMode && editingMember && (editingWifeIndex !== null || editingHusbandIndex !== null)) {
-            console.log('🔧 SKIPPING DELETION LOGIC - Currently editing a spouse');
-            console.log('🔧 editingWifeIndex:', editingWifeIndex);
-            console.log('🔧 editingHusbandIndex:', editingHusbandIndex);
-          }
-        }
-        
-        // 🚨 CRITICAL: Handle spouse deletion when spouses are removed - FIXED LOGIC
-        // Skip this deletion check during spouse edit operations to prevent incorrect deletions
-        if (editingWifeIndex !== null || editingHusbandIndex !== null) {
-          console.log('🚨 SKIPPING SPOUSE DELETION CHECK - Currently editing a spouse');
-          console.log('🚨 editingWifeIndex:', editingWifeIndex);
-          console.log('🚨 editingHusbandIndex:', editingHusbandIndex);
-        } else {
-          console.log('🚨 CHECKING FOR SPOUSE DELETIONS');
-          console.log('🚨 formMode:', formMode);
-          console.log('🚨 editingMember:', editingMember);
-          console.log('🚨 selectedMember:', selectedMember);
-          console.log('🚨 husbands.length:', currentHusbandsData.length);
-          console.log('🚨 wives.length:', currentWivesData.length);
-          
-          const memberToCheck = editingMember || selectedMember;
-          console.log('🚨 Member to check for spouse deletion:', memberToCheck);
-          
-          // FIXED LOGIC: Only check relevant spouse arrays based on member's gender
-          let shouldDeleteSpouses = false;
-          if (memberToCheck) {
-            if (memberToCheck.gender === 'male') {
-              // For male members, only check if wives were removed
-              shouldDeleteSpouses = currentWivesData.length === 0;
-              console.log('🚨 Male member - checking wives deletion:', shouldDeleteSpouses);
-            } else if (memberToCheck.gender === 'female') {
-              // For female members, only check if husbands were removed
-              shouldDeleteSpouses = currentHusbandsData.length === 0;
-              console.log('🚨 Female member - checking husbands deletion:', shouldDeleteSpouses);
-            }
-          }
-          
-          console.log('🚨 Final deletion decision:', shouldDeleteSpouses);
-          
-          // If spouses were removed, handle deletion
-          if (memberToCheck && shouldDeleteSpouses) {
-            console.log('🚨 DELETING SPOUSES for member:', memberToCheck.name);
-            
-            // Get existing marriages for the member
-            const { data: existingMarriages } = await supabase
-              .from('marriages')
-              .select(`
-                id,
-                husband_id,
-                wife_id
-              `)
-              .eq('family_id', familyId)
-              .eq('is_active', true)
-              .or(`husband_id.eq.${memberToCheck.id},wife_id.eq.${memberToCheck.id}`);
-
-            console.log('🚨 Existing marriages for member:', existingMarriages);
-            
-            if (existingMarriages && existingMarriages.length > 0) {
-              // Delete all marriages and spouses for this member
-              for (const marriage of existingMarriages) {
-                try {
-                  console.log('🚨 Deleting marriage:', marriage.id);
-                  // Get the spouse ID that should be deleted
-                  const spouseId = marriage.husband_id === memberToCheck.id 
-                    ? marriage.wife_id 
-                    : marriage.husband_id;
-                  
-                  console.log('🚨 Spouse to delete:', spouseId);
-                  
-                  if (spouseId) {
-                    const spouseMember = familyMembers.find(m => m.id === spouseId);
-                    console.log('🚨 Found spouse member:', spouseMember);
-                    
-                    if (spouseMember) {
-                      // Check if this spouse is only connected through marriage (not a blood family member)
-                      const isSpouseOnly = checkIfMemberIsSpouse(spouseMember);
-                      console.log('🚨 Is spouse only (not blood family):', isSpouseOnly);
-                      
-                      if (isSpouseOnly) {
-                        console.log(`🚨 Performing cascade delete for removed spouse: ${spouseMember.name}`);
-                        // Use the existing cascade delete function for the spouse
-                        await performCascadingDelete(spouseMember);
-                      } else {
-                        console.log('🚨 Spouse is blood family member, only deleting marriage');
-                        // If it's a blood family member, just delete the marriage
-                        const { error: deleteError } = await supabase
-                          .from('marriages')
-                          .delete()
-                          .eq('id', marriage.id);
-                        
-                        if (deleteError) {
-                          console.error('🚨 Error deleting marriage:', deleteError);
-                        } else {
-                          console.log('🚨 Successfully deleted marriage:', marriage.id);
-                        }
-                      }
-                    }
-                  }
-                } catch (error) {
-                  console.error('🚨 Error deleting marriage/spouse:', error);
-                }
-              }
-            }
-          }
-        }
+         }
+         
+          // Note: No automatic marriage deactivation - user manually deletes incorrect marriages
+       }
        
        // Refresh family data to show updated information
       await refreshFamilyData();
       
-      // Reset spouse form state
-      setWives([]);
-      setHusbands([]);
-      setCurrentSpouse(null);
-      setShowSpouseForm(false);
-      setWiveFamilyStatus([]);
-      setSpouseFamilyStatus('no');
-      
-      // Reset form mode to view
+      // Reset form state
       setFormMode('view');
-      setEditingMember(null);
       setCurrentStep(1);
+      resetFormData();
+      setWives([]);
+      setHusband(null);
       
       // Show success toast with detailed information
       const actionText = isEditMode ? "تحديث" : "إضافة";
@@ -3167,7 +2320,7 @@ const FamilyBuilderNew = () => {
     } finally {
       setIsSaving(false);
     }
-  }, [formData, familyData, wives, husbands, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
+  }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
 
   const nextStep = () => {
     // Validate required fields for step 1
@@ -3207,8 +2360,6 @@ const FamilyBuilderNew = () => {
     }
     
     if (currentStep < 2) {
-      // Close any opened spouse forms when transitioning to step 2
-      closeActiveSpouseEdit();
       setCurrentStep(currentStep + 1);
     }
   };
@@ -3591,36 +2742,27 @@ const FamilyBuilderNew = () => {
                                                  return '';
                                                };
                                                
-                                                // Helper function to build full genealogical name
-                                                const buildFullName = (member: any, isSpouse: boolean = false) => {
-                                                  if (!member) return '';
-                                                  
-                                                  // For spouses, show first_name + last_name
-                                                  if (isSpouse) {
-                                                    const firstName = member.first_name || member.name?.split(' ')[0] || '';
-                                                    const lastName = member.last_name || '';
-                                                    return firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '');
-                                                  }
-                                                  
-                                                  // For non-founders, show first name + father's first name only
-                                                  if (!member.is_founder && member.fatherId) {
-                                                    const firstName = member.first_name || member.name?.split(' ')[0] || member.name;
-                                                    const father = familyMembers.find(m => m?.id === member.fatherId);
-                                                    const fatherFirstName = father?.first_name || father?.name?.split(' ')[0] || father?.name;
-                                                    
-                                                    if (fatherFirstName) {
-                                                      return `${firstName} بن ${fatherFirstName}`;
-                                                    }
-                                                    return firstName;
-                                                  }
-                                                  
-                                                  // For founders, just show the name
-                                                  return member.first_name || member.name?.split(' ')[0] || member.name;
-                                                };
-                                                
-                                                 const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
-                                                 const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
-                                                 const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+                                               // Helper function to build full genealogical name
+                                               const buildFullName = (member: any) => {
+                                                 if (!member) return '';
+                                                 
+                                                 let fullName = member.name || '';
+                                                 const fatherName = getFatherName(member);
+                                                 const grandfatherName = getGrandfatherName(member);
+                                                 
+                                                 if (fatherName) {
+                                                   fullName += ` بن ${fatherName}`;
+                                                   if (grandfatherName) {
+                                                     fullName += ` بن ${grandfatherName}`;
+                                                   }
+                                                 }
+                                                 
+                                                 return fullName;
+                                               };
+                                               
+                                                const familyMember = husbandMember ? buildFullName(husbandMember) : 'غير محدد';
+                                                const spouse = wifeMember ? (wifeMember.name || 'غير محدد') : 'غير محدد';
+                                                const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
                                                 
                                                 return {
                                                   value: marriage.id,
@@ -3679,100 +2821,97 @@ const FamilyBuilderNew = () => {
                                 )}
                              </div>
 
-                              {/* Biography and Profile Picture Section - Side by Side */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Biography Section - 1/2 */}
-                                <div className="space-y-3">
-                                  <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-primary" />
-                                    السيرة الذاتية
-                                  </Label>
-                                  <Textarea
-                                    id="bio"
-                                    value={formData.bio}
-                                    onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                    placeholder="أدخل معلومات إضافية عن العضو"
-                                    rows={6}
-                                    className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none h-full"
-                                  />
-                                </div>
-
-                                {/* Profile Picture Section - 1/2 */}
-                                {(formMode === 'add' || formMode === 'edit') && (
-                                  <div className="space-y-3">
-                                    <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
-                                    
-                                    {(croppedImage || (editingMember && editingMember.image)) ? (
-                                      <div className="space-y-3">
-                                        <div className="relative group flex justify-center">
-                                          <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                            <img 
-                                              src={croppedImage || (editingMember && editingMember.image)} 
-                                              alt="صورة العضو" 
-                                              className="w-32 h-32 object-cover rounded-xl border-2 border-white shadow-lg"
-                                            />
-                                          </div>
-                                        </div>
-                                        
-                                        <div className="flex justify-center gap-2">
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant="secondary"
-                                            onClick={handleEditImage}
-                                            className="h-8 px-3"
-                                          >
-                                            <Edit2 className="h-3 w-3 ml-1" />
-                                            تعديل
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant="destructive"
-                                            onClick={handleDeleteImage}
-                                            className="h-8 px-3"
-                                          >
-                                            <Trash2 className="h-3 w-3 ml-1" />
-                                            حذف
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div 
-                                        className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 h-48 flex flex-col justify-center ${
-                                          isImageUploadEnabled 
-                                            ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
-                                            : 'border-gray-300 opacity-70 cursor-not-allowed'
-                                        }`}
-                                        onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
-                                      >
-                                        {isImageUploadEnabled ? (
-                                          <div className="space-y-2">
-                                            <Upload className="h-12 w-12 text-primary mx-auto" />
-                                            <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
-                                            <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
-                                          </div>
-                                        ) : (
-                                          <div className="space-y-2">
-                                            <Upload className="h-12 w-12 text-gray-400 mx-auto" />
-                                            <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
-                                            <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                    
-                                    <input
-                                      ref={fileInputRef}
-                                      type="file"
-                                      accept="image/*"
-                                      onChange={handleImageSelect}
-                                      className="hidden"
-                                      disabled={!isImageUploadEnabled}
-                                    />
-                                  </div>
-                                )}
+                             <div>
+                                <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-primary" />
+                                  السيرة الذاتية
+                               </Label>
+                               <Textarea
+                                 id="bio"
+                                 value={formData.bio}
+                                 onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                 placeholder="أدخل معلومات إضافية عن العضو"
+                                 rows={3}
+                                 className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none"
+                               />
                               </div>
+
+                             {/* Image Upload Section */}
+                             {(formMode === 'add' || formMode === 'edit') && (
+
+                             <div className="space-y-3">
+                              <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
+                              
+                              {(croppedImage || (editingMember && editingMember.image)) ? (
+                                <div className="space-y-3">
+                                  <div className="relative group flex justify-center">
+                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
+                                       <img 
+                                         src={croppedImage || (editingMember && editingMember.image)} 
+                                         alt="صورة العضو" 
+                                         className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg"
+                                       />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex justify-center gap-2">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="secondary"
+                                      onClick={handleEditImage}
+                                      className="h-8 px-3"
+                                    >
+                                      <Edit2 className="h-3 w-3 ml-1" />
+                                      تعديل
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={handleDeleteImage}
+                                      className="h-8 px-3"
+                                    >
+                                      <Trash2 className="h-3 w-3 ml-1" />
+                                      حذف
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div 
+                                  className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 ${
+                                    isImageUploadEnabled 
+                                      ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
+                                      : 'border-gray-300 opacity-70 cursor-not-allowed'
+                                  }`}
+                                  onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
+                                >
+                                  {isImageUploadEnabled ? (
+                                    <div className="space-y-2">
+                                      <Upload className="h-8 w-8 text-primary mx-auto" />
+                                      <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
+                                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-2">
+                                      <Upload className="h-8 w-8 text-gray-400 mx-auto" />
+                                      <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
+                                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageSelect}
+                                className="hidden"
+                                disabled={!isImageUploadEnabled}
+                              />
+                             </div>
+                             )}
                          </div>
                        )}
 
@@ -3799,25 +2938,15 @@ const FamilyBuilderNew = () => {
                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">الزوجات</h4>
                                    </div>
                                    
-                                    <div className="space-y-3">
-                                       {wives.length === 0 ? (
-                                         <div className="text-center py-8 text-muted-foreground">
-                                           <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                           <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
-                                           <Button 
-                                             onClick={() => {
-                                               console.log("Add wife button clicked");
-                                               handleAddSpouse('wife');
-                                             }}
-                                             className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-arabic shadow-lg transform hover:scale-105 transition-all duration-200"
-                                           >
-                                             <Plus className="h-4 w-4" />
-                                             إضافة زوجة
-                                           </Button>
-                                         </div>
-                                       ) : (
-                                         wives.map((wife, index) => (
-                                           <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
+                                   <div className="space-y-3">
+                                     {wives.length === 0 ? (
+                                       <div className="text-center py-8 text-muted-foreground">
+                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
+                                       </div>
+                                     ) : (
+                                       wives.map((wife, index) => (
+                                            <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
                                                 {/* Header Section */}
                                                 <div className="flex items-start justify-between">
@@ -3852,421 +2981,215 @@ const FamilyBuilderNew = () => {
                                                 {/* Action Buttons at bottom */}
                                                 <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
                                                   {wife.isSaved && (
-                                                     <Button
-                                                       variant="secondary"
-                                                       size="sm"
-                                                        onClick={() => {
-                                                           console.log("========================================");
-                                                           console.log("🚀 STEP 1: EDIT BUTTON CLICKED FOR WIFE");
-                                                           console.log("========================================");
-                                                           console.log("🔥 Wife index being edited:", index);
-                                                           console.log("🔥 Wife name:", wife.name || `الزوجة ${index + 1}`);
-                                                           console.log("🔥 Wife ID:", wife.id);
-                                                           console.log("🔥 Full wife data object:", JSON.stringify(wife, null, 2));
-                                                           console.log("🔥 Current wives array (before edit):", wives.map((w, idx) => ({ 
-                                                             index: idx, 
-                                                             name: w.name, 
-                                                             id: w.id,
-                                                             firstName: w.firstName,
-                                                             lastName: w.lastName,
-                                                             isSaved: w.isSaved 
-                                                           })));
-                                                           console.log("🔥 Current editingWifeIndex:", editingWifeIndex);
-                                                           
-                                                           console.log("----------------------------------------");
-                                                           console.log("🚀 STEP 2: FETCHING DB DATA FOR WIFE");
-                                                           console.log("----------------------------------------");
-                                                           // Get the actual family member data to determine family membership
-                                                           const wifeMember = familyMembers.find(fm => fm.id === wife.id);
-                                                           console.log("🔍 Wife member data from DB:", JSON.stringify(wifeMember, null, 2));
-                                                           console.log("🔍 Total family members count:", familyMembers.length);
-                                                           
-                                                           // Determine family membership based on father_id or founder status
-                                                           const isFamilyMemberFromDB = wifeMember ? !!(wifeMember.father_id || wifeMember.is_founder) : false;
-                                                           console.log("🔍 isFamilyMemberFromDB calculation:", {
-                                                             result: isFamilyMemberFromDB,
-                                                             father_id: wifeMember?.father_id,
-                                                             is_founder: wifeMember?.is_founder,
-                                                             hasWifeMember: !!wifeMember
-                                                           });
-                                                           
-                                                           console.log("----------------------------------------");
-                                                           console.log("🚀 STEP 3: CREATING FRESH SPOUSE DATA");
-                                                           console.log("----------------------------------------");
-                                                           // Create fresh spouse data from DB source (prevent corruption)
-                                                           const freshSpouseData = {
-                                                             ...wife,
-                                                             firstName: wifeMember?.first_name || wife.firstName || '',
-                                                             lastName: wifeMember?.last_name || wife.lastName || '',
-                                                             name: wifeMember?.name || wife.name || '',
-                                                             isSaved: false,
-                                                             isFamilyMember: isFamilyMemberFromDB,
-                                                             existingFamilyMemberId: isFamilyMemberFromDB ? wife.id : ''
-                                                           };
-                                                           
-                                                           console.log("🔧 Fresh spouse data for editing:", JSON.stringify(freshSpouseData, null, 2));
-                                                           console.log("🔧 Name comparison:", {
-                                                             originalWifeName: wife.name,
-                                                             dbMemberName: wifeMember?.name,
-                                                             freshDataName: freshSpouseData.name,
-                                                             originalFirstName: wife.firstName,
-                                                             dbFirstName: wifeMember?.first_name,
-                                                             freshFirstName: freshSpouseData.firstName,
-                                                             originalLastName: wife.lastName,
-                                                             dbLastName: wifeMember?.last_name,
-                                                             freshLastName: freshSpouseData.lastName
-                                                           });
-                                                           
-                                                           console.log("----------------------------------------");
-                                                           console.log("🚀 STEP 4: UPDATING WIVES ARRAY");
-                                                           console.log("----------------------------------------");
-                                                           // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                           const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                           console.log("🔄 Reset wives (all marked as saved):", resetWives.map((w, idx) => ({ 
-                                                             index: idx, name: w.name, id: w.id, isSaved: w.isSaved 
-                                                           })));
-                                                           
-                                                           // ثم تعيين الزوجة المحددة للتعديل مع البيانات المحدثة
-                                                           const updatedWives = [...resetWives];
-                                                           updatedWives[index] = freshSpouseData;
-                                                           console.log("📝 Updated wives array (fresh data at index " + index + "):", updatedWives.map((w, idx) => ({ 
-                                                             index: idx, 
-                                                             name: w.name, 
-                                                             id: w.id,
-                                                             firstName: w.firstName,
-                                                             lastName: w.lastName,
-                                                             isSaved: w.isSaved,
-                                                             isFamilyMember: w.isFamilyMember
-                                                           })));
-                                                           
-                                                           console.log("----------------------------------------");
-                                                           console.log("🚀 STEP 5: SETTING STATE VALUES");
-                                                           console.log("----------------------------------------");
-                                                           setWives(updatedWives);
-                                                           console.log("✅ Wives array updated in state");
-                                                           
-                                                           setCurrentSpouseType('wife');
-                                                           console.log("✅ Current spouse type set to: wife");
-                                                           
-                                                           setCurrentSpouse(freshSpouseData);
-                                                           console.log("✅ Current spouse set to:", JSON.stringify(freshSpouseData, null, 2));
-                                                           
-                                                          setShowSpouseForm(true);
-                                                          console.log("✅ Spouse form shown");
-                                                          
-                                                          // CRITICAL FIX: Set the editing index
-                                                          setEditingWifeIndex(index);
-                                                          console.log("✅ CRITICAL: Set editingWifeIndex to:", index);
-                                                          
-                                                          // Set family status based on actual DB data
-                                                          const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
-                                                          setSpouseFamilyStatus(newFamilyStatus);
-                                                          console.log("✅ Family status set to:", newFamilyStatus);
-                                                          
-                                                          console.log("========================================");
-                                                          console.log("🎉 EDIT WIFE SETUP COMPLETE");
-                                                          console.log("========================================");
-                                                          console.log("📊 Final State Summary:");
-                                                          console.log("   - editingWifeIndex:", index);
-                                                          console.log("   - currentSpouseType: wife");
-                                                          console.log("   - spouseFamilyStatus:", newFamilyStatus);
-                                                          console.log("   - showSpouseForm: true");
-                                                          console.log("   - currentSpouse name:", freshSpouseData.name);
-                                                          console.log("   - currentSpouse id:", freshSpouseData.id);
-                                                          console.log("========================================");
-                                                          
-                                                          toast({
-                                                            title: "وضع التعديل",
-                                                            description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                            variant: "default"
-                                                          });
-                                                       }}
+                                                    <Button
+                                                      variant="secondary"
+                                                      size="sm"
+                                                      onClick={() => {
+                                                        // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                                        const resetWives = wives.map(w => ({ ...w, isSaved: true }));
+                                                        // ثم تعيين الزوجة المحددة للتعديل
+                                                        const updatedWives = [...resetWives];
+                                                        updatedWives[index] = { ...wife, isSaved: false };
+                                                        setWives(updatedWives);
+                                                        setCurrentWife(wife);
+                                                        setShowWifeForm(true);
+                                                        setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                                        
+                                                        toast({
+                                                          title: "وضع التعديل",
+                                                          description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                                          variant: "default"
+                                                        });
+                                                      }}
                                                       className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
                                                     >
                                                       <Edit className="h-3 w-3 ml-1" />
                                                       تعديل
                                                     </Button>
                                                   )}
-                                                  <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                      // Close any open edit form first
-                                                      handleCloseWifeEdit();
-                                                      // Then show delete confirmation
-                                                      handleSpouseDelete(wife, index);
-                                                    }}
-                                                    className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300"
-                                                  >
-                                                    <X className="h-3 w-3 ml-1" />
-                                                    حذف
-                                                  </Button>
+                                                 <Button
+                                                   variant="outline"
+                                                   size="sm"
+                                                   onClick={() => handleSpouseDelete(wife, index)}
+                                                   className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300"
+                                                 >
+                                                   <X className="h-3 w-3 ml-1" />
+                                                   حذف
+                                                 </Button>
                                                </div>
                                                 
                                                 {/* Interactive Area removed - using edit button instead */}
                                               </div>
-                                            </div>
-                                          ))
-                                       )}
-                                       {wives.length > 0 && (
-                                         <div className="mt-4">
-                                           <Button 
-                                             onClick={() => handleAddSpouse('wife')}
-                                             variant="outline"
-                                             className="w-full flex items-center gap-2 border-2 border-dashed border-pink-400/60 text-pink-600 hover:bg-pink-50 dark:border-pink-500/60 dark:text-pink-400 dark:hover:bg-pink-950/20 font-arabic"
-                                           >
-                                             <Plus className="h-4 w-4" />
-                                             إضافة زوجة أخرى
-                                           </Button>
-                                         </div>
-                                        )}
-                                      </div>
+                                           </div>
+                                       ))
+                                     )}
+                                   </div>
                                  </div>
 
-                                   {/* Unified Wife Form */}
-                                    {/* Single Unified Spouse Form Section */}
-                                    {showSpouseForm && (
-                                      <div className="space-y-4 lg:col-span-2">
-                                        <div className="flex items-center gap-2 mb-4 w-full">
-                                         <div className={cn(
-                                           "w-6 h-6 rounded-full flex items-center justify-center",
-                                           currentSpouseType === 'wife' 
-                                             ? "bg-gradient-to-r from-pink-500 to-rose-500" 
-                                             : "bg-gradient-to-r from-blue-500 to-sky-500"
-                                         )}>
-                                           {currentSpouseType === 'wife' ? (
-                                             <Heart className="w-3 h-3 text-white" />
-                                           ) : (
-                                             <User className="w-3 h-3 text-white" />
-                                           )}
-                                         </div>
-                                         <h4 className={cn(
-                                           "text-lg font-semibold font-arabic",
-                                           currentSpouseType === 'wife' 
-                                             ? "text-pink-700 dark:text-pink-300" 
-                                             : "text-blue-700 dark:text-blue-300"
-                                         )}>
-                                           {currentSpouseType === 'wife' ? 'إضافة زوجة' : 'إضافة زوج'}
-                                         </h4>
-                                       </div>
-                                       
-                                        <SpouseForm
-                                          spouseType={currentSpouseType}
-                                          spouse={currentSpouse || {
-                                            id: '',
-                                            firstName: '',
-                                            lastName: '',
-                                            name: '',
-                                            isAlive: true,
-                                            birthDate: null,
-                                            deathDate: null,
-                                            maritalStatus: 'married',
-                                            isFamilyMember: false,
-                                            existingFamilyMemberId: '',
-                                            croppedImage: null,
-                                            biography: '',
-                                            isSaved: false
-                                          }}
-                                         onSpouseChange={setCurrentSpouse}
-                                         familyMembers={familyMembers}
-                                         selectedMember={selectedMember}
-                                          commandOpen={currentSpouseType === 'wife' ? spouseCommandOpen : husbandCommandOpen}
-                                          onCommandOpenChange={currentSpouseType === 'wife' ? setSpouseCommandOpen : setHusbandCommandOpen}
-                                         familyStatus={spouseFamilyStatus}
-                                         onFamilyStatusChange={handleSpouseFamilyStatusChange}
-                                         onSave={handleSpouseSaveWrapper}
-                                         onAdd={() => handleAddSpouse(currentSpouseType)}
-                                         onClose={currentSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit}
-                                         onDelete={handleSpouseDelete}
-                                         showForm={true}
-                                      />
-                                     </div>
-                                   )}
-                                </div>
-                              ) : (
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                  {/* Husband Display Panel */}
-                                  <div className="space-y-4">
+                                  {/* Unified Wife Form */}
+                                  <div className="space-y-4 lg:col-span-2">
                                     <div className="flex items-center gap-2 mb-4 w-full">
-                                      <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                        <User className="w-3 h-3 text-white" />
+                                      <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                                        <Heart className="w-3 h-3 text-white" />
                                       </div>
-                                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">الزوج</h4>
+                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
                                     </div>
                                     
-                                    <div className="space-y-3">
-                                      {!husbands || husbands.length === 0 ? (
-                                        <div className="text-center py-8 text-muted-foreground">
-                                          <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                          <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
-                                          <Button 
-                                            onClick={() => {
-                                              console.log("Add husband button clicked");
-                                              handleAddSpouse('husband');
-                                            }}
-                                            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white font-arabic shadow-lg transform hover:scale-105 transition-all duration-200"
-                                          >
-                                            <Plus className="h-4 w-4" />
-                                            إضافة زوج
-                                          </Button>
-                                        </div>
-                                      ) : (
-                                        <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60 min-h-[160px]">
-                                          <div className="h-full flex flex-col justify-between">
-                                            {/* Header Section */}
-                                            <div className="flex items-start justify-between">
-                                              <div className="flex items-start gap-4 flex-1">
-                                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
-                                                  <User className="w-5 h-5" />
-                                                </div>
-                                                <div className="flex-1">
-                                                  <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
-                                                    {husbands.length > 0 ? husbands[0].name : 'الزوج'}
-                                                  </h5>
+                                      <SpouseForm
+                                        spouseType="wife"
+                                        spouse={currentWife || {
+                                          id: '',
+                                          firstName: '',
+                                          lastName: '',
+                                          name: '',
+                                          isAlive: true,
+                                          birthDate: null,
+                                          deathDate: null,
+                                          maritalStatus: 'married',
+                                          isFamilyMember: false,
+                                          existingFamilyMemberId: '',
+                                          croppedImage: null,
+                                          biography: '',
+                                          isSaved: false
+                                        }}
+                                       onSpouseChange={setCurrentWife}
+                                       familyMembers={familyMembers}
+                                       selectedMember={selectedMember}
+                                       commandOpen={wifeCommandOpen}
+                                       onCommandOpenChange={setWifeCommandOpen}
+                                       familyStatus={wifeFamilyStatus}
+                                       onFamilyStatusChange={handleWifeFamilyStatusChange}
+                                       onSave={handleWifeSave}
+                                       onAdd={handleAddWife}
+                                       onClose={handleCloseWifeEdit}
+                                       showForm={showWifeForm}
+                                    />
+                                  </div>
+                               </div>
+                             ) : (
+                               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                 {/* Husband Display Panel */}
+                                 <div className="space-y-4">
+                                   <div className="flex items-center gap-2 mb-4">
+                                     <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                       <User className="w-3 h-3 text-white" />
+                                     </div>
+                                     <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
+                                   </div>
+                                   
+                                   <div className="space-y-3">
+                                     {!husband ? (
+                                       <div className="text-center py-8 text-muted-foreground">
+                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
+                                       </div>
+                                     ) : (
+                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
+                                         <div className="flex items-center justify-between">
+                                           <div 
+                                             className={cn(
+                                               "flex items-center gap-3 flex-1",
+                                               husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
+                                             )}
+                                              onClick={() => {
+                                                if (husband.isSaved) {
+                                                  setHusband({ ...husband, isSaved: false });
+                                                  setCurrentHusband(husband);
+                                                  setShowHusbandForm(true);
+                                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
                                                   
-                                                  <div className="space-y-2">
-                                                    <div className="flex items-center gap-2">
-                                                       {husbands.length > 0 && husbands[0].isSaved && (
-                                                        <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                          <Check className="h-3 w-3" />
-                                                          محفوظ
-                                                        </span>
-                                                      )}
-                                                      <span className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <User className="h-3 w-3" />
-                                                        زوج
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            
-                                               {/* Action Buttons at bottom */}
-                                               <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
-                                                 {husbands.length > 0 && husbands[0].isSaved && (
-                                                   <Button
-                                                     variant="secondary"
-                                                     size="sm"
-                                                       onClick={() => {
-                                                         console.log('🔧 Edit button clicked for husband');
-                                                         console.log('🔧 Husband data:', husbands[0]);
-                                                         
-                                                         // Get the actual family member data to determine family membership
-                                                         const husbandMember = familyMembers.find(fm => fm.id === husbands[0].id);
-                                                         console.log('🔧 Husband member data from DB:', husbandMember);
-                                                         
-                                                         // Determine family membership based on father_id or founder status
-                                                         const isFamilyMemberFromDB = husbandMember ? !!(husbandMember.father_id || husbandMember.is_founder) : false;
-                                                         console.log('🔧 Husband isFamilyMember from DB logic:', isFamilyMemberFromDB, {
-                                                           father_id: husbandMember?.father_id,
-                                                           is_founder: husbandMember?.is_founder
-                                                         });
-                                                         
-                                                         console.log('🔧 Before state changes:', {
-                                                           showSpouseForm,
-                                                           editingHusbandIndex,
-                                                           currentSpouse,
-                                                           currentSpouseType
-                                                         });
-
-                                                         // Don't modify husbands array - just set editing states with corrected data
-                                                         setCurrentSpouseType('husband');
-                                                         setCurrentSpouse({
-                                                           ...husbands[0],
-                                                           isFamilyMember: isFamilyMemberFromDB,
-                                                           existingFamilyMemberId: isFamilyMemberFromDB ? husbands[0].id : ''
-                                                         });
-                                                         setShowSpouseForm(true);
-                                                         setEditingHusbandIndex(0);
-                                                         
-                                                         // Set family status based on actual DB data
-                                                         const newFamilyStatus = isFamilyMemberFromDB ? 'yes' : 'no';
-                                                         setSpouseFamilyStatus(newFamilyStatus);
-                                                         console.log("🔧 Setting familyStatus to:", newFamilyStatus);
-                                                         
-                                                         console.log('🔧 After state changes - spouse form should be visible');
-                                                        
-                                                        toast({
-                                                          title: "وضع التعديل",
-                                                          description: "يمكنك الآن تعديل بيانات الزوج",
-                                                          variant: "default"
-                                                        });
-                                                       }}
-                                                     className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
-                                                   >
-                                                     <Edit className="h-3 w-3 ml-1" />
-                                                     تعديل
-                                                   </Button>
+                                                  toast({
+                                                    title: "وضع التعديل",
+                                                    description: "يمكنك الآن تعديل بيانات الزوج",
+                                                    variant: "default"
+                                                  });
+                                                }
+                                              }}
+                                           >
+                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                               <User className="w-4 h-4" />
+                                             </div>
+                                             <div>
+                                               <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                 {husband.name || 'الزوج'}
+                                               </h5>
+                                               <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                 {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                 {husband.isSaved && (
+                                                   <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                     <Check className="h-3 w-3" />
+                                                     محفوظ
+                                                   </span>
                                                  )}
+                                               </p>
+                                               {husband.isSaved && (
+                                                 <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                   انقر للتعديل
+                                                 </p>
+                                               )}
+                                             </div>
+                                           </div>
+                                           <div className="flex gap-2">
+                                              {husband.isSaved && (
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                 onClick={() => {
-                                                   // Close any open edit form first
-                                                   handleCloseHusbandEdit();
-                                                   // Then show delete confirmation
-                                                   handleSpouseDelete(husbands[0], -1);
-                                                 }}
-                                                 className="h-8 px-3 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50 border-red-200 dark:border-red-800 transition-all duration-300"
+                                                   onClick={() => {
+                                                     if (husband.isSaved) {
+                                                       handleSpouseEditAttempt('husband', husband, -1);
+                                                     }
+                                                   }}
+                                                 className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
                                                >
-                                                 <X className="h-3 w-3 ml-1" />
-                                                 حذف
+                                                 <Edit className="h-3 w-3" />
                                                </Button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
+                                             )}
+                                             <Button
+                                               variant="outline"
+                                               size="sm"
+                                               onClick={() => handleSpouseDelete(husband, -1)}
+                                               className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
+                                             >
+                                               <X className="h-3 w-3" />
+                                             </Button>
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
                                    </div>
-
-                                   {/* Single Unified Spouse Form Section for Husband */}
-                                   {showSpouseForm && currentSpouseType === 'husband' && (
-                                     <div className="space-y-4 lg:col-span-2">
-                                       <div className="flex items-center gap-2 mb-4 w-full">
-                                        <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                          <User className="w-3 h-3 text-white" />
-                                        </div>
-                                        <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">
-                                          تعديل الزوج
-                                        </h4>
-                                      </div>
-                                      
-                                        <SpouseForm
-                                          spouseType={currentSpouseType}
-                                          spouse={currentSpouse || {
-                                            id: '',
-                                            firstName: '',
-                                            lastName: '',
-                                            name: '',
-                                            isAlive: true,
-                                            birthDate: null,
-                                            deathDate: null,
-                                            maritalStatus: 'married',
-                                            isFamilyMember: false,
-                                            existingFamilyMemberId: '',
-                                            croppedImage: null,
-                                            biography: '',
-                                            isSaved: false
-                                          }}
-                                         onSpouseChange={setCurrentSpouse}
-                                         familyMembers={familyMembers}
-                                         selectedMember={selectedMember}
-                                          commandOpen={husbandCommandOpen}
-                                          onCommandOpenChange={setHusbandCommandOpen}
-                                         familyStatus={spouseFamilyStatus}
-                                         onFamilyStatusChange={handleSpouseFamilyStatusChange}
-                                         onSave={handleSpouseSaveWrapper}
-                                         onAdd={() => handleAddSpouse(currentSpouseType)}
-                                         onClose={handleCloseHusbandEdit}
-                                         onDelete={handleSpouseDelete}
-                                         showForm={true}
-                                         editingIndex={editingHusbandIndex}
-                                      />
-                                    </div>
-                                  )}
-
                                  </div>
+
+                                 {/* Unified Husband Form */}
+                                    <SpouseForm
+                                      spouseType="husband"
+                                      spouse={currentHusband || {
+                                        id: '',
+                                        firstName: '',
+                                        lastName: '',
+                                        name: '',
+                                        isAlive: true,
+                                        birthDate: null,
+                                        deathDate: null,
+                                        maritalStatus: 'married',
+                                        isFamilyMember: false,
+                                        existingFamilyMemberId: '',
+                                        croppedImage: null,
+                                        biography: '',
+                                        isSaved: false
+                                      }}
+                                     onSpouseChange={setCurrentHusband}
+                                    familyMembers={familyMembers}
+                                    selectedMember={selectedMember}
+                                    commandOpen={husbandCommandOpen}
+                                    onCommandOpenChange={setHusbandCommandOpen}
+                                    familyStatus={husbandFamilyStatus}
+                                    onFamilyStatusChange={handleHusbandFamilyStatusChange}
+                                    onSave={handleHusbandSave}
+                                    onAdd={handleAddHusband}
+                                    onClose={handleCloseHusbandEdit}
+                                    showForm={showHusbandForm}
+                                 />
+                               </div>
                               )}
                           </div>
                        )}
@@ -4846,41 +3769,42 @@ const MemberList = ({
         </SelectContent>
       </Select>
 
-      {/* Add Member Button - Always visible */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              onClick={onAddMember} 
-              className="w-full flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-              variant="default"
-            >
-              <Plus className="h-4 w-4" />
-              {packageData && familyMembers.length >= packageData.max_family_members 
-                ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
-                : 'إضافة عضو جديد'
-              }
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs" side="top">
-            {packageData && familyMembers.length >= packageData.max_family_members ? (
-              <div className="text-center">
-                <p className="font-semibold text-destructive mb-1">
-                  🚫 تم الوصول للحد الأقصى
-                </p>
-                <p className="text-sm">
-                  باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
-                </p>
-                <p className="text-xs mt-2 text-muted-foreground">
-                  قم بترقية باقتك لإضافة المزيد من الأعضاء
-                </p>
-              </div>
-            ) : (
-              <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      {/* Add Member Button */}
+      {formMode === 'view' && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={onAddMember} 
+                className="w-full flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                {packageData && familyMembers.length >= packageData.max_family_members 
+                  ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
+                  : 'إضافة عضو جديد'
+                }
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs" side="top">
+              {packageData && familyMembers.length >= packageData.max_family_members ? (
+                <div className="text-center">
+                  <p className="font-semibold text-destructive mb-1">
+                    🚫 تم الوصول للحد الأقصى
+                  </p>
+                  <p className="text-sm">
+                    باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
+                  </p>
+                  <p className="text-xs mt-2 text-muted-foreground">
+                    قم بترقية باقتك لإضافة المزيد من الأعضاء
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
 
       {/* Member List */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
@@ -4934,21 +3858,21 @@ const MemberList = ({
                         )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                           {(() => {
-                            
+                            console.log('Member data:', { name: member.name, first_name: member.first_name, last_name: member.last_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
                             
                             if (isSpouse) {
                               // For spouses: show first_name + last_name, or name if missing
-                              const firstName = member.first_name || '';
-                              const lastName = member.last_name || '';
+                              const firstName = member.first_name?.value || member.first_name || '';
+                              const lastName = member.last_name?.value || member.last_name || '';
                               
                               if (firstName && lastName) {
                                 return `${firstName} ${lastName}`;
                               }
                               return member.name || "غير معروف";
                             } else {
-                              // For founders and other native family members: show first_name, or split name if missing
-                              return member.first_name || member.name?.split(' ')[0] || member.name || "غير معروف";
+                              // For founders and other native family members: show first_name, or "Error" if missing
+                              return member.first_name || "Error";
                             }
                           })()}
                         </h3>
@@ -4974,18 +3898,15 @@ const MemberList = ({
                         const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
                         
                         if (father && grandfather) {
-                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                          const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
                           return (
                             <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {fatherFirstName} ابن {grandfatherFirstName}
+                              {father.name} ابن {grandfather.name}
                             </p>
                           );
                         } else if (father) {
-                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                           return (
                             <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {fatherFirstName}
+                              {father.name}
                             </p>
                           );
                         }
@@ -5037,17 +3958,19 @@ const MemberList = ({
                             
                             // Only show spouse info for non-family members (those without family fathers)
                             if (!memberHasFamilyFather) {
-                              // Get spouse's father from familyMembers
+                              // Get spouse's father and grandfather from familyMembers
+                              const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
+                              const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
+                              const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
+                              
+                              // Build simplified spouse info: زوجة محمد ابن سعيد
+                              const spouseName = spouse.name || spouse.full_name;
                               const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
                               const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
                               
-                              // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
-                              const spouseName = spouseFullData?.first_name || spouse.first_name || spouse.name?.split(' ')[0] || spouse.name;
-                              
                               let spouseInfo = spouseName;
                               if (spouseFather) {
-                                const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
-                                spouseInfo += ` ابن ${fatherFirstName}`;
+                                spouseInfo += ` ابن ${spouseFather.name}`;
                               }
                               
                               // Use زوج for husband, زوجة for wife (from member's perspective)

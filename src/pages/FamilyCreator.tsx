@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { supabase } from "@/integrations/supabase/client";
-import { SpouseForm, SpouseData } from "@/components/SpouseForm";
+import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -29,12 +29,8 @@ const FamilyCreator = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const { isImageUploadEnabled, loading: imagePermissionLoading } = useImageUploadPermission();
+  const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
-  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
-  const [showSpouseForm, setShowSpouseForm] = useState(false);
-  const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
-  const [currentSpouseType, setCurrentSpouseType] = useState<'wife' | 'husband'>('wife');
   const [isCreatingFamily, setIsCreatingFamily] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
@@ -1111,11 +1107,10 @@ const FamilyCreator = () => {
                                           </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                           <DropdownMenuItem onClick={() => {
-                                             setEditingWife(wife);
-                                             setCurrentSpouseType('wife');
-                                             setIsAddingWife(true);
-                                           }}>
+                                          <DropdownMenuItem onClick={() => {
+                                            setEditingWife(wife);
+                                            setIsAddingWife(true);
+                                          }}>
                                             <Edit className="h-4 w-4 mr-2" />
                                             {t('edit', 'تعديل')}
                                           </DropdownMenuItem>
@@ -1153,10 +1148,7 @@ const FamilyCreator = () => {
                             )}
                             
                             <Button
-                              onClick={() => {
-                                setCurrentSpouseType('wife');
-                                setIsAddingWife(true);
-                              }}
+                              onClick={() => setIsAddingWife(true)}
                               variant="outline"
                               className="w-full h-16 border-2 border-dashed border-rose-300/50 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:border-rose-500 transition-all duration-300 group rounded-xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm"
                             >
@@ -1274,39 +1266,24 @@ const FamilyCreator = () => {
           </DialogHeader>
           
           <div className="p-6 bg-white/40 dark:bg-gray-800/40 rounded-xl backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-            <SpouseForm
-              spouseType={currentSpouseType}
-              spouse={currentSpouse || {
-                id: editingWife?.id || '',
-                firstName: editingWife?.first_name || '',
-                lastName: editingWife?.last_name || '',
-                name: editingWife ? `${editingWife.first_name} ${editingWife.last_name}`.trim() : '',
-                isAlive: editingWife?.isAlive ?? true,
-                birthDate: editingWife?.birthDate || null,
-                deathDate: editingWife?.deathDate || null,
-                maritalStatus: editingWife?.maritalStatus || 'married',
-                isFamilyMember: false,
-                existingFamilyMemberId: '',
-                croppedImage: null,
-                biography: '',
-                isSaved: false
-              }}
-              onSpouseChange={(spouseData) => {
-                setCurrentSpouse(spouseData);
-                const fullName = `${spouseData.firstName} ${spouseData.lastName}`.trim();
+            <WifeForm
+              ref={wifeFormRef}
+              initialData={editingWife}
+              onAddWife={(wifeData) => {
+                const fullName = `${wifeData.first_name} ${wifeData.last_name}`.trim();
                 if (editingWife) {
                   // Update existing wife
                   setWives(wives.map(w => 
                     w.id === editingWife.id 
                       ? {
                           ...w,
-                          first_name: spouseData.firstName,
-                          last_name: spouseData.lastName,
+                          first_name: wifeData.first_name,
+                          last_name: wifeData.last_name,
                           name: fullName,
-                          isAlive: spouseData.isAlive,
-                          birthDate: spouseData.birthDate,
-                          deathDate: spouseData.deathDate,
-                          maritalStatus: spouseData.maritalStatus
+                          isAlive: wifeData.isAlive,
+                          birthDate: wifeData.birthDate,
+                          deathDate: wifeData.deathDate,
+                          maritalStatus: wifeData.maritalStatus
                         }
                       : w
                   ));
@@ -1319,13 +1296,13 @@ const FamilyCreator = () => {
                   // Add new wife
                   const newWife = {
                     id: crypto.randomUUID(),
-                    first_name: spouseData.firstName,
-                    last_name: spouseData.lastName,
+                    first_name: wifeData.first_name,
+                    last_name: wifeData.last_name,
                     name: fullName,
-                    isAlive: spouseData.isAlive,
-                    birthDate: spouseData.birthDate,
-                    deathDate: spouseData.deathDate,
-                    maritalStatus: spouseData.maritalStatus
+                    isAlive: wifeData.isAlive,
+                    birthDate: wifeData.birthDate,
+                    deathDate: wifeData.deathDate,
+                    maritalStatus: wifeData.maritalStatus
                   };
                   setWives([...wives, newWife]);
                   toast({
@@ -1337,21 +1314,6 @@ const FamilyCreator = () => {
                 setIsAddingWife(false);
                 setEditingWife(null);
               }}
-              familyMembers={[]}
-              selectedMember={null}
-              commandOpen={spouseCommandOpen}
-              onCommandOpenChange={setSpouseCommandOpen}
-              familyStatus={spouseFamilyStatus}
-              onFamilyStatusChange={(status) => setSpouseFamilyStatus(status as 'yes' | 'no')}
-              onSave={(spouseData) => {
-                // Handle save logic here if needed
-              }}
-              onAdd={() => setShowSpouseForm(true)}
-              onClose={() => {
-                setIsAddingWife(false);
-                setEditingWife(null);
-              }}
-              showForm={true}
             />
           </div>
           
@@ -1368,8 +1330,9 @@ const FamilyCreator = () => {
             </Button>
             <Button 
               onClick={() => {
-                setIsAddingWife(false);
-                setEditingWife(null);
+                if (wifeFormRef.current?.isValid()) {
+                  wifeFormRef.current?.handleSubmit();
+                }
               }}
               className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
             >

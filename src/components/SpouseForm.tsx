@@ -27,7 +27,6 @@ export interface SpouseData {
   croppedImage: string | null;
   biography?: string;
   isSaved: boolean;
-  originalData?: any;
 }
 
 interface SpouseFormProps {
@@ -40,12 +39,10 @@ interface SpouseFormProps {
   onCommandOpenChange: (open: boolean) => void;
   familyStatus: string;
   onFamilyStatusChange: (status: string) => void;
-  onSave: (spouseData?: SpouseData, saveToDb?: boolean) => void;
+  onSave: () => void;
   onAdd: () => void;
   onClose?: () => void;
-  onDelete?: (spouse: any, index: number) => void;
   showForm: boolean;
-  editingIndex?: number | null;
 }
 
 export const SpouseForm: React.FC<SpouseFormProps> = ({
@@ -61,9 +58,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   onSave,
   onAdd,
   onClose,
-  onDelete,
-  showForm,
-  editingIndex
+  showForm
 }) => {
   const { toast } = useToast();
   const { isImageUploadEnabled } = useImageUploadPermission();
@@ -86,26 +81,6 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
       setOriginalSpouse(null);
     }
   }, [spouse.isSaved, spouse.id]);
-
-  // Initialize family status based on spouse data
-  useEffect(() => {
-    if (spouse && spouse.id && spouse.isFamilyMember !== undefined) {
-      const expectedStatus = spouse.isFamilyMember ? 'yes' : 'no';
-      if (familyStatus !== expectedStatus) {
-        console.log('🔧 SpouseForm: Initializing familyStatus from spouse data:', {
-          spouseId: spouse.id,
-          spouseName: spouse.name,
-          isFamilyMember: spouse.isFamilyMember,
-          currentFamilyStatus: familyStatus,
-          expectedStatus: expectedStatus
-        });
-        onFamilyStatusChange(expectedStatus);
-      }
-    } else if (spouse && !spouse.id) {
-      // For new spouses (no ID), don't auto-set familyStatus - let user choose
-      console.log('🔧 SpouseForm: New spouse detected, leaving familyStatus for user choice');
-    }
-  }, [spouse.id, spouse.isFamilyMember, spouse.name, familyStatus, onFamilyStatusChange]);
   
   // Check if data has changed
   const hasChanges = originalSpouse && (
@@ -245,26 +220,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
       return;
     }
 
-    // Mark spouse based on whether it's new or edited
-    // For new spouses: isSaved = true (newly created, ready for DB insert)
-    // For edited spouses: isSaved = false (needs DB update)
-    const isEditingExistingSpouse = spouse.id && spouse.originalData;
-    const updatedSpouse = { ...spouse, isSaved: !isEditingExistingSpouse };
-    
-    // Update the spouse data locally first
-    onSpouseChange(updatedSpouse);
-    
-    // Then call onSave to handle any additional logic
-    onSave(updatedSpouse, false); // Pass false to indicate don't save to DB yet
-    
-    // Close the form after successful save
-    if (onClose) {
-      onClose();
-    }
+    onSave();
     
     toast({
-      title: "تم تجهيز البيانات",
-      description: `تم تجهيز بيانات ${spouseLabel} للحفظ مع بيانات العضو`,
+      title: "تم الحفظ بنجاح",
+      description: `تم حفظ بيانات ${spouseLabel} بنجاح`,
       variant: "default"
     });
   };
@@ -354,18 +314,15 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 </Label>
                 <Popover open={commandOpen} onOpenChange={onCommandOpenChange}>
                   <PopoverTrigger asChild>
-                     <Button
-                       variant="outline"
-                       role="combobox"
-                       aria-expanded={commandOpen}
-                       className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
-                     >
-                       {spouse.existingFamilyMemberId ? 
-                         familyMembers.find(m => m.id === spouse.existingFamilyMemberId)?.name || 'اختر فرد من العائلة...' 
-                         : 'اختر فرد من العائلة...'
-                       }
-                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                     </Button>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={commandOpen}
+                      className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
+                    >
+                      اختر فرد من العائلة...
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
                     <Command>
@@ -513,17 +470,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                     <Input
                       type="text"
                       value={spouse.firstName}
-                      onChange={(e) => {
-                        const newFirstName = e.target.value;
-                        const newFullName = spouse.lastName 
-                          ? `${newFirstName} ${spouse.lastName}`.trim() 
-                          : newFirstName.trim();
-                        onSpouseChange({ 
-                          ...spouse, 
-                          firstName: newFirstName,
-                          name: newFullName
-                        });
-                      }}
+                      onChange={(e) => onSpouseChange({ 
+                        ...spouse, 
+                        firstName: e.target.value,
+                        name: `${e.target.value} ${spouse.lastName}`.trim()
+                      })}
                       placeholder={`أدخل الاسم الأول ${isWife ? 'للزوجة' : 'للزوج'}`}
                       className="h-11 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
                     />
@@ -542,17 +493,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                     <Input
                       type="text"
                       value={spouse.lastName}
-                      onChange={(e) => {
-                        const newLastName = e.target.value;
-                        const newFullName = spouse.firstName 
-                          ? `${spouse.firstName} ${newLastName}`.trim() 
-                          : newLastName.trim();
-                        onSpouseChange({ 
-                          ...spouse, 
-                          lastName: newLastName,
-                          name: newFullName
-                        });
-                      }}
+                      onChange={(e) => onSpouseChange({ 
+                        ...spouse, 
+                        lastName: e.target.value,
+                        name: `${spouse.firstName} ${e.target.value}`.trim()
+                      })}
                       placeholder={`أدخل الاسم الأخير ${isWife ? 'للزوجة' : 'للزوج'}`}
                       className="h-11 text-sm border-2 border-indigo-200/50 dark:border-indigo-700/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
                     />
@@ -704,40 +649,22 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
-            <div className="flex gap-3">
-              {/* Close Button */}
+          {/* Action Buttons - Only show when radio button is selected */}
+          {(familyStatus === 'yes' || familyStatus === 'no') && (
+            <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
+              {/* Close Button - Always show when form is open */}
               {onClose && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onClose}
-                  className="flex-1 h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+                  className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
                 >
                   إغلاق
                 </Button>
               )}
               
-              {/* Delete Button - Only show for saved spouses */}
-              {spouse.isSaved && onDelete && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    // Use the actual editing index passed from parent
-                    const index = editingIndex !== null && editingIndex !== undefined ? editingIndex : (spouseType === 'wife' ? 0 : -1);
-                    onDelete(spouse, index);
-                  }}
-                  className="h-10 px-4 font-arabic text-sm border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-300"
-                >
-                  حذف {spouseLabel}
-                </Button>
-              )}
-            </div>
-            
-            {/* Save Button - Only show when family status is selected */}
-            {(familyStatus === 'yes' || familyStatus === 'no') && (
+              {/* Save Button */}
               <Button
                 type="button"
                 onClick={handleValidationAndSave}
@@ -762,8 +689,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   </>
                 )}
               </Button>
+            </div>
             )}
-          </div>
         </div>
       </div>
       

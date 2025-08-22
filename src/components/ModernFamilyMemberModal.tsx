@@ -97,7 +97,7 @@ export const ModernFamilyMemberModal = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [showCropModal, setShowCropModal] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
-  const [currentSpouseIndex, setCurrentSpouseIndex] = useState<number | null>(null);
+  const [currentWifeIndex, setCurrentWifeIndex] = useState<number | null>(null);
   const [isMainPersonImage, setIsMainPersonImage] = useState(false);
   const [isHusbandImage, setIsHusbandImage] = useState(false);
   const [crop, setCrop] = useState({
@@ -135,7 +135,6 @@ export const ModernFamilyMemberModal = ({
     isAlive: true,
     deathDate: "",
     imageUrl: "",
-    croppedImage: null as string | null,
     isFamilyMember: false,
     existingFamilyMemberId: ""
   });
@@ -146,7 +145,6 @@ export const ModernFamilyMemberModal = ({
     isAlive: true,
     deathDate: "",
     imageUrl: "",
-    croppedImage: null as string | null,
     isFamilyMember: false,
     existingFamilyMemberId: ""
   });
@@ -477,7 +475,6 @@ export const ModernFamilyMemberModal = ({
       isAlive: true,
       deathDate: "",
       imageUrl: "",
-      croppedImage: null,
       isFamilyMember: false,
       existingFamilyMemberId: ""
     });
@@ -508,7 +505,6 @@ export const ModernFamilyMemberModal = ({
         isAlive: true,
         deathDate: "",
         imageUrl: "",
-        croppedImage: null,
         isFamilyMember: false,
         existingFamilyMemberId: ""
       });
@@ -537,7 +533,6 @@ export const ModernFamilyMemberModal = ({
         isAlive: true,
         deathDate: "",
         imageUrl: "",
-        croppedImage: null,
         isFamilyMember: false,
         existingFamilyMemberId: ""
       });
@@ -555,7 +550,6 @@ export const ModernFamilyMemberModal = ({
       isAlive: wife.isAlive,
       deathDate: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : "",
       imageUrl: wife.croppedImage || "",
-      croppedImage: wife.croppedImage || null,
       isFamilyMember: wife.isExistingFamilyMember || false,
       existingFamilyMemberId: wife.existingFamilyMemberId || ""
     });
@@ -576,7 +570,7 @@ export const ModernFamilyMemberModal = ({
       setCropImage(imageUrl);
       setIsMainPersonImage(false);
       setIsHusbandImage(false);
-      setCurrentSpouseIndex(-1); // Use -1 to indicate new spouse
+      setCurrentWifeIndex(-1); // Use -1 to indicate new wife
       setShowCropModal(true);
     }
   };
@@ -595,7 +589,7 @@ export const ModernFamilyMemberModal = ({
       setCropImage(imageUrl);
       setIsMainPersonImage(false);
       setIsHusbandImage(true);
-      setCurrentSpouseIndex(null);
+      setCurrentWifeIndex(null);
       setShowCropModal(true);
     }
   };
@@ -1656,7 +1650,6 @@ export const ModernFamilyMemberModal = ({
                                 isAlive: husband.isAlive,
                                 deathDate: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : "",
                                 imageUrl: husband.croppedImage || "",
-                                croppedImage: husband.croppedImage || null,
                                 isFamilyMember: false,
                                 existingFamilyMemberId: ""
                               });
@@ -1869,23 +1862,22 @@ export const ModernFamilyMemberModal = ({
                     ...newHusband,
                     imageUrl: croppedImage
                   });
-                } else if (currentSpouseIndex !== null && currentSpouseIndex >= 0) {
+                } else if (currentWifeIndex !== null && currentWifeIndex >= 0) {
                   const newWives = [...wives];
-                  newWives[currentSpouseIndex].croppedImage = croppedImage;
+                  newWives[currentWifeIndex].croppedImage = croppedImage;
                   setWives(newWives);
-                } else if (currentSpouseIndex === -1) {
-                  // Handle new spouse image
+                } else if (currentWifeIndex === -1) {
+                  // Handle new wife image
                   setNewWife({
                     ...newWife,
-                    croppedImage: croppedImage
+                    imageUrl: croppedImage
                   });
                 }
-                
                 setShowCropModal(false);
                 setCropImage(null);
                 setIsMainPersonImage(false);
                 setIsHusbandImage(false);
-                setCurrentSpouseIndex(null);
+                setCurrentWifeIndex(null);
               } catch (error) {
                 console.error('Error cropping image:', error);
               }
