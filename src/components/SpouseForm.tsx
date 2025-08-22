@@ -27,6 +27,7 @@ export interface SpouseData {
   croppedImage: string | null;
   biography?: string;
   isSaved: boolean;
+  originalData?: any;
 }
 
 interface SpouseFormProps {
@@ -244,8 +245,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
       return;
     }
 
-    // Mark spouse as saved locally (don't insert to DB yet)
-    const updatedSpouse = { ...spouse, isSaved: true };
+    // Mark spouse based on whether it's new or edited
+    // For new spouses: isSaved = true (newly created, ready for DB insert)
+    // For edited spouses: isSaved = false (needs DB update)
+    const isEditingExistingSpouse = spouse.id && spouse.originalData;
+    const updatedSpouse = { ...spouse, isSaved: !isEditingExistingSpouse };
     
     // Update the spouse data locally first
     onSpouseChange(updatedSpouse);
