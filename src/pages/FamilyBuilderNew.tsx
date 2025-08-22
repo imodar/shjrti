@@ -537,13 +537,15 @@ const FamilyBuilderNew = () => {
     }
   }, [autoAdd, loading, familyData, formMode]);
 
+  // DISABLED: This useEffect was overwriting local spouse changes
   // Load spouses when data is updated and there's a member being edited
+  /*
   useEffect(() => {
     if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
-      
       loadExistingSpouses(editingMember);
     }
   }, [familyMarriages, familyMembers, editingMember]);
+  */
   
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -594,6 +596,31 @@ const FamilyBuilderNew = () => {
   const [showSpouseForm, setShowSpouseForm] = useState(false);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
   const [editingHusbandIndex, setEditingHusbandIndex] = useState<number | null>(null);
+
+  // Load spouses when data is updated and there's a member being edited
+  // CRITICAL FIX: Don't reload spouses if we're currently editing or have unsaved changes
+  useEffect(() => {
+    if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
+      // Don't reload if we have unsaved spouse changes
+      const hasUnsavedWifeChanges = wives.some(w => !w.isSaved);
+      const hasUnsavedHusbandChanges = husbands.some(h => !h.isSaved);
+      const isCurrentlyEditing = showSpouseForm || editingWifeIndex !== null || editingHusbandIndex !== null;
+      
+      if (!hasUnsavedWifeChanges && !hasUnsavedHusbandChanges && !isCurrentlyEditing) {
+        console.log('🔄 Loading existing spouses for member:', editingMember.name);
+        loadExistingSpouses(editingMember);
+      } else {
+        console.log('⏸️ Skipping spouse reload - unsaved changes detected:', {
+          hasUnsavedWifeChanges,
+          hasUnsavedHusbandChanges,
+          isCurrentlyEditing,
+          showSpouseForm,
+          editingWifeIndex,
+          editingHusbandIndex
+        });
+      }
+    }
+  }, [familyMarriages, familyMembers, editingMember, wives, husbands, showSpouseForm, editingWifeIndex, editingHusbandIndex]);
 
   // Debug useEffect to check button rendering condition
   useEffect(() => {
