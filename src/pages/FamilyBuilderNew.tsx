@@ -2208,14 +2208,26 @@ const FamilyBuilderNew = () => {
     console.log('🚨 Wives length:', wives.length);
     console.log('🚨 Is saving:', isSaving);
     
+    // Debug wife data structure
+    console.log('🚨 CRITICAL DEBUG - Wife array structure:', wives.map(w => ({
+      id: w.id,
+      name: w.name,
+      firstName: w.firstName,
+      lastName: w.lastName,
+      isSaved: w.isSaved,
+      hasOriginalData: !!w.originalData,
+      dataType: (w as any).family_id ? 'database-format' : 'spouse-format'
+    })));
+    
     // Add a small delay to ensure any pending state updates have completed
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 100));
     console.log('🔧 After delay - Current wives array:', wives.map(w => ({
       name: w.name,
       firstName: w.firstName, 
       lastName: w.lastName,
       id: w.id,
-      isSaved: w.isSaved
+      isSaved: w.isSaved,
+      dataType: (w as any).family_id ? 'database-format' : 'spouse-format'
     })));
     
     // Check if Khalid should be deleted
