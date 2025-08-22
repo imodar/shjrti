@@ -1880,8 +1880,25 @@ const FamilyBuilderNew = () => {
       isFounder: member.isFounder || false
     });
     
-    // Load existing spouses
-    loadExistingSpouses(member);
+    // Load existing spouses only if we don't have unsaved local changes
+    const hasUnsavedWifeChanges = wives.some(w => !w.isSaved);
+    const hasUnsavedHusbandChanges = husbands.some(h => !h.isSaved);
+    const isCurrentlyEditing = showSpouseForm || editingWifeIndex !== null || editingHusbandIndex !== null;
+    
+    if (!hasUnsavedWifeChanges && !hasUnsavedHusbandChanges && !isCurrentlyEditing && !hasUnsavedLocalChanges) {
+      console.log('🔄 populateFormData: Loading existing spouses for member:', member.name);
+      loadExistingSpouses(member);
+    } else {
+      console.log('⏸️ populateFormData: Skipping spouse reload - unsaved changes detected:', {
+        hasUnsavedWifeChanges,
+        hasUnsavedHusbandChanges,
+        isCurrentlyEditing,
+        hasUnsavedLocalChanges,
+        showSpouseForm,
+        editingWifeIndex,
+        editingHusbandIndex
+      });
+    }
   };
 
   const loadExistingSpouses = (member: any) => {
