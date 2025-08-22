@@ -41,6 +41,9 @@ interface MemberProfileViewProps {
   onBack: () => void;
   familyMembers: any[];
   marriages?: any[];
+  isSpouse?: boolean;
+  onSpouseEditWarning?: () => void;
+  onSpouseDeleteWarning?: () => void;
 }
 
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
@@ -49,7 +52,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   onDelete,
   onBack,
   familyMembers,
-  marriages = []
+  marriages = [],
+  isSpouse = false,
+  onSpouseEditWarning,
+  onSpouseDeleteWarning
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -250,17 +256,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 {/* Action Buttons */}
                 <div className="flex gap-3 mt-6 lg:mt-0">
                   <Button 
-                    onClick={onEdit} 
+                    onClick={() => {
+                      if (isSpouse && onSpouseEditWarning) {
+                        onSpouseEditWarning();
+                      } else {
+                        onEdit();
+                      }
+                    }}
                     className="facebook-button-primary px-6 py-3"
                   >
                     <Edit className="h-4 w-4 ml-2" />
                     تعديل الملف الشخصي
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="facebook-button-secondary px-4 py-3"
-                  >
-                    <Camera className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -454,36 +460,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <div className="bg-card rounded-xl border border-border p-4">
-              <h4 className="font-bold text-sm mb-4">إجراءات سريعة</h4>
-              <div className="space-y-3">
-                <Button 
-                  onClick={onEdit} 
-                  className="facebook-button-primary w-full"
-                  size="sm"
-                >
-                  <Edit className="h-4 w-4 ml-2" />
-                  تعديل المعلومات
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="facebook-button-secondary w-full"
-                  size="sm"
-                >
-                  <MessageCircle className="h-4 w-4 ml-2" />
-                  إضافة ملاحظة
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="facebook-button-secondary w-full"
-                  size="sm"
-                >
-                  <Share2 className="h-4 w-4 ml-2" />
-                  مشاركة الملف
-                </Button>
-              </div>
-            </div>
 
             {/* Family Stats */}
             <div className="bg-card rounded-xl border border-border p-4">
@@ -514,7 +490,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             <div className="bg-card rounded-xl border border-destructive/20 p-4">
               <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
               <Button 
-                onClick={onDelete}
+                onClick={() => {
+                  if (isSpouse && onSpouseDeleteWarning) {
+                    onSpouseDeleteWarning();
+                  } else {
+                    onDelete();
+                  }
+                }}
                 variant="destructive" 
                 className="w-full"
                 size="sm"

@@ -150,7 +150,7 @@ const Home2 = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-fade-in">
-              <div className="space-y-6">
+              <div className="space-y-6 pt-8 md:pt-0">
                 <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-2 text-sm">
                   <Sparkles className="h-4 w-4 ml-2" />
                   {t('hero_badge', 'الجيل الجديد من حفظ التراث')}

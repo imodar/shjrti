@@ -369,6 +369,8 @@ const FamilyBuilderNew = () => {
         const transformedMembers = members.map(member => ({
           id: member.id,
           name: member.name,
+          first_name: member.first_name,
+          last_name: member.last_name,
           fatherId: member.father_id,
           motherId: member.mother_id,
           spouseId: member.spouse_id,
@@ -933,7 +935,7 @@ const FamilyBuilderNew = () => {
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
-  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "" });
+  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "", isFounder: false });
   
   // Spouse deletion modal states
   const [showSpouseDeleteModal, setShowSpouseDeleteModal] = useState(false);
@@ -1027,41 +1029,17 @@ const FamilyBuilderNew = () => {
       return;
     }
     
-    // Find the partner in our editing member's context
-    if (!editingMember) {
-      toast({
-        title: "خطأ",
-        description: "يجب اختيار عضو أولاً لتعديل الزوج/الزوجة",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Set spouse partner details for the modal
+    setSpousePartnerName(partner.name || "غير محدد");
+    setSpousePartnerDetails({
+      name: partner.name || "غير محدد",
+      fatherName: partner.father_name || "غير محدد", 
+      grandfatherName: partner.grandfather_name || "غير محدد",
+      isFounder: partner.is_founder || false
+    });
     
-    // Check if this spouse is in the wives array or husband
-    if (spouseMember.gender === 'female') {
-      const wifeIndex = wives.findIndex(w => w.id === spouseMember.id);
-      if (wifeIndex !== -1) {
-        const wifeData = wives[wifeIndex];
-        handleSpouseEditAttempt('wife', wifeData, wifeIndex);
-      } else {
-        toast({
-          title: "خطأ",
-          description: "لم يتم العثور على بيانات الزوجة في القائمة",
-          variant: "destructive"
-        });
-      }
-    } else {
-      // It's a husband
-      if (husband && husband.id === spouseMember.id) {
-        handleSpouseEditAttempt('husband', husband, -1);
-      } else {
-        toast({
-          title: "خطأ", 
-          description: "لم يتم العثور على بيانات الزوج في القائمة",
-          variant: "destructive"
-        });
-      }
-    }
+    // Show the spouse edit warning modal
+    setShowSpouseEditWarning(true);
   };
 
   const getChildrenCount = (parentId: string) => {
@@ -1409,6 +1387,12 @@ const FamilyBuilderNew = () => {
     });
     setWives([]);
     setHusband(null);
+    // Clear image states
+    setCroppedImage(null);
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const populateFormData = (member: any) => {
@@ -2365,6 +2349,14 @@ const FamilyBuilderNew = () => {
         });
         return;
       }
+      
+      // Preserve image data when moving to next step
+      if (croppedImage && croppedImage !== formData.croppedImage) {
+        setFormData(prev => ({
+          ...prev,
+          croppedImage: croppedImage
+        }));
+      }
     }
     
     if (currentStep < 2) {
@@ -2456,8 +2448,8 @@ const FamilyBuilderNew = () => {
                   </div>
                   
                   <div className="text-center">
-                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-loose">
+                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 leading-relaxed">
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-relaxed" style={{ lineHeight: '1.8' }}>
                         {t('family_builder.family', 'عائلة')} {familyData?.name || t('family_builder.unspecified', 'غير محدد')}
                       </span>
                     </h1>
@@ -2651,6 +2643,9 @@ const FamilyBuilderNew = () => {
                       onBack={() => setFormMode('view')}
                       familyMembers={familyMembers}
                       marriages={familyMarriages}
+                      isSpouse={checkIfMemberIsSpouse(editingMember)}
+                      onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
+                      onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
                     />
                   ) : (
                     <div className="space-y-6">
@@ -2747,27 +2742,36 @@ const FamilyBuilderNew = () => {
                                                  return '';
                                                };
                                                
-                                               // Helper function to build full genealogical name
-                                               const buildFullName = (member: any) => {
-                                                 if (!member) return '';
-                                                 
-                                                 let fullName = member.name || '';
-                                                 const fatherName = getFatherName(member);
-                                                 const grandfatherName = getGrandfatherName(member);
-                                                 
-                                                 if (fatherName) {
-                                                   fullName += ` بن ${fatherName}`;
-                                                   if (grandfatherName) {
-                                                     fullName += ` بن ${grandfatherName}`;
-                                                   }
-                                                 }
-                                                 
-                                                 return fullName;
-                                               };
-                                               
-                                                const familyMember = husbandMember ? buildFullName(husbandMember) : 'غير محدد';
-                                                const spouse = wifeMember ? (wifeMember.name || 'غير محدد') : 'غير محدد';
-                                                const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+                                                // Helper function to build full genealogical name
+                                                const buildFullName = (member: any, isSpouse: boolean = false) => {
+                                                  if (!member) return '';
+                                                  
+                                                  // For spouses, show first_name + last_name
+                                                  if (isSpouse) {
+                                                    const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                                                    const lastName = member.last_name || '';
+                                                    return firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '');
+                                                  }
+                                                  
+                                                  // For non-founders, show first name + father's first name only
+                                                  if (!member.is_founder && member.fatherId) {
+                                                    const firstName = member.first_name || member.name?.split(' ')[0] || member.name;
+                                                    const father = familyMembers.find(m => m?.id === member.fatherId);
+                                                    const fatherFirstName = father?.first_name || father?.name?.split(' ')[0] || father?.name;
+                                                    
+                                                    if (fatherFirstName) {
+                                                      return `${firstName} بن ${fatherFirstName}`;
+                                                    }
+                                                    return firstName;
+                                                  }
+                                                  
+                                                  // For founders, just show the name
+                                                  return member.first_name || member.name?.split(' ')[0] || member.name;
+                                                };
+                                                
+                                                 const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
+                                                 const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
+                                                 const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
                                                 
                                                 return {
                                                   value: marriage.id,
@@ -2975,7 +2979,7 @@ const FamilyBuilderNew = () => {
                                                           )}
                                                           <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
                                                             <Heart className="h-3 w-3" />
-                                                            زوجة
+                                                            {wife.maritalStatus === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                                                           </span>
                                                         </div>
                                                       </div>
@@ -3022,19 +3026,8 @@ const FamilyBuilderNew = () => {
                                                    حذف
                                                  </Button>
                                                </div>
-                                               
-                                               {/* Interactive Area */}
-                                               {wife.isSaved && (
-                                                 <div 
-                                                   className="cursor-pointer hover:bg-pink-50/70 dark:hover:bg-pink-950/30 rounded-lg p-2 -m-1 transition-all duration-300 border border-transparent hover:border-pink-200 dark:hover:border-pink-700 mt-2"
-                                                   onClick={() => handleSpouseEditAttempt('wife', wife, index)}
-                                                 >
-                                                   <p className="text-sm text-pink-600 dark:text-pink-400 font-arabic flex items-center gap-2">
-                                                     <Edit className="h-4 w-4" />
-                                                     انقر هنا لعرض وتعديل التفاصيل
-                                                   </p>
-                                                 </div>
-                                               )}
+                                                
+                                                {/* Interactive Area removed - using edit button instead */}
                                               </div>
                                            </div>
                                        ))
@@ -3215,7 +3208,12 @@ const FamilyBuilderNew = () => {
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setFormMode('view')}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              e.nativeEvent.stopImmediatePropagation();
+                              handleCancelForm();
+                            }}
                             size="lg"
                             className="flex items-center gap-2"
                           >
@@ -3605,7 +3603,7 @@ const FamilyBuilderNew = () => {
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-4 animate-pulse shadow-lg">
                 <Heart className="h-8 w-8 text-white animate-fade-in" />
               </div>
-              <AlertDialogTitle className="font-arabic text-xl text-gray-800 font-bold">
+              <AlertDialogTitle className="font-arabic text-xl text-gray-800 font-bold text-center">
                 تعديل محمي
               </AlertDialogTitle>
             </AlertDialogHeader>
@@ -3634,12 +3632,12 @@ const FamilyBuilderNew = () => {
                      <div className="font-bold text-primary text-lg animate-pulse">
                        {spousePartnerDetails.name}
                      </div>
-                     {spousePartnerDetails.fatherName && (
+                     {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && (
                        <div className="text-sm text-gray-600 mt-1">
                          ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
                        </div>
                      )}
-                     {spousePartnerDetails.grandfatherName && (
+                     {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && (
                        <div className="text-xs text-gray-500 mt-1">
                          حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
                        </div>
@@ -3664,7 +3662,7 @@ const FamilyBuilderNew = () => {
             <AlertDialogFooter className="pt-6">
               <AlertDialogCancel className="font-arabic w-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border border-gray-300 text-gray-700 hover:text-gray-800 transition-all duration-200 hover-scale">
                 <Check className="h-4 w-4 mr-2" />
-                فهمت
+                عودة
               </AlertDialogCancel>
             </AlertDialogFooter>
           </div>
@@ -3869,9 +3867,22 @@ const MemberList = ({
                         )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                           {(() => {
-                            console.log('Member data:', { name: member.name, first_name: member.first_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
+                            console.log('Member data:', { name: member.name, first_name: member.first_name, last_name: member.last_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
-                            return isSpouse ? member.name : (member.first_name || member.name);
+                            
+                            if (isSpouse) {
+                              // For spouses: show first_name + last_name, or name if missing
+                              const firstName = member.first_name || '';
+                              const lastName = member.last_name || '';
+                              
+                              if (firstName && lastName) {
+                                return `${firstName} ${lastName}`;
+                              }
+                              return member.name || "غير معروف";
+                            } else {
+                              // For founders and other native family members: show first_name, or split name if missing
+                              return member.first_name || member.name?.split(' ')[0] || member.name || "غير معروف";
+                            }
                           })()}
                         </h3>
                         {(() => {
@@ -3896,15 +3907,18 @@ const MemberList = ({
                         const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
                         
                         if (father && grandfather) {
+                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                          const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
                           return (
                             <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {father.name} ابن {grandfather.name}
+                              {fatherFirstName} ابن {grandfatherFirstName}
                             </p>
                           );
                         } else if (father) {
+                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                           return (
                             <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {father.name}
+                              {fatherFirstName}
                             </p>
                           );
                         }
@@ -3956,23 +3970,17 @@ const MemberList = ({
                             
                             // Only show spouse info for non-family members (those without family fathers)
                             if (!memberHasFamilyFather) {
-                              // Get spouse's father and grandfather from familyMembers
+                              // Get spouse's father from familyMembers
                               const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
                               const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
-                              const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.fatherId) : null;
                               
-                              // Build the lineage string
-                              let spouseInfo = spouse.name || spouse.full_name;
+                              // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
+                              const spouseName = spouseFullData?.first_name || spouse.first_name || spouse.name?.split(' ')[0] || spouse.name;
                               
+                              let spouseInfo = spouseName;
                               if (spouseFather) {
-                                // Use ابن for male, ابنة for female
-                                const spouseGender = spouseFullData?.gender || spouse.gender;
-                                const childOf = spouseGender === 'male' ? 'ابن' : 'ابنة';
-                                spouseInfo += ` ${childOf} ${spouseFather.name}`;
-                                
-                                if (spouseGrandfather) {
-                                  spouseInfo += ` ابن ${spouseGrandfather.name}`;
-                                }
+                                const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
+                                spouseInfo += ` ابن ${fatherFirstName}`;
                               }
                               
                               // Use زوج for husband, زوجة for wife (from member's perspective)
