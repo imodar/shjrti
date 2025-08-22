@@ -596,17 +596,18 @@ const FamilyBuilderNew = () => {
   const [showSpouseForm, setShowSpouseForm] = useState(false);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
   const [editingHusbandIndex, setEditingHusbandIndex] = useState<number | null>(null);
+  const [hasUnsavedLocalChanges, setHasUnsavedLocalChanges] = useState(false);
 
   // Load spouses when data is updated and there's a member being edited
   // CRITICAL FIX: Don't reload spouses if we're currently editing or have unsaved changes
   useEffect(() => {
     if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
-      // Don't reload if we have unsaved spouse changes
+      // Don't reload if we have unsaved spouse changes or local changes
       const hasUnsavedWifeChanges = wives.some(w => !w.isSaved);
       const hasUnsavedHusbandChanges = husbands.some(h => !h.isSaved);
       const isCurrentlyEditing = showSpouseForm || editingWifeIndex !== null || editingHusbandIndex !== null;
       
-      if (!hasUnsavedWifeChanges && !hasUnsavedHusbandChanges && !isCurrentlyEditing) {
+      if (!hasUnsavedWifeChanges && !hasUnsavedHusbandChanges && !isCurrentlyEditing && !hasUnsavedLocalChanges) {
         console.log('🔄 Loading existing spouses for member:', editingMember.name);
         loadExistingSpouses(editingMember);
       } else {
@@ -614,13 +615,14 @@ const FamilyBuilderNew = () => {
           hasUnsavedWifeChanges,
           hasUnsavedHusbandChanges,
           isCurrentlyEditing,
+          hasUnsavedLocalChanges,
           showSpouseForm,
           editingWifeIndex,
           editingHusbandIndex
         });
       }
     }
-  }, [familyMarriages, familyMembers, editingMember, showSpouseForm, editingWifeIndex, editingHusbandIndex]);
+  }, [familyMarriages, familyMembers, editingMember, showSpouseForm, editingWifeIndex, editingHusbandIndex, hasUnsavedLocalChanges]);
 
   // Debug useEffect to check button rendering condition
   useEffect(() => {
@@ -949,6 +951,9 @@ const FamilyBuilderNew = () => {
         description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
         variant: "default"
       });
+      
+      // Clear the unsaved local changes flag after successful database save
+      setHasUnsavedLocalChanges(false);
     } catch (error) {
       console.error(`Error saving ${spouseType} data:`, error);
       toast({
@@ -1200,6 +1205,9 @@ const FamilyBuilderNew = () => {
         
         console.log("🔄 Setting wives state...");
         
+        // Mark that we have unsaved local changes
+        setHasUnsavedLocalChanges(true);
+        
         // Use functional update to ensure we have the latest state
         setWives(prevWives => {
           console.log("📊 State updater function called with prevWives:", prevWives.map(w => ({name: w.name, id: w.id})));
@@ -1258,6 +1266,10 @@ const FamilyBuilderNew = () => {
         };
         updatedHusbands[husbandIndex] = updatedHusband;
         console.log('💾 Husband save - updated husbands after save:', updatedHusbands.map(h => ({ name: h.name, id: h.id })));
+        
+        // Mark that we have unsaved local changes
+        setHasUnsavedLocalChanges(true);
+        
         setHusbands(updatedHusbands);
         
         // Close the form only after successful update
@@ -1795,6 +1807,8 @@ const FamilyBuilderNew = () => {
     setEditingMember(member);
     setCurrentStep(1);
     populateFormData(member);
+    // Clear any unsaved local changes when switching to a different member
+    setHasUnsavedLocalChanges(false);
     if (isMobile) setIsMemberListOpen(false);
   }, [isMobile]);
 
