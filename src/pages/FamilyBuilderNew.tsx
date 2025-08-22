@@ -2202,14 +2202,30 @@ const FamilyBuilderNew = () => {
 
   const handleFormSubmit = useCallback(async (submissionData: any) => {
     console.log('🚨🚨🚨 SAVE BUTTON CLICKED - handleFormSubmit called!');
-    console.log('🚨 Current husbands array:', husbands);
-    console.log('🚨 Current wives array:', wives);
-    console.log('🚨 Husbands length:', husbands.length);
-    console.log('🚨 Wives length:', wives.length);
+    
+    // Get fresh state data to avoid stale closures
+    let currentWivesData: any[] = [];
+    let currentHusbandsData: any[] = [];
+    
+    // Use functional state updates to get the current data
+    setWives(currentWives => {
+      currentWivesData = [...currentWives];
+      return currentWives;
+    });
+    
+    setHusbands(currentHusbands => {
+      currentHusbandsData = [...currentHusbands];
+      return currentHusbands;
+    });
+    
+    console.log('🚨 Fresh husbands array:', currentHusbandsData);
+    console.log('🚨 Fresh wives array:', currentWivesData);
+    console.log('🚨 Husbands length:', currentHusbandsData.length);
+    console.log('🚨 Wives length:', currentWivesData.length);
     console.log('🚨 Is saving:', isSaving);
     
     // Debug wife data structure
-    console.log('🚨 CRITICAL DEBUG - Wife array structure:', wives.map(w => ({
+    console.log('🚨 CRITICAL DEBUG - Fresh wife array structure:', currentWivesData.map(w => ({
       id: w.id,
       name: w.name,
       firstName: w.firstName,
@@ -2220,41 +2236,33 @@ const FamilyBuilderNew = () => {
     })));
     
     // Add a small delay to ensure any pending state updates have completed
-    await new Promise(resolve => setTimeout(resolve, 100));
-    console.log('🔧 After delay - Current wives array:', wives.map(w => ({
-      name: w.name,
-      firstName: w.firstName, 
-      lastName: w.lastName,
-      id: w.id,
-      isSaved: w.isSaved,
-      dataType: (w as any).family_id ? 'database-format' : 'spouse-format'
-    })));
+    await new Promise(resolve => setTimeout(resolve, 50));
     
     // Check if Khalid should be deleted
     const khalidId = 'dd05d323-de57-4455-8927-c0b6bc5dbe18';
     const khalidInCurrentMembers = familyMembers.find(m => m.id === khalidId);
     console.log('🚨 Khalid in current members:', khalidInCurrentMembers);
-    console.log('🚨 Should Khalid be deleted?', khalidInCurrentMembers && husbands.length === 0);
+    console.log('🚨 Should Khalid be deleted?', khalidInCurrentMembers && currentHusbandsData.length === 0);
     
     try {
       setIsSaving(true);
       
       console.log('🔧 SAVE START - Current state:', {
-        wives: wives,
-        husbands: husbands,
+        wives: currentWivesData,
+        husbands: currentHusbandsData,
         submissionData: submissionData
       });
       
       // Determine marital status based on presence of spouses
-      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
-                        submissionData.gender === "female" && husbands.length > 0;
+      const hasSpouses = submissionData.gender === "male" && currentWivesData.length > 0 || 
+                        submissionData.gender === "female" && currentHusbandsData.length > 0;
       
       // Prepare final submission data matching modal structure
       const finalData = {
         ...submissionData,
         maritalStatus: hasSpouses ? "married" : "single",
-        wives: submissionData.gender === "male" ? wives : [],
-        husbands: submissionData.gender === "female" && husbands.length > 0 ? husbands : []
+        wives: submissionData.gender === "male" ? currentWivesData : [],
+        husbands: submissionData.gender === "female" && currentHusbandsData.length > 0 ? currentHusbandsData : []
       };
       
       console.log('🔧 Final data prepared:', finalData);
@@ -2399,39 +2407,39 @@ const FamilyBuilderNew = () => {
            // Don't deactivate all marriages upfront - we'll handle each case individually
          }
 
-         // Handle wives for male members - process all saved wives
-         if (submissionData.gender === 'male' && wives.length > 0) {
-            const savedWives = wives.filter(wife => {
-              // Get the wife's index to check family status
-              const wifeIndex = wives.findIndex(w => w === wife);
-              const familyStatus = wiveFamilyStatus[wifeIndex];
-              
-              // Include wives that are:
-              // 1. Newly created (isSaved === true), OR
-              // 2. Edited existing wives (have valid id)
-              const shouldInclude = (wife.isSaved === true || (wife.id && wife.id.length > 0)) &&
-                                   (familyStatus !== 'yes' || wife.existingFamilyMemberId);
-              
-          console.log('🔍 Wife filter decision:', {
-            name: wife.name,
-            firstName: wife.firstName,
-            lastName: wife.lastName,
-            id: wife.id,
-            isSaved: wife.isSaved,
-            familyStatus: familyStatus,
-            existingFamilyMemberId: wife.existingFamilyMemberId,
-            shouldInclude: shouldInclude,
-            reason: shouldInclude ? (wife.isSaved ? 'newly created' : 'edited existing') : 'excluded',
-            fullWifeObject: wife
-          });
-          
-          console.log('🔍 Current wives array in filter:', wives.map(w => ({
-            name: w.name,
-            firstName: w.firstName,
-            lastName: w.lastName,
-            id: w.id,
-            isSaved: w.isSaved
-          })));
+          // Handle wives for male members - process all saved wives
+          if (submissionData.gender === 'male' && currentWivesData.length > 0) {
+             const savedWives = currentWivesData.filter(wife => {
+               // Get the wife's index to check family status
+               const wifeIndex = currentWivesData.findIndex(w => w === wife);
+               const familyStatus = wiveFamilyStatus[wifeIndex];
+               
+               // Include wives that are:
+               // 1. Newly created (isSaved === true), OR
+               // 2. Edited existing wives (have valid id)
+               const shouldInclude = (wife.isSaved === true || (wife.id && wife.id.length > 0)) &&
+                                    (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+               
+           console.log('🔍 Wife filter decision:', {
+             name: wife.name,
+             firstName: wife.firstName,
+             lastName: wife.lastName,
+             id: wife.id,
+             isSaved: wife.isSaved,
+             familyStatus: familyStatus,
+             existingFamilyMemberId: wife.existingFamilyMemberId,
+             shouldInclude: shouldInclude,
+             reason: shouldInclude ? (wife.isSaved ? 'newly created' : 'edited existing') : 'excluded',
+             fullWifeObject: wife
+           });
+           
+           console.log('🔍 Current wives array in filter:', currentWivesData.map(w => ({
+             name: w.name,
+             firstName: w.firstName,
+             lastName: w.lastName,
+             id: w.id,
+             isSaved: w.isSaved
+           })));
               
               return shouldInclude;
             });
@@ -2621,16 +2629,16 @@ const FamilyBuilderNew = () => {
         }
 
         // Handle husband for female members - process if saved or edited
-        if (submissionData.gender === 'female' && husbands && husbands.length > 0 && 
-            (husbands[0]?.isSaved === true || (husbands[0]?.id && husbands[0]?.id.length > 0))) {
+        if (submissionData.gender === 'female' && currentHusbandsData && currentHusbandsData.length > 0 && 
+            (currentHusbandsData[0]?.isSaved === true || (currentHusbandsData[0]?.id && currentHusbandsData[0]?.id.length > 0))) {
           try {
-            let husbandId = husbands[0].existingFamilyMemberId;
+            let husbandId = currentHusbandsData[0].existingFamilyMemberId;
             
             // If husband is not from existing family members, create new family member first
-            if (!husbands[0].isFamilyMember || !husbands[0].existingFamilyMemberId) {
-              const firstName = husbands[0].firstName || '';
-              const lastName = husbands[0].lastName || '';
-              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husbands[0].name || firstName || lastName || '');
+            if (!currentHusbandsData[0].isFamilyMember || !currentHusbandsData[0].existingFamilyMemberId) {
+              const firstName = currentHusbandsData[0].firstName || '';
+              const lastName = currentHusbandsData[0].lastName || '';
+              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (currentHusbandsData[0].name || firstName || lastName || '');
               
               const { data: newHusbandMember, error: husbandError } = await supabase
                 .from('family_tree_members')
@@ -2639,23 +2647,23 @@ const FamilyBuilderNew = () => {
                   first_name: firstName,
                   last_name: lastName,
                   gender: 'male',
-                  birth_date: husbands[0].birthDate?.toISOString().split('T')[0] || null,
-                  is_alive: husbands[0].isAlive ?? true,
-                  death_date: !husbands[0].isAlive && husbands[0].deathDate ? husbands[0].deathDate.toISOString().split('T')[0] : null,
+                  birth_date: currentHusbandsData[0].birthDate?.toISOString().split('T')[0] || null,
+                  is_alive: currentHusbandsData[0].isAlive ?? true,
+                  death_date: !currentHusbandsData[0].isAlive && currentHusbandsData[0].deathDate ? currentHusbandsData[0].deathDate.toISOString().split('T')[0] : null,
                   family_id: familyId,
                   created_by: familyData?.creator_id,
                   is_founder: false,
-                  marital_status: husbands[0].maritalStatus || 'married',
-                  image_url: husbands[0].croppedImage || null,
-                  biography: husbands[0].biography || null
+                  marital_status: currentHusbandsData[0].maritalStatus || 'married',
+                  image_url: currentHusbandsData[0].croppedImage || null,
+                  biography: currentHusbandsData[0].biography || null
                 })
                 .select()
                 .single();
 
               if (husbandError) {
-                console.error('Error creating husband member:', husbands[0].name, husbandError);
+                console.error('Error creating husband member:', currentHusbandsData[0].name, husbandError);
                 marriageResults.failed++;
-                marriageResults.details.push(`فشل في إنشاء العضو ${husbands[0].name}`);
+                marriageResults.details.push(`فشل في إنشاء العضو ${currentHusbandsData[0].name}`);
               } else {
                 husbandId = newHusbandMember.id;
                 
@@ -2665,12 +2673,12 @@ const FamilyBuilderNew = () => {
             // Create marriage record if husband was created/found successfully
             if (husbandId) {
               // If husband is an existing family member, update their marital status and handle image properly
-              if (husbands[0].isFamilyMember && husbands[0].existingFamilyMemberId) {
+              if (currentHusbandsData[0].isFamilyMember && currentHusbandsData[0].existingFamilyMemberId) {
                 // Get current data to handle image state properly
                 const { data: currentHusband } = await supabase
                   .from('family_tree_members')
                   .select('image_url')
-                  .eq('id', husbands[0].existingFamilyMemberId)
+                  .eq('id', currentHusbandsData[0].existingFamilyMemberId)
                   .maybeSingle();
                 
                 // Handle image state properly:
@@ -2678,8 +2686,8 @@ const FamilyBuilderNew = () => {
                 // - If husband.croppedImage is explicitly null/empty string, set to null (user removed image)
                 // - If husband.croppedImage is undefined, keep existing image
                 let imageUrl;
-                if (husbands[0].croppedImage !== undefined) {
-                  imageUrl = husbands[0].croppedImage || null;
+                if (currentHusbandsData[0].croppedImage !== undefined) {
+                  imageUrl = currentHusbandsData[0].croppedImage || null;
                 } else {
                   imageUrl = currentHusband?.image_url || null;
                 }
@@ -2687,23 +2695,23 @@ const FamilyBuilderNew = () => {
                 const { error: updateHusbandError } = await supabase
                   .from('family_tree_members')
                   .update({ 
-                    marital_status: husbands[0].maritalStatus,
+                    marital_status: currentHusbandsData[0].maritalStatus,
                     image_url: imageUrl,
-                    biography: husbands[0].biography || null
+                    biography: currentHusbandsData[0].biography || null
                   })
-                  .eq('id', husbands[0].existingFamilyMemberId);
+                  .eq('id', currentHusbandsData[0].existingFamilyMemberId);
                 
                 if (updateHusbandError) {
                   console.error('Error updating husband marital status:', updateHusbandError);
                 } else {
-                  console.log('Successfully updated husband marital status to:', husbands[0].maritalStatus);
+                  console.log('Successfully updated husband marital status to:', currentHusbandsData[0].maritalStatus);
                 }
 
                 // Also update marriage table marital status
                 await supabase
                   .from('marriages')
-                  .update({ marital_status: husbands[0].maritalStatus })
-                  .eq('husband_id', husbands[0].existingFamilyMemberId);
+                  .update({ marital_status: currentHusbandsData[0].maritalStatus })
+                  .eq('husband_id', currentHusbandsData[0].existingFamilyMemberId);
                 
               }
 
@@ -2779,10 +2787,10 @@ const FamilyBuilderNew = () => {
             const currentSpouseIds = new Set();
             
             console.log('🚨 CRITICAL DEBUG - Arrays at deletion check:', {
-              husbandsLength: husbands.length,
-              wivesLength: wives.length,
-              husbandsArray: husbands,
-              wivesArray: wives,
+              husbandsLength: currentHusbandsData.length,
+              wivesLength: currentWivesData.length,
+              husbandsArray: currentHusbandsData,
+              wivesArray: currentWivesData,
               editingMemberGender: submissionData.gender,
               expectedBehavior: submissionData.gender === 'female' ? 'Should check husbands array' : 'Should check wives array'
             });
@@ -2790,15 +2798,15 @@ const FamilyBuilderNew = () => {
             console.log('🔧 Building current spouse IDs from local arrays:', {
               editingMemberId: editingMember.id,
               editingMemberGender: submissionData.gender,
-              wivesCount: wives.length,
-              husbandsCount: husbands.length,
-              wives: wives.map(w => ({ 
+              wivesCount: currentWivesData.length,
+              husbandsCount: currentHusbandsData.length,
+              wives: currentWivesData.map(w => ({ 
                 id: w.id, 
                 name: w.name, 
                 isSaved: w.isSaved,
                 existingFamilyMemberId: w.existingFamilyMemberId 
               })),
-              husbands: husbands.map(h => ({ 
+              husbands: currentHusbandsData.map(h => ({ 
                 id: h.id, 
                 name: h.name, 
                 isSaved: h.isSaved,
@@ -2807,7 +2815,7 @@ const FamilyBuilderNew = () => {
             });
             
             if (submissionData.gender === 'male') {
-              wives.forEach((wife, index) => {
+              currentWivesData.forEach((wife, index) => {
                 // Only consider saved wives for deletion detection
                 if (wife.isSaved && (wife.existingFamilyMemberId || wife.id)) {
                   const spouseId = wife.existingFamilyMemberId || wife.id;
@@ -2822,7 +2830,7 @@ const FamilyBuilderNew = () => {
                 }
               });
             } else if (submissionData.gender === 'female') {
-              husbands.forEach((husband, index) => {
+              currentHusbandsData.forEach((husband, index) => {
                 // Only consider saved husbands for deletion detection
                 if (husband.isSaved && (husband.existingFamilyMemberId || husband.id)) {
                   const spouseId = husband.existingFamilyMemberId || husband.id;
@@ -2943,8 +2951,8 @@ const FamilyBuilderNew = () => {
           console.log('🚨 formMode:', formMode);
           console.log('🚨 editingMember:', editingMember);
           console.log('🚨 selectedMember:', selectedMember);
-          console.log('🚨 husbands.length:', husbands.length);
-          console.log('🚨 wives.length:', wives.length);
+          console.log('🚨 husbands.length:', currentHusbandsData.length);
+          console.log('🚨 wives.length:', currentWivesData.length);
           
           const memberToCheck = editingMember || selectedMember;
           console.log('🚨 Member to check for spouse deletion:', memberToCheck);
@@ -2954,11 +2962,11 @@ const FamilyBuilderNew = () => {
           if (memberToCheck) {
             if (memberToCheck.gender === 'male') {
               // For male members, only check if wives were removed
-              shouldDeleteSpouses = wives.length === 0;
+              shouldDeleteSpouses = currentWivesData.length === 0;
               console.log('🚨 Male member - checking wives deletion:', shouldDeleteSpouses);
             } else if (memberToCheck.gender === 'female') {
               // For female members, only check if husbands were removed
-              shouldDeleteSpouses = husbands.length === 0;
+              shouldDeleteSpouses = currentHusbandsData.length === 0;
               console.log('🚨 Female member - checking husbands deletion:', shouldDeleteSpouses);
             }
           }
