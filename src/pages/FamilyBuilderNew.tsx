@@ -620,7 +620,7 @@ const FamilyBuilderNew = () => {
         });
       }
     }
-  }, [familyMarriages, familyMembers, editingMember, wives, husbands, showSpouseForm, editingWifeIndex, editingHusbandIndex]);
+  }, [familyMarriages, familyMembers, editingMember, showSpouseForm, editingWifeIndex, editingHusbandIndex]);
 
   // Debug useEffect to check button rendering condition
   useEffect(() => {
