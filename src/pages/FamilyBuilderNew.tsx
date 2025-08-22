@@ -1182,9 +1182,9 @@ const FamilyBuilderNew = () => {
         
         const updatedWife = {
           ...existingWife,
-          name: spouseData.name,
-          firstName: spouseData.firstName,
-          lastName: spouseData.lastName
+          ...spouseData,
+          // Preserve the ID if it exists
+          id: existingWife?.id || spouseData.id
         };
         console.log('💾 Updated wife object:', JSON.stringify(updatedWife, null, 2));
         
@@ -1252,9 +1252,9 @@ const FamilyBuilderNew = () => {
         const existingHusband = updatedHusbands[husbandIndex];
         const updatedHusband = {
           ...existingHusband,
-          name: spouseData.name,
-          firstName: spouseData.firstName,
-          lastName: spouseData.lastName
+          ...spouseData,
+          // Preserve the ID if it exists
+          id: existingHusband?.id || spouseData.id
         };
         updatedHusbands[husbandIndex] = updatedHusband;
         console.log('💾 Husband save - updated husbands after save:', updatedHusbands.map(h => ({ name: h.name, id: h.id })));
