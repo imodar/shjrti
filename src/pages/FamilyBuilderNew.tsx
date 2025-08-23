@@ -807,45 +807,51 @@ const FamilyBuilderNew = () => {
   };
 
   const closeActiveSpouseEdit = () => {
-    if (showWifeForm && editingWifeIndex !== null) {
+    console.log('closeActiveSpouseEdit called, showSpouseForm:', showWifeForm || showHusbandForm, 'currentSpouseType:', showWifeForm ? 'wife' : 'husband', 'editingWifeIndex:', editingWifeIndex);
+    
+    if (showWifeForm) {
       setShowWifeForm(false);
       setCurrentWife(null);
-      setWifeFamilyStatus(null);
+      setWifeFamilyStatus('no');
       
-      // Restore the original saved wife data
-      const updatedWives = [...wives];
-      const originalWife = familyMarriages
-        .flatMap((m: any) => m.wife ? [m.wife] : [])
-        .find((w: any) => w.id === updatedWives[editingWifeIndex]?.id);
-      
-      if (originalWife && updatedWives[editingWifeIndex]) {
-        updatedWives[editingWifeIndex] = {
-          ...originalWife,
-          isSaved: true,
-          isFamilyMember: updatedWives[editingWifeIndex].isFamilyMember
-        };
-        setWives(updatedWives);
+      // If we were editing a wife, restore the original data
+      if (editingWifeIndex !== null) {
+        const updatedWives = [...wives];
+        const originalWife = familyMarriages
+          .flatMap((m: any) => m.wife ? [m.wife] : [])
+          .find((w: any) => w.id === updatedWives[editingWifeIndex]?.id);
+        
+        if (originalWife && updatedWives[editingWifeIndex]) {
+          updatedWives[editingWifeIndex] = {
+            ...originalWife,
+            isSaved: true,
+            isFamilyMember: updatedWives[editingWifeIndex].isFamilyMember
+          };
+          setWives(updatedWives);
+        }
       }
       
       setEditingWifeIndex(null);
     }
     
-    if (showHusbandForm && husband) {
+    if (showHusbandForm) {
       setShowHusbandForm(false);
       setCurrentHusband(null);
-      setHusbandFamilyStatus(null);
+      setHusbandFamilyStatus('no');
       
-      // Restore the original saved husband data
-      const originalHusband = familyMarriages
-        .flatMap((m: any) => m.husband ? [m.husband] : [])
-        .find((h: any) => h.id === husband.id);
-      
-      if (originalHusband) {
-        setHusband({
-          ...originalHusband,
-          isSaved: true,
-          isFamilyMember: husband.isFamilyMember
-        });
+      // If we have a husband, restore the original data
+      if (husband) {
+        const originalHusband = familyMarriages
+          .flatMap((m: any) => m.husband ? [m.husband] : [])
+          .find((h: any) => h.id === husband.id);
+        
+        if (originalHusband) {
+          setHusband({
+            ...originalHusband,
+            isSaved: true,
+            isFamilyMember: husband.isFamilyMember
+          });
+        }
       }
     }
   };
