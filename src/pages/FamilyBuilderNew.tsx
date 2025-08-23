@@ -4149,15 +4149,15 @@ const FamilyBuilderNew = () => {
                      <div className="font-bold text-primary text-lg animate-pulse">
                        {spousePartnerDetails.name}
                      </div>
-                     {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && (
-                       <div className="text-sm text-gray-600 mt-1">
-                         ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                       </div>
-                     )}
-                     {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && (
-                       <div className="text-xs text-gray-500 mt-1">
-                         حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                       </div>
+                      {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && (
+                        <div className="text-sm text-gray-600 mt-1">
+                          ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
+                        </div>
+                      )}
+                      {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.grandfatherName && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
+                        </div>
                      )}
                    </div>
                 </div>
