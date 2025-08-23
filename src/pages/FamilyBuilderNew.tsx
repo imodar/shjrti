@@ -1975,6 +1975,21 @@ const FamilyBuilderNew = () => {
            if (submissionData.gender === 'female' && originalHusbandData) {
              const hasCurrentHusband = husband && husband.isSaved;
              
+             console.log('🔍 HUSBAND DELETION DEBUG:');
+             console.log('Original husband:', originalHusbandData ? {
+               id: originalHusbandData.id,
+               existingFamilyMemberId: originalHusbandData.existingFamilyMemberId,
+               name: originalHusbandData.name,
+               isSaved: originalHusbandData.isSaved
+             } : null);
+             console.log('Current husband:', husband ? {
+               id: husband.id,
+               existingFamilyMemberId: husband.existingFamilyMemberId,
+               name: husband.name,
+               isSaved: husband.isSaved
+             } : null);
+             console.log('Has current husband:', hasCurrentHusband);
+             
              if (!hasCurrentHusband) {
                // Husband was deleted
                if (process.env.NODE_ENV === 'development') {
@@ -2048,72 +2063,112 @@ const FamilyBuilderNew = () => {
                !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId)
              );
              
-              if (process.env.NODE_ENV === 'development') {
-                console.log('DELETED WIVES detected:', deletedWives.length);
-              }
-              
-              for (const deletedWife of deletedWives) {
-                try {
-                  const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
-                  if (!wifeId) continue;
-                  
-                  // Find and delete marriage record
-                  const { error: marriageDeleteError } = await supabase
-                    .from('marriages')
-                    .delete()
-                    .eq('husband_id', memberData.id)
-                    .eq('wife_id', wifeId);
-                    
-                  if (marriageDeleteError) {
-                    console.error('Error deleting marriage:', marriageDeleteError);
-                    marriageResults.failed++;
-                    marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
-                    continue;
-                  }
-                  
-                  // If wife is not a family member (external spouse), delete her record
-                  if (!deletedWife.isFamilyMember) {
-                    const { error: wifeDeleteError } = await supabase
-                      .from('family_tree_members')
-                      .delete()
-                      .eq('id', wifeId);
-                      
-                    if (wifeDeleteError) {
-                      console.error('Error deleting wife member:', wifeDeleteError);
-                      marriageResults.failed++;
-                      marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
-                      continue;
-                    }
-                  } else {
-                    // If she's a family member, just update her marital status
-                    const { error: updateError } = await supabase
-                      .from('family_tree_members')
-                      .update({ marital_status: 'single' })
-                      .eq('id', wifeId);
-                      
-                    if (updateError) {
-                      console.error('Error updating wife marital status:', updateError);
-                    }
-                  }
-                  
-                  // Find and update children to remove mother relationship
-                  const { error: childrenUpdateError } = await supabase
-                    .from('family_tree_members')
-                    .update({ mother_id: null })
-                    .eq('mother_id', wifeId);
-                    
-                  if (childrenUpdateError) {
-                    console.error('Error updating children mother_id:', childrenUpdateError);
-                  }
-                  
-                  marriageResults.successful++;
-                  
-                } catch (error) {
-                  console.error(`Error deleting wife ${deletedWife.name}:`, error);
-                  marriageResults.failed++;
-                  marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
-                }
+             console.log('🔍 DELETION DETECTION DEBUG:');
+             console.log('Original wives count:', originalWivesData.length);
+             console.log('Current wives count:', wives.length);
+             console.log('Original wives IDs:', originalWivesData.map(w => ({ 
+               id: w.id, 
+               existingFamilyMemberId: w.existingFamilyMemberId,
+               name: w.name 
+             })));
+             console.log('Current wives IDs:', currentWiveIds);
+             console.log('Deleted wives detected:', deletedWives.length);
+             console.log('Deleted wives details:', deletedWives.map(w => ({ 
+               id: w.id, 
+               existingFamilyMemberId: w.existingFamilyMemberId,
+               name: w.name 
+             })));
+             
+             if (process.env.NODE_ENV === 'development') {
+               console.log('DELETED WIVES detected:', deletedWives.length);
              }
+              
+               for (const deletedWife of deletedWives) {
+                 try {
+                   const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
+                   console.log('🗑️ Processing deletion for wife:', {
+                     name: deletedWife.name,
+                     id: deletedWife.id,
+                     existingFamilyMemberId: deletedWife.existingFamilyMemberId,
+                     finalId: wifeId,
+                     isFamilyMember: deletedWife.isFamilyMember
+                   });
+                   
+                   if (!wifeId) {
+                     console.warn('⚠️ Skipping wife deletion - no valid ID:', deletedWife.name);
+                     continue;
+                   }
+                  
+                   // Find and delete marriage record
+                   console.log('🔗 Deleting marriage record for husband:', memberData.id, 'wife:', wifeId);
+                   const { error: marriageDeleteError } = await supabase
+                     .from('marriages')
+                     .delete()
+                     .eq('husband_id', memberData.id)
+                     .eq('wife_id', wifeId);
+                     
+                   if (marriageDeleteError) {
+                     console.error('❌ Error deleting marriage:', marriageDeleteError);
+                     marriageResults.failed++;
+                     marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
+                     continue;
+                   } else {
+                     console.log('✅ Marriage deleted successfully for:', deletedWife.name);
+                   }
+                  
+                   // If wife is not a family member (external spouse), delete her record
+                   if (!deletedWife.isFamilyMember) {
+                     console.log('🗑️ Deleting external wife member:', deletedWife.name);
+                     const { error: wifeDeleteError } = await supabase
+                       .from('family_tree_members')
+                       .delete()
+                       .eq('id', wifeId);
+                       
+                     if (wifeDeleteError) {
+                       console.error('❌ Error deleting wife member:', wifeDeleteError);
+                       marriageResults.failed++;
+                       marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
+                       continue;
+                     } else {
+                       console.log('✅ External wife member deleted:', deletedWife.name);
+                     }
+                   } else {
+                     console.log('👤 Updating family member wife to single:', deletedWife.name);
+                     // If she's a family member, just update her marital status
+                     const { error: updateError } = await supabase
+                       .from('family_tree_members')
+                       .update({ marital_status: 'single' })
+                       .eq('id', wifeId);
+                       
+                     if (updateError) {
+                       console.error('❌ Error updating wife marital status:', updateError);
+                     } else {
+                       console.log('✅ Family member wife status updated to single:', deletedWife.name);
+                     }
+                   }
+                  
+                   // Find and update children to remove mother relationship
+                   console.log('👶 Updating children to remove mother_id for:', deletedWife.name);
+                   const { error: childrenUpdateError } = await supabase
+                     .from('family_tree_members')
+                     .update({ mother_id: null })
+                     .eq('mother_id', wifeId);
+                     
+                   if (childrenUpdateError) {
+                     console.error('❌ Error updating children mother_id:', childrenUpdateError);
+                   } else {
+                     console.log('✅ Children mother_id updated for deleted wife:', deletedWife.name);
+                   }
+                   
+                   console.log('✅ Wife deletion completed successfully:', deletedWife.name);
+                   marriageResults.successful++;
+                   
+                 } catch (error) {
+                   console.error(`❌ Error deleting wife ${deletedWife.name}:`, error);
+                   marriageResults.failed++;
+                   marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
+                 }
+               }
            }
          }
 
