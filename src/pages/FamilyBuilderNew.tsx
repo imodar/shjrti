@@ -1848,6 +1848,13 @@ const FamilyBuilderNew = () => {
   };
 
   const handleFormSubmit = useCallback(async (submissionData: any) => {
+    console.log('🚨 HANDLE FORM SUBMIT CALLED!');
+    console.log('🚨 Submission data:', submissionData);
+    console.log('🚨 Form mode:', formMode);
+    console.log('🚨 Editing member:', editingMember ? editingMember.id : 'none');
+    console.log('🚨 Current wives:', wives);
+    console.log('🚨 Original wives data:', originalWivesData);
+    
     try {
       setIsSaving(true);
       
@@ -1898,6 +1905,11 @@ const FamilyBuilderNew = () => {
       }
 
       let isEditMode = formMode === 'edit' && editingMember;
+      console.log('🚨 IS EDIT MODE CHECK:', {
+        formMode,
+        editingMember: editingMember ? editingMember.id : 'none', 
+        isEditMode
+      });
       let memberData;
 
       if (isEditMode) {
@@ -1991,8 +2003,12 @@ const FamilyBuilderNew = () => {
          // Keep track of marriages that should remain active
          let activeMarriageIds = [];
          
-         if (isEditMode) {
-           // Handle deleted husband for female members
+          if (isEditMode) {
+            console.log('🚨 ENTERING EDIT MODE DELETION CHECKS');
+            console.log('🚨 Submission data gender:', submissionData.gender);
+            console.log('🚨 Original wives data length:', originalWivesData.length);
+            
+            // Handle deleted husband for female members
            if (submissionData.gender === 'female' && originalHusbandData) {
              const hasCurrentHusband = husband && husband.isSaved;
              
