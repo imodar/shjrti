@@ -527,8 +527,20 @@ const FamilyBuilderNew = () => {
   };
 
   useEffect(() => {
-    fetchFamilyData();
-  }, [toast]);
+    let isCancelled = false;
+    
+    const loadData = async () => {
+      if (!isCancelled) {
+        await fetchFamilyData();
+      }
+    };
+    
+    loadData();
+    
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   // Auto-add member when autoAdd parameter is true and data is loaded
   useEffect(() => {
@@ -539,11 +551,10 @@ const FamilyBuilderNew = () => {
 
   // Load spouses when data is updated and there's a member being edited
   useEffect(() => {
-    if (editingMember && familyMarriages && familyMembers && familyMarriages.length > 0) {
-      
+    if (editingMember?.id && familyMarriages?.length > 0 && familyMembers?.length > 0) {
       loadExistingSpouses(editingMember);
     }
-  }, [familyMarriages, familyMembers, editingMember]);
+  }, [editingMember?.id, familyMarriages?.length, familyMembers?.length]);
   
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -1940,108 +1951,102 @@ const FamilyBuilderNew = () => {
                !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId)
              );
              
-             console.log('🚨 DELETED WIVES detected:', deletedWives.map(w => ({ id: w.id, name: w.name })));
-             
-             for (const deletedWife of deletedWives) {
-               try {
-                 const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
-                 if (!wifeId) continue;
-                 
-                 console.log(`🚨 DELETING wife: ${deletedWife.name} (ID: ${wifeId})`);
-                 
-                 // Find and delete marriage record
-                 const { error: marriageDeleteError } = await supabase
-                   .from('marriages')
-                   .delete()
-                   .eq('husband_id', memberData.id)
-                   .eq('wife_id', wifeId);
-                   
-                 if (marriageDeleteError) {
-                   console.error('Error deleting marriage:', marriageDeleteError);
-                 } else {
-                   console.log(`🚨 Marriage deleted for wife: ${deletedWife.name}`);
-                 }
-                 
-                 // If wife is not a family member (external spouse), delete her record
-                 if (!deletedWife.isFamilyMember) {
-                   const { error: wifeDeleteError } = await supabase
-                     .from('family_tree_members')
-                     .delete()
-                     .eq('id', wifeId);
-                     
-                   if (wifeDeleteError) {
-                     console.error('Error deleting wife member:', wifeDeleteError);
-                   } else {
-                     console.log(`🚨 Wife member deleted: ${deletedWife.name}`);
-                   }
-                 } else {
-                   // If she's a family member, just update her marital status
-                   const { error: updateError } = await supabase
-                     .from('family_tree_members')
-                     .update({ marital_status: 'single' })
-                     .eq('id', wifeId);
-                     
-                   if (updateError) {
-                     console.error('Error updating wife marital status:', updateError);
-                   } else {
-                     console.log(`🚨 Wife marital status updated to single: ${deletedWife.name}`);
-                   }
-                 }
-                 
-                 // Find and update children to remove mother relationship
-                 const { error: childrenUpdateError } = await supabase
-                   .from('family_tree_members')
-                   .update({ mother_id: null })
-                   .eq('mother_id', wifeId);
-                   
-                 if (childrenUpdateError) {
-                   console.error('Error updating children mother_id:', childrenUpdateError);
-                 } else {
-                   console.log(`🚨 Children mother_id updated for deleted wife: ${deletedWife.name}`);
-                 }
-                 
-               } catch (error) {
-                 console.error(`Error deleting wife ${deletedWife.name}:`, error);
-               }
+              if (process.env.NODE_ENV === 'development') {
+                console.log('DELETED WIVES detected:', deletedWives.length);
+              }
+              
+              for (const deletedWife of deletedWives) {
+                try {
+                  const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
+                  if (!wifeId) continue;
+                  
+                  // Find and delete marriage record
+                  const { error: marriageDeleteError } = await supabase
+                    .from('marriages')
+                    .delete()
+                    .eq('husband_id', memberData.id)
+                    .eq('wife_id', wifeId);
+                    
+                  if (marriageDeleteError) {
+                    console.error('Error deleting marriage:', marriageDeleteError);
+                    marriageResults.failed++;
+                    marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
+                    continue;
+                  }
+                  
+                  // If wife is not a family member (external spouse), delete her record
+                  if (!deletedWife.isFamilyMember) {
+                    const { error: wifeDeleteError } = await supabase
+                      .from('family_tree_members')
+                      .delete()
+                      .eq('id', wifeId);
+                      
+                    if (wifeDeleteError) {
+                      console.error('Error deleting wife member:', wifeDeleteError);
+                      marriageResults.failed++;
+                      marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
+                      continue;
+                    }
+                  } else {
+                    // If she's a family member, just update her marital status
+                    const { error: updateError } = await supabase
+                      .from('family_tree_members')
+                      .update({ marital_status: 'single' })
+                      .eq('id', wifeId);
+                      
+                    if (updateError) {
+                      console.error('Error updating wife marital status:', updateError);
+                    }
+                  }
+                  
+                  // Find and update children to remove mother relationship
+                  const { error: childrenUpdateError } = await supabase
+                    .from('family_tree_members')
+                    .update({ mother_id: null })
+                    .eq('mother_id', wifeId);
+                    
+                  if (childrenUpdateError) {
+                    console.error('Error updating children mother_id:', childrenUpdateError);
+                  }
+                  
+                  marriageResults.successful++;
+                  
+                } catch (error) {
+                  console.error(`Error deleting wife ${deletedWife.name}:`, error);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
+                }
              }
            }
          }
 
-         // Handle wives for male members - process all saved wives
-         if (submissionData.gender === 'male' && wives.length > 0) {
-            console.log('🚨 PROCESSING WIVES - wives array:', wives.map(w => ({ 
-              id: w.id, 
-              name: w.name, 
-              isSaved: w.isSaved, 
-              existingFamilyMemberId: w.existingFamilyMemberId 
-            })));
-            
-            const savedWives = wives.filter(wife => {
-              // Get the wife's index to check family status
-              const wifeIndex = wives.findIndex(w => w === wife);
-              const familyStatus = wiveFamilyStatus[wifeIndex];
-              
-              console.log(`🚨 Wife filter - ${wife.name}: isSaved=${wife.isSaved}, familyStatus=${familyStatus}, existingFamilyMemberId=${wife.existingFamilyMemberId}`);
-              
-              // Only save if:
-              // 1. Wife is marked as saved
-              // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
-              return wife.isSaved === true && 
-                     (familyStatus !== 'yes' || wife.existingFamilyMemberId);
-            });
-            
-            console.log('🚨 SAVED WIVES after filter:', savedWives.map(w => ({ id: w.id, name: w.name })));
-           for (const wife of savedWives) {
-              try {
-                console.log(`🚨 PROCESSING WIFE: ${wife.name}`);
-                console.log(`🚨 Wife ID: ${wife.id}`);
-                console.log(`🚨 Wife existingFamilyMemberId: ${wife.existingFamilyMemberId}`);
-                
-                let wifeId = wife.existingFamilyMemberId || wife.id;
-                
-                // If wife has an existing ID (either existingFamilyMemberId or regular id), update the existing record
-                if (wifeId && (wife.existingFamilyMemberId || wife.id)) {
-                  console.log(`🚨 UPDATING existing wife with ID: ${wifeId}`);
+          // Handle wives for male members - process all saved wives
+          if (submissionData.gender === 'male' && wives.length > 0) {
+             if (process.env.NODE_ENV === 'development') {
+               console.log('PROCESSING WIVES - count:', wives.length);
+             }
+             
+             const savedWives = wives.filter(wife => {
+               // Get the wife's index to check family status
+               const wifeIndex = wives.findIndex(w => w === wife);
+               const familyStatus = wiveFamilyStatus[wifeIndex];
+               
+               // Only save if:
+               // 1. Wife is marked as saved
+               // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
+               return wife.isSaved === true && 
+                      (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+             });
+             
+             if (process.env.NODE_ENV === 'development') {
+               console.log('SAVED WIVES after filter:', savedWives.length);
+             }
+            for (const wife of savedWives) {
+               try {
+                 let wifeId = wife.existingFamilyMemberId || wife.id;
+                 
+                 // If wife has an existing ID (either existingFamilyMemberId or regular id), update the existing record
+                 if (wifeId && (wife.existingFamilyMemberId || wife.id)) {
                   // Get current image to handle image state properly
                   const { data: currentWife } = await supabase
                     .from('family_tree_members')
@@ -2060,8 +2065,7 @@ const FamilyBuilderNew = () => {
                      imageUrl = currentWife?.image_url || null;
                    }
                    
-                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                  console.log(`🚨 UPDATING wife in database - ID: ${wifeId}, Name: ${wifeName}`);
+                   const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
                   
                   const { data: updatedWife, error: wifeUpdateError } = await supabase
                     .from('family_tree_members')
@@ -2088,12 +2092,10 @@ const FamilyBuilderNew = () => {
                     continue;
                   }
                   
-                  console.log(`🚨 SUCCESS - Wife updated in database:`, updatedWife);
-                  wifeId = updatedWife.id;
+                   wifeId = updatedWife.id;
                  
-                } else {
-                  // If wife is not from existing family members, create new family member
-                  console.log(`🚨 CREATING new wife in database: ${wife.name}`);
+                 } else {
+                   // If wife is not from existing family members, create new family member
                   const firstName = wife.firstName || '';
                   const lastName = wife.lastName || familyData?.name || '';
                   const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
@@ -3973,9 +3975,8 @@ const MemberList = ({
                           <UserIcon className="h-3 w-3 text-pink-500" />
                         )}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
-                          {(() => {
-                            console.log('Member data:', { name: member.name, first_name: member.first_name, last_name: member.last_name, fatherId: member.fatherId, motherId: member.motherId, isFounder: member.isFounder });
-                            const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
+                         {(() => {
+                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
                             
                             if (isSpouse) {
                               // For spouses: show first_name + last_name, or name if missing
