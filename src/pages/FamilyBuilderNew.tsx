@@ -769,10 +769,29 @@ const FamilyBuilderNew = () => {
           const updatedWives = [...wives];
           updatedWives[wifeIndex] = updatedWife;
           setWives(updatedWives);
+          
+          // Update originalWivesData to track changes for new members
+          if (originalWivesData.length === 0 && formMode === 'add') {
+            // For new members, initialize originalWivesData with the first save
+            setOriginalWivesData([...updatedWives]);
+          } else {
+            // For existing members or subsequent saves, update the specific index
+            const updatedOriginal = [...originalWivesData];
+            if (updatedOriginal[wifeIndex]) {
+              updatedOriginal[wifeIndex] = { ...updatedWife };
+              setOriginalWivesData(updatedOriginal);
+            }
+          }
         } else {
           // Add new wife
           console.log('🔍 ADDING new wife');
-          setWives(prev => [...prev, updatedSpouse]);
+          const newWives = [...wives, updatedSpouse];
+          setWives(newWives);
+          
+          // Update originalWivesData for new members
+          if (originalWivesData.length === 0 && formMode === 'add') {
+            setOriginalWivesData([...newWives]);
+          }
         }
         setEditingWifeIndex(null);
       } else {
