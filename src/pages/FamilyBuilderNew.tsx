@@ -1280,10 +1280,13 @@ const FamilyBuilderNew = () => {
   };
 
   // Handle spouse deletion with modal
-  const handleSpouseDelete = (wife: any, index: number) => {
+  const handleSpouseDelete = (spouse: any, index: number) => {
+    const isHusband = index === -1;
+    const spouseName = spouse?.name || (isHusband ? 'الزوج' : 'الزوجة');
+    
     // Find children of this spouse
     const spouseChildren = familyMembers.filter(member => 
-      member.mother_id === wife.id || member.father_id === wife.id
+      member.mother_id === spouse.id || member.father_id === spouse.id
     );
     
     // Get all descendants
@@ -1298,10 +1301,10 @@ const FamilyBuilderNew = () => {
       return descendants;
     };
     
-    const allDescendants = getAllSpouseDescendants(wife.id);
+    const allDescendants = getAllSpouseDescendants(spouse.id);
     
-    let warningMessage = `تحذير: حذف هذه الزوجة سيؤدي إلى:\n`;
-    warningMessage += `- حذف الزوجة: ${wife.name}\n`;
+    let warningMessage = `تحذير: حذف ${isHusband ? 'هذا الزوج' : 'هذه الزوجة'} سيؤدي إلى:\n`;
+    warningMessage += `- حذف ${isHusband ? 'الزوج' : 'الزوجة'}: ${spouseName}\n`;
     warningMessage += `- إزالة علاقة الزواج\n`;
     
     if (spouseChildren.length > 0) {
@@ -1314,7 +1317,7 @@ const FamilyBuilderNew = () => {
     
     warningMessage += `\nسيتم التأكيد النهائي عند حفظ بيانات العضو الحالي.\nهل تريد المتابعة؟`;
     
-    setSpouseToDelete({ wife, index });
+    setSpouseToDelete({ wife: spouse, index });
     setSpouseDeleteWarning(warningMessage);
     setShowSpouseDeleteModal(true);
   };
@@ -1323,33 +1326,45 @@ const FamilyBuilderNew = () => {
   const confirmSpouseDelete = () => {
     if (!spouseToDelete) return;
     
-    const { index } = spouseToDelete;
-    const newWives = wives.filter((_, i) => i !== index);
-    setWives(newWives);
+    const { wife, index } = spouseToDelete;
     
-    // Update family status object
-    const newStatus = { ...wiveFamilyStatus };
-    delete newStatus[index];
-    // Reindex the remaining statuses
-    const reindexedStatus: { [key: number]: 'yes' | 'no' | null } = {};
-    Object.keys(newStatus).forEach((key, newIndex) => {
-      const oldIndex = parseInt(key);
-      if (oldIndex > index) {
-        reindexedStatus[newIndex] = newStatus[oldIndex];
-      } else if (oldIndex < index) {
-        reindexedStatus[oldIndex] = newStatus[oldIndex];
-      }
-    });
-    setWiveFamilyStatus(reindexedStatus);
+    if (index === -1) {
+      // This is a husband deletion
+      setHusband(null);
+      toast({
+        title: "تم تحديد الزوج للحذف",
+        description: "سيتم حذف الزوج نهائياً عند حفظ بيانات العضو",
+        variant: "destructive"
+      });
+    } else {
+      // This is a wife deletion
+      const newWives = wives.filter((_, i) => i !== index);
+      setWives(newWives);
+      
+      // Update family status object
+      const newStatus = { ...wiveFamilyStatus };
+      delete newStatus[index];
+      // Reindex the remaining statuses
+      const reindexedStatus: { [key: number]: 'yes' | 'no' | null } = {};
+      Object.keys(newStatus).forEach((key, newIndex) => {
+        const oldIndex = parseInt(key);
+        if (oldIndex > index) {
+          reindexedStatus[newIndex] = newStatus[oldIndex];
+        } else if (oldIndex < index) {
+          reindexedStatus[oldIndex] = newStatus[oldIndex];
+        }
+      });
+      setWiveFamilyStatus(reindexedStatus);
+      
+      toast({
+        title: "تم تحديد الزوجة للحذف",
+        description: "سيتم حذف الزوجة نهائياً عند حفظ بيانات العضو",
+        variant: "destructive"
+      });
+    }
     
     setShowSpouseDeleteModal(false);
     setSpouseToDelete(null);
-    
-    toast({
-      title: "تم تحديد الزوجة للحذف",
-      description: "سيتم حذف الزوجة نهائياً عند حفظ بيانات العضو",
-      variant: "destructive"
-    });
   };
 
   const filteredMembers = familyMembers.filter(member => {
