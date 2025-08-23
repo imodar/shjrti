@@ -2212,13 +2212,16 @@ const FamilyBuilderNew = () => {
          }
        }
 
-        // Handle marriages if applicable
-        if (finalData.maritalStatus === 'married') {
+        // Handle spouse deletions and current marriages  
+        // CRITICAL: Run deletion detection in edit mode regardless of final marital status
+        if (isEditMode || finalData.maritalStatus === 'married') {
           // Keep track of marriages that should remain active
           let activeMarriageIds = [];
           
-          // Process current spouses to create marriages
-           if (submissionData.gender === 'female' && originalHusbandData) {
+          // Deletion detection runs FIRST (in edit mode) regardless of current marital status
+          if (isEditMode) {
+            // Handle deleted husband for female members
+            if (submissionData.gender === 'female' && originalHusbandData) {
              const hasCurrentHusband = husband && husband.isSaved;
              
              console.log('🔍 HUSBAND DELETION DEBUG:');
@@ -2767,12 +2770,12 @@ const FamilyBuilderNew = () => {
             marriageResults.details.push(`خطأ في ربط الزواج مع ${husband.name}`);
            }
          }
-         
-          // Note: No automatic marriage deactivation - user manually deletes incorrect marriages
-        }
         
-        // Refresh family data to show updated information
-        await refreshFamilyData();
+        // Note: No automatic marriage deactivation - user manually deletes incorrect marriages
+      }
+      
+      // Refresh family data to show updated information
+      await refreshFamilyData();
       
         // Reset form state
       setFormMode('view');
@@ -2811,7 +2814,8 @@ const FamilyBuilderNew = () => {
           });
         }, 1000);
       }
-      
+      }
+
     } catch (error) {
       console.error('Error submitting form:', error);
       
