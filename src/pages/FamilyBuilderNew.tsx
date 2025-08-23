@@ -807,52 +807,29 @@ const FamilyBuilderNew = () => {
   };
 
   const closeActiveSpouseEdit = () => {
-    console.log('closeActiveSpouseEdit called, showSpouseForm:', showWifeForm || showHusbandForm, 'currentSpouseType:', showWifeForm ? 'wife' : 'husband', 'editingWifeIndex:', editingWifeIndex);
+    console.log('closeActiveSpouseEdit called, showWifeForm:', showWifeForm, 'showHusbandForm:', showHusbandForm, 'editingWifeIndex:', editingWifeIndex);
     
     if (showWifeForm) {
+      console.log('Closing wife form, current wives before close:', wives);
+      
+      // Simply close the form without restoring data - preserve existing state
       setShowWifeForm(false);
       setCurrentWife(null);
       setWifeFamilyStatus('no');
-      
-      // If we were editing a wife, restore the original data
-      if (editingWifeIndex !== null) {
-        const updatedWives = [...wives];
-        const originalWife = familyMarriages
-          .flatMap((m: any) => m.wife ? [m.wife] : [])
-          .find((w: any) => w.id === updatedWives[editingWifeIndex]?.id);
-        
-        if (originalWife && updatedWives[editingWifeIndex]) {
-          updatedWives[editingWifeIndex] = {
-            ...originalWife,
-            isSaved: true,
-            isFamilyMember: updatedWives[editingWifeIndex].isFamilyMember
-          };
-          setWives(updatedWives);
-        }
-      }
-      
       setEditingWifeIndex(null);
+      
+      console.log('Wife form closed, wives preserved as-is');
     }
     
     if (showHusbandForm) {
+      console.log('Closing husband form, current husband before close:', husband);
+      
+      // Simply close the form without restoring data - preserve existing state
       setShowHusbandForm(false);
       setCurrentHusband(null);
       setHusbandFamilyStatus('no');
       
-      // If we have a husband, restore the original data
-      if (husband) {
-        const originalHusband = familyMarriages
-          .flatMap((m: any) => m.husband ? [m.husband] : [])
-          .find((h: any) => h.id === husband.id);
-        
-        if (originalHusband) {
-          setHusband({
-            ...originalHusband,
-            isSaved: true,
-            isFamilyMember: husband.isFamilyMember
-          });
-        }
-      }
+      console.log('Husband form closed, husband preserved as-is');
     }
   };
 
