@@ -2084,21 +2084,28 @@ const FamilyBuilderNew = () => {
                !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId)
              );
              
-             console.log('🔍 DELETION DETECTION DEBUG:');
-             console.log('Original wives count:', originalWivesData.length);
-             console.log('Current wives count:', wives.length);
-             console.log('Original wives IDs:', originalWivesData.map(w => ({ 
+             console.log('🔍 DETAILED ID COMPARISON:');
+             console.log('Original wives data:', originalWivesData.map(w => ({
+               id: w.id,
+               existingFamilyMemberId: w.existingFamilyMemberId,
+               name: w.name,
+               finalId: w.id || w.existingFamilyMemberId
+             })));
+             console.log('Current wives data:', wives.map(w => ({
                id: w.id, 
                existingFamilyMemberId: w.existingFamilyMemberId,
-               name: w.name 
+               name: w.name,
+               finalId: w.id || w.existingFamilyMemberId
              })));
-             console.log('Current wives IDs:', currentWiveIds);
-             console.log('Deleted wives detected:', deletedWives.length);
-             console.log('Deleted wives details:', deletedWives.map(w => ({ 
-               id: w.id, 
-               existingFamilyMemberId: w.existingFamilyMemberId,
-               name: w.name 
-             })));
+             console.log('Current wives IDs extracted:', currentWiveIds);
+             console.log('Original wives final IDs:', originalWivesData.map(w => w.id || w.existingFamilyMemberId));
+             
+             // More detailed deletion check
+             originalWivesData.forEach((originalWife, index) => {
+               const originalId = originalWife.id || originalWife.existingFamilyMemberId;
+               const isFound = currentWiveIds.includes(originalId);
+               console.log(`Original wife ${index}: ${originalWife.name} (ID: ${originalId}) - Found in current: ${isFound}`);
+             });
              
              if (process.env.NODE_ENV === 'development') {
                console.log('DELETED WIVES detected:', deletedWives.length);
