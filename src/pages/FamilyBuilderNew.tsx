@@ -1281,6 +1281,13 @@ const FamilyBuilderNew = () => {
 
   // Handle spouse deletion with modal
   const handleSpouseDelete = (spouse: any, index: number) => {
+    console.log('🚨 SPOUSE DELETE CLICKED:', {
+      spouseName: spouse?.name,
+      index: index,
+      isHusband: index === -1,
+      spouseId: spouse?.id
+    });
+    
     const isHusband = index === -1;
     const spouseName = spouse?.name || (isHusband ? 'الزوج' : 'الزوجة');
     
@@ -1317,19 +1324,27 @@ const FamilyBuilderNew = () => {
     
     warningMessage += `\nسيتم التأكيد النهائي عند حفظ بيانات العضو الحالي.\nهل تريد المتابعة؟`;
     
+    console.log('🚨 SETTING SPOUSE TO DELETE:', { spouse, index });
     setSpouseToDelete({ wife: spouse, index });
     setSpouseDeleteWarning(warningMessage);
     setShowSpouseDeleteModal(true);
+    console.log('🚨 DELETE MODAL SHOULD BE SHOWN NOW');
   };
 
   // Confirm spouse deletion (just mark for deletion)
   const confirmSpouseDelete = () => {
-    if (!spouseToDelete) return;
+    console.log('🚨 CONFIRM SPOUSE DELETE CALLED');
+    if (!spouseToDelete) {
+      console.log('❌ No spouse to delete');
+      return;
+    }
     
     const { wife, index } = spouseToDelete;
+    console.log('🚨 DELETING SPOUSE:', { wife: wife?.name, index });
     
     if (index === -1) {
       // This is a husband deletion
+      console.log('🚨 DELETING HUSBAND');
       setHusband(null);
       toast({
         title: "تم تحديد الزوج للحذف",
@@ -1338,7 +1353,12 @@ const FamilyBuilderNew = () => {
       });
     } else {
       // This is a wife deletion
+      console.log('🚨 DELETING WIFE AT INDEX:', index);
+      console.log('🚨 WIVES BEFORE DELETION:', wives.length, wives.map(w => w.name));
+      
       const newWives = wives.filter((_, i) => i !== index);
+      console.log('🚨 WIVES AFTER DELETION:', newWives.length, newWives.map(w => w.name));
+      
       setWives(newWives);
       
       // Update family status object
@@ -1365,6 +1385,7 @@ const FamilyBuilderNew = () => {
     
     setShowSpouseDeleteModal(false);
     setSpouseToDelete(null);
+    console.log('🚨 SPOUSE DELETE COMPLETED');
   };
 
   const filteredMembers = familyMembers.filter(member => {
