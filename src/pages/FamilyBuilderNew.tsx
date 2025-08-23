@@ -1062,11 +1062,21 @@ const FamilyBuilderNew = () => {
     
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
+    
+    // Get father information by looking up the actual family member
+    const partnerFamilyMember = familyMembers.find(m => m.id === partner.id);
+    const father = partnerFamilyMember ? familyMembers.find(m => m.id === partnerFamilyMember.father_id) : null;
+    const fatherName = father?.name || "";
+    
+    // Get grandfather information
+    const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
+    const grandfatherName = grandfather?.name || "";
+    
     setSpousePartnerDetails({
       name: partner.name || "غير محدد",
-      fatherName: partner.father_name || "غير محدد", 
-      grandfatherName: partner.grandfather_name || "غير محدد",
-      isFounder: partner.is_founder || false
+      fatherName: fatherName || "غير محدد", 
+      grandfatherName: grandfatherName || "غير محدد",
+      isFounder: partnerFamilyMember?.is_founder || false
     });
     
     // Show the spouse edit warning modal
