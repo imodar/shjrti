@@ -812,24 +812,33 @@ const FamilyBuilderNew = () => {
     if (showWifeForm) {
       console.log('Closing wife form, current wives before close:', wives);
       
-      // Simply close the form without restoring data - preserve existing state
+      // Ensure all wives are marked as saved when closing
+      const updatedWives = wives.map(wife => ({ ...wife, isSaved: true }));
+      setWives(updatedWives);
+      
+      // Close the form
       setShowWifeForm(false);
       setCurrentWife(null);
       setWifeFamilyStatus('no');
       setEditingWifeIndex(null);
       
-      console.log('Wife form closed, wives preserved as-is');
+      console.log('Wife form closed, all wives marked as saved');
     }
     
     if (showHusbandForm) {
       console.log('Closing husband form, current husband before close:', husband);
       
-      // Simply close the form without restoring data - preserve existing state
+      // Ensure husband is marked as saved when closing
+      if (husband) {
+        setHusband({ ...husband, isSaved: true });
+      }
+      
+      // Close the form
       setShowHusbandForm(false);
       setCurrentHusband(null);
       setHusbandFamilyStatus('no');
       
-      console.log('Husband form closed, husband preserved as-is');
+      console.log('Husband form closed, husband marked as saved');
     }
   };
 
