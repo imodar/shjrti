@@ -726,16 +726,41 @@ const FamilyBuilderNew = () => {
       const updatedSpouse = { ...currentSpouse, id: spouseId, isSaved: true };
       
       if (spouseType === 'wife') {
-        // Check if we're editing an existing wife or adding a new one
-        const existingWifeIndex = wives.findIndex(w => w.id === currentSpouse.id || (editingWifeIndex !== null && editingWifeIndex >= 0));
+        console.log('🔍 WIFE SAVE - Determining index logic...');
+        console.log('🔍 currentSpouse.id:', currentSpouse.id);
+        console.log('🔍 editingWifeIndex:', editingWifeIndex);
+        console.log('🔍 wives array:', wives.map(w => ({ id: w.id, name: w.name })));
         
-        if (existingWifeIndex >= 0) {
-          // Update existing wife
+        // First try to find by ID match (most reliable)
+        let wifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
+        console.log('🔍 Index by ID match:', wifeIndex);
+        
+        // If no ID match and we have an editing index, use that
+        if (wifeIndex === -1 && editingWifeIndex !== null && editingWifeIndex >= 0) {
+          wifeIndex = editingWifeIndex;
+          console.log('🔍 Using editingWifeIndex:', wifeIndex);
+        }
+        
+        if (wifeIndex >= 0) {
+          // Update existing wife - preserve original ID and database reference
+          console.log('🔍 UPDATING existing wife at index:', wifeIndex);
+          const existingWife = wives[wifeIndex];
+          const updatedWife = {
+            ...updatedSpouse,
+            // Preserve original database ID if it exists
+            id: existingWife.id || updatedSpouse.id,
+            existingFamilyMemberId: existingWife.existingFamilyMemberId || updatedSpouse.existingFamilyMemberId,
+            isSaved: true
+          };
+          
+          console.log('🔍 Updated wife data:', { id: updatedWife.id, name: updatedWife.name, existingFamilyMemberId: updatedWife.existingFamilyMemberId });
+          
           const updatedWives = [...wives];
-          updatedWives[existingWifeIndex] = updatedSpouse;
+          updatedWives[wifeIndex] = updatedWife;
           setWives(updatedWives);
         } else {
           // Add new wife
+          console.log('🔍 ADDING new wife');
           setWives(prev => [...prev, updatedSpouse]);
         }
         setEditingWifeIndex(null);
@@ -1922,10 +1947,19 @@ const FamilyBuilderNew = () => {
 
          // Handle wives for male members - process all saved wives
          if (submissionData.gender === 'male' && wives.length > 0) {
+            console.log('🚨 PROCESSING WIVES - wives array:', wives.map(w => ({ 
+              id: w.id, 
+              name: w.name, 
+              isSaved: w.isSaved, 
+              existingFamilyMemberId: w.existingFamilyMemberId 
+            })));
+            
             const savedWives = wives.filter(wife => {
               // Get the wife's index to check family status
               const wifeIndex = wives.findIndex(w => w === wife);
               const familyStatus = wiveFamilyStatus[wifeIndex];
+              
+              console.log(`🚨 Wife filter - ${wife.name}: isSaved=${wife.isSaved}, familyStatus=${familyStatus}, existingFamilyMemberId=${wife.existingFamilyMemberId}`);
               
               // Only save if:
               // 1. Wife is marked as saved
@@ -1933,18 +1967,25 @@ const FamilyBuilderNew = () => {
               return wife.isSaved === true && 
                      (familyStatus !== 'yes' || wife.existingFamilyMemberId);
             });
+            
+            console.log('🚨 SAVED WIVES after filter:', savedWives.map(w => ({ id: w.id, name: w.name })));
            for (const wife of savedWives) {
-             try {
-               let wifeId = wife.existingFamilyMemberId;
-               
-                 // If wife has an existing ID, update the existing record
-                 if (wife.existingFamilyMemberId && wife.id) {
-                   // Get current image to handle image state properly
-                   const { data: currentWife } = await supabase
-                     .from('family_tree_members')
-                     .select('image_url')
-                     .eq('id', wife.existingFamilyMemberId)
-                     .maybeSingle();
+              try {
+                console.log(`🚨 PROCESSING WIFE: ${wife.name}`);
+                console.log(`🚨 Wife ID: ${wife.id}`);
+                console.log(`🚨 Wife existingFamilyMemberId: ${wife.existingFamilyMemberId}`);
+                
+                let wifeId = wife.existingFamilyMemberId || wife.id;
+                
+                // If wife has an existing ID (either existingFamilyMemberId or regular id), update the existing record
+                if (wifeId && (wife.existingFamilyMemberId || wife.id)) {
+                  console.log(`🚨 UPDATING existing wife with ID: ${wifeId}`);
+                  // Get current image to handle image state properly
+                  const { data: currentWife } = await supabase
+                    .from('family_tree_members')
+                    .select('image_url')
+                    .eq('id', wifeId)
+                    .maybeSingle();
                    
                    // Handle image state properly:
                    // - If image exists in wife.croppedImage, use it (user uploaded new image)
@@ -1957,39 +1998,43 @@ const FamilyBuilderNew = () => {
                      imageUrl = currentWife?.image_url || null;
                    }
                    
-                   const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                     const { data: updatedWife, error: wifeUpdateError } = await supabase
-                       .from('family_tree_members')
-                        .update({
-                          name: wifeName,
-                         first_name: wife.firstName || null,
-                         last_name: wife.lastName || familyData?.name || null,
-                         birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
-                         is_alive: wife.isAlive ?? true,
-                         death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
-                          marital_status: wife.maritalStatus || 'married',
-                          image_url: imageUrl,
-                          biography: wife.biography || null,
-                          updated_at: new Date().toISOString()
-                       })
-                      .eq('id', wife.existingFamilyMemberId)
+                  const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
+                  console.log(`🚨 UPDATING wife in database - ID: ${wifeId}, Name: ${wifeName}`);
+                  
+                  const { data: updatedWife, error: wifeUpdateError } = await supabase
+                    .from('family_tree_members')
+                    .update({
+                      name: wifeName,
+                      first_name: wife.firstName || null,
+                      last_name: wife.lastName || familyData?.name || null,
+                      birth_date: wife.birthDate?.toISOString().split('T')[0] || null,
+                      is_alive: wife.isAlive ?? true,
+                      death_date: !wife.isAlive && wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                      marital_status: wife.maritalStatus || 'married',
+                      image_url: imageUrl,
+                      biography: wife.biography || null,
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', wifeId)
                       .select()
                       .single();
 
-                    if (wifeUpdateError) {
-                      console.error('Error updating wife member:', wife.name, wifeUpdateError);
-                      marriageResults.failed++;
-                      marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
-                      continue;
-                    }
-                    
-                    wifeId = updatedWife.id;
+                  if (wifeUpdateError) {
+                    console.error('Error updating wife member:', wife.name, wifeUpdateError);
+                    marriageResults.failed++;
+                    marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
+                    continue;
+                  }
+                  
+                  console.log(`🚨 SUCCESS - Wife updated in database:`, updatedWife);
+                  wifeId = updatedWife.id;
                  
-               } else {
-                   // If wife is not from existing family members, create new family member
-                   const firstName = wife.firstName || '';
-                   const lastName = wife.lastName || familyData?.name || '';
-                   const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
+                } else {
+                  // If wife is not from existing family members, create new family member
+                  console.log(`🚨 CREATING new wife in database: ${wife.name}`);
+                  const firstName = wife.firstName || '';
+                  const lastName = wife.lastName || familyData?.name || '';
+                  const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
                    
                    const { data: newWifeMember, error: wifeError } = await supabase
                      .from('family_tree_members')
