@@ -4265,11 +4265,21 @@ const FamilyBuilderNew = () => {
               </div>
             </AlertDialogDescription>
 
-            <AlertDialogFooter className="pt-6">
+            <AlertDialogFooter className="pt-6 flex flex-col gap-3">
               <AlertDialogCancel className="font-arabic w-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border border-gray-300 text-gray-700 hover:text-gray-800 transition-all duration-200 hover-scale">
-                <Check className="h-4 w-4 mr-2" />
+                <ArrowRight className="h-4 w-4 mr-2" />
                 عودة
               </AlertDialogCancel>
+              <Button 
+                className="font-arabic w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white transition-all duration-200 hover-scale"
+                onClick={() => {
+                  setShowSpouseEditWarning(false);
+                  // Navigate to edit founder data
+                }}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                تعديل بيانات مضر
+              </Button>
             </AlertDialogFooter>
           </div>
         </AlertDialogContent>
