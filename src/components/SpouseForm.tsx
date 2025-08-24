@@ -328,9 +328,9 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                     <Command>
                       <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                       <CommandList>
-                        <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                          لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة (لديهم أب في العائلة وعازبون/مطلقون).
-                        </CommandEmpty>
+                         <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
+                           لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة من العازبين أو المطلقين.
+                         </CommandEmpty>
                         <CommandGroup>
                           {familyMembers.filter(member => {
                             const hasValidGender = member.gender === spouseGender;
