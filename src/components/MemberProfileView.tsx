@@ -549,7 +549,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div>
                           <p className="text-sm text-muted-foreground">الأب</p>
                           <p className="font-semibold text-foreground">
-                            {getFather() ? `${getFather()?.first_name} ${getFather()?.last_name || ''}`.trim() : 'غير محدد'}
+                            {getFather()?.first_name || 'غير محدد'}
                           </p>
                         </div>
                       </div>
