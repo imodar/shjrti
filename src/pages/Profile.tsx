@@ -14,12 +14,14 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDatePreference } from "@/contexts/DatePreferenceContext";
+import { useDateFormat } from "@/hooks/useDateFormat";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Profile() {
   const { user } = useAuth();
-  const { datePreference: globalDatePreference, setDatePreference: setGlobalDatePreference, formatDate } = useDatePreference();
+  const { datePreference: globalDatePreference, setDatePreference: setGlobalDatePreference } = useDatePreference();
+  const { format } = useDateFormat();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -200,7 +202,7 @@ export default function Profile() {
         lastName: profileData?.last_name || "",
         email: profileData?.email || user?.email || "",
         phone: profileData?.phone || "",
-        joinDate: profileData?.created_at ? formatDate(new Date(profileData.created_at)) : formatDate(new Date()),
+        joinDate: profileData?.created_at ? format(new Date(profileData.created_at)) : format(new Date()),
         datePreference: (profileData?.date_preference || "gregorian") as DatePreference
       };
 
