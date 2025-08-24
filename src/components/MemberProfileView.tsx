@@ -321,24 +321,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     
                     {/* Quick Stats */}
                     <div className="flex gap-6 pt-2">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">{children.length}</div>
-                        <div className="text-sm text-muted-foreground">الأطفال</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
-                        <div className="text-sm text-muted-foreground">الأزواج</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
-                        <div className="text-sm text-muted-foreground">الأحفاد</div>
-                      </div>
                       {getAge() && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-accent">{getAge()}</div>
                           <div className="text-sm text-muted-foreground">سنة</div>
                         </div>
                       )}
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
+                        <div className="text-sm text-muted-foreground">الأزواج</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{children.length}</div>
+                        <div className="text-sm text-muted-foreground">الأطفال</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
+                        <div className="text-sm text-muted-foreground">الأحفاد</div>
+                      </div>
                     </div>
                   </div>
                 </div>
