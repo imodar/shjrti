@@ -540,7 +540,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div>
                           <p className="text-sm text-muted-foreground">الأب</p>
                           <p className="font-semibold text-foreground">
-                            {getFather()?.first_name || 'غير محدد'}
+                            {getFather() ? `${getFather()?.first_name} ${getFather()?.last_name || ''}`.trim() : 'غير محدد'}
                           </p>
                         </div>
                       </div>
@@ -553,7 +553,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div>
                           <p className="text-sm text-muted-foreground">الأم</p>
                           <p className="font-semibold text-foreground">
-                            {getMother()?.first_name || 'غير محدد'}
+                            {getMother() ? `${getMother()?.first_name} ${getMother()?.last_name || ''}`.trim() : 'غير محدد'}
                           </p>
                         </div>
                       </div>
