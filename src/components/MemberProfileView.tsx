@@ -685,6 +685,40 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   }
                   return null;
                 })()}
+
+                {/* Grandchildren Section */}
+                {(() => {
+                  const grandchildren = getGrandchildren();
+                  if (grandchildren.length > 0) {
+                    return (
+                      <div className="bg-card rounded-xl border border-border p-6">
+                        <h3 className="font-bold text-lg mb-4 text-primary">الأحفاد</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {grandchildren.map((grandchild) => (
+                            <div key={grandchild.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                grandchild.gender === 'female' 
+                                  ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                  : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                              }`}>
+                                {grandchild.gender === 'female' ? '♀' : '♂'}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-semibold text-foreground">{grandchild.first_name} {grandchild.last_name || ''}</p>
+                                {grandchild.birth_date && (
+                                  <p className="text-sm text-muted-foreground">
+                                    {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} سنة
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             )}
 
