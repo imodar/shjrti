@@ -340,8 +340,10 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                member.marital_status === "divorced";
                              
                              // Debug log for ميرا and دنيا
-                             if (member.name === 'ميرا' || member.name === 'دنيا') {
-                               console.log(`Debug ${member.name}:`, {
+                             if (member.first_name === 'ميرا' || member.first_name === 'دنيا') {
+                               console.log(`Debug ${member.first_name}:`, {
+                                 id: member.id,
+                                 first_name: member.first_name,
                                  gender: member.gender,
                                  spouseGender,
                                  hasValidGender,
