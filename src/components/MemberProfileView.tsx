@@ -592,9 +592,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   <h4 className="font-semibold text-foreground text-lg">
                                     {spouse.first_name} {spouse.last_name}
                                   </h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    {member.gender === 'male' ? 'الزوجة' : 'الزوج'} {maritalStatusText}
-                                  </p>
                                 </div>
                                 <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                                   spouse.marital_status === 'divorced' 
