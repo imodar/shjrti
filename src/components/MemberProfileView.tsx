@@ -544,30 +544,36 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <h3 className="font-bold text-lg mb-4 text-primary">الوالدان</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Father */}
-                      <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
-                          ♂
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">الأب</p>
-                          <p className="font-semibold text-foreground">
-                            {getFather()?.first_name || 'غير محدد'}
-                          </p>
-                        </div>
-                      </div>
+                       <div 
+                         className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
+                         onClick={() => getFather() && onMemberClick?.(getFather())}
+                       >
+                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                           ♂
+                         </div>
+                         <div>
+                           <p className="text-sm text-muted-foreground">الأب</p>
+                           <p className="font-semibold text-foreground">
+                             {getFather()?.first_name || 'غير محدد'}
+                           </p>
+                         </div>
+                       </div>
                       
                       {/* Mother */}
-                      <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-semibold">
-                          ♀
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">الأم</p>
-                          <p className="font-semibold text-foreground">
-                            {getMother() ? `${getMother()?.first_name} ${getMother()?.last_name || ''}`.trim() : 'غير محدد'}
-                          </p>
-                        </div>
-                      </div>
+                       <div 
+                         className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
+                         onClick={() => getMother() && onMemberClick?.(getMother())}
+                       >
+                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-semibold">
+                           ♀
+                         </div>
+                         <div>
+                           <p className="text-sm text-muted-foreground">الأم</p>
+                           <p className="font-semibold text-foreground">
+                             {getMother() ? `${getMother()?.first_name} ${getMother()?.last_name || ''}`.trim() : 'غير محدد'}
+                           </p>
+                         </div>
+                       </div>
                     </div>
                   </div>
                 )}
