@@ -310,7 +310,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <div className="space-y-3 text-center sm:text-right">
                     <div>
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
-                        {member.name}
+                        {(() => {
+                          let displayName = member.name;
+                          
+                          // Get father's name
+                          const father = familyMembers.find(m => m.id === member.father_id);
+                          if (father) {
+                            const genderTerm = member.gender === 'male' ? 'ابن' : 'ابنة';
+                            displayName += ` ${genderTerm} ${father.name}`;
+                            
+                            // Get grandfather's name
+                            const grandfather = familyMembers.find(m => m.id === father.father_id);
+                            if (grandfather) {
+                              displayName += ` ابن ${grandfather.name}`;
+                            }
+                          }
+                          
+                          return displayName;
+                        })()}
                       </h1>
                       {member.bio && (
                         <p className="text-lg italic text-muted-foreground max-w-md">
