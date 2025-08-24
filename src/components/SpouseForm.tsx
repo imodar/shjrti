@@ -332,14 +332,15 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                            لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة من العازبين أو المطلقين.
                          </CommandEmpty>
                         <CommandGroup>
-                          {familyMembers.filter(member => {
-                            const hasValidGender = member.gender === spouseGender;
-                            const isNotSelf = member.id !== selectedMember?.id;
-                            const isAvailableForMarriage = 
-                              member.marital_status === "single" || 
-                              member.marital_status === "divorced";
-                            
-                            return hasValidGender && isNotSelf && isAvailableForMarriage;
+                           {familyMembers.filter(member => {
+                             const hasValidGender = member.gender === spouseGender;
+                             const isNotSelf = member.id !== selectedMember?.id;
+                             const isAlive = member.is_alive === true;
+                             const isAvailableForMarriage = 
+                               member.marital_status === "single" || 
+                               member.marital_status === "divorced";
+                             
+                             return hasValidGender && isNotSelf && isAlive && isAvailableForMarriage;
                           }).map((member) => (
                             <CommandItem
                               key={member.id}
