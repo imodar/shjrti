@@ -49,83 +49,6 @@ const FamilyBuilderNew = () => {
   const { hasAIFeatures } = useSubscription();
   const isMobile = useIsMobile();
 
-  const calculateGenerationCount = () => {
-    if (familyMembers.length === 0) return 1;
-    
-    console.log('🔍 Starting generation calculation with members:', familyMembers.map(m => ({ 
-      id: m.id, 
-      name: m.name, 
-      isFounder: m.isFounder, 
-      fatherId: m.fatherId, 
-      motherId: m.motherId 
-    })));
-    
-    const generationMap = new Map();
-    
-    // Step 1: Assign generation 1 to founders and members without parents
-    familyMembers.forEach(member => {
-      if (member.isFounder || (!member.fatherId && !member.motherId)) {
-        generationMap.set(member.id, 1);
-        console.log(`🔍 Assigned generation 1 to ${member.name} (founder: ${member.isFounder}, no parents: ${!member.fatherId && !member.motherId})`);
-      }
-    });
-    
-    // Step 2: Calculate generations based on parent-child relationships only
-    let changed = true;
-    let maxIterations = familyMembers.length * 2; // Increase max iterations
-    let iterations = 0;
-    
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      
-      familyMembers.forEach(member => {
-        // Skip if already has generation assigned
-        if (generationMap.has(member.id)) return;
-        
-        // Skip if no parents (should have been assigned in step 1)
-        if (!member.fatherId && !member.motherId) {
-          generationMap.set(member.id, 1);
-          console.log(`🔍 Late assignment: ${member.name} -> generation 1 (no parents)`);
-          changed = true;
-          return;
-        }
-        
-        // Check if we can assign generation based on parents
-        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
-        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-        
-        // Only assign if at least one parent has a generation
-        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-          const parentGeneration = Math.max(
-            fatherGeneration || 0, 
-            motherGeneration || 0
-          );
-          const childGeneration = parentGeneration + 1;
-          generationMap.set(member.id, childGeneration);
-          console.log(`🔍 Assigned generation ${childGeneration} to ${member.name} (parent gen: ${parentGeneration})`);
-          changed = true;
-        }
-      });
-      
-      console.log(`🔍 Iteration ${iterations}: ${Array.from(generationMap.entries()).length} members assigned`);
-    }
-    
-    // Log final generation assignments
-    console.log('🔍 Final generation assignments:');
-    Array.from(generationMap.entries())
-      .sort((a, b) => a[1] - b[1]) // Sort by generation
-      .forEach(([memberId, generation]) => {
-        const member = familyMembers.find(m => m.id === memberId);
-        console.log(`🔍 ${member?.name || 'Unknown'} -> Generation ${generation}`);
-      });
-    
-    const generations = Array.from(generationMap.values());
-    const maxGeneration = generations.length > 0 ? Math.max(...generations) : 1;
-    
-    console.log(`🔍 Max generation calculated: ${maxGeneration}`);
-    return maxGeneration;
-  };
 
   const getGenerationStats = () => {
     if (familyMembers.length === 0) return [];
@@ -292,6 +215,94 @@ const FamilyBuilderNew = () => {
   const [familyData, setFamilyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [memberListLoading, setMemberListLoading] = useState(false);
+
+  // Memoized generation count calculation
+  const generationCount = useMemo(() => {
+    console.log('🔍 calculateGenerationCount called with familyMembers.length:', familyMembers.length);
+    console.log('🔍 familyMarriages.length:', familyMarriages?.length || 0);
+    console.log('🔍 loading state:', loading);
+    
+    if (familyMembers.length === 0) {
+      console.log('🔍 No family members, returning 1');
+      return 1;
+    }
+    
+    console.log('🔍 Starting generation calculation with members:', familyMembers.map(m => ({ 
+      id: m.id, 
+      name: m.name, 
+      isFounder: m.isFounder, 
+      fatherId: m.fatherId, 
+      motherId: m.motherId 
+    })));
+    
+    const generationMap = new Map();
+    
+    // Step 1: Assign generation 1 to founders and members without parents
+    familyMembers.forEach(member => {
+      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+        generationMap.set(member.id, 1);
+        console.log(`🔍 Assigned generation 1 to ${member.name} (founder: ${member.isFounder}, no parents: ${!member.fatherId && !member.motherId})`);
+      }
+    });
+    
+    // Step 2: Calculate generations based on parent-child relationships only
+    let changed = true;
+    let maxIterations = familyMembers.length * 2; // Increase max iterations
+    let iterations = 0;
+    
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      
+      familyMembers.forEach(member => {
+        // Skip if already has generation assigned
+        if (generationMap.has(member.id)) return;
+        
+        // Skip if no parents (should have been assigned in step 1)
+        if (!member.fatherId && !member.motherId) {
+          generationMap.set(member.id, 1);
+          console.log(`🔍 Late assignment: ${member.name} -> generation 1 (no parents)`);
+          changed = true;
+          return;
+        }
+        
+        // Check if we can assign generation based on parents
+        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
+        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
+        
+        // Only assign if at least one parent has a generation
+        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+          const parentGeneration = Math.max(
+            fatherGeneration || 0, 
+            motherGeneration || 0
+          );
+          const childGeneration = parentGeneration + 1;
+          generationMap.set(member.id, childGeneration);
+          console.log(`🔍 Assigned generation ${childGeneration} to ${member.name} (parent gen: ${parentGeneration})`);
+          changed = true;
+        }
+      });
+      
+      console.log(`🔍 Iteration ${iterations}: ${Array.from(generationMap.entries()).length} members assigned`);
+    }
+    
+    // Log final generation assignments
+    console.log('🔍 Final generation assignments:');
+    Array.from(generationMap.entries())
+      .sort((a, b) => a[1] - b[1]) // Sort by generation
+      .forEach(([memberId, generation]) => {
+        const member = familyMembers.find(m => m.id === memberId);
+        console.log(`🔍 ${member?.name || 'Unknown'} -> Generation ${generation}`);
+      });
+    
+    const generations = Array.from(generationMap.values());
+    const maxGeneration = generations.length > 0 ? Math.max(...generations) : 1;
+    
+    console.log(`🔍 Max generation calculated: ${maxGeneration}`);
+    return maxGeneration;
+  }, [familyMembers, familyMarriages, loading]);
+
+  const calculateGenerationCount = () => generationCount;
 
   // Form panel states
   const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile'>('view');
