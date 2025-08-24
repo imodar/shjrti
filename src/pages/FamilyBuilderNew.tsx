@@ -3488,7 +3488,7 @@ const FamilyBuilderNew = () => {
                                 </div>
                               ) : (
                                 <div 
-                                  className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 min-h-[180px] flex items-center justify-center ${
+                                  className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 h-[140px] flex items-center justify-center ${
                                     isImageUploadEnabled 
                                       ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
                                       : 'border-gray-300 opacity-70 cursor-not-allowed'
