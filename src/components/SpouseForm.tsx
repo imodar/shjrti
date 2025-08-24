@@ -335,12 +335,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                            {familyMembers.filter(member => {
                              const hasValidGender = member.gender === spouseGender;
                              const isNotSelf = member.id !== selectedMember?.id;
-                             const isAlive = member.is_alive === true;
                              const isAvailableForMarriage = 
                                member.marital_status === "single" || 
                                member.marital_status === "divorced";
                              
-                             return hasValidGender && isNotSelf && isAlive && isAvailableForMarriage;
+                             return hasValidGender && isNotSelf && isAvailableForMarriage;
                           }).map((member) => (
                             <CommandItem
                               key={member.id}
