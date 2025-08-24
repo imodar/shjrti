@@ -4274,19 +4274,23 @@ const FamilyBuilderNew = () => {
                 className="font-arabic w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white transition-all duration-200 hover-scale"
                 onClick={() => {
                   setShowSpouseEditWarning(false);
-                  // Find and edit the founder
-                  const founder = familyMembers.find(member => member.isFounder);
-                  if (founder) {
+                  // Find the specific member to edit based on spousePartnerDetails
+                  const memberToEdit = familyMembers.find(member => 
+                    member.first_name === spousePartnerDetails.name || 
+                    member.name === spousePartnerDetails.name ||
+                    `${member.first_name} ${member.last_name}`.trim() === spousePartnerDetails.name
+                  );
+                  if (memberToEdit) {
                     setFormMode('edit');
-                    setEditingMember(founder);
+                    setEditingMember(memberToEdit);
                     setCurrentStep(1);
-                    populateFormData(founder);
+                    populateFormData(memberToEdit);
                     if (isMobile) setIsMemberListOpen(false);
                   }
                 }}
               >
                 <Edit className="h-4 w-4 mr-2" />
-                تعديل بيانات مضر
+                تعديل بيانات {spousePartnerDetails.name || "العضو"}
               </Button>
             </AlertDialogFooter>
           </div>
