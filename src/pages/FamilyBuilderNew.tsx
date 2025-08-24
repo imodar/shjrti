@@ -3224,7 +3224,7 @@ const FamilyBuilderNew = () => {
                       </CardTitle>
 
                   </CardHeader>
-                <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden">
+                <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? (
                     <div className="text-center py-12 text-muted-foreground">
                       <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
