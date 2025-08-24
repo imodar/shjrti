@@ -704,7 +704,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                 {grandchild.gender === 'female' ? '♀' : '♂'}
                               </div>
                               <div className="flex-1">
-                                <p className="font-semibold text-foreground">{grandchild.first_name} {grandchild.last_name || ''}</p>
+                                <p className="font-semibold text-foreground">{grandchild.first_name}</p>
                                 {grandchild.birth_date && (
                                   <p className="text-sm text-muted-foreground">
                                     {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} سنة
