@@ -270,8 +270,11 @@ const FamilyBuilderNew = () => {
         const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
         const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
         
+        console.log(`🔍 Checking ${member.name}: fatherId=${member.fatherId}, motherId=${member.motherId}`);
+        console.log(`🔍   Father generation: ${fatherGeneration}, Mother generation: ${motherGeneration}`);
+        
         // Only assign if at least one parent has a generation
-        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+        if (fatherGeneration !== undefined && fatherGeneration !== null || motherGeneration !== undefined && motherGeneration !== null) {
           const parentGeneration = Math.max(
             fatherGeneration || 0, 
             motherGeneration || 0
@@ -280,6 +283,8 @@ const FamilyBuilderNew = () => {
           generationMap.set(member.id, childGeneration);
           console.log(`🔍 Assigned generation ${childGeneration} to ${member.name} (parent gen: ${parentGeneration})`);
           changed = true;
+        } else {
+          console.log(`🔍 Cannot assign generation to ${member.name} - no parent generations found yet`);
         }
       });
       
