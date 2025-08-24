@@ -155,6 +155,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return familyMembers.find(m => m.id === member.motherId);
   };
 
+  const getGenerationName = (generationNumber: number): string => {
+    const generationNames = {
+      1: 'الأول',
+      2: 'الثاني', 
+      3: 'الثالث',
+      4: 'الرابع',
+      5: 'الخامس',
+      6: 'السادس',
+      7: 'السابع',
+      8: 'الثامن',
+      9: 'التاسع',
+      10: 'العاشر'
+    };
+    
+    return generationNames[generationNumber] || `الجيل ${generationNumber}`;
+  };
+
   const calculateMemberGeneration = () => {
     if (!familyMembers.length) return 1;
     
@@ -553,7 +570,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                  <div className="flex justify-between">
                    <span className="text-sm text-muted-foreground">الجيل</span>
                    <span className="font-semibold">
-                     الجيل {memberGeneration}
+                     {getGenerationName(memberGeneration)}
                    </span>
                  </div>
               </div>
