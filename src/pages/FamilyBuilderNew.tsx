@@ -4290,7 +4290,7 @@ const FamilyBuilderNew = () => {
                 }}
               >
                 <Edit className="h-4 w-4 mr-2" />
-                تعديل بيانات {spousePartnerDetails.name || "العضو"}
+                تعديل البيانات
               </Button>
             </AlertDialogFooter>
           </div>
