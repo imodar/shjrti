@@ -333,33 +333,13 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                          </CommandEmpty>
                         <CommandGroup>
                            {familyMembers.filter(member => {
-                              // Debug log to see the full member object
-                              if (member.first_name === 'ميرا' || member.first_name === 'دنيا') {
-                                console.log(`Full member object for ${member.first_name}:`, member);
-                              }
-                              
                               const hasValidGender = member.gender === spouseGender;
                               const isNotSelf = member.id !== selectedMember?.id;
                               const isAvailableForMarriage = 
                                 member.marital_status === "single" || 
                                 member.marital_status === "divorced";
                               
-                              // Debug log for ميرا and دنيا
-                              if (member.first_name === 'ميرا' || member.first_name === 'دنيا') {
-                                console.log(`Debug ${member.first_name}:`, {
-                                  id: member.id,
-                                  first_name: member.first_name,
-                                  gender: member.gender,
-                                  spouseGender,
-                                  hasValidGender,
-                                  isNotSelf,
-                                  marital_status: member.marital_status,
-                                  isAvailableForMarriage,
-                                  willShow: hasValidGender && isNotSelf && isAvailableForMarriage
-                                });
-                              }
-                             
-                             return hasValidGender && isNotSelf && isAvailableForMarriage;
+                              return hasValidGender && isNotSelf && isAvailableForMarriage;
                           }).map((member) => (
                             <CommandItem
                               key={member.id}

@@ -434,6 +434,7 @@ const FamilyBuilderNew = () => {
           deathDate: member.death_date || null,
           image: member.image_url || null,
           bio: member.biography || '',
+          marital_status: member.marital_status || 'single',
           relation: ""
         }));
         
@@ -521,6 +522,8 @@ const FamilyBuilderNew = () => {
       const transformedMembers = members.map(member => ({
         id: member.id,
         name: member.name,
+        first_name: member.first_name,
+        last_name: member.last_name,
         fatherId: member.father_id,
         motherId: member.mother_id,
         spouseId: member.spouse_id,
@@ -532,6 +535,7 @@ const FamilyBuilderNew = () => {
         deathDate: member.death_date || null,
         image: member.image_url || null,
         bio: member.biography || "",
+        marital_status: member.marital_status || 'single',
         relation: ""
       }));
 
