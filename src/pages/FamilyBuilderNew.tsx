@@ -2004,7 +2004,16 @@ const FamilyBuilderNew = () => {
         // Update existing member
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        const lastName = familyData?.name || '';
+        
+        // Determine lastName based on father's family name if father is external
+        let lastName = familyData?.name || '';
+        if (fatherId) {
+          const father = familyMembers.find(m => m.id === fatherId);
+          if (father && father.last_name && father.last_name !== familyData?.name) {
+            // Father is from external family, use father's last name
+            lastName = father.last_name;
+          }
+        }
         
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
@@ -2042,7 +2051,16 @@ const FamilyBuilderNew = () => {
         // Insert new family member into database
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        const lastName = familyData?.name || '';
+        
+        // Determine lastName based on father's family name if father is external
+        let lastName = familyData?.name || '';
+        if (fatherId) {
+          const father = familyMembers.find(m => m.id === fatherId);
+          if (father && father.last_name && father.last_name !== familyData?.name) {
+            // Father is from external family, use father's last name
+            lastName = father.last_name;
+          }
+        }
         
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
