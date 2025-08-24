@@ -532,7 +532,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <h3 className="font-bold text-lg mb-4 text-primary">الوالدان</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Father */}
-                    <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/50">
+                    <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/30">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
                         ♂
                       </div>
@@ -545,7 +545,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     </div>
                     
                     {/* Mother */}
-                    <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/50">
+                    <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/30">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-semibold">
                         ♀
                       </div>
