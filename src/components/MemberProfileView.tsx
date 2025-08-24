@@ -582,7 +582,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           const maritalStatusText = spouse.marital_status === 'divorced' ? 'مطلقة' : 'متزوجة';
                           
                           return (
-                            <div key={spouse.id || index} className="border border-border/50 rounded-lg p-4 bg-accent/20">
+                            <div key={spouse.id || index} className="bg-muted/50 border border-border/30 shadow-sm rounded-lg p-4">
                               {/* Spouse Info */}
                               <div className="flex items-center space-x-3 space-x-reverse mb-4">
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold">
