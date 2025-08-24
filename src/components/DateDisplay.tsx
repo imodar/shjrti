@@ -12,7 +12,7 @@ interface DateDisplayProps {
 }
 
 // Helper function to format dates with numbers only and "/" separators
-const formatDateNumeric = (date: Date | string | null | undefined, formatDate: (date: Date) => string): string => {
+const formatDateNumeric = (date: Date | string | null | undefined, formatDate: (date: Date) => string, datePreference: string): string => {
   if (!date) return '';
   
   try {
@@ -21,39 +21,19 @@ const formatDateNumeric = (date: Date | string | null | undefined, formatDate: (
       return '';
     }
     
-    // Get formatted date and convert month names to numbers if needed
-    const formatted = formatDate(dateObj);
+    // Always format as DD/MM/YYYY regardless of user preference for display consistency
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear();
     
-    // For Levantine format, replace month names with numbers and format with "/"
-    const levantineMonths = [
-      'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
-      'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
-    ];
-    
-    let result = formatted;
-    
-    // Check if it's a Levantine format (contains Arabic month names)
-    const isLevantine = levantineMonths.some(month => result.includes(month));
-    
-    if (isLevantine) {
-      // Extract day, month, year from Levantine format
-      const day = dateObj.getDate().toString().padStart(2, '0');
-      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-      const year = dateObj.getFullYear();
-      result = `${day}/${month}/${year}`;
-    } else {
-      // For Gregorian and Hijri, ensure "/" separators
-      result = result.replace(/[.\s-]/g, '/');
-    }
-    
-    return result;
+    return `${day}/${month}/${year}`;
   } catch (error) {
     return '';
   }
 };
 
 // Helper function for relative time
-const formatRelativeTime = (date: Date | string | null | undefined, t: (key: string, fallback: string) => string, formatDate: (date: Date) => string): string => {
+const formatRelativeTime = (date: Date | string | null | undefined, t: (key: string, fallback: string) => string, formatDate: (date: Date) => string, datePreference: string): string => {
   if (!date) return '';
   
   try {
@@ -72,24 +52,24 @@ const formatRelativeTime = (date: Date | string | null | undefined, t: (key: str
     if (diffInDays < 30) return `${Math.floor(diffInDays / 7).toLocaleString('en')} ${t('weeks_ago', 'weeks ago')}`;
     if (diffInDays < 365) return `${Math.floor(diffInDays / 30).toLocaleString('en')} ${t('months_ago', 'months ago')}`;
     
-    return formatDateNumeric(date, formatDate);
+    return formatDateNumeric(date, formatDate, datePreference);
   } catch (error) {
-    return formatDateNumeric(date, formatDate);
+    return formatDateNumeric(date, formatDate, datePreference);
   }
 };
 
 // Helper function for lifespan
-const formatLifespanNumeric = (birthDate: Date | string | null, deathDate: Date | string | null, isAlive: boolean = true, t: (key: string, fallback: string) => string, formatDate: (date: Date) => string): string => {
+const formatLifespanNumeric = (birthDate: Date | string | null, deathDate: Date | string | null, isAlive: boolean = true, t: (key: string, fallback: string) => string, formatDate: (date: Date) => string, datePreference: string): string => {
   if (!birthDate) return '';
   
   try {
-    const birth = formatDateNumeric(birthDate, formatDate);
+    const birth = formatDateNumeric(birthDate, formatDate, datePreference);
     if (!birth) return '';
     
     if (isAlive) {
       return `${t('born', 'Born')} ${birth}`;
     } else if (deathDate) {
-      const death = formatDateNumeric(deathDate, formatDate);
+      const death = formatDateNumeric(deathDate, formatDate, datePreference);
       if (death) {
         return `${birth} - ${death}`;
       }
@@ -120,13 +100,13 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
   try {
     switch (format) {
       case 'relative':
-        formattedDate = formatRelativeTime(date, t, formatDate);
+        formattedDate = formatRelativeTime(date, t, formatDate, datePreference);
         break;
       case 'lifespan':
-        formattedDate = formatLifespanNumeric(birthDate, deathDate, isAlive, t, formatDate);
+        formattedDate = formatLifespanNumeric(birthDate, deathDate, isAlive, t, formatDate, datePreference);
         break;
       default:
-        formattedDate = formatDateNumeric(date, formatDate);
+        formattedDate = formatDateNumeric(date, formatDate, datePreference);
         break;
     }
     
