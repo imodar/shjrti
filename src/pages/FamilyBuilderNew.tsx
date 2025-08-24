@@ -3535,7 +3535,7 @@ const FamilyBuilderNew = () => {
                            <h3 className="text-lg font-semibold">
                              {formData.gender === "male" ? "معلومات الزوجة/الزوجات" : "معلومات الزوج"}
                            </h3>
-                           <p className="text-sm text-muted-foreground">
+                           <p className="text-sm text-muted-foreground -mt-1">
                              {formData.gender === "male" 
                                ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً"
                                : "أضف معلومات الزوج إذا كانت متزوجة"
