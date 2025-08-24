@@ -45,6 +45,7 @@ interface MemberProfileViewProps {
   isSpouse?: boolean;
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
+  onMemberClick?: (member: any) => void;
 }
 
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
@@ -56,7 +57,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   marriages = [],
   isSpouse = false,
   onSpouseEditWarning,
-  onSpouseDeleteWarning
+  onSpouseDeleteWarning,
+  onMemberClick
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -616,27 +618,31 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     الأبناء ({childrenWithSpouse.length})
                                   </h5>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {childrenWithSpouse.map((child) => (
-                                      <div key={child.id} className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                                          child.gender === 'female' 
-                                            ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                            : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                        }`}>
-                                          {child.gender === 'female' ? '♀' : '♂'}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                          <p className="font-medium text-sm text-foreground truncate">
-                                            {child.first_name}
-                                          </p>
-                                          {child.birth_date && (
-                                            <p className="text-xs text-muted-foreground">
-                                              {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} سنة
-                                            </p>
-                                          )}
-                                        </div>
-                                      </div>
-                                    ))}
+                                     {childrenWithSpouse.map((child) => (
+                                       <div 
+                                         key={child.id} 
+                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-transparent hover:border-border/30"
+                                         onClick={() => onMemberClick?.(child)}
+                                       >
+                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                           child.gender === 'female' 
+                                             ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                             : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                         }`}>
+                                           {child.gender === 'female' ? '♀' : '♂'}
+                                         </div>
+                                         <div className="flex-1 min-w-0">
+                                           <p className="font-medium text-sm text-foreground truncate">
+                                             {child.first_name}
+                                           </p>
+                                           {child.birth_date && (
+                                             <p className="text-xs text-muted-foreground">
+                                               {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} سنة
+                                             </p>
+                                           )}
+                                         </div>
+                                       </div>
+                                     ))}
                                   </div>
                                 </div>
                               )}
@@ -696,25 +702,29 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="bg-card rounded-xl border border-border p-6">
                         <h3 className="font-bold text-lg mb-4 text-primary">الأحفاد</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {grandchildren.map((grandchild) => (
-                            <div key={grandchild.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
-                                grandchild.gender === 'female' 
-                                  ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
-                                  : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                              }`}>
-                                {grandchild.gender === 'female' ? '♀' : '♂'}
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-foreground">{grandchild.first_name}</p>
-                                {grandchild.birth_date && (
-                                  <p className="text-sm text-muted-foreground">
-                                    {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} سنة
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          ))}
+                           {grandchildren.map((grandchild) => (
+                             <div 
+                               key={grandchild.id} 
+                               className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
+                               onClick={() => onMemberClick?.(grandchild)}
+                             >
+                               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                 grandchild.gender === 'female' 
+                                   ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                   : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                               }`}>
+                                 {grandchild.gender === 'female' ? '♀' : '♂'}
+                               </div>
+                               <div className="flex-1">
+                                 <p className="font-semibold text-foreground">{grandchild.first_name}</p>
+                                 {grandchild.birth_date && (
+                                   <p className="text-sm text-muted-foreground">
+                                     {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} سنة
+                                   </p>
+                                 )}
+                               </div>
+                             </div>
+                           ))}
                         </div>
                       </div>
                     );

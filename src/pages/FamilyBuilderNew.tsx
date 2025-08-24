@@ -3238,21 +3238,25 @@ const FamilyBuilderNew = () => {
                       <p className="text-sm mt-2">أو اضغط "إضافة عضو" لإضافة عضو جديد</p>
                     </div>
                   ) : formMode === 'profile' ? (
-                    <MemberProfileView
-                      member={editingMember}
-                      onEdit={() => {
-                        setFormMode('edit');
-                        setCurrentStep(1);
-                        populateFormData(editingMember);
-                      }}
-                      onDelete={() => handleDeleteMember(editingMember)}
-                      onBack={() => setFormMode('view')}
-                      familyMembers={familyMembers}
-                      marriages={familyMarriages}
-                      isSpouse={checkIfMemberIsSpouse(editingMember)}
-                      onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
-                      onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
-                    />
+                     <MemberProfileView
+                       member={editingMember}
+                       onEdit={() => {
+                         setFormMode('edit');
+                         setCurrentStep(1);
+                         populateFormData(editingMember);
+                       }}
+                       onDelete={() => handleDeleteMember(editingMember)}
+                       onBack={() => setFormMode('view')}
+                       familyMembers={familyMembers}
+                       marriages={familyMarriages}
+                       isSpouse={checkIfMemberIsSpouse(editingMember)}
+                       onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
+                       onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
+                       onMemberClick={(member) => {
+                         setEditingMember(member);
+                         setFormMode('profile');
+                       }}
+                     />
                   ) : (
                     <div className="space-y-6">
 
