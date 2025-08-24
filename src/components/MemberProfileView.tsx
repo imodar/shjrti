@@ -570,23 +570,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
                 )}
 
-                {/* Spouses and Children Section */}
-                <div className="bg-card rounded-xl border border-border p-6">
-                  <h3 className="font-bold text-lg mb-4 text-primary">الزوجات والأبناء</h3>
-                  {(() => {
-                    const spouses = getSpouses();
-                    if (spouses.length === 0) {
-                      return (
-                        <div className="text-center py-8">
-                          <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-accent/30 flex items-center justify-center">
-                            <span className="text-2xl">👤</span>
-                          </div>
-                          <p className="text-muted-foreground">لا توجد معلومات زواج مسجلة</p>
-                        </div>
-                      );
-                    }
-                    
-                    return (
+                {/* Spouses and Children Section - Only show if there are spouses */}
+                {(() => {
+                  const spouses = getSpouses();
+                  if (spouses.length === 0) {
+                    return null;
+                  }
+                  
+                  return (
+                    <div className="bg-card rounded-xl border border-border p-6">
+                      <h3 className="font-bold text-lg mb-4 text-primary">الزوجات والأبناء</h3>
                       <div className="space-y-6">
                         {spouses.map((spouse, index) => {
                           const childrenWithSpouse = getChildrenBySpouse(spouse.id);
@@ -657,9 +650,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           );
                         })}
                       </div>
-                    );
-                  })()}
-                </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Children without specific spouse */}
                 {(() => {
