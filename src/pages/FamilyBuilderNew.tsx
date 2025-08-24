@@ -4290,7 +4290,7 @@ const FamilyBuilderNew = () => {
                 }}
               >
                 <Edit className="h-4 w-4 mr-2" />
-                تعديل البيانات
+                تعديل بيانات {spousePartnerDetails.name ? spousePartnerDetails.name.split(' ')[0] : "العضو"}
               </Button>
             </AlertDialogFooter>
           </div>
