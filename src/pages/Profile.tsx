@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Profile() {
   const { user } = useAuth();
-  const { datePreference: globalDatePreference, setDatePreference: setGlobalDatePreference } = useDatePreference();
+  const { datePreference: globalDatePreference, setDatePreference: setGlobalDatePreference, formatDate } = useDatePreference();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -200,7 +200,7 @@ export default function Profile() {
         lastName: profileData?.last_name || "",
         email: profileData?.email || user?.email || "",
         phone: profileData?.phone || "",
-        joinDate: profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ar-SA') : new Date().toLocaleDateString('ar-SA'),
+        joinDate: profileData?.created_at ? formatDate(new Date(profileData.created_at)) : formatDate(new Date()),
         datePreference: (profileData?.date_preference || "gregorian") as DatePreference
       };
 
