@@ -3428,26 +3428,28 @@ const FamilyBuilderNew = () => {
                                 )}
                              </div>
 
-                             <div>
-                                <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                  <FileText className="h-4 w-4 text-primary" />
-                                  السيرة الذاتية
-                               </Label>
-                               <Textarea
-                                 id="bio"
-                                 value={formData.bio}
-                                 onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                 placeholder="أدخل معلومات إضافية عن العضو"
-                                 rows={3}
-                                 className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none"
-                               />
-                              </div>
+                             {/* Biography and Profile Picture - Side by Side Layout */}
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               {/* Biography Section - 1/2 */}
+                               <div>
+                                 <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                   <FileText className="h-4 w-4 text-primary" />
+                                   السيرة الذاتية
+                                 </Label>
+                                 <Textarea
+                                   id="bio"
+                                   value={formData.bio}
+                                   onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                   placeholder="أدخل معلومات إضافية عن العضو"
+                                   rows={6}
+                                   className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none"
+                                 />
+                               </div>
 
-                             {/* Image Upload Section */}
-                             {(formMode === 'add' || formMode === 'edit') && (
-
-                             <div className="space-y-3">
-                              <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
+                               {/* Profile Picture Section - 1/2 */}
+                               {(formMode === 'add' || formMode === 'edit') && (
+                               <div className="space-y-3">
+                                 <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
                               
                               {(croppedImage || (editingMember && editingMember.image)) ? (
                                 <div className="space-y-3">
@@ -3519,6 +3521,7 @@ const FamilyBuilderNew = () => {
                               />
                              </div>
                              )}
+                           </div>
                          </div>
                        )}
 
