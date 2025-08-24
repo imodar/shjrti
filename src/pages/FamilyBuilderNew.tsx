@@ -4274,7 +4274,15 @@ const FamilyBuilderNew = () => {
                 className="font-arabic w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white transition-all duration-200 hover-scale"
                 onClick={() => {
                   setShowSpouseEditWarning(false);
-                  // Navigate to edit founder data
+                  // Find and edit the founder
+                  const founder = familyMembers.find(member => member.isFounder);
+                  if (founder) {
+                    setFormMode('edit');
+                    setEditingMember(founder);
+                    setCurrentStep(1);
+                    populateFormData(founder);
+                    if (isMobile) setIsMemberListOpen(false);
+                  }
                 }}
               >
                 <Edit className="h-4 w-4 mr-2" />
