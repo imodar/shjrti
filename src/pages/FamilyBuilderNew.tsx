@@ -3378,12 +3378,21 @@ const FamilyBuilderNew = () => {
                                                 const buildFullName = (member: any, isSpouse: boolean = false) => {
                                                   if (!member) return '';
                                                   
-                                                  // For spouses, show first_name + last_name
-                                                  if (isSpouse) {
-                                                    const firstName = member.first_name || member.name?.split(' ')[0] || '';
-                                                    const lastName = member.last_name || '';
-                                                    return firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '');
-                                                  }
+                                                 // For spouses, show first_name + last_name
+                                                 if (isSpouse) {
+                                                   const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                                                   let lastName = member.last_name || '';
+                                                   
+                                                   // If no last_name but the member has a full name with surname, extract it
+                                                   if (!lastName && member.name && member.name.includes(' ')) {
+                                                     const nameParts = member.name.split(' ');
+                                                     if (nameParts.length > 1) {
+                                                       lastName = nameParts.slice(1).join(' '); // Take everything after first name as surname
+                                                     }
+                                                   }
+                                                   
+                                                   return firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '');
+                                                 }
                                                   
                                                   // For non-founders, show first name + father's first name only
                                                   if (!member.is_founder && member.fatherId) {
