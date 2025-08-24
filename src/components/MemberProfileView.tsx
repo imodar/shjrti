@@ -31,7 +31,8 @@ import {
   Award,
   Clock,
   Eye,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 
 interface MemberProfileViewProps {
@@ -275,6 +276,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       <div className="container mx-auto px-2 sm:px-4 pb-3 sm:pb-6 max-w-6xl">
         {/* Hero Section */}
         <div className="relative mb-4 sm:mb-8">
+          {/* Close Button */}
+          <button
+            onClick={onBack}
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105"
+          >
+            <X className="w-4 h-4 text-gray-600" />
+          </button>
+          
           {/* Cover Ribbon */}
           <div className="relative h-12 sm:h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-lg sm:rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
