@@ -3159,44 +3159,45 @@ const FamilyBuilderNew = () => {
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                   <CardHeader className={cn("relative", formMode === 'profile' && "hidden")}>
-                      <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                          {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                          {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                          {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent leading-relaxed">
-                             {formMode === 'view' && "معلومات العضو"}
-                             {formMode === 'add' && "إضافة عضو جديد"}
-                             {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
-                             {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
-                           </span>
-                           
-                           {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
-                           {(formMode === 'add' || formMode === 'edit') && (
-                           <div className="flex items-center gap-3 ml-auto">
-                             {[1, 2].map((step, index) => (
-                               <div key={step} className="flex items-center gap-2">
-                                 <div
-                                   className={cn(
-                                     "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
-                                     currentStep >= step
-                                       ? "bg-primary border-primary text-primary-foreground shadow-md"
-                                       : "bg-background border-muted-foreground/30 text-muted-foreground"
-                                   )}
-                                 >
-                                   {currentStep > step ? (
-                                     <Check className="h-4 w-4" />
-                                   ) : (
-                                     step
-                                   )}
-                                 </div>
-                                 {index < 1 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
+                       <CardTitle className="flex items-center justify-between">
+                         {/* Step Indicator for add/edit modes - positioned at far left */}
+                         {(formMode === 'add' || formMode === 'edit') && (
+                         <div className="flex items-center gap-3">
+                           {[1, 2].map((step, index) => (
+                             <div key={step} className="flex items-center gap-2">
+                               <div
+                                 className={cn(
+                                   "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
+                                   currentStep >= step
+                                     ? "bg-primary border-primary text-primary-foreground shadow-md"
+                                     : "bg-background border-muted-foreground/30 text-muted-foreground"
+                                 )}
+                               >
+                                 {currentStep > step ? (
+                                   <Check className="h-4 w-4" />
+                                 ) : (
+                                   step
+                                 )}
                                </div>
-                             ))}
-                           </div>
-                           )}
-                        </div>
+                               {index < 1 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
+                             </div>
+                           ))}
+                         </div>
+                         )}
+                         
+                         {/* Title and Icon - positioned to the right */}
+                         <div className="flex items-center gap-2 mr-auto">
+                           {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                           {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                           {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                           {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                             <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent leading-relaxed">
+                              {formMode === 'view' && "معلومات العضو"}
+                              {formMode === 'add' && "إضافة عضو جديد"}
+                              {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
+                              {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
+                            </span>
+                         </div>
                          {formMode === 'profile' && (
                            <Button
                              type="button"
