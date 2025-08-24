@@ -527,11 +527,163 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {/* Family Tab */}
             {activeTab === 'family' && (
               <div className="space-y-6">
-                {/* Family content goes here */}
+                {/* Parents Section */}
                 <div className="bg-card rounded-xl border border-border p-6">
-                  <h3 className="font-bold text-lg mb-4">معلومات العائلة</h3>
-                  <p className="text-muted-foreground">سيتم عرض معلومات العائلة هنا</p>
+                  <h3 className="font-bold text-lg mb-4 text-primary">الوالدان</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Father */}
+                    <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/50">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                        ♂
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">الأب</p>
+                        <p className="font-semibold text-foreground">
+                          {getFather()?.first_name || 'غير محدد'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Mother */}
+                    <div className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/50">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-semibold">
+                        ♀
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">الأم</p>
+                        <p className="font-semibold text-foreground">
+                          {getMother()?.first_name || 'غير محدد'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Spouses and Children Section */}
+                <div className="bg-card rounded-xl border border-border p-6">
+                  <h3 className="font-bold text-lg mb-4 text-primary">الزوجات والأبناء</h3>
+                  {(() => {
+                    const spouses = getSpouses();
+                    if (spouses.length === 0) {
+                      return (
+                        <div className="text-center py-8">
+                          <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-accent/30 flex items-center justify-center">
+                            <span className="text-2xl">👤</span>
+                          </div>
+                          <p className="text-muted-foreground">لا توجد معلومات زواج مسجلة</p>
+                        </div>
+                      );
+                    }
+                    
+                    return (
+                      <div className="space-y-6">
+                        {spouses.map((spouse, index) => {
+                          const childrenWithSpouse = getChildrenBySpouse(spouse.id);
+                          const maritalStatusText = spouse.marital_status === 'divorced' ? 'مطلقة' : 'متزوجة';
+                          
+                          return (
+                            <div key={spouse.id || index} className="border border-border/50 rounded-lg p-4 bg-accent/20">
+                              {/* Spouse Info */}
+                              <div className="flex items-center space-x-3 space-x-reverse mb-4">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                                  {spouse.gender === 'female' ? '♀' : '♂'}
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-foreground text-lg">
+                                    {spouse.first_name}
+                                  </h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    {member.gender === 'male' ? 'الزوجة' : 'الزوج'} • {maritalStatusText}
+                                  </p>
+                                </div>
+                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  spouse.marital_status === 'divorced' 
+                                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+                                    : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                                }`}>
+                                  {maritalStatusText}
+                                </div>
+                              </div>
+                              
+                              {/* Children */}
+                              {childrenWithSpouse.length > 0 && (
+                                <div className="mt-4 pt-4 border-t border-border/50">
+                                  <h5 className="font-medium text-foreground mb-3 flex items-center">
+                                    <span className="mr-2">👶</span>
+                                    الأبناء ({childrenWithSpouse.length})
+                                  </h5>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {childrenWithSpouse.map((child) => (
+                                      <div key={child.id} className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                          child.gender === 'female' 
+                                            ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                            : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                        }`}>
+                                          {child.gender === 'female' ? '♀' : '♂'}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="font-medium text-sm text-foreground truncate">
+                                            {child.first_name}
+                                          </p>
+                                          {child.birth_date && (
+                                            <p className="text-xs text-muted-foreground">
+                                              {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} سنة
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {childrenWithSpouse.length === 0 && (
+                                <div className="mt-4 pt-4 border-t border-border/50 text-center">
+                                  <p className="text-sm text-muted-foreground">لا يوجد أطفال مسجلون</p>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Children without specific spouse */}
+                {(() => {
+                  const childrenWithoutSpouse = getChildrenBySpouse();
+                  if (childrenWithoutSpouse.length > 0) {
+                    return (
+                      <div className="bg-card rounded-xl border border-border p-6">
+                        <h3 className="font-bold text-lg mb-4 text-primary">أبناء آخرون</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {childrenWithoutSpouse.map((child) => (
+                            <div key={child.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/30">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                child.gender === 'female' 
+                                  ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                  : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                              }`}>
+                                {child.gender === 'female' ? '♀' : '♂'}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-semibold text-foreground">{child.first_name}</p>
+                                {child.birth_date && (
+                                  <p className="text-sm text-muted-foreground">
+                                    {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} سنة
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             )}
 
