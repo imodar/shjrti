@@ -3162,12 +3162,12 @@ const FamilyBuilderNew = () => {
                        <CardTitle className="flex items-center justify-between flex-row-reverse">
                          {/* Step Indicator for add/edit modes - positioned at far left */}
                          {(formMode === 'add' || formMode === 'edit') && (
-                         <div className="flex items-center gap-3">
+                         <div className="flex items-center gap-4">
                            {[1, 2].map((step, index) => (
-                             <div key={step} className="flex items-center gap-2">
+                             <div key={step} className="flex flex-col items-center gap-2">
                                <div
                                  className={cn(
-                                   "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
+                                   "flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium border-2 transition-all duration-200",
                                    currentStep >= step
                                      ? "bg-primary border-primary text-primary-foreground shadow-md"
                                      : "bg-background border-muted-foreground/30 text-muted-foreground"
@@ -3179,7 +3179,18 @@ const FamilyBuilderNew = () => {
                                    step
                                  )}
                                </div>
-                               {index < 1 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
+                               <span className={cn(
+                                 "text-xs font-medium text-center",
+                                 currentStep >= step ? "text-primary" : "text-muted-foreground"
+                               )}>
+                                 {step === 1 ? "المعلومات الأساسية" : "التفاصيل الإضافية"}
+                               </span>
+                               {index < 1 && (
+                                 <div className={cn(
+                                   "absolute top-5 right-[-12px] w-6 h-0.5 transition-all duration-200",
+                                   currentStep > step ? "bg-primary" : "bg-muted-foreground/30"
+                                 )} />
+                               )}
                              </div>
                            ))}
                          </div>
