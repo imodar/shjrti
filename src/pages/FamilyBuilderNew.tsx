@@ -3171,6 +3171,31 @@ const FamilyBuilderNew = () => {
                              {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
                              {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
                            </span>
+                           
+                           {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
+                           {(formMode === 'add' || formMode === 'edit') && (
+                           <div className="flex items-center gap-3 order-2 ms-auto">
+                             {[1, 2].map((step, index) => (
+                               <div key={step} className="flex items-center gap-2">
+                                 <div
+                                   className={cn(
+                                     "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
+                                     currentStep >= step
+                                       ? "bg-primary border-primary text-primary-foreground shadow-md"
+                                       : "bg-background border-muted-foreground/30 text-muted-foreground"
+                                   )}
+                                 >
+                                   {currentStep > step ? (
+                                     <Check className="h-4 w-4" />
+                                   ) : (
+                                     step
+                                   )}
+                                 </div>
+                                 {index < 1 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
+                               </div>
+                             ))}
+                           </div>
+                           )}
                         </div>
                          {formMode === 'profile' && (
                            <Button
@@ -3186,41 +3211,6 @@ const FamilyBuilderNew = () => {
                          )}
                       </CardTitle>
 
-                     {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
-                     {(formMode === 'add' || formMode === 'edit') && (
-                      <div className="flex items-center gap-3 order-2 ms-auto">
-                        {[1, 2].map((step, index) => (
-                          <div key={step} className="flex items-center gap-2">
-                            <div
-                              className={cn(
-                                "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-all duration-200",
-                                currentStep >= step
-                                  ? "bg-primary border-primary text-primary-foreground shadow-md"
-                                  : "bg-background border-muted-foreground/30 text-muted-foreground"
-                              )}
-                            >
-                              {currentStep > step ? (
-                                <Check className="h-4 w-4" />
-                              ) : (
-                                step
-                              )}
-                            </div>
-                            <span className={cn(
-                              "text-sm font-medium",
-                              currentStep >= step ? "text-primary" : "text-muted-foreground"
-                            )}>
-                              {step === 1 ? "المعلومات الأساسية" : "التفاصيل الإضافية"}
-                            </span>
-                            {index < 1 && (
-                              <div className={cn(
-                                "w-12 h-0.5 mx-2 transition-all duration-200",
-                                currentStep > step ? "bg-primary" : "bg-muted-foreground/30"
-                              )} />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                     )}
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden">
                   {formMode === 'view' ? (
