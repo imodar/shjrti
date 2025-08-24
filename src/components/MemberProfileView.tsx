@@ -581,7 +581,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="space-y-6">
                         {spouses.map((spouse, index) => {
                           const childrenWithSpouse = getChildrenBySpouse(spouse.id);
-                          const maritalStatusText = spouse.marital_status === 'divorced' ? 'مطلقة' : 'متزوجة';
+                           const maritalStatusText = spouse.marital_status === 'divorced' 
+                             ? (spouse.gender === 'male' ? 'مطلق' : 'مطلقة') 
+                             : (spouse.gender === 'male' ? 'متزوج' : 'متزوجة');
                           
                           return (
                             <div key={spouse.id || index} className="bg-muted/50 border border-border/30 shadow-sm rounded-lg p-4">
