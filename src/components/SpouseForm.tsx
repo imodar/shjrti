@@ -339,6 +339,19 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                member.marital_status === "single" || 
                                member.marital_status === "divorced";
                              
+                             // Debug log for ميرا and دنيا
+                             if (member.name === 'ميرا' || member.name === 'دنيا') {
+                               console.log(`Debug ${member.name}:`, {
+                                 gender: member.gender,
+                                 spouseGender,
+                                 hasValidGender,
+                                 isNotSelf,
+                                 marital_status: member.marital_status,
+                                 isAvailableForMarriage,
+                                 willShow: hasValidGender && isNotSelf && isAvailableForMarriage
+                               });
+                             }
+                             
                              return hasValidGender && isNotSelf && isAvailableForMarriage;
                           }).map((member) => (
                             <CommandItem
