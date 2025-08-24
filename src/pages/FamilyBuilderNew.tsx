@@ -3449,7 +3449,10 @@ const FamilyBuilderNew = () => {
                                {/* Profile Picture Section - 1/2 */}
                                {(formMode === 'add' || formMode === 'edit') && (
                                <div className="space-y-3">
-                                 <Label htmlFor="picture" className="text-sm font-medium text-foreground">الصورة الشخصية</Label>
+                                 <Label htmlFor="picture" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                   <Camera className="h-4 w-4 text-primary" />
+                                   الصورة الشخصية
+                                 </Label>
                               
                               {(croppedImage || (editingMember && editingMember.image)) ? (
                                 <div className="space-y-3">
