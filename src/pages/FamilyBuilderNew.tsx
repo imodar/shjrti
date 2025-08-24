@@ -107,6 +107,7 @@ const FamilyBuilderNew = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [showCropDialog, setShowCropDialog] = useState(false);
+  const [imageChanged, setImageChanged] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -175,6 +176,7 @@ const FamilyBuilderNew = () => {
       const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
       if (croppedImg) {
         setCroppedImage(croppedImg);
+        setImageChanged(true);
         setShowCropDialog(false);
       }
     }
@@ -183,6 +185,7 @@ const FamilyBuilderNew = () => {
   const handleDeleteImage = () => {
     setCroppedImage(null);
     setSelectedImage(null);
+    setImageChanged(true);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -1537,6 +1540,7 @@ const FamilyBuilderNew = () => {
     // Clear image states
     setCroppedImage(null);
     setSelectedImage(null);
+    setImageChanged(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -1555,12 +1559,15 @@ const FamilyBuilderNew = () => {
       deathDate: member.deathDate ? new Date(member.deathDate) : null,
       bio: member.bio || "",
       imageUrl: member.image || "",
-      croppedImage: member.image || null,
+      croppedImage: null, // Don't set croppedImage when editing existing member
       isFounder: member.isFounder || false
     });
     
     // Load existing spouses
     loadExistingSpouses(member);
+    
+    // Reset image change tracking
+    setImageChanged(false);
   };
 
   const loadExistingSpouses = (member: any) => {
@@ -1949,12 +1956,11 @@ const FamilyBuilderNew = () => {
       };
       
       // Handle image state properly for edits:
-      // - If image exists in submissionData.croppedImage, use it (user uploaded new image)
-      // - If submissionData.croppedImage is explicitly null/empty string, set to null (user removed image)
-      // - If submissionData.croppedImage is undefined, keep existing image
+      // - If imageChanged is true, use croppedImage (user modified the image)
+      // - If imageChanged is false, keep existing image (user didn't touch the image)
       let finalImageUrl;
       if (formMode === 'edit' && editingMember) {
-        if (submissionData.croppedImage !== undefined) {
+        if (imageChanged) {
           finalImageUrl = submissionData.croppedImage || null;
         } else {
           finalImageUrl = editingMember.image_url || null;
