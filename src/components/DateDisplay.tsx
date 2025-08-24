@@ -11,7 +11,7 @@ interface DateDisplayProps {
   className?: string;
 }
 
-// Helper function to format dates with numbers only
+// Helper function to format dates with numbers only and "/" separators
 const formatDateNumeric = (date: Date | string | null | undefined, formatDate: (date: Date) => string): string => {
   if (!date) return '';
   
@@ -24,16 +24,27 @@ const formatDateNumeric = (date: Date | string | null | undefined, formatDate: (
     // Get formatted date and convert month names to numbers if needed
     const formatted = formatDate(dateObj);
     
-    // For Levantine format, replace month names with numbers
+    // For Levantine format, replace month names with numbers and format with "/"
     const levantineMonths = [
       'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
       'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
     ];
     
     let result = formatted;
-    levantineMonths.forEach((monthName, index) => {
-      result = result.replace(monthName, String(index + 1).padStart(2, '0'));
-    });
+    
+    // Check if it's a Levantine format (contains Arabic month names)
+    const isLevantine = levantineMonths.some(month => result.includes(month));
+    
+    if (isLevantine) {
+      // Extract day, month, year from Levantine format
+      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+      const year = dateObj.getFullYear();
+      result = `${day}/${month}/${year}`;
+    } else {
+      // For Gregorian and Hijri, ensure "/" separators
+      result = result.replace(/[.\s-]/g, '/');
+    }
     
     return result;
   } catch (error) {
