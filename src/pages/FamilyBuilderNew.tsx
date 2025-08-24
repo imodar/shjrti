@@ -4525,7 +4525,8 @@ const MemberList = ({
                               let spouseInfo = spouseName;
                               if (spouseFather) {
                                 const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
-                                spouseInfo += ` ابن ${fatherFirstName}`;
+                                const genderTerm = spouseFullData?.gender === 'female' ? 'ابنة' : 'ابن';
+                                spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
                               }
                               
                               // Use زوج for husband, زوجة for wife (from member's perspective)
