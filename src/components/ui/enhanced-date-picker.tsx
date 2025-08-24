@@ -25,6 +25,12 @@ const HIJRI_MONTHS = [
   'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
 ];
 
+// Levantine month names for calendar display
+const LEVANTINE_MONTHS = [
+  'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+  'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+];
+
 const HIJRI_DAYS = [
   'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'
 ];
@@ -133,7 +139,11 @@ export function EnhancedDatePicker({
           )}
         >
           <span className="text-sm mr-2">
-            {value ? (datePreference === 'hijri' ? formatHijriDate(value) : format(value, "dd/MM/yyyy", { locale: ar })) : placeholder}
+            {value ? (
+              datePreference === 'hijri' ? formatHijriDate(value) : 
+              datePreference === 'gregorian-levantine' ? `${value.getDate()} ${LEVANTINE_MONTHS[value.getMonth()]} ${value.getFullYear()}` :
+              format(value, "dd/MM/yyyy", { locale: ar })
+            ) : placeholder}
           </span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
         </Button>
@@ -160,14 +170,17 @@ export function EnhancedDatePicker({
             <div className="flex justify-center">
               <Select 
                 value={datePreference} 
-                onValueChange={(value: 'gregorian' | 'hijri') => setDatePreference(value)}
+                onValueChange={(value: 'gregorian' | 'gregorian-levantine' | 'hijri') => setDatePreference(value)}
               >
-                <SelectTrigger className="w-24 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50 pointer-events-auto">
+                <SelectTrigger className="w-32 h-7 bg-white/20 border-white/30 text-white text-xs hover:bg-white/30 focus:ring-white/50 pointer-events-auto">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[100px] z-[10050] pointer-events-auto">
+                <SelectContent className="bg-white dark:bg-gray-800 border-amber-200 dark:border-amber-700 min-w-[120px] z-[10050] pointer-events-auto">
                   <SelectItem value="gregorian" className="text-right cursor-pointer">
                     ميلادي
+                  </SelectItem>
+                  <SelectItem value="gregorian-levantine" className="text-right cursor-pointer">
+                    شامي
                   </SelectItem>
                   <SelectItem value="hijri" className="text-right cursor-pointer">
                     هجري
@@ -178,13 +191,15 @@ export function EnhancedDatePicker({
           </div>
           {value && (
             <p className="text-amber-100 text-xs text-center mt-1">
-              {datePreference === 'hijri' ? formatHijriDate(value) : format(value, "EEEE، dd MMMM yyyy", { locale: ar })}
+              {datePreference === 'hijri' ? formatHijriDate(value) : 
+               datePreference === 'gregorian-levantine' ? `${value.getDate()} ${LEVANTINE_MONTHS[value.getMonth()]} ${value.getFullYear()}` :
+               format(value, "EEEE، dd MMMM yyyy", { locale: ar })}
             </p>
           )}
         </div>
         
         
-        {datePreference === 'gregorian' ? (
+        {(datePreference === 'gregorian' || datePreference === 'gregorian-levantine') ? (
           <div className="[&_.rdp-vhidden]:hidden">
             <Calendar
               mode="single"
