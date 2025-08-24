@@ -3106,7 +3106,7 @@ const FamilyBuilderNew = () => {
             )}>
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
-                  <CardHeader className="relative">
+                  <CardHeader className={cn("relative", formMode === 'profile' && "hidden")}>
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
