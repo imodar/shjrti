@@ -3174,7 +3174,7 @@ const FamilyBuilderNew = () => {
                            
                            {/* Step Indicator for add/edit modes - positioned at far left in RTL */}
                            {(formMode === 'add' || formMode === 'edit') && (
-                           <div className="flex items-center gap-3 order-2 ms-auto">
+                           <div className="flex items-center gap-3 ml-auto">
                              {[1, 2].map((step, index) => (
                                <div key={step} className="flex items-center gap-2">
                                  <div
