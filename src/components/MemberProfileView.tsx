@@ -155,11 +155,84 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return familyMembers.find(m => m.id === member.motherId);
   };
 
+  const calculateMemberGeneration = () => {
+    if (!familyMembers.length) return 1;
+    
+    const generationMap = new Map();
+    
+    // Step 1: Find the founder and assign generation 1
+    const founder = familyMembers.find(member => member.isFounder);
+    if (founder) {
+      generationMap.set(founder.id, 1);
+      
+      // Step 2: Find founder's spouse(s) from marriages and assign generation 1
+      marriages.forEach(marriage => {
+        if (marriage.husband_id === founder.id && marriage.wife_id) {
+          generationMap.set(marriage.wife_id, 1);
+        } else if (marriage.wife_id === founder.id && marriage.husband_id) {
+          generationMap.set(marriage.husband_id, 1);
+        }
+      });
+    }
+
+    // Step 3: Iteratively assign generations based on parent-child relationships
+    let changed = true;
+    let iterations = 0;
+    const maxIterations = 10;
+
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+
+      familyMembers.forEach(fmember => {
+        if (generationMap.has(fmember.id)) return;
+
+        const fatherGeneration = fmember.fatherId ? generationMap.get(fmember.fatherId) : null;
+        const motherGeneration = fmember.motherId ? generationMap.get(fmember.motherId) : null;
+        
+        if (fatherGeneration !== undefined && fatherGeneration !== null || motherGeneration !== undefined && motherGeneration !== null) {
+          const parentGeneration = Math.max(
+            fatherGeneration || 0, 
+            motherGeneration || 0
+          );
+          const childGeneration = parentGeneration + 1;
+          generationMap.set(fmember.id, childGeneration);
+          changed = true;
+          
+          // Also assign the same generation to their spouse(s)
+          marriages.forEach(marriage => {
+            let spouseId = null;
+            if (marriage.husband_id === fmember.id && marriage.wife_id) {
+              spouseId = marriage.wife_id;
+            } else if (marriage.wife_id === fmember.id && marriage.husband_id) {
+              spouseId = marriage.husband_id;
+            }
+            
+            if (spouseId && !generationMap.has(spouseId)) {
+              generationMap.set(spouseId, childGeneration);
+              changed = true;
+            }
+          });
+        }
+      });
+    }
+
+    // Fallback for members without parents
+    familyMembers.forEach(fmember => {
+      if (!generationMap.has(fmember.id) && !fmember.fatherId && !fmember.motherId) {
+        generationMap.set(fmember.id, 1);
+      }
+    });
+
+    return generationMap.get(member.id) || 1;
+  };
+
   const father = getFather();
   const mother = getMother();
   const spouses = getSpouses();
   const children = getChildren();
   const grandchildren = getGrandchildren();
+  const memberGeneration = calculateMemberGeneration();
 
   const tabItems = [
     { id: 'overview', label: 'نظرة عامة', icon: User },
@@ -477,12 +550,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <span className="text-sm text-muted-foreground">الأحفاد</span>
                   <span className="font-semibold">{grandchildren.length}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">الجيل</span>
-                  <span className="font-semibold">
-                    {(father || mother) ? 'الثاني' : 'الأول'}
-                  </span>
-                </div>
+                 <div className="flex justify-between">
+                   <span className="text-sm text-muted-foreground">الجيل</span>
+                   <span className="font-semibold">
+                     الجيل {memberGeneration}
+                   </span>
+                 </div>
               </div>
             </div>
 
