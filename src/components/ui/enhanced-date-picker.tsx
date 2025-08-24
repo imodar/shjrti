@@ -190,7 +190,6 @@ export function EnhancedDatePicker({
               mode="single"
               selected={value}
               onSelect={handleSelect}
-              locale={ar}
               initialFocus
               defaultMonth={value || new Date()}
               className="rounded-md pointer-events-auto p-2 sm:p-4 touch-manipulation"
@@ -198,6 +197,9 @@ export function EnhancedDatePicker({
               captionLayout="dropdown-buttons"
               fromYear={fromYear}
               toYear={toYear}
+              formatters={{
+                formatMonthCaption: (date) => String(date.getMonth() + 1).padStart(2, '0'),
+              }}
               classNames={{
                 months: "flex flex-col space-y-4",
                 month: "space-y-4",
