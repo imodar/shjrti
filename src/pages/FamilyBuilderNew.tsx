@@ -3391,6 +3391,15 @@ const FamilyBuilderNew = () => {
                                                      }
                                                    }
                                                    
+                                                   // Debug logging
+                                                   console.log('Spouse member data:', {
+                                                     memberName: member.name,
+                                                     firstName: firstName,
+                                                     lastName: lastName,
+                                                     memberLastName: member.last_name,
+                                                     fullResult: firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '')
+                                                   });
+                                                   
                                                    return firstName && lastName ? `${firstName} ${lastName}` : (member.first_name || member.name || '');
                                                  }
                                                   
