@@ -3037,7 +3037,11 @@ const FamilyBuilderNew = () => {
                     <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600 dark:text-amber-400" />
                     <div className="text-center">
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-amber-600 dark:text-amber-400">
-                        {calculateGenerationCount()}
+                        {(() => {
+                          const count = calculateGenerationCount();
+                          console.log('🔍 UI Display: Generation count =', count);
+                          return count;
+                        })()}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.generations', 'أجيال')}</div>
                     </div>
