@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-type DatePreference = 'gregorian' | 'hijri';
+type DatePreference = 'gregorian' | 'gregorian-levantine' | 'hijri';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -659,53 +659,82 @@ export default function Profile() {
                               <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200">
                                 <SelectValue placeholder="اختر نوع التقويم" />
                               </SelectTrigger>
-                              <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50">
-                                <SelectItem value="gregorian" className="hover:bg-blue-50 dark:hover:bg-blue-950">
-                                  <div className="flex items-center gap-2">
-                                    <span>📅</span>
-                                    <span>التقويم الميلادي (الغربي)</span>
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="hijri" className="hover:bg-emerald-50 dark:hover:bg-emerald-950">
-                                  <div className="flex items-center gap-2">
-                                    <span>🌙</span>
-                                    <span>التقويم الهجري (الإسلامي)</span>
-                                  </div>
-                                </SelectItem>
+                               <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50">
+                                 <SelectItem value="gregorian" className="hover:bg-blue-50 dark:hover:bg-blue-950">
+                                   <div className="flex items-center gap-2">
+                                     <span>📅</span>
+                                     <span>التقويم الميلادي (يناير، فبراير...)</span>
+                                   </div>
+                                 </SelectItem>
+                                 <SelectItem value="gregorian-levantine" className="hover:bg-purple-50 dark:hover:bg-purple-950">
+                                   <div className="flex items-center gap-2">
+                                     <span>🗓️</span>
+                                     <span>التقويم الشامي (كانون الثاني، شباط...)</span>
+                                   </div>
+                                 </SelectItem>
+                                 <SelectItem value="hijri" className="hover:bg-emerald-50 dark:hover:bg-emerald-950">
+                                   <div className="flex items-center gap-2">
+                                     <span>🌙</span>
+                                     <span>التقويم الهجري (الإسلامي)</span>
+                                   </div>
+                                 </SelectItem>
                               </SelectContent>
                             </Select>
                           ) : (
-                            <div 
-                              className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600"
-                              onClick={async () => {
-                                const newPreference = profileData.datePreference === 'hijri' ? 'gregorian' : 'hijri';
-                                try {
-                                  await setGlobalDatePreference(newPreference);
-                                  toast({
-                                    title: "تم التحديث",
-                                    description: `تم تغيير تفضيل التقويم إلى ${newPreference === 'hijri' ? 'الهجري' : 'الميلادي'}`
-                                  });
-                                } catch (error) {
-                                  toast({
-                                    title: "خطأ",
-                                    description: "حدث خطأ أثناء تحديث تفضيل التقويم",
-                                    variant: "destructive"
-                                  });
-                                }
-                              }}
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <span>{profileData.datePreference === 'hijri' ? '🌙' : '📅'}</span>
-                                  <span className="text-gray-700 dark:text-gray-300">
-                                    {profileData.datePreference === 'hijri' ? 'التقويم الهجري (الإسلامي)' : 'التقويم الميلادي (الغربي)'}
-                                  </span>
-                                </div>
-                                <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
-                                  انقر للتبديل
-                                </span>
-                              </div>
-                            </div>
+                             <div 
+                               className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600"
+                               onClick={async () => {
+                                 // Cycle through date preferences
+                                 let newPreference: DatePreference;
+                                 if (profileData.datePreference === 'gregorian') {
+                                   newPreference = 'gregorian-levantine';
+                                 } else if (profileData.datePreference === 'gregorian-levantine') {
+                                   newPreference = 'hijri';
+                                 } else {
+                                   newPreference = 'gregorian';
+                                 }
+                                 
+                                 try {
+                                   await setGlobalDatePreference(newPreference);
+                                   let description = '';
+                                   if (newPreference === 'gregorian') {
+                                     description = 'تم تغيير تفضيل التقويم إلى الميلادي (يناير، فبراير...)';
+                                   } else if (newPreference === 'gregorian-levantine') {
+                                     description = 'تم تغيير تفضيل التقويم إلى الشامي (كانون الثاني، شباط...)';
+                                   } else {
+                                     description = 'تم تغيير تفضيل التقويم إلى الهجري';
+                                   }
+                                   
+                                   toast({
+                                     title: "تم التحديث",
+                                     description
+                                   });
+                                 } catch (error) {
+                                   toast({
+                                     title: "خطأ",
+                                     description: "حدث خطأ أثناء تحديث تفضيل التقويم",
+                                     variant: "destructive"
+                                   });
+                                 }
+                               }}
+                             >
+                               <div className="flex items-center justify-between">
+                                 <div className="flex items-center gap-2">
+                                   <span>
+                                     {profileData.datePreference === 'hijri' ? '🌙' : 
+                                      profileData.datePreference === 'gregorian-levantine' ? '🗓️' : '📅'}
+                                   </span>
+                                   <span className="text-gray-700 dark:text-gray-300">
+                                     {profileData.datePreference === 'hijri' ? 'التقويم الهجري (الإسلامي)' :
+                                      profileData.datePreference === 'gregorian-levantine' ? 'التقويم الشامي (كانون الثاني، شباط...)' :
+                                      'التقويم الميلادي (يناير، فبراير...)'}
+                                   </span>
+                                 </div>
+                                 <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
+                                   انقر للتبديل
+                                 </span>
+                               </div>
+                             </div>
                           )}
                         </div>
                       </div>

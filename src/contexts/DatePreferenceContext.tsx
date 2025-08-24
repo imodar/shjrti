@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 
-type DatePreference = 'gregorian' | 'hijri';
+type DatePreference = 'gregorian' | 'gregorian-levantine' | 'hijri';
 
 interface DatePreferenceContextType {
   datePreference: DatePreference;
@@ -128,12 +128,24 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
     }
 
     if (datePreference === 'gregorian') {
-      // Gregorian format in Arabic
+      // Gregorian format in Arabic (يناير، فبراير...)
       return dateObj.toLocaleDateString('ar-SA', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
+    } else if (datePreference === 'gregorian-levantine') {
+      // Levantine month names (كانون الثاني، شباط...)
+      const levantineMonths = [
+        'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+        'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+      ];
+      
+      const day = dateObj.getDate();
+      const month = levantineMonths[dateObj.getMonth()];
+      const year = dateObj.getFullYear();
+      
+      return `${day} ${month} ${year}`;
     } else {
       // Hijri format
       return toHijri(dateObj);
