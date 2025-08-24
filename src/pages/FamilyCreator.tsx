@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { LuxuryFooter } from "@/components/LuxuryFooter";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDateForDatabase, parseDateFromDatabase } from "@/lib/dateUtils";
 import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
@@ -375,8 +376,8 @@ const FamilyCreator = () => {
           first_name: founderData.name,
           last_name: treeData.name,
           gender: founderData.gender,
-          birth_date: founderData.birthDate ? new Date(founderData.birthDate).toISOString().split('T')[0] : null,
-          death_date: founderData.deathDate ? new Date(founderData.deathDate).toISOString().split('T')[0] : null,
+          birth_date: formatDateForDatabase(founderData.birthDate),
+          death_date: formatDateForDatabase(founderData.deathDate),
           is_alive: founderData.isAlive,
           biography: founderData.bio,
           image_url: founderData.croppedImage,
@@ -408,8 +409,8 @@ const FamilyCreator = () => {
             last_name: wife.last_name || treeData.name,
             gender: 'female',
             marital_status: wife.maritalStatus || 'married',
-            birth_date: wife.birthDate ? new Date(wife.birthDate).toISOString().split('T')[0] : null,
-            death_date: wife.deathDate ? new Date(wife.deathDate).toISOString().split('T')[0] : null,
+            birth_date: formatDateForDatabase(wife.birthDate),
+            death_date: formatDateForDatabase(wife.deathDate),
             is_alive: wife.isAlive,
             created_by: user.id
           })

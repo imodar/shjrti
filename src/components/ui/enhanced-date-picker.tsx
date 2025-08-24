@@ -96,17 +96,23 @@ export function EnhancedDatePicker({
   const [hijriDate, setHijriDate] = React.useState(() => value ? toHijri(value) : null);
 
   const handleSelect = (date: Date | undefined) => {
-    onChange?.(date);
     if (date) {
-      setHijriDate(toHijri(date));
+      // Create a new date in local timezone to avoid timezone issues
+      const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      onChange?.(localDate);
+      setHijriDate(toHijri(localDate));
       setOpen(false);
+    } else {
+      onChange?.(date);
     }
   };
 
   const handleHijriDateChange = (year: number, month: number, day: number) => {
     const gregorianDate = hijriToGregorian(year, month, day);
+    // Create a new date in local timezone to avoid timezone issues
+    const localDate = new Date(gregorianDate.getFullYear(), gregorianDate.getMonth(), gregorianDate.getDate());
     setHijriDate({ year, month, day });
-    onChange?.(gregorianDate);
+    onChange?.(localDate);
     setOpen(false);
   };
 

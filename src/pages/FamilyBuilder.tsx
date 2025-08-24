@@ -28,6 +28,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDateForDatabase, parseDateFromDatabase } from "@/lib/dateUtils";
 import Cropper from "react-easy-crop";
 import { ModernFamilyMemberModal } from "@/components/ModernFamilyMemberModal";
 
@@ -882,9 +883,9 @@ const FamilyBuilder = () => {
         father_id: memberData.fatherId,
         mother_id: memberData.motherId,
         related_person_id: memberData.relatedPersonId, // Set the related person ID
-        birth_date: memberData.birthDate ? (memberData.birthDate instanceof Date ? memberData.birthDate.toISOString().split('T')[0] : memberData.birthDate) : null,
+        birth_date: formatDateForDatabase(memberData.birthDate),
         is_alive: memberData.isAlive,
-        death_date: memberData.deathDate ? (memberData.deathDate instanceof Date ? memberData.deathDate.toISOString().split('T')[0] : memberData.deathDate) : null,
+        death_date: formatDateForDatabase(memberData.deathDate),
         biography: memberData.bio || "",
         image_url: memberData.croppedImage,
         is_founder: false,
@@ -932,9 +933,9 @@ const FamilyBuilder = () => {
               family_id: familyId,
               name: wife.name,
               gender: "female",
-              birth_date: wife.birthDate ? (wife.birthDate instanceof Date ? wife.birthDate.toISOString().split('T')[0] : wife.birthDate) : null,
+              birth_date: formatDateForDatabase(wife.birthDate),
               is_alive: wife.isAlive,
-              death_date: wife.deathDate ? (wife.deathDate instanceof Date ? wife.deathDate.toISOString().split('T')[0] : wife.deathDate) : null,
+              death_date: formatDateForDatabase(wife.deathDate),
               image_url: wife.croppedImage,
               is_founder: false,
               marital_status: "married", // Set wife as married
@@ -985,9 +986,9 @@ const FamilyBuilder = () => {
               family_id: familyId,
               name: husband.name,
               gender: "male",
-              birth_date: husband.birthDate ? (husband.birthDate instanceof Date ? husband.birthDate.toISOString().split('T')[0] : husband.birthDate) : null,
+              birth_date: formatDateForDatabase(husband.birthDate),
               is_alive: husband.isAlive,
-              death_date: husband.deathDate ? (husband.deathDate instanceof Date ? husband.deathDate.toISOString().split('T')[0] : husband.deathDate) : null,
+              death_date: formatDateForDatabase(husband.deathDate),
               image_url: husband.croppedImage,
               is_founder: false,
               marital_status: "married", // Set husband as married
@@ -1092,9 +1093,9 @@ const FamilyBuilder = () => {
         father_id: fatherId,
         mother_id: motherId,
         gender: formData.gender,
-        birth_date: formData.birthDate?.toISOString().split('T')[0] || null,
+        birth_date: formatDateForDatabase(formData.birthDate),
         is_alive: formData.isAlive,
-        death_date: formData.deathDate?.toISOString().split('T')[0] || null,
+        death_date: formatDateForDatabase(formData.deathDate),
         biography: formData.bio,
         image_url: formData.croppedImage,
         created_by: user.id
@@ -1135,8 +1136,8 @@ const FamilyBuilder = () => {
                   family_id: familyData?.id,
                   name: wife.name,
                   gender: 'female',
-                  birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
-                  death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                  birth_date: formatDateForDatabase(wife.birthDate),
+                  death_date: formatDateForDatabase(wife.deathDate),
                   is_alive: wife.isAlive,
                   created_by: user.id
                 })
@@ -1246,9 +1247,9 @@ const FamilyBuilder = () => {
             gender: formData.gender,
             fatherId: fatherId,
             motherId: motherId,
-            birthDate: formData.birthDate?.toISOString().split('T')[0] || "",
+            birthDate: formatDateForDatabase(formData.birthDate),
             isAlive: formData.isAlive,
-            deathDate: formData.deathDate?.toISOString().split('T')[0] || null,
+            deathDate: formatDateForDatabase(formData.deathDate),
             bio: formData.bio,
             image: formData.croppedImage,
             relatedPersonId: formData.relatedPersonId
@@ -1285,8 +1286,8 @@ const FamilyBuilder = () => {
                   family_id: familyData?.id,
                   name: wife.name,
                   gender: 'female',
-                  birth_date: wife.birthDate ? wife.birthDate.toISOString().split('T')[0] : null,
-                  death_date: wife.deathDate ? wife.deathDate.toISOString().split('T')[0] : null,
+                  birth_date: formatDateForDatabase(wife.birthDate),
+                  death_date: formatDateForDatabase(wife.deathDate),
                   is_alive: wife.isAlive,
                   created_by: user.id
                 })
@@ -1396,8 +1397,8 @@ const FamilyBuilder = () => {
                 family_id: familyData?.id,
                 name: husband.name,
                 gender: 'male',
-                birth_date: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : null,
-                death_date: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : null,
+                birth_date: formatDateForDatabase(husband.birthDate),
+                death_date: formatDateForDatabase(husband.deathDate),
                 is_alive: husband.isAlive,
                 created_by: user.id
               })
