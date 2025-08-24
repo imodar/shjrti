@@ -123,6 +123,10 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
   const formatDate = (date: Date | string): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
+    // Debug logging
+    console.log('DatePreferenceContext formatDate - datePreference:', datePreference);
+    console.log('DatePreferenceContext formatDate - input date:', date);
+    
     if (isNaN(dateObj.getTime())) {
       return 'تاريخ غير صحيح';
     }
@@ -148,8 +152,11 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
       return `${day} ${month} ${year}`;
     } else {
       // Hijri format
-      return toHijri(dateObj);
+      const hijriResult = toHijri(dateObj);
+      console.log('DatePreferenceContext formatDate - hijri result:', hijriResult);
+      return hijriResult;
     }
+    
   };
 
   const value: DatePreferenceContextType = {

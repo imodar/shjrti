@@ -109,8 +109,13 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
   className = ''
 }) => {
   const { t } = useLanguage();
-  const { formatDate } = useDatePreference();
+  const { formatDate, datePreference } = useDatePreference();
   let formattedDate: string = '';
+
+  // Debug logging
+  console.log('DateDisplay - datePreference:', datePreference);
+  console.log('DateDisplay - input date:', date);
+  console.log('DateDisplay - format:', format);
 
   try {
     switch (format) {
@@ -124,6 +129,9 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
         formattedDate = formatDateNumeric(date, formatDate);
         break;
     }
+    
+    // Debug logging
+    console.log('DateDisplay - formatted result:', formattedDate);
   } catch (error) {
     console.error('Error in DateDisplay:', error);
     formattedDate = '';
