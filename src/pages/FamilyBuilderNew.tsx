@@ -1166,6 +1166,59 @@ const FamilyBuilderNew = () => {
     setShowSpouseEditWarning(true);
   };
 
+  const handleSpouseDeleteWarning = (spouseMember: any) => {
+    // Close any active spouse editing forms first
+    closeActiveSpouseEdit();
+    
+    // Find the marriage where this spouse belongs
+    const marriage = familyMarriages.find((m: any) => 
+      m.husband?.id === spouseMember.id || m.wife?.id === spouseMember.id
+    );
+    
+    if (!marriage) {
+      toast({
+        title: "خطأ",
+        description: "لم يتم العثور على معلومات الزواج لهذا العضو",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Get the partner (the actual family member who can be edited)
+    const partner = marriage.husband?.id === spouseMember.id ? marriage.wife : marriage.husband;
+    
+    if (!partner) {
+      toast({
+        title: "خطأ", 
+        description: "لم يتم العثور على معلومات الشريك",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Set spouse partner details for the modal
+    setSpousePartnerName(partner.name || "غير محدد");
+    
+    // Get the current member's father and grandfather information (not the partner's)
+    const currentMember = familyMembers.find(m => m.id === spouseMember.id);
+    const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
+    const fatherName = father?.name || "";
+    
+    // Get grandfather information (father's father)
+    const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
+    const grandfatherName = grandfather?.name || "";
+    
+    setSpousePartnerDetails({
+      name: partner.name || "غير محدد",
+      fatherName: fatherName || "غير محدد", 
+      grandfatherName: grandfatherName || "غير محدد",
+      isFounder: currentMember?.is_founder || false
+    });
+    
+    // Show the spouse delete warning modal
+    setShowSpouseDeleteModal(true);
+  };
+
   const getChildrenCount = (parentId: string) => {
     return familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId).length;
   };
@@ -3394,25 +3447,26 @@ const FamilyBuilderNew = () => {
                      profileLoading ? (
                        <MemberProfileSkeleton />
                      ) : (
-                       <MemberProfileView
-                         member={editingMember}
-                         onEdit={() => {
-                           setFormMode('edit');
-                           setCurrentStep(1);
-                           populateFormData(editingMember);
-                         }}
-                         onBack={() => setFormMode('view')}
-                         onDelete={() => handleDeleteMember(editingMember)}
-                         familyMembers={familyMembers}
-                         marriages={familyMarriages}
-                         onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
-                         onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
-                         onMemberClick={async (member) => {
-                           setEditingMember(member);
-                           setFormMode('profile');
-                           await fetchMemberProfile(member.id);
-                         }}
-                       />
+                        <MemberProfileView
+                          member={editingMember}
+                          isSpouse={checkIfMemberIsSpouse(editingMember)}
+                          onEdit={() => {
+                            setFormMode('edit');
+                            setCurrentStep(1);
+                            populateFormData(editingMember);
+                          }}
+                          onBack={() => setFormMode('view')}
+                          onDelete={() => handleDeleteMember(editingMember)}
+                          familyMembers={familyMembers}
+                          marriages={familyMarriages}
+                          onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
+                          onSpouseDeleteWarning={() => handleSpouseDeleteWarning(editingMember)}
+                          onMemberClick={async (member) => {
+                            setEditingMember(member);
+                            setFormMode('profile');
+                            await fetchMemberProfile(member.id);
+                          }}
+                        />
                      )
                   ) : (
                     <div className="space-y-6">
