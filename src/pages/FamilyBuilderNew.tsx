@@ -2148,10 +2148,16 @@ const FamilyBuilderNew = () => {
       // - If imageChanged is false, keep existing image (user didn't touch the image)
       let finalImageUrl;
       if (formMode === 'edit' && editingMember) {
+        console.log('🚨 Image preservation check:', {
+          imageChanged,
+          croppedImage: submissionData.croppedImage,
+          existingImage: editingMember.image,
+          editingMember: editingMember
+        });
         if (imageChanged) {
           finalImageUrl = submissionData.croppedImage || null;
         } else {
-          finalImageUrl = editingMember.image_url || null;
+          finalImageUrl = editingMember.image || null;
         }
       } else {
         finalImageUrl = submissionData.croppedImage || null;
