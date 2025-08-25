@@ -1,12 +1,20 @@
+console.log('🔧 useMaintenanceMode file loaded');
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useMaintenanceMode = () => {
+  console.log('🔧 useMaintenanceMode: Hook initialized');
+  
   const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🔧 useMaintenanceMode: useEffect triggered');
+    
     const checkMaintenanceMode = async () => {
+      console.log('🔧 useMaintenanceMode: Checking maintenance mode from database');
+      
       try {
         const { data, error } = await supabase
           .from('admin_settings')
@@ -14,8 +22,10 @@ export const useMaintenanceMode = () => {
           .eq('setting_key', 'maintenance_mode')
           .maybeSingle();
 
+        console.log('🔧 useMaintenanceMode: Database response:', { data, error });
+
         if (error && error.code !== 'PGRST116') {
-          console.error('Error checking maintenance mode:', error);
+          console.error('🔧 useMaintenanceMode: Error checking maintenance mode:', error);
           return;
         }
 
@@ -30,9 +40,10 @@ export const useMaintenanceMode = () => {
         
         setIsMaintenanceMode(maintenanceEnabled);
       } catch (error) {
-        console.error('Error checking maintenance mode:', error);
+        console.error('🔧 useMaintenanceMode: Error checking maintenance mode:', error);
         setIsMaintenanceMode(false);
       } finally {
+        console.log('🔧 useMaintenanceMode: Setting loading to false');
         setLoading(false);
       }
     };
@@ -40,6 +51,7 @@ export const useMaintenanceMode = () => {
     checkMaintenanceMode();
 
     // Set up real-time subscription to admin_settings for maintenance_mode changes
+    console.log('🔧 useMaintenanceMode: Setting up realtime subscription');
     const subscription = supabase
       .channel('maintenance_mode_changes')
       .on(
@@ -63,9 +75,11 @@ export const useMaintenanceMode = () => {
       .subscribe();
 
     return () => {
+      console.log('🔧 useMaintenanceMode: Cleaning up subscription');
       subscription.unsubscribe();
     };
   }, []);
 
+  console.log('🔧 useMaintenanceMode: Current state:', { isMaintenanceMode, loading });
   return { isMaintenanceMode, loading };
 };
