@@ -6,9 +6,8 @@ import EditModal from '@/components/EditModal';
 import MemberCard from '@/components/MemberCard';
 import AddMemberModal from '@/components/AddMemberModal';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import Loading from '@/components/Loading';
 import {
   AlertDialog,
@@ -26,16 +25,24 @@ import { Button } from "@/components/ui/button"
 interface FamilyMember {
   id: string;
   name: string;
-  relationship: string;
-  image_url: string;
+  first_name?: string;
+  last_name?: string;
+  gender?: string;
+  image_url?: string;
   family_id: string;
   created_at: string;
   updated_at: string;
-  is_alive: boolean;
-  birth_date: string;
-  death_date: string;
-  additional_info: string;
-  order: number;
+  is_alive?: boolean;
+  birth_date?: string;
+  death_date?: string;
+  biography?: string;
+  is_founder?: boolean;
+  father_id?: string;
+  mother_id?: string;
+  spouse_id?: string;
+  marital_status?: string;
+  created_by?: string;
+  related_person_id?: string;
 }
 
 const FamilyBuilderNew = () => {
@@ -45,14 +52,14 @@ const FamilyBuilderNew = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { auth } = useAuth();
+  const { user } = useAuth();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const router = useRouter();
+  const navigate = useNavigate();
   const [isDeleteAlertDialogOpen, setIsDeleteAlertDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchFamilies = async () => {
-      if (!auth.user) {
+      if (!user) {
         console.error('❌ User not authenticated');
         return;
       }
@@ -62,7 +69,7 @@ const FamilyBuilderNew = () => {
         const { data: families, error } = await supabase
           .from('families')
           .select('*')
-          .eq('user_id', auth.user.id);
+          .eq('creator_id', user.id);
 
         if (error) {
           console.error('❌ Error fetching families:', error);
@@ -77,7 +84,7 @@ const FamilyBuilderNew = () => {
           const newFamilyId = uuidv4();
           const { error: createError } = await supabase
             .from('families')
-            .insert([{ id: newFamilyId, user_id: auth.user.id, name: 'My Family' }]);
+            .insert([{ id: newFamilyId, creator_id: user.id, name: 'My Family' }]);
 
           if (createError) {
             console.error('❌ Error creating family:', createError);
@@ -96,10 +103,10 @@ const FamilyBuilderNew = () => {
       }
     };
 
-    if (auth.user) {
+    if (user) {
       fetchFamilies();
     }
-  }, [auth.user]);
+  }, [user]);
 
   useEffect(() => {
     if (selectedFamily) {
@@ -119,7 +126,7 @@ const FamilyBuilderNew = () => {
         .from('family_tree_members')
         .select('*')
         .eq('family_id', selectedFamily)
-        .order('order', { ascending: true });
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error('❌ Error fetching family tree:', error);
@@ -160,8 +167,8 @@ const FamilyBuilderNew = () => {
     setIsAddModalOpen(false);
   };
 
-  const handleCreateMember = async (newMember: Omit<FamilyMember, 'id' | 'created_at' | 'updated_at'>) => {
-    if (!selectedFamily || !auth.user) {
+  const handleCreateMember = async (newMember: any) => {
+    if (!selectedFamily || !user) {
       console.error('❌ No family selected or user not authenticated');
       return;
     }
@@ -175,7 +182,7 @@ const FamilyBuilderNew = () => {
         console.log('📸 Uploading new image...');
 
         const fileExt = selectedImage.name.split('.').pop();
-        const fileName = `${auth.user.id}-${Date.now()}.${fileExt}`;
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('family-images')
@@ -201,9 +208,7 @@ const FamilyBuilderNew = () => {
         id: uuidv4(),
         family_id: selectedFamily,
         image_url: imageUrl,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        order: familyTree.length,
+        created_by: user.id,
       };
 
       const { error } = await supabase
@@ -227,7 +232,7 @@ const FamilyBuilderNew = () => {
   };
 
   const handleSaveMember = async (updatedMember: any) => {
-    if (!selectedFamily || !auth.user) {
+    if (!selectedFamily || !user) {
       console.error('❌ No family selected or user not authenticated');
       return;
     }
@@ -258,7 +263,7 @@ const FamilyBuilderNew = () => {
 
         // Upload new image
         const fileExt = selectedImage.name.split('.').pop();
-        const fileName = `${auth.user.id}-${Date.now()}.${fileExt}`;
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
           .from('family-images')
@@ -281,7 +286,6 @@ const FamilyBuilderNew = () => {
       const memberData = {
         ...updatedMember,
         image_url: imageUrl,
-        updated_at: new Date().toISOString()
       };
 
       const { error } = await supabase
@@ -366,38 +370,10 @@ const FamilyBuilderNew = () => {
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    // Update the order property of each item in the array
-    const updatedItems = items.map((item, index) => ({ ...item, order: index }));
+    setFamilyTree(items);
 
-    setFamilyTree(updatedItems);
-
-    // Update the order in the database
-    try {
-      setIsLoading(true);
-      const updates = updatedItems.map(member => ({ id: member.id, order: member.order }));
-
-      // Use a single update operation to update all members
-      const { error } = await supabase
-        .from('family_tree_members')
-        .upsert(updates);
-
-      if (error) {
-        console.error('❌ Error updating member orders:', error);
-        toast.error('Error updating member orders');
-        // Revert to the original order in case of error
-        await fetchFamilyTree();
-        return;
-      }
-
-      console.log('✅ Member orders updated successfully');
-    } catch (error) {
-      console.error('❌ Error updating member orders:', error);
-      toast.error('Error updating member orders');
-      // Revert to the original order in case of error
-      await fetchFamilyTree();
-    } finally {
-      setIsLoading(false);
-    }
+    // For now, we'll just update the UI without persisting order
+    // You can implement order persistence later if needed
   };
 
   if (isLoading) {
