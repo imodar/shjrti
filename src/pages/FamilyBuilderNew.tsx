@@ -28,7 +28,7 @@ import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { DateDisplay } from "@/components/DateDisplay";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
@@ -3203,7 +3203,7 @@ const FamilyBuilderNew = () => {
         <div className="container mx-auto px-4 py-6">
           <FamilyBuilderNewSkeleton />
         </div>
-        <GlobalFooter />
+        <GlobalFooterSimplified />
       </div>
     );
   }
@@ -4608,7 +4608,7 @@ const FamilyBuilderNew = () => {
         </DialogContent>
       </Dialog>
 
-      <GlobalFooter />
+      <GlobalFooterSimplified />
     </div>
   );
 };
