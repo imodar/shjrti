@@ -1873,12 +1873,27 @@ const FamilyBuilderNew = () => {
       console.log(`Successfully updated ${spouseType} marital status to:`, spouse.maritalStatus);
     }
 
-    // Also update marriage table marital status
+    // Update marriage table marital status
     const spouseColumn = spouseType === 'wife' ? 'wife_id' : 'husband_id';
-    await supabase
+    const { data: marriage } = await supabase
       .from('marriages')
       .update({ marital_status: spouse.maritalStatus })
-      .eq(spouseColumn, spouse.existingFamilyMemberId);
+      .eq(spouseColumn, spouse.existingFamilyMemberId)
+      .select('husband_id, wife_id')
+      .single();
+
+    // Update the other spouse's marital status in family_tree_members
+    if (marriage) {
+      const otherSpouseId = spouseType === 'wife' ? marriage.husband_id : marriage.wife_id;
+      if (otherSpouseId && otherSpouseId !== spouse.existingFamilyMemberId) {
+        await supabase
+          .from('family_tree_members')
+          .update({ marital_status: spouse.maritalStatus })
+          .eq('id', otherSpouseId);
+        
+        console.log(`Also updated other spouse's marital status to:`, spouse.maritalStatus);
+      }
+    }
   };
 
   const createOrUpdateMarriage = async ({ memberData, spouseId, spouseType, spouse, familyId, activeMarriageIds, marriageResults, isMainMember }) => {
