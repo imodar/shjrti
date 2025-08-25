@@ -3449,12 +3449,13 @@ const FamilyBuilderNew = () => {
                                                   const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
                                                  const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
                                                 
-                                                return {
-                                                  value: marriage.id,
-                                                  familyMember,
-                                                  spouse,
-                                                  heartIcon
-                                                };
+                                                 return {
+                                                   value: marriage.id,
+                                                   familyMember,
+                                                   spouse,
+                                                   heartIcon,
+                                                   isFounder: husbandMember?.is_founder || false
+                                                 };
                                              }) :
                                            [{ value: "no-data", label: "لا توجد زيجات مسجلة في هذه العائلة", disabled: true }]
                                      }

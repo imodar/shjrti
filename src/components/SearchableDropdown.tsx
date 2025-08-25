@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Search, X, Heart, HeartCrack } from 'lucide-react';
+import { ChevronDown, Search, X, Heart, HeartCrack, Crown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ interface DropdownOption {
   familyMember?: string;
   spouse?: string;
   heartIcon?: 'heart' | 'heart-crack';
+  isFounder?: boolean;
 }
 
 interface SearchableDropdownProps {
@@ -120,6 +121,7 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
             selectedOption.familyMember ? (
               <div className="flex items-center justify-center gap-2 text-sm">
                 <span className="truncate">{selectedOption.familyMember}</span>
+                {selectedOption.isFounder && <Crown className="h-3 w-3 text-yellow-500" />}
                 {selectedOption.heartIcon === 'heart-crack' ? (
                   <HeartCrack className="h-3 w-3 text-muted-foreground" />
                 ) : (
@@ -188,6 +190,7 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                       {option.familyMember ? (
                         <div className="flex items-center justify-center gap-2">
                           <span className="truncate">{option.familyMember}</span>
+                          {option.isFounder && <Crown className="h-4 w-4 text-yellow-500" />}
                           {option.heartIcon === 'heart-crack' ? (
                             <HeartCrack className="h-4 w-4 text-muted-foreground" />
                           ) : (
