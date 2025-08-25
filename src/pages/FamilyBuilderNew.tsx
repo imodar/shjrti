@@ -1215,8 +1215,8 @@ const FamilyBuilderNew = () => {
       isFounder: currentMember?.is_founder || false
     });
     
-    // Show the spouse delete warning modal
-    setShowSpouseDeleteModal(true);
+    // Show the spouse edit warning modal (same for delete)
+    setShowSpouseEditWarning(true);
   };
 
   const getChildrenCount = (parentId: string) => {
