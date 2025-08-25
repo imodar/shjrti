@@ -30,6 +30,7 @@ export const useMaintenanceMode = () => {
         const settingValue = settingData?.setting_value as { enabled?: boolean } | null;
         const maintenanceEnabled = settingValue?.enabled || false;
         
+        console.log('🔧 Maintenance mode set to:', maintenanceEnabled);
         setIsMaintenanceMode(maintenanceEnabled);
       } catch (error) {
         console.error('Error checking maintenance mode:', error);
@@ -53,9 +54,11 @@ export const useMaintenanceMode = () => {
           filter: `setting_key=eq.maintenance_mode`
         },
         (payload) => {
+          console.log('🔧 Real-time update received:', payload);
           if (payload.new && typeof payload.new === 'object') {
             const newData = payload.new as { setting_value: { enabled?: boolean } };
             const enabled = newData.setting_value?.enabled || false;
+            console.log('🔧 Real-time maintenance mode update:', enabled);
             setIsMaintenanceMode(enabled);
           }
         }
