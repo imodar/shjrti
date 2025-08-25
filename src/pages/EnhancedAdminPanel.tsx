@@ -362,19 +362,9 @@ export default function EnhancedAdminPanel() {
 
   // Save maintenance mode to admin settings
   const saveMaintenanceMode = async (enabled: boolean) => {
-    console.log('🔧 Admin Panel: Saving maintenance mode:', enabled);
     setSavingMaintenanceMode(true);
     try {
-      // First, let's check if the record exists
-      const { data: existingData, error: checkError } = await supabase
-        .from('admin_settings')
-        .select('*')
-        .eq('setting_key', 'maintenance_mode');
-
-      console.log('🔧 Admin Panel: Existing maintenance mode record:', { existingData, checkError });
-
-      // Perform the upsert operation
-      const { data: upsertData, error: upsertError } = await supabase
+      const { error } = await supabase
         .from('admin_settings')
         .upsert({
           setting_key: 'maintenance_mode',
@@ -382,25 +372,13 @@ export default function EnhancedAdminPanel() {
           description: 'Enable or disable maintenance mode for the entire site'
         }, {
           onConflict: 'setting_key'
-        })
-        .select();
+        });
 
-      console.log('🔧 Admin Panel: Upsert result:', { upsertData, upsertError });
-
-      if (upsertError) {
-        console.error('🔧 Admin Panel: Error saving maintenance mode:', upsertError);
-        throw upsertError;
+      if (error) {
+        console.error('Error saving maintenance mode:', error);
+        throw error;
       }
 
-      // Verify the save by reading it back
-      const { data: verifyData, error: verifyError } = await supabase
-        .from('admin_settings')
-        .select('*')
-        .eq('setting_key', 'maintenance_mode');
-
-      console.log('🔧 Admin Panel: Verification read:', { verifyData, verifyError });
-
-      console.log('🔧 Admin Panel: Successfully saved maintenance mode:', enabled);
       setMaintenanceMode(enabled);
       toast({
         title: enabled ? "تم تفعيل وضع الصيانة" : "تم إلغاء وضع الصيانة",
