@@ -1697,6 +1697,61 @@ export default function EnhancedAdminPanel() {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
+            {/* Maintenance Mode Card */}
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-red-200/30 dark:border-red-700/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl font-bold text-red-600">
+                  <ShieldCheck className="h-5 w-5" />
+                  وضع الصيانة
+                </CardTitle>
+                <CardDescription>
+                  تفعيل أو إلغاء وضع الصيانة للموقع. عند التفعيل، لن يتمكن المستخدمون العاديون من الوصول للموقع
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between p-6 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 rounded-lg border-2 border-red-200/50">
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">
+                      {maintenanceMode ? 'وضع الصيانة مفعل' : 'وضع الصيانة معطل'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {maintenanceMode 
+                        ? 'الموقع حالياً في وضع الصيانة. المديرون فقط يمكنهم الوصول.' 
+                        : 'الموقع متاح لجميع المستخدمين.'
+                      }
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Switch
+                      checked={maintenanceMode}
+                      onCheckedChange={saveMaintenanceMode}
+                      disabled={savingMaintenanceMode}
+                      className="data-[state=checked]:bg-red-500"
+                    />
+                    {savingMaintenanceMode && (
+                      <RefreshCw className="h-4 w-4 animate-spin text-red-500" />
+                    )}
+                  </div>
+                </div>
+                
+                {maintenanceMode && (
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-red-800 dark:text-red-200 font-semibold mb-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      تحذير: وضع الصيانة مفعل
+                    </div>
+                    <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+                      <li>• المستخدمون العاديون لا يمكنهم الوصول للموقع</li>
+                      <li>• سيتم عرض صفحة الصيانة لجميع الزوار</li>
+                      <li>• المديرون فقط يمكنهم الوصول والتنقل في الموقع</li>
+                      <li>• تأكد من إلغاء تفعيل الوضع بعد انتهاء الصيانة</li>
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Custom JavaScript Card */}
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl font-bold text-emerald-600">
