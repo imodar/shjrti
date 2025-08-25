@@ -362,6 +362,7 @@ export default function EnhancedAdminPanel() {
 
   // Save maintenance mode to admin settings
   const saveMaintenanceMode = async (enabled: boolean) => {
+    console.log('🔧 Admin Panel: Saving maintenance mode:', enabled);
     setSavingMaintenanceMode(true);
     try {
       const { error } = await supabase
@@ -374,8 +375,12 @@ export default function EnhancedAdminPanel() {
           onConflict: 'setting_key'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('🔧 Admin Panel: Error saving maintenance mode:', error);
+        throw error;
+      }
 
+      console.log('🔧 Admin Panel: Successfully saved maintenance mode:', enabled);
       setMaintenanceMode(enabled);
       toast({
         title: enabled ? "تم تفعيل وضع الصيانة" : "تم إلغاء وضع الصيانة",
@@ -383,7 +388,7 @@ export default function EnhancedAdminPanel() {
         variant: enabled ? "destructive" : "default"
       });
     } catch (error) {
-      console.error('Error saving maintenance mode:', error);
+      console.error('🔧 Admin Panel: Error saving maintenance mode:', error);
       toast({
         title: "خطأ",
         description: "فشل في حفظ إعدادات وضع الصيانة",

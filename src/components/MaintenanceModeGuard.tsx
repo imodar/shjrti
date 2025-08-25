@@ -44,8 +44,19 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
     checkAdminStatus();
   }, [user]);
 
+  // Debug logging
+  console.log('🔧 MaintenanceModeGuard Debug:', {
+    isMaintenanceMode,
+    maintenanceLoading,
+    authLoading,
+    adminLoading,
+    isAdmin,
+    user: user?.email
+  });
+
   // Show loading while checking maintenance mode or admin status
   if (maintenanceLoading || authLoading || adminLoading) {
+    console.log('🔧 MaintenanceModeGuard: Showing loading state');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
@@ -58,9 +69,11 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
 
   // If maintenance mode is enabled and user is not admin, show maintenance page
   if (isMaintenanceMode && !isAdmin) {
+    console.log('🔧 MaintenanceModeGuard: Showing maintenance page');
     return <MaintenancePage />;
   }
 
+  console.log('🔧 MaintenanceModeGuard: Allowing access to app');
   // Otherwise, render the app normally
   return <>{children}</>;
 };
