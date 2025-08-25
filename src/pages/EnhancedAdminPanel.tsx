@@ -33,7 +33,8 @@ import {
   FileText,
   Mail,
   Code,
-  Palette
+  Palette,
+  AlertTriangle
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import PageEditor from '@/components/PageEditor';
@@ -195,6 +196,10 @@ export default function EnhancedAdminPanel() {
   const [customJavaScript, setCustomJavaScript] = useState('');
   const [savingJavaScript, setSavingJavaScript] = useState(false);
   
+  // Maintenance mode management state
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [savingMaintenanceMode, setSavingMaintenanceMode] = useState(false);
+  
   // User status management state
   const [statusUpdating, setStatusUpdating] = useState<Set<string>>(new Set());
   const [statusDialog, setStatusDialog] = useState<{isOpen: boolean, user: UserProfile | null}>({isOpen: false, user: null});
@@ -335,6 +340,60 @@ export default function EnhancedAdminPanel() {
     }
   };
 
+  // Load maintenance mode from admin settings
+  const loadMaintenanceMode = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('admin_settings')
+        .select('setting_value')
+        .eq('setting_key', 'maintenance_mode')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      const settingValue = data?.setting_value as { enabled?: boolean } | null;
+      if (settingValue?.enabled !== undefined) {
+        setMaintenanceMode(settingValue.enabled);
+      }
+    } catch (error) {
+      console.error('Error loading maintenance mode:', error);
+    }
+  };
+
+  // Save maintenance mode to admin settings
+  const saveMaintenanceMode = async (enabled: boolean) => {
+    setSavingMaintenanceMode(true);
+    try {
+      const { error } = await supabase
+        .from('admin_settings')
+        .upsert({
+          setting_key: 'maintenance_mode',
+          setting_value: { enabled },
+          description: 'Enable or disable maintenance mode for the entire site'
+        }, {
+          onConflict: 'setting_key'
+        });
+
+      if (error) throw error;
+
+      setMaintenanceMode(enabled);
+      toast({
+        title: enabled ? "تم تفعيل وضع الصيانة" : "تم إلغاء وضع الصيانة",
+        description: enabled ? "الموقع الآن في وضع الصيانة للمستخدمين العاديين" : "الموقع متاح الآن لجميع المستخدمين",
+        variant: enabled ? "destructive" : "default"
+      });
+    } catch (error) {
+      console.error('Error saving maintenance mode:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حفظ إعدادات وضع الصيانة",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingMaintenanceMode(false);
+    }
+  };
+
   // Update user status function
   const updateUserStatus = async (userId: string, status: 'active' | 'pending' | 'suspended' | 'inactive', reason?: string) => {
     setStatusUpdating(prev => new Set([...prev, userId]));
@@ -381,7 +440,7 @@ export default function EnhancedAdminPanel() {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([loadPackages(), loadTranslations(), loadLanguages(), loadUsers(), loadUserSubscriptions(), loadCustomJavaScript()]).finally(() => {
+    Promise.all([loadPackages(), loadTranslations(), loadLanguages(), loadUsers(), loadUserSubscriptions(), loadCustomJavaScript(), loadMaintenanceMode()]).finally(() => {
       setLoading(false);
     });
   }, []);

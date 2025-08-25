@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
+import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
 import ScrollToTop from "@/components/ScrollToTop";
 import CustomScriptInjector from "@/components/CustomScriptInjector";
 import Index from "./pages/Index";
@@ -53,113 +54,115 @@ const App = () => (
         <DirectionWrapper>
           <AuthProvider>
             <SubscriptionProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <ScrollToTop />
-                <CustomScriptInjector />
-                <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/home-backup" element={<IndexBackup />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/dashboard-backup" element={
-                  <ProtectedRoute>
-                    <DashboardBackup />
-                  </ProtectedRoute>
-                } />
-                <Route path="/family-creator" element={
-                  <ProtectedRoute requireActiveSubscription={true}>
-                    <FamilyCreator />
-                  </ProtectedRoute>
-                } />
-        <Route path="/family-builder" element={
-          <ProtectedRoute requireActiveSubscription={true}>
-            <ProtectedFamilyRoute>
-              <FamilyBuilder />
-            </ProtectedFamilyRoute>
-          </ProtectedRoute>
-        } />
-        <Route path="/family-builder-new" element={
-          <ProtectedRoute requireActiveSubscription={true}>
-            <ProtectedFamilyRoute>
-              <FamilyBuilderNew />
-            </ProtectedFamilyRoute>
-          </ProtectedRoute>
-        } />
-                <Route path="/family-tree-view" element={
-                  <ProtectedRoute>
-                    <FamilyTreeView />
-                  </ProtectedRoute>
-                } />
-                <Route path="/family-statistics" element={
-                  <ProtectedRoute>
-                    <FamilyStatistics />
-                  </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/payments" element={
-                  <ProtectedRoute>
-                    <Payments />
-                  </ProtectedRoute>
-                } />
-                <Route path="/plan-selection" element={
-                  <ProtectedRoute>
-                    <PlanSelection />
-                  </ProtectedRoute>
-                } />
-                <Route path="/payment-success" element={
-                  <ProtectedRoute>
-                    <PaymentSuccess />
-                  </ProtectedRoute>
-                } />
-                <Route path="/payment" element={
-                  <ProtectedRoute>
-                    <Payment />
-                  </ProtectedRoute>
-                } />
-                <Route path="/change-password" element={
-                  <ProtectedRoute>
-                    <ChangePassword />
-                  </ProtectedRoute>
-                } />
-                <Route path="/store" element={
-                  <ProtectedRoute>
-                    <Store />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin" element={
-                  <ProtectedRoute requireAdmin={true}>
-                    <EnhancedAdminPanel />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/billing" element={
-                  <ProtectedRoute requireAdmin={true}>
-                    <AdminBilling />
-                  </ProtectedRoute>
-                } />
-                <Route path="/renew-subscription" element={
-                  <ProtectedRoute>
-                    <RenewSubscription />
-                  </ProtectedRoute>
-                } />
-                <Route path="/terms-conditions" element={<TermsConditions />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/contact" element={<ContactUs />} />
-                {/* Redirect old terms route to new one */}
-                <Route path="/terms" element={<TermsConditions />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
+              <MaintenanceModeGuard>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <ScrollToTop />
+                  <CustomScriptInjector />
+                  <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/home-backup" element={<IndexBackup />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard-backup" element={
+                    <ProtectedRoute>
+                      <DashboardBackup />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/family-creator" element={
+                    <ProtectedRoute requireActiveSubscription={true}>
+                      <FamilyCreator />
+                    </ProtectedRoute>
+                  } />
+          <Route path="/family-builder" element={
+            <ProtectedRoute requireActiveSubscription={true}>
+              <ProtectedFamilyRoute>
+                <FamilyBuilder />
+              </ProtectedFamilyRoute>
+            </ProtectedRoute>
+          } />
+          <Route path="/family-builder-new" element={
+            <ProtectedRoute requireActiveSubscription={true}>
+              <ProtectedFamilyRoute>
+                <FamilyBuilderNew />
+              </ProtectedFamilyRoute>
+            </ProtectedRoute>
+          } />
+                  <Route path="/family-tree-view" element={
+                    <ProtectedRoute>
+                      <FamilyTreeView />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/family-statistics" element={
+                    <ProtectedRoute>
+                      <FamilyStatistics />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/payments" element={
+                    <ProtectedRoute>
+                      <Payments />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/plan-selection" element={
+                    <ProtectedRoute>
+                      <PlanSelection />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/payment-success" element={
+                    <ProtectedRoute>
+                      <PaymentSuccess />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/payment" element={
+                    <ProtectedRoute>
+                      <Payment />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/change-password" element={
+                    <ProtectedRoute>
+                      <ChangePassword />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/store" element={
+                    <ProtectedRoute>
+                      <Store />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <EnhancedAdminPanel />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/billing" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <AdminBilling />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/renew-subscription" element={
+                    <ProtectedRoute>
+                      <RenewSubscription />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/terms-conditions" element={<TermsConditions />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/contact" element={<ContactUs />} />
+                  {/* Redirect old terms route to new one */}
+                  <Route path="/terms" element={<TermsConditions />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </MaintenanceModeGuard>
             </SubscriptionProvider>
           </AuthProvider>
         </DirectionWrapper>
