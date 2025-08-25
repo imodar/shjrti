@@ -19,21 +19,23 @@ export const useMaintenanceMode = () => {
         const { data, error } = await supabase
           .from('admin_settings')
           .select('setting_value')
-          .eq('setting_key', 'maintenance_mode')
-          .maybeSingle();
+          .eq('setting_key', 'maintenance_mode');
 
         console.log('🔧 useMaintenanceMode: Database response:', { data, error });
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           console.error('🔧 useMaintenanceMode: Error checking maintenance mode:', error);
           return;
         }
 
-        const settingValue = data?.setting_value as { enabled?: boolean } | null;
+        // Handle both array and single object responses
+        const settingData = Array.isArray(data) ? data[0] : data;
+        const settingValue = settingData?.setting_value as { enabled?: boolean } | null;
         const maintenanceEnabled = settingValue?.enabled || false;
         
-        console.log('🔧 useMaintenanceMode: Loaded from DB:', {
+        console.log('🔧 useMaintenanceMode: Processed data:', {
           data,
+          settingData,
           settingValue,
           maintenanceEnabled
         });
