@@ -41,6 +41,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SpouseForm, SpouseData } from "@/components/SpouseForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
+import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
 
 
@@ -219,6 +220,8 @@ const FamilyBuilderNew = () => {
   const [familyData, setFamilyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [memberListLoading, setMemberListLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [memberProfileData, setMemberProfileData] = useState(null);
 
   // Memoized generation count calculation
   const generationCount = useMemo(() => {
@@ -512,9 +515,20 @@ const FamilyBuilderNew = () => {
       if (familyError) throw familyError;
       setFamilyData(family);
 
+      // Fetch only essential member data for initial load
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
-        .select('*')
+        .select(`
+          id,
+          name,
+          first_name,
+          last_name,
+          father_id,
+          mother_id,
+          is_founder,
+          gender,
+          marital_status
+        `)
         .eq('family_id', family.id);
 
       if (membersError) throw membersError;
@@ -526,21 +540,22 @@ const FamilyBuilderNew = () => {
         last_name: member.last_name,
         fatherId: member.father_id,
         motherId: member.mother_id,
-        spouseId: member.spouse_id,
-        relatedPersonId: member.related_person_id,
+        spouseId: null, // Will be filled from marriages
+        relatedPersonId: null,
         isFounder: member.is_founder,
         gender: member.gender,
-        birthDate: member.birth_date || "",
-        isAlive: member.is_alive,
-        deathDate: member.death_date || null,
-        image: member.image_url || null,
-        bio: member.biography || "",
+        birthDate: "", // Will be loaded when profile is viewed
+        isAlive: true,
+        deathDate: null,
+        image: null, // Will be loaded when profile is viewed
+        bio: "", // Will be loaded when profile is viewed
         marital_status: member.marital_status || 'single',
         relation: ""
       }));
 
       setFamilyMembers(transformedMembers);
 
+      // Fetch minimal marriage data for initial load
       const { data: marriages, error: marriagesError } = await supabase
         .from('marriages')
         .select(`
@@ -555,20 +570,13 @@ const FamilyBuilderNew = () => {
 
       if (marriagesError) throw marriagesError;
 
-      // Get detailed marriage data with member info
+      // Create simplified marriage objects for initial load
       let marriagesWithMembers = [];
       if (marriages) {
-        marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
-          const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
-          ]);
-          
-          return {
-            ...marriage,
-            husband: husbandResult.data,
-            wife: wifeResult.data
-          };
+        marriagesWithMembers = marriages.map(marriage => ({
+          ...marriage,
+          husband: { id: marriage.husband_id, name: "Loading..." },
+          wife: { id: marriage.wife_id, name: "Loading..." }
         }));
       }
 
@@ -1500,11 +1508,119 @@ const FamilyBuilderNew = () => {
     if (isMobile) setIsMemberListOpen(false);
   };
 
-  const handleViewMember = useCallback((member: any) => {
+  // Fetch detailed member profile data
+  const fetchMemberProfile = async (memberId: string) => {
+    try {
+      setProfileLoading(true);
+      
+      // Fetch complete member details
+      const { data: memberData, error: memberError } = await supabase
+        .from('family_tree_members')
+        .select('*')
+        .eq('id', memberId)
+        .single();
+
+      if (memberError) throw memberError;
+
+      // Fetch member's marriages with spouse details
+      const { data: marriages, error: marriagesError } = await supabase
+        .from('marriages')
+        .select(`
+          id,
+          husband_id,
+          wife_id,
+          is_active,
+          marital_status
+        `)
+        .eq('family_id', familyId)
+        .eq('is_active', true)
+        .or(`husband_id.eq.${memberId},wife_id.eq.${memberId}`);
+
+      if (marriagesError) throw marriagesError;
+
+      // Get detailed marriage data with member info
+      let memberMarriages = [];
+      if (marriages) {
+        memberMarriages = await Promise.all(marriages.map(async (marriage) => {
+          const [husbandResult, wifeResult] = await Promise.all([
+            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
+          ]);
+          
+          return {
+            ...marriage,
+            husband: husbandResult.data,
+            wife: wifeResult.data
+          };
+        }));
+      }
+
+      // Transform member data
+      const transformedMember = {
+        id: memberData.id,
+        name: memberData.name,
+        first_name: memberData.first_name,
+        last_name: memberData.last_name,
+        fatherId: memberData.father_id,
+        motherId: memberData.mother_id,
+        spouseId: memberData.spouse_id,
+        relatedPersonId: memberData.related_person_id,
+        isFounder: memberData.is_founder,
+        gender: memberData.gender,
+        birthDate: memberData.birth_date || "",
+        isAlive: memberData.is_alive,
+        deathDate: memberData.death_date || null,
+        image: memberData.image_url || null,
+        bio: memberData.biography || "",
+        marital_status: memberData.marital_status || 'single',
+        relation: ""
+      };
+
+      // Update local state with fresh data
+      setMemberProfileData(transformedMember);
+      setEditingMember(transformedMember);
+      
+      // Update the member in familyMembers array
+      setFamilyMembers(prev => prev.map(m => 
+        m.id === memberId ? transformedMember : m
+      ));
+      
+      // Update marriages if this member's marriages changed
+      if (memberMarriages.length > 0) {
+        setFamilyMarriages(prev => {
+          const updatedMarriages = [...prev];
+          memberMarriages.forEach(newMarriage => {
+            const existingIndex = updatedMarriages.findIndex(m => m.id === newMarriage.id);
+            if (existingIndex >= 0) {
+              updatedMarriages[existingIndex] = newMarriage;
+            } else {
+              updatedMarriages.push(newMarriage);
+            }
+          });
+          return updatedMarriages;
+        });
+      }
+
+    } catch (error) {
+      console.error('Error fetching member profile:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ في تحميل بيانات العضو",
+        variant: "destructive"
+      });
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const handleViewMember = useCallback(async (member: any) => {
     setFormMode('profile');
     setEditingMember(member);
     if (isMobile) setIsMemberListOpen(false);
-  }, [isMobile]);
+    
+    // Fetch fresh member profile data
+    await fetchMemberProfile(member.id);
+  }, [isMobile, familyId, toast]);
 
   const handleEditMember = useCallback((member: any) => {
     setFormMode('edit');
@@ -3274,26 +3390,30 @@ const FamilyBuilderNew = () => {
                       <p>اختر عضواً من القائمة لعرض أو تعديل بياناته</p>
                       <p className="text-sm mt-2">أو اضغط "إضافة عضو" لإضافة عضو جديد</p>
                     </div>
-                  ) : formMode === 'profile' ? (
-                     <MemberProfileView
-                       member={editingMember}
-                       onEdit={() => {
-                         setFormMode('edit');
-                         setCurrentStep(1);
-                         populateFormData(editingMember);
-                       }}
-                       onDelete={() => handleDeleteMember(editingMember)}
-                       onBack={() => setFormMode('view')}
-                       familyMembers={familyMembers}
-                       marriages={familyMarriages}
-                       isSpouse={checkIfMemberIsSpouse(editingMember)}
-                       onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
-                       onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
-                       onMemberClick={(member) => {
-                         setEditingMember(member);
-                         setFormMode('profile');
-                       }}
-                     />
+                   ) : formMode === 'profile' ? (
+                     profileLoading ? (
+                       <MemberProfileSkeleton />
+                     ) : (
+                       <MemberProfileView
+                         member={editingMember}
+                         onEdit={() => {
+                           setFormMode('edit');
+                           setCurrentStep(1);
+                           populateFormData(editingMember);
+                         }}
+                         onBack={() => setFormMode('view')}
+                         onDelete={() => handleDeleteMember(editingMember)}
+                         familyMembers={familyMembers}
+                         marriages={familyMarriages}
+                         onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
+                         onSpouseDeleteWarning={() => handleSpouseEditWarning(editingMember)}
+                         onMemberClick={async (member) => {
+                           setEditingMember(member);
+                           setFormMode('profile');
+                           await fetchMemberProfile(member.id);
+                         }}
+                       />
+                     )
                   ) : (
                     <div className="space-y-6">
 
