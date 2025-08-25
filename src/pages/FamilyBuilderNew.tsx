@@ -3424,15 +3424,28 @@ const FamilyBuilderNew = () => {
                                                 
                                                   const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
                                                   const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
-                                                 const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
-                                                
-                                                 return {
-                                                   value: marriage.id,
-                                                   familyMember,
-                                                   spouse,
-                                                   heartIcon,
-                                                   isFounder: husbandMember?.is_founder || false
-                                                 };
+                                                  const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+                                                  
+                                                  // Debug logging
+                                                  console.log('🔍 Marriage Display Debug:', {
+                                                    husbandName: husbandMember?.name,
+                                                    husbandFirstName: husbandMember?.first_name,
+                                                    husbandIsFounder: husbandMember?.is_founder,
+                                                    generatedFamilyMember: familyMember,
+                                                    wifeName: wifeMember?.name,
+                                                    wifeFirstName: wifeMember?.first_name,
+                                                    generatedSpouse: spouse,
+                                                    maritalStatus: marriage.marital_status,
+                                                    heartIcon
+                                                  });
+                                                 
+                                                  return {
+                                                    value: marriage.id,
+                                                    familyMember,
+                                                    spouse,
+                                                    heartIcon,
+                                                    isFounder: husbandMember?.is_founder || false
+                                                  };
                                              }) :
                                            [{ value: "no-data", label: "لا توجد زيجات مسجلة في هذه العائلة", disabled: true }]
                                      }
