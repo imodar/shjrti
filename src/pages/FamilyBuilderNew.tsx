@@ -3374,76 +3374,53 @@ const FamilyBuilderNew = () => {
                                                  return '';
                                                };
                                                
-                                                 // Helper function to build full genealogical name
-                                                 const buildFullName = (member: any, isWife: boolean = false) => {
-                                                   if (!member) return '';
-                                                   
-                                                   const firstName = member.first_name || member.name?.split(' ')[0] || '';
-                                                   const mainFamilyName = "الشيخ سعيد"; // Main family surname
-                                                   
-                                                   // Check if member is from external family
-                                                   const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
-                                                   
-                                                   // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
-                                                   if (isExternalFamily) {
-                                                     let lastName = member.last_name || '';
-                                                     
-                                                     // If no explicit last_name but name contains surname, extract it
-                                                     if (!lastName && member.name && member.name.includes(' ')) {
-                                                       const nameParts = member.name.split(' ');
-                                                       if (nameParts.length > 1) {
-                                                         lastName = nameParts.slice(1).join(' ');
-                                                       }
-                                                     }
-                                                     
-                                                     // For external family members who are married to internal family, show full patronymic
-                                                     if (member.fatherId && !member.is_founder) {
-                                                       const father = familyMembers.find(m => m?.id === member.fatherId);
-                                                       if (father) {
-                                                         const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                                         const fatherLastName = father.last_name || lastName;
-                                                         return `${firstName} ${fatherFirstName} ${fatherLastName}`;
-                                                       }
-                                                     }
-                                                     
-                                                     return firstName && lastName ? `${firstName} ${lastName}` : firstName;
-                                                   }
-                                                   
-                                                   // For wives from internal family, use Arabic genealogical format: ابنة + father + grandfather
-                                                   if (isWife && member.fatherId) {
-                                                     const father = familyMembers.find(m => m?.id === member.fatherId);
-                                                     if (father) {
-                                                       const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                                       
-                                                       // Get grandfather name
-                                                       let grandfatherName = '';
-                                                       if (father.fatherId) {
-                                                         const grandfather = familyMembers.find(m => m?.id === father.fatherId);
-                                                         if (grandfather) {
-                                                           grandfatherName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                                                         }
-                                                       }
-                                                       
-                                                       if (grandfatherName) {
-                                                         return `${firstName} ابنة ${fatherFirstName} ابن ${grandfatherName}`;
-                                                       } else {
-                                                         return `${firstName} ابنة ${fatherFirstName}`;
-                                                       }
-                                                     }
-                                                   }
-                                                   
-                                                   // For internal family non-founders (males), use بن format
-                                                   if (!member.is_founder && member.fatherId) {
-                                                     const father = familyMembers.find(m => m?.id === member.fatherId);
-                                                     if (father) {
-                                                       const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                                       return `${firstName} بن ${fatherFirstName}`;
-                                                     }
-                                                   }
-                                                   
-                                                   // For founders, just show the first name
-                                                   return firstName || member.name;
-                                                 };
+                                                  // Helper function to build full genealogical name
+                                                  const buildFullName = (member: any, isWife: boolean = false) => {
+                                                    if (!member) return '';
+                                                    
+                                                    const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                                                    const mainFamilyName = "الشيخ سعيد"; // Main family surname
+                                                    
+                                                    // For founders, show full name with surname
+                                                    if (member.is_founder) {
+                                                      const lastName = member.last_name || mainFamilyName;
+                                                      return `${firstName} ${lastName}`;
+                                                    }
+                                                    
+                                                    // Check if member is from external family
+                                                    const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
+                                                    
+                                                    // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
+                                                    if (isExternalFamily) {
+                                                      return `${firstName} ${member.last_name}`;
+                                                    }
+                                                    
+                                                    // For internal family members
+                                                    if (isWife) {
+                                                      // For wives from internal family, show "ابنة" format
+                                                      const father = familyMembers.find(m => m?.id === member?.fatherId);
+                                                      if (father) {
+                                                        const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                                                        return `${firstName} ابنة ${fatherFirstName}`;
+                                                      }
+                                                      return firstName;
+                                                    } else {
+                                                      // For internal family males (not founders), show "ابن" format with grandfather if available
+                                                      const father = familyMembers.find(m => m?.id === member?.fatherId);
+                                                      if (father) {
+                                                        const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                                                        const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                                                        if (grandfather) {
+                                                          const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                                                          return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
+                                                        }
+                                                        return `${firstName} ابن ${fatherFirstName}`;
+                                                      }
+                                                    }
+                                                    
+                                                    // Fallback
+                                                    return firstName || member.name;
+                                                  };
                                                 
                                                   const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
                                                   const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
