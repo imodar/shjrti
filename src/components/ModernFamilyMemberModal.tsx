@@ -125,6 +125,10 @@ export const ModernFamilyMemberModal = ({
     maritalStatus: "single" as string,
     hasMultipleWives: false
   });
+  
+  // Track image changes and original image URL for preservation
+  const [imageChanged, setImageChanged] = useState(false);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [wives, setWives] = useState<Wife[]>([]);
   const [husband, setHusband] = useState<Husband | null>(null);
   const [commandOpen, setCommandOpen] = useState(false);
@@ -170,6 +174,11 @@ export const ModernFamilyMemberModal = ({
     console.log('🔥 Populating edit form for member:', editMember);
     console.log('🔥 Available marriages:', marriages);
     console.log('🔥 Available family members:', familyMembers);
+    
+    // Store original image URL and reset image change flag
+    setOriginalImageUrl(editMember.image || null);
+    setImageChanged(false);
+    console.log('🔍 Image Debug - Original image URL set to:', editMember.image);
 
     // Find the parent marriage for this member
     let selectedParent = null;
@@ -202,6 +211,8 @@ export const ModernFamilyMemberModal = ({
       maritalStatus: editMember.maritalStatus || "single",
       hasMultipleWives: false
     });
+    
+    console.log('🔍 Image Debug - Form populated with croppedImage:', editMember.image);
 
     // Load existing wives/husbands
     if (editMember.gender === "male") {
@@ -404,11 +415,22 @@ export const ModernFamilyMemberModal = ({
         }
       }
 
+      // Handle image preservation for edits
+      let finalImage = memberData.croppedImage;
+      if (editMember && !imageChanged) {
+        // If editing and image wasn't changed, preserve original image
+        finalImage = originalImageUrl;
+        console.log('🔍 Image Debug - Preserving original image:', originalImageUrl);
+      } else if (imageChanged) {
+        console.log('🔍 Image Debug - Using updated image:', memberData.croppedImage);
+      }
+
       // Sanitize all form data before submission
       const sanitizedData = sanitizeFormData({
         ...memberData,
         name: sanitizedName,
         bio: memberData.bio ? sanitizeInput(memberData.bio) : "",
+        croppedImage: finalImage, // Use the preserved or updated image
         maritalStatus: hasSpouses ? "married" : "single",
         // Set marital status based on spouses
         fatherId,
@@ -478,6 +500,9 @@ export const ModernFamilyMemberModal = ({
       isFamilyMember: false,
       existingFamilyMemberId: ""
     });
+    // Reset image tracking states
+    setImageChanged(false);
+    setOriginalImageUrl(null);
     onClose();
   };
   const addWife = () => {
@@ -946,11 +971,15 @@ export const ModernFamilyMemberModal = ({
                                 <Upload className="h-3 w-3" />
                                 {memberData.croppedImage ? 'تغيير' : 'اختيار'}
                               </Button>}
-                            {memberData.croppedImage && isImageUploadEnabled && <Button type="button" variant="outline" size="sm" onClick={() => setMemberData({
-                          ...memberData,
-                          image: null,
-                          croppedImage: null
-                        })} className="gap-2 border-2 border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 text-xs px-3 py-2">
+                            {memberData.croppedImage && isImageUploadEnabled && <Button type="button" variant="outline" size="sm" onClick={() => {
+                              console.log('🔍 Image Debug - User deleted image');
+                              setImageChanged(true); // Mark image as changed
+                              setMemberData({
+                                ...memberData,
+                                image: null,
+                                croppedImage: null
+                              });
+                            }} className="gap-2 border-2 border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 text-xs px-3 py-2">
                                 <Trash2 className="h-3 w-3" />
                                 حذف
                               </Button>}
@@ -966,10 +995,12 @@ export const ModernFamilyMemberModal = ({
                         }
                         const file = e.target.files?.[0];
                         if (file) {
+                          console.log('🔍 Image Debug - User selected new image');
                           const imageUrl = URL.createObjectURL(file);
                           setCropImage(imageUrl);
                           setIsMainPersonImage(true);
                           setShowCropModal(true);
+                          setImageChanged(true); // Mark image as changed
                           setMemberData({
                             ...memberData,
                             image: file
@@ -1852,6 +1883,8 @@ export const ModernFamilyMemberModal = ({
               try {
                 const croppedImage = await getCroppedImg(cropImage, croppedAreaPixels);
                 if (isMainPersonImage) {
+                  console.log('🔍 Image Debug - User saved cropped image');
+                  setImageChanged(true); // Mark image as changed
                   setMemberData({
                     ...memberData,
                     croppedImage
