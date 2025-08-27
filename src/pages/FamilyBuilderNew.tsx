@@ -3444,10 +3444,95 @@ const FamilyBuilderNew = () => {
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>اختر عضواً من القائمة لعرض أو تعديل بياناته</p>
-                      <p className="text-sm mt-2">أو اضغط "إضافة عضو" لإضافة عضو جديد</p>
+                    <div className="py-8 px-6">
+                      {/* Family Overview Header */}
+                      <div className="text-center mb-8">
+                        <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+                          <TreePine className="h-8 w-8 text-white" />
+                        </div>
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+                          عائلة {familyData?.name || 'غير محدد'}
+                        </h2>
+                        {familyData?.description && (
+                          <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
+                            {familyData.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Statistics Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        {/* Total Members */}
+                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl p-4 text-center border border-emerald-200 dark:border-emerald-700">
+                          <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+                            {familyMembers.length}
+                          </div>
+                          <div className="text-xs text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
+                        </div>
+
+                        {/* Generations */}
+                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700">
+                          <Crown className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                            {generationCount}
+                          </div>
+                          <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
+                        </div>
+
+                        {/* Males */}
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-700">
+                          <UserIcon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                            {familyMembers.filter(m => m.gender === 'male').length}
+                          </div>
+                          <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
+                        </div>
+
+                        {/* Females */}
+                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-xl p-4 text-center border border-pink-200 dark:border-pink-700">
+                          <UserRoundIcon className="h-6 w-6 text-pink-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-pink-700 dark:text-pink-300">
+                            {familyMembers.filter(m => m.gender === 'female').length}
+                          </div>
+                          <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
+                        </div>
+                      </div>
+
+                      {/* Quick Actions */}
+                      <div className="space-y-3">
+                        <div className="text-center">
+                          <p className="text-muted-foreground text-sm mb-4">اختر إجراءً للبدء</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <Button 
+                            variant="outline" 
+                            className="flex items-center gap-2 h-12"
+                            onClick={() => setFormMode('add')}
+                          >
+                            <UserPlus className="h-4 w-4" />
+                            إضافة عضو جديد
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="flex items-center gap-2 h-12"
+                            onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
+                          >
+                            <TreePine className="h-4 w-4" />
+                            عرض شجرة العائلة
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Last Updated Info */}
+                      {familyData?.updated_at && (
+                        <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
+                            <Clock className="h-3 w-3" />
+                            آخر تحديث: {format(new Date(familyData.updated_at), 'd MMMM yyyy', { locale: ar })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                    ) : formMode === 'profile' ? (
                      profileLoading ? (
