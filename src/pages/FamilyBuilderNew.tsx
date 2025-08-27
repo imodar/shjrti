@@ -3442,7 +3442,7 @@ const FamilyBuilderNew = () => {
                       </CardTitle>
 
                   </CardHeader>
-                <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-y-auto bg-white max-h-[60vh]">
+                <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-y-auto bg-white h-[60vh]">
                   {formMode === 'view' ? (
                     <div className="py-8 px-6">
                       {/* Family Overview Header */}
