@@ -295,9 +295,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           <div className="relative -mt-6 sm:-mt-8 mx-2 sm:mx-4">
             <div className="bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 flex-1">
+                <div className="flex flex-col sm:flex-row-reverse items-center sm:items-start gap-4 sm:gap-6 flex-1">
                   {/* Basic Info - Name and Stats on the left */}
-                  <div className="space-y-3 text-center sm:text-right order-2 sm:order-1 flex-1">
+                  <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
                         {(() => {
