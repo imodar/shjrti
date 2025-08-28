@@ -295,30 +295,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           <div className="relative -mt-6 sm:-mt-8 mx-2 sm:mx-4">
             <div className="bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
-                <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-6">
-                  {/* Profile Avatar */}
-                  <div className="relative">
-                    {/* Show gradient background only when there's no profile picture */}
-                    {!member.image_url && !member.image && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
-                    )}
-                    <Avatar className="relative h-32 w-32 border-4 border-white shadow-2xl">
-                      {(member.image_url || member.image) ? (
-                        <AvatarImage 
-                          src={member.image_url || member.image} 
-                          alt={member.name} 
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
-                          {member.name.charAt(0)}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                  </div>
-
-                  {/* Basic Info */}
-                  <div className="space-y-3 text-center sm:text-right">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 flex-1">
+                  {/* Basic Info - Name and Stats on the left */}
+                  <div className="space-y-3 text-center sm:text-right order-2 sm:order-1 flex-1">
                     <div>
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
                         {(() => {
@@ -348,7 +327,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     </div>
                     
                     {/* Quick Stats */}
-                    <div className="flex gap-6 pt-2">
+                    <div className="flex gap-6 pt-2 justify-center sm:justify-start">
                       {getAge() && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-accent">{getAge()}</div>
@@ -368,6 +347,27 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="text-sm text-muted-foreground">الأحفاد</div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Profile Avatar - Now on the right */}
+                  <div className="relative order-1 sm:order-2">
+                    {/* Show gradient background only when there's no profile picture */}
+                    {!member.image_url && !member.image && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
+                    )}
+                    <Avatar className="relative h-32 w-32 border-4 border-white shadow-2xl">
+                      {(member.image_url || member.image) ? (
+                        <AvatarImage 
+                          src={member.image_url || member.image} 
+                          alt={member.name} 
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
+                          {member.name.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
                   </div>
                 </div>
 
