@@ -45,59 +45,26 @@ import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton"
 import { MemberProfileView } from "@/components/MemberProfileView";
 
 
-// Tree Settings Component
-const TreeSettings = ({ familyData }: { familyData: any }) => {
-  const { toast } = useToast();
-  const currentUrl = window.location.href;
-  
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(currentUrl);
-    toast({
-      title: "تم نسخ الرابط",
-      description: "تم نسخ رابط الشجرة إلى الحافظة",
-    });
-  };
+// Tree Settings Button Component
+const TreeSettingsButton = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const familyId = searchParams.get("family");
 
-  const handleShareTree = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-        url: currentUrl,
-      });
-    } else {
-      handleCopyLink();
-    }
+  const handleOpenSettings = () => {
+    navigate(`/tree-settings?family=${familyId}`);
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          <Settings className="h-4 w-4 ml-2" />
-          إعدادات الشجرة
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>إعدادات الشجرة</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleShareTree} className="cursor-pointer">
-          <Share2 className="h-4 w-4 ml-2" />
-          مشاركة الشجرة برابط
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
-          <Link2 className="h-4 w-4 ml-2" />
-          نسخ رابط الشجرة
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <Eye className="h-4 w-4 ml-2" />
-          تفاصيل الرابط
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      variant="outline"
+      size="sm"
+      className="ml-2"
+      onClick={handleOpenSettings}
+    >
+      <Settings className="h-4 w-4 ml-2" />
+      إعدادات الشجرة
+    </Button>
   );
 };
 
@@ -3510,7 +3477,7 @@ const FamilyBuilderNew = () => {
                            <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                              عائلة {familyData?.name || 'غير محدد'}
                            </h2>
-                           <TreeSettings familyData={familyData} />
+                           <TreeSettingsButton />
                          </div>
                          {familyData?.description && (
                            <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
