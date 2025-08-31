@@ -16,9 +16,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -46,25 +47,236 @@ import { MemberProfileView } from "@/components/MemberProfileView";
 
 
 // Tree Settings Button Component
-const TreeSettingsButton = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const familyId = searchParams.get("family");
-
-  const handleOpenSettings = () => {
-    navigate(`/tree-settings?family=${familyId}`);
-  };
-
+const TreeSettingsButton = ({ onShowSettings }: { onShowSettings: () => void }) => {
   return (
     <Button
       variant="outline"
       size="sm"
       className="ml-2"
-      onClick={handleOpenSettings}
+      onClick={onShowSettings}
     >
       <Settings className="h-4 w-4 ml-2" />
       إعدادات الشجرة
     </Button>
+  );
+};
+
+// Tree Settings View Component
+const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () => void }) => {
+  const { toast } = useToast();
+  const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareableLink);
+    toast({
+      title: "تم نسخ الرابط",
+      description: "تم نسخ رابط الشجرة إلى الحافظة",
+    });
+  };
+
+  const handleShareTree = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+        url: shareableLink,
+      });
+    } else {
+      handleCopyLink();
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-3 p-6 border-b">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onBack}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          العودة
+        </Button>
+        <div className="flex items-center gap-3 flex-1">
+          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-md">
+            <Settings className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <h2 className="font-semibold text-foreground">إعدادات الشجرة</h2>
+            <p className="text-xs text-muted-foreground">عائلة {familyData?.name || 'غير محدد'}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+        {/* مشاركة الشجرة */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Share2 className="h-4 w-4" />
+              مشاركة الشجرة
+            </CardTitle>
+            <CardDescription className="text-xs">
+              شارك شجرة العائلة مع الآخرين
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="shareLink" className="text-xs">رابط الشجرة</Label>
+              <div className="flex gap-2">
+                <Input 
+                  id="shareLink"
+                  value={shareableLink} 
+                  readOnly 
+                  className="flex-1 text-xs"
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-1"
+                >
+                  <Copy className="h-3 w-3" />
+                  نسخ
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleShareTree}
+                size="sm"
+                className="flex items-center gap-2 text-xs"
+              >
+                <Share2 className="h-3 w-3" />
+                مشاركة
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(shareableLink, '_blank')}
+                className="flex items-center gap-2 text-xs"
+              >
+                <Eye className="h-3 w-3" />
+                معاينة
+              </Button>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+              <div className="flex items-center gap-2">
+                <Shield className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs font-medium">معلومات الرابط</span>
+              </div>
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p>• يمكن لأي شخص لديه الرابط مشاهدة الشجرة</p>
+                <p>• لا يمكن للزوار تعديل المعلومات</p>
+                <p>• الرابط صالح ما لم تحذف الشجرة</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* معلومات الشجرة */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <TreePine className="h-4 w-4" />
+              معلومات الشجرة
+            </CardTitle>
+            <CardDescription className="text-xs">
+              معلومات أساسية عن شجرة العائلة
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <Label className="text-xs">اسم العائلة</Label>
+              <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
+                {familyData?.name || 'غير محدد'}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-xs">تاريخ الإنشاء</Label>
+              <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
+                {familyData?.created_at ? new Date(familyData.created_at).toLocaleDateString('ar-SA') : 'غير محدد'}
+              </div>
+            </div>
+            
+            {familyData?.description && (
+              <div className="space-y-2">
+                <Label className="text-xs">وصف العائلة</Label>
+                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
+                  {familyData.description}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* إعدادات متقدمة */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              إعدادات متقدمة
+            </CardTitle>
+            <CardDescription className="text-xs">
+              خيارات إضافية (قريباً)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full justify-start text-xs"
+                disabled
+              >
+                <Download className="h-3 w-3 ml-2" />
+                تصدير بيانات الشجرة
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full justify-start text-xs"
+                disabled
+              >
+                <Lock className="h-3 w-3 ml-2" />
+                إعدادات الخصوصية
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full justify-start text-xs"
+                disabled
+              >
+                <Users className="h-3 w-3 ml-2" />
+                إدارة الأذونات
+              </Button>
+            </div>
+
+            <Separator />
+
+            <Button 
+              variant="destructive" 
+              size="sm"
+              className="w-full justify-start text-xs"
+              disabled
+            >
+              <Trash2 className="h-3 w-3 ml-2" />
+              حذف الشجرة نهائياً
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              تحذير: هذا الإجراء لا يمكن التراجع عنه
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
@@ -358,7 +570,7 @@ const FamilyBuilderNew = () => {
   const calculateGenerationCount = () => generationCount;
 
   // Form panel states
-  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile'>('view');
+  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>('view');
   const [editingMember, setEditingMember] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
@@ -3399,7 +3611,7 @@ const FamilyBuilderNew = () => {
             )}>
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
-                  <CardHeader className={cn("relative", (formMode === 'view' || formMode === 'profile') && "hidden")}>
+                  <CardHeader className={cn("relative", (formMode === 'view' || formMode === 'profile' || formMode === 'tree-settings') && "hidden")}>
                        <CardTitle className="flex items-center justify-between flex-row-reverse">
                          {/* Step Indicator for add/edit modes - positioned at far left */}
                          {(formMode === 'add' || formMode === 'edit') && (
@@ -3439,16 +3651,18 @@ const FamilyBuilderNew = () => {
                          
                          {/* Title and Icon - positioned to the right */}
                          <div className="flex items-center gap-2 mr-auto">
-                           {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                           {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                           {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                           {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                             <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent leading-relaxed">
-                              {formMode === 'view' && "معلومات العضو"}
-                              {formMode === 'add' && "إضافة عضو جديد"}
-                              {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
-                              {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
-                            </span>
+                            {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                            {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                            {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                            {formMode === 'profile' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                            {formMode === 'tree-settings' && <Settings className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent leading-relaxed">
+                               {formMode === 'view' && "معلومات العضو"}
+                               {formMode === 'add' && "إضافة عضو جديد"}
+                               {formMode === 'edit' && `تعديل معلومات ${editingMember?.name || 'العضو'}`}
+                               {formMode === 'profile' && `ملف ${editingMember?.name || 'العضو'}`}
+                               {formMode === 'tree-settings' && "إعدادات الشجرة"}
+                             </span>
                          </div>
                          {formMode === 'profile' && (
                            <Button
@@ -3477,7 +3691,7 @@ const FamilyBuilderNew = () => {
                            <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                              عائلة {familyData?.name || 'غير محدد'}
                            </h2>
-                           <TreeSettingsButton />
+                           <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
                          </div>
                          {familyData?.description && (
                            <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
@@ -3585,6 +3799,11 @@ const FamilyBuilderNew = () => {
                           }}
                         />
                      )
+                  ) : formMode === 'tree-settings' ? (
+                    <TreeSettingsView 
+                      familyData={familyData}
+                      onBack={() => setFormMode('view')}
+                    />
                   ) : (
                     <div className="space-y-6">
 
