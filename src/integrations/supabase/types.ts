@@ -551,6 +551,7 @@ export type Database = {
         Row: {
           ai_features_enabled: boolean | null
           created_at: string
+          custom_domains_enabled: boolean | null
           description: Json | null
           display_order: number | null
           features: Json | null
@@ -568,6 +569,7 @@ export type Database = {
         Insert: {
           ai_features_enabled?: boolean | null
           created_at?: string
+          custom_domains_enabled?: boolean | null
           description?: Json | null
           display_order?: number | null
           features?: Json | null
@@ -585,6 +587,7 @@ export type Database = {
         Update: {
           ai_features_enabled?: boolean | null
           created_at?: string
+          custom_domains_enabled?: boolean | null
           description?: Json | null
           display_order?: number | null
           features?: Json | null

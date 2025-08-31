@@ -26,6 +26,7 @@ interface Package {
   features?: any; // Can be string, object, or Json from Supabase
   ai_features_enabled?: boolean;
   image_upload_enabled?: boolean;
+  custom_domains_enabled?: boolean;
 }
 
 interface PackageEditModalProps {
@@ -57,7 +58,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
     is_featured: false,
     features: {},
     ai_features_enabled: false,
-    image_upload_enabled: false
+    image_upload_enabled: false,
+    custom_domains_enabled: false
   });
 
   useEffect(() => {
@@ -136,7 +138,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
         is_featured: formData.is_featured,
         features: formData.features,  // Send as object, not JSON string
         ai_features_enabled: formData.ai_features_enabled,
-        image_upload_enabled: formData.image_upload_enabled
+        image_upload_enabled: formData.image_upload_enabled,
+        custom_domains_enabled: formData.custom_domains_enabled
       };
 
       const { error } = await supabase
@@ -315,6 +318,9 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
                 />
                 <Label htmlFor="is_featured">Featured</Label>
               </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="ai_features_enabled"
@@ -336,6 +342,17 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
                   }))}
                 />
                 <Label htmlFor="image_upload_enabled">رفع الصور</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="custom_domains_enabled"
+                  checked={formData.custom_domains_enabled || false}
+                  onCheckedChange={(checked) => setFormData(prev => ({
+                    ...prev,
+                    custom_domains_enabled: checked
+                  }))}
+                />
+                <Label htmlFor="custom_domains_enabled">الروابط المخصصة</Label>
               </div>
             </div>
           </TabsContent>
