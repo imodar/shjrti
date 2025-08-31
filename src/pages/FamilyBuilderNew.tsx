@@ -18,7 +18,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -44,6 +44,62 @@ import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSke
 import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
 
+
+// Tree Settings Component
+const TreeSettings = ({ familyData }: { familyData: any }) => {
+  const { toast } = useToast();
+  const currentUrl = window.location.href;
+  
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(currentUrl);
+    toast({
+      title: "تم نسخ الرابط",
+      description: "تم نسخ رابط الشجرة إلى الحافظة",
+    });
+  };
+
+  const handleShareTree = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+        url: currentUrl,
+      });
+    } else {
+      handleCopyLink();
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-2"
+        >
+          <Settings className="h-4 w-4 ml-2" />
+          إعدادات الشجرة
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>إعدادات الشجرة</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleShareTree} className="cursor-pointer">
+          <Share2 className="h-4 w-4 ml-2" />
+          مشاركة الشجرة برابط
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
+          <Link2 className="h-4 w-4 ml-2" />
+          نسخ رابط الشجرة
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
+          <Eye className="h-4 w-4 ml-2" />
+          تفاصيل الرابط
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
@@ -3444,21 +3500,24 @@ const FamilyBuilderNew = () => {
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? (
-                    <div className="py-8 px-6">
-                      {/* Family Overview Header */}
-                      <div className="text-center mb-8">
-                        <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
-                          <TreePine className="h-8 w-8 text-white" />
-                        </div>
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
-                          عائلة {familyData?.name || 'غير محدد'}
-                        </h2>
-                        {familyData?.description && (
-                          <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-                            {familyData.description}
-                          </p>
-                        )}
-                      </div>
+                     <div className="py-8 px-6">
+                       {/* Family Overview Header */}
+                       <div className="text-center mb-8">
+                         <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+                           <TreePine className="h-8 w-8 text-white" />
+                         </div>
+                         <div className="flex items-center justify-center gap-2 mb-2">
+                           <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                             عائلة {familyData?.name || 'غير محدد'}
+                           </h2>
+                           <TreeSettings familyData={familyData} />
+                         </div>
+                         {familyData?.description && (
+                           <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
+                             {familyData.description}
+                           </p>
+                         )}
+                       </div>
 
                       {/* Statistics Grid */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
