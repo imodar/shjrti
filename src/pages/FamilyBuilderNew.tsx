@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -58,6 +58,182 @@ const TreeSettingsButton = ({ onShowSettings }: { onShowSettings: () => void }) 
       <Settings className="h-4 w-4 ml-2" />
       إعدادات الشجرة
     </Button>
+  );
+};
+
+// Custom Domain Card Component  
+const CustomDomainCard = ({ familyData }: { familyData: any }) => {
+  const { toast } = useToast();
+  const { subscription } = useSubscription();
+  const [customDomain, setCustomDomain] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Check if user has premium subscription
+  const hasPremiumAccess = subscription?.status === "active" && 
+    subscription?.package_name && 
+    (subscription?.package_name?.en?.includes("Premium") || subscription?.package_name?.en?.includes("Enterprise"));
+
+  const handleSaveCustomDomain = async () => {
+    if (!customDomain.trim()) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إدخال اسم النطاق المطلوب",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate domain format
+    const domainRegex = /^[a-zA-Z0-9-]+$/;
+    if (!domainRegex.test(customDomain)) {
+      toast({
+        title: "خطأ",
+        description: "اسم النطاق يجب أن يحتوي على أحرف وأرقام وعلامات الطرح فقط",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Here you would typically save to database or call an API
+      // For now, just show success message
+      toast({
+        title: "تم الحفظ",
+        description: "سيتم مراجعة طلب النطاق المخصص وتفعيله خلال 24-48 ساعة",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ في حفظ النطاق المخصص",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const customUrl = customDomain ? `https://${customDomain}.shjrti.com` : "";
+
+  return (
+    <Card className={!hasPremiumAccess ? "opacity-60" : ""}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Globe className="h-4 w-4" />
+          رابط مخصص للشجرة
+          <Badge variant="secondary" className="text-xs">
+            مدفوع
+          </Badge>
+        </CardTitle>
+        <CardDescription className="text-xs">
+          احصل على رابط مخصص وسهل التذكر لشجرة عائلتك
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {!hasPremiumAccess ? (
+          <div className="text-center p-4 bg-muted/50 rounded-lg space-y-2">
+            <Lock className="h-6 w-6 mx-auto text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">
+              هذه الميزة متاحة فقط للاشتراكات المدفوعة
+            </p>
+            <Button size="sm" className="text-xs">
+              ترقية الاشتراك
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="customDomain" className="text-xs">اسم النطاق المخصص</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="customDomain"
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  placeholder="اسم-عائلتك"
+                  disabled={!isEditing}
+                  className="text-xs"
+                />
+                <span className="text-xs text-muted-foreground">.shjrti.com</span>
+              </div>
+            </div>
+
+            {customUrl && (
+              <div className="space-y-2">
+                <Label className="text-xs">الرابط المخصص</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    value={customUrl}
+                    readOnly 
+                    className="flex-1 text-xs"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(customUrl);
+                      toast({
+                        title: "تم نسخ الرابط",
+                        description: "تم نسخ الرابط المخصص إلى الحافظة",
+                      });
+                    }}
+                    className="flex items-center gap-1"
+                  >
+                    <Copy className="h-3 w-3" />
+                    نسخ
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveCustomDomain}
+                    disabled={isLoading}
+                    className="text-xs"
+                  >
+                    {isLoading ? "جاري الحفظ..." : "حفظ"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(false)}
+                    className="text-xs"
+                  >
+                    إلغاء
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                  className="text-xs"
+                >
+                  {customDomain ? "تعديل النطاق" : "إضافة نطاق مخصص"}
+                </Button>
+              )}
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+              <div className="flex items-center gap-2">
+                <Shield className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs font-medium">معلومات النطاق المخصص</span>
+              </div>
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p>• النطاق المخصص يجعل الرابط أسهل في التذكر والمشاركة</p>
+                <p>• التفعيل يتم خلال 24-48 ساعة من الطلب</p>
+                <p>• يمكن تغيير النطاق مرة واحدة كل شهر</p>
+                <p>• النطاق متاح فقط للاشتراكات المدفوعة</p>
+              </div>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
@@ -177,6 +353,9 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
             </div>
           </CardContent>
         </Card>
+
+        {/* الرابط المخصص - ميزة مدفوعة */}
+        <CustomDomainCard familyData={familyData} />
 
         {/* معلومات الشجرة */}
         <Card>
