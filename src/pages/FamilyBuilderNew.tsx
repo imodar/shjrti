@@ -68,9 +68,157 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
   const [customDomain, setCustomDomain] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasFeature, setHasFeature] = useState(false);
   
-  // Check if user has access to custom domains feature
-  const hasCustomDomainAccess = subscription?.status === "active";
+  useEffect(() => {
+    const checkFeature = async () => {
+      if (!subscription?.package_name) return;
+      try {
+        const { data } = await supabase.from('packages').select('custom_domains_enabled').eq('name->en', subscription.package_name).single();
+        setHasFeature(data?.custom_domains_enabled || false);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    checkFeature();
+  }, [subscription?.package_name]);
+
+  const hasAccess = subscription?.status === "active" && hasFeature;
+  const customUrl = customDomain ? `https://${customDomain}.shjrti.com` : "";
+  const treeLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
+
+  const handleSave = async () => {
+    if (!customDomain.trim()) {
+      toast({ title: "خطأ", description: "يرجى إدخال اسم النطاق", variant: "destructive" });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      toast({ title: "تم الحفظ", description: "سيتم تفعيل النطاق خلال 24-48 ساعة" });
+      setIsEditing(false);
+    } catch (error) {
+      toast({ title: "خطأ", description: "حدث خطأ في الحفظ", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Card className={`transition-all ${!hasAccess ? "opacity-60" : ""}`}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Globe className="h-5 w-5" />
+          رابط مخصص للشجرة
+          <Badge variant="outline" className="text-xs">ميزة متقدمة</Badge>
+        </CardTitle>
+        <CardDescription>احصل على رابط مخصص لشجرة عائلتك</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {!hasAccess ? (
+          <div className="text-center p-6 bg-muted/50 rounded-lg space-y-4">
+            <Lock className="h-12 w-12 mx-auto text-muted-foreground" />
+            <div className="space-y-2">
+              <h3 className="font-semibold">ميزة الروابط المخصصة</h3>
+              <p className="text-sm text-muted-foreground">هذه الميزة متاحة فقط في الحزم المدفوعة</p>
+            </div>
+            <Button size="sm">ترقية الاشتراك</Button>
+            <div className="mt-4 p-3 bg-background rounded border">
+              <Label className="text-sm">رابط الشجرة الافتراضي</Label>
+              <div className="flex gap-2 mt-2">
+                <Input value={treeLink} readOnly className="text-xs" />
+                <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(treeLink); toast({ title: "تم النسخ" }); }}>
+                  <Copy className="h-3 w-3" />
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => { if (navigator.share) navigator.share({ url: treeLink }); }}>
+                  <Share2 className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <Label>اسم النطاق المخصص</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  placeholder="اسم-عائلتك"
+                  disabled={!isEditing}
+                />
+                <span className="flex items-center text-sm text-muted-foreground">.shjrti.com</span>
+              </div>
+              {customUrl && (
+                <div className="space-y-2">
+                  <Label>الرابط المخصص</Label>
+                  <div className="flex gap-2">
+                    <Input value={customUrl} readOnly />
+                    <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(customUrl); toast({ title: "تم النسخ" }); }}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => { if (navigator.share) navigator.share({ url: customUrl }); }}>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              <div className="flex gap-2">
+                {isEditing ? (
+                  <>
+                    <Button size="sm" onClick={handleSave} disabled={isLoading}>
+                      {isLoading ? "جاري الحفظ..." : "حفظ"}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>إلغاء</Button>
+                  </>
+                ) : (
+                  <Button size="sm" onClick={() => setIsEditing(true)}>{customDomain ? "تعديل" : "إضافة"}</Button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+  const { toast } = useToast();
+  const { subscription } = useSubscription();
+  const [customDomain, setCustomDomain] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
+  const [checkingFeature, setCheckingFeature] = useState(true);
+  
+  // Check if user's package has custom domains enabled
+  useEffect(() => {
+    const checkCustomDomainFeature = async () => {
+      if (!subscription?.package_name) {
+        setCheckingFeature(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('packages')
+          .select('custom_domains_enabled')
+          .is('name->en', subscription.package_name)
+          .eq('is_active', true)
+          .single();
+        
+        if (data && !error) {
+          setHasCustomDomainFeature(data.custom_domains_enabled);
+        }
+      } catch (error) {
+        console.error('Error checking custom domain feature:', error);
+      } finally {
+        setCheckingFeature(false);
+      }
+    };
+    
+    checkCustomDomainFeature();
+  }, [subscription?.package_name]);
+  
+  const hasAccess = subscription?.status === "active" && hasCustomDomainFeature;
 
   const handleSaveCustomDomain = async () => {
     if (!customDomain.trim()) {
@@ -114,114 +262,248 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
   };
 
   const customUrl = customDomain ? `https://${customDomain}.shjrti.com` : "";
+  const shareableTreeLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
+
+  if (checkingFeature) {
+    return (
+      <Card className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+        <CardHeader className="relative pb-3">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded" />
+            <Skeleton className="h-5 w-32" />
+          </div>
+        </CardHeader>
+        <CardContent className="relative">
+          <Skeleton className="h-20 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className={!hasCustomDomainAccess ? "opacity-60" : ""}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Globe className="h-4 w-4" />
-          رابط مخصص للشجرة
-          <Badge variant="secondary" className="text-xs">
-            ميزة متقدمة
-          </Badge>
+    <Card className={`relative overflow-hidden transition-all duration-300 ${!hasAccess ? "opacity-60" : "hover:shadow-lg border-primary/20"}`}>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+      <CardHeader className="relative pb-4">
+        <CardTitle className="text-lg flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Globe className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              رابط مخصص للشجرة
+              <Badge variant="outline" className="text-xs bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
+                ميزة متقدمة
+              </Badge>
+            </div>
+          </div>
         </CardTitle>
-        <CardDescription className="text-xs">
-          احصل على رابط مخصص وسهل التذكر لشجرة عائلتك
+        <CardDescription className="text-sm text-muted-foreground mt-2">
+          احصل على رابط مخصص وسهل التذكر لشجرة عائلتك واجعل المشاركة أسهل
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {!hasCustomDomainAccess ? (
-          <div className="text-center p-4 bg-muted/50 rounded-lg space-y-2">
-            <Lock className="h-6 w-6 mx-auto text-muted-foreground" />
-            <p className="text-xs text-muted-foreground">
-              هذه الميزة متاحة فقط في الحزم التي تدعم الروابط المخصصة
-            </p>
-            <Button size="sm" className="text-xs">
-              ترقية الاشتراك
-            </Button>
+      <CardContent className="relative space-y-4">
+        {!hasAccess ? (
+          <>
+            <div className="text-center p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-xl space-y-4 border border-muted">
+              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                <Lock className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-semibold text-sm">ميزة الروابط المخصصة</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  هذه الميزة متاحة فقط في الحزم التي تدعم الروابط المخصصة.<br />
+                  ترقي لتتمكن من إنشاء رابط مخصص لشجرة عائلتك.
+                </p>
+              </div>
+              <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+                <span className="text-sm">ترقية الاشتراك</span>
+              </Button>
+            </div>
+          
+            <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
+              <div className="flex items-center gap-2">
+                <Share2 className="h-4 w-4 text-primary" />
+                <Label className="text-sm font-medium">رابط الشجرة الافتراضي</Label>
+              </div>
+            <div className="flex gap-2">
+              <Input 
+                value={shareableTreeLink}
+                readOnly 
+                className="flex-1 text-xs bg-background"
+              />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  navigator.clipboard.writeText(shareableTreeLink);
+                  toast({
+                    title: "تم نسخ الرابط",
+                    description: "تم نسخ رابط الشجرة إلى الحافظة",
+                  });
+                }}
+                className="flex items-center gap-2"
+              >
+                <Copy className="h-3 w-3" />
+                نسخ
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                      url: shareableTreeLink,
+                    });
+                  } else {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Share2 className="h-3 w-3" />
+                مشاركة
+              </Button>
+            </div>
           </div>
         ) : (
           <>
-            <div className="space-y-2">
-              <Label htmlFor="customDomain" className="text-xs">اسم النطاق المخصص</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="customDomain"
-                  value={customDomain}
-                  onChange={(e) => setCustomDomain(e.target.value)}
-                  placeholder="اسم-عائلتك"
-                  disabled={!isEditing}
-                  className="text-xs"
-                />
-                <span className="text-xs text-muted-foreground">.shjrti.com</span>
-              </div>
-            </div>
-
-            {customUrl && (
-              <div className="space-y-2">
-                <Label className="text-xs">الرابط المخصص</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    value={customUrl}
-                    readOnly 
-                    className="flex-1 text-xs"
+            {/* Custom Domain Section */}
+            <div className="space-y-4 p-4 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl border border-primary/10">
+              <div className="space-y-3">
+                <Label htmlFor="customDomain" className="text-sm font-medium flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-primary" />
+                  اسم النطاق المخصص
+                </Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="customDomain"
+                    value={customDomain}
+                    onChange={(e) => setCustomDomain(e.target.value)}
+                    placeholder="اسم-عائلتك"
+                    disabled={!isEditing}
+                    className="flex-1 text-sm"
                   />
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => {
-                      navigator.clipboard.writeText(customUrl);
-                      toast({
-                        title: "تم نسخ الرابط",
-                        description: "تم نسخ الرابط المخصص إلى الحافظة",
-                      });
-                    }}
-                    className="flex items-center gap-1"
-                  >
-                    <Copy className="h-3 w-3" />
-                    نسخ
-                  </Button>
+                  <span className="text-sm text-muted-foreground font-mono bg-muted px-2 py-1 rounded">
+                    .shjrti.com
+                  </span>
+                </div>
+                
+                {customUrl && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-primary">الرابط المخصص</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        value={customUrl}
+                        readOnly 
+                        className="flex-1 text-sm bg-background font-mono"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          navigator.clipboard.writeText(customUrl);
+                          toast({
+                            title: "تم نسخ الرابط",
+                            description: "تم نسخ الرابط المخصص إلى الحافظة",
+                          });
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <Copy className="h-4 w-4" />
+                        نسخ
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator.share({
+                              title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                              url: customUrl,
+                            });
+                          } else {
+                            window.open(`https://wa.me/?text=${encodeURIComponent(customUrl)}`, '_blank');
+                          }
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        مشاركة
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2">
+                  {isEditing ? (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveCustomDomain}
+                        disabled={isLoading}
+                        className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                      >
+                        {isLoading ? "جاري الحفظ..." : "حفظ"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        إلغاء
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={() => setIsEditing(true)}
+                      variant="outline"
+                    >
+                      {customDomain ? "تعديل النطاق" : "إضافة نطاق مخصص"}
+                    </Button>
+                  )}
                 </div>
               </div>
-            )}
-
-            <div className="flex gap-2">
-              {isEditing ? (
-                <>
-                  <Button
-                    size="sm"
-                    onClick={handleSaveCustomDomain}
-                    disabled={isLoading}
-                    className="text-xs"
-                  >
-                    {isLoading ? "جاري الحفظ..." : "حفظ"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditing(false)}
-                    className="text-xs"
-                  >
-                    إلغاء
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                  className="text-xs"
-                >
-                  {customDomain ? "تعديل النطاق" : "إضافة نطاق مخصص"}
-                </Button>
-              )}
             </div>
 
-            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+            {/* Default tree sharing section for comparison */}
+            <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
               <div className="flex items-center gap-2">
-                <Shield className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs font-medium">معلومات النطاق المخصص</span>
+                <Share2 className="h-4 w-4 text-primary" />
+                <Label className="text-sm font-medium">رابط الشجرة الافتراضي</Label>
               </div>
-              <div className="text-xs text-muted-foreground space-y-0.5">
+              <div className="flex gap-2">
+                <Input 
+                  value={shareableTreeLink}
+                  readOnly 
+                  className="flex-1 text-xs bg-background font-mono"
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareableTreeLink);
+                    toast({
+                      title: "تم نسخ الرابط",
+                      description: "تم نسخ رابط الشجرة الافتراضي إلى الحافظة",
+                    });
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-3 w-3" />
+                  نسخ
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 space-y-2 border border-primary/20">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold text-primary">معلومات النطاق المخصص</span>
+              </div>
+              <div className="text-sm text-muted-foreground space-y-1 leading-relaxed">
                 <p>• النطاق المخصص يجعل الرابط أسهل في التذكر والمشاركة</p>
                 <p>• التفعيل يتم خلال 24-48 ساعة من الطلب</p>
                 <p>• يمكن تغيير النطاق مرة واحدة كل شهر</p>
