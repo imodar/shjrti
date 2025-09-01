@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -194,195 +194,225 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
           احصل على رابط مخصص وسهل التذكر لشجرة عائلتك واجعل المشاركة أسهل
         </CardDescription>
       </CardHeader>
-      <CardContent className="relative space-y-4">
+      <CardContent className="p-0">
         {checkingFeature ? (
-          <div className="flex items-center justify-center p-6">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-              جاري فحص صلاحيات الباقة...
+          <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+              <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent"></div>
+              <span className="text-sm">جاري فحص صلاحيات الباقة...</span>
             </div>
           </div>
         ) : (
         /* Unified Tree Sharing Component */
-        <div className="space-y-6">
+        <div className="divide-y">
           {/* Default Sharing Option */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <Label className="text-sm font-medium">الرابط الافتراضي</Label>
-              <Badge variant="secondary" className="text-xs">مجاني</Badge>
+          <div className="p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                <Share2 className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-foreground text-lg mb-1">مشاركة عامة</h3>
+                <p className="text-sm text-muted-foreground">رابط افتراضي آمن للمشاركة الخارجية</p>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Input 
-                value={shareableTreeLink}
-                readOnly 
-                className="flex-1 text-xs bg-background font-mono"
-                dir="ltr"
-              />
-                <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  navigator.clipboard.writeText(shareableTreeLink);
-                  toast({
-                    title: "تم نسخ الرابط",
-                    description: "تم نسخ رابط الشجرة إلى الحافظة",
-                  });
-                }}
-                className="flex items-center gap-2"
-              >
-                <Copy className="h-3 w-3" />
-                نسخ
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                      url: shareableTreeLink,
+            
+            <div className="bg-muted/50 rounded-xl p-4 space-y-4">
+              <div className="bg-background rounded-lg p-3 border border-border/50">
+                <div className="flex items-center gap-2 text-sm">
+                  <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="truncate font-mono text-foreground">{shareableTreeLink}</span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-2 h-10"
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareableTreeLink);
+                    toast({
+                      title: "تم نسخ الرابط",
+                      description: "تم نسخ رابط الشجرة إلى الحافظة",
                     });
-                  } else {
-                    window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
-                  }
-                }}
-                className="flex items-center gap-2"
-              >
-                <Share2 className="h-3 w-3" />
-                مشاركة
-              </Button>
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                  <span className="hidden sm:inline">نسخ الرابط</span>
+                  <span className="sm:hidden">نسخ</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-2 h-10"
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                        url: shareableTreeLink,
+                      });
+                    } else {
+                      window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
+                    }
+                  }}
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">مشاركة</span>
+                  <span className="sm:hidden">شارك</span>
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* Custom Domain Option */}
-          <Separator className="my-4" />
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-                <Label className="text-sm font-medium">الرابط المخصص</Label>
-                <Badge className="text-xs bg-gradient-to-r from-primary to-secondary">مميز</Badge>
+          {/* Custom Domain Option - Premium Feature */}
+          <div className="p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 via-violet-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                <Crown className="h-5 w-5 text-white" />
               </div>
-              {!hasAccess && (
-                <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
-                  ترقية الاشتراك
-                </Button>
-              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-foreground text-lg">رابط مخصص</h3>
+                  <Badge variant="secondary" className="text-xs px-2 py-1">
+                    <Crown className="h-3 w-3 mr-1" />
+                    مميز
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">اختر اسم مستخدم مخصص لعائلتك</p>
+              </div>
             </div>
 
             {!hasAccess ? (
-              <div className="p-4 bg-muted/30 rounded-lg border-2 border-dashed">
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Lock className="h-4 w-4" />
-                  <span className="text-sm">احصل على رابط مخصص مثل: shjrti.com/username</span>
+              <div className="bg-muted/50 rounded-xl p-6 text-center space-y-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                  <Crown className="h-8 w-8 text-white" />
                 </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-lg">ميزة مميزة</h4>
+                  <p className="text-sm text-muted-foreground max-w-sm mx-auto">هذه الميزة متاحة في الباقات المدفوعة فقط للحصول على رابط مخصص جميل</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 h-10"
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  ترقية الباقة
+                </Button>
               </div>
             ) : (
-              <>
+              <div className="bg-muted/50 rounded-xl p-4 space-y-4">
                 {isEditing ? (
                   <div className="space-y-3">
-                    <Label htmlFor="customDomain" className="text-sm font-medium">
-                      اسم المستخدم المخصص
+                    <Label htmlFor="customDomain" className="text-sm font-medium flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      اسم المستخدم (بالإنجليزية فقط)
                     </Label>
-                    <div className="flex gap-2">
-                      <div className="flex-1 relative">
+                    <div className="space-y-2">
+                      <div className="flex rounded-lg overflow-hidden border">
+                        <div className="flex items-center px-4 bg-muted text-sm text-muted-foreground font-mono border-r">
+                          shjrti.com/
+                        </div>
                         <Input
                           id="customDomain"
                           value={customDomain}
                           onChange={(e) => setCustomDomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                           placeholder="family-username"
-                          className="pl-28 pr-3"
+                          className="border-0 rounded-none font-mono focus-visible:ring-0 flex-1"
                           dir="ltr"
                         />
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                          shjrti.com/
-                        </span>
                       </div>
+                      {customDomain && (
+                        <div className="bg-background rounded-lg p-3 border border-border/50">
+                          <p className="text-xs text-muted-foreground flex items-center gap-2">
+                            <Link className="h-3 w-3" />
+                            معاينة الرابط: <span className="font-mono text-foreground">shjrti.com/{customDomain}</span>
+                          </p>
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        استخدم أحرف إنجليزية وأرقام وشرطات فقط. مثال: al-smith-family
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      استخدم أحرف إنجليزية وأرقام وشرطات فقط. مثال: al-smith-family
-                    </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <div className="p-3 bg-muted/50 rounded-lg border-2 border-dashed">
-                      {customDomain ? (
-                        <span className="font-mono text-sm text-primary font-medium" dir="ltr">
-                          shjrti.com/{customDomain}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground text-sm italic">
-                          لم يتم تعيين رابط مخصص بعد
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Show custom URL for sharing when domain is set */}
-                {customDomain && !isEditing && (
-                  <div className="space-y-3">
-                    <div className="flex gap-2">
-                      <Input 
-                        value={customUrl}
-                        readOnly 
-                        className="flex-1 text-sm bg-background font-mono"
-                        dir="ltr"
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => {
-                          navigator.clipboard.writeText(customUrl);
-                          toast({
-                            title: "تم نسخ الرابط",
-                            description: "تم نسخ الرابط المخصص إلى الحافظة",
-                          });
-                        }}
-                        className="flex items-center gap-2"
-                      >
-                        <Copy className="h-4 w-4" />
-                        نسخ
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (navigator.share) {
-                            navigator.share({
-                              title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                              url: customUrl,
+                  customDomain && (
+                    <div className="space-y-3">
+                      <div className="bg-background rounded-lg p-3 border border-border/50">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="truncate font-mono text-foreground">{customUrl}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 gap-2 h-10"
+                          onClick={() => {
+                            navigator.clipboard.writeText(customUrl);
+                            toast({
+                              title: "تم نسخ الرابط",
+                              description: "تم نسخ الرابط المخصص إلى الحافظة",
                             });
-                          } else {
-                            window.open(`https://wa.me/?text=${encodeURIComponent(customUrl)}`, '_blank');
-                          }
-                        }}
-                        className="flex items-center gap-2"
-                      >
-                        <Share2 className="h-4 w-4" />
-                        مشاركة
-                      </Button>
+                          }}
+                        >
+                          <Copy className="h-4 w-4" />
+                          <span className="hidden sm:inline">نسخ الرابط</span>
+                          <span className="sm:hidden">نسخ</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 gap-2 h-10"
+                          onClick={() => {
+                            if (navigator.share) {
+                              navigator.share({
+                                title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                                url: customUrl,
+                              });
+                            } else {
+                              window.open(`https://wa.me/?text=${encodeURIComponent(customUrl)}`, '_blank');
+                            }
+                          }}
+                        >
+                          <Share2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">مشاركة</span>
+                          <span className="sm:hidden">شارك</span>
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   {isEditing ? (
                     <>
                       <Button
                         size="sm"
                         onClick={handleSaveCustomDomain}
                         disabled={isLoading}
-                        className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                        className="flex-1 gap-2 h-10"
                       >
-                        {isLoading ? "جاري الحفظ..." : "حفظ"}
+                        {isLoading ? (
+                          <>
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                            جاري الحفظ...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4" />
+                            حفظ الرابط المخصص
+                          </>
+                        )}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setIsEditing(false)}
+                        className="h-10"
                       >
                         إلغاء
                       </Button>
@@ -392,27 +422,40 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
                       size="sm"
                       onClick={() => setIsEditing(true)}
                       variant="outline"
-                      className="border-primary/30 hover:border-primary"
+                      className="flex-1 gap-2 h-10"
                     >
+                      <Edit className="h-4 w-4" />
                       {customDomain ? "تعديل الرابط" : "إنشاء رابط مخصص"}
                     </Button>
                   )}
                 </div>
-              </>
+
+                {customDomain && !isEditing && (
+                  <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <span className="text-emerald-700 dark:text-emerald-300">رابطك المخصص النشط:</span>
+                      <span className="font-mono text-emerald-800 dark:text-emerald-200 break-all">shjrti.com/{customDomain}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
           {/* Benefits Info */}
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 space-y-2 border border-primary/20">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">مميزات المشاركة</span>
-            </div>
-            <div className="text-sm text-muted-foreground space-y-1 leading-relaxed">
-              <p>• الرابط الافتراضي: مجاني ومتاح لجميع المستخدمين</p>
-              <p>• الرابط المخصص: أسهل في التذكر والمشاركة (shjrti.com/username)</p>
-              <p>• يمكن تغيير الرابط المخصص مرة واحدة كل شهر</p>
-              <p>• الرابط المخصص متاح للحزم المميزة فقط</p>
+          <div className="p-6 pt-0">
+            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-4 space-y-3 border border-primary/20">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary shrink-0" />
+                <span className="text-sm font-semibold text-primary">مميزات المشاركة</span>
+              </div>
+              <div className="text-sm text-muted-foreground space-y-1 leading-relaxed">
+                <p>• الرابط الافتراضي: مجاني ومتاح لجميع المستخدمين</p>
+                <p>• الرابط المخصص: أسهل في التذكر والمشاركة (shjrti.com/username)</p>
+                <p>• يمكن تغيير الرابط المخصص مرة واحدة كل شهر</p>
+                <p>• الرابط المخصص متاح للحزم المميزة فقط</p>
+              </div>
             </div>
           </div>
         </div>
