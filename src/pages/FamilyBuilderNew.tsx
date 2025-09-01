@@ -75,24 +75,33 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
   // Check if user's package has custom domains enabled
   useEffect(() => {
     const checkCustomDomainFeature = async () => {
-      if (!subscription?.package_name) {
-        setCheckingFeature(false);
-        return;
-      }
+      setCheckingFeature(true);
       
       try {
-        const { data, error } = await supabase
-          .from('packages')
-          .select('custom_domains_enabled')
-          .is('name->en', subscription.package_name)
-          .eq('is_active', true)
+        // Get current user's active subscription
+        const { data: userSub, error: subError } = await supabase
+          .from('user_subscriptions')
+          .select(`
+            *,
+            packages(
+              custom_domains_enabled,
+              name
+            )
+          `)
+          .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+          .eq('status', 'active')
           .single();
         
-        if (data && !error) {
-          setHasCustomDomainFeature(data.custom_domains_enabled);
+        if (userSub && userSub.packages && !subError) {
+          setHasCustomDomainFeature(userSub.packages.custom_domains_enabled);
+          console.log('Custom domain feature enabled:', userSub.packages.custom_domains_enabled);
+        } else {
+          console.log('No active subscription or package found');
+          setHasCustomDomainFeature(false);
         }
       } catch (error) {
         console.error('Error checking custom domain feature:', error);
+        setHasCustomDomainFeature(false);
       } finally {
         setCheckingFeature(false);
       }
@@ -101,7 +110,7 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
     checkCustomDomainFeature();
   }, [subscription?.package_name]);
   
-  const hasAccess = subscription?.status === "active" && hasCustomDomainFeature;
+  const hasAccess = !checkingFeature && hasCustomDomainFeature;
 
   const handleSaveCustomDomain = async () => {
     if (!customDomain.trim()) {
@@ -186,7 +195,15 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="relative space-y-4">
-        {/* Unified Tree Sharing Component */}
+        {checkingFeature ? (
+          <div className="flex items-center justify-center p-6">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              جاري فحص صلاحيات الباقة...
+            </div>
+          </div>
+        ) : (
+        /* Unified Tree Sharing Component */
         <div className="space-y-6">
           {/* Default Sharing Option */}
           <div className="space-y-3">
@@ -399,6 +416,7 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
             </div>
           </div>
         </div>
+        )}
       </CardContent>
     </Card>
   );
