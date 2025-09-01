@@ -61,126 +61,9 @@ const TreeSettingsButton = ({ onShowSettings }: { onShowSettings: () => void }) 
   );
 };
 
-// Custom Domain Card Component  
+
+// Custom Domain Card Component
 const CustomDomainCard = ({ familyData }: { familyData: any }) => {
-  const { toast } = useToast();
-  const { subscription } = useSubscription();
-  const [customDomain, setCustomDomain] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasFeature, setHasFeature] = useState(false);
-  
-  useEffect(() => {
-    const checkFeature = async () => {
-      if (!subscription?.package_name) return;
-      try {
-        const { data } = await supabase.from('packages').select('custom_domains_enabled').eq('name->en', subscription.package_name).single();
-        setHasFeature(data?.custom_domains_enabled || false);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-    checkFeature();
-  }, [subscription?.package_name]);
-
-  const hasAccess = subscription?.status === "active" && hasFeature;
-  const customUrl = customDomain ? `https://${customDomain}.shjrti.com` : "";
-  const treeLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
-
-  const handleSave = async () => {
-    if (!customDomain.trim()) {
-      toast({ title: "خطأ", description: "يرجى إدخال اسم النطاق", variant: "destructive" });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      toast({ title: "تم الحفظ", description: "سيتم تفعيل النطاق خلال 24-48 ساعة" });
-      setIsEditing(false);
-    } catch (error) {
-      toast({ title: "خطأ", description: "حدث خطأ في الحفظ", variant: "destructive" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Card className={`transition-all ${!hasAccess ? "opacity-60" : ""}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Globe className="h-5 w-5" />
-          رابط مخصص للشجرة
-          <Badge variant="outline" className="text-xs">ميزة متقدمة</Badge>
-        </CardTitle>
-        <CardDescription>احصل على رابط مخصص لشجرة عائلتك</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {!hasAccess ? (
-          <div className="text-center p-6 bg-muted/50 rounded-lg space-y-4">
-            <Lock className="h-12 w-12 mx-auto text-muted-foreground" />
-            <div className="space-y-2">
-              <h3 className="font-semibold">ميزة الروابط المخصصة</h3>
-              <p className="text-sm text-muted-foreground">هذه الميزة متاحة فقط في الحزم المدفوعة</p>
-            </div>
-            <Button size="sm">ترقية الاشتراك</Button>
-            <div className="mt-4 p-3 bg-background rounded border">
-              <Label className="text-sm">رابط الشجرة الافتراضي</Label>
-              <div className="flex gap-2 mt-2">
-                <Input value={treeLink} readOnly className="text-xs" />
-                <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(treeLink); toast({ title: "تم النسخ" }); }}>
-                  <Copy className="h-3 w-3" />
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => { if (navigator.share) navigator.share({ url: treeLink }); }}>
-                  <Share2 className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <Label>اسم النطاق المخصص</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={customDomain}
-                  onChange={(e) => setCustomDomain(e.target.value)}
-                  placeholder="اسم-عائلتك"
-                  disabled={!isEditing}
-                />
-                <span className="flex items-center text-sm text-muted-foreground">.shjrti.com</span>
-              </div>
-              {customUrl && (
-                <div className="space-y-2">
-                  <Label>الرابط المخصص</Label>
-                  <div className="flex gap-2">
-                    <Input value={customUrl} readOnly />
-                    <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(customUrl); toast({ title: "تم النسخ" }); }}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => { if (navigator.share) navigator.share({ url: customUrl }); }}>
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-              <div className="flex gap-2">
-                {isEditing ? (
-                  <>
-                    <Button size="sm" onClick={handleSave} disabled={isLoading}>
-                      {isLoading ? "جاري الحفظ..." : "حفظ"}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>إلغاء</Button>
-                  </>
-                ) : (
-                  <Button size="sm" onClick={() => setIsEditing(true)}>{customDomain ? "تعديل" : "إضافة"}</Button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
   const { toast } = useToast();
   const { subscription } = useSubscription();
   const [customDomain, setCustomDomain] = useState("");
@@ -326,47 +209,48 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
                 <Share2 className="h-4 w-4 text-primary" />
                 <Label className="text-sm font-medium">رابط الشجرة الافتراضي</Label>
               </div>
-            <div className="flex gap-2">
-              <Input 
-                value={shareableTreeLink}
-                readOnly 
-                className="flex-1 text-xs bg-background"
-              />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  navigator.clipboard.writeText(shareableTreeLink);
-                  toast({
-                    title: "تم نسخ الرابط",
-                    description: "تم نسخ رابط الشجرة إلى الحافظة",
-                  });
-                }}
-                className="flex items-center gap-2"
-              >
-                <Copy className="h-3 w-3" />
-                نسخ
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                      url: shareableTreeLink,
+              <div className="flex gap-2">
+                <Input 
+                  value={shareableTreeLink}
+                  readOnly 
+                  className="flex-1 text-xs bg-background"
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareableTreeLink);
+                    toast({
+                      title: "تم نسخ الرابط",
+                      description: "تم نسخ رابط الشجرة إلى الحافظة",
                     });
-                  } else {
-                    window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
-                  }
-                }}
-                className="flex items-center gap-2"
-              >
-                <Share2 className="h-3 w-3" />
-                مشاركة
-              </Button>
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-3 w-3" />
+                  نسخ
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                        url: shareableTreeLink,
+                      });
+                    } else {
+                      window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
+                    }
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Share2 className="h-3 w-3" />
+                  مشاركة
+                </Button>
+              </div>
             </div>
-          </div>
+          </>
         ) : (
           <>
             {/* Custom Domain Section */}
