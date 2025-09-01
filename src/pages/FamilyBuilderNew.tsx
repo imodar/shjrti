@@ -174,7 +174,7 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
   }
 
   return (
-    <Card className={`relative overflow-hidden transition-all duration-300 ${!hasAccess ? "opacity-60" : "hover:shadow-lg border-primary/20"}`}>
+    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg border-primary/20">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 pointer-events-none" />
       <CardHeader className="relative pb-4">
         <CardTitle className="text-lg flex items-center gap-3">
@@ -183,27 +183,16 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              رابط مخصص للشجرة
-              <Badge variant="outline" className="text-xs bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-                ميزة متقدمة
-              </Badge>
+              مشاركة الشجرة
             </div>
           </div>
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground mt-2">
-          احصل على رابط مخصص وسهل التذكر لشجرة عائلتك واجعل المشاركة أسهل
+          شارك شجرة عائلتك مع الآخرين باستخدام رابط آمن أو احصل على رابط مخصص
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        {checkingFeature ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="flex flex-col items-center gap-3 text-muted-foreground">
-              <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent"></div>
-              <span className="text-sm">جاري فحص صلاحيات الباقة...</span>
-            </div>
-          </div>
-        ) : (
-        /* Unified Tree Sharing Component */
+        {/* Unified Tree Sharing Component */}
         <div className="divide-y">
           {/* Default Sharing Option */}
           <div className="p-6 space-y-4">
@@ -459,7 +448,6 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
             </div>
           </div>
         </div>
-        )}
       </CardContent>
     </Card>
   );
