@@ -69,9 +69,11 @@ const CustomDomainCard = ({
   const {
     subscription
   } = useSubscription();
-  const [customDomain, setCustomDomain] = useState("");
+  const [customDomain, setCustomDomain] = useState(familyData?.custom_domain || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationError, setValidationError] = useState("");
   const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
   const [checkingFeature, setCheckingFeature] = useState(true);
 
@@ -107,47 +109,143 @@ const CustomDomainCard = ({
     };
     checkCustomDomainFeature();
   }, [subscription?.package_name]);
+
+  // Validation function
+  const validateCustomDomain = async (domain: string) => {
+    setValidationError("");
+    setIsValidating(true);
+
+    try {
+      // Client-side validation
+      if (!domain.trim()) {
+        setValidationError("يرجى إدخال اسم النطاق المطلوب");
+        return false;
+      }
+
+      if (domain.length < 5) {
+        setValidationError("يجب أن يكون اسم النطاق 5 أحرف على الأقل");
+        return false;
+      }
+
+      if (domain.includes('.')) {
+        setValidationError("لا يمكن أن يحتوي اسم النطاق على نقاط");
+        return false;
+      }
+
+      if (!/^[a-z0-9-]+$/.test(domain)) {
+        setValidationError("استخدم أحرف إنجليزية صغيرة وأرقام وشرطات فقط");
+        return false;
+      }
+
+      // Check availability in database
+      const { data: existingFamily, error } = await supabase
+        .from('families')
+        .select('id')
+        .eq('custom_domain', domain)
+        .neq('id', familyData?.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking domain availability:', error);
+        setValidationError("خطأ في التحقق من توفر النطاق");
+        return false;
+      }
+
+      if (existingFamily) {
+        setValidationError("هذا النطاق مستخدم بالفعل، يرجى اختيار نطاق آخر");
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Validation error:', error);
+      setValidationError("خطأ في التحقق من صحة النطاق");
+      return false;
+    } finally {
+      setIsValidating(false);
+    }
+  };
   const hasAccess = !checkingFeature && hasCustomDomainFeature;
   const handleSaveCustomDomain = async () => {
-    if (!customDomain.trim()) {
-      toast({
-        title: "خطأ",
-        description: "يرجى إدخال اسم النطاق المطلوب",
-        variant: "destructive"
-      });
-      return;
-    }
+    const isValid = await validateCustomDomain(customDomain);
+    if (!isValid) return;
 
-    // Validate domain format
-    const domainRegex = /^[a-zA-Z0-9-]+$/;
-    if (!domainRegex.test(customDomain)) {
-      toast({
-        title: "خطأ",
-        description: "اسم النطاق يجب أن يحتوي على أحرف وأرقام وعلامات الطرح فقط",
-        variant: "destructive"
-      });
-      return;
-    }
     setIsLoading(true);
     try {
-      // Here you would typically save to database or call an API
-      // For now, just show success message
+      const { error } = await supabase
+        .from('families')
+        .update({ 
+          custom_domain: customDomain.trim().toLowerCase(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', familyData?.id);
+
+      if (error) {
+        console.error('Error saving custom domain:', error);
+        toast({
+          title: "خطأ",
+          description: "فشل في حفظ الرابط المخصص",
+          variant: "destructive"
+        });
+        return;
+      }
+
       toast({
         title: "تم الحفظ",
-        description: "سيتم مراجعة طلب النطاق المخصص وتفعيله خلال 24-48 ساعة"
+        description: "تم حفظ الرابط المخصص بنجاح"
       });
       setIsEditing(false);
     } catch (error) {
+      console.error('Error saving custom domain:', error);
       toast({
         title: "خطأ",
-        description: "حدث خطأ في حفظ النطاق المخصص",
+        description: "حدث خطأ أثناء حفظ الرابط المخصص",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
   };
-  const customUrl = customDomain ? `https://${customDomain}.shjrti.com` : "";
+
+  const handleDeleteCustomDomain = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('families')
+        .update({ 
+          custom_domain: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', familyData?.id);
+
+      if (error) {
+        console.error('Error deleting custom domain:', error);
+        toast({
+          title: "خطأ",
+          description: "فشل في حذف الرابط المخصص",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setCustomDomain("");
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف الرابط المخصص بنجاح"
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error deleting custom domain:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حذف الرابط المخصص",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const customUrl = customDomain ? `https://shjrti.com/${customDomain}` : "";
   const shareableTreeLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   if (checkingFeature) {
     return <Card className="relative overflow-hidden">
@@ -290,6 +388,13 @@ const CustomDomainCard = ({
                             معاينة الرابط: <span className="font-mono text-foreground">shjrti.com/{customDomain}</span>
                           </p>
                         </div>}
+                      {validationError && <div className="bg-destructive/10 text-destructive rounded-lg p-3 border border-destructive/20">
+                          <p className="text-xs">{validationError}</p>
+                        </div>}
+                      {isValidating && <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
+                          جاري التحقق من النطاق...
+                        </div>}
                       <p className="text-xs text-muted-foreground">
                         استخدم أحرف إنجليزية وأرقام وشرطات فقط. مثال: al-smith-family
                       </p>
@@ -345,10 +450,27 @@ const CustomDomainCard = ({
                       <Button variant="outline" size="sm" onClick={() => setIsEditing(false)} className="h-10">
                         إلغاء
                       </Button>
-                    </> : <Button size="sm" onClick={() => setIsEditing(true)} variant="outline" className="flex-1 gap-2 h-10">
-                      <Edit className="h-4 w-4" />
-                      {customDomain ? "تعديل الرابط" : "إنشاء رابط مخصص"}
-                    </Button>}
+                    </> : <div className="flex gap-2">
+                        <Button size="sm" onClick={() => setIsEditing(true)} variant="outline" className="flex-1 gap-2 h-10">
+                          <Edit className="h-4 w-4" />
+                          {customDomain ? "تعديل الرابط" : "إنشاء رابط مخصص"}
+                        </Button>
+                        {customDomain && (
+                          <Button 
+                            size="sm" 
+                            onClick={handleDeleteCustomDomain} 
+                            disabled={isLoading}
+                            variant="destructive" 
+                            className="gap-2 h-10"
+                          >
+                            {isLoading ? (
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>}
                 </div>
 
                 {customDomain && !isEditing && <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">

@@ -38,6 +38,7 @@ import Store from "./pages/Store";
 import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
 import RenewSubscription from "./pages/RenewSubscription";
+import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -158,6 +159,8 @@ const App = () => (
                   <Route path="/contact" element={<ContactUs />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
+                  {/* Custom domain route */}
+                  <Route path="/:customDomain" element={<CustomDomainRedirect />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                   </Routes>

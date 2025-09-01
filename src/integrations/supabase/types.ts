@@ -136,6 +136,7 @@ export type Database = {
           archived_at: string | null
           created_at: string
           creator_id: string | null
+          custom_domain: string | null
           description: string | null
           id: string
           is_archived: boolean | null
@@ -146,6 +147,7 @@ export type Database = {
           archived_at?: string | null
           created_at?: string
           creator_id?: string | null
+          custom_domain?: string | null
           description?: string | null
           id?: string
           is_archived?: boolean | null
@@ -156,6 +158,7 @@ export type Database = {
           archived_at?: string | null
           created_at?: string
           creator_id?: string | null
+          custom_domain?: string | null
           description?: string | null
           id?: string
           is_archived?: boolean | null
