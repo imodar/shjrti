@@ -278,8 +278,8 @@ const CustomDomainCard = ({
                       اسم المستخدم (بالإنجليزية فقط)
                     </Label>
                     <div className="space-y-2">
-                      <div className="flex rounded-lg overflow-hidden border">
-                        <div className="flex items-center px-4 bg-muted text-sm text-muted-foreground font-mono border-r">
+                      <div className="flex rounded-lg overflow-hidden border flex-row-reverse">
+                        <div className="flex items-center px-4 bg-muted text-sm text-muted-foreground font-mono border-l">
                           shjrti.com/
                         </div>
                         <Input id="customDomain" value={customDomain} onChange={e => setCustomDomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="family-username" className="border-0 rounded-none font-mono focus-visible:ring-0 flex-1" dir="ltr" />
