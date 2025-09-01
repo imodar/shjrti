@@ -45,53 +45,52 @@ import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSke
 import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
 
-
 // Tree Settings Button Component
-const TreeSettingsButton = ({ onShowSettings }: { onShowSettings: () => void }) => {
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      className="ml-2"
-      onClick={onShowSettings}
-    >
+const TreeSettingsButton = ({
+  onShowSettings
+}: {
+  onShowSettings: () => void;
+}) => {
+  return <Button variant="outline" size="sm" className="ml-2" onClick={onShowSettings}>
       <Settings className="h-4 w-4 ml-2" />
       إعدادات الشجرة
-    </Button>
-  );
+    </Button>;
 };
 
-
 // Custom Domain Card Component
-const CustomDomainCard = ({ familyData }: { familyData: any }) => {
-  const { toast } = useToast();
-  const { subscription } = useSubscription();
+const CustomDomainCard = ({
+  familyData
+}: {
+  familyData: any;
+}) => {
+  const {
+    toast
+  } = useToast();
+  const {
+    subscription
+  } = useSubscription();
   const [customDomain, setCustomDomain] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
   const [checkingFeature, setCheckingFeature] = useState(true);
-  
+
   // Check if user's package has custom domains enabled
   useEffect(() => {
     const checkCustomDomainFeature = async () => {
       setCheckingFeature(true);
-      
       try {
         // Get current user's active subscription
-        const { data: userSub, error: subError } = await supabase
-          .from('user_subscriptions')
-          .select(`
+        const {
+          data: userSub,
+          error: subError
+        } = await supabase.from('user_subscriptions').select(`
             *,
             packages(
               custom_domains_enabled,
               name
             )
-          `)
-          .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-          .eq('status', 'active')
-          .single();
-        
+          `).eq('user_id', (await supabase.auth.getUser()).data.user?.id).eq('status', 'active').single();
         if (userSub && userSub.packages && !subError) {
           setHasCustomDomainFeature(userSub.packages.custom_domains_enabled);
           console.log('Custom domain feature enabled:', userSub.packages.custom_domains_enabled);
@@ -106,12 +105,9 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
         setCheckingFeature(false);
       }
     };
-    
     checkCustomDomainFeature();
   }, [subscription?.package_name]);
-  
   const hasAccess = !checkingFeature && hasCustomDomainFeature;
-
   const handleSaveCustomDomain = async () => {
     if (!customDomain.trim()) {
       toast({
@@ -132,14 +128,13 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
       });
       return;
     }
-
     setIsLoading(true);
     try {
       // Here you would typically save to database or call an API
       // For now, just show success message
       toast({
         title: "تم الحفظ",
-        description: "سيتم مراجعة طلب النطاق المخصص وتفعيله خلال 24-48 ساعة",
+        description: "سيتم مراجعة طلب النطاق المخصص وتفعيله خلال 24-48 ساعة"
       });
       setIsEditing(false);
     } catch (error) {
@@ -152,13 +147,10 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
       setIsLoading(false);
     }
   };
-
   const customUrl = customDomain ? `https://${customDomain}.shjrti.com` : "";
   const shareableTreeLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
-
   if (checkingFeature) {
-    return (
-      <Card className="relative overflow-hidden">
+    return <Card className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
         <CardHeader className="relative pb-3">
           <div className="flex items-center gap-2">
@@ -169,12 +161,9 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
         <CardContent className="relative">
           <Skeleton className="h-20 w-full" />
         </CardContent>
-      </Card>
-    );
+      </Card>;
   }
-
-  return (
-    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg border-primary/20">
+  return <Card className={`relative overflow-hidden transition-all duration-300 ${!hasAccess ? "opacity-60" : "hover:shadow-lg border-primary/20"}`}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 pointer-events-none" />
       <CardHeader className="relative pb-4">
         <CardTitle className="text-lg flex items-center gap-3">
@@ -183,17 +172,25 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              مشاركة الشجرة
+              رابط مخصص للشجرة
+              <Badge variant="outline" className="text-xs bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
+                ميزة متقدمة
+              </Badge>
             </div>
           </div>
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground mt-2">
-          شارك شجرة عائلتك مع الآخرين باستخدام رابط آمن أو احصل على رابط مخصص
+          احصل على رابط مخصص وسهل التذكر لشجرة عائلتك واجعل المشاركة أسهل
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        {/* Unified Tree Sharing Component */}
-        <div className="divide-y">
+        {checkingFeature ? <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+              <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent"></div>
+              <span className="text-sm">جاري فحص صلاحيات الباقة...</span>
+            </div>
+          </div> : (/* Unified Tree Sharing Component */
+      <div className="divide-y">
           {/* Default Sharing Option */}
           <div className="p-6 space-y-4">
             <div className="flex items-start gap-3">
@@ -215,55 +212,33 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
               </div>
               
               <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 gap-2 h-10"
-                  onClick={() => {
-                    navigator.clipboard.writeText(shareableTreeLink);
-                    toast({
-                      title: "تم نسخ الرابط",
-                      description: "تم نسخ رابط الشجرة إلى الحافظة",
-                    });
-                  }}
-                >
+                <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
+                navigator.clipboard.writeText(shareableTreeLink);
+                toast({
+                  title: "تم نسخ الرابط",
+                  description: "تم نسخ رابط الشجرة إلى الحافظة"
+                });
+              }}>
                   <Copy className="h-4 w-4" />
                   <span className="hidden sm:inline">نسخ الرابط</span>
                   <span className="sm:hidden">نسخ</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 gap-2 h-10"
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                        url: shareableTreeLink,
-                      });
-                    } else {
-                      window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
-                    }
-                  }}
-                >
+                <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                    url: shareableTreeLink
+                  });
+                } else {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
+                }
+              }}>
                   <Share2 className="h-4 w-4" />
                   <span className="hidden sm:inline">مشاركة</span>
                   <span className="sm:hidden">شارك</span>
                 </Button>
-               </div>
-               
-               <div className="bg-muted/50 rounded-lg p-3 space-y-1">
-                 <div className="flex items-center gap-2">
-                   <Shield className="h-3 w-3 text-muted-foreground" />
-                   <span className="text-xs font-medium">معلومات الرابط</span>
-                 </div>
-                 <div className="text-xs text-muted-foreground space-y-0.5">
-                   <p>• يمكن لأي شخص لديه الرابط مشاهدة الشجرة</p>
-                   <p>• لا يمكن للزوار تعديل المعلومات</p>
-                   <p>• الرابط صالح ما لم تحذف الشجرة</p>
-                 </div>
-               </div>
-             </div>
+              </div>
+            </div>
           </div>
 
           {/* Custom Domain Option - Premium Feature */}
@@ -284,8 +259,7 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
               </div>
             </div>
 
-            {!hasAccess ? (
-              <div className="bg-muted/50 rounded-xl p-6 text-center space-y-4">
+            {!hasAccess ? <div className="bg-muted/50 rounded-xl p-6 text-center space-y-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
                   <Crown className="h-8 w-8 text-white" />
                 </div>
@@ -293,19 +267,12 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
                   <h4 className="font-semibold text-foreground text-lg">ميزة مميزة</h4>
                   <p className="text-sm text-muted-foreground max-w-sm mx-auto">هذه الميزة متاحة في الباقات المدفوعة فقط للحصول على رابط مخصص جميل</p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 h-10"
-                >
+                <Button variant="outline" size="sm" className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 h-10">
                   <Crown className="h-4 w-4 mr-2" />
                   ترقية الباقة
                 </Button>
-              </div>
-            ) : (
-              <div className="bg-muted/50 rounded-xl p-4 space-y-4">
-                {isEditing ? (
-                  <div className="space-y-3">
+              </div> : <div className="bg-muted/50 rounded-xl p-4 space-y-4">
+                {isEditing ? <div className="space-y-3">
                     <Label htmlFor="customDomain" className="text-sm font-medium flex items-center gap-2">
                       <User className="h-4 w-4" />
                       اسم المستخدم (بالإنجليزية فقط)
@@ -315,31 +282,19 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
                         <div className="flex items-center px-4 bg-muted text-sm text-muted-foreground font-mono border-r">
                           shjrti.com/
                         </div>
-                        <Input
-                          id="customDomain"
-                          value={customDomain}
-                          onChange={(e) => setCustomDomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                          placeholder="family-username"
-                          className="border-0 rounded-none font-mono focus-visible:ring-0 flex-1"
-                          dir="ltr"
-                        />
+                        <Input id="customDomain" value={customDomain} onChange={e => setCustomDomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="family-username" className="border-0 rounded-none font-mono focus-visible:ring-0 flex-1" dir="ltr" />
                       </div>
-                      {customDomain && (
-                        <div className="bg-background rounded-lg p-3 border border-border/50">
+                      {customDomain && <div className="bg-background rounded-lg p-3 border border-border/50">
                           <p className="text-xs text-muted-foreground flex items-center gap-2">
                             <Link className="h-3 w-3" />
                             معاينة الرابط: <span className="font-mono text-foreground">shjrti.com/{customDomain}</span>
                           </p>
-                        </div>
-                      )}
+                        </div>}
                       <p className="text-xs text-muted-foreground">
                         استخدم أحرف إنجليزية وأرقام وشرطات فقط. مثال: al-smith-family
                       </p>
                     </div>
-                  </div>
-                ) : (
-                  customDomain && (
-                    <div className="space-y-3">
+                  </div> : customDomain && <div className="space-y-3">
                       <div className="bg-background rounded-lg p-3 border border-border/50">
                         <div className="flex items-center gap-2 text-sm">
                           <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -348,100 +303,62 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-2 h-10"
-                          onClick={() => {
-                            navigator.clipboard.writeText(customUrl);
-                            toast({
-                              title: "تم نسخ الرابط",
-                              description: "تم نسخ الرابط المخصص إلى الحافظة",
-                            });
-                          }}
-                        >
+                        <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
+                  navigator.clipboard.writeText(customUrl);
+                  toast({
+                    title: "تم نسخ الرابط",
+                    description: "تم نسخ الرابط المخصص إلى الحافظة"
+                  });
+                }}>
                           <Copy className="h-4 w-4" />
                           <span className="hidden sm:inline">نسخ الرابط</span>
                           <span className="sm:hidden">نسخ</span>
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-2 h-10"
-                          onClick={() => {
-                            if (navigator.share) {
-                              navigator.share({
-                                title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                                url: customUrl,
-                              });
-                            } else {
-                              window.open(`https://wa.me/?text=${encodeURIComponent(customUrl)}`, '_blank');
-                            }
-                          }}
-                        >
+                        <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+                      url: customUrl
+                    });
+                  } else {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(customUrl)}`, '_blank');
+                  }
+                }}>
                           <Share2 className="h-4 w-4" />
                           <span className="hidden sm:inline">مشاركة</span>
                           <span className="sm:hidden">شارك</span>
                         </Button>
                       </div>
-                    </div>
-                  )
-                )}
+                    </div>}
 
                 <div className="flex flex-col sm:flex-row gap-2">
-                  {isEditing ? (
-                    <>
-                      <Button
-                        size="sm"
-                        onClick={handleSaveCustomDomain}
-                        disabled={isLoading}
-                        className="flex-1 gap-2 h-10"
-                      >
-                        {isLoading ? (
-                          <>
+                  {isEditing ? <>
+                      <Button size="sm" onClick={handleSaveCustomDomain} disabled={isLoading} className="flex-1 gap-2 h-10">
+                        {isLoading ? <>
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                             جاري الحفظ...
-                          </>
-                        ) : (
-                          <>
+                          </> : <>
                             <Save className="h-4 w-4" />
                             حفظ الرابط المخصص
-                          </>
-                        )}
+                          </>}
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsEditing(false)}
-                        className="h-10"
-                      >
+                      <Button variant="outline" size="sm" onClick={() => setIsEditing(false)} className="h-10">
                         إلغاء
                       </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => setIsEditing(true)}
-                      variant="outline"
-                      className="flex-1 gap-2 h-10"
-                    >
+                    </> : <Button size="sm" onClick={() => setIsEditing(true)} variant="outline" className="flex-1 gap-2 h-10">
                       <Edit className="h-4 w-4" />
                       {customDomain ? "تعديل الرابط" : "إنشاء رابط مخصص"}
-                    </Button>
-                  )}
+                    </Button>}
                 </div>
 
-                {customDomain && !isEditing && (
-                  <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
+                {customDomain && !isEditing && <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
                     <div className="flex items-center gap-2 text-sm">
                       <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       <span className="text-emerald-700 dark:text-emerald-300">رابطك المخصص النشط:</span>
                       <span className="font-mono text-emerald-800 dark:text-emerald-200 break-all">shjrti.com/{customDomain}</span>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  </div>}
+              </div>}
           </div>
 
           {/* Benefits Info */}
@@ -459,46 +376,44 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
               </div>
             </div>
           </div>
-        </div>
+        </div>)}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
 
 // Tree Settings View Component
-const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () => void }) => {
-  const { toast } = useToast();
+const TreeSettingsView = ({
+  familyData,
+  onBack
+}: {
+  familyData: any;
+  onBack: () => void;
+}) => {
+  const {
+    toast
+  } = useToast();
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareableLink);
     toast({
       title: "تم نسخ الرابط",
-      description: "تم نسخ رابط الشجرة إلى الحافظة",
+      description: "تم نسخ رابط الشجرة إلى الحافظة"
     });
   };
-
   const handleShareTree = () => {
     if (navigator.share) {
       navigator.share({
         title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-        url: shareableLink,
+        url: shareableLink
       });
     } else {
       handleCopyLink();
     }
   };
-
-  return (
-    <div className="h-full flex flex-col">
+  return <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-6 border-b">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-        >
+        <Button variant="ghost" size="sm" onClick={onBack} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           العودة
         </Button>
@@ -530,18 +445,8 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
             <div className="space-y-2">
               <Label htmlFor="shareLink" className="text-xs">رابط الشجرة</Label>
               <div className="flex gap-2">
-                <Input 
-                  id="shareLink"
-                  value={shareableLink} 
-                  readOnly 
-                  className="flex-1 text-xs"
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleCopyLink}
-                  className="flex items-center gap-1"
-                >
+                <Input id="shareLink" value={shareableLink} readOnly className="flex-1 text-xs" />
+                <Button variant="outline" size="sm" onClick={handleCopyLink} className="flex items-center gap-1">
                   <Copy className="h-3 w-3" />
                   نسخ
                 </Button>
@@ -549,25 +454,27 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
             </div>
             
             <div className="flex gap-2">
-              <Button 
-                onClick={handleShareTree}
-                size="sm"
-                className="flex items-center gap-2 text-xs"
-              >
+              <Button onClick={handleShareTree} size="sm" className="flex items-center gap-2 text-xs">
                 <Share2 className="h-3 w-3" />
                 مشاركة
               </Button>
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => window.open(shareableLink, '_blank')}
-                className="flex items-center gap-2 text-xs"
-              >
+              <Button variant="outline" size="sm" onClick={() => window.open(shareableLink, '_blank')} className="flex items-center gap-2 text-xs">
                 <Eye className="h-3 w-3" />
                 معاينة
               </Button>
             </div>
 
+            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+              <div className="flex items-center gap-2">
+                <Shield className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs font-medium">معلومات الرابط</span>
+              </div>
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p>• يمكن لأي شخص لديه الرابط مشاهدة الشجرة</p>
+                <p>• لا يمكن للزوار تعديل المعلومات</p>
+                <p>• الرابط صالح ما لم تحذف الشجرة</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -600,14 +507,12 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
               </div>
             </div>
             
-            {familyData?.description && (
-              <div className="space-y-2">
+            {familyData?.description && <div className="space-y-2">
                 <Label className="text-xs">وصف العائلة</Label>
                 <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
                   {familyData.description}
                 </div>
-              </div>
-            )}
+              </div>}
           </CardContent>
         </Card>
 
@@ -624,32 +529,17 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="space-y-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="w-full justify-start text-xs"
-                disabled
-              >
+              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
                 <Download className="h-3 w-3 ml-2" />
                 تصدير بيانات الشجرة
               </Button>
               
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="w-full justify-start text-xs"
-                disabled
-              >
+              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
                 <Lock className="h-3 w-3 ml-2" />
                 إعدادات الخصوصية
               </Button>
               
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="w-full justify-start text-xs"
-                disabled
-              >
+              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
                 <Users className="h-3 w-3 ml-2" />
                 إدارة الأذونات
               </Button>
@@ -657,12 +547,7 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
 
             <Separator />
 
-            <Button 
-              variant="destructive" 
-              size="sm"
-              className="w-full justify-start text-xs"
-              disabled
-            >
+            <Button variant="destructive" size="sm" className="w-full justify-start text-xs" disabled>
               <Trash2 className="h-3 w-3 ml-2" />
               حذف الشجرة نهائياً
             </Button>
@@ -672,66 +557,53 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { hasAIFeatures } = useSubscription();
+  const {
+    hasAIFeatures
+  } = useSubscription();
   const isMobile = useIsMobile();
-
-
   const getGenerationStats = () => {
     if (familyMembers.length === 0) return [];
-    
     const generationMap = new Map();
-    
+
     // Step 1: Assign generation 1 to founders and members without parents
     familyMembers.forEach(member => {
-      if (member.isFounder || (!member.fatherId && !member.motherId)) {
+      if (member.isFounder || !member.fatherId && !member.motherId) {
         generationMap.set(member.id, 1);
       }
     });
-    
+
     // Step 2: Calculate generations based on parent-child relationships
     let changed = true;
     let maxIterations = familyMembers.length * 2;
     let iterations = 0;
-    
     while (changed && iterations < maxIterations) {
       changed = false;
       iterations++;
-      
       familyMembers.forEach(member => {
         if (generationMap.has(member.id)) return;
-        
         if (!member.fatherId && !member.motherId) {
           generationMap.set(member.id, 1);
           changed = true;
           return;
         }
-        
         const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
         const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-        
         if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-          const parentGeneration = Math.max(
-            fatherGeneration || 0, 
-            motherGeneration || 0
-          );
+          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
           generationMap.set(member.id, parentGeneration + 1);
           changed = true;
         }
       });
     }
-    
     const generationCounts = new Map();
-    generationMap.forEach((generation) => {
+    generationMap.forEach(generation => {
       generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
     });
-    
     return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
   };
 
@@ -740,44 +612,30 @@ const FamilyBuilderNew = () => {
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [showCropDialog, setShowCropDialog] = useState(false);
   const [imageChanged, setImageChanged] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0
+  });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const createImage = (url: string): Promise<HTMLImageElement> =>
-    new Promise((resolve, reject) => {
-      const image = document.createElement('img');
-      image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', error => reject(error));
-      image.setAttribute('crossOrigin', 'anonymous');
-      image.src = url;
-    });
-
+  const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
+    const image = document.createElement('img');
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', error => reject(error));
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.src = url;
+  });
   const getCroppedImg = async (imageSrc: string, pixelCrop: any) => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
     if (!ctx) return null;
-
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
-
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      pixelCrop.width,
-      pixelCrop.height
-    );
-
-    return new Promise<string>((resolve) => {
-      canvas.toBlob((blob) => {
+    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+    return new Promise<string>(resolve => {
+      canvas.toBlob(blob => {
         if (!blob) return;
         const reader = new FileReader();
         reader.addEventListener('load', () => resolve(reader.result as string));
@@ -785,11 +643,9 @@ const FamilyBuilderNew = () => {
       }, 'image/jpeg', 0.95);
     });
   };
-
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
-
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -802,7 +658,6 @@ const FamilyBuilderNew = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleCropSave = async () => {
     if (selectedImage && croppedAreaPixels) {
       const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
@@ -813,7 +668,6 @@ const FamilyBuilderNew = () => {
       }
     }
   };
-
   const handleDeleteImage = () => {
     setCroppedImage(null);
     setSelectedImage(null);
@@ -822,7 +676,6 @@ const FamilyBuilderNew = () => {
       fileInputRef.current.value = '';
     }
   };
-
   const handleEditImage = () => {
     if (selectedImage) {
       setShowCropDialog(true);
@@ -830,12 +683,22 @@ const FamilyBuilderNew = () => {
   };
 
   // Get image upload permission state from top level
-  const { isImageUploadEnabled, loading: uploadLoading } = useImageUploadPermission();
+  const {
+    isImageUploadEnabled,
+    loading: uploadLoading
+  } = useImageUploadPermission();
+  const {
+    toast
+  } = useToast();
+  const {
+    t,
+    direction
+  } = useLanguage();
+  const {
+    notifications,
+    profile
+  } = useDashboardData();
 
-  const { toast } = useToast();
-  const { t, direction } = useLanguage();
-  const { notifications, profile } = useDashboardData();
-  
   // Package and subscription data
   const [packageData, setPackageData] = useState(null);
   const [subscriptionData, setSubscriptionData] = useState(null);
@@ -844,7 +707,6 @@ const FamilyBuilderNew = () => {
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
   const autoAdd = searchParams.get('autoAdd') === 'true';
-  
   const [activeTab, setActiveTab] = useState("overview");
   const [familyMembers, setFamilyMembers] = useState([]);
   const [familyMarriages, setFamilyMarriages] = useState([]);
@@ -859,28 +721,25 @@ const FamilyBuilderNew = () => {
     console.log('🔍 calculateGenerationCount called with familyMembers.length:', familyMembers.length);
     console.log('🔍 familyMarriages.length:', familyMarriages?.length || 0);
     console.log('🔍 loading state:', loading);
-    
     if (familyMembers.length === 0) {
       console.log('🔍 No family members, returning 1');
       return 1;
     }
-    
-    console.log('🔍 Starting generation calculation with members:', familyMembers.map(m => ({ 
-      id: m.id, 
-      name: m.name, 
-      isFounder: m.isFounder, 
-      fatherId: m.fatherId, 
-      motherId: m.motherId 
+    console.log('🔍 Starting generation calculation with members:', familyMembers.map(m => ({
+      id: m.id,
+      name: m.name,
+      isFounder: m.isFounder,
+      fatherId: m.fatherId,
+      motherId: m.motherId
     })));
-    
     const generationMap = new Map();
-    
+
     // Step 1: Find the founder and assign generation 1
     const founder = familyMembers.find(member => member.isFounder);
     if (founder) {
       generationMap.set(founder.id, 1);
       console.log(`🔍 Assigned generation 1 to founder: ${founder.name}`);
-      
+
       // Step 2: Find founder's spouse(s) from marriages and assign generation 1
       familyMarriages.forEach(marriage => {
         if (marriage.husband_id === founder.id && marriage.wife_id) {
@@ -899,28 +758,23 @@ const FamilyBuilderNew = () => {
     let changed = true;
     let iterations = 0;
     const maxIterations = 10;
-
     while (changed && iterations < maxIterations) {
       changed = false;
       iterations++;
-
       familyMembers.forEach(member => {
         if (generationMap.has(member.id)) return; // Skip if already assigned
 
         const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
         const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-        
+
         // If at least one parent has a generation, assign child generation
         if (fatherGeneration !== undefined && fatherGeneration !== null || motherGeneration !== undefined && motherGeneration !== null) {
-          const parentGeneration = Math.max(
-            fatherGeneration || 0, 
-            motherGeneration || 0
-          );
+          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
           const childGeneration = parentGeneration + 1;
           generationMap.set(member.id, childGeneration);
           console.log(`🔍 Assigned generation ${childGeneration} to ${member.name} (child of generation ${parentGeneration})`);
           changed = true;
-          
+
           // Step 4: Also assign the same generation to their spouse(s)
           familyMarriages.forEach(marriage => {
             let spouseId = null;
@@ -929,7 +783,6 @@ const FamilyBuilderNew = () => {
             } else if (marriage.wife_id === member.id && marriage.husband_id) {
               spouseId = marriage.husband_id;
             }
-            
             if (spouseId && !generationMap.has(spouseId)) {
               generationMap.set(spouseId, childGeneration);
               const spouse = familyMembers.find(m => m.id === spouseId);
@@ -939,7 +792,6 @@ const FamilyBuilderNew = () => {
           });
         }
       });
-      
       console.log(`🔍 Iteration ${iterations}: ${generationMap.size} members assigned`);
     }
 
@@ -957,12 +809,10 @@ const FamilyBuilderNew = () => {
       const gen = generationMap.get(member.id) || 1;
       console.log(`🔍 ${member.name} -> Generation ${gen}`);
     });
-
     const maxGeneration = Math.max(...Array.from(generationMap.values()));
     console.log("🔍 Max generation calculated:", maxGeneration);
     return maxGeneration;
   }, [familyMembers, familyMarriages, loading]);
-
   const calculateGenerationCount = () => generationCount;
 
   // Form panel states
@@ -971,22 +821,22 @@ const FamilyBuilderNew = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
-  
+
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
-
   const fetchFamilyData = async () => {
     try {
       setLoading(true);
-        
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
-
-      
-
-      const { data: userSubscription, error: subError } = await supabase
-        .from('user_subscriptions')
-        .select(`
+      const {
+        data: userSubscription,
+        error: subError
+      } = await supabase.from('user_subscriptions').select(`
           *,
           packages:package_id (
             id,
@@ -995,62 +845,39 @@ const FamilyBuilderNew = () => {
             max_family_trees,
             features
           )
-        `)
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      
-
+        `).eq('user_id', user.id).eq('status', 'active').order('created_at', {
+        ascending: false
+      }).limit(1).single();
       if (userSubscription && userSubscription.packages) {
         setPackageData(userSubscription.packages);
         setSubscriptionData(userSubscription);
       } else {
-        
-        const { data: freePackage } = await supabase
-          .from('packages')
-          .select('*')
-          .ilike('name->en', 'Free')
-          .single();
-        
+        const {
+          data: freePackage
+        } = await supabase.from('packages').select('*').ilike('name->en', 'Free').single();
         if (freePackage) setPackageData(freePackage);
       }
-      
       if (!familyId) {
         throw new Error('No family ID provided');
       }
-
-      
-      
-      const { data: family, error: familyError } = await supabase
-        .from('families')
-        .select('*')
-        .eq('id', familyId)
-        .eq('creator_id', user.id)
-        .single();
-
+      const {
+        data: family,
+        error: familyError
+      } = await supabase.from('families').select('*').eq('id', familyId).eq('creator_id', user.id).single();
       if (familyError) {
         console.error('Error fetching family:', familyError);
         throw familyError;
       }
-
       if (!family) {
         throw new Error('Family not found or access denied');
       }
-
-      
       const familyToUse = family;
       setFamilyData(familyToUse);
-      
-      const { data: members, error: membersError } = await supabase
-        .from('family_tree_members')
-        .select('*')
-        .eq('family_id', familyToUse.id);
-
+      const {
+        data: members,
+        error: membersError
+      } = await supabase.from('family_tree_members').select('*').eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
-
       if (members) {
         const transformedMembers = members.map(member => ({
           id: member.id,
@@ -1071,33 +898,25 @@ const FamilyBuilderNew = () => {
           marital_status: member.marital_status || 'single',
           relation: ""
         }));
-        
         setFamilyMembers(transformedMembers);
       }
-
-      const { data: marriages, error: marriagesError } = await supabase
-        .from('marriages')
-        .select(`
+      const {
+        data: marriages,
+        error: marriagesError
+      } = await supabase.from('marriages').select(`
           id,
           husband_id,
           wife_id,
           is_active,
           marital_status
-        `)
-        .eq('family_id', familyToUse.id)
-        .eq('is_active', true);
-
+        `).eq('family_id', familyToUse.id).eq('is_active', true);
       if (marriagesError) throw marriagesError;
 
       // Get detailed marriage data with member info
       let marriagesWithMembers = [];
       if (marriages) {
-        marriagesWithMembers = await Promise.all(marriages.map(async (marriage) => {
-          const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
-          ]);
-          
+        marriagesWithMembers = await Promise.all(marriages.map(async marriage => {
+          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
           return {
             ...marriage,
             husband: husbandResult.data,
@@ -1105,12 +924,9 @@ const FamilyBuilderNew = () => {
           };
         }));
       }
-
       if (marriagesError) throw marriagesError;
-
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
-        
       }
     } catch (error) {
       console.error('Error fetching family data:', error);
@@ -1123,33 +939,31 @@ const FamilyBuilderNew = () => {
       setLoading(false);
     }
   };
-
   const refreshFamilyData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
         return;
       }
-
-      
-
       const familyId = new URLSearchParams(window.location.search).get('family');
       if (!familyId) throw new Error('Family ID not found in URL');
-
-      const { data: family, error: familyError } = await supabase
-        .from('families')
-        .select('*')
-        .eq('id', familyId)
-        .single();
-
+      const {
+        data: family,
+        error: familyError
+      } = await supabase.from('families').select('*').eq('id', familyId).single();
       if (familyError) throw familyError;
       setFamilyData(family);
 
       // Fetch only essential member data for initial load
-      const { data: members, error: membersError } = await supabase
-        .from('family_tree_members')
-        .select(`
+      const {
+        data: members,
+        error: membersError
+      } = await supabase.from('family_tree_members').select(`
           id,
           name,
           first_name,
@@ -1159,11 +973,8 @@ const FamilyBuilderNew = () => {
           is_founder,
           gender,
           marital_status
-        `)
-        .eq('family_id', family.id);
-
+        `).eq('family_id', family.id);
       if (membersError) throw membersError;
-
       const transformedMembers = members.map(member => ({
         id: member.id,
         name: member.name,
@@ -1171,34 +982,35 @@ const FamilyBuilderNew = () => {
         last_name: member.last_name,
         fatherId: member.father_id,
         motherId: member.mother_id,
-        spouseId: null, // Will be filled from marriages
+        spouseId: null,
+        // Will be filled from marriages
         relatedPersonId: null,
         isFounder: member.is_founder,
         gender: member.gender,
-        birthDate: "", // Will be loaded when profile is viewed
+        birthDate: "",
+        // Will be loaded when profile is viewed
         isAlive: true,
         deathDate: null,
-        image: null, // Will be loaded when profile is viewed
-        bio: "", // Will be loaded when profile is viewed
+        image: null,
+        // Will be loaded when profile is viewed
+        bio: "",
+        // Will be loaded when profile is viewed
         marital_status: member.marital_status || 'single',
         relation: ""
       }));
-
       setFamilyMembers(transformedMembers);
 
       // Fetch minimal marriage data for initial load
-      const { data: marriages, error: marriagesError } = await supabase
-        .from('marriages')
-        .select(`
+      const {
+        data: marriages,
+        error: marriagesError
+      } = await supabase.from('marriages').select(`
           id,
           husband_id,
           wife_id,
           is_active,
           marital_status
-        `)
-        .eq('family_id', family.id)
-        .eq('is_active', true);
-
+        `).eq('family_id', family.id).eq('is_active', true);
       if (marriagesError) throw marriagesError;
 
       // Create simplified marriage objects for initial load
@@ -1206,32 +1018,31 @@ const FamilyBuilderNew = () => {
       if (marriages) {
         marriagesWithMembers = marriages.map(marriage => ({
           ...marriage,
-          husband: { id: marriage.husband_id, name: "Loading..." },
-          wife: { id: marriage.wife_id, name: "Loading..." }
+          husband: {
+            id: marriage.husband_id,
+            name: "Loading..."
+          },
+          wife: {
+            id: marriage.wife_id,
+            name: "Loading..."
+          }
         }));
       }
-
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
       }
-
-      
     } catch (error) {
       console.error('Error refreshing family data:', error);
     }
   };
-
   useEffect(() => {
     let isCancelled = false;
-    
     const loadData = async () => {
       if (!isCancelled) {
         await fetchFamilyData();
       }
     };
-    
     loadData();
-    
     return () => {
       isCancelled = true;
     };
@@ -1250,12 +1061,12 @@ const FamilyBuilderNew = () => {
       loadExistingSpouses(editingMember);
     }
   }, [editingMember?.id, familyMarriages?.length, familyMembers?.length]);
-  
+
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
-  
+
   // Form data states
   const [formData, setFormData] = useState({
     name: "",
@@ -1272,9 +1083,7 @@ const FamilyBuilderNew = () => {
     croppedImage: null as string | null,
     isFounder: false
   });
-
   const [wives, setWives] = useState<SpouseData[]>([]);
-
   const [husband, setHusband] = useState<SpouseData | null>(null);
 
   // Sync croppedImage with formData when croppedImage changes
@@ -1289,9 +1098,13 @@ const FamilyBuilderNew = () => {
 
   // Command states for search
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
-  const [wivesCommandOpen, setWivesCommandOpen] = useState<{ [key: number]: boolean }>({});
-  const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{ [key: number]: 'yes' | 'no' | null }>({});
-  
+  const [wivesCommandOpen, setWivesCommandOpen] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [wiveFamilyStatus, setWiveFamilyStatus] = useState<{
+    [key: number]: 'yes' | 'no' | null;
+  }>({});
+
   // Unified spouse form states
   const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
   const [currentHusband, setCurrentHusband] = useState<SpouseData | null>(null);
@@ -1306,11 +1119,9 @@ const FamilyBuilderNew = () => {
   const handleWifeFamilyStatusChange = (status: string) => {
     setWifeFamilyStatus(status as 'yes' | 'no');
   };
-
   const handleHusbandFamilyStatusChange = (status: string) => {
     setHusbandFamilyStatus(status as 'yes' | 'no');
   };
-
   const handleAddWife = () => {
     setCurrentWife({
       id: '',
@@ -1328,7 +1139,6 @@ const FamilyBuilderNew = () => {
     });
     setShowWifeForm(true);
   };
-
   const handleAddHusband = () => {
     setCurrentHusband({
       id: '',
@@ -1346,73 +1156,48 @@ const FamilyBuilderNew = () => {
     });
     setShowHusbandForm(true);
   };
-
   const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
     const currentSpouse = spouseType === 'wife' ? currentWife : currentHusband;
     if (!currentSpouse) return;
-    
     try {
       let spouseId = currentSpouse.id;
-      
+
       // For new spouses without an ID or external spouses, handle database creation
       if (!currentSpouse.isFamilyMember) {
         // External spouse - create or update in database
         if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
           // Create new external spouse in database
           const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-          
-          const { data: { user } } = await supabase.auth.getUser();
-          
-          const { data: newSpouseData, error: insertError } = await supabase
-            .from('family_tree_members')
-            .insert({
-              family_id: familyId,
-              name: spouseName,
-              first_name: currentSpouse.firstName || null,
-              last_name: currentSpouse.lastName || null,
-              gender: spouseType === 'wife' ? 'female' : 'male',
-              birth_date: formatDateForDatabase(currentSpouse.birthDate),
-              is_alive: currentSpouse.isAlive ?? true,
-              death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
-              marital_status: 'married',
-              image_url: currentSpouse.croppedImage || null,
-              created_by: user?.id,
-              is_founder: false
-            })
-            .select()
-            .single();
-            
+          const {
+            data: {
+              user
+            }
+          } = await supabase.auth.getUser();
+          const {
+            data: newSpouseData,
+            error: insertError
+          } = await supabase.from('family_tree_members').insert({
+            family_id: familyId,
+            name: spouseName,
+            first_name: currentSpouse.firstName || null,
+            last_name: currentSpouse.lastName || null,
+            gender: spouseType === 'wife' ? 'female' : 'male',
+            birth_date: formatDateForDatabase(currentSpouse.birthDate),
+            is_alive: currentSpouse.isAlive ?? true,
+            death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
+            marital_status: 'married',
+            image_url: currentSpouse.croppedImage || null,
+            created_by: user?.id,
+            is_founder: false
+          }).select().single();
           if (insertError) {
             throw insertError;
           }
-          
           spouseId = newSpouseData.id;
         } else {
           // Update existing external spouse
           const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-          
-          await supabase
-            .from('family_tree_members')
-            .update({
-              name: spouseName,
-              first_name: currentSpouse.firstName || null,
-              last_name: currentSpouse.lastName || null,
-              birth_date: formatDateForDatabase(currentSpouse.birthDate),
-              is_alive: currentSpouse.isAlive ?? true,
-              death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
-              marital_status: 'married',
-              image_url: currentSpouse.croppedImage || null,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', spouseId);
-        }
-      } else if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
-        // Update existing family member spouse
-        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-        
-        await supabase
-          .from('family_tree_members')
-          .update({
+          await supabase.from('family_tree_members').update({
             name: spouseName,
             first_name: currentSpouse.firstName || null,
             last_name: currentSpouse.lastName || null,
@@ -1422,31 +1207,49 @@ const FamilyBuilderNew = () => {
             marital_status: 'married',
             image_url: currentSpouse.croppedImage || null,
             updated_at: new Date().toISOString()
-          })
-          .eq('id', currentSpouse.existingFamilyMemberId);
-          
+          }).eq('id', spouseId);
+        }
+      } else if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
+        // Update existing family member spouse
+        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
+        await supabase.from('family_tree_members').update({
+          name: spouseName,
+          first_name: currentSpouse.firstName || null,
+          last_name: currentSpouse.lastName || null,
+          birth_date: formatDateForDatabase(currentSpouse.birthDate),
+          is_alive: currentSpouse.isAlive ?? true,
+          death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
+          marital_status: 'married',
+          image_url: currentSpouse.croppedImage || null,
+          updated_at: new Date().toISOString()
+        }).eq('id', currentSpouse.existingFamilyMemberId);
         spouseId = currentSpouse.existingFamilyMemberId;
       }
 
       // Update local state with the correct spouse ID
-      const updatedSpouse = { ...currentSpouse, id: spouseId, isSaved: true };
-      
+      const updatedSpouse = {
+        ...currentSpouse,
+        id: spouseId,
+        isSaved: true
+      };
       if (spouseType === 'wife') {
         console.log('🔍 WIFE SAVE - Determining index logic...');
         console.log('🔍 currentSpouse.id:', currentSpouse.id);
         console.log('🔍 editingWifeIndex:', editingWifeIndex);
-        console.log('🔍 wives array:', wives.map(w => ({ id: w.id, name: w.name })));
-        
+        console.log('🔍 wives array:', wives.map(w => ({
+          id: w.id,
+          name: w.name
+        })));
+
         // First try to find by ID match (most reliable)
         let wifeIndex = wives.findIndex(w => w.id === currentSpouse.id);
         console.log('🔍 Index by ID match:', wifeIndex);
-        
+
         // If no ID match and we have an editing index, use that
         if (wifeIndex === -1 && editingWifeIndex !== null && editingWifeIndex >= 0) {
           wifeIndex = editingWifeIndex;
           console.log('🔍 Using editingWifeIndex:', wifeIndex);
         }
-        
         if (wifeIndex >= 0) {
           // Update existing wife - preserve original ID and database reference
           console.log('🔍 UPDATING existing wife at index:', wifeIndex);
@@ -1458,13 +1261,15 @@ const FamilyBuilderNew = () => {
             existingFamilyMemberId: existingWife.existingFamilyMemberId || updatedSpouse.existingFamilyMemberId,
             isSaved: true
           };
-          
-          console.log('🔍 Updated wife data:', { id: updatedWife.id, name: updatedWife.name, existingFamilyMemberId: updatedWife.existingFamilyMemberId });
-          
+          console.log('🔍 Updated wife data:', {
+            id: updatedWife.id,
+            name: updatedWife.name,
+            existingFamilyMemberId: updatedWife.existingFamilyMemberId
+          });
           const updatedWives = [...wives];
           updatedWives[wifeIndex] = updatedWife;
           setWives(updatedWives);
-          
+
           // Update originalWivesData to track changes for new members
           if (originalWivesData.length === 0 && formMode === 'add') {
             // For new members, initialize originalWivesData with the first save
@@ -1473,7 +1278,9 @@ const FamilyBuilderNew = () => {
             // For existing members or subsequent saves, update the specific index
             const updatedOriginal = [...originalWivesData];
             if (updatedOriginal[wifeIndex]) {
-              updatedOriginal[wifeIndex] = { ...updatedWife };
+              updatedOriginal[wifeIndex] = {
+                ...updatedWife
+              };
               setOriginalWivesData(updatedOriginal);
             }
           }
@@ -1482,7 +1289,7 @@ const FamilyBuilderNew = () => {
           console.log('🔍 ADDING new wife');
           const newWives = [...wives, updatedSpouse];
           setWives(newWives);
-          
+
           // Update originalWivesData for new members
           if (originalWivesData.length === 0 && formMode === 'add') {
             setOriginalWivesData([...newWives]);
@@ -1493,7 +1300,7 @@ const FamilyBuilderNew = () => {
         // Update husband
         setHusband(updatedSpouse);
       }
-      
+
       // Reset form state
       if (spouseType === 'wife') {
         setCurrentWife(null);
@@ -1504,7 +1311,6 @@ const FamilyBuilderNew = () => {
         setShowHusbandForm(false);
         setHusbandFamilyStatus(null);
       }
-      
       toast({
         title: "تم حفظ البيانات",
         description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
@@ -1523,80 +1329,90 @@ const FamilyBuilderNew = () => {
   // Helper functions for spouse editing conflict management
   const checkForActiveSpouseEdit = () => {
     if (showWifeForm && editingWifeIndex !== null) {
-      return { type: 'wife', index: editingWifeIndex };
+      return {
+        type: 'wife',
+        index: editingWifeIndex
+      };
     }
     if (showHusbandForm) {
-      return { type: 'husband', index: -1 };
+      return {
+        type: 'husband',
+        index: -1
+      };
     }
     return null;
   };
-
   const closeActiveSpouseEdit = () => {
     console.log('closeActiveSpouseEdit called, showWifeForm:', showWifeForm, 'showHusbandForm:', showHusbandForm, 'editingWifeIndex:', editingWifeIndex);
-    
     if (showWifeForm) {
       console.log('Closing wife form, current wives before close:', wives);
-      
+
       // Ensure all wives are marked as saved when closing
-      const updatedWives = wives.map(wife => ({ ...wife, isSaved: true }));
+      const updatedWives = wives.map(wife => ({
+        ...wife,
+        isSaved: true
+      }));
       setWives(updatedWives);
-      
+
       // Close the form
       setShowWifeForm(false);
       setCurrentWife(null);
       setWifeFamilyStatus('no');
       setEditingWifeIndex(null);
-      
       console.log('Wife form closed, all wives marked as saved');
     }
-    
     if (showHusbandForm) {
       console.log('Closing husband form, current husband before close:', husband);
-      
+
       // Ensure husband is marked as saved when closing
       if (husband) {
-        setHusband({ ...husband, isSaved: true });
+        setHusband({
+          ...husband,
+          isSaved: true
+        });
       }
-      
+
       // Close the form
       setShowHusbandForm(false);
       setCurrentHusband(null);
       setHusbandFamilyStatus('no');
-      
       console.log('Husband form closed, husband marked as saved');
     }
   };
-
   const handleSpouseEditAttempt = (spouseType: 'wife' | 'husband', spouseData: any, index: number) => {
     const activeEdit = checkForActiveSpouseEdit();
-    
     if (activeEdit) {
       // There's already an active edit session
       if (activeEdit.type === spouseType && activeEdit.index === index) {
         // Same spouse being edited, just return
         return;
       }
-      
+
       // Different spouse, close the previous edit and proceed with new one
       closeActiveSpouseEdit();
     }
-    
+
     // No active edit, proceed with editing
     if (spouseType === 'wife') {
       const updatedWives = [...wives];
-      updatedWives[index] = { ...spouseData, isSaved: false };
+      updatedWives[index] = {
+        ...spouseData,
+        isSaved: false
+      };
       setWives(updatedWives);
       setCurrentWife(spouseData);
       setShowWifeForm(true);
       setEditingWifeIndex(index);
       setWifeFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
     } else {
-      setHusband({ ...spouseData, isSaved: false });
+      setHusband({
+        ...spouseData,
+        isSaved: false
+      });
       setCurrentHusband(spouseData);
       setShowHusbandForm(true);
       setHusbandFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
     }
-    
     toast({
       title: "وضع التعديل",
       description: `يمكنك الآن تعديل بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'}`,
@@ -1613,11 +1429,10 @@ const FamilyBuilderNew = () => {
       variant: "default"
     });
   };
-
   const handleCloseHusbandEdit = () => {
     closeActiveSpouseEdit();
     toast({
-      title: "تم إغلاق التعديل", 
+      title: "تم إغلاق التعديل",
       description: "تم إغلاق تعديل الزوج",
       variant: "default"
     });
@@ -1638,23 +1453,10 @@ const FamilyBuilderNew = () => {
           reject(new Error('Failed to get canvas context'));
           return;
         }
-
         canvas.width = crop.width;
         canvas.height = crop.height;
-
-        ctx.drawImage(
-          image,
-          crop.x,
-          crop.y,
-          crop.width,
-          crop.height,
-          0,
-          0,
-          crop.width,
-          crop.height
-        );
-
-        canvas.toBlob((blob) => {
+        ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+        canvas.toBlob(blob => {
           if (!blob) {
             reject(new Error('Canvas is empty'));
             return;
@@ -1669,7 +1471,7 @@ const FamilyBuilderNew = () => {
   };
 
   // Form states for member creation/editing
-  
+
   // Delete modal states (keep existing delete modal functionality)
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<any>(null);
@@ -1677,19 +1479,27 @@ const FamilyBuilderNew = () => {
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
-  const [spousePartnerDetails, setSpousePartnerDetails] = useState({ name: "", fatherName: "", grandfatherName: "", isFounder: false });
-  
+  const [spousePartnerDetails, setSpousePartnerDetails] = useState({
+    name: "",
+    fatherName: "",
+    grandfatherName: "",
+    isFounder: false
+  });
+
   // Spouse deletion modal states
   const [showSpouseDeleteModal, setShowSpouseDeleteModal] = useState(false);
-  const [spouseToDelete, setSpouseToDelete] = useState<{ wife: any; index: number } | null>(null);
+  const [spouseToDelete, setSpouseToDelete] = useState<{
+    wife: any;
+    index: number;
+  } | null>(null);
   const [spouseDeleteWarning, setSpouseDeleteWarning] = useState("");
-  
+
   // Track original wife data for change detection
   const [originalWivesData, setOriginalWivesData] = useState<any[]>([]);
-  
+
   // Track original husband data for change detection  
   const [originalHusbandData, setOriginalHusbandData] = useState<any>(null);
-  
+
   // Upgrade modal state
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -1698,61 +1508,53 @@ const FamilyBuilderNew = () => {
     // Spouse: no parents in this family and not a founder
     return !member?.fatherId && !member?.motherId && !member?.isFounder;
   }, []);
-
   const getSpousePartnerName = (spouseMember: any) => {
-    const marriage = familyMarriages.find((marriage: any) => 
-      marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id
-    );
-    
+    const marriage = familyMarriages.find((marriage: any) => marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id);
     if (!marriage) return "";
-    
     if (marriage.husband?.id === spouseMember.id) {
       return marriage.wife?.name || "";
     } else {
       return marriage.husband?.name || "";
     }
   };
-
   const getSpousePartnerDetails = (spouseMember: any) => {
-    const marriage = familyMarriages.find((marriage: any) => 
-      marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id
-    );
-    
-    if (!marriage) return { name: "", fatherName: "", grandfatherName: "" };
-    
+    const marriage = familyMarriages.find((marriage: any) => marriage.husband?.id === spouseMember.id || marriage.wife?.id === spouseMember.id);
+    if (!marriage) return {
+      name: "",
+      fatherName: "",
+      grandfatherName: ""
+    };
     let partnerMember;
     if (marriage.husband?.id === spouseMember.id) {
       partnerMember = familyMembers.find(m => m.id === marriage.wife?.id);
     } else {
       partnerMember = familyMembers.find(m => m.id === marriage.husband?.id);
     }
-    
-    if (!partnerMember) return { name: "", fatherName: "", grandfatherName: "" };
-    
+    if (!partnerMember) return {
+      name: "",
+      fatherName: "",
+      grandfatherName: ""
+    };
+
     // Get father information
     const father = familyMembers.find(m => m.id === partnerMember.fatherId);
     const fatherName = father?.name || "";
-    
+
     // Get grandfather information
     const grandfather = father ? familyMembers.find(m => m.id === father.fatherId) : null;
     const grandfatherName = grandfather?.name || "";
-    
     return {
       name: partnerMember.name || "",
       fatherName,
       grandfatherName
     };
   };
-
   const handleSpouseEditWarning = (spouseMember: any) => {
     // Close any active spouse editing forms first
     closeActiveSpouseEdit();
-    
+
     // Find the marriage where this spouse belongs
-    const marriage = familyMarriages.find((m: any) => 
-      m.husband?.id === spouseMember.id || m.wife?.id === spouseMember.id
-    );
-    
+    const marriage = familyMarriages.find((m: any) => m.husband?.id === spouseMember.id || m.wife?.id === spouseMember.id);
     if (!marriage) {
       toast({
         title: "خطأ",
@@ -1761,51 +1563,45 @@ const FamilyBuilderNew = () => {
       });
       return;
     }
-    
+
     // Get the partner (the actual family member who can be edited)
     const partner = marriage.husband?.id === spouseMember.id ? marriage.wife : marriage.husband;
-    
     if (!partner) {
       toast({
-        title: "خطأ", 
+        title: "خطأ",
         description: "لم يتم العثور على معلومات الشريك",
         variant: "destructive"
       });
       return;
     }
-    
+
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
-    
+
     // Get the current member's father and grandfather information (not the partner's)
     const currentMember = familyMembers.find(m => m.id === spouseMember.id);
     const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
     const fatherName = father?.name || "";
-    
+
     // Get grandfather information (father's father)
     const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
     const grandfatherName = grandfather?.name || "";
-    
     setSpousePartnerDetails({
       name: partner.name || "غير محدد",
-      fatherName: fatherName || "غير محدد", 
+      fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
       isFounder: currentMember?.is_founder || false
     });
-    
+
     // Show the spouse edit warning modal
     setShowSpouseEditWarning(true);
   };
-
   const handleSpouseDeleteWarning = (spouseMember: any) => {
     // Close any active spouse editing forms first
     closeActiveSpouseEdit();
-    
+
     // Find the marriage where this spouse belongs
-    const marriage = familyMarriages.find((m: any) => 
-      m.husband?.id === spouseMember.id || m.wife?.id === spouseMember.id
-    );
-    
+    const marriage = familyMarriages.find((m: any) => m.husband?.id === spouseMember.id || m.wife?.id === spouseMember.id);
     if (!marriage) {
       toast({
         title: "خطأ",
@@ -1814,50 +1610,45 @@ const FamilyBuilderNew = () => {
       });
       return;
     }
-    
+
     // Get the partner (the actual family member who can be edited)
     const partner = marriage.husband?.id === spouseMember.id ? marriage.wife : marriage.husband;
-    
     if (!partner) {
       toast({
-        title: "خطأ", 
+        title: "خطأ",
         description: "لم يتم العثور على معلومات الشريك",
         variant: "destructive"
       });
       return;
     }
-    
+
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
-    
+
     // Get the current member's father and grandfather information (not the partner's)
     const currentMember = familyMembers.find(m => m.id === spouseMember.id);
     const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
     const fatherName = father?.name || "";
-    
+
     // Get grandfather information (father's father)
     const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
     const grandfatherName = grandfather?.name || "";
-    
     setSpousePartnerDetails({
       name: partner.name || "غير محدد",
-      fatherName: fatherName || "غير محدد", 
+      fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
       isFounder: currentMember?.is_founder || false
     });
-    
+
     // Show the spouse edit warning modal (same for delete)
     setShowSpouseEditWarning(true);
   };
-
   const getChildrenCount = (parentId: string) => {
     return familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId).length;
   };
-
   const getSpousesCount = (memberId: string) => {
     return familyMarriages.filter((marriage: any) => marriage.husband?.id === memberId || marriage.wife?.id === memberId).length;
   };
-
   const performCascadingDelete = async (member: any) => {
     const membersToDelete = new Set<string>();
     const marriagesToDelete = new Set<string>();
@@ -1866,14 +1657,12 @@ const FamilyBuilderNew = () => {
     membersToDelete.add(member.id);
 
     // Find all marriages involving this member
-    const memberMarriages = familyMarriages.filter((marriage: any) =>
-      marriage.husband?.id === member.id || marriage.wife?.id === member.id
-    );
+    const memberMarriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id);
 
     // Process each marriage
     memberMarriages.forEach((marriage: any) => {
       marriagesToDelete.add(marriage.id);
-      
+
       // If deleting a blood family member (not a spouse), also delete their spouse if the spouse is not a blood family member
       if (!checkIfMemberIsSpouse(member)) {
         const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
@@ -1890,18 +1679,14 @@ const FamilyBuilderNew = () => {
     // Recursive function to find and delete all descendants
     const findDescendants = (parentId: string) => {
       const children = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
-      
       children.forEach(child => {
         membersToDelete.add(child.id);
-        
+
         // Find and delete marriages of this child
-        const childMarriages = familyMarriages.filter((marriage: any) =>
-          marriage.husband?.id === child.id || marriage.wife?.id === child.id
-        );
-        
+        const childMarriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === child.id || marriage.wife?.id === child.id);
         childMarriages.forEach((marriage: any) => {
           marriagesToDelete.add(marriage.id);
-          
+
           // If child's spouse is not a blood family member, delete them too
           const spouseId = marriage.husband?.id === child.id ? marriage.wife?.id : marriage.husband?.id;
           if (spouseId) {
@@ -1911,7 +1696,7 @@ const FamilyBuilderNew = () => {
             }
           }
         });
-        
+
         // Recursively find descendants of this child
         findDescendants(child.id);
       });
@@ -1919,30 +1704,26 @@ const FamilyBuilderNew = () => {
 
     // Start the recursive descent from the member being deleted
     findDescendants(member.id);
-
     try {
       // Delete marriages first (to avoid foreign key constraints)
       if (marriagesToDelete.size > 0) {
-        const { error: marriageError } = await supabase
-          .from('marriages')
-          .delete()
-          .in('id', Array.from(marriagesToDelete));
+        const {
+          error: marriageError
+        } = await supabase.from('marriages').delete().in('id', Array.from(marriagesToDelete));
         if (marriageError) throw marriageError;
       }
 
       // Then delete family members
       if (membersToDelete.size > 0) {
-        const { error: memberError } = await supabase
-          .from('family_tree_members')
-          .delete()
-          .in('id', Array.from(membersToDelete));
+        const {
+          error: memberError
+        } = await supabase.from('family_tree_members').delete().in('id', Array.from(membersToDelete));
         if (memberError) throw memberError;
       }
 
       // Update local state
       setFamilyMembers(familyMembers.filter(m => !membersToDelete.has(m.id)));
       setFamilyMarriages(familyMarriages.filter((marriage: any) => !marriagesToDelete.has(marriage.id)));
-
       toast({
         title: t('family_builder.deleted', 'تم الحذف بنجاح'),
         description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} علاقة زواج من شجرة العائلة`
@@ -1952,33 +1733,34 @@ const FamilyBuilderNew = () => {
       throw error;
     }
   };
-
   const handleDeleteMember = useCallback(async (memberOrId: any) => {
     const id = typeof memberOrId === 'string' ? memberOrId : memberOrId?.id;
     const member = familyMembers.find(m => m.id === id);
     if (!member) {
-      toast({ title: t('family_builder.error', 'خطأ'), description: t('family_builder.member_not_found', 'العضو غير موجود'), variant: 'destructive' });
+      toast({
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.member_not_found', 'العضو غير موجود'),
+        variant: 'destructive'
+      });
       return;
     }
-
     if (member.isFounder) {
-      toast({ title: t('family_builder.warning', 'تحذير'), description: t('family_builder.cannot_delete_founder', 'لا يمكن حذف مؤسس العائلة'), variant: 'destructive' });
+      toast({
+        title: t('family_builder.warning', 'تحذير'),
+        description: t('family_builder.cannot_delete_founder', 'لا يمكن حذف مؤسس العائلة'),
+        variant: 'destructive'
+      });
       return;
     }
-
     setMemberToDelete(member);
 
     // Get detailed information about what will be deleted
-    const spouses = familyMarriages
-      .filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id)
-      .map((marriage: any) => {
-        const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
-        return familyMembers.find(m => m.id === spouseId);
-      })
-      .filter(Boolean);
-
+    const spouses = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id).map((marriage: any) => {
+      const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
+      return familyMembers.find(m => m.id === spouseId);
+    }).filter(Boolean);
     const children = familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
-    
+
     // Count all descendants recursively
     const getAllDescendants = (parentId: string): any[] => {
       const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
@@ -1988,23 +1770,12 @@ const FamilyBuilderNew = () => {
       });
       return allDescendants;
     };
-
     const allDescendants = getAllDescendants(member.id);
-    const marriages = familyMarriages.filter((marriage: any) => 
-      marriage.husband?.id === member.id || marriage.wife?.id === member.id
-    );
-
+    const marriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id);
     const isSpouse = checkIfMemberIsSpouse(member);
-    
     if (isSpouse) {
       setDeleteModalType('spouse');
-      setDeleteWarningMessage(
-        `تحذير: حذف هذا الزوج/الزوجة سيؤدي إلى:\n` +
-        `- حذف الشخص نفسه\n` +
-        `- إزالة علاقة الزواج\n` +
-        (children.length > 0 ? `- حذف ${children.length} من الأطفال وجميع أحفادهم (${allDescendants.length} شخص إجمالي)\n` : '') +
-        `هل أنت متأكد من المتابعة؟`
-      );
+      setDeleteWarningMessage(`تحذير: حذف هذا الزوج/الزوجة سيؤدي إلى:\n` + `- حذف الشخص نفسه\n` + `- إزالة علاقة الزواج\n` + (children.length > 0 ? `- حذف ${children.length} من الأطفال وجميع أحفادهم (${allDescendants.length} شخص إجمالي)\n` : '') + `هل أنت متأكد من المتابعة؟`);
     } else {
       let warningMessage = `تحذير: حذف هذا العضو سيؤدي إلى حذف:\n`;
       warningMessage += `- الشخص نفسه (${member.name})\n`;
@@ -2021,13 +1792,11 @@ const FamilyBuilderNew = () => {
         warningMessage += `- ${marriages.length} من علاقات الزواج\n`;
       }
       warningMessage += `\nهل أنت متأكد من المتابعة؟`;
-      
       setDeleteModalType('bloodMember');
       setDeleteWarningMessage(warningMessage);
     }
     setShowDeleteModal(true);
   }, [familyMembers, familyMarriages, t]);
-
   const confirmDelete = async () => {
     if (!memberToDelete) return;
     try {
@@ -2036,7 +1805,11 @@ const FamilyBuilderNew = () => {
       setMemberToDelete(null);
     } catch (error) {
       console.error('Error deleting member:', error);
-      toast({ title: t('family_builder.error', 'خطأ'), description: t('family_builder.delete_error', 'حدث خطأ أثناء حذف العضو'), variant: 'destructive' });
+      toast({
+        title: t('family_builder.error', 'خطأ'),
+        description: t('family_builder.delete_error', 'حدث خطأ أثناء حذف العضو'),
+        variant: 'destructive'
+      });
     }
   };
 
@@ -2045,15 +1818,8 @@ const FamilyBuilderNew = () => {
     const original = originalWivesData[index];
     if (!original && wife.isSaved) return false; // New wife that's saved
     if (!original) return true; // New unsaved wife
-    
-    return (
-      wife.name !== original.name ||
-      wife.isAlive !== original.isAlive ||
-      wife.maritalStatus !== original.maritalStatus ||
-      wife.isFamilyMember !== original.isFamilyMember ||
-      (wife.birthDate?.getTime() || 0) !== (original.birthDate?.getTime() || 0) ||
-      (wife.deathDate?.getTime() || 0) !== (original.deathDate?.getTime() || 0)
-    );
+
+    return wife.name !== original.name || wife.isAlive !== original.isAlive || wife.maritalStatus !== original.maritalStatus || wife.isFamilyMember !== original.isFamilyMember || (wife.birthDate?.getTime() || 0) !== (original.birthDate?.getTime() || 0) || (wife.deathDate?.getTime() || 0) !== (original.deathDate?.getTime() || 0);
   };
 
   // Handle spouse deletion with modal
@@ -2064,45 +1830,40 @@ const FamilyBuilderNew = () => {
       isHusband: index === -1,
       spouseId: spouse?.id
     });
-    
     const isHusband = index === -1;
     const spouseName = spouse?.name || (isHusband ? 'الزوج' : 'الزوجة');
-    
+
     // Find children of this spouse
-    const spouseChildren = familyMembers.filter(member => 
-      member.mother_id === spouse.id || member.father_id === spouse.id
-    );
-    
+    const spouseChildren = familyMembers.filter(member => member.mother_id === spouse.id || member.father_id === spouse.id);
+
     // Get all descendants
     const getAllSpouseDescendants = (memberId: string): any[] => {
-      const children = familyMembers.filter(member => 
-        member.father_id === memberId || member.mother_id === memberId
-      );
+      const children = familyMembers.filter(member => member.father_id === memberId || member.mother_id === memberId);
       let descendants = [...children];
       children.forEach(child => {
         descendants = [...descendants, ...getAllSpouseDescendants(child.id)];
       });
       return descendants;
     };
-    
     const allDescendants = getAllSpouseDescendants(spouse.id);
-    
     let warningMessage = `تحذير: حذف ${isHusband ? 'هذا الزوج' : 'هذه الزوجة'} سيؤدي إلى:\n`;
     warningMessage += `- حذف ${isHusband ? 'الزوج' : 'الزوجة'}: ${spouseName}\n`;
     warningMessage += `- إزالة علاقة الزواج\n`;
-    
     if (spouseChildren.length > 0) {
       warningMessage += `- حذف ${spouseChildren.length} من الأطفال\n`;
     }
-    
     if (allDescendants.length > spouseChildren.length) {
       warningMessage += `- حذف جميع الأحفاد (${allDescendants.length} شخص إجمالي)\n`;
     }
-    
     warningMessage += `\nسيتم التأكيد النهائي عند حفظ بيانات العضو الحالي.\nهل تريد المتابعة؟`;
-    
-    console.log('🚨 SETTING SPOUSE TO DELETE:', { spouse, index });
-    setSpouseToDelete({ wife: spouse, index });
+    console.log('🚨 SETTING SPOUSE TO DELETE:', {
+      spouse,
+      index
+    });
+    setSpouseToDelete({
+      wife: spouse,
+      index
+    });
     setSpouseDeleteWarning(warningMessage);
     setShowSpouseDeleteModal(true);
     console.log('🚨 DELETE MODAL SHOULD BE SHOWN NOW');
@@ -2115,10 +1876,14 @@ const FamilyBuilderNew = () => {
       console.log('❌ No spouse to delete');
       return;
     }
-    
-    const { wife, index } = spouseToDelete;
-    console.log('🚨 DELETING SPOUSE:', { wife: wife?.name, index });
-    
+    const {
+      wife,
+      index
+    } = spouseToDelete;
+    console.log('🚨 DELETING SPOUSE:', {
+      wife: wife?.name,
+      index
+    });
     if (index === -1) {
       // This is a husband deletion
       console.log('🚨 DELETING HUSBAND');
@@ -2132,17 +1897,19 @@ const FamilyBuilderNew = () => {
       // This is a wife deletion
       console.log('🚨 DELETING WIFE AT INDEX:', index);
       console.log('🚨 WIVES BEFORE DELETION:', wives.length, wives.map(w => w.name));
-      
       const newWives = wives.filter((_, i) => i !== index);
       console.log('🚨 WIVES AFTER DELETION:', newWives.length, newWives.map(w => w.name));
-      
       setWives(newWives);
-      
+
       // Update family status object
-      const newStatus = { ...wiveFamilyStatus };
+      const newStatus = {
+        ...wiveFamilyStatus
+      };
       delete newStatus[index];
       // Reindex the remaining statuses
-      const reindexedStatus: { [key: number]: 'yes' | 'no' | null } = {};
+      const reindexedStatus: {
+        [key: number]: 'yes' | 'no' | null;
+      } = {};
       Object.keys(newStatus).forEach((key, newIndex) => {
         const oldIndex = parseInt(key);
         if (oldIndex > index) {
@@ -2152,28 +1919,19 @@ const FamilyBuilderNew = () => {
         }
       });
       setWiveFamilyStatus(reindexedStatus);
-      
       toast({
         title: "تم تحديد الزوجة للحذف",
         description: "سيتم حذف الزوجة نهائياً عند حفظ بيانات العضو",
         variant: "destructive"
       });
     }
-    
     setShowSpouseDeleteModal(false);
     setSpouseToDelete(null);
     console.log('🚨 SPOUSE DELETE COMPLETED');
   };
-
   const filteredMembers = familyMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === "all" || 
-      (selectedFilter === "alive" && member.isAlive) ||
-      (selectedFilter === "deceased" && !member.isAlive) ||
-      (selectedFilter === "male" && member.gender === "male") ||
-      (selectedFilter === "female" && member.gender === "female") ||
-      (selectedFilter === "founders" && member.isFounder);
-    
+    const matchesFilter = selectedFilter === "all" || selectedFilter === "alive" && member.isAlive || selectedFilter === "deceased" && !member.isAlive || selectedFilter === "male" && member.gender === "male" || selectedFilter === "female" && member.gender === "female" || selectedFilter === "founders" && member.isFounder;
     return matchesSearch && matchesFilter;
   });
 
@@ -2184,7 +1942,6 @@ const FamilyBuilderNew = () => {
       setShowUpgradeModal(true);
       return;
     }
-    
     setFormMode('add');
     setEditingMember(null);
     setCurrentStep(1);
@@ -2196,41 +1953,32 @@ const FamilyBuilderNew = () => {
   const fetchMemberProfile = async (memberId: string) => {
     try {
       setProfileLoading(true);
-      
-      // Fetch complete member details
-      const { data: memberData, error: memberError } = await supabase
-        .from('family_tree_members')
-        .select('*')
-        .eq('id', memberId)
-        .single();
 
+      // Fetch complete member details
+      const {
+        data: memberData,
+        error: memberError
+      } = await supabase.from('family_tree_members').select('*').eq('id', memberId).single();
       if (memberError) throw memberError;
 
       // Fetch member's marriages with spouse details
-      const { data: marriages, error: marriagesError } = await supabase
-        .from('marriages')
-        .select(`
+      const {
+        data: marriages,
+        error: marriagesError
+      } = await supabase.from('marriages').select(`
           id,
           husband_id,
           wife_id,
           is_active,
           marital_status
-        `)
-        .eq('family_id', familyId)
-        .eq('is_active', true)
-        .or(`husband_id.eq.${memberId},wife_id.eq.${memberId}`);
-
+        `).eq('family_id', familyId).eq('is_active', true).or(`husband_id.eq.${memberId},wife_id.eq.${memberId}`);
       if (marriagesError) throw marriagesError;
 
       // Get detailed marriage data with member info
       let memberMarriages = [];
       if (marriages) {
-        memberMarriages = await Promise.all(marriages.map(async (marriage) => {
-          const [husbandResult, wifeResult] = await Promise.all([
-            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
-            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
-          ]);
-          
+        memberMarriages = await Promise.all(marriages.map(async marriage => {
+          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
           return {
             ...marriage,
             husband: husbandResult.data,
@@ -2263,12 +2011,10 @@ const FamilyBuilderNew = () => {
       // Update local state with fresh data
       setMemberProfileData(transformedMember);
       setEditingMember(transformedMember);
-      
+
       // Update the member in familyMembers array
-      setFamilyMembers(prev => prev.map(m => 
-        m.id === memberId ? transformedMember : m
-      ));
-      
+      setFamilyMembers(prev => prev.map(m => m.id === memberId ? transformedMember : m));
+
       // Update marriages if this member's marriages changed
       if (memberMarriages.length > 0) {
         setFamilyMarriages(prev => {
@@ -2284,7 +2030,6 @@ const FamilyBuilderNew = () => {
           return updatedMarriages;
         });
       }
-
     } catch (error) {
       console.error('Error fetching member profile:', error);
       toast({
@@ -2296,16 +2041,14 @@ const FamilyBuilderNew = () => {
       setProfileLoading(false);
     }
   };
-
   const handleViewMember = useCallback(async (member: any) => {
     setFormMode('profile');
     setEditingMember(member);
     if (isMobile) setIsMemberListOpen(false);
-    
+
     // Fetch fresh member profile data
     await fetchMemberProfile(member.id);
   }, [isMobile, familyId, toast]);
-
   const handleEditMember = useCallback((member: any) => {
     setFormMode('edit');
     setEditingMember(member);
@@ -2313,14 +2056,12 @@ const FamilyBuilderNew = () => {
     populateFormData(member);
     if (isMobile) setIsMemberListOpen(false);
   }, [isMobile]);
-
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
     setCurrentStep(1);
     resetFormData();
   };
-
   const resetFormData = () => {
     setFormData({
       name: "",
@@ -2349,7 +2090,6 @@ const FamilyBuilderNew = () => {
       fileInputRef.current.value = '';
     }
   };
-
   const populateFormData = (member: any) => {
     setFormData({
       name: member.name || "",
@@ -2363,42 +2103,35 @@ const FamilyBuilderNew = () => {
       deathDate: member.deathDate ? new Date(member.deathDate) : null,
       bio: member.bio || "",
       imageUrl: member.image || "",
-      croppedImage: null, // Don't set croppedImage when editing existing member
+      croppedImage: null,
+      // Don't set croppedImage when editing existing member
       isFounder: member.isFounder || false
     });
-    
+
     // Load existing spouses
     loadExistingSpouses(member);
-    
+
     // Reset image change tracking
     setImageChanged(false);
   };
-
   const loadExistingSpouses = (member: any) => {
     if (!familyMarriages || familyMarriages.length === 0) return;
-    
+
     // Reset spouse states first
     setWives([]);
     setHusband(null);
     setOriginalWivesData([]);
     setOriginalHusbandData(null);
-    
     if (member.gender === "male") {
       // Load wives for male member
-      const memberMarriages = familyMarriages.filter(marriage => 
-        marriage.husband?.id === member.id
-      );
-      
-      
-      
+      const memberMarriages = familyMarriages.filter(marriage => marriage.husband?.id === member.id);
       if (memberMarriages.length > 0) {
         const memberWives = memberMarriages.map(marriage => {
           // Use the wife data from the marriage object directly (it already has all fields from the database)
           const wifeMember = marriage.wife || familyMembers.find(fm => fm.id === marriage.wife?.id);
-          
+
           // Determine if spouse is external: no father_id and not founder
-          const isExternalSpouse = wifeMember ? (!wifeMember.father_id && !wifeMember.is_founder) : true;
-          
+          const isExternalSpouse = wifeMember ? !wifeMember.father_id && !wifeMember.is_founder : true;
           return {
             id: marriage.wife?.id || '',
             name: marriage.wife?.name || '',
@@ -2409,11 +2142,15 @@ const FamilyBuilderNew = () => {
             isAlive: wifeMember?.is_alive ?? true,
             deathDate: parseDateFromDatabase(wifeMember?.death_date),
             croppedImage: wifeMember?.image_url || null,
-            biography: wifeMember?.biography || '', // Add missing biography field
-            isFamilyMember: !isExternalSpouse, // If external spouse, mark as not family member
+            biography: wifeMember?.biography || '',
+            // Add missing biography field
+            isFamilyMember: !isExternalSpouse,
+            // If external spouse, mark as not family member
             existingFamilyMemberId: wifeMember ? wifeMember.id : '',
-            isSaved: true, // Mark existing wives as saved
-            originalData: wifeMember ? { // Store original data for change tracking
+            isSaved: true,
+            // Mark existing wives as saved
+            originalData: wifeMember ? {
+              // Store original data for change tracking
               name: marriage.wife?.name || '',
               firstName: wifeMember.first_name || '',
               lastName: wifeMember.last_name || '',
@@ -2422,38 +2159,37 @@ const FamilyBuilderNew = () => {
               deathDate: parseDateFromDatabase(wifeMember.death_date),
               maritalStatus: wifeMember.marital_status || 'married',
               croppedImage: wifeMember.image_url || null,
-              biography: wifeMember.biography || '', // Add missing biography field to original data too
+              biography: wifeMember.biography || '',
+              // Add missing biography field to original data too
               isFamilyMember: !isExternalSpouse
             } : null
           };
         }).filter(wife => wife.id); // Filter out wives without ID
-        
-        
+
         setWives(memberWives);
-        setOriginalWivesData(memberWives.map(wife => ({ ...wife }))); // Store original data
-        
+        setOriginalWivesData(memberWives.map(wife => ({
+          ...wife
+        }))); // Store original data
+
         // Initialize wife family status based on whether they are family members
-        const initialWiveFamilyStatus: { [key: number]: 'yes' | 'no' | null } = {};
+        const initialWiveFamilyStatus: {
+          [key: number]: 'yes' | 'no' | null;
+        } = {};
         memberWives.forEach((wife, index) => {
           initialWiveFamilyStatus[index] = wife.isFamilyMember ? 'yes' : 'no';
         });
         setWiveFamilyStatus(initialWiveFamilyStatus);
       } else {
-        
         setWives([]);
         setWiveFamilyStatus({});
         setOriginalWivesData([]);
       }
     } else if (member.gender === "female") {
       // Load husband for female member
-      const memberMarriages = familyMarriages.filter(marriage => 
-        marriage.wife?.id === member.id
-      );
-      
+      const memberMarriages = familyMarriages.filter(marriage => marriage.wife?.id === member.id);
       if (memberMarriages.length > 0) {
         const marriage = memberMarriages[0]; // Take the first marriage
         const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
-        
         const husbandData = {
           id: marriage.husband?.id || '',
           firstName: husbandMember?.first_name || marriage.husband?.firstName || '',
@@ -2464,15 +2200,17 @@ const FamilyBuilderNew = () => {
           isAlive: husbandMember?.is_alive ?? true,
           deathDate: parseDateFromDatabase(husbandMember?.death_date),
           croppedImage: husbandMember?.image_url || null,
-          biography: husbandMember?.biography || '', // Add missing biography field
-          isFamilyMember: !!husbandMember, // If found in family members, it's a family member
+          biography: husbandMember?.biography || '',
+          // Add missing biography field
+          isFamilyMember: !!husbandMember,
+          // If found in family members, it's a family member
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
-        
-        
         setHusband(husbandData);
-        setOriginalHusbandData({ ...husbandData }); // Store original data for change detection
+        setOriginalHusbandData({
+          ...husbandData
+        }); // Store original data for change detection
       } else {
         setHusband(null);
         setOriginalHusbandData(null);
@@ -2480,7 +2218,6 @@ const FamilyBuilderNew = () => {
     }
   };
 
-  
   // Unified spouse processing functions
   const processSpouses = async (submissionData, memberData, familyId, familyData, marriageResults, activeMarriageIds) => {
     // Handle wives for male members
@@ -2488,11 +2225,8 @@ const FamilyBuilderNew = () => {
       const savedWives = wives.filter(wife => {
         const wifeIndex = wives.findIndex(w => w === wife);
         const familyStatus = wiveFamilyStatus[wifeIndex];
-        
-        return wife.isSaved === true && 
-               (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+        return wife.isSaved === true && (familyStatus !== 'yes' || wife.existingFamilyMemberId);
       });
-      
       for (const wife of savedWives) {
         await processSpouse({
           spouse: wife,
@@ -2521,14 +2255,21 @@ const FamilyBuilderNew = () => {
       });
     }
   };
-
-  const processSpouse = async ({ spouse, spouseType, memberData, familyId, familyData, marriageResults, activeMarriageIds, isMainMember }) => {
+  const processSpouse = async ({
+    spouse,
+    spouseType,
+    memberData,
+    familyId,
+    familyData,
+    marriageResults,
+    activeMarriageIds,
+    isMainMember
+  }) => {
     try {
       let spouseId = spouse.existingFamilyMemberId;
-      
+
       // Create or update spouse member
       spouseId = await createOrUpdateSpouseMember(spouse, spouseType, familyId, familyData);
-      
       if (!spouseId) {
         marriageResults.failed++;
         marriageResults.details.push(`فشل في معالجة بيانات ${spouse.name}`);
@@ -2551,26 +2292,22 @@ const FamilyBuilderNew = () => {
         marriageResults,
         isMainMember
       });
-
     } catch (error) {
       console.error(`Error processing ${spouseType}:`, error);
       marriageResults.failed++;
       marriageResults.details.push(`خطأ في معالجة ${spouse.name}`);
     }
   };
-
   const createOrUpdateSpouseMember = async (spouse, spouseType, familyId, familyData) => {
     const isWife = spouseType === 'wife';
-    
+
     // If spouse has existing ID, update the record
     if (spouse.existingFamilyMemberId && spouse.id) {
       // Get current image to handle image state properly
-      const { data: currentSpouse } = await supabase
-        .from('family_tree_members')
-        .select('image_url')
-        .eq('id', spouse.existingFamilyMemberId)
-        .maybeSingle();
-      
+      const {
+        data: currentSpouse
+      } = await supabase.from('family_tree_members').select('image_url').eq('id', spouse.existingFamilyMemberId).maybeSingle();
+
       // Handle image state properly
       let imageUrl;
       if (spouse.croppedImage !== undefined) {
@@ -2578,75 +2315,63 @@ const FamilyBuilderNew = () => {
       } else {
         imageUrl = currentSpouse?.image_url || null;
       }
-      
       const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
-      const { data: updatedSpouse, error: spouseUpdateError } = await supabase
-        .from('family_tree_members')
-        .update({
-          name: spouseName,
-          first_name: spouse.firstName || null,
-          last_name: spouse.lastName || familyData?.name || null,
-          birth_date: formatDateForDatabase(spouse.birthDate),
-          is_alive: spouse.isAlive ?? true,
-          death_date: !spouse.isAlive ? formatDateForDatabase(spouse.deathDate) : null,
-          marital_status: spouse.maritalStatus || 'married',
-          image_url: imageUrl,
-          biography: spouse.biography || null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', spouse.existingFamilyMemberId)
-        .select()
-        .single();
-
+      const {
+        data: updatedSpouse,
+        error: spouseUpdateError
+      } = await supabase.from('family_tree_members').update({
+        name: spouseName,
+        first_name: spouse.firstName || null,
+        last_name: spouse.lastName || familyData?.name || null,
+        birth_date: formatDateForDatabase(spouse.birthDate),
+        is_alive: spouse.isAlive ?? true,
+        death_date: !spouse.isAlive ? formatDateForDatabase(spouse.deathDate) : null,
+        marital_status: spouse.maritalStatus || 'married',
+        image_url: imageUrl,
+        biography: spouse.biography || null,
+        updated_at: new Date().toISOString()
+      }).eq('id', spouse.existingFamilyMemberId).select().single();
       if (spouseUpdateError) {
         console.error(`Error updating ${spouseType} member:`, spouse.name, spouseUpdateError);
         throw spouseUpdateError;
       }
-      
       return updatedSpouse.id;
     } else {
       // Create new spouse member
       const firstName = spouse.firstName || '';
       const lastName = spouse.lastName || familyData?.name || '';
-      const spouseName = firstName && lastName ? `${firstName} ${lastName}` : (spouse.name || firstName || lastName || '');
-      
-      const { data: newSpouseMember, error: spouseError } = await supabase
-        .from('family_tree_members')
-        .insert({
-          name: spouseName,
-          first_name: firstName,
-          last_name: lastName,
-          gender: isWife ? 'female' : 'male',
-          birth_date: formatDateForDatabase(spouse.birthDate),
-          is_alive: spouse.isAlive ?? true,
-          death_date: !spouse.isAlive ? formatDateForDatabase(spouse.deathDate) : null,
-          family_id: familyId,
-          created_by: familyData?.creator_id,
-          is_founder: false,
-          marital_status: spouse.maritalStatus || 'married',
-          image_url: spouse.croppedImage || null,
-          biography: spouse.biography || null
-        })
-        .select()
-        .single();
-
+      const spouseName = firstName && lastName ? `${firstName} ${lastName}` : spouse.name || firstName || lastName || '';
+      const {
+        data: newSpouseMember,
+        error: spouseError
+      } = await supabase.from('family_tree_members').insert({
+        name: spouseName,
+        first_name: firstName,
+        last_name: lastName,
+        gender: isWife ? 'female' : 'male',
+        birth_date: formatDateForDatabase(spouse.birthDate),
+        is_alive: spouse.isAlive ?? true,
+        death_date: !spouse.isAlive ? formatDateForDatabase(spouse.deathDate) : null,
+        family_id: familyId,
+        created_by: familyData?.creator_id,
+        is_founder: false,
+        marital_status: spouse.maritalStatus || 'married',
+        image_url: spouse.croppedImage || null,
+        biography: spouse.biography || null
+      }).select().single();
       if (spouseError) {
         console.error(`Error creating ${spouseType} member:`, spouse.name, spouseError);
         throw spouseError;
       }
-      
       return newSpouseMember.id;
     }
   };
-
   const updateSpouseMemberStatus = async (spouse, spouseType) => {
     // Get current data to handle image state properly
-    const { data: currentSpouse } = await supabase
-      .from('family_tree_members')
-      .select('image_url')
-      .eq('id', spouse.existingFamilyMemberId)
-      .maybeSingle();
-    
+    const {
+      data: currentSpouse
+    } = await supabase.from('family_tree_members').select('image_url').eq('id', spouse.existingFamilyMemberId).maybeSingle();
+
     // Handle image state properly - preserve existing image if no new image provided
     let imageUrl;
     // Check if there's a new image or if we should preserve the existing one
@@ -2657,16 +2382,13 @@ const FamilyBuilderNew = () => {
       // No new image, preserve existing
       imageUrl = currentSpouse?.image_url || null;
     }
-    
-    const { error: updateSpouseError } = await supabase
-      .from('family_tree_members')
-      .update({ 
-        marital_status: spouse.maritalStatus,
-        image_url: imageUrl,
-        biography: spouse.biography || null
-      })
-      .eq('id', spouse.existingFamilyMemberId);
-    
+    const {
+      error: updateSpouseError
+    } = await supabase.from('family_tree_members').update({
+      marital_status: spouse.maritalStatus,
+      image_url: imageUrl,
+      biography: spouse.biography || null
+    }).eq('id', spouse.existingFamilyMemberId);
     if (updateSpouseError) {
       console.error(`Error updating ${spouseType} marital status:`, updateSpouseError);
     } else {
@@ -2675,72 +2397,69 @@ const FamilyBuilderNew = () => {
 
     // Update marriage table marital status
     const spouseColumn = spouseType === 'wife' ? 'wife_id' : 'husband_id';
-    const { data: marriage } = await supabase
-      .from('marriages')
-      .update({ marital_status: spouse.maritalStatus })
-      .eq(spouseColumn, spouse.existingFamilyMemberId)
-      .select('husband_id, wife_id')
-      .single();
+    const {
+      data: marriage
+    } = await supabase.from('marriages').update({
+      marital_status: spouse.maritalStatus
+    }).eq(spouseColumn, spouse.existingFamilyMemberId).select('husband_id, wife_id').single();
 
     // Update the other spouse's marital status in family_tree_members
     if (marriage) {
       const otherSpouseId = spouseType === 'wife' ? marriage.husband_id : marriage.wife_id;
       if (otherSpouseId && otherSpouseId !== spouse.existingFamilyMemberId) {
-        await supabase
-          .from('family_tree_members')
-          .update({ marital_status: spouse.maritalStatus })
-          .eq('id', otherSpouseId);
-        
+        await supabase.from('family_tree_members').update({
+          marital_status: spouse.maritalStatus
+        }).eq('id', otherSpouseId);
         console.log(`Also updated other spouse's marital status to:`, spouse.maritalStatus);
       }
     }
   };
-
-  const createOrUpdateMarriage = async ({ memberData, spouseId, spouseType, spouse, familyId, activeMarriageIds, marriageResults, isMainMember }) => {
+  const createOrUpdateMarriage = async ({
+    memberData,
+    spouseId,
+    spouseType,
+    spouse,
+    familyId,
+    activeMarriageIds,
+    marriageResults,
+    isMainMember
+  }) => {
     const isWife = spouseType === 'wife';
     const husbandId = isWife ? memberData.id : spouseId;
     const wifeId = isWife ? spouseId : memberData.id;
 
     // Check if marriage already exists
-    const { data: existingMarriage } = await supabase
-      .from('marriages')
-      .select('id')
-      .eq('husband_id', husbandId)
-      .eq('wife_id', wifeId)
-      .maybeSingle();
-
+    const {
+      data: existingMarriage
+    } = await supabase.from('marriages').select('id').eq('husband_id', husbandId).eq('wife_id', wifeId).maybeSingle();
     let marriageError;
     if (existingMarriage) {
       // Update existing marriage to ensure it's active
-      const { error } = await supabase
-        .from('marriages')
-        .update({
-          is_active: true,
-          marital_status: spouse.maritalStatus || 'married'
-        })
-        .eq('id', existingMarriage.id);
+      const {
+        error
+      } = await supabase.from('marriages').update({
+        is_active: true,
+        marital_status: spouse.maritalStatus || 'married'
+      }).eq('id', existingMarriage.id);
       marriageError = error;
       activeMarriageIds.push(existingMarriage.id);
     } else {
       // Create new marriage record
-      const { data: newMarriage, error } = await supabase
-        .from('marriages')
-        .insert({
-          family_id: familyId,
-          husband_id: husbandId,
-          wife_id: wifeId,
-          is_active: true,
-          marital_status: spouse.maritalStatus || 'married'
-        })
-        .select('id')
-        .single();
-      
+      const {
+        data: newMarriage,
+        error
+      } = await supabase.from('marriages').insert({
+        family_id: familyId,
+        husband_id: husbandId,
+        wife_id: wifeId,
+        is_active: true,
+        marital_status: spouse.maritalStatus || 'married'
+      }).select('id').single();
       marriageError = error;
       if (newMarriage) {
         activeMarriageIds.push(newMarriage.id);
       }
     }
-
     if (marriageError) {
       console.error('Error creating/updating marriage:', marriageError);
       marriageResults.failed++;
@@ -2750,7 +2469,6 @@ const FamilyBuilderNew = () => {
       console.log(`Successfully processed marriage with ${spouse.name}`);
     }
   };
-
   const handleFormSubmit = useCallback(async (submissionData: any) => {
     console.log('🚨 HANDLE FORM SUBMIT CALLED!');
     console.log('🚨 Submission data:', submissionData);
@@ -2758,14 +2476,12 @@ const FamilyBuilderNew = () => {
     console.log('🚨 Editing member:', editingMember ? editingMember.id : 'none');
     console.log('🚨 Current wives:', wives);
     console.log('🚨 Original wives data:', originalWivesData);
-    
     try {
       setIsSaving(true);
-      
+
       // Determine marital status based on presence of spouses
-      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || 
-                        submissionData.gender === "female" && husband;
-      
+      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || submissionData.gender === "female" && husband;
+
       // Prepare final submission data matching modal structure
       const finalData = {
         ...submissionData,
@@ -2773,7 +2489,7 @@ const FamilyBuilderNew = () => {
         wives: submissionData.gender === "male" ? wives : [],
         husband: submissionData.gender === "female" && husband ? husband : null
       };
-      
+
       // Handle image state properly for edits:
       // - If imageChanged is true, use croppedImage (user modified the image)
       // - If imageChanged is false, keep existing image (user didn't touch the image)
@@ -2793,39 +2509,33 @@ const FamilyBuilderNew = () => {
       } else {
         finalImageUrl = submissionData.croppedImage || null;
       }
-      
+
       // Call the existing submission logic (same as modal)
-      
-      
+
       // Determine family relationship info based on selectedParent
       let fatherId = null;
       let motherId = null;
       let relatedPersonId = null;
-      
       if (submissionData.selectedParent && submissionData.selectedParent !== "none") {
         const selectedMarriage = familyMarriages.find(m => m.id === submissionData.selectedParent);
-        
         if (selectedMarriage) {
           fatherId = selectedMarriage.husband?.id || null;
           motherId = selectedMarriage.wife?.id || null;
           relatedPersonId = selectedMarriage.id;
-          
         }
       }
-
       let isEditMode = formMode === 'edit' && editingMember;
       console.log('🚨 IS EDIT MODE CHECK:', {
         formMode,
-        editingMember: editingMember ? editingMember.id : 'none', 
+        editingMember: editingMember ? editingMember.id : 'none',
         isEditMode
       });
       let memberData;
-
       if (isEditMode) {
         // Update existing member
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        
+
         // Determine lastName based on father's family name if father is external
         let lastName = familyData?.name || '';
         if (fatherId) {
@@ -2835,44 +2545,38 @@ const FamilyBuilderNew = () => {
             lastName = father.last_name;
           }
         }
-        
+
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
-        
-        const { data: updatedMember, error: updateError } = await supabase
-          .from('family_tree_members')
-          .update({
-            name: fullName,
-            first_name: firstName,
-            last_name: lastName,
-            gender: submissionData.gender,
-            birth_date: formatDateForDatabase(submissionData.birthDate),
-            is_alive: submissionData.isAlive,
-            death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
-            biography: submissionData.bio || null,
-            image_url: finalImageUrl,
-            father_id: fatherId,
-            mother_id: motherId,
-            related_person_id: relatedPersonId,
-            marital_status: finalData.maritalStatus || 'single',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', editingMember.id)
-          .select()
-          .single();
-
+        const {
+          data: updatedMember,
+          error: updateError
+        } = await supabase.from('family_tree_members').update({
+          name: fullName,
+          first_name: firstName,
+          last_name: lastName,
+          gender: submissionData.gender,
+          birth_date: formatDateForDatabase(submissionData.birthDate),
+          is_alive: submissionData.isAlive,
+          death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
+          biography: submissionData.bio || null,
+          image_url: finalImageUrl,
+          father_id: fatherId,
+          mother_id: motherId,
+          related_person_id: relatedPersonId,
+          marital_status: finalData.maritalStatus || 'single',
+          updated_at: new Date().toISOString()
+        }).eq('id', editingMember.id).select().single();
         if (updateError) {
           console.error('Error updating family member:', updateError);
           throw updateError;
         }
-
         memberData = updatedMember;
-        
       } else {
         // Insert new family member into database
         // Use first_name from formData directly
         const firstName = submissionData.first_name || submissionData.name || '';
-        
+
         // Determine lastName based on father's family name if father is external
         let lastName = familyData?.name || '';
         if (fatherId) {
@@ -2882,40 +2586,35 @@ const FamilyBuilderNew = () => {
             lastName = father.last_name;
           }
         }
-        
+
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
-        
-        const { data: newMember, error: memberError } = await supabase
-          .from('family_tree_members')
-          .insert({
-            name: fullName,
-            first_name: firstName,
-            last_name: lastName,
-            gender: submissionData.gender,
-            birth_date: formatDateForDatabase(submissionData.birthDate),
-            is_alive: submissionData.isAlive,
-            death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
-            biography: submissionData.bio || null,
-            image_url: submissionData.croppedImage || null,
-            father_id: fatherId,
-            mother_id: motherId,
-            related_person_id: relatedPersonId,
-            family_id: familyId,
-            created_by: familyData?.creator_id,
-            is_founder: submissionData.isFounder || false,
-            marital_status: finalData.maritalStatus || 'single'
-          })
-          .select()
-          .single();
-
+        const {
+          data: newMember,
+          error: memberError
+        } = await supabase.from('family_tree_members').insert({
+          name: fullName,
+          first_name: firstName,
+          last_name: lastName,
+          gender: submissionData.gender,
+          birth_date: formatDateForDatabase(submissionData.birthDate),
+          is_alive: submissionData.isAlive,
+          death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
+          biography: submissionData.bio || null,
+          image_url: submissionData.croppedImage || null,
+          father_id: fatherId,
+          mother_id: motherId,
+          related_person_id: relatedPersonId,
+          family_id: familyId,
+          created_by: familyData?.creator_id,
+          is_founder: submissionData.isFounder || false,
+          marital_status: finalData.maritalStatus || 'single'
+        }).select().single();
         if (memberError) {
           console.error('Error adding family member:', memberError);
           throw memberError;
         }
-
         memberData = newMember;
-        
       }
 
       // Track successful marriages for toast message
@@ -2925,628 +2624,552 @@ const FamilyBuilderNew = () => {
         details: []
       };
 
-       // Handle spouse deletions first (in edit mode) - regardless of final marital status
-       if (isEditMode) {
-         console.log('🚨 ENTERING EDIT MODE DELETION CHECKS');
-         console.log('🚨 Submission data gender:', submissionData.gender);
-         console.log('🚨 Original wives data length:', originalWivesData.length);
-         
-         // Handle deleted husband for female members
-         if (submissionData.gender === 'female' && originalHusbandData) {
-           const hasCurrentHusband = husband && husband.isSaved;
-           
-           console.log('🔍 HUSBAND DELETION DEBUG:');
-           console.log('Original husband:', originalHusbandData ? {
-             id: originalHusbandData.id,
-             existingFamilyMemberId: originalHusbandData.existingFamilyMemberId,
-             name: originalHusbandData.name,
-             isSaved: originalHusbandData.isSaved
-           } : null);
-           console.log('Current husband:', husband ? {
-             id: husband.id,
-             existingFamilyMemberId: husband.existingFamilyMemberId,
-             name: husband.name,
-             isSaved: husband.isSaved
-           } : null);
-           console.log('Has current husband:', hasCurrentHusband);
-           
-           if (!hasCurrentHusband) {
-             // Husband was deleted
-             if (process.env.NODE_ENV === 'development') {
-               console.log('DELETED HUSBAND detected:', originalHusbandData.name);
-             }
-             
-             try {
-               const husbandId = originalHusbandData.id || originalHusbandData.existingFamilyMemberId;
-               if (husbandId) {
-                 // Find and delete marriage record
-                 const { error: marriageDeleteError } = await supabase
-                   .from('marriages')
-                   .delete()
-                   .eq('wife_id', memberData.id)
-                   .eq('husband_id', husbandId);
-                   
-                 if (marriageDeleteError) {
-                   console.error('Error deleting marriage:', marriageDeleteError);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`فشل في حذف زواج ${originalHusbandData.name}`);
-                 } else {
-                   // If husband is not a family member (external spouse), delete his record
-                   if (!originalHusbandData.isFamilyMember) {
-                     const { error: husbandDeleteError } = await supabase
-                       .from('family_tree_members')
-                       .delete()
-                       .eq('id', husbandId);
-                       
-                     if (husbandDeleteError) {
-                       console.error('Error deleting husband member:', husbandDeleteError);
-                       marriageResults.failed++;
-                       marriageResults.details.push(`فشل في حذف ${originalHusbandData.name}`);
-                     }
-                   } else {
-                     // If he's a family member, just update his marital status
-                     const { error: updateError } = await supabase
-                       .from('family_tree_members')
-                       .update({ marital_status: 'single' })
-                       .eq('id', husbandId);
-                       
-                     if (updateError) {
-                       console.error('Error updating husband marital status:', updateError);
-                     }
-                   }
-                   
-                   // Find and update children to remove father relationship
-                   const { error: childrenUpdateError } = await supabase
-                     .from('family_tree_members')
-                     .update({ father_id: null })
-                     .eq('father_id', husbandId);
-                     
-                   if (childrenUpdateError) {
-                     console.error('Error updating children father_id:', childrenUpdateError);
-                   }
-                   
-                   marriageResults.successful++;
-                 }
-               }
-             } catch (error) {
-               console.error(`Error deleting husband ${originalHusbandData.name}:`, error);
-               marriageResults.failed++;
-               marriageResults.details.push(`خطأ في حذف ${originalHusbandData.name}`);
-             }
-           }
-         }
-         
-         // Handle deleted wives for male members
-         if (submissionData.gender === 'male' && originalWivesData.length > 0) {
-           const currentWiveIds = wives.map(w => w.id || w.existingFamilyMemberId).filter(Boolean);
-           const deletedWives = originalWivesData.filter(originalWife => 
-             !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId)
-           );
-           
-           console.log('🔍 DETAILED ID COMPARISON:');
-           console.log('Original wives data:', originalWivesData.map(w => ({
-             id: w.id,
-             existingFamilyMemberId: w.existingFamilyMemberId,
-             name: w.name,
-             finalId: w.id || w.existingFamilyMemberId
-           })));
-           console.log('Current wives data:', wives.map(w => ({
-             id: w.id, 
-             existingFamilyMemberId: w.existingFamilyMemberId,
-             name: w.name,
-             finalId: w.id || w.existingFamilyMemberId
-           })));
-           console.log('Current wives IDs extracted:', currentWiveIds);
-           console.log('Original wives final IDs:', originalWivesData.map(w => w.id || w.existingFamilyMemberId));
-           
-           // More detailed deletion check
-           originalWivesData.forEach((originalWife, index) => {
-             const originalId = originalWife.id || originalWife.existingFamilyMemberId;
-             const isFound = currentWiveIds.includes(originalId);
-             console.log(`Original wife ${index}: ${originalWife.name} (ID: ${originalId}) - Found in current: ${isFound}`);
-           });
-           
-           if (process.env.NODE_ENV === 'development') {
-             console.log('DELETED WIVES detected:', deletedWives.length);
-           }
-            
-             for (const deletedWife of deletedWives) {
-               try {
-                 const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
-                 console.log('🗑️ Processing deletion for wife:', {
-                   name: deletedWife.name,
-                   id: deletedWife.id,
-                   existingFamilyMemberId: deletedWife.existingFamilyMemberId,
-                   finalId: wifeId,
-                   isFamilyMember: deletedWife.isFamilyMember
-                 });
-                 
-                 if (!wifeId) {
-                   console.warn('⚠️ Skipping wife deletion - no valid ID:', deletedWife.name);
-                   continue;
-                 }
-                
-                 // Find and delete marriage record
-                 console.log('🔗 Deleting marriage record for husband:', memberData.id, 'wife:', wifeId);
-                 const { error: marriageDeleteError } = await supabase
-                   .from('marriages')
-                   .delete()
-                   .eq('husband_id', memberData.id)
-                   .eq('wife_id', wifeId);
-                   
-                 if (marriageDeleteError) {
-                   console.error('❌ Error deleting marriage:', marriageDeleteError);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
-                   continue;
-                 } else {
-                   console.log('✅ Marriage deleted successfully for:', deletedWife.name);
-                 }
-                
-                 // If wife is not a family member (external spouse), delete her record
-                 if (!deletedWife.isFamilyMember) {
-                   console.log('🗑️ Deleting external wife member:', deletedWife.name);
-                   const { error: wifeDeleteError } = await supabase
-                     .from('family_tree_members')
-                     .delete()
-                     .eq('id', wifeId);
-                     
-                   if (wifeDeleteError) {
-                     console.error('❌ Error deleting wife member:', wifeDeleteError);
-                     marriageResults.failed++;
-                     marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
-                     continue;
-                   } else {
-                     console.log('✅ External wife member deleted:', deletedWife.name);
-                   }
-                 } else {
-                   console.log('👤 Updating family member wife to single:', deletedWife.name);
-                   // If she's a family member, just update her marital status
-                   const { error: updateError } = await supabase
-                     .from('family_tree_members')
-                     .update({ marital_status: 'single' })
-                     .eq('id', wifeId);
-                     
-                   if (updateError) {
-                     console.error('❌ Error updating wife marital status:', updateError);
-                   } else {
-                     console.log('✅ Family member wife status updated to single:', deletedWife.name);
-                   }
-                 }
-                
-                 // Find and update children to remove mother relationship
-                 console.log('👶 Updating children to remove mother_id for:', deletedWife.name);
-                 const { error: childrenUpdateError } = await supabase
-                   .from('family_tree_members')
-                   .update({ mother_id: null })
-                   .eq('mother_id', wifeId);
-                   
-                 if (childrenUpdateError) {
-                   console.error('❌ Error updating children mother_id:', childrenUpdateError);
-                 } else {
-                   console.log('✅ Children mother_id updated for deleted wife:', deletedWife.name);
-                 }
-                 
-                 console.log('✅ Wife deletion completed successfully:', deletedWife.name);
-                 marriageResults.successful++;
-                 
-               } catch (error) {
-                 console.error(`❌ Error deleting wife ${deletedWife.name}:`, error);
-                 marriageResults.failed++;
-                 marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
-               }
-             }
-         }
-       }
+      // Handle spouse deletions first (in edit mode) - regardless of final marital status
+      if (isEditMode) {
+        console.log('🚨 ENTERING EDIT MODE DELETION CHECKS');
+        console.log('🚨 Submission data gender:', submissionData.gender);
+        console.log('🚨 Original wives data length:', originalWivesData.length);
 
-        // Handle spouse deletions and current marriages  
-        // CRITICAL: Run deletion detection in edit mode regardless of final marital status
-        if (isEditMode || finalData.maritalStatus === 'married') {
-          // Keep track of marriages that should remain active
-          let activeMarriageIds = [];
-          
-          // Deletion detection runs FIRST (in edit mode) regardless of current marital status
-          if (isEditMode) {
-            // Handle deleted husband for female members
-            if (submissionData.gender === 'female' && originalHusbandData) {
-             const hasCurrentHusband = husband && husband.isSaved;
-             
-             console.log('🔍 HUSBAND DELETION DEBUG:');
-             console.log('Original husband:', originalHusbandData ? {
-               id: originalHusbandData.id,
-               existingFamilyMemberId: originalHusbandData.existingFamilyMemberId,
-               name: originalHusbandData.name,
-               isSaved: originalHusbandData.isSaved
-             } : null);
-             console.log('Current husband:', husband ? {
-               id: husband.id,
-               existingFamilyMemberId: husband.existingFamilyMemberId,
-               name: husband.name,
-               isSaved: husband.isSaved
-             } : null);
-             console.log('Has current husband:', hasCurrentHusband);
-             
-             if (!hasCurrentHusband) {
-               // Husband was deleted
-               if (process.env.NODE_ENV === 'development') {
-                 console.log('DELETED HUSBAND detected:', originalHusbandData.name);
-               }
-               
-               try {
-                 const husbandId = originalHusbandData.id || originalHusbandData.existingFamilyMemberId;
-                 if (husbandId) {
-                   // Find and delete marriage record
-                   const { error: marriageDeleteError } = await supabase
-                     .from('marriages')
-                     .delete()
-                     .eq('wife_id', memberData.id)
-                     .eq('husband_id', husbandId);
-                     
-                   if (marriageDeleteError) {
-                     console.error('Error deleting marriage:', marriageDeleteError);
-                     marriageResults.failed++;
-                     marriageResults.details.push(`فشل في حذف زواج ${originalHusbandData.name}`);
-                   } else {
-                     // If husband is not a family member (external spouse), delete his record
-                     if (!originalHusbandData.isFamilyMember) {
-                       const { error: husbandDeleteError } = await supabase
-                         .from('family_tree_members')
-                         .delete()
-                         .eq('id', husbandId);
-                         
-                       if (husbandDeleteError) {
-                         console.error('Error deleting husband member:', husbandDeleteError);
-                         marriageResults.failed++;
-                         marriageResults.details.push(`فشل في حذف ${originalHusbandData.name}`);
-                       }
-                     } else {
-                       // If he's a family member, just update his marital status
-                       const { error: updateError } = await supabase
-                         .from('family_tree_members')
-                         .update({ marital_status: 'single' })
-                         .eq('id', husbandId);
-                         
-                       if (updateError) {
-                         console.error('Error updating husband marital status:', updateError);
-                       }
-                     }
-                     
-                     // Find and update children to remove father relationship
-                     const { error: childrenUpdateError } = await supabase
-                       .from('family_tree_members')
-                       .update({ father_id: null })
-                       .eq('father_id', husbandId);
-                       
-                     if (childrenUpdateError) {
-                       console.error('Error updating children father_id:', childrenUpdateError);
-                     }
-                     
-                     marriageResults.successful++;
-                   }
-                 }
-               } catch (error) {
-                 console.error(`Error deleting husband ${originalHusbandData.name}:`, error);
-                 marriageResults.failed++;
-                 marriageResults.details.push(`خطأ في حذف ${originalHusbandData.name}`);
-               }
-             }
-           }
-           
-           // Handle deleted wives for male members
-           if (submissionData.gender === 'male' && originalWivesData.length > 0) {
-             const currentWiveIds = wives.map(w => w.id || w.existingFamilyMemberId).filter(Boolean);
-             const deletedWives = originalWivesData.filter(originalWife => 
-               !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId)
-             );
-             
-             console.log('🔍 DETAILED ID COMPARISON:');
-             console.log('Original wives data:', originalWivesData.map(w => ({
-               id: w.id,
-               existingFamilyMemberId: w.existingFamilyMemberId,
-               name: w.name,
-               finalId: w.id || w.existingFamilyMemberId
-             })));
-             console.log('Current wives data:', wives.map(w => ({
-               id: w.id, 
-               existingFamilyMemberId: w.existingFamilyMemberId,
-               name: w.name,
-               finalId: w.id || w.existingFamilyMemberId
-             })));
-             console.log('Current wives IDs extracted:', currentWiveIds);
-             console.log('Original wives final IDs:', originalWivesData.map(w => w.id || w.existingFamilyMemberId));
-             
-             // More detailed deletion check
-             originalWivesData.forEach((originalWife, index) => {
-               const originalId = originalWife.id || originalWife.existingFamilyMemberId;
-               const isFound = currentWiveIds.includes(originalId);
-               console.log(`Original wife ${index}: ${originalWife.name} (ID: ${originalId}) - Found in current: ${isFound}`);
-             });
-             
-             if (process.env.NODE_ENV === 'development') {
-               console.log('DELETED WIVES detected:', deletedWives.length);
-             }
-              
-               for (const deletedWife of deletedWives) {
-                 try {
-                   const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
-                   console.log('🗑️ Processing deletion for wife:', {
-                     name: deletedWife.name,
-                     id: deletedWife.id,
-                     existingFamilyMemberId: deletedWife.existingFamilyMemberId,
-                     finalId: wifeId,
-                     isFamilyMember: deletedWife.isFamilyMember
-                   });
-                   
-                   if (!wifeId) {
-                     console.warn('⚠️ Skipping wife deletion - no valid ID:', deletedWife.name);
-                     continue;
-                   }
-                  
-                   // Find and delete marriage record
-                   console.log('🔗 Deleting marriage record for husband:', memberData.id, 'wife:', wifeId);
-                   const { error: marriageDeleteError } = await supabase
-                     .from('marriages')
-                     .delete()
-                     .eq('husband_id', memberData.id)
-                     .eq('wife_id', wifeId);
-                     
-                   if (marriageDeleteError) {
-                     console.error('❌ Error deleting marriage:', marriageDeleteError);
-                     marriageResults.failed++;
-                     marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
-                     continue;
-                   } else {
-                     console.log('✅ Marriage deleted successfully for:', deletedWife.name);
-                   }
-                  
-                   // If wife is not a family member (external spouse), delete her record
-                   if (!deletedWife.isFamilyMember) {
-                     console.log('🗑️ Deleting external wife member:', deletedWife.name);
-                     const { error: wifeDeleteError } = await supabase
-                       .from('family_tree_members')
-                       .delete()
-                       .eq('id', wifeId);
-                       
-                     if (wifeDeleteError) {
-                       console.error('❌ Error deleting wife member:', wifeDeleteError);
-                       marriageResults.failed++;
-                       marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
-                       continue;
-                     } else {
-                       console.log('✅ External wife member deleted:', deletedWife.name);
-                     }
-                   } else {
-                     console.log('👤 Updating family member wife to single:', deletedWife.name);
-                     // If she's a family member, just update her marital status
-                     const { error: updateError } = await supabase
-                       .from('family_tree_members')
-                       .update({ marital_status: 'single' })
-                       .eq('id', wifeId);
-                       
-                     if (updateError) {
-                       console.error('❌ Error updating wife marital status:', updateError);
-                     } else {
-                       console.log('✅ Family member wife status updated to single:', deletedWife.name);
-                     }
-                   }
-                  
-                   // Find and update children to remove mother relationship
-                   console.log('👶 Updating children to remove mother_id for:', deletedWife.name);
-                   const { error: childrenUpdateError } = await supabase
-                     .from('family_tree_members')
-                     .update({ mother_id: null })
-                     .eq('mother_id', wifeId);
-                     
-                   if (childrenUpdateError) {
-                     console.error('❌ Error updating children mother_id:', childrenUpdateError);
-                   } else {
-                     console.log('✅ Children mother_id updated for deleted wife:', deletedWife.name);
-                   }
-                   
-                   console.log('✅ Wife deletion completed successfully:', deletedWife.name);
-                   marriageResults.successful++;
-                   
-                 } catch (error) {
-                   console.error(`❌ Error deleting wife ${deletedWife.name}:`, error);
-                   marriageResults.failed++;
-                   marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
-                 }
-               }
-           }
-         }
-
-          // Handle wives for male members - process all saved wives
-          if (submissionData.gender === 'male' && wives.length > 0) {
-             if (process.env.NODE_ENV === 'development') {
-               console.log('PROCESSING WIVES - count:', wives.length);
-             }
-             
-             const savedWives = wives.filter(wife => {
-               // Get the wife's index to check family status
-               const wifeIndex = wives.findIndex(w => w === wife);
-               const familyStatus = wiveFamilyStatus[wifeIndex];
-               
-               // Only save if:
-               // 1. Wife is marked as saved
-               // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
-               return wife.isSaved === true && 
-                      (familyStatus !== 'yes' || wife.existingFamilyMemberId);
-             });
-             
-             if (process.env.NODE_ENV === 'development') {
-               console.log('SAVED WIVES after filter:', savedWives.length);
-             }
-            for (const wife of savedWives) {
-               try {
-                 let wifeId = wife.existingFamilyMemberId || wife.id;
-                 
-                 // If wife has an existing ID (either existingFamilyMemberId or regular id), update the existing record
-                 if (wifeId && (wife.existingFamilyMemberId || wife.id)) {
-                  // Get current image to handle image state properly
-                  const { data: currentWife } = await supabase
-                    .from('family_tree_members')
-                    .select('image_url')
-                    .eq('id', wifeId)
-                    .maybeSingle();
-                   
-                   // Handle image state properly:
-                   // - If image exists in wife.croppedImage, use it (user uploaded new image)
-                   // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
-                   // - If wife.croppedImage is undefined, keep existing image
-                   let imageUrl;
-                   if (wife.croppedImage !== undefined) {
-                     imageUrl = wife.croppedImage || null;
-                   } else {
-                     imageUrl = currentWife?.image_url || null;
-                   }
-                   
-                   const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
-                  
-                  const { data: updatedWife, error: wifeUpdateError } = await supabase
-                    .from('family_tree_members')
-                    .update({
-                      name: wifeName,
-                      first_name: wife.firstName || null,
-                      last_name: wife.lastName || familyData?.name || null,
-                      birth_date: formatDateForDatabase(wife.birthDate),
-                      is_alive: wife.isAlive ?? true,
-                      death_date: !wife.isAlive ? formatDateForDatabase(wife.deathDate) : null,
-                      marital_status: wife.maritalStatus || 'married',
-                      image_url: imageUrl,
-                      biography: wife.biography || null,
-                      updated_at: new Date().toISOString()
-                    })
-                    .eq('id', wifeId)
-                      .select()
-                      .single();
-
-                  if (wifeUpdateError) {
-                    console.error('Error updating wife member:', wife.name, wifeUpdateError);
-                    marriageResults.failed++;
-                    marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
-                    continue;
-                  }
-                  
-                   wifeId = updatedWife.id;
-                 
-                 } else {
-                   // If wife is not from existing family members, create new family member
-                  const firstName = wife.firstName || '';
-                  const lastName = wife.lastName || familyData?.name || '';
-                  const wifeName = firstName && lastName ? `${firstName} ${lastName}` : (wife.name || firstName || lastName || '');
-                   
-                   const { data: newWifeMember, error: wifeError } = await supabase
-                     .from('family_tree_members')
-                      .insert({
-                        name: wifeName,
-                        first_name: firstName,
-                        last_name: lastName,
-                       gender: 'female',
-                       birth_date: formatDateForDatabase(wife.birthDate),
-                       is_alive: wife.isAlive ?? true,
-                       death_date: !wife.isAlive ? formatDateForDatabase(wife.deathDate) : null,
-                       family_id: familyId,
-                       created_by: familyData?.creator_id,
-                        is_founder: false,
-                        marital_status: wife.maritalStatus || 'married',
-                        image_url: wife.croppedImage || null,
-                        biography: wife.biography || null
-                     })
-                    .select()
-                    .single();
-
-                  if (wifeError) {
-                    console.error('Error creating wife member:', wife.name, wifeError);
-                    marriageResults.failed++;
-                    marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
-                    continue;
-                  }
-                 
-                 wifeId = newWifeMember.id;
-                 
-               }
-
-                   // If wife is an existing family member, update their marital status and handle image properly
-                   if (wife.isFamilyMember && wife.existingFamilyMemberId) {
-                    // Get current data to handle image state properly
-                    const { data: currentWife } = await supabase
-                      .from('family_tree_members')
-                      .select('image_url')
-                      .eq('id', wife.existingFamilyMemberId)
-                      .maybeSingle();
-                    
-                    // Handle image state properly:
-                    // - If image exists in wife.croppedImage, use it (user uploaded new image)
-                    // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
-                    // - If wife.croppedImage is undefined, keep existing image
-                    let imageUrl;
-                    if (wife.croppedImage !== undefined) {
-                      imageUrl = wife.croppedImage || null;
-                    } else {
-                      imageUrl = currentWife?.image_url || null;
-                    }
-                    
-                     const { error: updateWifeError } = await supabase
-                       .from('family_tree_members')
-                       .update({ 
-                         marital_status: wife.maritalStatus,
-                         image_url: imageUrl,
-                         biography: wife.biography || null
-                       })
-                       .eq('id', wife.existingFamilyMemberId);
-                    
-                     if (updateWifeError) {
-                       console.error('Error updating wife marital status:', updateWifeError);
-                     } else {
-                       console.log('Successfully updated wife marital status to:', wife.maritalStatus);
-                     }
-
-                     // Also update marriage table marital status
-                     await supabase
-                       .from('marriages')
-                       .update({ marital_status: wife.maritalStatus })
-                       .eq('wife_id', wife.existingFamilyMemberId);
-                   }
-
-                // Check if marriage already exists and update it, otherwise create new one
-                const { data: existingMarriage } = await supabase
-                  .from('marriages')
-                  .select('id')
-                  .eq('husband_id', memberData.id)
-                  .eq('wife_id', wifeId)
-                  .maybeSingle();
-
-                let marriageError;
-                if (existingMarriage) {
-                  // Update existing marriage to ensure it's active
-                  const { error } = await supabase
-                    .from('marriages')
-                    .update({
-                      is_active: true
-                    })
-                    .eq('id', existingMarriage.id);
-                  marriageError = error;
-                 activeMarriageIds.push(existingMarriage.id);
-                 
+        // Handle deleted husband for female members
+        if (submissionData.gender === 'female' && originalHusbandData) {
+          const hasCurrentHusband = husband && husband.isSaved;
+          console.log('🔍 HUSBAND DELETION DEBUG:');
+          console.log('Original husband:', originalHusbandData ? {
+            id: originalHusbandData.id,
+            existingFamilyMemberId: originalHusbandData.existingFamilyMemberId,
+            name: originalHusbandData.name,
+            isSaved: originalHusbandData.isSaved
+          } : null);
+          console.log('Current husband:', husband ? {
+            id: husband.id,
+            existingFamilyMemberId: husband.existingFamilyMemberId,
+            name: husband.name,
+            isSaved: husband.isSaved
+          } : null);
+          console.log('Has current husband:', hasCurrentHusband);
+          if (!hasCurrentHusband) {
+            // Husband was deleted
+            if (process.env.NODE_ENV === 'development') {
+              console.log('DELETED HUSBAND detected:', originalHusbandData.name);
+            }
+            try {
+              const husbandId = originalHusbandData.id || originalHusbandData.existingFamilyMemberId;
+              if (husbandId) {
+                // Find and delete marriage record
+                const {
+                  error: marriageDeleteError
+                } = await supabase.from('marriages').delete().eq('wife_id', memberData.id).eq('husband_id', husbandId);
+                if (marriageDeleteError) {
+                  console.error('Error deleting marriage:', marriageDeleteError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في حذف زواج ${originalHusbandData.name}`);
                 } else {
-                  // Create new marriage record
-                  const { data: newMarriage, error } = await supabase
-                    .from('marriages')
-                    .insert({
-                      family_id: familyId,
-                      husband_id: memberData.id,
-                      wife_id: wifeId,
-                      is_active: true
-                    })
-                    .select('id')
-                    .single();
-                 marriageError = error;
-                 if (newMarriage) {
-                   activeMarriageIds.push(newMarriage.id);
-                   
-                 }
-               }
+                  // If husband is not a family member (external spouse), delete his record
+                  if (!originalHusbandData.isFamilyMember) {
+                    const {
+                      error: husbandDeleteError
+                    } = await supabase.from('family_tree_members').delete().eq('id', husbandId);
+                    if (husbandDeleteError) {
+                      console.error('Error deleting husband member:', husbandDeleteError);
+                      marriageResults.failed++;
+                      marriageResults.details.push(`فشل في حذف ${originalHusbandData.name}`);
+                    }
+                  } else {
+                    // If he's a family member, just update his marital status
+                    const {
+                      error: updateError
+                    } = await supabase.from('family_tree_members').update({
+                      marital_status: 'single'
+                    }).eq('id', husbandId);
+                    if (updateError) {
+                      console.error('Error updating husband marital status:', updateError);
+                    }
+                  }
 
+                  // Find and update children to remove father relationship
+                  const {
+                    error: childrenUpdateError
+                  } = await supabase.from('family_tree_members').update({
+                    father_id: null
+                  }).eq('father_id', husbandId);
+                  if (childrenUpdateError) {
+                    console.error('Error updating children father_id:', childrenUpdateError);
+                  }
+                  marriageResults.successful++;
+                }
+              }
+            } catch (error) {
+              console.error(`Error deleting husband ${originalHusbandData.name}:`, error);
+              marriageResults.failed++;
+              marriageResults.details.push(`خطأ في حذف ${originalHusbandData.name}`);
+            }
+          }
+        }
+
+        // Handle deleted wives for male members
+        if (submissionData.gender === 'male' && originalWivesData.length > 0) {
+          const currentWiveIds = wives.map(w => w.id || w.existingFamilyMemberId).filter(Boolean);
+          const deletedWives = originalWivesData.filter(originalWife => !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId));
+          console.log('🔍 DETAILED ID COMPARISON:');
+          console.log('Original wives data:', originalWivesData.map(w => ({
+            id: w.id,
+            existingFamilyMemberId: w.existingFamilyMemberId,
+            name: w.name,
+            finalId: w.id || w.existingFamilyMemberId
+          })));
+          console.log('Current wives data:', wives.map(w => ({
+            id: w.id,
+            existingFamilyMemberId: w.existingFamilyMemberId,
+            name: w.name,
+            finalId: w.id || w.existingFamilyMemberId
+          })));
+          console.log('Current wives IDs extracted:', currentWiveIds);
+          console.log('Original wives final IDs:', originalWivesData.map(w => w.id || w.existingFamilyMemberId));
+
+          // More detailed deletion check
+          originalWivesData.forEach((originalWife, index) => {
+            const originalId = originalWife.id || originalWife.existingFamilyMemberId;
+            const isFound = currentWiveIds.includes(originalId);
+            console.log(`Original wife ${index}: ${originalWife.name} (ID: ${originalId}) - Found in current: ${isFound}`);
+          });
+          if (process.env.NODE_ENV === 'development') {
+            console.log('DELETED WIVES detected:', deletedWives.length);
+          }
+          for (const deletedWife of deletedWives) {
+            try {
+              const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
+              console.log('🗑️ Processing deletion for wife:', {
+                name: deletedWife.name,
+                id: deletedWife.id,
+                existingFamilyMemberId: deletedWife.existingFamilyMemberId,
+                finalId: wifeId,
+                isFamilyMember: deletedWife.isFamilyMember
+              });
+              if (!wifeId) {
+                console.warn('⚠️ Skipping wife deletion - no valid ID:', deletedWife.name);
+                continue;
+              }
+
+              // Find and delete marriage record
+              console.log('🔗 Deleting marriage record for husband:', memberData.id, 'wife:', wifeId);
+              const {
+                error: marriageDeleteError
+              } = await supabase.from('marriages').delete().eq('husband_id', memberData.id).eq('wife_id', wifeId);
+              if (marriageDeleteError) {
+                console.error('❌ Error deleting marriage:', marriageDeleteError);
+                marriageResults.failed++;
+                marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
+                continue;
+              } else {
+                console.log('✅ Marriage deleted successfully for:', deletedWife.name);
+              }
+
+              // If wife is not a family member (external spouse), delete her record
+              if (!deletedWife.isFamilyMember) {
+                console.log('🗑️ Deleting external wife member:', deletedWife.name);
+                const {
+                  error: wifeDeleteError
+                } = await supabase.from('family_tree_members').delete().eq('id', wifeId);
+                if (wifeDeleteError) {
+                  console.error('❌ Error deleting wife member:', wifeDeleteError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
+                  continue;
+                } else {
+                  console.log('✅ External wife member deleted:', deletedWife.name);
+                }
+              } else {
+                console.log('👤 Updating family member wife to single:', deletedWife.name);
+                // If she's a family member, just update her marital status
+                const {
+                  error: updateError
+                } = await supabase.from('family_tree_members').update({
+                  marital_status: 'single'
+                }).eq('id', wifeId);
+                if (updateError) {
+                  console.error('❌ Error updating wife marital status:', updateError);
+                } else {
+                  console.log('✅ Family member wife status updated to single:', deletedWife.name);
+                }
+              }
+
+              // Find and update children to remove mother relationship
+              console.log('👶 Updating children to remove mother_id for:', deletedWife.name);
+              const {
+                error: childrenUpdateError
+              } = await supabase.from('family_tree_members').update({
+                mother_id: null
+              }).eq('mother_id', wifeId);
+              if (childrenUpdateError) {
+                console.error('❌ Error updating children mother_id:', childrenUpdateError);
+              } else {
+                console.log('✅ Children mother_id updated for deleted wife:', deletedWife.name);
+              }
+              console.log('✅ Wife deletion completed successfully:', deletedWife.name);
+              marriageResults.successful++;
+            } catch (error) {
+              console.error(`❌ Error deleting wife ${deletedWife.name}:`, error);
+              marriageResults.failed++;
+              marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
+            }
+          }
+        }
+      }
+
+      // Handle spouse deletions and current marriages  
+      // CRITICAL: Run deletion detection in edit mode regardless of final marital status
+      if (isEditMode || finalData.maritalStatus === 'married') {
+        // Keep track of marriages that should remain active
+        let activeMarriageIds = [];
+
+        // Deletion detection runs FIRST (in edit mode) regardless of current marital status
+        if (isEditMode) {
+          // Handle deleted husband for female members
+          if (submissionData.gender === 'female' && originalHusbandData) {
+            const hasCurrentHusband = husband && husband.isSaved;
+            console.log('🔍 HUSBAND DELETION DEBUG:');
+            console.log('Original husband:', originalHusbandData ? {
+              id: originalHusbandData.id,
+              existingFamilyMemberId: originalHusbandData.existingFamilyMemberId,
+              name: originalHusbandData.name,
+              isSaved: originalHusbandData.isSaved
+            } : null);
+            console.log('Current husband:', husband ? {
+              id: husband.id,
+              existingFamilyMemberId: husband.existingFamilyMemberId,
+              name: husband.name,
+              isSaved: husband.isSaved
+            } : null);
+            console.log('Has current husband:', hasCurrentHusband);
+            if (!hasCurrentHusband) {
+              // Husband was deleted
+              if (process.env.NODE_ENV === 'development') {
+                console.log('DELETED HUSBAND detected:', originalHusbandData.name);
+              }
+              try {
+                const husbandId = originalHusbandData.id || originalHusbandData.existingFamilyMemberId;
+                if (husbandId) {
+                  // Find and delete marriage record
+                  const {
+                    error: marriageDeleteError
+                  } = await supabase.from('marriages').delete().eq('wife_id', memberData.id).eq('husband_id', husbandId);
+                  if (marriageDeleteError) {
+                    console.error('Error deleting marriage:', marriageDeleteError);
+                    marriageResults.failed++;
+                    marriageResults.details.push(`فشل في حذف زواج ${originalHusbandData.name}`);
+                  } else {
+                    // If husband is not a family member (external spouse), delete his record
+                    if (!originalHusbandData.isFamilyMember) {
+                      const {
+                        error: husbandDeleteError
+                      } = await supabase.from('family_tree_members').delete().eq('id', husbandId);
+                      if (husbandDeleteError) {
+                        console.error('Error deleting husband member:', husbandDeleteError);
+                        marriageResults.failed++;
+                        marriageResults.details.push(`فشل في حذف ${originalHusbandData.name}`);
+                      }
+                    } else {
+                      // If he's a family member, just update his marital status
+                      const {
+                        error: updateError
+                      } = await supabase.from('family_tree_members').update({
+                        marital_status: 'single'
+                      }).eq('id', husbandId);
+                      if (updateError) {
+                        console.error('Error updating husband marital status:', updateError);
+                      }
+                    }
+
+                    // Find and update children to remove father relationship
+                    const {
+                      error: childrenUpdateError
+                    } = await supabase.from('family_tree_members').update({
+                      father_id: null
+                    }).eq('father_id', husbandId);
+                    if (childrenUpdateError) {
+                      console.error('Error updating children father_id:', childrenUpdateError);
+                    }
+                    marriageResults.successful++;
+                  }
+                }
+              } catch (error) {
+                console.error(`Error deleting husband ${originalHusbandData.name}:`, error);
+                marriageResults.failed++;
+                marriageResults.details.push(`خطأ في حذف ${originalHusbandData.name}`);
+              }
+            }
+          }
+
+          // Handle deleted wives for male members
+          if (submissionData.gender === 'male' && originalWivesData.length > 0) {
+            const currentWiveIds = wives.map(w => w.id || w.existingFamilyMemberId).filter(Boolean);
+            const deletedWives = originalWivesData.filter(originalWife => !currentWiveIds.includes(originalWife.id || originalWife.existingFamilyMemberId));
+            console.log('🔍 DETAILED ID COMPARISON:');
+            console.log('Original wives data:', originalWivesData.map(w => ({
+              id: w.id,
+              existingFamilyMemberId: w.existingFamilyMemberId,
+              name: w.name,
+              finalId: w.id || w.existingFamilyMemberId
+            })));
+            console.log('Current wives data:', wives.map(w => ({
+              id: w.id,
+              existingFamilyMemberId: w.existingFamilyMemberId,
+              name: w.name,
+              finalId: w.id || w.existingFamilyMemberId
+            })));
+            console.log('Current wives IDs extracted:', currentWiveIds);
+            console.log('Original wives final IDs:', originalWivesData.map(w => w.id || w.existingFamilyMemberId));
+
+            // More detailed deletion check
+            originalWivesData.forEach((originalWife, index) => {
+              const originalId = originalWife.id || originalWife.existingFamilyMemberId;
+              const isFound = currentWiveIds.includes(originalId);
+              console.log(`Original wife ${index}: ${originalWife.name} (ID: ${originalId}) - Found in current: ${isFound}`);
+            });
+            if (process.env.NODE_ENV === 'development') {
+              console.log('DELETED WIVES detected:', deletedWives.length);
+            }
+            for (const deletedWife of deletedWives) {
+              try {
+                const wifeId = deletedWife.id || deletedWife.existingFamilyMemberId;
+                console.log('🗑️ Processing deletion for wife:', {
+                  name: deletedWife.name,
+                  id: deletedWife.id,
+                  existingFamilyMemberId: deletedWife.existingFamilyMemberId,
+                  finalId: wifeId,
+                  isFamilyMember: deletedWife.isFamilyMember
+                });
+                if (!wifeId) {
+                  console.warn('⚠️ Skipping wife deletion - no valid ID:', deletedWife.name);
+                  continue;
+                }
+
+                // Find and delete marriage record
+                console.log('🔗 Deleting marriage record for husband:', memberData.id, 'wife:', wifeId);
+                const {
+                  error: marriageDeleteError
+                } = await supabase.from('marriages').delete().eq('husband_id', memberData.id).eq('wife_id', wifeId);
+                if (marriageDeleteError) {
+                  console.error('❌ Error deleting marriage:', marriageDeleteError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في حذف زواج ${deletedWife.name}`);
+                  continue;
+                } else {
+                  console.log('✅ Marriage deleted successfully for:', deletedWife.name);
+                }
+
+                // If wife is not a family member (external spouse), delete her record
+                if (!deletedWife.isFamilyMember) {
+                  console.log('🗑️ Deleting external wife member:', deletedWife.name);
+                  const {
+                    error: wifeDeleteError
+                  } = await supabase.from('family_tree_members').delete().eq('id', wifeId);
+                  if (wifeDeleteError) {
+                    console.error('❌ Error deleting wife member:', wifeDeleteError);
+                    marriageResults.failed++;
+                    marriageResults.details.push(`فشل في حذف ${deletedWife.name}`);
+                    continue;
+                  } else {
+                    console.log('✅ External wife member deleted:', deletedWife.name);
+                  }
+                } else {
+                  console.log('👤 Updating family member wife to single:', deletedWife.name);
+                  // If she's a family member, just update her marital status
+                  const {
+                    error: updateError
+                  } = await supabase.from('family_tree_members').update({
+                    marital_status: 'single'
+                  }).eq('id', wifeId);
+                  if (updateError) {
+                    console.error('❌ Error updating wife marital status:', updateError);
+                  } else {
+                    console.log('✅ Family member wife status updated to single:', deletedWife.name);
+                  }
+                }
+
+                // Find and update children to remove mother relationship
+                console.log('👶 Updating children to remove mother_id for:', deletedWife.name);
+                const {
+                  error: childrenUpdateError
+                } = await supabase.from('family_tree_members').update({
+                  mother_id: null
+                }).eq('mother_id', wifeId);
+                if (childrenUpdateError) {
+                  console.error('❌ Error updating children mother_id:', childrenUpdateError);
+                } else {
+                  console.log('✅ Children mother_id updated for deleted wife:', deletedWife.name);
+                }
+                console.log('✅ Wife deletion completed successfully:', deletedWife.name);
+                marriageResults.successful++;
+              } catch (error) {
+                console.error(`❌ Error deleting wife ${deletedWife.name}:`, error);
+                marriageResults.failed++;
+                marriageResults.details.push(`خطأ في حذف ${deletedWife.name}`);
+              }
+            }
+          }
+        }
+
+        // Handle wives for male members - process all saved wives
+        if (submissionData.gender === 'male' && wives.length > 0) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('PROCESSING WIVES - count:', wives.length);
+          }
+          const savedWives = wives.filter(wife => {
+            // Get the wife's index to check family status
+            const wifeIndex = wives.findIndex(w => w === wife);
+            const familyStatus = wiveFamilyStatus[wifeIndex];
+
+            // Only save if:
+            // 1. Wife is marked as saved
+            // 2. If wife is from family (familyStatus === 'yes'), must have existingFamilyMemberId
+            return wife.isSaved === true && (familyStatus !== 'yes' || wife.existingFamilyMemberId);
+          });
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SAVED WIVES after filter:', savedWives.length);
+          }
+          for (const wife of savedWives) {
+            try {
+              let wifeId = wife.existingFamilyMemberId || wife.id;
+
+              // If wife has an existing ID (either existingFamilyMemberId or regular id), update the existing record
+              if (wifeId && (wife.existingFamilyMemberId || wife.id)) {
+                // Get current image to handle image state properly
+                const {
+                  data: currentWife
+                } = await supabase.from('family_tree_members').select('image_url').eq('id', wifeId).maybeSingle();
+
+                // Handle image state properly:
+                // - If image exists in wife.croppedImage, use it (user uploaded new image)
+                // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
+                // - If wife.croppedImage is undefined, keep existing image
+                let imageUrl;
+                if (wife.croppedImage !== undefined) {
+                  imageUrl = wife.croppedImage || null;
+                } else {
+                  imageUrl = currentWife?.image_url || null;
+                }
+                const wifeName = wife.name || (wife.firstName && wife.lastName ? `${wife.firstName} ${wife.lastName}` : wife.firstName || wife.lastName || '');
+                const {
+                  data: updatedWife,
+                  error: wifeUpdateError
+                } = await supabase.from('family_tree_members').update({
+                  name: wifeName,
+                  first_name: wife.firstName || null,
+                  last_name: wife.lastName || familyData?.name || null,
+                  birth_date: formatDateForDatabase(wife.birthDate),
+                  is_alive: wife.isAlive ?? true,
+                  death_date: !wife.isAlive ? formatDateForDatabase(wife.deathDate) : null,
+                  marital_status: wife.maritalStatus || 'married',
+                  image_url: imageUrl,
+                  biography: wife.biography || null,
+                  updated_at: new Date().toISOString()
+                }).eq('id', wifeId).select().single();
+                if (wifeUpdateError) {
+                  console.error('Error updating wife member:', wife.name, wifeUpdateError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في تحديث بيانات ${wife.name}`);
+                  continue;
+                }
+                wifeId = updatedWife.id;
+              } else {
+                // If wife is not from existing family members, create new family member
+                const firstName = wife.firstName || '';
+                const lastName = wife.lastName || familyData?.name || '';
+                const wifeName = firstName && lastName ? `${firstName} ${lastName}` : wife.name || firstName || lastName || '';
+                const {
+                  data: newWifeMember,
+                  error: wifeError
+                } = await supabase.from('family_tree_members').insert({
+                  name: wifeName,
+                  first_name: firstName,
+                  last_name: lastName,
+                  gender: 'female',
+                  birth_date: formatDateForDatabase(wife.birthDate),
+                  is_alive: wife.isAlive ?? true,
+                  death_date: !wife.isAlive ? formatDateForDatabase(wife.deathDate) : null,
+                  family_id: familyId,
+                  created_by: familyData?.creator_id,
+                  is_founder: false,
+                  marital_status: wife.maritalStatus || 'married',
+                  image_url: wife.croppedImage || null,
+                  biography: wife.biography || null
+                }).select().single();
+                if (wifeError) {
+                  console.error('Error creating wife member:', wife.name, wifeError);
+                  marriageResults.failed++;
+                  marriageResults.details.push(`فشل في إنشاء العضو ${wife.name}`);
+                  continue;
+                }
+                wifeId = newWifeMember.id;
+              }
+
+              // If wife is an existing family member, update their marital status and handle image properly
+              if (wife.isFamilyMember && wife.existingFamilyMemberId) {
+                // Get current data to handle image state properly
+                const {
+                  data: currentWife
+                } = await supabase.from('family_tree_members').select('image_url').eq('id', wife.existingFamilyMemberId).maybeSingle();
+
+                // Handle image state properly:
+                // - If image exists in wife.croppedImage, use it (user uploaded new image)
+                // - If wife.croppedImage is explicitly null/empty string, set to null (user removed image)
+                // - If wife.croppedImage is undefined, keep existing image
+                let imageUrl;
+                if (wife.croppedImage !== undefined) {
+                  imageUrl = wife.croppedImage || null;
+                } else {
+                  imageUrl = currentWife?.image_url || null;
+                }
+                const {
+                  error: updateWifeError
+                } = await supabase.from('family_tree_members').update({
+                  marital_status: wife.maritalStatus,
+                  image_url: imageUrl,
+                  biography: wife.biography || null
+                }).eq('id', wife.existingFamilyMemberId);
+                if (updateWifeError) {
+                  console.error('Error updating wife marital status:', updateWifeError);
+                } else {
+                  console.log('Successfully updated wife marital status to:', wife.maritalStatus);
+                }
+
+                // Also update marriage table marital status
+                await supabase.from('marriages').update({
+                  marital_status: wife.maritalStatus
+                }).eq('wife_id', wife.existingFamilyMemberId);
+              }
+
+              // Check if marriage already exists and update it, otherwise create new one
+              const {
+                data: existingMarriage
+              } = await supabase.from('marriages').select('id').eq('husband_id', memberData.id).eq('wife_id', wifeId).maybeSingle();
+              let marriageError;
+              if (existingMarriage) {
+                // Update existing marriage to ensure it's active
+                const {
+                  error
+                } = await supabase.from('marriages').update({
+                  is_active: true
+                }).eq('id', existingMarriage.id);
+                marriageError = error;
+                activeMarriageIds.push(existingMarriage.id);
+              } else {
+                // Create new marriage record
+                const {
+                  data: newMarriage,
+                  error
+                } = await supabase.from('marriages').insert({
+                  family_id: familyId,
+                  husband_id: memberData.id,
+                  wife_id: wifeId,
+                  is_active: true
+                }).select('id').single();
+                marriageError = error;
+                if (newMarriage) {
+                  activeMarriageIds.push(newMarriage.id);
+                }
+              }
               if (marriageError) {
                 console.error('Error creating marriage with wife:', wife.name, marriageError);
                 marriageResults.failed++;
@@ -3554,7 +3177,6 @@ const FamilyBuilderNew = () => {
               } else {
                 marriageResults.successful++;
                 marriageResults.details.push(`تم ربط الزواج مع ${wife.name}`);
-                
               }
             } catch (error) {
               console.error('Marriage creation error:', error);
@@ -3568,40 +3190,36 @@ const FamilyBuilderNew = () => {
         if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
           try {
             let husbandId = husband.existingFamilyMemberId;
-            
+
             // If husband is not from existing family members, create new family member first
             if (!husband.isFamilyMember || !husband.existingFamilyMemberId) {
               const firstName = husband.firstName || '';
               const lastName = husband.lastName || familyData?.name || '';
-              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : (husband.name || firstName || lastName || '');
-              
-              const { data: newHusbandMember, error: husbandError } = await supabase
-                .from('family_tree_members')
-                .insert({
-                  name: husbandName,
-                  first_name: firstName,
-                  last_name: lastName,
-                  gender: 'male',
-                  birth_date: formatDateForDatabase(husband.birthDate),
-                  is_alive: husband.isAlive ?? true,
-                  death_date: !husband.isAlive ? formatDateForDatabase(husband.deathDate) : null,
-                  family_id: familyId,
-                  created_by: familyData?.creator_id,
-                  is_founder: false,
-                  marital_status: husband.maritalStatus || 'married',
-                  image_url: husband.croppedImage || null,
-                  biography: husband.biography || null
-                })
-                .select()
-                .single();
-
+              const husbandName = firstName && lastName ? `${firstName} ${lastName}` : husband.name || firstName || lastName || '';
+              const {
+                data: newHusbandMember,
+                error: husbandError
+              } = await supabase.from('family_tree_members').insert({
+                name: husbandName,
+                first_name: firstName,
+                last_name: lastName,
+                gender: 'male',
+                birth_date: formatDateForDatabase(husband.birthDate),
+                is_alive: husband.isAlive ?? true,
+                death_date: !husband.isAlive ? formatDateForDatabase(husband.deathDate) : null,
+                family_id: familyId,
+                created_by: familyData?.creator_id,
+                is_founder: false,
+                marital_status: husband.maritalStatus || 'married',
+                image_url: husband.croppedImage || null,
+                biography: husband.biography || null
+              }).select().single();
               if (husbandError) {
                 console.error('Error creating husband member:', husband.name, husbandError);
                 marriageResults.failed++;
                 marriageResults.details.push(`فشل في إنشاء العضو ${husband.name}`);
               } else {
                 husbandId = newHusbandMember.id;
-                
               }
             }
 
@@ -3610,12 +3228,10 @@ const FamilyBuilderNew = () => {
               // If husband is an existing family member, update their marital status and handle image properly
               if (husband.isFamilyMember && husband.existingFamilyMemberId) {
                 // Get current data to handle image state properly
-                const { data: currentHusband } = await supabase
-                  .from('family_tree_members')
-                  .select('image_url')
-                  .eq('id', husband.existingFamilyMemberId)
-                  .maybeSingle();
-                
+                const {
+                  data: currentHusband
+                } = await supabase.from('family_tree_members').select('image_url').eq('id', husband.existingFamilyMemberId).maybeSingle();
+
                 // Handle image state properly:
                 // - If image exists in husband.croppedImage, use it (user uploaded new image)
                 // - If husband.croppedImage is explicitly null/empty string, set to null (user removed image)
@@ -3626,16 +3242,13 @@ const FamilyBuilderNew = () => {
                 } else {
                   imageUrl = currentHusband?.image_url || null;
                 }
-                
-                const { error: updateHusbandError } = await supabase
-                  .from('family_tree_members')
-                  .update({ 
-                    marital_status: husband.maritalStatus,
-                    image_url: imageUrl,
-                    biography: husband.biography || null
-                  })
-                  .eq('id', husband.existingFamilyMemberId);
-                
+                const {
+                  error: updateHusbandError
+                } = await supabase.from('family_tree_members').update({
+                  marital_status: husband.maritalStatus,
+                  image_url: imageUrl,
+                  biography: husband.biography || null
+                }).eq('id', husband.existingFamilyMemberId);
                 if (updateHusbandError) {
                   console.error('Error updating husband marital status:', updateHusbandError);
                 } else {
@@ -3643,44 +3256,36 @@ const FamilyBuilderNew = () => {
                 }
 
                 // Also update marriage table marital status
-                await supabase
-                  .from('marriages')
-                  .update({ marital_status: husband.maritalStatus })
-                  .eq('husband_id', husband.existingFamilyMemberId);
-                
+                await supabase.from('marriages').update({
+                  marital_status: husband.maritalStatus
+                }).eq('husband_id', husband.existingFamilyMemberId);
               }
 
               // Check if marriage already exists and update it, otherwise create new one
-              const { data: existingMarriage } = await supabase
-                .from('marriages')
-                .select('id')
-                .eq('husband_id', husbandId)
-                .eq('wife_id', memberData.id)
-                .maybeSingle();
-
+              const {
+                data: existingMarriage
+              } = await supabase.from('marriages').select('id').eq('husband_id', husbandId).eq('wife_id', memberData.id).maybeSingle();
               let marriageError;
               if (existingMarriage) {
                 // Update existing marriage
-                const { error } = await supabase
-                  .from('marriages')
-                  .update({
-                    is_active: true
-                  })
-                  .eq('id', existingMarriage.id);
+                const {
+                  error
+                } = await supabase.from('marriages').update({
+                  is_active: true
+                }).eq('id', existingMarriage.id);
                 marriageError = error;
               } else {
                 // Create new marriage record
-                const { error } = await supabase
-                  .from('marriages')
-                  .insert({
-                    family_id: familyId,
-                    husband_id: husbandId,
-                    wife_id: memberData.id,
-                    is_active: true
-                  });
+                const {
+                  error
+                } = await supabase.from('marriages').insert({
+                  family_id: familyId,
+                  husband_id: husbandId,
+                  wife_id: memberData.id,
+                  is_active: true
+                });
                 marriageError = error;
               }
-
               if (marriageError) {
                 console.error('Error creating marriage with husband:', husband.name, marriageError);
                 marriageResults.failed++;
@@ -3688,43 +3293,40 @@ const FamilyBuilderNew = () => {
               } else {
                 marriageResults.successful++;
                 marriageResults.details.push(`تم ربط الزواج مع ${husband.name}`);
-                
               }
             }
           } catch (error) {
             console.error('Marriage creation error:', error);
             marriageResults.failed++;
             marriageResults.details.push(`خطأ في ربط الزواج مع ${husband.name}`);
-           }
-         }
-        
+          }
+        }
+
         // Note: No automatic marriage deactivation - user manually deletes incorrect marriages
       }
-      
+
       // Refresh family data to show updated information
       await refreshFamilyData();
-      
-        // Reset form state
+
+      // Reset form state
       setFormMode('view');
       setCurrentStep(1);
       resetFormData();
       setWives([]);
       setHusband(null);
-      
+
       // Show success toast with detailed information
       const actionText = isEditMode ? "تحديث" : "إضافة";
       const actionedText = isEditMode ? "تم تحديث" : "تم إضافة";
       let toastDescription = `${actionedText} العضو "${submissionData.name}" بنجاح`;
-      
+
       // Add marriage information to toast
       if (marriageResults.successful > 0) {
         toastDescription += `\n✅ تم ربط ${marriageResults.successful} زواج بنجاح`;
       }
-      
       if (marriageResults.failed > 0) {
         toastDescription += `\n❌ فشل في ربط ${marriageResults.failed} زواج`;
       }
-      
       toast({
         title: `تم ${actionText} العضو بنجاح`,
         description: toastDescription,
@@ -3741,12 +3343,10 @@ const FamilyBuilderNew = () => {
           });
         }, 1000);
       }
-
     } catch (error) {
       console.error('Error submitting form:', error);
-      
       let errorMessage = "حدث خطأ أثناء حفظ البيانات";
-      
+
       // Provide more specific error messages
       if (error.message?.includes('duplicate')) {
         errorMessage = "يوجد عضو بنفس هذه البيانات مسبقاً";
@@ -3755,7 +3355,6 @@ const FamilyBuilderNew = () => {
       } else if (error.message?.includes('permission')) {
         errorMessage = "ليس لديك صلاحية لتنفيذ هذا الإجراء";
       }
-      
       toast({
         title: formMode === 'edit' ? "خطأ في التحديث" : "خطأ في الإضافة",
         description: errorMessage,
@@ -3765,7 +3364,6 @@ const FamilyBuilderNew = () => {
       setIsSaving(false);
     }
   }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
-
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -3779,7 +3377,7 @@ const FamilyBuilderNew = () => {
       }
       if (!formData.gender) {
         toast({
-          title: "خطأ في البيانات", 
+          title: "خطأ في البيانات",
           description: "يرجى اختيار الجنس",
           variant: "destructive"
         });
@@ -3793,7 +3391,7 @@ const FamilyBuilderNew = () => {
         });
         return;
       }
-      
+
       // Preserve image data when moving to next step
       if (croppedImage && croppedImage !== formData.croppedImage) {
         setFormData(prev => ({
@@ -3802,18 +3400,15 @@ const FamilyBuilderNew = () => {
         }));
       }
     }
-    
     if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
   };
-
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
-
   const getAdditionalInfo = (member: any) => {
     const parts = [];
     if (member.birthDate) parts.push(`مولود: ${member.birthDate}`);
@@ -3821,32 +3416,25 @@ const FamilyBuilderNew = () => {
     if (member.isFounder) parts.push("مؤسس العائلة");
     return parts.join(" • ");
   };
-
   const getFullName = (member: any) => {
     if (!member.relatedPersonId || !familyMembers.length) return member.name;
     const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
     if (!relatedPerson) return member.name;
     return `${member.name} (${member.relation} ${relatedPerson.name})`;
   };
-
   const getGenderColor = (gender: string) => {
     return gender === "female" ? "text-pink-600" : "text-blue-600";
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+    return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
         <GlobalHeader />
         <div className="container mx-auto px-4 py-6">
           <FamilyBuilderNewSkeleton />
         </div>
         <GlobalFooterSimplified />
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       
       {/* Floating Background Elements */}
@@ -3893,7 +3481,9 @@ const FamilyBuilderNew = () => {
                   
                   <div className="text-center">
                     <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 leading-relaxed">
-                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-relaxed" style={{ lineHeight: '1.8' }}>
+                      <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent leading-relaxed" style={{
+                      lineHeight: '1.8'
+                    }}>
                         {t('family_builder.family', 'عائلة')} {familyData?.name || t('family_builder.unspecified', 'غير محدد')}
                       </span>
                     </h1>
@@ -3922,9 +3512,9 @@ const FamilyBuilderNew = () => {
                     <div className="text-center">
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-amber-600 dark:text-amber-400">
                         {(() => {
-                          console.log('🔍 UI Display: Generation count =', generationCount);
-                          return generationCount;
-                        })()}
+                        console.log('🔍 UI Display: Generation count =', generationCount);
+                        return generationCount;
+                      })()}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.generations', 'أجيال')}</div>
                     </div>
@@ -3938,10 +3528,9 @@ const FamilyBuilderNew = () => {
                     <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600 dark:text-teal-400" />
                     <div className="text-center">
                       <div className="text-sm sm:text-base lg:text-lg font-bold text-teal-600 dark:text-teal-400">
-                        {familyData?.updated_at 
-                          ? format(new Date(familyData.updated_at), 'd MMM', { locale: ar })
-                          : t('family_builder.today', 'اليوم')
-                        }
+                        {familyData?.updated_at ? format(new Date(familyData.updated_at), 'd MMM', {
+                        locale: ar
+                      }) : t('family_builder.today', 'اليوم')}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">{t('family_builder.last_modified', 'آخر تعديل')}</div>
                     </div>
@@ -3957,30 +3546,21 @@ const FamilyBuilderNew = () => {
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
                   </div>
                   
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                  >
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <TreePine className="h-5 w-5" />
                     </div>
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
                   </div>
                   
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate('/store')}
-                  >
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Store className="h-5 w-5" />
                     </div>
                     <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
                   </div>
                   
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => navigate(`/family-statistics?family=${familyId}`)}
-                  >
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
                     <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
                       <Star className="h-5 w-5" />
                     </div>
@@ -3996,54 +3576,25 @@ const FamilyBuilderNew = () => {
 
         {/* Main Content */}
                 <div className="container mx-auto px-4 pt-2 pb-6">
-          <div className={cn(
-            "grid gap-6",
-            isMobile ? "grid-cols-1" : "grid-cols-12"
-          )}>
+          <div className={cn("grid gap-6", isMobile ? "grid-cols-1" : "grid-cols-12")}>
             {/* Form Panel - Right Side on Desktop */}
-            <div className={cn(
-              "space-y-6",
-              isMobile ? "order-2" : "col-span-8 order-2"
-            )}>
+            <div className={cn("space-y-6", isMobile ? "order-2" : "col-span-8 order-2")}>
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                   <CardHeader className={cn("relative", (formMode === 'view' || formMode === 'profile' || formMode === 'tree-settings') && "hidden")}>
                        <CardTitle className="flex items-center justify-between flex-row-reverse">
                          {/* Step Indicator for add/edit modes - positioned at far left */}
-                         {(formMode === 'add' || formMode === 'edit') && (
-                         <div className="flex items-center gap-4">
-                           {[1, 2].map((step, index) => (
-                             <div key={step} className="flex flex-col items-center gap-2">
-                               <div
-                                 className={cn(
-                                   "flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium border-2 transition-all duration-200",
-                                   currentStep >= step
-                                     ? "bg-primary border-primary text-primary-foreground shadow-md"
-                                     : "bg-background border-muted-foreground/30 text-muted-foreground"
-                                 )}
-                               >
-                                 {currentStep > step ? (
-                                   <Check className="h-4 w-4" />
-                                 ) : (
-                                   step
-                                 )}
+                         {(formMode === 'add' || formMode === 'edit') && <div className="flex items-center gap-4">
+                           {[1, 2].map((step, index) => <div key={step} className="flex flex-col items-center gap-2">
+                               <div className={cn("flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium border-2 transition-all duration-200", currentStep >= step ? "bg-primary border-primary text-primary-foreground shadow-md" : "bg-background border-muted-foreground/30 text-muted-foreground")}>
+                                 {currentStep > step ? <Check className="h-4 w-4" /> : step}
                                </div>
-                               <span className={cn(
-                                 "text-xs font-medium text-center",
-                                 currentStep >= step ? "text-primary" : "text-muted-foreground"
-                               )}>
+                               <span className={cn("text-xs font-medium text-center", currentStep >= step ? "text-primary" : "text-muted-foreground")}>
                                  {step === 1 ? "المعلومات الأساسية" : "التفاصيل الإضافية"}
                                </span>
-                               {index < 1 && (
-                                 <div className={cn(
-                                   "absolute top-5 right-[-12px] w-6 h-0.5 transition-all duration-200",
-                                   currentStep > step ? "bg-primary" : "bg-muted-foreground/30"
-                                 )} />
-                               )}
-                             </div>
-                           ))}
-                         </div>
-                         )}
+                               {index < 1 && <div className={cn("absolute top-5 right-[-12px] w-6 h-0.5 transition-all duration-200", currentStep > step ? "bg-primary" : "bg-muted-foreground/30")} />}
+                             </div>)}
+                         </div>}
                          
                          {/* Title and Icon - positioned to the right */}
                          <div className="flex items-center gap-2 mr-auto">
@@ -4060,24 +3611,15 @@ const FamilyBuilderNew = () => {
                                {formMode === 'tree-settings' && "إعدادات الشجرة"}
                              </span>
                          </div>
-                         {formMode === 'profile' && (
-                           <Button
-                             type="button"
-                             variant="outline"
-                             onClick={currentStep === 1 ? handleCancelForm : prevStep}
-                             className="flex items-center gap-2 font-arabic"
-                             size="sm"
-                           >
+                         {formMode === 'profile' && <Button type="button" variant="outline" onClick={currentStep === 1 ? handleCancelForm : prevStep} className="flex items-center gap-2 font-arabic" size="sm">
                              <ArrowLeft className="h-4 w-4" />
                              العودة
-                           </Button>
-                         )}
+                           </Button>}
                       </CardTitle>
 
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
-                  {formMode === 'view' ? (
-                     <div className="py-8 px-6">
+                  {formMode === 'view' ? <div className="py-8 px-6">
                        {/* Family Overview Header */}
                        <div className="text-center mb-8">
                          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
@@ -4089,11 +3631,9 @@ const FamilyBuilderNew = () => {
                            </h2>
                            <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
                          </div>
-                         {familyData?.description && (
-                           <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
+                         {familyData?.description && <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
                              {familyData.description}
-                           </p>
-                         )}
+                           </p>}
                        </div>
 
                       {/* Statistics Grid */}
@@ -4141,19 +3681,11 @@ const FamilyBuilderNew = () => {
                           <p className="text-muted-foreground text-sm mb-4">اختر إجراءً للبدء</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <Button 
-                            variant="outline" 
-                            className="flex items-center gap-2 h-12"
-                            onClick={() => setFormMode('add')}
-                          >
+                          <Button variant="outline" className="flex items-center gap-2 h-12" onClick={() => setFormMode('add')}>
                             <UserPlus className="h-4 w-4" />
                             إضافة عضو جديد
                           </Button>
-                          <Button 
-                            variant="outline" 
-                            className="flex items-center gap-2 h-12"
-                            onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                          >
+                          <Button variant="outline" className="flex items-center gap-2 h-12" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
                             <TreePine className="h-4 w-4" />
                             عرض شجرة العائلة
                           </Button>
@@ -4161,51 +3693,26 @@ const FamilyBuilderNew = () => {
                       </div>
 
                       {/* Last Updated Info */}
-                      {familyData?.updated_at && (
-                        <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                      {familyData?.updated_at && <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                           <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
                             <Clock className="h-3 w-3" />
-                            آخر تحديث: {format(new Date(familyData.updated_at), 'd MMMM yyyy', { locale: ar })}
+                            آخر تحديث: {format(new Date(familyData.updated_at), 'd MMMM yyyy', {
+                        locale: ar
+                      })}
                           </div>
-                        </div>
-                      )}
-                    </div>
-                   ) : formMode === 'profile' ? (
-                     profileLoading ? (
-                       <MemberProfileSkeleton />
-                     ) : (
-                        <MemberProfileView
-                          member={editingMember}
-                          isSpouse={checkIfMemberIsSpouse(editingMember)}
-                          onEdit={() => {
-                            setFormMode('edit');
-                            setCurrentStep(1);
-                            populateFormData(editingMember);
-                          }}
-                          onBack={() => setFormMode('view')}
-                          onDelete={() => handleDeleteMember(editingMember)}
-                          familyMembers={familyMembers}
-                          marriages={familyMarriages}
-                          onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)}
-                          onSpouseDeleteWarning={() => handleSpouseDeleteWarning(editingMember)}
-                          onMemberClick={async (member) => {
-                            setEditingMember(member);
-                            setFormMode('profile');
-                            await fetchMemberProfile(member.id);
-                          }}
-                        />
-                     )
-                  ) : formMode === 'tree-settings' ? (
-                    <TreeSettingsView 
-                      familyData={familyData}
-                      onBack={() => setFormMode('view')}
-                    />
-                  ) : (
-                    <div className="space-y-6">
+                        </div>}
+                    </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={editingMember} isSpouse={checkIfMemberIsSpouse(editingMember)} onEdit={() => {
+                  setFormMode('edit');
+                  setCurrentStep(1);
+                  populateFormData(editingMember);
+                }} onBack={() => setFormMode('view')} onDelete={() => handleDeleteMember(editingMember)} familyMembers={familyMembers} marriages={familyMarriages} onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)} onSpouseDeleteWarning={() => handleSpouseDeleteWarning(editingMember)} onMemberClick={async member => {
+                  setEditingMember(member);
+                  setFormMode('profile');
+                  await fetchMemberProfile(member.id);
+                }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
 
                       {/* Step Content */}
-                      {currentStep === 1 && (
-                           <div className="space-y-6">
+                      {currentStep === 1 && <div className="space-y-6">
                             <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
                              
                               {/* First row: First Name (1/2), Gender (1/4), Birthdate (1/4) */}
@@ -4215,14 +3722,10 @@ const FamilyBuilderNew = () => {
                                        <UserCircle className="h-4 w-4 text-primary" />
                                        الاسم الأول *
                                     </Label>
-                                     <Input
-                                       id="first_name"
-                                       value={formData.first_name}
-                                       onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                                       placeholder="أدخل الاسم الأول"
-                                       className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                       required
-                                     />
+                                     <Input id="first_name" value={formData.first_name} onChange={e => setFormData({
+                          ...formData,
+                          first_name: e.target.value
+                        })} placeholder="أدخل الاسم الأول" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" required />
                                  </div>
                                  
                                  <div className="col-span-6 md:col-span-3">
@@ -4230,7 +3733,10 @@ const FamilyBuilderNew = () => {
                                       <Zap className="h-4 w-4 text-primary" />
                                       الجنس *
                                    </Label>
-                                   <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                                   <Select value={formData.gender} onValueChange={value => setFormData({
+                          ...formData,
+                          gender: value
+                        })}>
                                      <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
                                        <SelectValue placeholder="اختر الجنس" />
                                      </SelectTrigger>
@@ -4246,12 +3752,10 @@ const FamilyBuilderNew = () => {
                                       <CalendarDays className="h-4 w-4 text-primary" />
                                       تاريخ الميلاد
                                    </Label>
-                                   <EnhancedDatePicker
-                                     value={formData.birthDate}
-                                     onChange={(date) => setFormData({...formData, birthDate: date})}
-                                     placeholder="اختر تاريخ الميلاد"
-                                     className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                   />
+                                   <EnhancedDatePicker value={formData.birthDate} onChange={date => setFormData({
+                          ...formData,
+                          birthDate: date
+                        })} placeholder="اختر تاريخ الميلاد" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
                                 </div>
                               </div>
                              
@@ -4261,126 +3765,111 @@ const FamilyBuilderNew = () => {
                                    <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                      <UsersIcon className="h-4 w-4 text-primary" />
                                      العلاقة العائلية (الوالدين) *
-                                    {formData.isFounder && (
-                                      <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>
-                                    )}
+                                    {formData.isFounder && <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>}
                                   </Label>
-                                   <SearchableDropdown
-                                     options={
-                                       loading || !familyMarriages || !familyMembers ? 
-                                         [{ value: "loading", label: "جاري تحميل البيانات...", disabled: true }] :
-                                         familyMarriages.length > 0 ? 
-                                           familyMarriages
-                                             .filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife)
-                                             .map((marriage) => {
-                                               // Get full member details for proper naming
-                                               const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
-                                               const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
-                                               
-                                               let displayName = '';
-                                               
-                                               // Helper function to get father's name
-                                               const getFatherName = (member: any) => {
-                                                 const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                                 return father?.name || '';
-                                               };
-                                               
-                                               // Helper function to get grandfather's name
-                                               const getGrandfatherName = (member: any) => {
-                                                 const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                                 if (father) {
-                                                   const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
-                                                   return grandfather?.name || '';
-                                                 }
-                                                 return '';
-                                               };
-                                               
-                                                  // Helper function to build full genealogical name
-                                                  const buildFullName = (member: any, isWife: boolean = false) => {
-                                                    if (!member) return '';
-                                                    
-                                                    const firstName = member.first_name || member.name?.split(' ')[0] || '';
-                                                    const mainFamilyName = "الشيخ سعيد"; // Main family surname
-                                                    
-                                                    // For founders, show full name with surname
-                                                    if (member.is_founder) {
-                                                      const lastName = member.last_name || mainFamilyName;
-                                                      return `${firstName} ${lastName}`;
-                                                    }
-                                                    
-                                                    // Check if member is from external family
-                                                    const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
-                                                    
-                                                    // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
-                                                    if (isExternalFamily) {
-                                                      return `${firstName} ${member.last_name}`;
-                                                    }
-                                                    
-                                                    // For internal family members
-                                                    if (isWife) {
-                                                      // For wives from internal family, show "ابنة" format
-                                                      const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                                      if (father) {
-                                                        const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                                        return `${firstName} ابنة ${fatherFirstName}`;
-                                                      }
-                                                      return firstName;
-                                                    } else {
-                                                      // For internal family males (not founders), show "ابن" format with grandfather if available
-                                                      const father = familyMembers.find(m => m?.id === member?.fatherId);
-                                                      if (father) {
-                                                        const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                                        const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
-                                                        if (grandfather) {
-                                                          const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                                                          return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
-                                                        }
-                                                        return `${firstName} ابن ${fatherFirstName}`;
-                                                      }
-                                                    }
-                                                    
-                                                    // Fallback
-                                                    return firstName || member.name;
-                                                  };
-                                                
-                                                  const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
-                                                  const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
-                                                  const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
-                                                  
-                                                  // Debug logging
-                                                  console.log('🔍 Marriage Display Debug:', {
-                                                    husbandName: husbandMember?.name,
-                                                    husbandFirstName: husbandMember?.first_name,
-                                                    husbandIsFounder: husbandMember?.is_founder,
-                                                    generatedFamilyMember: familyMember,
-                                                    wifeName: wifeMember?.name,
-                                                    wifeFirstName: wifeMember?.first_name,
-                                                    generatedSpouse: spouse,
-                                                    maritalStatus: marriage.marital_status,
-                                                    heartIcon
-                                                  });
-                                                 
-                                                  return {
-                                                    value: marriage.id,
-                                                    familyMember,
-                                                    spouse,
-                                                    heartIcon,
-                                                    isFounder: husbandMember?.is_founder || false
-                                                  };
-                                             }) :
-                                           [{ value: "no-data", label: "لا توجد زيجات مسجلة في هذه العائلة", disabled: true }]
-                                     }
-                                     value={formData.selectedParent || ""}
-                                     onValueChange={(value) => setFormData({...formData, selectedParent: value === "none" ? null : value})}
-                                     disabled={loading || !familyMarriages || !familyMembers || formData.isFounder}
-                                     placeholder={
-                                       loading ? "جاري التحميل..." : 
-                                       formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : 
-                                       "اختر الوالدين"
-                                     }
-                                     searchPlaceholder="ابحث عن الوالدين..."
-                                     emptyMessage="لا توجد نتائج تطابق البحث"
-                                   />
+                                   <SearchableDropdown options={loading || !familyMarriages || !familyMembers ? [{
+                          value: "loading",
+                          label: "جاري تحميل البيانات...",
+                          disabled: true
+                        }] : familyMarriages.length > 0 ? familyMarriages.filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife).map(marriage => {
+                          // Get full member details for proper naming
+                          const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
+                          const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
+                          let displayName = '';
+
+                          // Helper function to get father's name
+                          const getFatherName = (member: any) => {
+                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                            return father?.name || '';
+                          };
+
+                          // Helper function to get grandfather's name
+                          const getGrandfatherName = (member: any) => {
+                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                            if (father) {
+                              const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                              return grandfather?.name || '';
+                            }
+                            return '';
+                          };
+
+                          // Helper function to build full genealogical name
+                          const buildFullName = (member: any, isWife: boolean = false) => {
+                            if (!member) return '';
+                            const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                            const mainFamilyName = "الشيخ سعيد"; // Main family surname
+
+                            // For founders, show full name with surname
+                            if (member.is_founder) {
+                              const lastName = member.last_name || mainFamilyName;
+                              return `${firstName} ${lastName}`;
+                            }
+
+                            // Check if member is from external family
+                            const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
+
+                            // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
+                            if (isExternalFamily) {
+                              return `${firstName} ${member.last_name}`;
+                            }
+
+                            // For internal family members
+                            if (isWife) {
+                              // For wives from internal family, show "ابنة" format
+                              const father = familyMembers.find(m => m?.id === member?.fatherId);
+                              if (father) {
+                                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                                return `${firstName} ابنة ${fatherFirstName}`;
+                              }
+                              return firstName;
+                            } else {
+                              // For internal family males (not founders), show "ابن" format with grandfather if available
+                              const father = familyMembers.find(m => m?.id === member?.fatherId);
+                              if (father) {
+                                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                                const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                                if (grandfather) {
+                                  const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                                  return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
+                                }
+                                return `${firstName} ابن ${fatherFirstName}`;
+                              }
+                            }
+
+                            // Fallback
+                            return firstName || member.name;
+                          };
+                          const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
+                          const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
+                          const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+
+                          // Debug logging
+                          console.log('🔍 Marriage Display Debug:', {
+                            husbandName: husbandMember?.name,
+                            husbandFirstName: husbandMember?.first_name,
+                            husbandIsFounder: husbandMember?.is_founder,
+                            generatedFamilyMember: familyMember,
+                            wifeName: wifeMember?.name,
+                            wifeFirstName: wifeMember?.first_name,
+                            generatedSpouse: spouse,
+                            maritalStatus: marriage.marital_status,
+                            heartIcon
+                          });
+                          return {
+                            value: marriage.id,
+                            familyMember,
+                            spouse,
+                            heartIcon,
+                            isFounder: husbandMember?.is_founder || false
+                          };
+                        }) : [{
+                          value: "no-data",
+                          label: "لا توجد زيجات مسجلة في هذه العائلة",
+                          disabled: true
+                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
+                          ...formData,
+                          selectedParent: value === "none" ? null : value
+                        })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder} placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : "اختر الوالدين"} searchPlaceholder="ابحث عن الوالدين..." emptyMessage="لا توجد نتائج تطابق البحث" />
                                </div>
                               
                                <div className="col-span-6 md:col-span-3">
@@ -4388,10 +3877,10 @@ const FamilyBuilderNew = () => {
                                     <Activity className="h-4 w-4 text-primary" />
                                     الحالة الحيوية
                                  </Label>
-                                 <Select 
-                                   value={formData.isAlive ? "alive" : "deceased"} 
-                                   onValueChange={(value) => setFormData({...formData, isAlive: value === "alive"})}
-                                 >
+                                 <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={value => setFormData({
+                          ...formData,
+                          isAlive: value === "alive"
+                        })}>
                                    <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
                                      <SelectValue placeholder="اختر الحالة الحيوية" />
                                    </SelectTrigger>
@@ -4402,20 +3891,16 @@ const FamilyBuilderNew = () => {
                                  </Select>
                                </div>
 
-                                {!formData.isAlive && (
-                                  <div className="col-span-6 md:col-span-3">
+                                {!formData.isAlive && <div className="col-span-6 md:col-span-3">
                                      <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                        <Skull className="h-4 w-4 text-primary" />
                                        تاريخ الوفاة
                                     </Label>
-                                    <EnhancedDatePicker
-                                      value={formData.deathDate}
-                                      onChange={(date) => setFormData({...formData, deathDate: date})}
-                                      placeholder="اختر تاريخ الوفاة"
-                                      className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm"
-                                    />
-                                  </div>
-                                )}
+                                    <EnhancedDatePicker value={formData.deathDate} onChange={date => setFormData({
+                          ...formData,
+                          deathDate: date
+                        })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
+                                  </div>}
                              </div>
 
                              {/* Biography and Profile Picture - Side by Side Layout */}
@@ -4426,112 +3911,62 @@ const FamilyBuilderNew = () => {
                                    <FileText className="h-4 w-4 text-primary" />
                                    السيرة الذاتية
                                  </Label>
-                                 <Textarea
-                                   id="bio"
-                                   value={formData.bio}
-                                   onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                   placeholder="أدخل معلومات إضافية عن العضو"
-                                   rows={6}
-                                   className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none"
-                                 />
+                                 <Textarea id="bio" value={formData.bio} onChange={e => setFormData({
+                          ...formData,
+                          bio: e.target.value
+                        })} placeholder="أدخل معلومات إضافية عن العضو" rows={6} className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none" />
                                </div>
 
                                {/* Profile Picture Section - 1/2 */}
-                               {(formMode === 'add' || formMode === 'edit') && (
-                               <div className="space-y-3">
+                               {(formMode === 'add' || formMode === 'edit') && <div className="space-y-3">
                                  <Label htmlFor="picture" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                    <Camera className="h-4 w-4 text-primary" />
                                    الصورة الشخصية
                                  </Label>
                               
-                              {(croppedImage || (editingMember && editingMember.image)) ? (
-                                <div className="space-y-3">
+                              {croppedImage || editingMember && editingMember.image ? <div className="space-y-3">
                                   <div className="relative group flex justify-center">
                                     <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                       <img 
-                                         src={croppedImage || (editingMember && editingMember.image)} 
-                                         alt="صورة العضو" 
-                                         className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg"
-                                       />
+                                       <img src={croppedImage || editingMember && editingMember.image} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
                                     </div>
                                   </div>
                                   
                                   <div className="flex justify-center gap-2">
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="secondary"
-                                      onClick={handleEditImage}
-                                      className="h-8 px-3"
-                                    >
+                                    <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
                                       <Edit2 className="h-3 w-3 ml-1" />
                                       تعديل
                                     </Button>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="destructive"
-                                      onClick={handleDeleteImage}
-                                      className="h-8 px-3"
-                                    >
+                                    <Button type="button" size="sm" variant="destructive" onClick={handleDeleteImage} className="h-8 px-3">
                                       <Trash2 className="h-3 w-3 ml-1" />
                                       حذف
                                     </Button>
                                   </div>
-                                </div>
-                              ) : (
-                                <div 
-                                  className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 h-[140px] flex items-center justify-center ${
-                                    isImageUploadEnabled 
-                                      ? 'border-primary/40 cursor-pointer hover:border-primary/60' 
-                                      : 'border-gray-300 opacity-70 cursor-not-allowed'
-                                  }`}
-                                  onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}
-                                >
-                                  {isImageUploadEnabled ? (
-                                    <div className="space-y-2">
+                                </div> : <div className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 h-[140px] flex items-center justify-center ${isImageUploadEnabled ? 'border-primary/40 cursor-pointer hover:border-primary/60' : 'border-gray-300 opacity-70 cursor-not-allowed'}`} onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}>
+                                  {isImageUploadEnabled ? <div className="space-y-2">
                                       <Upload className="h-8 w-8 text-primary mx-auto" />
                                       <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
                                       <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
-                                    </div>
-                                  ) : (
-                                    <div className="space-y-2">
+                                    </div> : <div className="space-y-2">
                                       <Upload className="h-8 w-8 text-gray-400 mx-auto" />
                                       <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
                                       <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
+                                    </div>}
+                                </div>}
                               
-                              <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageSelect}
-                                className="hidden"
-                                disabled={!isImageUploadEnabled}
-                              />
-                             </div>
-                             )}
+                              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" disabled={!isImageUploadEnabled} />
+                             </div>}
                            </div>
-                         </div>
-                       )}
+                         </div>}
 
-                       {currentStep === 2 && (
-                         <div className="space-y-4">
+                       {currentStep === 2 && <div className="space-y-4">
                            <h3 className="text-lg font-semibold">
                              {formData.gender === "male" ? "معلومات الزوجة/الزوجات" : "معلومات الزوج"}
                            </h3>
                            <p className="text-sm text-muted-foreground -mt-1">
-                             {formData.gender === "male" 
-                               ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً"
-                               : "أضف معلومات الزوج إذا كانت متزوجة"
-                             }
+                             {formData.gender === "male" ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً" : "أضف معلومات الزوج إذا كانت متزوجة"}
                            </p>
                            
-                             {formData.gender === "male" ? (
-                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                             {formData.gender === "male" ? <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                  {/* Wives Display Panel */}
                                  <div className="space-y-4">
                                     <div className="flex items-center gap-2 mb-4 w-full">
@@ -4542,14 +3977,10 @@ const FamilyBuilderNew = () => {
                                    </div>
                                    
                                    <div className="space-y-3">
-                                     {wives.length === 0 ? (
-                                       <div className="text-center py-8 text-muted-foreground">
+                                     {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
                                          <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                          <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
-                                       </div>
-                                     ) : (
-                                       wives.map((wife, index) => (
-                                            <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
+                                       </div> : wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
                                                 {/* Header Section */}
                                                 <div className="flex items-start justify-between">
@@ -4565,12 +3996,10 @@ const FamilyBuilderNew = () => {
                                                       <div className="space-y-2">
                                                         
                                                         <div className="flex items-center gap-2">
-                                                          {wife.isSaved && (
-                                                            <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                          {wife.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
                                                               <Check className="h-3 w-3" />
                                                               محفوظة
-                                                            </span>
-                                                          )}
+                                                            </span>}
                                                           <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
                                                             <Heart className="h-3 w-3" />
                                                             {wife.maritalStatus === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
@@ -4583,39 +4012,32 @@ const FamilyBuilderNew = () => {
                                                 
                                                 {/* Action Buttons at bottom */}
                                                 <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
-                                                  {wife.isSaved && (
-                                                    <Button
-                                                      variant="secondary"
-                                                      size="sm"
-                                                      onClick={() => {
-                                                        // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                                        const resetWives = wives.map(w => ({ ...w, isSaved: true }));
-                                                        // ثم تعيين الزوجة المحددة للتعديل
-                                                        const updatedWives = [...resetWives];
-                                                        updatedWives[index] = { ...wife, isSaved: false };
-                                                        setWives(updatedWives);
-                                                        setCurrentWife(wife);
-                                                        setShowWifeForm(true);
-                                                        setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                                        
-                                                        toast({
-                                                          title: "وضع التعديل",
-                                                          description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                                          variant: "default"
-                                                        });
-                                                      }}
-                                                      className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300"
-                                                    >
+                                                  {wife.isSaved && <Button variant="secondary" size="sm" onClick={() => {
+                                  // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
+                                  const resetWives = wives.map(w => ({
+                                    ...w,
+                                    isSaved: true
+                                  }));
+                                  // ثم تعيين الزوجة المحددة للتعديل
+                                  const updatedWives = [...resetWives];
+                                  updatedWives[index] = {
+                                    ...wife,
+                                    isSaved: false
+                                  };
+                                  setWives(updatedWives);
+                                  setCurrentWife(wife);
+                                  setShowWifeForm(true);
+                                  setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
+                                  toast({
+                                    title: "وضع التعديل",
+                                    description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
+                                    variant: "default"
+                                  });
+                                }} className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300">
                                                       <Edit className="h-3 w-3 ml-1" />
                                                       تعديل
-                                                    </Button>
-                                                  )}
-                                                 <Button
-                                                   variant="outline"
-                                                   size="sm"
-                                                   onClick={() => handleSpouseDelete(wife, index)}
-                                                   className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300"
-                                                 >
+                                                    </Button>}
+                                                 <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300">
                                                    <X className="h-3 w-3 ml-1" />
                                                    حذف
                                                  </Button>
@@ -4623,9 +4045,7 @@ const FamilyBuilderNew = () => {
                                                 
                                                 {/* Interactive Area removed - using edit button instead */}
                                               </div>
-                                           </div>
-                                       ))
-                                     )}
+                                           </div>)}
                                    </div>
                                  </div>
 
@@ -4638,39 +4058,23 @@ const FamilyBuilderNew = () => {
                                       <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
                                     </div>
                                     
-                                      <SpouseForm
-                                        spouseType="wife"
-                                        spouse={currentWife || {
-                                          id: '',
-                                          firstName: '',
-                                          lastName: '',
-                                          name: '',
-                                          isAlive: true,
-                                          birthDate: null,
-                                          deathDate: null,
-                                          maritalStatus: 'married',
-                                          isFamilyMember: false,
-                                          existingFamilyMemberId: '',
-                                          croppedImage: null,
-                                          biography: '',
-                                          isSaved: false
-                                        }}
-                                       onSpouseChange={setCurrentWife}
-                                       familyMembers={familyMembers}
-                                       selectedMember={selectedMember}
-                                       commandOpen={wifeCommandOpen}
-                                       onCommandOpenChange={setWifeCommandOpen}
-                                       familyStatus={wifeFamilyStatus}
-                                       onFamilyStatusChange={handleWifeFamilyStatusChange}
-                                       onSave={handleWifeSave}
-                                       onAdd={handleAddWife}
-                                       onClose={handleCloseWifeEdit}
-                                       showForm={showWifeForm}
-                                    />
+                                      <SpouseForm spouseType="wife" spouse={currentWife || {
+                          id: '',
+                          firstName: '',
+                          lastName: '',
+                          name: '',
+                          isAlive: true,
+                          birthDate: null,
+                          deathDate: null,
+                          maritalStatus: 'married',
+                          isFamilyMember: false,
+                          existingFamilyMemberId: '',
+                          croppedImage: null,
+                          biography: '',
+                          isSaved: false
+                        }} onSpouseChange={setCurrentWife} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={wifeCommandOpen} onCommandOpenChange={setWifeCommandOpen} familyStatus={wifeFamilyStatus} onFamilyStatusChange={handleWifeFamilyStatusChange} onSave={handleWifeSave} onAdd={handleAddWife} onClose={handleCloseWifeEdit} showForm={showWifeForm} />
                                   </div>
-                               </div>
-                             ) : (
-                               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                               </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                  {/* Husband Display Panel */}
                                  <div className="space-y-4">
                                    <div className="flex items-center gap-2 mb-4">
@@ -4681,34 +4085,27 @@ const FamilyBuilderNew = () => {
                                    </div>
                                    
                                    <div className="space-y-3">
-                                     {!husband ? (
-                                       <div className="text-center py-8 text-muted-foreground">
+                                     {!husband ? <div className="text-center py-8 text-muted-foreground">
                                          <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                          <p className="font-arabic">لم يتم إضافة زوج بعد</p>
-                                       </div>
-                                     ) : (
-                                       <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
+                                       </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                          <div className="flex items-center justify-between">
-                                           <div 
-                                             className={cn(
-                                               "flex items-center gap-3 flex-1",
-                                               husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : ""
-                                             )}
-                                              onClick={() => {
-                                                if (husband.isSaved) {
-                                                  setHusband({ ...husband, isSaved: false });
-                                                  setCurrentHusband(husband);
-                                                  setShowHusbandForm(true);
-                                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
-                                                  
-                                                  toast({
-                                                    title: "وضع التعديل",
-                                                    description: "يمكنك الآن تعديل بيانات الزوج",
-                                                    variant: "default"
-                                                  });
-                                                }
-                                              }}
-                                           >
+                                           <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
+                                if (husband.isSaved) {
+                                  setHusband({
+                                    ...husband,
+                                    isSaved: false
+                                  });
+                                  setCurrentHusband(husband);
+                                  setShowHusbandForm(true);
+                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
+                                  toast({
+                                    title: "وضع التعديل",
+                                    description: "يمكنك الآن تعديل بيانات الزوج",
+                                    variant: "default"
+                                  });
+                                }
+                              }}>
                                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                <User className="w-4 h-4" />
                                              </div>
@@ -4718,159 +4115,90 @@ const FamilyBuilderNew = () => {
                                                </h5>
                                                <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
                                                  {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                 {husband.isSaved && (
-                                                   <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                 {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
                                                      <Check className="h-3 w-3" />
                                                      محفوظ
-                                                   </span>
-                                                 )}
+                                                   </span>}
                                                </p>
-                                               {husband.isSaved && (
-                                                 <p className="text-xs text-blue-600 font-arabic mt-1">
+                                               {husband.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
                                                    انقر للتعديل
-                                                 </p>
-                                               )}
+                                                 </p>}
                                              </div>
                                            </div>
                                            <div className="flex gap-2">
-                                              {husband.isSaved && (
-                                                <Button
-                                                  variant="outline"
-                                                  size="sm"
-                                                   onClick={() => {
-                                                     if (husband.isSaved) {
-                                                       handleSpouseEditAttempt('husband', husband, -1);
-                                                     }
-                                                   }}
-                                                 className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2"
-                                               >
+                                              {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                  if (husband.isSaved) {
+                                    handleSpouseEditAttempt('husband', husband, -1);
+                                  }
+                                }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
                                                  <Edit className="h-3 w-3" />
-                                               </Button>
-                                             )}
-                                             <Button
-                                               variant="outline"
-                                               size="sm"
-                                               onClick={() => handleSpouseDelete(husband, -1)}
-                                               className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2"
-                                             >
+                                               </Button>}
+                                             <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
                                                <X className="h-3 w-3" />
                                              </Button>
                                            </div>
                                          </div>
-                                       </div>
-                                     )}
+                                       </div>}
                                    </div>
                                  </div>
 
                                  {/* Unified Husband Form */}
-                                    <SpouseForm
-                                      spouseType="husband"
-                                      spouse={currentHusband || {
-                                        id: '',
-                                        firstName: '',
-                                        lastName: '',
-                                        name: '',
-                                        isAlive: true,
-                                        birthDate: null,
-                                        deathDate: null,
-                                        maritalStatus: 'married',
-                                        isFamilyMember: false,
-                                        existingFamilyMemberId: '',
-                                        croppedImage: null,
-                                        biography: '',
-                                        isSaved: false
-                                      }}
-                                     onSpouseChange={setCurrentHusband}
-                                    familyMembers={familyMembers}
-                                    selectedMember={selectedMember}
-                                    commandOpen={husbandCommandOpen}
-                                    onCommandOpenChange={setHusbandCommandOpen}
-                                    familyStatus={husbandFamilyStatus}
-                                    onFamilyStatusChange={handleHusbandFamilyStatusChange}
-                                    onSave={handleHusbandSave}
-                                    onAdd={handleAddHusband}
-                                    onClose={handleCloseHusbandEdit}
-                                    showForm={showHusbandForm}
-                                 />
-                               </div>
-                              )}
-                          </div>
-                       )}
+                                    <SpouseForm spouseType="husband" spouse={currentHusband || {
+                        id: '',
+                        firstName: '',
+                        lastName: '',
+                        name: '',
+                        isAlive: true,
+                        birthDate: null,
+                        deathDate: null,
+                        maritalStatus: 'married',
+                        isFamilyMember: false,
+                        existingFamilyMemberId: '',
+                        croppedImage: null,
+                        biography: '',
+                        isSaved: false
+                      }} onSpouseChange={setCurrentHusband} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={husbandCommandOpen} onCommandOpenChange={setHusbandCommandOpen} familyStatus={husbandFamilyStatus} onFamilyStatusChange={handleHusbandFamilyStatusChange} onSave={handleHusbandSave} onAdd={handleAddHusband} onClose={handleCloseHusbandEdit} showForm={showHusbandForm} />
+                               </div>}
+                          </div>}
 
                         {/* Navigation Buttons */}
                         <div className="flex justify-between pt-6">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              e.nativeEvent.stopImmediatePropagation();
-                              handleCancelForm();
-                            }}
-                            size="lg"
-                            className="flex items-center gap-2"
-                          >
+                          <Button type="button" variant="outline" onClick={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
+                      handleCancelForm();
+                    }} size="lg" className="flex items-center gap-2">
                             إلغاء
                           </Button>
                          
-                         {currentStep < 2 ? (
-                           <Button
-                             type="button"
-                             onClick={nextStep}
-                             size="lg"
-                             className="flex items-center gap-2"
-                           >
+                         {currentStep < 2 ? <Button type="button" onClick={nextStep} size="lg" className="flex items-center gap-2">
                              التالي
                              <ArrowLeft className="h-4 w-4" />
-                           </Button>
-                          ) : (
-                            <div className="flex items-center gap-3">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={prevStep}
-                                size="lg"
-                                className="flex items-center gap-2"
-                              >
+                           </Button> : <div className="flex items-center gap-3">
+                              <Button type="button" variant="outline" onClick={prevStep} size="lg" className="flex items-center gap-2">
                                 <ArrowRight className="h-4 w-4" />
                                 العودة
                               </Button>
-                              <Button
-                                type="button"
-                                onClick={() => handleFormSubmit(formData)}
-                                disabled={isSaving}
-                                size="lg"
-                                className="flex items-center gap-2"
-                              >
-                                {isSaving ? (
-                                  <>
+                              <Button type="button" onClick={() => handleFormSubmit(formData)} disabled={isSaving} size="lg" className="flex items-center gap-2">
+                                {isSaving ? <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                                     جاري الحفظ...
-                                  </>
-                                ) : (
-                                  <>
+                                  </> : <>
                                     <Save className="h-4 w-4" />
                                     حفظ
-                                  </>
-                                )}
+                                  </>}
                               </Button>
-                            </div>
-                          )}
+                            </div>}
                       </div>
-                    </div>
-                  )}
+                    </div>}
                 </CardContent>
               </Card>
             </div>
 
             {/* Member List - Left Side on Desktop */}
-            <div className={cn(
-              "space-y-4",
-              isMobile ? "order-1" : "col-span-4 order-1"
-            )}>
-              {isMobile ? (
-                <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
+            <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
+              {isMobile ? <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
                   <DrawerTrigger asChild>
                     <Button variant="outline" className="w-full flex items-center gap-2">
                       <Menu className="h-4 w-4" />
@@ -4879,31 +4207,10 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                        <MemberList 
-                          members={filteredMembers}
-                         onEditMember={handleEditMember}
-                         onViewMember={handleViewMember}
-                          onDeleteMember={handleDeleteMember}
-                           onSpouseEditAttempt={handleSpouseEditWarning}
-                          checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                          searchTerm={searchTerm}
-                          onSearchChange={setSearchTerm}
-                          selectedFilter={selectedFilter}
-                          onFilterChange={setSelectedFilter}
-                          getAdditionalInfo={getAdditionalInfo}
-                         getGenderColor={getGenderColor}
-                         familyMembers={familyMembers}
-                         marriages={familyMarriages}
-                         memberListLoading={memberListLoading}
-                         formMode={formMode}
-                         onAddMember={handleAddMember}
-                         packageData={packageData}
-                        />
+                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
                     </div>
                   </DrawerContent>
-                </Drawer>
-              ) : (
-                <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl">
+                </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
                   <CardHeader className="pb-4 relative">
                     <CardTitle className="flex items-center gap-2">
@@ -4914,29 +4221,9 @@ const FamilyBuilderNew = () => {
                      </CardTitle>
                   </CardHeader>
                   <CardContent className="relative">
-                      <MemberList 
-                        members={filteredMembers}
-                         onEditMember={handleEditMember}
-                         onViewMember={handleViewMember}
-                        onDeleteMember={handleDeleteMember}
-                        onSpouseEditAttempt={handleSpouseEditWarning}
-                        checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
-                        selectedFilter={selectedFilter}
-                        onFilterChange={setSelectedFilter}
-                        getAdditionalInfo={getAdditionalInfo}
-                       getGenderColor={getGenderColor}
-                       familyMembers={familyMembers}
-                       marriages={familyMarriages}
-                       memberListLoading={memberListLoading}
-                       formMode={formMode}
-                       onAddMember={handleAddMember}
-                       packageData={packageData}
-                     />
+                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
                   </CardContent>
-                </Card>
-              )}
+                </Card>}
             </div>
           </div>
         </div>
@@ -4967,10 +4254,7 @@ const FamilyBuilderNew = () => {
               <AlertDialogCancel className="flex-1 h-12 text-base border-2 font-arabic hover:bg-gray-50 transition-all duration-300">
                 إلغاء
               </AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={confirmSpouseDelete}
-                className="flex-1 h-12 text-base bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-arabic shadow-lg hover:shadow-xl transition-all duration-300 border-0"
-              >
+              <AlertDialogAction onClick={confirmSpouseDelete} className="flex-1 h-12 text-base bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-arabic shadow-lg hover:shadow-xl transition-all duration-300 border-0">
                 تأكيد الحذف
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -4989,38 +4273,18 @@ const FamilyBuilderNew = () => {
           </DialogHeader>
           
           <div className="space-y-4">
-            {selectedImage && (
-              <div className="relative h-96">
-                <Cropper
-                  image={selectedImage}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onCropComplete={onCropComplete}
-                  onZoomChange={setZoom}
-                />
-              </div>
-            )}
+            {selectedImage && <div className="relative h-96">
+                <Cropper image={selectedImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onCropComplete={onCropComplete} onZoomChange={setZoom} />
+              </div>}
             
             <div className="space-y-2">
               <Label>التكبير</Label>
-              <Slider
-                value={[zoom]}
-                onValueChange={(value) => setZoom(value[0])}
-                min={1}
-                max={3}
-                step={0.1}
-                className="w-full"
-              />
+              <Slider value={[zoom]} onValueChange={value => setZoom(value[0])} min={1} max={3} step={0.1} className="w-full" />
             </div>
           </div>
           
           <DialogFooter className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowCropDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowCropDialog(false)}>
               إلغاء
             </Button>
             <Button onClick={handleCropSave}>
@@ -5047,8 +4311,7 @@ const FamilyBuilderNew = () => {
               </AlertDialogTitle>
             </AlertDialogHeader>
 
-            {memberToDelete && (
-              <div className="space-y-4 px-2">
+            {memberToDelete && <div className="space-y-4 px-2">
                 {/* Member being deleted */}
                 <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border-2 border-red-200 animate-fade-in">
                   <div className="flex items-center gap-3 mb-3">
@@ -5073,32 +4336,22 @@ const FamilyBuilderNew = () => {
                   
                   <div className="p-4 space-y-3">
                     {(() => {
-                      const spouses = familyMarriages
-                        .filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id)
-                        .map((marriage: any) => {
-                          const spouseId = marriage.husband?.id === memberToDelete.id ? marriage.wife?.id : marriage.husband?.id;
-                          return familyMembers.find(m => m.id === spouseId);
-                        })
-                        .filter(Boolean);
-
-                      const children = familyMembers.filter(m => m.fatherId === memberToDelete.id || m.motherId === memberToDelete.id);
-                      
-                      const getAllDescendants = (parentId: string): any[] => {
-                        const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
-                        let allDescendants = [...directChildren];
-                        directChildren.forEach(child => {
-                          allDescendants = [...allDescendants, ...getAllDescendants(child.id)];
-                        });
-                        return allDescendants;
-                      };
-
-                      const allDescendants = getAllDescendants(memberToDelete.id);
-                      const marriages = familyMarriages.filter((marriage: any) => 
-                        marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id
-                      );
-
-                      return (
-                        <>
+                  const spouses = familyMarriages.filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id).map((marriage: any) => {
+                    const spouseId = marriage.husband?.id === memberToDelete.id ? marriage.wife?.id : marriage.husband?.id;
+                    return familyMembers.find(m => m.id === spouseId);
+                  }).filter(Boolean);
+                  const children = familyMembers.filter(m => m.fatherId === memberToDelete.id || m.motherId === memberToDelete.id);
+                  const getAllDescendants = (parentId: string): any[] => {
+                    const directChildren = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
+                    let allDescendants = [...directChildren];
+                    directChildren.forEach(child => {
+                      allDescendants = [...allDescendants, ...getAllDescendants(child.id)];
+                    });
+                    return allDescendants;
+                  };
+                  const allDescendants = getAllDescendants(memberToDelete.id);
+                  const marriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === memberToDelete.id || marriage.wife?.id === memberToDelete.id);
+                  return <>
                           {/* Main person */}
                           <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
                             <User className="h-4 w-4 text-red-600" />
@@ -5106,50 +4359,39 @@ const FamilyBuilderNew = () => {
                           </div>
 
                           {/* Spouses */}
-                          {spouses.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                          {spouses.length > 0 && <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200">
                               <Heart className="h-4 w-4 text-pink-600" />
                               <div>
                                 <span className="text-pink-800 font-medium">الأزواج: {spouses.length}</span>
                                 <div className="text-sm text-pink-700 mt-1">
-                                  {spouses.map((spouse, index) => (
-                                    <span key={index}>
+                                  {spouses.map((spouse, index) => <span key={index}>
                                       {spouse?.name || 'غير معروف'}
                                       {index < spouses.length - 1 && ', '}
-                                    </span>
-                                  ))}
+                                    </span>)}
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
                           {/* Children and descendants */}
-                          {children.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          {children.length > 0 && <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                               <Users className="h-4 w-4 text-blue-600" />
                               <div>
                                 <span className="text-blue-800 font-medium">
                                   الأطفال المباشرين: {children.length}
                                 </span>
-                                {allDescendants.length > children.length && (
-                                  <div className="text-sm text-blue-700 mt-1">
+                                {allDescendants.length > children.length && <div className="text-sm text-blue-700 mt-1">
                                     إجمالي الأحفاد: {allDescendants.length} شخص
-                                  </div>
-                                )}
+                                  </div>}
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
                           {/* Marriages */}
-                          {marriages.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                          {marriages.length > 0 && <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
                               <Heart className="h-4 w-4 text-purple-600" />
                               <span className="text-purple-800 font-medium">علاقات الزواج: {marriages.length}</span>
-                            </div>
-                          )}
-                        </>
-                      );
-                    })()}
+                            </div>}
+                        </>;
+                })()}
                   </div>
                 </div>
 
@@ -5165,8 +4407,7 @@ const FamilyBuilderNew = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
 
           <AlertDialogFooter className="gap-3 pt-6">
@@ -5174,10 +4415,7 @@ const FamilyBuilderNew = () => {
               <X className="h-4 w-4 mr-2" />
               إلغاء
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-medium shadow-lg"
-            >
+            <AlertDialogAction onClick={confirmDelete} className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-medium shadow-lg">
               <Trash2 className="h-4 w-4 mr-2" />
               تأكيد الحذف
             </AlertDialogAction>
@@ -5216,8 +4454,7 @@ const FamilyBuilderNew = () => {
               </div>
 
               {/* Partner name highlight */}
-              {spousePartnerDetails.name && (
-                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
+              {spousePartnerDetails.name && <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-sm animate-fade-in">
                    <div className="flex items-center justify-center mb-2">
                      <Edit className="h-5 w-5 text-primary mr-2" />
                      <div className="text-sm text-gray-600">للتعديل، انتقل إلى:</div>
@@ -5226,19 +4463,14 @@ const FamilyBuilderNew = () => {
                      <div className="font-bold text-primary text-lg animate-pulse">
                        {spousePartnerDetails.name}
                      </div>
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && (
-                         <div className="text-sm text-gray-600 mt-1">
+                       {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && <div className="text-sm text-gray-600 mt-1">
                            ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                         </div>
-                       )}
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && (
-                         <div className="text-xs text-gray-500 mt-1">
+                         </div>}
+                       {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && <div className="text-xs text-gray-500 mt-1">
                            حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                         </div>
-                      )}
+                         </div>}
                    </div>
-                </div>
-              )}
+                </div>}
 
               {/* Info section */}
               <div className="bg-blue-50 rounded-lg p-3 border border-blue-200 animate-fade-in">
@@ -5258,25 +4490,18 @@ const FamilyBuilderNew = () => {
                 <ArrowRight className="h-4 w-4 mr-2" />
                 عودة
               </AlertDialogCancel>
-              <Button 
-                className="font-arabic w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white transition-all duration-200 hover-scale"
-                onClick={() => {
-                  setShowSpouseEditWarning(false);
-                  // Find the specific member to edit based on spousePartnerDetails
-                  const memberToEdit = familyMembers.find(member => 
-                    member.first_name === spousePartnerDetails.name || 
-                    member.name === spousePartnerDetails.name ||
-                    `${member.first_name} ${member.last_name}`.trim() === spousePartnerDetails.name
-                  );
-                  if (memberToEdit) {
-                    setFormMode('edit');
-                    setEditingMember(memberToEdit);
-                    setCurrentStep(1);
-                    populateFormData(memberToEdit);
-                    if (isMobile) setIsMemberListOpen(false);
-                  }
-                }}
-              >
+              <Button className="font-arabic w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white transition-all duration-200 hover-scale" onClick={() => {
+              setShowSpouseEditWarning(false);
+              // Find the specific member to edit based on spousePartnerDetails
+              const memberToEdit = familyMembers.find(member => member.first_name === spousePartnerDetails.name || member.name === spousePartnerDetails.name || `${member.first_name} ${member.last_name}`.trim() === spousePartnerDetails.name);
+              if (memberToEdit) {
+                setFormMode('edit');
+                setEditingMember(memberToEdit);
+                setCurrentStep(1);
+                populateFormData(memberToEdit);
+                if (isMobile) setIsMemberListOpen(false);
+              }
+            }}>
                 <Edit className="h-4 w-4 mr-2" />
                 تعديل بيانات {spousePartnerDetails.name ? spousePartnerDetails.name.split(' ')[0] : "العضو"}
               </Button>
@@ -5319,20 +4544,13 @@ const FamilyBuilderNew = () => {
           </div>
 
           <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowUpgradeModal(false)}
-              className="flex-1"
-            >
+            <Button variant="outline" onClick={() => setShowUpgradeModal(false)} className="flex-1">
               إلغاء
             </Button>
-            <Button 
-              onClick={() => {
-                setShowUpgradeModal(false);
-                navigate('/plan-selection');
-              }}
-              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-            >
+            <Button onClick={() => {
+            setShowUpgradeModal(false);
+            navigate('/plan-selection');
+          }} className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
               <Crown className="h-4 w-4 ml-2" />
               ترقية الباقة
             </Button>
@@ -5341,21 +4559,20 @@ const FamilyBuilderNew = () => {
       </Dialog>
 
       <GlobalFooterSimplified />
-    </div>
-  );
+    </div>;
 };
 
 // Member List Component
-const MemberList = ({ 
-  members, 
+const MemberList = ({
+  members,
   onEditMember,
-  onViewMember, 
+  onViewMember,
   onDeleteMember,
   onSpouseEditAttempt,
   checkIfMemberIsSpouse,
-  searchTerm, 
-  onSearchChange, 
-  selectedFilter, 
+  searchTerm,
+  onSearchChange,
+  selectedFilter,
   onFilterChange,
   getAdditionalInfo,
   getGenderColor,
@@ -5366,17 +4583,11 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="ابحث عن عضو..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
-        />
+        <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
       </div>
 
       {/* Filter */}
@@ -5395,24 +4606,16 @@ const MemberList = ({
       </Select>
 
       {/* Add Member Button */}
-      {formMode === 'view' && (
-        <TooltipProvider>
+      {formMode === 'view' && <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                onClick={onAddMember} 
-                className="w-full flex items-center gap-2"
-              >
+              <Button onClick={onAddMember} className="w-full flex items-center gap-2">
                 <Plus className="h-4 w-4" />
-                {packageData && familyMembers.length >= packageData.max_family_members 
-                  ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)`
-                  : 'إضافة عضو جديد'
-                }
+                {packageData && familyMembers.length >= packageData.max_family_members ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)` : 'إضافة عضو جديد'}
               </Button>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs" side="top">
-              {packageData && familyMembers.length >= packageData.max_family_members ? (
-                <div className="text-center">
+              {packageData && familyMembers.length >= packageData.max_family_members ? <div className="text-center">
                   <p className="font-semibold text-destructive mb-1">
                     🚫 تم الوصول للحد الأقصى
                   </p>
@@ -5422,21 +4625,18 @@ const MemberList = ({
                   <p className="text-xs mt-2 text-muted-foreground">
                     قم بترقية باقتك لإضافة المزيد من الأعضاء
                   </p>
-                </div>
-              ) : (
-                <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>
-              )}
+                </div> : <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>}
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-      )}
+        </TooltipProvider>}
 
       {/* Member List */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
-        {memberListLoading ? (
-          // Loading skeletons
-          Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
+        {memberListLoading ?
+      // Loading skeletons
+      Array.from({
+        length: 3
+      }).map((_, index) => <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
               <div className="flex items-start gap-3">
                 <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
                 <div className="flex-1 space-y-2">
@@ -5449,20 +4649,10 @@ const MemberList = ({
                   <Skeleton className="h-8 w-8 rounded-full" />
                 </div>
               </div>
-            </div>
-          ))
-        ) : members.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+            </div>) : members.length === 0 ? <div className="text-center py-8 text-muted-foreground">
             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>لا توجد أعضاء</p>
-          </div>
-        ) : (
-          members.map((member: any) => (
-            <Card 
-              key={member.id} 
-              className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden"
-              onClick={() => onViewMember(member)}
-            >
+          </div> : members.map((member: any) => <Card key={member.id} className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-3 min-h-[80px]">
                   <div className="flex items-start gap-3 flex-1">
@@ -5476,157 +4666,122 @@ const MemberList = ({
                     <div className="flex-1 min-w-0 space-y-1">
                       {/* Name */}
                       <div className="flex items-center gap-2">
-                        {member.gender === 'male' ? (
-                          <User className="h-3 w-3 text-blue-500" />
-                        ) : (
-                          <UserIcon className="h-3 w-3 text-pink-500" />
-                        )}
+                        {member.gender === 'male' ? <User className="h-3 w-3 text-blue-500" /> : <UserIcon className="h-3 w-3 text-pink-500" />}
                         <h3 className="font-semibold text-base font-arabic leading-tight">
                          {(() => {
-                             const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
-                            
-                            if (isSpouse) {
-                              // For spouses: show first_name + last_name, or name if missing
-                              const firstName = member.first_name || '';
-                              const lastName = member.last_name || '';
-                              
-                              if (firstName && lastName) {
-                                return `${firstName} ${lastName}`;
-                              }
-                              return member.name || "غير معروف";
-                            } else {
-                              // For founders and other native family members: show first_name, or split name if missing
-                              return member.first_name || member.name?.split(' ')[0] || member.name || "غير معروف";
-                            }
-                          })()}
+                      const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
+                      if (isSpouse) {
+                        // For spouses: show first_name + last_name, or name if missing
+                        const firstName = member.first_name || '';
+                        const lastName = member.last_name || '';
+                        if (firstName && lastName) {
+                          return `${firstName} ${lastName}`;
+                        }
+                        return member.name || "غير معروف";
+                      } else {
+                        // For founders and other native family members: show first_name, or split name if missing
+                        return member.first_name || member.name?.split(' ')[0] || member.name || "غير معروف";
+                      }
+                    })()}
                         </h3>
                         {(() => {
-                          // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
-                          const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-                          const isDescendant = !member.isFounder && memberHasFamilyFather;
-                          
-                          if (isDescendant) {
-                            return (
-                              <span className="text-xs text-muted-foreground font-normal">
+                    // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
+                    const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
+                    const isDescendant = !member.isFounder && memberHasFamilyFather;
+                    if (isDescendant) {
+                      return <span className="text-xs text-muted-foreground font-normal">
                                 {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                              </span>
-                            );
-                          }
-                          return null;
-                        })()}
+                              </span>;
+                    }
+                    return null;
+                  })()}
                       </div>
                       
                       {/* Father + Grandfather names */}
                       {(() => {
-                        const father = familyMembers?.find(m => m?.id === member.fatherId);
-                        const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
-                        
-                        if (father && grandfather) {
-                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                          const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                          return (
-                            <p className="text-sm text-muted-foreground truncate font-arabic">
+                  const father = familyMembers?.find(m => m?.id === member.fatherId);
+                  const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
+                  if (father && grandfather) {
+                    const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                    const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                    return <p className="text-sm text-muted-foreground truncate font-arabic">
                               {fatherFirstName} ابن {grandfatherFirstName}
-                            </p>
-                          );
-                        } else if (father) {
-                          const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                          return (
-                            <p className="text-sm text-muted-foreground truncate font-arabic">
+                            </p>;
+                  } else if (father) {
+                    const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                    return <p className="text-sm text-muted-foreground truncate font-arabic">
                               {fatherFirstName}
-                            </p>
-                          );
-                        }
-                        return null;
-                      })()}
+                            </p>;
+                  }
+                  return null;
+                })()}
                       
                       {/* Spouse information - show founder text for founders, spouse info for non-family members */}
                       {(() => {
-                        // Show founder text for founders
-                        if (member.isFounder) {
-                          return (
-                            <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                  // Show founder text for founders
+                  if (member.isFounder) {
+                    return <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
                               الجد الأكبر للعائلة
-                            </p>
-                          );
+                            </p>;
+                  }
+
+                  // Find marriage where this member is husband or wife
+                  const marriage = marriages?.find(m => m.husband?.id === member.id || m.wife?.id === member.id || m.husband_id === member.id || m.wife_id === member.id);
+                  if (marriage) {
+                    // Determine if this member is the husband or wife
+                    const isHusband = marriage.husband?.id === member.id || marriage.husband_id === member.id;
+
+                    // Get spouse data - try both nested object and direct ID approaches
+                    let spouse;
+                    let spouseId;
+                    if (isHusband) {
+                      spouse = marriage.wife;
+                      spouseId = marriage.wife_id;
+                    } else {
+                      spouse = marriage.husband;
+                      spouseId = marriage.husband_id;
+                    }
+
+                    // If spouse is not in nested object, find by ID
+                    if (!spouse && spouseId) {
+                      spouse = familyMembers?.find(m => m?.id === spouseId);
+                    }
+                    if (spouse) {
+                      // Check if current member is a non-family member (married into the family)
+                      // A non-family member would not have father/grandfather in the family tree
+                      const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
+
+                      // Only show spouse info for non-family members (those without family fathers)
+                      if (!memberHasFamilyFather) {
+                        // Get spouse's father from familyMembers
+                        const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
+                        const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
+
+                        // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
+                        const spouseName = spouseFullData?.first_name || spouse.first_name || spouse.name?.split(' ')[0] || spouse.name;
+                        let spouseInfo = spouseName;
+                        if (spouseFather) {
+                          const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
+                          const genderTerm = spouseFullData?.gender === 'female' ? 'ابنة' : 'ابن';
+                          spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
                         }
 
-                        // Find marriage where this member is husband or wife
-                        const marriage = marriages?.find(m => 
-                          (m.husband?.id === member.id || m.wife?.id === member.id) ||
-                          (m.husband_id === member.id || m.wife_id === member.id)
-                        );
-                        
-                        if (marriage) {
-                          // Determine if this member is the husband or wife
-                          const isHusband = (marriage.husband?.id === member.id) || (marriage.husband_id === member.id);
-                          
-                          // Get spouse data - try both nested object and direct ID approaches
-                          let spouse;
-                          let spouseId;
-                          
-                          if (isHusband) {
-                            spouse = marriage.wife;
-                            spouseId = marriage.wife_id;
-                          } else {
-                            spouse = marriage.husband;
-                            spouseId = marriage.husband_id;
-                          }
-                          
-                          // If spouse is not in nested object, find by ID
-                          if (!spouse && spouseId) {
-                            spouse = familyMembers?.find(m => m?.id === spouseId);
-                          }
-                          
-                          if (spouse) {
-                            // Check if current member is a non-family member (married into the family)
-                            // A non-family member would not have father/grandfather in the family tree
-                            const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-                            
-                            // Only show spouse info for non-family members (those without family fathers)
-                            if (!memberHasFamilyFather) {
-                              // Get spouse's father from familyMembers
-                              const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
-                              const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
-                              
-                              // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
-                              const spouseName = spouseFullData?.first_name || spouse.first_name || spouse.name?.split(' ')[0] || spouse.name;
-                              
-                              let spouseInfo = spouseName;
-                              if (spouseFather) {
-                                const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
-                                const genderTerm = spouseFullData?.gender === 'female' ? 'ابنة' : 'ابن';
-                                spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
-                              }
-                              
-                              // Use زوج for husband, زوجة for wife (from member's perspective)
-                              const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-                              
-                              return (
-                                <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                        // Use زوج for husband, زوجة for wife (from member's perspective)
+                        const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+                        return <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
                                   {relationLabel} {spouseInfo}
-                                </p>
-                              );
-                            }
-                          }
-                        }
-                        return null;
-                      })()}
+                                </p>;
+                      }
+                    }
+                  }
+                  return null;
+                })()}
                       
                       {/* Birth date and other icons */}
                       <div className="flex items-center gap-2">
-                        {member.birthDate && (
-                          <DateDisplay 
-                            date={member.birthDate} 
-                            className="text-xs text-muted-foreground font-arabic"
-                          />
-                        )}
-                        {member.isFounder && (
-                          <Crown className="h-3 w-3 text-yellow-500" />
-                        )}
-                        {!member.isAlive && (
-                          <Skull className="h-3 w-3 text-muted-foreground" />
-                        )}
+                        {member.birthDate && <DateDisplay date={member.birthDate} className="text-xs text-muted-foreground font-arabic" />}
+                        {member.isFounder && <Crown className="h-3 w-3 text-yellow-500" />}
+                        {!member.isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
                       </div>
                     </div>
                   </div>
@@ -5634,65 +4789,33 @@ const MemberList = ({
                    {/* Edit & Remove buttons at the most left */}
                   <div className="flex flex-col gap-1 flex-shrink-0">
                      {/* Only show edit button for non-spouse members */}
-                     {!checkIfMemberIsSpouse(member) ? (
-                       <Button
-                         type="button"
-                         size="sm"
-                         variant="outline"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             onEditMember(member);
-                           }}
-                         className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
-                       >
+                     {!checkIfMemberIsSpouse(member) ? <Button type="button" size="sm" variant="outline" onClick={e => {
+                e.stopPropagation();
+                onEditMember(member);
+              }} className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm">
                          <Edit2 className="h-3 w-3 text-gray-600" />
-                       </Button>
-                     ) : (
-                       <Button
-                         type="button"
-                         size="sm"
-                         variant="outline"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           onSpouseEditAttempt(member);
-                         }}
-                         className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm"
-                       >
+                       </Button> : <Button type="button" size="sm" variant="outline" onClick={e => {
+                e.stopPropagation();
+                onSpouseEditAttempt(member);
+              }} className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm">
                          <Edit2 className="h-3 w-3 text-yellow-600" />
-                       </Button>
-                     )}
+                       </Button>}
                     
-                     <Button
-                       type="button"
-                       size="sm"
-                       variant="outline"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           if (checkIfMemberIsSpouse(member)) {
-                             onSpouseEditAttempt(member);
-                           } else {
-                             onDeleteMember(member);
-                           }
-                         }}
-                       className={`h-7 w-7 p-0 border shadow-sm ${
-                         checkIfMemberIsSpouse(member) 
-                           ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' 
-                           : 'bg-red-50/80 hover:bg-red-100 border-red-200'
-                       }`}
-                     >
-                       <Trash2 className={`h-3 w-3 ${
-                         checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'
-                       }`} />
+                     <Button type="button" size="sm" variant="outline" onClick={e => {
+                e.stopPropagation();
+                if (checkIfMemberIsSpouse(member)) {
+                  onSpouseEditAttempt(member);
+                } else {
+                  onDeleteMember(member);
+                }
+              }} className={`h-7 w-7 p-0 border shadow-sm ${checkIfMemberIsSpouse(member) ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' : 'bg-red-50/80 hover:bg-red-100 border-red-200'}`}>
+                       <Trash2 className={`h-3 w-3 ${checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'}`} />
                      </Button>
                   </div>
                 </div>
               </CardContent>
-            </Card>
-          ))
-        )}
+            </Card>)}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default FamilyBuilderNew;
