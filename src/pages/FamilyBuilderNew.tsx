@@ -175,7 +175,7 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
 
   return (
     <Card className={`relative overflow-hidden transition-all duration-300 ${!hasAccess ? "opacity-60" : "hover:shadow-lg border-primary/20"}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 pointer-events-none" />
       <CardHeader className="relative pb-4">
         <CardTitle className="text-lg flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10">
