@@ -430,53 +430,6 @@ const TreeSettingsView = ({
 
       {/* Content */}
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-        {/* مشاركة الشجرة */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Share2 className="h-4 w-4" />
-              مشاركة الشجرة
-            </CardTitle>
-            <CardDescription className="text-xs">
-              شارك شجرة العائلة مع الآخرين
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <Label htmlFor="shareLink" className="text-xs">رابط الشجرة</Label>
-              <div className="flex gap-2">
-                <Input id="shareLink" value={shareableLink} readOnly className="flex-1 text-xs" />
-                <Button variant="outline" size="sm" onClick={handleCopyLink} className="flex items-center gap-1">
-                  <Copy className="h-3 w-3" />
-                  نسخ
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button onClick={handleShareTree} size="sm" className="flex items-center gap-2 text-xs">
-                <Share2 className="h-3 w-3" />
-                مشاركة
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => window.open(shareableLink, '_blank')} className="flex items-center gap-2 text-xs">
-                <Eye className="h-3 w-3" />
-                معاينة
-              </Button>
-            </div>
-
-            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
-              <div className="flex items-center gap-2">
-                <Shield className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs font-medium">معلومات الرابط</span>
-              </div>
-              <div className="text-xs text-muted-foreground space-y-0.5">
-                <p>• يمكن لأي شخص لديه الرابط مشاهدة الشجرة</p>
-                <p>• لا يمكن للزوار تعديل المعلومات</p>
-                <p>• الرابط صالح ما لم تحذف الشجرة</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* الرابط المخصص - ميزة مدفوعة */}
         <CustomDomainCard familyData={familyData} />
