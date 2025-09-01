@@ -250,8 +250,20 @@ const CustomDomainCard = ({ familyData }: { familyData: any }) => {
                   <span className="hidden sm:inline">مشاركة</span>
                   <span className="sm:hidden">شارك</span>
                 </Button>
-              </div>
-            </div>
+               </div>
+               
+               <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                 <div className="flex items-center gap-2">
+                   <Shield className="h-3 w-3 text-muted-foreground" />
+                   <span className="text-xs font-medium">معلومات الرابط</span>
+                 </div>
+                 <div className="text-xs text-muted-foreground space-y-0.5">
+                   <p>• يمكن لأي شخص لديه الرابط مشاهدة الشجرة</p>
+                   <p>• لا يمكن للزوار تعديل المعلومات</p>
+                   <p>• الرابط صالح ما لم تحذف الشجرة</p>
+                 </div>
+               </div>
+             </div>
           </div>
 
           {/* Custom Domain Option - Premium Feature */}
@@ -556,17 +568,6 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
               </Button>
             </div>
 
-            <div className="bg-muted/50 rounded-lg p-3 space-y-1">
-              <div className="flex items-center gap-2">
-                <Shield className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs font-medium">معلومات الرابط</span>
-              </div>
-              <div className="text-xs text-muted-foreground space-y-0.5">
-                <p>• يمكن لأي شخص لديه الرابط مشاهدة الشجرة</p>
-                <p>• لا يمكن للزوار تعديل المعلومات</p>
-                <p>• الرابط صالح ما لم تحذف الشجرة</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
