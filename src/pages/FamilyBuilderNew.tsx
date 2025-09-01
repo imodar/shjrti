@@ -504,7 +504,7 @@ const TreeSettingsView = ({ familyData, onBack }: { familyData: any; onBack: () 
         </Button>
         <div className="flex items-center gap-3 flex-1">
           <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-md">
-            <Settings className="h-4 w-4 text-white" />
+            
           </div>
           <div>
             <h2 className="font-semibold text-foreground">إعدادات الشجرة</h2>
