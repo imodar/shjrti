@@ -3805,27 +3805,76 @@ const FamilyBuilderNew = () => {
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? <div className="py-8 px-6">
                        {/* Family Overview Header */}
-                        <div className="relative bg-card/50 rounded-xl p-4 sm:p-6 mb-8 border border-border/20">
-                          {/* Header with settings button */}
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center shadow-md">
-                                  <TreePine className="h-6 w-6 text-primary-foreground" />
+                        <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-card to-secondary/5 rounded-2xl p-6 sm:p-8 mb-8 border border-primary/10 shadow-lg">
+                          {/* Background decorative elements */}
+                          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-primary/20 to-transparent rounded-full blur-3xl -translate-y-20 translate-x-20"></div>
+                          <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-secondary/20 to-transparent rounded-full blur-2xl translate-y-16 -translate-x-16"></div>
+                          
+                          {/* Settings button - floating top right */}
+                          <div className="absolute top-4 left-4 z-20">
+                            <div className="relative group">
+                              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
+                              <div className="relative">
+                                <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="relative z-10 pt-8">
+                            {/* Main content container */}
+                            <div className="text-center space-y-6">
+                              {/* Icon with creative styling */}
+                              <div className="relative inline-block">
+                                <div className="relative">
+                                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/25 transform hover:scale-105 transition-all duration-500 border border-primary/20">
+                                    <TreePine className="h-10 w-10 sm:h-12 sm:w-12 text-primary-foreground" />
+                                  </div>
+                                  {/* Decorative rings */}
+                                  <div className="absolute inset-0 rounded-3xl border-2 border-primary/30 animate-pulse"></div>
+                                  <div className="absolute -inset-2 rounded-3xl border border-primary/10"></div>
                                 </div>
-                                <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-                                  عائلة {familyData?.name || 'غير محدد'}
-                                </h2>
+                                
+                                {/* Status indicator */}
+                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full border-2 border-card shadow-lg">
+                                  <div className="w-full h-full rounded-full bg-green-400 animate-ping opacity-75"></div>
+                                </div>
                               </div>
                               
+                              {/* Title section */}
+                              <div className="space-y-3">
+                                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                                  <span className="bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent">
+                                    عائلة {familyData?.name || 'غير محدد'}
+                                  </span>
+                                </h2>
+                                
+                                {/* Decorative line */}
+                                <div className="flex items-center justify-center">
+                                  <div className="h-1 w-16 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                                </div>
+                              </div>
+                              
+                              {/* Description */}
                               {familyData?.description && (
-                                <p className="text-muted-foreground text-sm leading-relaxed max-w-md">
-                                  {familyData.description}
-                                </p>
+                                <div className="max-w-lg mx-auto">
+                                  <div className="relative">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl blur-sm"></div>
+                                    <p className="relative text-muted-foreground text-sm sm:text-base leading-relaxed p-4 bg-card/80 backdrop-blur-sm rounded-xl border border-primary/10 shadow-sm">
+                                      {familyData.description}
+                                    </p>
+                                  </div>
+                                </div>
                               )}
+                              
+                              {/* Bottom decorative elements */}
+                              <div className="flex items-center justify-center pt-4">
+                                <div className="flex space-x-2">
+                                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce delay-100"></div>
+                                  <div className="w-2 h-2 bg-primary/30 rounded-full animate-bounce delay-200"></div>
+                                </div>
+                              </div>
                             </div>
-                            
-                            <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
                           </div>
                         </div>
 
