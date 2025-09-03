@@ -514,7 +514,12 @@ const TreeSettingsView = ({
   const {
     toast
   } = useToast();
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [description, setDescription] = useState(familyData?.description || '');
+  const [isUpdatingDescription, setIsUpdatingDescription] = useState(false);
+  
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
+  
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareableLink);
     toast({
@@ -522,6 +527,7 @@ const TreeSettingsView = ({
       description: "تم نسخ رابط الشجرة إلى الحافظة"
     });
   };
+  
   const handleShareTree = () => {
     if (navigator.share) {
       navigator.share({
@@ -532,6 +538,53 @@ const TreeSettingsView = ({
       handleCopyLink();
     }
   };
+
+  const handleSaveDescription = async () => {
+    setIsUpdatingDescription(true);
+    try {
+      const { error } = await supabase
+        .from('families')
+        .update({ 
+          description: description.trim() || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', familyData?.id);
+
+      if (error) {
+        console.error('Error updating family description:', error);
+        toast({
+          title: "خطأ",
+          description: "فشل في حفظ وصف العائلة",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update the local family data
+      familyData.description = description.trim() || null;
+      
+      toast({
+        title: "تم الحفظ",
+        description: "تم حفظ وصف العائلة بنجاح"
+      });
+      setIsEditingDescription(false);
+    } catch (error) {
+      console.error('Error updating family description:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حفظ وصف العائلة",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdatingDescription(false);
+    }
+  };
+
+  const handleCancelEditDescription = () => {
+    setDescription(familyData?.description || '');
+    setIsEditingDescription(false);
+  };
+
   return <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-6 border-b">
@@ -582,12 +635,68 @@ const TreeSettingsView = ({
               </div>
             </div>
             
-            {familyData?.description && <div className="space-y-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <Label className="text-xs">وصف العائلة</Label>
-                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
-                  {familyData.description}
+                {!isEditingDescription && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setIsEditingDescription(true)}
+                    className="h-6 px-2 text-xs"
+                  >
+                    <Edit2 className="h-3 w-3 ml-1" />
+                    تعديل
+                  </Button>
+                )}
+              </div>
+              
+              {isEditingDescription ? (
+                <div className="space-y-3">
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="أدخل وصف العائلة..."
+                    className="min-h-[100px] text-sm"
+                    disabled={isUpdatingDescription}
+                  />
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      onClick={handleSaveDescription}
+                      disabled={isUpdatingDescription}
+                      className="text-xs"
+                    >
+                      {isUpdatingDescription ? (
+                        <>
+                          <div className="w-3 h-3 animate-spin rounded-full border-2 border-white border-t-transparent ml-1" />
+                          حفظ...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-3 w-3 ml-1" />
+                          حفظ
+                        </>
+                      )}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleCancelEditDescription}
+                      disabled={isUpdatingDescription}
+                      className="text-xs"
+                    >
+                      <X className="h-3 w-3 ml-1" />
+                      إلغاء
+                    </Button>
+                  </div>
                 </div>
-              </div>}
+              ) : (
+                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2 min-h-[60px]">
+                  {familyData?.description || 'لا يوجد وصف للعائلة. اضغط على "تعديل" لإضافة وصف.'}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
