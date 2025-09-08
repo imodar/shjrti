@@ -416,26 +416,28 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       <div
         className="relative overflow-auto bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner"
         style={{ 
-          transform: `scale(${zoomLevel})`, 
-          transformOrigin: 'top center',
           minHeight: '600px'
         }}
       >
-        {/* Background grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-30 pointer-events-none"
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
-            `,
-            backgroundSize: '40px 40px'
-          }}
-        />
-        
         <div
           className="relative"
-          style={{ width: chartWidth, height: chartHeight }}
+          style={{ 
+            width: chartWidth, 
+            height: chartHeight,
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'top left'
+          }}
         >
+          {/* Background grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-30 pointer-events-none"
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
+              `,
+              backgroundSize: '40px 40px'
+            }}
+          />
 
           {/* SVG for connection lines */}
           <svg
