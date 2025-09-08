@@ -3697,7 +3697,8 @@ const FamilyBuilderNew = () => {
 
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
-                  {formMode === 'view' ? <div className="relative min-h-screen bg-gradient-to-br from-background via-card/30 to-accent/10">
+                  {formMode === 'view' ? (
+                    <div className="relative min-h-screen bg-gradient-to-br from-background via-card/30 to-accent/10">
                        {/* Top Navigation Bar */}
                        <div className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border/50 shadow-lg">
                          <div className="flex items-center justify-between p-4">
@@ -4405,12 +4406,21 @@ const FamilyBuilderNew = () => {
                                   </>}
                               </Button>
                             </div>}
+                 </div>
                      </div>
-                 </CardContent>
-                    </div>}
-               </Card>
+                     </div>
+                  ) : (
+                    <div>
+                      {/* Other form modes content */}
+                      {formMode === 'add' && <p>Add Member Form</p>}
+                      {formMode === 'edit' && <p>Edit Member Form</p>}
+                      {formMode === 'profile' && <p>Profile Form</p>}
+                      {formMode === 'tree-settings' && <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} />}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
-                     </div>
 
             {/* Member List - Left Side on Desktop */}
             <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
