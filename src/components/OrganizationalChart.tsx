@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,24 +48,35 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    
-    setPanOffset({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    });
-  };
+  // Use effect to handle document-level mouse events when dragging
+  useEffect(() => {
+    const handleDocumentMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      setPanOffset({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    };
 
-  const handleMouseUp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    const handleDocumentMouseUp = (e: MouseEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+        setIsDragging(false);
+      }
+    };
 
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
+    if (isDragging) {
+      document.addEventListener('mousemove', handleDocumentMouseMove);
+      document.addEventListener('mouseup', handleDocumentMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleDocumentMouseMove);
+      document.removeEventListener('mouseup', handleDocumentMouseUp);
+    };
+  }, [isDragging, dragStart.x, dragStart.y]);
 
   // Build hierarchical structure
   const buildHierarchy = () => {
@@ -454,9 +465,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           touchAction: 'none'
         }}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
       >
         <div
           className="relative"
