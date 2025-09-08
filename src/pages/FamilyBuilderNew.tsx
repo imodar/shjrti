@@ -3698,74 +3698,94 @@ const FamilyBuilderNew = () => {
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? <div className="py-8 px-6">
-                       {/* Family Overview Header */}
-                        <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-card to-secondary/5 rounded-2xl p-6 sm:p-8 mb-8 border border-primary/10 shadow-lg">
-                          {/* Background decorative elements */}
-                          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-primary/20 to-transparent rounded-full blur-3xl -translate-y-20 translate-x-20"></div>
-                          <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-secondary/20 to-transparent rounded-full blur-2xl translate-y-16 -translate-x-16"></div>
+                       {/* Family Overview Header - Redesigned */}
+                        <div className="relative overflow-hidden bg-gradient-to-br from-background via-card/50 to-accent/5 rounded-3xl p-8 sm:p-12 mb-8 border border-border/50 shadow-2xl backdrop-blur-sm animate-fade-in">
+                          {/* Dynamic Background Pattern */}
+                          <div className="absolute inset-0 opacity-5">
+                            <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary rounded-full"></div>
+                            <div className="absolute top-20 right-20 w-24 h-24 border border-secondary rounded-full"></div>
+                            <div className="absolute bottom-10 left-20 w-20 h-20 border-2 border-accent rounded-full"></div>
+                            <div className="absolute bottom-20 right-10 w-16 h-16 border border-primary/50 rounded-full"></div>
+                          </div>
                           
-                          {/* Settings button - floating top right */}
-                          <div className="absolute top-4 left-4 z-20">
+                          {/* Animated Background Orbs */}
+                          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
+                          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                          
+                          {/* Settings Button - Enhanced */}
+                          <div className="absolute top-6 left-6 z-20">
                             <div className="relative group">
-                              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
-                              <div className="relative">
+                              <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-xl blur opacity-20 group-hover:opacity-40 transition-all duration-500 animate-pulse"></div>
+                              <div className="relative bg-card/80 backdrop-blur-md rounded-xl p-2 border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                                 <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
                               </div>
                             </div>
                           </div>
                           
-                          <div className="relative z-10 pt-8">
-                            {/* Main content container */}
-                            <div className="text-center space-y-6">
-                              {/* Icon with creative styling */}
+                          <div className="relative z-10 pt-4">
+                            {/* Hero Content */}
+                            <div className="text-center space-y-8">
+                              {/* Logo Section with Enhanced Design */}
                               <div className="relative inline-block">
-                                <div className="relative">
-                                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/25 transform hover:scale-105 transition-all duration-500 border border-primary/20">
-                                    <TreePine className="h-10 w-10 sm:h-12 sm:w-12 text-primary-foreground" />
+                                <div className="relative group">
+                                  {/* Main Icon Container */}
+                                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
+                                    {/* Animated background rings */}
+                                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-spin" style={{animationDuration: '10s'}}></div>
+                                    <div className="absolute inset-2 rounded-full border-2 border-secondary/30 animate-spin" style={{animationDuration: '8s', animationDirection: 'reverse'}}></div>
+                                    
+                                    {/* Main icon */}
+                                    <div className="absolute inset-4 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-full flex items-center justify-center shadow-2xl shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-500 border-2 border-primary/20">
+                                      <TreePine className="h-12 w-12 sm:h-14 sm:w-14 text-primary-foreground drop-shadow-lg" />
+                                    </div>
+                                    
+                                    {/* Active Status Indicator */}
+                                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full border-4 border-card shadow-xl flex items-center justify-center">
+                                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                                    </div>
                                   </div>
-                                  {/* Decorative rings */}
-                                  <div className="absolute inset-0 rounded-3xl border-2 border-primary/30 animate-pulse"></div>
-                                  <div className="absolute -inset-2 rounded-3xl border border-primary/10"></div>
-                                </div>
-                                
-                                {/* Status indicator */}
-                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full border-2 border-card shadow-lg">
-                                  <div className="w-full h-full rounded-full bg-green-400 animate-ping opacity-75"></div>
                                 </div>
                               </div>
                               
-                              {/* Title section */}
-                              <div className="space-y-3">
-                                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-                                  <span className="bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent">
-                                    عائلة {familyData?.name || 'غير محدد'}
-                                  </span>
-                                </h2>
-                                
-                                {/* Decorative line */}
-                                <div className="flex items-center justify-center">
-                                  <div className="h-1 w-16 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-                                </div>
-                              </div>
-                              
-                              {/* Description */}
-                              {familyData?.description && (
-                                <div className="max-w-lg mx-auto">
-                                  <div className="relative">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl blur-sm"></div>
-                                    <p className="relative text-muted-foreground text-sm sm:text-base leading-relaxed p-4 bg-card/80 backdrop-blur-sm rounded-xl border border-primary/10 shadow-sm">
-                                      {familyData.description}
-                                    </p>
+                              {/* Title Section with Enhanced Typography */}
+                              <div className="space-y-6">
+                                <div className="space-y-3">
+                                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+                                    <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in">
+                                      عائلة {familyData?.name || 'غير محدد'}
+                                    </span>
+                                  </h1>
+                                  
+                                  {/* Animated Decorative Line */}
+                                  <div className="flex items-center justify-center space-x-2">
+                                    <div className="h-1 w-8 bg-gradient-to-r from-transparent to-primary rounded-full animate-fade-in delay-200"></div>
+                                    <div className="h-2 w-20 bg-gradient-to-r from-primary via-accent to-secondary rounded-full animate-fade-in delay-100"></div>
+                                    <div className="h-1 w-8 bg-gradient-to-r from-secondary to-transparent rounded-full animate-fade-in delay-200"></div>
                                   </div>
                                 </div>
-                              )}
-                              
-                              {/* Bottom decorative elements */}
-                              <div className="flex items-center justify-center pt-4">
-                                <div className="flex space-x-2">
-                                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce delay-100"></div>
-                                  <div className="w-2 h-2 bg-primary/30 rounded-full animate-bounce delay-200"></div>
+                                
+                                {/* Family Description with Glass Morphism */}
+                                {familyData?.description && (
+                                  <div className="max-w-2xl mx-auto animate-fade-in delay-300">
+                                    <div className="relative group">
+                                      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-card/20 to-secondary/10 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+                                      <div className="relative bg-card/60 backdrop-blur-md rounded-2xl p-6 border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+                                        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+                                          {familyData.description}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Interactive Elements */}
+                                <div className="flex items-center justify-center pt-6">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-3 h-3 bg-primary rounded-full animate-bounce shadow-lg"></div>
+                                    <div className="w-2 h-2 bg-accent rounded-full animate-bounce delay-100 shadow-md"></div>
+                                    <div className="w-3 h-3 bg-secondary rounded-full animate-bounce delay-200 shadow-lg"></div>
+                                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce delay-300 shadow-md"></div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
