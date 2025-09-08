@@ -4134,7 +4134,7 @@ const FamilyBuilderNew = () => {
                                </div>
 
                                {/* Profile Picture Section - 1/2 */}
-                               {(formMode === 'add' || formMode === 'edit') && <div className="space-y-3">
+                               <div className="space-y-3">
                                  <Label htmlFor="picture" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                    <Camera className="h-4 w-4 text-primary" />
                                    الصورة الشخصية
@@ -4170,7 +4170,7 @@ const FamilyBuilderNew = () => {
                                 </div>}
                               
                               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" disabled={!isImageUploadEnabled} />
-                             </div>}
+                             </div>
                            </div>
                          </div>}
 
@@ -4406,9 +4406,10 @@ const FamilyBuilderNew = () => {
                                   </>}
                               </Button>
                             </div>}
-                 </div>
-                     </div>
-                     </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <div>
                       {/* Other form modes content */}
