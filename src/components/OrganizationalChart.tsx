@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +32,37 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const UNIT_HEIGHT = 180;
   const VERTICAL_SPACING = 120;
   const HORIZONTAL_SPACING = 60;
+
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+
+  // Mouse event handlers for dragging
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - panOffset.x,
+      y: e.clientY - panOffset.y
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    
+    setPanOffset({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
 
   // Build hierarchical structure
   const buildHierarchy = () => {
@@ -414,10 +445,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   return (
     <div className="w-full h-full">
       <div
-        className="relative overflow-auto bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner"
+        className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner cursor-grab active:cursor-grabbing select-none"
         style={{ 
           minHeight: '600px'
         }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
       >
         <div
           className="relative"
@@ -429,7 +464,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           <div
             className="absolute inset-0"
             style={{
-              transform: `scale(${zoomLevel})`,
+              transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
               transformOrigin: 'top center'
             }}
           >
