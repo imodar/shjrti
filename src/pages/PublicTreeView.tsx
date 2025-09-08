@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalHeader } from "@/components/GlobalHeader";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { supabase } from "@/integrations/supabase/client";
 import PasswordModal from "@/components/PasswordModal";
@@ -322,6 +323,7 @@ const PublicTreeView = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+        <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
@@ -336,6 +338,7 @@ const PublicTreeView = () => {
   if (showPasswordModal) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+        <GlobalHeader />
         <PasswordModal
           isOpen={showPasswordModal}
           onClose={() => setShowPasswordModal(false)}
@@ -353,6 +356,7 @@ const PublicTreeView = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
+      <GlobalHeader />
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
