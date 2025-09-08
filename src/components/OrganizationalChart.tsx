@@ -423,44 +423,50 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           className="relative"
           style={{ 
             width: chartWidth, 
-            height: chartHeight,
-            transform: `scale(${zoomLevel})`,
-            transformOrigin: 'top left'
+            height: chartHeight
           }}
         >
-          {/* Background grid pattern */}
-          <div 
-            className="absolute inset-0 opacity-30 pointer-events-none"
+          <div
+            className="absolute inset-0"
             style={{
-              backgroundImage: `
-                radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
-              `,
-              backgroundSize: '40px 40px'
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: 'top center'
             }}
-          />
-
-          {/* SVG for connection lines */}
-          <svg
-            className="absolute inset-0 pointer-events-none"
-            width="100%"
-            height="100%"
           >
-            <defs>
-              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="hsl(var(--primary))" floodOpacity="0.3"/>
-              </filter>
-            </defs>
-            <g filter="url(#shadow)">
-              {renderConnections()}
-            </g>
-          </svg>
+            {/* Background grid pattern */}
+            <div 
+              className="absolute inset-0 opacity-30 pointer-events-none"
+              style={{
+                backgroundImage: `
+                  radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
+                `,
+                backgroundSize: '40px 40px'
+              }}
+            />
 
-          {/* Render all family units */}
-          {Array.from(familyUnits.values()).map(unit => {
-            const position = positions.get(unit.id);
-            if (!position) return null;
-            return renderFamilyUnit(unit, position);
-          })}
+            {/* SVG for connection lines */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              width="100%"
+              height="100%"
+            >
+              <defs>
+                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="hsl(var(--primary))" floodOpacity="0.3"/>
+                </filter>
+              </defs>
+              <g filter="url(#shadow)">
+                {renderConnections()}
+              </g>
+            </svg>
+
+            {/* Render all family units */}
+            {Array.from(familyUnits.values()).map(unit => {
+              const position = positions.get(unit.id);
+              if (!position) return null;
+              return renderFamilyUnit(unit, position);
+            })}
+          </div>
         </div>
       </div>
     </div>
