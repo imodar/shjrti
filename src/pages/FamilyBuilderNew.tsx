@@ -3914,10 +3914,15 @@ const FamilyBuilderNew = () => {
                             <Clock className="h-3 w-3" />
                             آخر تحديث: {format(new Date(familyData.updated_at), 'd MMMM yyyy', {
                         locale: ar
-                      })}
+                       })}
+                           </div>
+                         </div>}
                           </div>
-                        </div>}
-                    </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={editingMember} isSpouse={checkIfMemberIsSpouse(editingMember)} onEdit={() => {
+                        </div>
+                      </div>
+                    </div>
+                  ) : formMode === 'profile' ? (
+                    profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={editingMember} isSpouse={checkIfMemberIsSpouse(editingMember)} onEdit={() => {
                   setFormMode('edit');
                   setCurrentStep(1);
                   populateFormData(editingMember);
@@ -3925,7 +3930,11 @@ const FamilyBuilderNew = () => {
                   setEditingMember(member);
                   setFormMode('profile');
                   await fetchMemberProfile(member.id);
-                }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
+                 }} />
+                  ) : formMode === 'tree-settings' ? (
+                    <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} />
+                  ) : (
+                    <div className="space-y-6">
 
                       {/* Step Content */}
                       {currentStep === 1 && <div className="space-y-6">
@@ -4409,14 +4418,6 @@ const FamilyBuilderNew = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div>
-                      {/* Other form modes content */}
-                      {formMode === 'add' && <p>Add Member Form</p>}
-                      {formMode === 'edit' && <p>Edit Member Form</p>}
-                      {formMode === 'profile' && <p>Profile Form</p>}
-                      {formMode === 'tree-settings' && <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} />}
                     </div>
                   )}
                 </CardContent>
