@@ -3697,198 +3697,172 @@ const FamilyBuilderNew = () => {
 
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
-                  {formMode === 'view' ? <div className="relative min-h-screen bg-gradient-to-br from-background via-card/30 to-accent/10">
-                       {/* Top Navigation Bar */}
-                       <div className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border/50 shadow-lg">
-                         <div className="flex items-center justify-between p-4">
-                           {/* Settings & Menu */}
-                           <div className="flex items-center gap-3">
-                             <div className="relative group">
-                               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
-                               <div className="relative bg-card rounded-lg p-2 border border-border/50">
-                                 <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
-                               </div>
-                             </div>
-                             <Button variant="ghost" size="sm" className="rounded-full">
-                               <Menu className="h-4 w-4" />
-                             </Button>
-                           </div>
-                           
-                           {/* Navigation Icons - Mobile First */}
-                           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hidden">
-                             <div className="flex items-center gap-2 px-2">
-                               <Button variant="default" size="sm" className="rounded-full bg-primary text-primary-foreground shadow-lg">
-                                 <Users className="h-4 w-4 mr-1" />
-                                 <span className="hidden sm:inline text-xs">نظرة عامة</span>
-                               </Button>
-                               
-                               <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
-                                 <TreePine className="h-4 w-4 mr-1" />
-                                 <span className="hidden sm:inline text-xs">الشجرة</span>
-                               </Button>
-                               
-                               <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10" onClick={() => navigate('/store')}>
-                                 <Store className="h-4 w-4 mr-1" />
-                                 <span className="hidden sm:inline text-xs">المتجر</span>
-                               </Button>
-                               
-                               <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
-                                 <Star className="h-4 w-4 mr-1" />
-                                 <span className="hidden sm:inline text-xs">الإحصائيات</span>
-                               </Button>
-                             </div>
-                           </div>
-                           
-                           {/* Profile/Status */}
-                           <div className="flex items-center gap-2">
-                             <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                               <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
+                  {formMode === 'view' ? <div className="py-8 px-6">
+                       {/* Family Overview Header - Redesigned */}
+                        <div className="relative overflow-hidden bg-gradient-to-br from-background via-card/50 to-accent/5 rounded-3xl p-8 sm:p-12 mb-8 border border-border/50 shadow-2xl backdrop-blur-sm animate-fade-in">
+                          {/* Dynamic Background Pattern */}
+                          <div className="absolute inset-0 opacity-5">
+                            <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary rounded-full"></div>
+                            <div className="absolute top-20 right-20 w-24 h-24 border border-secondary rounded-full"></div>
+                            <div className="absolute bottom-10 left-20 w-20 h-20 border-2 border-accent rounded-full"></div>
+                            <div className="absolute bottom-20 right-10 w-16 h-16 border border-primary/50 rounded-full"></div>
+                          </div>
+                          
+                          {/* Animated Background Orbs */}
+                          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
+                          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                          
+                          {/* Settings Button - Enhanced */}
+                          <div className="absolute top-6 left-6 z-20">
+                            <div className="relative group">
+                              <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-xl blur opacity-20 group-hover:opacity-40 transition-all duration-500 animate-pulse"></div>
+                              <div className="relative bg-card/80 backdrop-blur-md rounded-xl p-2 border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="relative z-10 pt-4">
+                            {/* Hero Content */}
+                            <div className="text-center space-y-8">
+                              {/* Logo Section with Enhanced Design */}
+                              <div className="relative inline-block">
+                                <div className="relative group">
+                                  {/* Main Icon Container */}
+                                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
+                                    {/* Animated background rings */}
+                                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-spin" style={{animationDuration: '10s'}}></div>
+                                    <div className="absolute inset-2 rounded-full border-2 border-secondary/30 animate-spin" style={{animationDuration: '8s', animationDirection: 'reverse'}}></div>
+                                    
+                                    {/* Main icon */}
+                                    <div className="absolute inset-4 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-full flex items-center justify-center shadow-2xl shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-500 border-2 border-primary/20">
+                                      <TreePine className="h-12 w-12 sm:h-14 sm:w-14 text-primary-foreground drop-shadow-lg" />
+                                    </div>
+                                    
+                                    {/* Active Status Indicator */}
+                                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full border-4 border-card shadow-xl flex items-center justify-center">
+                                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Title Section with Enhanced Typography */}
+                              <div className="space-y-6">
+                                <div className="space-y-3">
+                                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+                                    <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in">
+                                      عائلة {familyData?.name || 'غير محدد'}
+                                    </span>
+                                  </h1>
+                                  
+                                  {/* Animated Decorative Line */}
+                                  <div className="flex items-center justify-center space-x-2">
+                                    <div className="h-1 w-8 bg-gradient-to-r from-transparent to-primary rounded-full animate-fade-in delay-200"></div>
+                                    <div className="h-2 w-20 bg-gradient-to-r from-primary via-accent to-secondary rounded-full animate-fade-in delay-100"></div>
+                                    <div className="h-1 w-8 bg-gradient-to-r from-secondary to-transparent rounded-full animate-fade-in delay-200"></div>
+                                  </div>
+                                </div>
+                                
+                                {/* Family Description with Glass Morphism */}
+                                {familyData?.description && (
+                                  <div className="max-w-2xl mx-auto animate-fade-in delay-300">
+                                    <div className="relative group">
+                                      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-card/20 to-secondary/10 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+                                      <div className="relative bg-card/60 backdrop-blur-md rounded-2xl p-6 border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+                                        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
+                                          {familyData.description}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Interactive Elements */}
+                                <div className="flex items-center justify-center pt-6">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-3 h-3 bg-primary rounded-full animate-bounce shadow-lg"></div>
+                                    <div className="w-2 h-2 bg-accent rounded-full animate-bounce delay-100 shadow-md"></div>
+                                    <div className="w-3 h-3 bg-secondary rounded-full animate-bounce delay-200 shadow-lg"></div>
+                                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce delay-300 shadow-md"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
-                       {/* Hero Section */}
-                       <div className="relative overflow-hidden">
-                         {/* Dynamic Background */}
-                         <div className="absolute inset-0">
-                           <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                           <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tl from-secondary/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-                           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-accent/5 to-primary/5 rounded-full blur-2xl"></div>
-                         </div>
-                         
-                         <div className="relative z-10 px-6 py-12 sm:py-20">
-                           <div className="max-w-4xl mx-auto text-center space-y-8">
-                             {/* Family Logo & Name */}
-                             <div className="space-y-6">
-                               {/* Floating Logo */}
-                               <div className="relative inline-block">
-                                 <div className="relative group cursor-pointer">
-                                   <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-secondary rounded-full blur opacity-20 group-hover:opacity-30 transition-all duration-500 animate-pulse"></div>
-                                   <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-card via-card/90 to-card/80 rounded-full border-4 border-primary/20 shadow-2xl backdrop-blur-md group-hover:scale-105 transition-all duration-500">
-                                     <div className="absolute inset-4 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center shadow-xl">
-                                       <TreePine className="h-8 w-8 sm:h-12 sm:w-12 lg:h-16 lg:w-16 text-primary-foreground" />
-                                     </div>
-                                     {/* Rotating border */}
-                                     <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-spin" style={{animationDuration: '20s'}}></div>
-                                   </div>
-                                 </div>
-                               </div>
-                               
-                               {/* Family Name with Creative Typography */}
-                               <div className="space-y-4">
-                                 <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-tight">
-                                   <span className="inline-block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in">
-                                     عائلة
-                                   </span>
-                                   <br />
-                                   <span className="inline-block bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent text-5xl sm:text-7xl lg:text-8xl font-black animate-fade-in delay-200">
-                                     {familyData?.name || 'غير محدد'}
-                                   </span>
-                                 </h1>
-                                 
-                                 {/* Artistic Separator */}
-                                 <div className="flex items-center justify-center space-x-2 pt-4">
-                                   <div className="h-1 w-12 bg-gradient-to-r from-transparent via-primary to-primary/50 rounded-full animate-fade-in delay-300"></div>
-                                   <div className="w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full animate-bounce delay-400"></div>
-                                   <div className="h-2 w-24 bg-gradient-to-r from-primary via-accent to-secondary rounded-full animate-fade-in delay-100"></div>
-                                   <div className="w-3 h-3 bg-gradient-to-r from-secondary to-accent rounded-full animate-bounce delay-500"></div>
-                                   <div className="h-1 w-12 bg-gradient-to-r from-secondary/50 via-secondary to-transparent rounded-full animate-fade-in delay-300"></div>
-                                 </div>
-                               </div>
-                               
-                               {/* Family Description Card */}
-                               {familyData?.description && (
-                                 <div className="max-w-2xl mx-auto animate-fade-in delay-600">
-                                   <div className="relative group">
-                                     <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-card/30 to-secondary/20 rounded-3xl blur group-hover:blur-md transition-all duration-300"></div>
-                                     <div className="relative bg-card/70 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-border/30 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02]">
-                                       <div className="absolute top-4 right-4 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full opacity-20"></div>
-                                       <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed font-medium">
-                                         {familyData.description}
-                                       </p>
-                                     </div>
-                                   </div>
-                                 </div>
-                               )}
-                             </div>
-                           </div>
-                         </div>
-                       </div>
+                      {/* Statistics Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        {/* Total Members */}
+                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl p-4 text-center border border-emerald-200 dark:border-emerald-700">
+                          <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+                            {familyMembers.length}
+                          </div>
+                          <div className="text-xs text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
+                        </div>
 
-                       {/* Statistics Dashboard */}
-                       <div className="px-6 pb-8">
-                         <div className="max-w-6xl mx-auto">
-                           {/* Statistics Cards */}
-                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                             {/* Total Members */}
-                             <div className="group relative">
-                               <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
-                               <div className="relative bg-gradient-to-br from-emerald-50 via-card to-emerald-50/50 dark:from-emerald-900/20 dark:via-card dark:to-emerald-800/20 rounded-2xl p-4 sm:p-6 border border-emerald-200/50 dark:border-emerald-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                 <div className="flex items-center justify-between mb-3">
-                                   <Users className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-                                   <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                                 </div>
-                                 <div className="space-y-1">
-                                   <div className="text-3xl sm:text-4xl font-bold text-emerald-700 dark:text-emerald-300">
-                                     {familyMembers.length}
-                                   </div>
-                                   <div className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-medium">إجمالي الأعضاء</div>
-                                 </div>
-                               </div>
-                             </div>
+                        {/* Generations */}
+                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700">
+                          <Crown className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                            {generationCount}
+                          </div>
+                          <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
+                        </div>
 
-                             {/* Generations */}
-                             <div className="group relative">
-                               <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
-                               <div className="relative bg-gradient-to-br from-amber-50 via-card to-amber-50/50 dark:from-amber-900/20 dark:via-card dark:to-amber-800/20 rounded-2xl p-4 sm:p-6 border border-amber-200/50 dark:border-amber-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                 <div className="flex items-center justify-between mb-3">
-                                   <Crown className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-                                   <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse delay-100"></div>
-                                 </div>
-                                 <div className="space-y-1">
-                                   <div className="text-3xl sm:text-4xl font-bold text-amber-700 dark:text-amber-300">
-                                     {generationCount}
-                                   </div>
-                                   <div className="text-xs sm:text-sm text-amber-600 dark:text-amber-400 font-medium">الأجيال</div>
-                                 </div>
-                               </div>
-                             </div>
+                        {/* Males */}
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-700">
+                          <UserIcon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                            {familyMembers.filter(m => m.gender === 'male').length}
+                          </div>
+                          <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
+                        </div>
 
-                             {/* Males */}
-                             <div className="group relative">
-                               <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
-                               <div className="relative bg-gradient-to-br from-blue-50 via-card to-blue-50/50 dark:from-blue-900/20 dark:via-card dark:to-blue-800/20 rounded-2xl p-4 sm:p-6 border border-blue-200/50 dark:border-blue-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                 <div className="flex items-center justify-between mb-3">
-                                   <UserIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-200"></div>
-                                 </div>
-                                 <div className="space-y-1">
-                                   <div className="text-3xl sm:text-4xl font-bold text-blue-700 dark:text-blue-300">
-                                     {familyMembers.filter(m => m.gender === 'male').length}
-                                   </div>
-                                   <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-medium">الذكور</div>
-                                 </div>
-                               </div>
-                             </div>
+                        {/* Females */}
+                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-xl p-4 text-center border border-pink-200 dark:border-pink-700">
+                          <UserRoundIcon className="h-6 w-6 text-pink-600 mx-auto mb-2" />
+                          <div className="text-2xl font-bold text-pink-700 dark:text-pink-300">
+                            {familyMembers.filter(m => m.gender === 'female').length}
+                          </div>
+                          <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
+                        </div>
+                      </div>
 
-                             {/* Females */}
-                             <div className="group relative">
-                               <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-pink-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
-                               <div className="relative bg-gradient-to-br from-pink-50 via-card to-pink-50/50 dark:from-pink-900/20 dark:via-card dark:to-pink-800/20 rounded-2xl p-4 sm:p-6 border border-pink-200/50 dark:border-pink-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                 <div className="flex items-center justify-between mb-3">
-                                   <UserRoundIcon className="h-8 w-8 text-pink-600 dark:text-pink-400" />
-                                   <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse delay-300"></div>
-                                 </div>
-                                 <div className="space-y-1">
-                                   <div className="text-3xl sm:text-4xl font-bold text-pink-700 dark:text-pink-300">
-                                     {familyMembers.filter(m => m.gender === 'female').length}
-                                   </div>
-                                   <div className="text-xs sm:text-sm text-pink-600 dark:text-pink-400 font-medium">الإناث</div>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
+                      {/* Navigation Icons */}
+                      <div className="flex justify-center mb-6">
+                        <div className="flex items-center gap-4">
+                          <div className="flex flex-col items-center cursor-pointer group">
+                            <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
+                              <Users className="h-5 w-5" />
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
+                          </div>
+                          
+                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
+                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                              <TreePine className="h-5 w-5" />
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
+                          </div>
+                          
+                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
+                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                              <Store className="h-5 w-5" />
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
+                          </div>
+                          
+                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
+                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                              <Star className="h-5 w-5" />
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
+                          </div>
+                        </div>
+                      </div>
 
                       {/* Quick Actions */}
                       <div className="space-y-3">
@@ -4405,12 +4379,11 @@ const FamilyBuilderNew = () => {
                                   </>}
                               </Button>
                             </div>}
-                     </div>
-                 </CardContent>
+                      </div>
                     </div>}
-               </Card>
+                </CardContent>
+              </Card>
             </div>
-                     </div>
 
             {/* Member List - Left Side on Desktop */}
             <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
@@ -4757,8 +4730,7 @@ const FamilyBuilderNew = () => {
             <p className="text-gray-600 dark:text-gray-300">
               لإضافة المزيد من أعضاء العائلة، يمكنك ترقية باقتك للحصول على المزيد من الميزات والإمكانيات.
             </p>
-      <GlobalFooterSimplified />
-                       </div>
+          </div>
 
           <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
             <Button variant="outline" onClick={() => setShowUpgradeModal(false)} className="flex-1">
