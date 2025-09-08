@@ -76,6 +76,9 @@ const CustomDomainCard = ({
   const [validationError, setValidationError] = useState("");
   const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
   const [checkingFeature, setCheckingFeature] = useState(true);
+  const [sharePassword, setSharePassword] = useState(familyData?.share_password || "");
+  const [isPasswordProtected, setIsPasswordProtected] = useState(!!familyData?.share_password);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   // Check if user's package has custom domains enabled
   useEffect(() => {
@@ -246,7 +249,7 @@ const CustomDomainCard = ({
     }
   };
   const customUrl = customDomain ? `https://shjrti.com/${customDomain}` : "";
-  const shareableTreeLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
+  const shareableTreeLink = `${window.location.origin}/tree?family=${familyData?.id}`;
   if (checkingFeature) {
     return <Card className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
@@ -336,6 +339,150 @@ const CustomDomainCard = ({
                   <span className="sm:hidden">شارك</span>
                 </Button>
               </div>
+            </div>
+          </div>
+
+          {/* Password Protection Option */}
+          <div className="p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                <Lock className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-foreground text-lg mb-1">الحماية بكلمة مرور</h3>
+                <p className="text-sm text-muted-foreground">احم شجرتك بكلمة مرور للمشاركة الآمنة</p>
+              </div>
+            </div>
+            
+            <div className="bg-muted/50 rounded-xl p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password-toggle" className="text-sm font-medium">
+                  تفعيل الحماية بكلمة مرور
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    id="password-toggle"
+                    type="checkbox"
+                    checked={isPasswordProtected}
+                    onChange={async (e) => {
+                      const enabled = e.target.checked;
+                      setIsPasswordProtected(enabled);
+                      
+                      if (!enabled) {
+                        // Remove password protection
+                        setIsUpdatingPassword(true);
+                        try {
+                          const { error } = await supabase
+                            .from('families')
+                            .update({ share_password: null })
+                            .eq('id', familyData?.id);
+                          
+                          if (error) throw error;
+                          
+                          setSharePassword("");
+                          toast({
+                            title: "تم إلغاء الحماية",
+                            description: "تم إلغاء الحماية بكلمة المرور بنجاح"
+                          });
+                        } catch (error) {
+                          console.error('Error removing password:', error);
+                          setIsPasswordProtected(true); // Revert on error
+                          toast({
+                            title: "خطأ",
+                            description: "حدث خطأ أثناء إلغاء الحماية",
+                            variant: "destructive"
+                          });
+                        } finally {
+                          setIsUpdatingPassword(false);
+                        }
+                      }
+                    }}
+                    className="sr-only"
+                  />
+                  <div 
+                    className={cn(
+                      "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer",
+                      isPasswordProtected ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
+                    )}
+                    onClick={() => document.getElementById('password-toggle')?.click()}
+                  >
+                    <span
+                      className={cn(
+                        "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                        isPasswordProtected ? "translate-x-6" : "translate-x-1"
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {isPasswordProtected && (
+                <div className="space-y-3">
+                  <Label htmlFor="share-password" className="text-sm font-medium">
+                    كلمة المرور للمشاركة
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="share-password"
+                      type="text"
+                      value={sharePassword}
+                      onChange={(e) => setSharePassword(e.target.value)}
+                      placeholder="أدخل كلمة مرور قوية"
+                      className="flex-1"
+                      disabled={isUpdatingPassword}
+                    />
+                    <Button 
+                      size="sm" 
+                      onClick={async () => {
+                        if (!sharePassword.trim()) {
+                          toast({
+                            title: "خطأ",
+                            description: "يرجى إدخال كلمة مرور",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        
+                        setIsUpdatingPassword(true);
+                        try {
+                          const { error } = await supabase
+                            .from('families')
+                            .update({ share_password: sharePassword.trim() })
+                            .eq('id', familyData?.id);
+                          
+                          if (error) throw error;
+                          
+                          toast({
+                            title: "تم الحفظ",
+                            description: "تم حفظ كلمة المرور بنجاح"
+                          });
+                        } catch (error) {
+                          console.error('Error updating password:', error);
+                          toast({
+                            title: "خطأ",
+                            description: "حدث خطأ أثناء حفظ كلمة المرور",
+                            variant: "destructive"
+                          });
+                        } finally {
+                          setIsUpdatingPassword(false);
+                        }
+                      }}
+                      disabled={isUpdatingPassword || !sharePassword.trim()}
+                      className="gap-2"
+                    >
+                      {isUpdatingPassword ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                      حفظ
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    ستحتاج إلى كلمة المرور هذه لعرض الشجرة عبر الرابط المشترك
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
