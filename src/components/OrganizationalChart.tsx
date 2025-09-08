@@ -40,6 +40,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   // Mouse event handlers for dragging
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     setIsDragging(true);
     setDragStart({
       x: e.clientX - panOffset.x,
@@ -49,6 +50,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
+    e.preventDefault();
     
     setPanOffset({
       x: e.clientX - dragStart.x,
@@ -56,7 +58,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent) => {
+    e.preventDefault();
     setIsDragging(false);
   };
 
@@ -447,7 +450,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       <div
         className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner cursor-grab active:cursor-grabbing select-none"
         style={{ 
-          minHeight: '600px'
+          minHeight: '600px',
+          touchAction: 'none'
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
