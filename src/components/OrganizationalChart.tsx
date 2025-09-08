@@ -1,8 +1,8 @@
 import React from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, HeartCrack, Users } from "lucide-react";
+import { Heart, HeartCrack, Users, Crown, UserRound } from "lucide-react";
 
 interface FamilyUnit {
   id: string;
@@ -18,259 +18,334 @@ interface OrganizationalChartProps {
   zoomLevel: number;
 }
 
-export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({ 
-  familyUnits, 
-  zoomLevel 
+interface Position {
+  x: number;
+  y: number;
+  width: number;
+}
+
+export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
+  familyUnits,
+  zoomLevel
 }) => {
+  const UNIT_WIDTH = 320;
+  const UNIT_HEIGHT = 180;
+  const VERTICAL_SPACING = 120;
+  const HORIZONTAL_SPACING = 60;
+
   // Build hierarchical structure
   const buildHierarchy = () => {
     const hierarchy: { [generation: number]: FamilyUnit[] } = {};
-    
+    const rootUnits: FamilyUnit[] = [];
+
     familyUnits.forEach(unit => {
-      if (unit.generation > 0) {
-        if (!hierarchy[unit.generation]) {
-          hierarchy[unit.generation] = [];
-        }
-        hierarchy[unit.generation].push(unit);
+      if (!hierarchy[unit.generation]) {
+        hierarchy[unit.generation] = [];
+      }
+      hierarchy[unit.generation].push(unit);
+
+      if (!unit.parentUnitId) {
+        rootUnits.push(unit);
       }
     });
-    
-    return hierarchy;
+
+    return { hierarchy, rootUnits };
   };
 
-  const hierarchy = buildHierarchy();
+  const { hierarchy, rootUnits } = buildHierarchy();
   const generations = Object.keys(hierarchy).map(Number).sort();
-  
-  // Calculate positions for each generation
-  const calculatePositions = () => {
-    const positions: { [unitId: string]: { x: number; y: number } } = {};
-    const generationWidth = 300; // Base width per generation level
+
+  // Calculate optimal positions using tree layout algorithm
+  const calculatePositions = (): Map<string, Position> => {
+    const positions = new Map<string, Position>();
     
-    generations.forEach((gen, genIndex) => {
-      const units = hierarchy[gen];
-      const startX = -(units.length - 1) * generationWidth / 2;
+    if (rootUnits.length === 0) return positions;
+
+    // Start with root units
+    let currentX = 0;
+    
+    const calculateSubtreeWidth = (unit: FamilyUnit): number => {
+      const children = unit.childUnits
+        .map(id => familyUnits.get(id))
+        .filter(Boolean) as FamilyUnit[];
       
-      units.forEach((unit, unitIndex) => {
-        positions[unit.id] = {
-          x: startX + unitIndex * generationWidth,
-          y: genIndex * 200
-        };
+      if (children.length === 0) {
+        return UNIT_WIDTH;
+      }
+      
+      const childrenWidth = children.reduce((total, child) => {
+        return total + calculateSubtreeWidth(child);
+      }, 0);
+      
+      const spacingWidth = Math.max(0, (children.length - 1) * HORIZONTAL_SPACING);
+      return Math.max(UNIT_WIDTH, childrenWidth + spacingWidth);
+    };
+
+    const positionSubtree = (unit: FamilyUnit, centerX: number, generation: number) => {
+      const y = generation * (UNIT_HEIGHT + VERTICAL_SPACING);
+      
+      positions.set(unit.id, {
+        x: centerX - UNIT_WIDTH / 2,
+        y: y,
+        width: UNIT_WIDTH
       });
+
+      const children = unit.childUnits
+        .map(id => familyUnits.get(id))
+        .filter(Boolean) as FamilyUnit[];
+
+      if (children.length > 0) {
+        const subtreeWidth = calculateSubtreeWidth(unit);
+        let childX = centerX - subtreeWidth / 2;
+
+        children.forEach(child => {
+          const childSubtreeWidth = calculateSubtreeWidth(child);
+          const childCenterX = childX + childSubtreeWidth / 2;
+          
+          positionSubtree(child, childCenterX, generation + 1);
+          childX += childSubtreeWidth + HORIZONTAL_SPACING;
+        });
+      }
+    };
+
+    // Position root units
+    rootUnits.forEach((rootUnit, index) => {
+      const subtreeWidth = calculateSubtreeWidth(rootUnit);
+      const centerX = currentX + subtreeWidth / 2;
+      
+      positionSubtree(rootUnit, centerX, 0);
+      currentX += subtreeWidth + HORIZONTAL_SPACING * 2;
     });
-    
+
     return positions;
   };
 
   const positions = calculatePositions();
 
-  // Find founder unit
-  const getFounderUnit = (): FamilyUnit | undefined => {
-    return Array.from(familyUnits.values()).find(unit => 
-      unit.members.some(member => member.is_founder)
-    );
-  };
-
-  // Get children of a unit
-  const getChildren = (parentUnit: FamilyUnit): FamilyUnit[] => {
-    return parentUnit.childUnits
-      .map(childId => familyUnits.get(childId))
-      .filter(Boolean) as FamilyUnit[];
-  };
-
-  // Render family unit box
-  const renderFamilyUnit = (unit: FamilyUnit, position: { x: number; y: number }) => {
+  // Render family unit with modern design
+  const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
     if (unit.type === 'married' && unit.members.length === 2) {
       const [husband, wife] = unit.members;
+      const isFounder = unit.members.some(member => member.is_founder);
+      
       return (
         <div
           key={unit.id}
-          className="absolute flex flex-col items-center"
+          className="absolute"
           style={{
-            left: `calc(50% + ${position.x}px)`,
+            left: `${position.x}px`,
             top: `${position.y}px`,
-            transform: 'translateX(-50%)'
+            width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-emerald-300 dark:border-emerald-600 shadow-xl min-w-[280px]">
-            <div className="flex items-center justify-center gap-6">
-              <div className="text-center">
-                <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-pink-300">
-                  {wife.image_url ? (
-                    <AvatarImage src={wife.image_url} alt={wife.name} />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-pink-500/30 to-pink-600/30 text-pink-800 font-bold">
-                      {wife.name.slice(0, 2)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{wife.name}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">الزوجة</p>
-              </div>
-              
-              {/* Show broken heart if either spouse is divorced */}
-              {(husband.marital_status === 'divorced' || wife.marital_status === 'divorced') ? (
-                <HeartCrack className="h-8 w-8 text-gray-500 animate-pulse" />
-              ) : (
-                <Heart className="h-8 w-8 text-pink-500 animate-pulse" />
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden">
+            <CardContent className="p-6">
+              {isFounder && (
+                <div className="flex justify-center mb-3">
+                  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
+                    <Crown className="h-3 w-3 mr-1" />
+                    المؤسس
+                  </Badge>
+                </div>
               )}
               
-              <div className="text-center">
-                <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-blue-300">
-                  {husband.image_url ? (
-                    <AvatarImage src={husband.image_url} alt={husband.name} />
+              <div className="flex items-center justify-between gap-4">
+                {/* Wife */}
+                <div className="flex-1 text-center">
+                  <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-pink-300 ring-2 ring-pink-100 dark:ring-pink-900">
+                    {wife.image_url ? (
+                      <AvatarImage src={wife.image_url} alt={wife.name} />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold">
+                        {wife.name.slice(0, 2)}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <h4 className="font-semibold text-sm text-foreground truncate">{wife.name}</h4>
+                  <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
+                    الزوجة
+                  </Badge>
+                </div>
+
+                {/* Marriage Status */}
+                <div className="flex flex-col items-center justify-center">
+                  {(husband.marital_status === 'divorced' || wife.marital_status === 'divorced') ? (
+                    <HeartCrack className="h-6 w-6 text-muted-foreground/60" />
                   ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500/30 to-blue-600/30 text-blue-800 font-bold">
-                      {husband.name.slice(0, 2)}
-                    </AvatarFallback>
+                    <Heart className="h-6 w-6 text-pink-500 animate-pulse" />
                   )}
-                </Avatar>
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{husband.name}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">الزوج</p>
+                </div>
+
+                {/* Husband */}
+                <div className="flex-1 text-center">
+                  <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
+                    {husband.image_url ? (
+                      <AvatarImage src={husband.image_url} alt={husband.name} />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold">
+                        {husband.name.slice(0, 2)}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <h4 className="font-semibold text-sm text-foreground truncate">{husband.name}</h4>
+                  <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
+                    الزوج
+                  </Badge>
+                </div>
               </div>
-            </div>
-            
-            <div className="text-center mt-4">
-              <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
-                <Users className="h-3 w-3 mr-1" />
-                عائلة {husband.name}
-              </Badge>
-            </div>
+
+              <div className="text-center mt-4">
+                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
+                  <Users className="h-3 w-3 mr-1" />
+                  عائلة {husband.name}
+                </Badge>
+              </div>
+            </CardContent>
           </Card>
-          
-          {/* Connection point for children */}
-          <div className="w-1 h-6 bg-gradient-to-b from-emerald-500 to-transparent"></div>
         </div>
       );
     } else {
       const member = unit.members[0];
+      const isFounder = member.is_founder;
+      
       return (
         <div
           key={unit.id}
-          className="absolute flex flex-col items-center"
+          className="absolute"
           style={{
-            left: `calc(50% + ${position.x}px)`,
+            left: `${position.x}px`,
             top: `${position.y}px`,
-            transform: 'translateX(-50%)'
+            width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-amber-300 dark:border-amber-600 shadow-xl min-w-[200px]">
-            <div className="text-center">
-              <Avatar className="h-20 w-20 mx-auto mb-3 border-2 border-amber-400">
-                {member.image_url ? (
-                  <AvatarImage src={member.image_url} alt={member.name} />
-                ) : (
-                  <AvatarFallback className="bg-gradient-to-br from-amber-400/30 to-amber-600/30 text-amber-800 font-bold text-lg">
-                    {member.name.slice(0, 2)}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <h3 className="font-bold text-lg text-gray-800 dark:text-gray-200">{member.name}</h3>
-              <Badge variant="outline" className="text-xs mt-2">
-                {member.gender === 'male' ? 'ذكر' : 'أنثى'}
-              </Badge>
-              {member.birth_date && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                  {new Date(member.birth_date).getFullYear()}
-                </p>
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden">
+            <CardContent className="p-6">
+              {isFounder && (
+                <div className="flex justify-center mb-3">
+                  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
+                    <Crown className="h-3 w-3 mr-1" />
+                    المؤسس
+                  </Badge>
+                </div>
               )}
-            </div>
+              
+              <div className="text-center">
+                <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-primary/30 ring-2 ring-primary/10">
+                  {member.image_url ? (
+                    <AvatarImage src={member.image_url} alt={member.name} />
+                  ) : (
+                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/30 text-primary font-semibold text-lg">
+                      {member.name.slice(0, 2)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <h3 className="font-bold text-lg text-foreground mb-2">{member.name}</h3>
+                
+                <div className="flex justify-center gap-2 flex-wrap">
+                  <Badge variant="outline" className="text-xs">
+                    <UserRound className="h-3 w-3 mr-1" />
+                    {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+                  </Badge>
+                  {member.birth_date && (
+                    <Badge variant="secondary" className="text-xs">
+                      {new Date(member.birth_date).getFullYear()}
+                    </Badge>
+                  )}
+                </div>
+                
+                {member.marital_status && (
+                  <Badge variant="outline" className="mt-2 text-xs">
+                    {member.marital_status === 'single' ? 'أعزب' : 
+                     member.marital_status === 'married' ? 'متزوج' :
+                     member.marital_status === 'divorced' ? 'مطلق' : 'أرمل'}
+                  </Badge>
+                )}
+              </div>
+            </CardContent>
           </Card>
-          
-          {/* Connection point for children */}
-          <div className="w-1 h-6 bg-gradient-to-b from-amber-500 to-transparent"></div>
         </div>
       );
     }
   };
 
-  // Render connection lines
+  // Render clean connection lines
   const renderConnections = () => {
     const connections: JSX.Element[] = [];
-    
-    // Group children by parent
-    const childrenByParent = new Map<string, FamilyUnit[]>();
-    
-    generations.forEach((gen, genIndex) => {
-      if (genIndex === 0) return; // Skip founder generation
-      
-      const units = hierarchy[gen];
-      
-      units.forEach(unit => {
-        if (!unit.parentUnitId) return;
-        
-        if (!childrenByParent.has(unit.parentUnitId)) {
-          childrenByParent.set(unit.parentUnitId, []);
-        }
-        childrenByParent.get(unit.parentUnitId)!.push(unit);
-      });
-    });
-    
-    // Draw connections for each parent
-    childrenByParent.forEach((children, parentId) => {
-      const parentPosition = positions[parentId];
-      if (!parentPosition || children.length === 0) return;
-      
-      // Calculate connection points - adjust for SVG coordinate system
-      const parentCenterX = chartWidth / 2 + parentPosition.x;
-      const parentBottomY = parentPosition.y + 140; // Below parent box
-      const distributionY = parentBottomY + 30; // Horizontal distribution line
+
+    familyUnits.forEach(parentUnit => {
+      const children = parentUnit.childUnits
+        .map(id => familyUnits.get(id))
+        .filter(Boolean) as FamilyUnit[];
+
+      if (children.length === 0) return;
+
+      const parentPos = positions.get(parentUnit.id);
+      if (!parentPos) return;
+
+      const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
+      const parentBottomY = parentPos.y + UNIT_HEIGHT;
       
       if (children.length === 1) {
-        // Direct connection for single child
+        // Single child - direct line
         const child = children[0];
-        const childPosition = positions[child.id];
-        if (!childPosition) return;
-        
-        const childCenterX = chartWidth / 2 + childPosition.x;
-        const childTopY = childPosition.y - 6;
-        
+        const childPos = positions.get(child.id);
+        if (!childPos) return;
+
+        const childCenterX = childPos.x + UNIT_WIDTH / 2;
+        const childTopY = childPos.y;
+
         connections.push(
-          <g key={`single-connection-${child.id}`}>
-            {/* Vertical line from parent down */}
+          <g key={`connection-${parentUnit.id}-${child.id}`}>
             <line
               x1={parentCenterX}
               y1={parentBottomY}
               x2={parentCenterX}
-              y2={distributionY}
+              y2={parentBottomY + VERTICAL_SPACING / 3}
               stroke="hsl(var(--primary))"
-              strokeWidth="2"
+              strokeWidth="3"
+              className="drop-shadow-sm"
             />
-            {/* Horizontal line to child */}
             <line
               x1={parentCenterX}
-              y1={distributionY}
+              y1={parentBottomY + VERTICAL_SPACING / 3}
               x2={childCenterX}
-              y2={distributionY}
+              y2={parentBottomY + VERTICAL_SPACING / 3}
               stroke="hsl(var(--primary))"
-              strokeWidth="2"
+              strokeWidth="3"
+              className="drop-shadow-sm"
             />
-            {/* Vertical line down to child */}
             <line
               x1={childCenterX}
-              y1={distributionY}
+              y1={parentBottomY + VERTICAL_SPACING / 3}
               x2={childCenterX}
               y2={childTopY}
               stroke="hsl(var(--primary))"
-              strokeWidth="2"
+              strokeWidth="3"
+              className="drop-shadow-sm"
             />
           </g>
         );
       } else {
         // Multiple children - org chart style
-        const childPositions = children.map(child => positions[child.id]).filter(Boolean);
-        const leftmostX = Math.min(...childPositions.map(pos => chartWidth / 2 + pos!.x));
-        const rightmostX = Math.max(...childPositions.map(pos => chartWidth / 2 + pos!.x));
-        
+        const childPositions = children
+          .map(child => positions.get(child.id))
+          .filter(Boolean) as Position[];
+
+        const leftmostX = Math.min(...childPositions.map(pos => pos.x + UNIT_WIDTH / 2));
+        const rightmostX = Math.max(...childPositions.map(pos => pos.x + UNIT_WIDTH / 2));
+        const distributionY = parentBottomY + VERTICAL_SPACING / 2;
+
         connections.push(
-          <g key={`multi-connection-${parentId}`}>
-            {/* Vertical line from parent down */}
+          <g key={`connection-group-${parentUnit.id}`}>
+            {/* Main vertical line from parent */}
             <line
               x1={parentCenterX}
               y1={parentBottomY}
               x2={parentCenterX}
               y2={distributionY}
               stroke="hsl(var(--primary))"
-              strokeWidth="2"
+              strokeWidth="3"
+              className="drop-shadow-sm"
             />
             
             {/* Horizontal distribution line */}
@@ -280,17 +355,18 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               x2={rightmostX}
               y2={distributionY}
               stroke="hsl(var(--primary))"
-              strokeWidth="2"
+              strokeWidth="3"
+              className="drop-shadow-sm"
             />
             
             {/* Vertical lines to each child */}
             {children.map(child => {
-              const childPosition = positions[child.id];
-              if (!childPosition) return null;
-              
-              const childCenterX = chartWidth / 2 + childPosition.x;
-              const childTopY = childPosition.y - 6;
-              
+              const childPos = positions.get(child.id);
+              if (!childPos) return null;
+
+              const childCenterX = childPos.x + UNIT_WIDTH / 2;
+              const childTopY = childPos.y;
+
               return (
                 <line
                   key={`child-line-${child.id}`}
@@ -299,7 +375,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   x2={childCenterX}
                   y2={childTopY}
                   stroke="hsl(var(--primary))"
-                  strokeWidth="2"
+                  strokeWidth="3"
+                  className="drop-shadow-sm"
                 />
               );
             })}
@@ -307,52 +384,81 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         );
       }
     });
-    
+
     return connections;
   };
 
   if (familyUnits.size === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-center">
-        <div>
-          <Users className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">لا توجد بيانات عائلة لعرضها</p>
+        <div className="text-muted-foreground">
+          <Users className="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <p className="text-lg font-medium">لا توجد بيانات عائلة لعرضها</p>
+          <p className="text-sm mt-2">ابدأ بإضافة أعضاء العائلة لبناء الشجرة</p>
         </div>
       </div>
     );
   }
 
-  const founderUnit = getFounderUnit();
-  if (!founderUnit) return null;
-
-  const chartWidth = Math.max(1200, generations.length * 400);
-  const chartHeight = Math.max(800, generations.length * 200 + 200);
+  // Calculate chart dimensions
+  const allPositions = Array.from(positions.values());
+  const chartWidth = Math.max(
+    1000,
+    Math.max(...allPositions.map(pos => pos.x)) + UNIT_WIDTH + 100
+  );
+  const chartHeight = Math.max(
+    600,
+    Math.max(...allPositions.map(pos => pos.y)) + UNIT_HEIGHT + 100
+  );
 
   return (
-    <div 
-      className="relative w-full overflow-auto bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-lg border border-emerald-200/30 dark:border-emerald-700/30"
-      style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-    >
-      <div 
-        className="relative mx-auto"
-        style={{ width: chartWidth, height: chartHeight }}
+    <div className="w-full h-full">
+      <div
+        className="relative overflow-auto bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner"
+        style={{ 
+          transform: `scale(${zoomLevel})`, 
+          transformOrigin: 'top center',
+          minHeight: '600px'
+        }}
       >
-        {/* SVG for connection lines */}
-        <svg
-          className="absolute inset-0 pointer-events-none"
-          width="100%"
-          height="100%"
-          style={{ left: '50%', transform: 'translateX(-50%)' }}
+        <div
+          className="relative"
+          style={{ width: chartWidth, height: chartHeight }}
         >
-          {renderConnections()}
-        </svg>
+          {/* Background grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
+              `,
+              backgroundSize: '40px 40px'
+            }}
+          />
 
-        {/* Render all family units */}
-        {Array.from(familyUnits.values()).map(unit => {
-          const position = positions[unit.id];
-          if (!position) return null;
-          return renderFamilyUnit(unit, position);
-        })}
+          {/* SVG for connection lines */}
+          <svg
+            className="absolute inset-0 pointer-events-none"
+            width="100%"
+            height="100%"
+          >
+            <defs>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="hsl(var(--primary))" floodOpacity="0.3"/>
+              </filter>
+            </defs>
+            <g filter="url(#shadow)">
+              {renderConnections()}
+            </g>
+          </svg>
+
+          {/* Render all family units */}
+          {Array.from(familyUnits.values()).map(unit => {
+            const position = positions.get(unit.id);
+            if (!position) return null;
+            return renderFamilyUnit(unit, position);
+          })}
+        </div>
       </div>
     </div>
   );
