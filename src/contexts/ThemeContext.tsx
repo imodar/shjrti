@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type ThemeVariant = 'modern' | 'professional';
+export type ThemeVariant = 'modern' | 'professional' | 'tamara';
 
 interface ThemeContextType {
   currentTheme: ThemeVariant;
@@ -19,17 +19,18 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentTheme, setCurrentTheme] = useState<ThemeVariant>('modern');
+  const [currentTheme, setCurrentTheme] = useState<ThemeVariant>('tamara');
   const [currentStyleElement, setCurrentStyleElement] = useState<HTMLLinkElement | null>(null);
 
   const themes: Record<ThemeVariant, string> = {
     modern: 'theme-modern',
-    professional: 'theme-professional'
+    professional: 'theme-professional',
+    tamara: 'theme-tamara'
   };
 
   const loadThemeCSS = async (theme: ThemeVariant) => {
     // Remove existing theme classes
-    document.documentElement.classList.remove('theme-modern', 'theme-professional');
+    document.documentElement.classList.remove('theme-modern', 'theme-professional', 'theme-tamara');
     
     // Remove existing theme CSS
     if (currentStyleElement) {

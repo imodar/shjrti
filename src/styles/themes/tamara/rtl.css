@@ -1,0 +1,34 @@
+/* Tamara Theme - RTL Support */
+
+.theme-tamara[dir="rtl"],
+.theme-tamara [dir="rtl"] {
+  text-align: right !important;
+}
+
+.theme-tamara[dir="rtl"] .grid-2-cols {
+  direction: rtl !important;
+}
+
+.theme-tamara[dir="rtl"] .flex {
+  direction: rtl !important;
+}
+
+.theme-tamara[dir="rtl"] .btn-hero,
+.theme-tamara[dir="rtl"] .btn-outline-hero {
+  direction: rtl !important;
+}
+
+/* RTL Icon adjustments */
+.theme-tamara[dir="rtl"] .lucide {
+  transform: scaleX(-1) !important;
+}
+
+.theme-tamara[dir="rtl"] .ml-2 {
+  margin-left: 0 !important;
+  margin-right: 8px !important;
+}
+
+.theme-tamara[dir="rtl"] .mr-2 {
+  margin-right: 0 !important;
+  margin-left: 8px !important;
+}

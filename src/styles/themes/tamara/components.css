@@ -1,0 +1,88 @@
+/* Tamara Theme - Component Styles */
+
+/* Button Styles */
+.theme-tamara .bg-primary,
+.theme-tamara [class*="bg-primary"] {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.theme-tamara .bg-primary:hover,
+.theme-tamara [class*="bg-primary"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-xl) !important;
+  filter: brightness(1.1) !important;
+}
+
+/* Card Styles */
+.theme-tamara .bg-card,
+.theme-tamara .card,
+.theme-tamara [class*="bg-card"] {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.theme-tamara .bg-card:hover,
+.theme-tamara .card:hover,
+.theme-tamara [class*="bg-card"]:hover {
+  box-shadow: var(--shadow-lg) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* Hero Section */
+.theme-tamara .hero-section {
+  background: linear-gradient(135deg, 
+    hsl(var(--background)) 0%, 
+    hsl(280 20% 98%) 50%, 
+    hsl(290 20% 96%) 100%) !important;
+}
+
+/* Text Styles */
+.theme-tamara .text-primary {
+  color: hsl(var(--primary)) !important;
+}
+
+.theme-tamara .gradient-text {
+  background: var(--gradient-primary) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Badge Styles */
+.theme-tamara .badge-primary {
+  background: var(--gradient-primary) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 50px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+}
+
+/* Input Styles */
+.theme-tamara input,
+.theme-tamara textarea {
+  border: 2px solid hsl(var(--border)) !important;
+  border-radius: 12px !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.theme-tamara input:focus,
+.theme-tamara textarea:focus {
+  border-color: hsl(var(--primary)) !important;
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1) !important;
+}
+
+/* Navigation */
+.theme-tamara .nav-item {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500 !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.theme-tamara .nav-item:hover {
+  color: hsl(var(--primary)) !important;
+}

@@ -1,0 +1,83 @@
+/* Tamara Theme - Utility Classes */
+
+.theme-tamara {
+  /* Background Utilities */
+  .bg-gradient-hero {
+    background: var(--gradient-hero) !important;
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-secondary) !important;
+  }
+  
+  /* Text Utilities */
+  .text-gradient {
+    background: var(--gradient-primary) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+  
+  /* Shadow Utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-md) !important;
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-lg) !important;
+  }
+  
+  .shadow-floating {
+    box-shadow: var(--shadow-xl) !important;
+  }
+  
+  /* Hover Effects */
+  .hover-lift {
+    transition: var(--transition-smooth) !important;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--shadow-xl) !important;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3) !important;
+  }
+  
+  /* Button Variants */
+  .btn-hero {
+    background: var(--gradient-primary) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 16px 32px !important;
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    transition: var(--transition-smooth) !important;
+  }
+  
+  .btn-hero:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-xl) !important;
+    filter: brightness(1.1) !important;
+  }
+  
+  .btn-outline-hero {
+    background: transparent !important;
+    color: hsl(var(--primary)) !important;
+    border: 2px solid hsl(var(--primary)) !important;
+    border-radius: 50px !important;
+    padding: 14px 30px !important;
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    transition: var(--transition-smooth) !important;
+  }
+  
+  .btn-outline-hero:hover {
+    background: var(--gradient-primary) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+}
