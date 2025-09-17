@@ -122,13 +122,23 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
           }
 
-          // Use زوج for husband, زوجة for wife (from member's perspective)
-          const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-          return (
-            <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-              {relationLabel} {spouseInfo}
-            </p>
-          );
+          // For wives: show husband's name, for husbands: show relation only
+          if (member.gender === 'female') {
+            // For wives: show "زوجة [husband name]"
+            const husbandName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
+            return (
+              <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                زوجة {husbandName}
+              </p>
+            );
+          } else {
+            // For husbands: show spouse info only
+            return (
+              <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+                زوج {spouseInfo}
+              </p>
+            );
+          }
         }
       }
     }
