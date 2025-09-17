@@ -137,8 +137,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
           // For wives: show husband's name, for husbands: show relation only
           if (member.gender === 'female') {
-            // For wives: show "زوجة [husband name]"
-            const husbandName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
+            // For wives: show "زوجة [husband name]" - only first name
+            let husbandName = spouse.first_name;
+            if (!husbandName && (spouse as any).name) {
+              // Extract only the first word from the full name
+              husbandName = (spouse as any).name.split(' ')[0];
+            }
+            if (!husbandName) {
+              husbandName = "غير معروف";
+            }
             return (
               <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
                 زوجة {husbandName}
