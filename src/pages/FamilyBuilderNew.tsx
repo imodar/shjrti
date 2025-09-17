@@ -815,9 +815,6 @@ const TreeSettingsView = ({
         <CustomDomainCard familyData={familyData} />
 
 
-        {/* مشاركة الشجرة */}
-        <Card>
-        </Card>
 
         <Card>
           <CardHeader className="pb-3">
