@@ -959,7 +959,7 @@ export default function EnhancedAdminPanel() {
         </div>
 
         <Tabs defaultValue="packages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 place-items-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+          <TabsList className="grid w-full grid-cols-8 place-items-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl py-4 px-2">
             <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Package className="ml-2 h-4 w-4" />
               الباقات
