@@ -817,15 +817,6 @@ const TreeSettingsView = ({
 
         {/* مشاركة الشجرة */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Share2 className="h-4 w-4" />
-              مشاركة الشجرة
-            </CardTitle>
-            <CardDescription className="text-xs">
-              روابط لمشاركة شجرة العائلة مع الآخرين
-            </CardDescription>
-          </CardHeader>
         </Card>
 
         <Card>
