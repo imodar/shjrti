@@ -1,6 +1,4 @@
 /* Modern Theme Components */
-@tailwind components;
-
 @layer components {
   .hero-gradient {
     background: var(--tree-gradient);
