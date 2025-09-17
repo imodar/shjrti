@@ -246,57 +246,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               </div>
             )}
             
-            {/* Action buttons - compact */}
-            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              {!checkIfMemberIsSpouse(member) ? (
-                <Button 
-                  type="button" 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditMember(member);
-                  }} 
-                  className="h-7 w-7 p-0 hover:bg-primary/10 hover:text-primary"
-                >
-                  <Edit2 className="h-3 w-3" />
-                </Button>
-              ) : (
-                <Button 
-                  type="button" 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSpouseEditAttempt(member);
-                  }} 
-                  className="h-7 w-7 p-0 hover:bg-accent/15 hover:text-accent-foreground"
-                >
-                  <Edit2 className="h-3 w-3" />
-                </Button>
-              )}
-              
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="ghost" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (checkIfMemberIsSpouse(member)) {
-                    onSpouseEditAttempt(member);
-                  } else {
-                    onDeleteMember(member);
-                  }
-                }} 
-                className={`h-7 w-7 p-0 ${
-                  checkIfMemberIsSpouse(member) 
-                    ? 'hover:bg-accent/15 hover:text-accent-foreground' 
-                    : 'hover:bg-destructive/10 hover:text-destructive'
-                }`}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
+            {/* Action buttons removed */}
           </div>
         </div>
       </CardContent>
