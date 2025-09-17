@@ -148,128 +148,165 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="w-full h-full bg-card rounded-2xl" />
       </div>
       
-      <CardContent className="relative p-5">
-        {/* Top floating icons */}
-        <div className="absolute top-2 right-3 flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-          {member.is_founder && (
-            <div className="relative">
-              <Crown className="h-4 w-4 text-primary animate-pulse" />
-              <div className="absolute inset-0 h-4 w-4 text-primary animate-ping opacity-30" />
-            </div>
-          )}
-          {!(member as any).isAlive && <Skull className="h-4 w-4 text-muted-foreground/70" />}
-        </div>
-
-        <div className="flex items-start gap-4 min-h-[90px]">
-          {/* Avatar with enhanced styling */}
-          <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-110" />
-            <Avatar className="relative h-14 w-14 ring-2 ring-primary/20 ring-offset-2 ring-offset-background group-hover:ring-primary/40 transition-all duration-300">
-              <AvatarImage src={(member as any).image} className="object-cover" />
-              <AvatarFallback className={`${getGenderColor(member.gender)} text-lg font-bold`}>
-                {((member as any).name || member.first_name || "؟").charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            {/* Gender indicator */}
-            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center shadow-lg ${member.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'}`}>
-              {member.gender === 'male' ? 
-                <User className="h-3 w-3 text-white" /> : 
-                <UserIcon className="h-3 w-3 text-white" />
-              }
-            </div>
+      <CardContent className="relative p-0 overflow-hidden">
+        {/* Innovative hexagonal design */}
+        <div className="relative h-32 bg-gradient-to-br from-primary/20 via-accent/15 to-secondary/20 overflow-hidden">
+          {/* Animated geometric patterns */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-2 left-4 w-8 h-8 border-2 border-primary/40 rotate-45 animate-spin" style={{animationDuration: '8s'}} />
+            <div className="absolute top-6 right-8 w-6 h-6 border-2 border-accent/40 rounded-full animate-pulse" />
+            <div className="absolute bottom-4 left-8 w-4 h-4 bg-secondary/40 rotate-45 animate-bounce" style={{animationDuration: '3s'}} />
           </div>
           
-          {/* Main content with better spacing */}
-          <div className="flex-1 min-w-0 space-y-2">
-            {/* Name with enhanced typography */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-lg font-arabic leading-tight text-foreground group-hover:text-primary transition-colors duration-300">
+          {/* Status indicators - floating */}
+          <div className="absolute top-3 right-3 flex gap-2">
+            {member.is_founder && (
+              <div className="relative">
+                <div className="w-8 h-8 bg-primary/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                  <Crown className="h-4 w-4 text-white animate-pulse" />
+                </div>
+                <div className="absolute inset-0 w-8 h-8 bg-primary/30 rounded-full animate-ping" />
+              </div>
+            )}
+            {!(member as any).isAlive && (
+              <div className="w-8 h-8 bg-muted/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                <Skull className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
+          </div>
+
+          {/* Avatar - positioned creatively */}
+          <div className="absolute bottom-0 left-4 transform translate-y-1/2">
+            <div className="relative">
+              {/* Multiple rings effect */}
+              <div className="absolute inset-0 w-16 h-16 border-4 border-primary/30 rounded-full animate-ping" style={{animationDuration: '2s'}} />
+              <div className="absolute inset-0 w-16 h-16 border-2 border-accent/40 rounded-full animate-pulse" />
+              
+              <Avatar className="relative w-16 h-16 border-4 border-background shadow-2xl">
+                <AvatarImage src={(member as any).image} className="object-cover" />
+                <AvatarFallback className={`${getGenderColor(member.gender)} text-xl font-bold`}>
+                  {((member as any).name || member.first_name || "؟").charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Gender badge - innovative positioning */}
+              <div className={`absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center shadow-xl border-2 border-background ${
+                member.gender === 'male' ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-pink-500 to-pink-600'
+              }`}>
+                {member.gender === 'male' ? 
+                  <User className="h-3 w-3 text-white" /> : 
+                  <UserIcon className="h-3 w-3 text-white" />
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content section - innovative layout */}
+        <div className="pt-10 pb-4 px-4 space-y-3">
+          {/* Name section - diagonal design */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="font-bold text-xl font-arabic leading-tight text-foreground group-hover:text-primary transition-all duration-500 transform group-hover:scale-105">
                   {generateMemberDisplayName()}
                 </h3>
+                
+                {/* Relationship tag */}
                 {renderRelationship() && (
-                  <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full font-medium">
-                    {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                  </span>
+                  <div className="inline-block mt-1">
+                    <span className="px-3 py-1 text-xs bg-gradient-to-r from-primary/20 to-accent/20 text-primary rounded-full font-medium border border-primary/30 backdrop-blur-sm">
+                      {member.gender === 'female' ? 'ابنة' : 'ابن'}
+                    </span>
+                  </div>
                 )}
               </div>
               
-              {/* Enhanced parentage display */}
-              {renderParentage() && (
-                <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+              {/* Action buttons - floating design */}
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-0 translate-x-4">
+                {!checkIfMemberIsSpouse(member) ? (
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditMember(member);
+                    }} 
+                    className="h-9 w-9 p-0 rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/20 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                  >
+                    <Edit2 className="h-4 w-4 text-primary" />
+                  </Button>
+                ) : (
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSpouseEditAttempt(member);
+                    }} 
+                    className="h-9 w-9 p-0 rounded-full bg-accent/10 hover:bg-accent/20 border border-accent/20 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                  >
+                    <Edit2 className="h-4 w-4 text-accent-foreground" />
+                  </Button>
+                )}
+                
+                <Button 
+                  type="button" 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (checkIfMemberIsSpouse(member)) {
+                      onSpouseEditAttempt(member);
+                    } else {
+                      onDeleteMember(member);
+                    }
+                  }} 
+                  className={`h-9 w-9 p-0 rounded-full border backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 ${
+                    checkIfMemberIsSpouse(member) 
+                      ? 'bg-accent/10 hover:bg-accent/20 border-accent/20' 
+                      : 'bg-destructive/10 hover:bg-destructive/20 border-destructive/20'
+                  }`}
+                >
+                  <Trash2 className={`h-4 w-4 ${
+                    checkIfMemberIsSpouse(member) ? 'text-accent-foreground' : 'text-destructive'
+                  }`} />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Info cards - innovative stacked design */}
+          <div className="space-y-2">
+            {/* Parentage info */}
+            {renderParentage() && (
+              <div className="flex items-center gap-3 p-2 bg-gradient-to-r from-muted/30 to-transparent rounded-lg border-r-2 border-primary/40">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <div className="text-sm text-muted-foreground font-arabic">
                   {renderParentage()}
                 </div>
-              )}
-              
-              {/* Enhanced spouse/founder info */}
-              {renderSpouseInfo() && (
-                <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 rounded-full bg-accent/70" />
+              </div>
+            )}
+            
+            {/* Spouse/Founder info */}
+            {renderSpouseInfo() && (
+              <div className="flex items-center gap-3 p-2 bg-gradient-to-r from-accent/20 to-transparent rounded-lg border-r-2 border-accent/40">
+                <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                <div className="text-xs text-accent-foreground font-arabic">
                   {renderSpouseInfo()}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             
-            {/* Birth date with icon */}
+            {/* Birth date */}
             {member.birth_date && (
-              <div className="flex items-center gap-2 pt-1">
-                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-accent opacity-60" />
+              <div className="flex items-center gap-3 p-2 bg-gradient-to-r from-secondary/30 to-transparent rounded-lg border-r-2 border-secondary/40">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-primary to-accent animate-pulse opacity-70" />
                 <DateDisplay date={member.birth_date} className="text-sm text-muted-foreground font-arabic" />
               </div>
             )}
-          </div>
-          
-          {/* Enhanced action buttons */}
-          <div className="flex flex-col gap-2 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-all duration-300">
-            {!checkIfMemberIsSpouse(member) ? (
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="ghost" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditMember(member);
-                }} 
-                className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary transition-all duration-200 rounded-lg"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
-            ) : (
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="ghost" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSpouseEditAttempt(member);
-                }} 
-                className="h-8 w-8 p-0 hover:bg-accent/20 hover:text-accent-foreground transition-all duration-200 rounded-lg"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
-            )}
-            
-            <Button 
-              type="button" 
-              size="sm" 
-              variant="ghost" 
-              onClick={(e) => {
-                e.stopPropagation();
-                if (checkIfMemberIsSpouse(member)) {
-                  onSpouseEditAttempt(member);
-                } else {
-                  onDeleteMember(member);
-                }
-              }} 
-              className={`h-8 w-8 p-0 transition-all duration-200 rounded-lg ${
-                checkIfMemberIsSpouse(member) 
-                  ? 'hover:bg-accent/20 hover:text-accent-foreground' 
-                  : 'hover:bg-destructive/10 hover:text-destructive'
-              }`}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </CardContent>
