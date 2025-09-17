@@ -299,7 +299,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {/* Basic Info - Name and Stats on the left */}
                   <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
-                      <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none whitespace-nowrap overflow-hidden text-ellipsis">
+                      <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
                         {(() => {
                           let displayName = member.name;
                           
