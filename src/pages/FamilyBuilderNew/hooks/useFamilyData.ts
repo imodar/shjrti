@@ -52,15 +52,15 @@ export const useFamilyData = (familyId: string | null): UseFamilyDataResult => {
 
       setFamilyData(family);
 
-      // Fetch family members
+      // Fetch family tree members
       const { data: members, error: membersError } = await supabase
-        .from('family_members')
+        .from('family_tree_members')
         .select('*')
         .eq('family_id', familyId)
         .order('created_at', { ascending: true });
 
       if (membersError) {
-        console.error('Error fetching members:', membersError);
+        console.error('Error fetching family tree members:', membersError);
         toast({
           title: "خطأ في تحميل الأعضاء",
           description: "حدث خطأ أثناء تحميل أعضاء العائلة",

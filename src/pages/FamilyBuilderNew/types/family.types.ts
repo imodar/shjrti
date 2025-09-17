@@ -13,25 +13,25 @@ export interface Family {
 
 export interface Member {
   id: string;
-  first_name: string;
-  middle_name?: string;
+  name: string;
+  first_name?: string;
   last_name?: string;
-  nickname?: string;
-  gender: 'male' | 'female';
+  gender: string;
   birth_date?: string;
   death_date?: string;
   birth_place?: string;
   death_place?: string;
-  current_residence?: string;
-  occupation?: string;
-  education?: string;
   biography?: string;
-  photo_url?: string;
+  image_url?: string;
   father_id?: string;
   mother_id?: string;
   family_id: string;
-  generation?: number;
   is_founder?: boolean;
+  is_alive?: boolean;
+  marital_status?: string;
+  spouse_id?: string;
+  related_person_id?: string;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
