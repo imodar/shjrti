@@ -762,7 +762,7 @@ const Dashboard = () => {
                                   console.log('🔗 Full URL:', `/family-tree-view?family=${tree.id}`);
                                 }}
                               >
-                                <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
+                                <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-emerald-200 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Eye className="h-4 w-4 ml-2" />
                                   <span className="font-medium">{t('view', 'عرض')}</span>
                                 </Button>
