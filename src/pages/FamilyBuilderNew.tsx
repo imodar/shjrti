@@ -409,7 +409,9 @@ const CustomDomainCard = ({
                     <span
                       className={cn(
                         "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                        isPasswordProtected ? "translate-x-6" : "translate-x-1"
+                        isPasswordProtected 
+                          ? "translate-x-6 rtl:-translate-x-6 rtl:translate-x-1" 
+                          : "translate-x-1 rtl:-translate-x-1 rtl:translate-x-6"
                       )}
                     />
                   </div>
