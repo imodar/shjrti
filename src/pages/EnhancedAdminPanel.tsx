@@ -2003,7 +2003,7 @@ export default function EnhancedAdminPanel() {
         {/* Delete User Confirmation Dialog */}
         <Dialog open={deletingUser !== null} onOpenChange={() => setDeletingUser(null)}>
           <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+            <DialogHeader className="text-left">
               <DialogTitle className="text-red-600">تأكيد حذف المستخدم</DialogTitle>
               <DialogDescription className="text-red-500">
                 تحذير: هذا الإجراء لا يمكن التراجع عنه
