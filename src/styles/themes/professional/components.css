@@ -1,265 +1,263 @@
 /* Facebook Theme Components - Exact Design Match */
-@layer components {
-  .hero-gradient {
-    background: var(--tree-gradient);
-  }
-  
-  .tree-shadow {
-    box-shadow: var(--tree-shadow);
-  }
-  
-  .fade-in {
-    animation: fadeIn 0.3s ease-out;
-  }
+.hero-gradient {
+  background: var(--tree-gradient);
+}
 
-  /* Facebook Card Styling */
-  .facebook-card {
-    @apply bg-card rounded-lg;
-    box-shadow: var(--shadow-card);
-    border: 1px solid hsl(var(--border));
-    transition: box-shadow 0.2s ease;
-  }
+.tree-shadow {
+  box-shadow: var(--tree-shadow);
+}
 
-  .facebook-card:hover {
-    box-shadow: var(--shadow-hover);
-  }
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
 
-  /* Facebook Button Styling */
-  .facebook-button {
-    @apply font-semibold rounded-md transition-all duration-150;
-    font-family: var(--font-family-primary);
-    letter-spacing: 0.02em;
-    border: none;
-    cursor: pointer;
-  }
+/* Facebook Card Styling */
+.facebook-card {
+  @apply bg-card rounded-lg;
+  box-shadow: var(--shadow-card);
+  border: 1px solid hsl(var(--border));
+  transition: box-shadow 0.2s ease;
+}
 
-  .facebook-button-primary {
-    @apply facebook-button bg-primary text-primary-foreground;
-    padding: 8px 16px;
-    font-size: 15px;
-    font-weight: 600;
-  }
+.facebook-card:hover {
+  box-shadow: var(--shadow-hover);
+}
 
-  .facebook-button-primary:hover {
-    filter: brightness(0.95);
-  }
+/* Facebook Button Styling */
+.facebook-button {
+  @apply font-semibold rounded-md transition-all duration-150;
+  font-family: var(--font-family-primary);
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+}
 
-  .facebook-button-secondary {
-    @apply facebook-button bg-secondary text-secondary-foreground;
-    padding: 8px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    border: 1px solid hsl(var(--border));
-  }
+.facebook-button-primary {
+  @apply facebook-button bg-primary text-primary-foreground;
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
 
-  .facebook-button-secondary:hover {
-    @apply bg-muted;
-  }
+.facebook-button-primary:hover {
+  filter: brightness(0.95);
+}
 
-  /* Facebook Input Styling */
-  .facebook-input {
-    @apply bg-input border border-border rounded-md px-3 py-2;
-    font-family: var(--font-family-primary);
-    font-size: 15px;
-    line-height: 1.34;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    outline: none;
-  }
+.facebook-button-secondary {
+  @apply facebook-button bg-secondary text-secondary-foreground;
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid hsl(var(--border));
+}
 
-  .facebook-input:focus {
-    border-color: hsl(var(--primary));
-    box-shadow: var(--shadow-focus);
-  }
+.facebook-button-secondary:hover {
+  @apply bg-muted;
+}
 
-  .facebook-input::placeholder {
-    color: hsl(var(--muted-foreground));
-    font-weight: 400;
-  }
+/* Facebook Input Styling */
+.facebook-input {
+  @apply bg-input border border-border rounded-md px-3 py-2;
+  font-family: var(--font-family-primary);
+  font-size: 15px;
+  line-height: 1.34;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
 
-  /* Facebook Header/Navigation */
-  .facebook-header {
-    @apply bg-card;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid hsl(var(--border));
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
+.facebook-input:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: var(--shadow-focus);
+}
 
-  .facebook-nav-item {
-    @apply text-muted-foreground hover:text-foreground;
-    transition: all 0.15s ease;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    position: relative;
-  }
+.facebook-input::placeholder {
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+}
 
-  .facebook-nav-item:hover {
-    @apply bg-accent;
-  }
+/* Facebook Header/Navigation */
+.facebook-header {
+  @apply bg-card;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid hsl(var(--border));
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
 
-  .facebook-nav-item.active {
-    @apply text-primary;
-  }
+.facebook-nav-item {
+  @apply text-muted-foreground hover:text-foreground;
+  transition: all 0.15s ease;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
 
-  .facebook-nav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 3px;
-    background: hsl(var(--primary));
-    border-radius: 2px;
-  }
+.facebook-nav-item:hover {
+  @apply bg-accent;
+}
 
-  /* Facebook Sidebar */
-  .facebook-sidebar {
-    @apply bg-card;
-    width: 280px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 56px;
-    padding: var(--spacing-lg);
-    overflow-y: auto;
-    border-right: 1px solid hsl(var(--border));
-  }
+.facebook-nav-item.active {
+  @apply text-primary;
+}
 
-  .facebook-sidebar-item {
-    @apply flex items-center px-2 py-2 rounded-lg text-foreground;
-    transition: all 0.15s ease;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    margin-bottom: 4px;
-  }
+.facebook-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: hsl(var(--primary));
+  border-radius: 2px;
+}
 
-  .facebook-sidebar-item:hover {
-    @apply bg-accent;
-  }
+/* Facebook Sidebar */
+.facebook-sidebar {
+  @apply bg-card;
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 56px;
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  border-right: 1px solid hsl(var(--border));
+}
 
-  .facebook-sidebar-item.active {
-    @apply bg-primary text-primary-foreground;
-  }
+.facebook-sidebar-item {
+  @apply flex items-center px-2 py-2 rounded-lg text-foreground;
+  transition: all 0.15s ease;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
 
-  .facebook-sidebar-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: var(--spacing-md);
-    flex-shrink: 0;
-  }
+.facebook-sidebar-item:hover {
+  @apply bg-accent;
+}
 
-  /* Facebook Typography */
-  .facebook-text-heading {
-    font-family: var(--font-family-primary);
-    font-weight: 700;
-    color: hsl(var(--foreground));
-    line-height: 1.2;
-  }
+.facebook-sidebar-item.active {
+  @apply bg-primary text-primary-foreground;
+}
 
-  .facebook-text-body {
-    font-family: var(--font-family-primary);
-    font-weight: 400;
-    color: hsl(var(--foreground));
-    line-height: 1.34;
-    font-size: 15px;
-  }
+.facebook-sidebar-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: var(--spacing-md);
+  flex-shrink: 0;
+}
 
-  .facebook-text-caption {
-    font-family: var(--font-family-primary);
-    font-weight: 400;
-    color: hsl(var(--muted-foreground));
-    font-size: 13px;
-    line-height: 1.34;
-  }
+/* Facebook Typography */
+.facebook-text-heading {
+  font-family: var(--font-family-primary);
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  line-height: 1.2;
+}
 
-  /* Facebook Form Elements */
-  .facebook-form-group {
-    margin-bottom: var(--spacing-lg);
-  }
+.facebook-text-body {
+  font-family: var(--font-family-primary);
+  font-weight: 400;
+  color: hsl(var(--foreground));
+  line-height: 1.34;
+  font-size: 15px;
+}
 
-  .facebook-form-label {
-    @apply facebook-text-body font-semibold mb-1 block;
-    color: hsl(var(--foreground));
-  }
+.facebook-text-caption {
+  font-family: var(--font-family-primary);
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+  line-height: 1.34;
+}
 
-  .facebook-form-error {
-    @apply facebook-text-caption;
-    color: hsl(var(--destructive));
-    margin-top: var(--spacing-xs);
-  }
+/* Facebook Form Elements */
+.facebook-form-group {
+  margin-bottom: var(--spacing-lg);
+}
 
-  /* Facebook Modal/Dialog */
-  .facebook-modal {
-    @apply bg-card rounded-lg;
-    box-shadow: var(--shadow-card);
-    border: 1px solid hsl(var(--border));
-    max-width: 500px;
-    width: 100%;
-  }
+.facebook-form-label {
+  @apply facebook-text-body font-semibold mb-1 block;
+  color: hsl(var(--foreground));
+}
 
-  .facebook-modal-header {
-    @apply border-b border-border px-4 py-4;
-  }
+.facebook-form-error {
+  @apply facebook-text-caption;
+  color: hsl(var(--destructive));
+  margin-top: var(--spacing-xs);
+}
 
-  .facebook-modal-title {
-    @apply facebook-text-heading text-xl;
-  }
+/* Facebook Modal/Dialog */
+.facebook-modal {
+  @apply bg-card rounded-lg;
+  box-shadow: var(--shadow-card);
+  border: 1px solid hsl(var(--border));
+  max-width: 500px;
+  width: 100%;
+}
 
-  .facebook-modal-content {
-    @apply px-4 py-4;
-  }
+.facebook-modal-header {
+  @apply border-b border-border px-4 py-4;
+}
 
-  .facebook-modal-footer {
-    @apply border-t border-border px-4 py-4 flex justify-end;
-    gap: var(--spacing-sm);
-  }
+.facebook-modal-title {
+  @apply facebook-text-heading text-xl;
+}
 
-  /* Facebook Feed/Content */
-  .facebook-post {
-    @apply facebook-card p-4 mb-4;
-  }
+.facebook-modal-content {
+  @apply px-4 py-4;
+}
 
-  .facebook-post-header {
-    @apply flex items-center mb-3;
-  }
+.facebook-modal-footer {
+  @apply border-t border-border px-4 py-4 flex justify-end;
+  gap: var(--spacing-sm);
+}
 
-  .facebook-post-author {
-    @apply facebook-text-body font-semibold;
-  }
+/* Facebook Feed/Content */
+.facebook-post {
+  @apply facebook-card p-4 mb-4;
+}
 
-  .facebook-post-time {
-    @apply facebook-text-caption;
-  }
+.facebook-post-header {
+  @apply flex items-center mb-3;
+}
 
-  .facebook-post-content {
-    @apply facebook-text-body mb-3;
-  }
+.facebook-post-author {
+  @apply facebook-text-body font-semibold;
+}
 
-  /* Facebook Avatar */
-  .facebook-avatar {
-    border-radius: 50%;
-    border: 2px solid hsl(var(--border));
-  }
+.facebook-post-time {
+  @apply facebook-text-caption;
+}
 
-  .facebook-avatar-sm {
-    width: 32px;
-    height: 32px;
-  }
+.facebook-post-content {
+  @apply facebook-text-body mb-3;
+}
 
-  .facebook-avatar-md {
-    width: 40px;
-    height: 40px;
-  }
+/* Facebook Avatar */
+.facebook-avatar {
+  border-radius: 50%;
+  border: 2px solid hsl(var(--border));
+}
 
-  .facebook-avatar-lg {
-    width: 48px;
-    height: 48px;
-  }
+.facebook-avatar-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.facebook-avatar-md {
+  width: 40px;
+  height: 40px;
+}
+
+.facebook-avatar-lg {
+  width: 48px;
+  height: 48px;
 }

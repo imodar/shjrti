@@ -99,7 +99,7 @@ export function ChangePackageModal({ isOpen, onClose, user, onSuccess }: ChangeP
 
     setLoading(true);
     try {
-      const { error } = await supabase.rpc('admin_change_user_package', {
+      const { error } = await supabase.rpc('admin_change_user_package' as any, {
         target_user_id: user.id,
         new_package_id: selectedPackageId,
         change_type: changeType

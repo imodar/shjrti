@@ -70,7 +70,7 @@ export function ExtendSubscriptionModal({ isOpen, onClose, user, onSuccess }: Ex
 
     setLoading(true);
     try {
-      const { error } = await supabase.rpc('admin_extend_subscription', {
+      const { error } = await supabase.rpc('admin_extend_subscription' as any, {
         target_user_id: user.id,
         new_expiry_date: newExpiryDate.toISOString()
       });

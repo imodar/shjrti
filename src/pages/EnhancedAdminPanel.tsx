@@ -37,6 +37,8 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
+import { ChangePackageModal } from '@/components/ChangePackageModal';
+import { ExtendSubscriptionModal } from '@/components/ExtendSubscriptionModal';
 import PageEditor from '@/components/PageEditor';
 import ContactSubmissions from '@/components/ContactSubmissions';
 import { useToast } from "@/hooks/use-toast";
@@ -206,7 +208,9 @@ export default function EnhancedAdminPanel() {
   const [newUserStatus, setNewUserStatus] = useState<'active' | 'pending' | 'suspended' | 'inactive'>('active');
   const [statusReason, setStatusReason] = useState('');
   
-  // Extended user editing state
+  // Subscription management modals
+  const [changePackageModalOpen, setChangePackageModalOpen] = useState(false);
+  const [extendSubscriptionModalOpen, setExtendSubscriptionModalOpen] = useState(false);
   const [editingUserStatus, setEditingUserStatus] = useState<'active' | 'pending' | 'suspended' | 'inactive'>('active');
   const [editingStatusReason, setEditingStatusReason] = useState('');
 
@@ -2244,14 +2248,21 @@ export default function EnhancedAdminPanel() {
                       <div className="space-y-2">
                         {editingUser.subscription_status === 'active' ? (
                           <div className="flex gap-2 flex-wrap">
-                            <Button variant="outline" size="sm" className="text-orange-600 border-orange-200 hover:bg-orange-50">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                              onClick={() => setExtendSubscriptionModalOpen(true)}
+                            >
                               تمديد الاشتراك
                             </Button>
-                            <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              onClick={() => setChangePackageModalOpen(true)}
+                            >
                               تغيير الباقة
-                            </Button>
-                            <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
-                              إلغاء الاشتراك
                             </Button>
                           </div>
                         ) : (
@@ -2340,6 +2351,30 @@ export default function EnhancedAdminPanel() {
             } catch (error) {
               console.error('Error reloading packages:', error);
             }
+          }}
+        />
+
+        {/* Change Package Modal */}
+        <ChangePackageModal
+          isOpen={changePackageModalOpen}
+          onClose={() => setChangePackageModalOpen(false)}
+          user={editingUser}
+          onSuccess={() => {
+            loadUsers();
+            loadUserSubscriptions();
+            setChangePackageModalOpen(false);
+          }}
+        />
+
+        {/* Extend Subscription Modal */}
+        <ExtendSubscriptionModal
+          isOpen={extendSubscriptionModalOpen}
+          onClose={() => setExtendSubscriptionModalOpen(false)}
+          user={editingUser}
+          onSuccess={() => {
+            loadUsers();
+            loadUserSubscriptions();
+            setExtendSubscriptionModalOpen(false);
           }}
         />
       </div>

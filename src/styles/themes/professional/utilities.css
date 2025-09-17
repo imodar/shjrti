@@ -1,154 +1,152 @@
 /* Professional Theme Utilities and Animations */
-@layer components {
-  /* Subtle Professional Animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+/* Subtle Professional Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
   }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
-  @keyframes pulse-subtle {
-    0%, 100% { 
-      opacity: 1;
-    }
-    50% { 
-      opacity: 0.8;
-    }
+@keyframes pulse-subtle {
+  0%, 100% { 
+    opacity: 1;
   }
+  50% { 
+    opacity: 0.8;
+  }
+}
 
-  @keyframes bounce-gentle {
-    0%, 100% { 
-      transform: translateY(0);
-    }
-    50% { 
-      transform: translateY(-3px);
-    }
+@keyframes bounce-gentle {
+  0%, 100% { 
+    transform: translateY(0);
   }
+  50% { 
+    transform: translateY(-3px);
+  }
+}
 
-  @keyframes shine-professional {
-    0% { 
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% { 
-      transform: translateX(100%);
-      opacity: 0;
-    }
+@keyframes shine-professional {
+  0% { 
+    transform: translateX(-100%);
+    opacity: 0;
   }
+  50% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
 
-  /* Professional Animation Classes */
-  .animate-fade-in-professional { 
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  .animate-slide-in-professional { 
-    animation: slideIn 0.2s ease-out;
-  }
-  
-  .animate-scale-in-professional { 
-    animation: scaleIn 0.2s ease-out;
-  }
-  
-  .animate-pulse-subtle { 
-    animation: pulse-subtle 2s infinite;
-  }
-  
-  .animate-bounce-gentle { 
-    animation: bounce-gentle 1s infinite;
-  }
+/* Professional Animation Classes */
+.animate-fade-in-professional { 
+  animation: fadeIn 0.3s ease-out;
+}
 
-  /* Professional Hover Effects */
-  .hover-lift {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
+.animate-slide-in-professional { 
+  animation: slideIn 0.2s ease-out;
+}
 
-  .hover-scale-professional {
-    transition: transform 0.2s ease;
-  }
-  
-  .hover-scale-professional:hover {
-    transform: scale(1.02);
-  }
+.animate-scale-in-professional { 
+  animation: scaleIn 0.2s ease-out;
+}
 
-  /* Professional Loading States */
-  .loading-shimmer {
-    background: linear-gradient(90deg, 
-      hsl(var(--muted)) 25%, 
-      hsl(var(--muted) / 0.5) 50%, 
-      hsl(var(--muted)) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer-professional 1.5s infinite;
-  }
+.animate-pulse-subtle { 
+  animation: pulse-subtle 2s infinite;
+}
 
-  @keyframes shimmer-professional {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+.animate-bounce-gentle { 
+  animation: bounce-gentle 1s infinite;
+}
 
-  /* Professional Focus States */
-  .focus-visible-professional:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2;
-  }
+/* Professional Hover Effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-  /* Professional Typography */
-  .text-professional-heading {
-    @apply text-foreground font-semibold tracking-tight;
-  }
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 
-  .text-professional-body {
-    @apply text-foreground leading-relaxed;
-  }
+.hover-scale-professional {
+  transition: transform 0.2s ease;
+}
 
-  .text-professional-caption {
-    @apply text-muted-foreground text-sm;
-  }
+.hover-scale-professional:hover {
+  transform: scale(1.02);
+}
 
-  /* Professional Spacing */
-  .space-professional-tight > * + * {
-    margin-top: 0.5rem;
-  }
+/* Professional Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, 
+    hsl(var(--muted)) 25%, 
+    hsl(var(--muted) / 0.5) 50%, 
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-professional 1.5s infinite;
+}
 
-  .space-professional-normal > * + * {
-    margin-top: 1rem;
-  }
+@keyframes shimmer-professional {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
 
-  .space-professional-loose > * + * {
-    margin-top: 1.5rem;
-  }
+/* Professional Focus States */
+.focus-visible-professional:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2;
+}
+
+/* Professional Typography */
+.text-professional-heading {
+  @apply text-foreground font-semibold tracking-tight;
+}
+
+.text-professional-body {
+  @apply text-foreground leading-relaxed;
+}
+
+.text-professional-caption {
+  @apply text-muted-foreground text-sm;
+}
+
+/* Professional Spacing */
+.space-professional-tight > * + * {
+  margin-top: 0.5rem;
+}
+
+.space-professional-normal > * + * {
+  margin-top: 1rem;
+}
+
+.space-professional-loose > * + * {
+  margin-top: 1.5rem;
 }
