@@ -132,10 +132,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               </p>
             );
           } else {
-            // For husbands: show spouse info only
+            // For husbands: show spouse info only (without "زوج" label)
             return (
               <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                زوج {spouseInfo}
+                {spouseInfo}
               </p>
             );
           }
