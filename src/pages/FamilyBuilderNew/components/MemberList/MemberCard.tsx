@@ -70,21 +70,36 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   const renderParentage = () => {
     const fatherId = member.father_id || (member as any).fatherId;
     const father = familyMembers?.find(m => m?.id === fatherId);
-    const grandfatherFatherId = father?.father_id || (father as any)?.fatherId;
-    const grandfather = father ? familyMembers?.find(m => m?.id === grandfatherFatherId) : null;
-    if (father && grandfather) {
-      const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-      const grandfatherFirstName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
+    
+    // Check for external father name (stored as full name when father is outside family)
+    const externalFatherName = (member as any).father_name || (member as any).fatherName;
+    
+    if (father) {
+      // Father is in the family tree
+      const grandfatherFatherId = father.father_id || (father as any)?.fatherId;
+      const grandfather = familyMembers?.find(m => m?.id === grandfatherFatherId);
+      
+      if (grandfather) {
+        const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
+        const grandfatherFirstName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
+        return (
+          <p className="text-sm text-muted-foreground truncate font-arabic">
+            {fatherFirstName} ابن {grandfatherFirstName}
+          </p>
+        );
+      } else {
+        const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
+        return (
+          <p className="text-sm text-muted-foreground truncate font-arabic">
+            {fatherFirstName}
+          </p>
+        );
+      }
+    } else if (externalFatherName) {
+      // Father is external to the family - show full name
       return (
         <p className="text-sm text-muted-foreground truncate font-arabic">
-          {fatherFirstName} ابن {grandfatherFirstName}
-        </p>
-      );
-    } else if (father) {
-      const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-      return (
-        <p className="text-sm text-muted-foreground truncate font-arabic">
-          {fatherFirstName}
+          {externalFatherName}
         </p>
       );
     }
