@@ -137,7 +137,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
           // For wives: show husband's name, for husbands: show relation only
           if (member.gender === 'female') {
-            // For wives: show "زوجة [husband name]" - only first name
+            // For wives: show "زوجة [husband name]" with full lineage
             let husbandName = spouse.first_name;
             if (!husbandName && (spouse as any).name) {
               // Extract only the first word from the full name
@@ -146,9 +146,27 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             if (!husbandName) {
               husbandName = "غير معروف";
             }
+            
+            // Build husband's lineage
+            const husbandFatherId = spouse.father_id || (spouse as any).fatherId;
+            const husbandFather = familyMembers?.find(m => m?.id === husbandFatherId);
+            let husbandLineage = husbandName;
+            
+            if (husbandFather) {
+              const fatherFirstName = husbandFather.first_name || (husbandFather as any).name?.split(' ')[0] || (husbandFather as any).name;
+              husbandLineage += ` ابن ${fatherFirstName}`;
+              
+              // Check for grandfather
+              const grandfatherFatherId = husbandFather.father_id || (husbandFather as any).fatherId;
+              const husbandGrandfather = familyMembers?.find(m => m?.id === grandfatherFatherId);
+              if (husbandGrandfather) {
+                const grandfatherFirstName = husbandGrandfather.first_name || (husbandGrandfather as any).name?.split(' ')[0] || (husbandGrandfather as any).name;
+                husbandLineage += ` ابن ${grandfatherFirstName}`;
+              }
+            }
             return (
               <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                زوجة {husbandName}
+                زوجة {husbandLineage}
               </p>
             );
           } else {
