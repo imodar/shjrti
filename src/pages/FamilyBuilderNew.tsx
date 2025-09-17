@@ -48,6 +48,7 @@ import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSett
 import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { MemberBasicInfoForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberBasicInfoForm";
+import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
 
 
 const FamilyBuilderNew = () => {
@@ -3466,32 +3467,28 @@ const FamilyBuilderNew = () => {
 
             {/* Member List - Left Side on Desktop */}
             <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
-              {isMobile ? <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
-                  <DrawerTrigger asChild>
-                    <Button variant="outline" className="w-full flex items-center gap-2">
-                      <Menu className="h-4 w-4" />
-                      عرض قائمة الأعضاء ({familyMembers.length})
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent className="h-[80vh]">
-                    <div className="p-4">
-                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
-                    </div>
-                  </DrawerContent>
-                </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
-                  <CardHeader className="pb-4 relative">
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                         أعضاء العائلة ({familyMembers.length})
-                       </span>
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent className="relative">
-                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
-                  </CardContent>
-                </Card>}
+              <MemberListComponent 
+                members={familyMembers}
+                familyMembers={familyMembers}
+                marriages={familyMarriages}
+                searchTerm={searchTerm}
+                selectedFilter={selectedFilter}
+                memberListLoading={memberListLoading}
+                formMode={formMode}
+                packageData={packageData}
+                isMemberListOpen={isMemberListOpen}
+                onSearchChange={setSearchTerm}
+                onFilterChange={setSelectedFilter}
+                onEditMember={handleEditMember}
+                onViewMember={handleViewMember}
+                onDeleteMember={handleDeleteMember}
+                onSpouseEditAttempt={handleSpouseEditWarning}
+                onAddMember={handleAddMember}
+                onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
+                checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                getAdditionalInfo={getAdditionalInfo}
+                getGenderColor={getGenderColor}
+              />
             </div>
           </div>
         </div>
@@ -3831,112 +3828,4 @@ const FamilyBuilderNew = () => {
 };
 
 // Member List Component
-const MemberList = ({
-  members,
-  onEditMember,
-  onViewMember,
-  onDeleteMember,
-  onSpouseEditAttempt,
-  checkIfMemberIsSpouse,
-  searchTerm,
-  onSearchChange,
-  selectedFilter,
-  onFilterChange,
-  getAdditionalInfo,
-  getGenderColor,
-  familyMembers,
-  marriages,
-  memberListLoading,
-  formMode,
-  onAddMember,
-  packageData
-}: any) => {
-  return <div className="space-y-4">
-      {/* Search and Filter on the same row */}
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
-        </div>
-        <div className="flex-1">
-          <Select value={selectedFilter} onValueChange={onFilterChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="تصفية حسب..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">جميع الأعضاء</SelectItem>
-          <SelectItem value="alive">الأحياء</SelectItem>
-          <SelectItem value="deceased">المتوفين</SelectItem>
-          <SelectItem value="male">الذكور</SelectItem>
-          <SelectItem value="female">الإناث</SelectItem>
-          <SelectItem value="founders">المؤسسون</SelectItem>
-        </SelectContent>
-      </Select>
-        </div>
-      </div>
-
-      {/* Add Member Button */}
-      {formMode === 'view' && <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button onClick={onAddMember} className="w-full flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                {packageData && familyMembers.length >= packageData.max_family_members ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)` : 'إضافة عضو جديد'}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs" side="top">
-              {packageData && familyMembers.length >= packageData.max_family_members ? <div className="text-center">
-                  <p className="font-semibold text-destructive mb-1">
-                    🚫 تم الوصول للحد الأقصى
-                  </p>
-                  <p className="text-sm">
-                    باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
-                  </p>
-                  <p className="text-xs mt-2 text-muted-foreground">
-                    قم بترقية باقتك لإضافة المزيد من الأعضاء
-                  </p>
-                </div> : <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>}
-
-      {/* Member List */}
-      <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
-        {memberListLoading ?
-      // Loading skeletons
-      Array.from({
-        length: 3
-      }).map((_, index) => <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
-              <div className="flex items-start gap-3">
-                <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
-                <div className="flex gap-2">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                </div>
-              </div>
-            </div>) : members.length === 0 ? <div className="text-center py-8 text-muted-foreground">
-            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>لا توجد أعضاء</p>
-          </div> : members.map((member: any) => (
-            <MemberCard
-              key={member.id}
-              member={member}
-              familyMembers={familyMembers}
-              marriages={marriages}
-              onViewMember={onViewMember}
-              onEditMember={onEditMember}
-              onDeleteMember={onDeleteMember}
-              onSpouseEditAttempt={onSpouseEditAttempt}
-              checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-              getGenderColor={getGenderColor}
-            />
-          ))}
-      </div>
-    </div>;
-};
 export default FamilyBuilderNew;
