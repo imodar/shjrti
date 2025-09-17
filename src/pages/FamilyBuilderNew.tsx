@@ -44,7 +44,6 @@ import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
 import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
-import TreeDeleteModal from "@/components/TreeDeleteModal";
 
 // Tree Settings Button Component
 const TreeSettingsButton = ({
@@ -849,12 +848,7 @@ const TreeSettingsView = ({
 
             <Separator />
 
-            <Button 
-              variant="destructive" 
-              size="sm" 
-              className="w-full justify-start text-xs"
-              onClick={() => setShowTreeDeleteModal(true)}
-            >
+            <Button variant="destructive" size="sm" className="w-full justify-start text-xs" disabled>
               <Trash2 className="h-3 w-3 ml-2" />
               حذف الشجرة نهائياً
             </Button>
@@ -871,23 +865,8 @@ const FamilyBuilderNew = () => {
   const navigate = useNavigate();
   const {
     hasAIFeatures
-  const { toast } = useToast();
-  const { hasAIFeatures } = useSubscription();
+  } = useSubscription();
   const isMobile = useIsMobile();
-  
-  // Tree delete modal states
-  const [showTreeDeleteModal, setShowTreeDeleteModal] = useState(false);
-  
-  // Handle successful tree deletion
-  const handleTreeDeleteSuccess = (treeId: string) => {
-    toast({
-      title: "تم حذف الشجرة",
-      description: "تم حذف شجرة العائلة نهائياً",
-      variant: "destructive" 
-    });
-    navigate('/dashboard');
-  };
-  
   const getGenerationStats = () => {
     if (familyMembers.length === 0) return [];
     const generationMap = new Map();
@@ -1799,8 +1778,6 @@ const FamilyBuilderNew = () => {
   const [memberToDelete, setMemberToDelete] = useState<any>(null);
   const [deleteModalType, setDeleteModalType] = useState<'spouse' | 'bloodMember'>('spouse');
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
-  
-  
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
   const [spousePartnerDetails, setSpousePartnerDetails] = useState({
@@ -4886,15 +4863,6 @@ const FamilyBuilderNew = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Tree Delete Modal */}
-      <TreeDeleteModal
-        isOpen={showTreeDeleteModal}
-        onClose={() => setShowTreeDeleteModal(false)}
-        onSuccess={handleTreeDeleteSuccess}
-        treeId={familyId}
-        treeName={familyData?.name || "شجرة العائلة"}
-      />
 
       <GlobalFooterSimplified />
     </div>;
