@@ -41,7 +41,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       return (member as any).name || "غير معروف";
     } else {
       // For family members: show first name only
-      return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
+      if (member.first_name) {
+        return member.first_name;
+      } else if ((member as any).name) {
+        // Extract first word from name field
+        return ((member as any).name).split(' ')[0];
+      }
+      return "غير معروف";
     }
   };
 
