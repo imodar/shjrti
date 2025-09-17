@@ -32,7 +32,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   const generateMemberDisplayName = () => {
     const isSpouse = !member.father_id && !member.mother_id && !member.is_founder;
     if (isSpouse) {
-      // For spouses: show first_name + last_name, or name if missing
+      // For spouses: show full name (first_name + last_name)
       const firstName = member.first_name || '';
       const lastName = member.last_name || '';
       if (firstName && lastName) {
@@ -40,7 +40,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       }
       return (member as any).name || "غير معروف";
     } else {
-      // For founders and other native family members: show first_name, or split name if missing
+      // For family members: show first name only
       return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
     }
   };
