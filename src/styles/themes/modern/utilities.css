@@ -1,4 +1,6 @@
 /* Modern Theme Utilities and Animations */
+@tailwind components;
+
 @layer components {
   /* Keyframe Animations */
   @keyframes fadeIn {

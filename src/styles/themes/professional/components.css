@@ -1,4 +1,6 @@
 /* Facebook Theme Components - Exact Design Match */
+@tailwind components;
+
 @layer components {
   .hero-gradient {
     background: var(--tree-gradient);

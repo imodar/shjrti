@@ -1,4 +1,6 @@
 /* Professional Theme Utilities and Animations */
+@tailwind components;
+
 @layer components {
   /* Subtle Professional Animations */
   @keyframes fadeIn {
