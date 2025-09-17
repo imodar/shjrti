@@ -44,18 +44,7 @@ import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
 import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
-
-// Tree Settings Button Component
-const TreeSettingsButton = ({
-  onShowSettings
-}: {
-  onShowSettings: () => void;
-}) => {
-  return <Button variant="outline" size="sm" className="ml-2" onClick={onShowSettings}>
-      <Settings className="h-4 w-4 ml-2" />
-      إعدادات الشجرة
-    </Button>;
-};
+import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsButton";
 
 // Custom Domain Card Component
 const CustomDomainCard = ({
