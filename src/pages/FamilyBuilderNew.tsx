@@ -2837,15 +2837,6 @@ const FamilyBuilderNew = () => {
                             <Star className="h-5 w-5 text-yellow-400/60" />
                           </div>
                           
-                          {/* Settings Button - Luxury Style */}
-                          <div className="absolute top-6 left-6 z-20">
-                            <div className="relative group">
-                              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-all duration-500"></div>
-                              <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl p-3 border border-emerald-200/50 dark:border-emerald-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1">
-                                <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
-                              </div>
-                            </div>
-                          </div>
                           
                           <div className="relative z-10 pt-4">
                             {/* Hero Content */}
@@ -3059,6 +3050,13 @@ const FamilyBuilderNew = () => {
                               <Star className="h-5 w-5" />
                             </div>
                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
+                          </div>
+                          
+                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')}>
+                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                              <Settings className="h-5 w-5" />
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">إعدادات الشجرة</span>
                           </div>
                         </div>
                       </div>
