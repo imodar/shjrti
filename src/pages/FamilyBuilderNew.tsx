@@ -47,7 +47,7 @@ import { MemberProfileView } from "@/components/MemberProfileView";
 import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsButton";
 import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
-import { MemberBasicInfoForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberBasicInfoForm";
+import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
 import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
 
 
@@ -3210,20 +3210,38 @@ const FamilyBuilderNew = () => {
 
                       {/* Step Content */}
                       {currentStep === 1 && (
-                        <MemberBasicInfoForm
+                        <MemberDetailForm
                           formData={{
-                            first_name: formData.first_name,
+                            firstName: formData.first_name || '',
+                            middleName: '',
+                            lastName: '',
+                            nickname: '',
                             gender: formData.gender,
                             birthDate: formData.birthDate,
-                            selectedParent: formData.selectedParent,
-                            isAlive: formData.isAlive,
                             deathDate: formData.deathDate,
-                            isFounder: formData.isFounder
+                            birthPlace: '',
+                            deathPlace: '',
+                            currentResidence: '',
+                            occupation: '',
+                            education: '',
+                            biography: '',
+                            isAlive: formData.isAlive,
+                            isFounder: formData.isFounder || false,
+                            fatherId: formData.selectedParent || '',
+                            motherId: ''
                           }}
-                          setFormData={(data) => setFormData({ ...formData, ...data })}
+                          setFormData={(data) => setFormData({
+                            ...formData,
+                            first_name: data.firstName || formData.first_name,
+                            gender: data.gender || formData.gender,
+                            birthDate: data.birthDate,
+                            deathDate: data.deathDate,
+                            isAlive: data.isAlive !== undefined ? data.isAlive : formData.isAlive,
+                            isFounder: data.isFounder !== undefined ? data.isFounder : formData.isFounder,
+                            selectedParent: data.fatherId || formData.selectedParent
+                          })}
                           familyMembers={familyMembers}
-                          familyMarriages={familyMarriages}
-                          loading={loading}
+                          editingMember={editingMember}
                         />
                       )}
 
