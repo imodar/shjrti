@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { X, UserPlus, Eye, Edit } from "lucide-react";
 import { MemberProfileView } from "@/components/MemberProfileView";
 import { Member } from "../../types/family.types";
+import { FamilyOverview } from "../Overview/FamilyOverview";
 
 interface FormPanelContainerProps {
   formMode: 'view' | 'add' | 'edit' | 'profile' | 'tree-settings';
@@ -12,8 +13,13 @@ interface FormPanelContainerProps {
   profileLoading: boolean;
   familyMembers: Member[];
   familyMarriages: any[];
+  familyData?: any;
+  familyId?: string;
+  generationCount?: number;
   onClose: () => void;
   onEdit: (member: Member) => void;
+  onAddMember?: () => void;
+  onShowSettings?: () => void;
   children?: React.ReactNode;
 }
 
@@ -24,8 +30,13 @@ export const FormPanelContainer: React.FC<FormPanelContainerProps> = ({
   profileLoading,
   familyMembers,
   familyMarriages,
+  familyData,
+  familyId,
+  generationCount,
   onClose,
   onEdit,
+  onAddMember,
+  onShowSettings,
   children
 }) => {
   const getTitle = () => {
@@ -58,19 +69,14 @@ export const FormPanelContainer: React.FC<FormPanelContainerProps> = ({
 
   if (formMode === 'view') {
     return (
-      <div className="h-full flex items-center justify-center p-6">
-        <div className="text-center space-y-4">
-          <Eye className="h-12 w-12 mx-auto text-muted-foreground/50" />
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium text-muted-foreground">
-              اختر عضواً من القائمة
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              انقر على أي عضو لعرض ملفه الشخصي أو تعديل بياناته
-            </p>
-          </div>
-        </div>
-      </div>
+      <FamilyOverview
+        familyData={familyData}
+        familyMembers={familyMembers}
+        generationCount={generationCount || 0}
+        familyId={familyId || ''}
+        onAddMember={onAddMember || (() => {})}
+        onShowSettings={onShowSettings || (() => {})}
+      />
     );
   }
 

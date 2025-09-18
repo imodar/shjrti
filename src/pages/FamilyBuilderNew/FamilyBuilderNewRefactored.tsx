@@ -255,8 +255,13 @@ const FamilyBuilderNewRefactored = () => {
       profileLoading={profileLoading}
       familyMembers={familyMembers}
       familyMarriages={familyMarriages}
+      familyData={familyData}
+      familyId={familyId}
+      generationCount={generationCount}
       onClose={handleFormClose}
       onEdit={handleMemberEdit}
+      onAddMember={handleAddMember}
+      onShowSettings={handleTreeSettings}
     >
       {renderFormPanel()}
     </FormPanelContainer>
