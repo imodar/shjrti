@@ -15,7 +15,7 @@ import { MainLayout } from "./components/Layout/MainLayout";
 import { FamilyStatsPanel } from "./components/Stats/FamilyStatsPanel";
 import { FormPanelContainer } from "./components/FormPanel/FormPanelContainer";
 import { MemberFormContainer } from "./components/Forms/MemberFormContainer";
-import { MemberListComponent } from "./components/MemberList/MemberListComponent";
+import { SimplifiedMemberList } from "./components/MemberList/SimplifiedMemberList";
 import { TreeSettingsView } from "./components/TreeSettings/TreeSettingsView";
 
 // Hooks
@@ -198,7 +198,7 @@ const FamilyBuilderNewRefactored = () => {
 
   // Left Panel (Members List)
   const leftPanel = (
-    <MemberListComponent
+    <SimplifiedMemberList
       familyMembers={familyMembers}
       onMemberSelect={handleMemberSelect}
       onMemberEdit={handleMemberEdit}
