@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { X, UserPlus, Eye, Edit } from "lucide-react";
 import { MemberProfileView } from "@/components/MemberProfileView";
 import { Member } from "../../types/family.types";
-import { FamilyOverview } from "../Overview/FamilyOverview";
 
 interface FormPanelContainerProps {
   formMode: 'view' | 'add' | 'edit' | 'profile' | 'tree-settings';
@@ -66,19 +65,6 @@ export const FormPanelContainer: React.FC<FormPanelContainerProps> = ({
         return null;
     }
   };
-
-  if (formMode === 'view') {
-    return (
-      <FamilyOverview
-        familyData={familyData}
-        familyMembers={familyMembers}
-        generationCount={generationCount || 0}
-        familyId={familyId || ''}
-        onAddMember={onAddMember || (() => {})}
-        onShowSettings={onShowSettings || (() => {})}
-      />
-    );
-  }
 
   if (formMode === 'profile' && memberProfileData) {
     return (
