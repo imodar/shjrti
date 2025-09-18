@@ -422,7 +422,7 @@ const FamilyBuilderNew = () => {
             <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
               
-              <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
+              <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden">
                 {formMode === 'view' ? (
                   <div className="py-8 px-6">
                     {/* Family Overview Header - Redesigned */}
@@ -534,8 +534,8 @@ const FamilyBuilderNew = () => {
                         </div>
                         <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
                       </div>
-                    </div>
-                  </div>
+                     </div>
+                   </div>
                 ) : formMode === 'profile' ? (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between mb-6">
@@ -620,7 +620,7 @@ const FamilyBuilderNew = () => {
                       onAddMember={handleAddMember}
                       onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
                       checkIfMemberIsSpouse={() => false}
-                      getAdditionalInfo={() => ({ isSpouse: false, spouseOf: null })}
+                      getAdditionalInfo={() => ""}
                       getGenderColor={() => "bg-blue-500"}
                     />
                   </div>
@@ -656,7 +656,7 @@ const FamilyBuilderNew = () => {
                     onAddMember={handleAddMember}
                     onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
                     checkIfMemberIsSpouse={() => false}
-                    getAdditionalInfo={() => ({ isSpouse: false, spouseOf: null })}
+                    getAdditionalInfo={() => ""}
                     getGenderColor={() => "bg-blue-500"}
                   />
                 </CardContent>
