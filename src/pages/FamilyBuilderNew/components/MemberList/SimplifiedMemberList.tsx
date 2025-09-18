@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Users, Eye, Edit } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Plus, Search, Users, Eye, Edit, Trash2 } from "lucide-react";
 import { Member } from "../../types/family.types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -11,6 +12,7 @@ interface SimplifiedMemberListProps {
   familyMembers: Member[];
   onMemberSelect: (member: Member) => Promise<void>;
   onMemberEdit: (member: Member) => void;
+  onMemberDelete?: (member: Member) => Promise<void>;
   onAddMember: () => void;
   searchable?: boolean;
 }
@@ -19,6 +21,7 @@ export const SimplifiedMemberList: React.FC<SimplifiedMemberListProps> = ({
   familyMembers,
   onMemberSelect,
   onMemberEdit,
+  onMemberDelete,
   onAddMember,
   searchable = true
 }) => {
@@ -148,6 +151,37 @@ export const SimplifiedMemberList: React.FC<SimplifiedMemberListProps> = ({
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
+                    {onMemberDelete && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>حذف العضو</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              هل أنت متأكد من حذف العضو "{getMemberDisplayName(member)}"؟ 
+                              هذا الإجراء لا يمكن التراجع عنه.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => onMemberDelete(member)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              حذف
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                   </div>
                 </div>
               </div>

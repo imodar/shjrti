@@ -22,6 +22,7 @@ import { TreeSettingsView } from "./components/TreeSettings/TreeSettingsView";
 import { useFamilyData } from "./hooks/useFamilyData";
 import { useFormState } from "./hooks/useFormState";
 import { useGenerationStats } from "./hooks/useGenerationStats";
+import { useMemberOperations } from "./hooks/useMemberOperations";
 
 // Types
 import { Member } from "./types/family.types";
@@ -69,9 +70,27 @@ const FamilyBuilderNewRefactored = () => {
     loading
   );
 
+  const {
+    isLoading: memberOperationsLoading,
+    createMember,
+    updateMember,
+    deleteMember,
+    uploadMemberImage
+  } = useMemberOperations();
+
   // Form state for the new form component
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Handle member deletion
+  const handleDeleteMember = async (member: Member) => {
+    if (window.confirm(`هل أنت متأكد من حذف العضو ${member.name || 'غير محدد'}؟`)) {
+      const success = await deleteMember(member.id);
+      if (success) {
+        await refreshFamilyData();
+      }
+    }
+  };
 
   // Loading check
   if (loading) {
@@ -141,18 +160,29 @@ const FamilyBuilderNewRefactored = () => {
     try {
       setIsSaving(true);
       
-      // TODO: Implement save logic
-      console.log('Saving member:', formData);
-      
-      // Refresh family data after save
-      await refreshFamilyData();
-      
-      toast({
-        title: "تم الحفظ",
-        description: "تم حفظ بيانات العضو بنجاح",
-      });
+      if (!familyId) {
+        toast({
+          title: "خطأ",
+          description: "معرف العائلة غير موجود",
+          variant: "destructive"
+        });
+        return;
+      }
 
-      handleFormClose();
+      let result;
+      if (formMode === 'edit' && selectedMemberId) {
+        // Update existing member
+        result = await updateMember(selectedMemberId, formData);
+      } else {
+        // Create new member
+        result = await createMember(familyId, formData);
+      }
+
+      if (result) {
+        // Refresh family data after save
+        await refreshFamilyData();
+        handleFormClose();
+      }
     } catch (error) {
       console.error('Error saving member:', error);
       toast({
@@ -202,6 +232,7 @@ const FamilyBuilderNewRefactored = () => {
       familyMembers={familyMembers}
       onMemberSelect={handleMemberSelect}
       onMemberEdit={handleMemberEdit}
+      onMemberDelete={handleDeleteMember}
       onAddMember={handleAddMember}
       searchable={true}
     />

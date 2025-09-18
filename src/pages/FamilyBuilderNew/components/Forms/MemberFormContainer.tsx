@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Save, ArrowRight, ArrowLeft } from "lucide-react";
-import { MemberBasicInfoForm } from "./MemberBasicInfoForm";
+import { MemberDetailForm } from "./MemberDetailForm";
 import { ImageUploadSection } from "../ImageUpload/ImageUploadSection";
 import { ImageCropDialog } from "../ImageUpload/ImageCropDialog";
 import { useImageCrop } from "../../hooks/useImageCrop";
@@ -80,38 +80,20 @@ export const MemberFormContainer: React.FC<MemberFormContainerProps> = ({
       case 1:
         return (
           <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">المعلومات الأساسية</h3>
-                <Badge variant="outline">الخطوة 1 من 3</Badge>
-              </div>
-              
-              <MemberBasicInfoForm
-                formData={{
-                  first_name: formData.firstName,
-                  gender: formData.gender,
-                  birthDate: formData.birthDate,
-                  selectedParent: formData.fatherId,
-                  isAlive: formData.isAlive,
-                  deathDate: formData.deathDate,
-                  isFounder: formData.isFounder
-                }}
-                setFormData={(data) => {
-                  setFormData({
-                    firstName: data.first_name || formData.firstName,
-                    gender: data.gender || formData.gender,
-                    birthDate: data.birthDate,
-                    fatherId: data.selectedParent || formData.fatherId,
-                    isAlive: data.isAlive !== undefined ? data.isAlive : formData.isAlive,
-                    deathDate: data.deathDate,
-                    isFounder: data.isFounder !== undefined ? data.isFounder : formData.isFounder
-                  });
-                }}
-                familyMembers={familyMembers}
-                familyMarriages={familyMarriages}
-                loading={loading}
-              />
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">المعلومات الأساسية</h3>
+              <Badge variant="outline">الخطوة 1 من 3</Badge>
             </div>
+            <Card>
+              <CardContent className="p-6">
+                <MemberDetailForm
+                  formData={formData}
+                  setFormData={setFormData}
+                  familyMembers={familyMembers}
+                  editingMember={editingMember}
+                />
+              </CardContent>
+            </Card>
           </div>
         );
 
