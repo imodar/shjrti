@@ -2815,140 +2815,141 @@ const FamilyBuilderNew = () => {
 
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
-                  {formMode === 'view' ? <div className="py-8 px-6">
-                       {/* Family Overview Header - Luxury Redesign */}
-                        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/80 to-amber-50/70 dark:from-emerald-950/90 dark:via-teal-950/80 dark:to-amber-950/70 rounded-2xl p-4 sm:p-6 mb-4 border border-emerald-200/30 dark:border-emerald-800/30 shadow-2xl backdrop-blur-xl animate-fade-in">
-                          {/* Luxury Background Pattern */}
-                          <div className="absolute inset-0 opacity-10">
-                            <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-2xl"></div>
-                            <div className="absolute top-20 right-20 w-24 h-24 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-xl"></div>
-                            <div className="absolute bottom-10 left-20 w-20 h-20 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-lg"></div>
-                            <div className="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-md"></div>
-                          </div>
-                          
-                          {/* Floating Decorative Elements */}
-                          <div className="absolute top-16 right-16 animate-bounce">
-                            <Crown className="h-8 w-8 text-amber-400/60" />
-                          </div>
-                          <div className="absolute bottom-16 left-16 animate-pulse">
-                            <Gem className="h-6 w-6 text-emerald-400/60" />
-                          </div>
-                          <div className="absolute top-1/2 right-1/4 animate-pulse delay-500">
-                            <Star className="h-5 w-5 text-yellow-400/60" />
-                          </div>
-                          
-                          
-                          <div className="relative z-10 pt-4">
-                            {/* Hero Content */}
-                            <div className="text-center space-y-10">
-                              {/* Logo Section with Luxury Design */}
-                              <div className="relative inline-block">
-                                <div className="relative group">
-                                  {/* Main Icon Container */}
-                                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto">
-                                    {/* Luxury animated rings */}
-                                    <div className="absolute inset-0 rounded-full border-4 border-emerald-300/30 dark:border-emerald-700/30 animate-spin" style={{animationDuration: '12s'}}></div>
-                                    <div className="absolute inset-2 rounded-full border-2 border-teal-300/40 dark:border-teal-700/40 animate-spin" style={{animationDuration: '10s', animationDirection: 'reverse'}}></div>
-                                    <div className="absolute inset-4 rounded-full border border-amber-300/50 dark:border-amber-700/50 animate-spin" style={{animationDuration: '8s'}}></div>
-                                    
-                                    {/* Main luxury icon */}
-                                    <div className="absolute inset-6 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40 group-hover:shadow-emerald-500/60 transition-all duration-700 border-4 border-white/20 dark:border-gray-800/20 group-hover:scale-110">
-                                      <TreePine className="h-16 w-16 sm:h-20 sm:w-20 text-white drop-shadow-2xl" />
-                                    </div>
-                                    
-                                    {/* Premium Status Indicator */}
-                                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full border-4 border-white dark:border-gray-800 shadow-xl flex items-center justify-center group-hover:animate-bounce">
-                                      <Crown className="h-5 w-5 text-white" />
-                                    </div>
-                                    
-                                    {/* Sparkle Effects */}
-                                    <div className="absolute -top-4 -left-4 w-6 h-6 text-yellow-400 animate-pulse">
-                                      <Sparkles className="h-full w-full" />
-                                    </div>
-                                    <div className="absolute -bottom-4 -right-4 w-4 h-4 text-pink-400 animate-pulse delay-300">
-                                      <Sparkles className="h-full w-full" />
-                                    </div>
-                                  </div>
-                                </div>
+                  {/* Family Overview Header - Luxury Redesign */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/80 to-amber-50/70 dark:from-emerald-950/90 dark:via-teal-950/80 dark:to-amber-950/70 rounded-2xl p-4 sm:p-6 mb-4 border border-emerald-200/30 dark:border-emerald-800/30 shadow-2xl backdrop-blur-xl animate-fade-in">
+                    {/* Luxury Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-2xl"></div>
+                      <div className="absolute top-20 right-20 w-24 h-24 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-xl"></div>
+                      <div className="absolute bottom-10 left-20 w-20 h-20 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-lg"></div>
+                      <div className="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-md"></div>
+                    </div>
+                    
+                    {/* Floating Decorative Elements */}
+                    <div className="absolute top-16 right-16 animate-bounce">
+                      <Crown className="h-8 w-8 text-amber-400/60" />
+                    </div>
+                    <div className="absolute bottom-16 left-16 animate-pulse">
+                      <Gem className="h-6 w-6 text-emerald-400/60" />
+                    </div>
+                    <div className="absolute top-1/2 right-1/4 animate-pulse delay-500">
+                      <Star className="h-5 w-5 text-yellow-400/60" />
+                    </div>
+                    
+                    
+                    <div className="relative z-10 pt-4">
+                      {/* Hero Content */}
+                      <div className="text-center space-y-10">
+                        {/* Logo Section with Luxury Design */}
+                        <div className="relative inline-block">
+                          <div className="relative group">
+                            {/* Main Icon Container */}
+                            <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto">
+                              {/* Luxury animated rings */}
+                              <div className="absolute inset-0 rounded-full border-4 border-emerald-300/30 dark:border-emerald-700/30 animate-spin" style={{animationDuration: '12s'}}></div>
+                              <div className="absolute inset-2 rounded-full border-2 border-teal-300/40 dark:border-teal-700/40 animate-spin" style={{animationDuration: '10s', animationDirection: 'reverse'}}></div>
+                              <div className="absolute inset-4 rounded-full border border-amber-300/50 dark:border-amber-700/50 animate-spin" style={{animationDuration: '8s'}}></div>
+                              
+                              {/* Main luxury icon */}
+                              <div className="absolute inset-6 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40 group-hover:shadow-emerald-500/60 transition-all duration-700 border-4 border-white/20 dark:border-gray-800/20 group-hover:scale-110">
+                                <TreePine className="h-16 w-16 sm:h-20 sm:w-20 text-white drop-shadow-2xl" />
                               </div>
                               
-                              {/* Title Section with Luxury Typography */}
-                              <div className="space-y-8">
-                                <div className="space-y-4">
-                                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg">
-                                    <Sparkles className="h-4 w-4" />
-                                    إرث عائلي فاخر
-                                    <Sparkles className="h-4 w-4" />
-                                  </div>
-                                  
-                                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                      عائلة {familyData?.name || 'غير محدد'}
-                                    </span>
-                                  </h1>
-                                  
-                                  {/* Luxury Decorative Elements */}
-                                  <div className="flex items-center justify-center gap-4">
-                                    <div className="h-1 w-12 bg-gradient-to-r from-transparent via-emerald-500 to-teal-500 rounded-full"></div>
-                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse"></div>
-                                    <div className="h-2 w-24 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-full"></div>
-                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse delay-200"></div>
-                                    <div className="h-1 w-12 bg-gradient-to-r from-teal-500 via-emerald-500 to-transparent rounded-full"></div>
-                                   </div>
-                                </div>
-                                
-                                {/* Family Description with Luxury Glass Morphism */}
-                                {familyData?.description && (
-                                  <div className="max-w-3xl mx-auto animate-fade-in delay-300">
-                                    <div className="relative group">
-                                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-white/20 to-teal-500/20 rounded-3xl blur-md group-hover:blur-lg transition-all duration-300"></div>
-                                      <div className="relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 border border-emerald-200/50 dark:border-emerald-800/50 shadow-2xl group-hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]">
-                                        <div className="text-center">
-                                          <Quote className="h-8 w-8 text-emerald-500 mx-auto mb-4 opacity-60" />
-                                          <p className="text-gray-700 dark:text-gray-300 text-lg sm:text-xl leading-relaxed font-medium italic">
-                                            "{familyData.description}"
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                
-                                {/* Luxury Action Buttons */}
-                                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
-                                  <Button 
-                                    size="lg" 
-                                    className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1 font-medium"
-                                    onClick={() => setFormMode('add')}
-                                  >
-                                    <UserPlus className="h-5 w-5 ml-2" />
-                                    إضافة عضو جديد
-                                  </Button>
-                                  
-                                  <Button 
-                                    variant="outline" 
-                                    size="lg" 
-                                    className="w-full sm:w-auto border-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:rotate-1 font-medium"
-                                    onClick={() => window.open(`/family-tree/${familyData?.id}`, '_blank')}
-                                  >
-                                    <TreePine className="h-5 w-5 ml-2" />
-                                    عرض الشجرة
-                                  </Button>
-                                </div>
-                                
-                                {/* Luxury Interactive Elements */}
-                                <div className="flex items-center justify-center pt-8">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-bounce shadow-lg"></div>
-                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-bounce delay-100 shadow-md"></div>
-                                    <div className="w-4 h-4 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-bounce delay-200 shadow-lg"></div>
-                                    <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full animate-bounce delay-300 shadow-md"></div>
-                                  </div>
-                                </div>
+                              {/* Premium Status Indicator */}
+                              <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full border-4 border-white dark:border-gray-800 shadow-xl flex items-center justify-center group-hover:animate-bounce">
+                                <Crown className="h-5 w-5 text-white" />
+                              </div>
+                              
+                              {/* Sparkle Effects */}
+                              <div className="absolute -top-4 -left-4 w-6 h-6 text-yellow-400 animate-pulse">
+                                <Sparkles className="h-full w-full" />
+                              </div>
+                              <div className="absolute -bottom-4 -right-4 w-4 h-4 text-pink-400 animate-pulse delay-300">
+                                <Sparkles className="h-full w-full" />
                               </div>
                             </div>
                           </div>
                         </div>
+                        
+                        {/* Title Section with Luxury Typography */}
+                        <div className="space-y-8">
+                          <div className="space-y-4">
+                            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg">
+                              <Sparkles className="h-4 w-4" />
+                              إرث عائلي فاخر
+                              <Sparkles className="h-4 w-4" />
+                            </div>
+                            
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                                عائلة {familyData?.name || 'غير محدد'}
+                              </span>
+                            </h1>
+                            
+                            {/* Luxury Decorative Elements */}
+                            <div className="flex items-center justify-center gap-4">
+                              <div className="h-1 w-12 bg-gradient-to-r from-transparent via-emerald-500 to-teal-500 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse"></div>
+                              <div className="h-2 w-24 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse delay-200"></div>
+                              <div className="h-1 w-12 bg-gradient-to-r from-teal-500 via-emerald-500 to-transparent rounded-full"></div>
+                             </div>
+                          </div>
+                          
+                          {/* Family Description with Luxury Glass Morphism */}
+                          {familyData?.description && (
+                            <div className="max-w-3xl mx-auto animate-fade-in delay-300">
+                              <div className="relative group">
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-white/20 to-teal-500/20 rounded-3xl blur-md group-hover:blur-lg transition-all duration-300"></div>
+                                <div className="relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 border border-emerald-200/50 dark:border-emerald-800/50 shadow-2xl group-hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]">
+                                  <div className="text-center">
+                                    <Quote className="h-8 w-8 text-emerald-500 mx-auto mb-4 opacity-60" />
+                                    <p className="text-gray-700 dark:text-gray-300 text-lg sm:text-xl leading-relaxed font-medium italic">
+                                      "{familyData.description}"
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Luxury Action Buttons */}
+                          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
+                            <Button 
+                              size="lg" 
+                              className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1 font-medium"
+                              onClick={() => setFormMode('add')}
+                            >
+                              <UserPlus className="h-5 w-5 ml-2" />
+                              إضافة عضو جديد
+                            </Button>
+                            
+                            <Button 
+                              variant="outline" 
+                              size="lg" 
+                              className="w-full sm:w-auto border-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:rotate-1 font-medium"
+                              onClick={() => window.open(`/family-tree/${familyData?.id}`, '_blank')}
+                            >
+                              <TreePine className="h-5 w-5 ml-2" />
+                              عرض الشجرة
+                            </Button>
+                          </div>
+                          
+                          {/* Luxury Interactive Elements */}
+                          <div className="flex items-center justify-center pt-8">
+                            <div className="flex items-center gap-3">
+                              <div className="w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-bounce shadow-lg"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-bounce delay-100 shadow-md"></div>
+                              <div className="w-4 h-4 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-bounce delay-200 shadow-lg"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full animate-bounce delay-300 shadow-md"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {formMode === 'view' ? <div className="py-8 px-6">
 
                        {/* Luxury Statistics Grid */}
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
