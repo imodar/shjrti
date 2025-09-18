@@ -49,6 +49,7 @@ import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettin
 import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
 import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
 import { useImageManagement } from "@/pages/FamilyBuilderNew/hooks/useImageManagement";
+import { FormLogicManager } from "@/pages/FamilyBuilderNew/components/Forms/FormLogicManager";
 
 
 const FamilyBuilderNew = () => {
