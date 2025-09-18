@@ -37,7 +37,6 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
-import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SpouseForm, SpouseData } from "@/components/SpouseForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
@@ -49,6 +48,7 @@ import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/Membe
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
 import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
+import { useImageManagement } from "@/pages/FamilyBuilderNew/hooks/useImageManagement";
 
 
 const FamilyBuilderNew = () => {
@@ -99,80 +99,13 @@ const FamilyBuilderNew = () => {
     return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
   };
 
-  // Image Upload and Crop Component (consolidated states)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [showCropDialog, setShowCropDialog] = useState(false);
-  const [imageChanged, setImageChanged] = useState(false);
-  const [crop, setCrop] = useState({
-    x: 0,
-    y: 0
-  });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
-    const image = document.createElement('img');
-    image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', error => reject(error));
-    image.setAttribute('crossOrigin', 'anonymous');
-    image.src = url;
-  });
-  const getCroppedImg = async (imageSrc: string, pixelCrop: any) => {
-    const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
-    return new Promise<string>(resolve => {
-      canvas.toBlob(blob => {
-        if (!blob) return;
-        const reader = new FileReader();
-        reader.addEventListener('load', () => resolve(reader.result as string));
-        reader.readAsDataURL(blob);
-      }, 'image/jpeg', 0.95);
-    });
-  };
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        const result = reader.result as string;
-        setSelectedImage(result);
-        setShowCropDialog(true);
-      });
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleCropSave = async () => {
-    if (selectedImage && croppedAreaPixels) {
-      const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
-      if (croppedImg) {
-        setCroppedImage(croppedImg);
-        setImageChanged(true);
-        setShowCropDialog(false);
-      }
-    }
-  };
-  const handleDeleteImage = () => {
-    setCroppedImage(null);
-    setSelectedImage(null);
-    setImageChanged(true);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-  const handleEditImage = () => {
-    if (selectedImage) {
-      setShowCropDialog(true);
-    }
-  };
+  // Image management hook
+  const {
+    croppedImage,
+    imageChanged,
+    resetImageState: resetImage,
+    initializeImage
+  } = useImageManagement();
 
   // Get image upload permission state from top level
   const {
@@ -1575,12 +1508,7 @@ const FamilyBuilderNew = () => {
     setOriginalWivesData([]);
     setOriginalHusbandData(null);
     // Clear image states
-    setCroppedImage(null);
-    setSelectedImage(null);
-    setImageChanged(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    resetImage();
   };
   const populateFormData = (member: any) => {
     setFormData({
@@ -1603,8 +1531,12 @@ const FamilyBuilderNew = () => {
     // Load existing spouses
     loadExistingSpouses(member);
 
-    // Reset image change tracking
-    setImageChanged(false);
+    // If we have an existing image, initialize it
+    if (member.image_url) {
+      initializeImage(member.image_url);
+    } else {
+      resetImage();
+    }
   };
   const loadExistingSpouses = (member: any) => {
     if (!familyMarriages || familyMarriages.length === 0) return;
@@ -3545,39 +3477,7 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Image Crop Dialog */}
-      <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>اقتصاص الصورة</DialogTitle>
-            <DialogDescription>
-              استخدم الأدوات أدناه لاقتصاص وتعديل الصورة كما تريد
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {selectedImage && <div className="relative h-96">
-                <Cropper image={selectedImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onCropComplete={onCropComplete} onZoomChange={setZoom} />
-              </div>}
-            
-            <div className="space-y-2">
-              <Label>التكبير</Label>
-              <Slider value={[zoom]} onValueChange={value => setZoom(value[0])} min={1} max={3} step={0.1} className="w-full" />
-            </div>
-          </div>
-          
-          <DialogFooter className="flex gap-2">
-            <Button variant="outline" onClick={() => setShowCropDialog(false)}>
-              إلغاء
-            </Button>
-            <Button onClick={handleCropSave}>
-              حفظ الصورة
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Keep existing delete modals */}
+      {/* Spouse delete confirmation modal with enhanced design */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <AlertDialogContent className="max-w-lg animate-scale-in">
           <div className="relative overflow-hidden">
