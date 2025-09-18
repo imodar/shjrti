@@ -37,6 +37,45 @@ const FamilyBuilderNew = () => {
   const navigate = useNavigate();
   const { hasAIFeatures } = useSubscription();
   const isMobile = useIsMobile();
+  
+  const { toast } = useToast();
+  const { t, direction } = useLanguage();
+  const { notifications, profile } = useDashboardData();
+
+  // Package and subscription data
+  const [packageData, setPackageData] = useState(null);
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  
+  // URL params
+  const familyId = searchParams.get('family');
+  const treeId = searchParams.get('treeId');
+  const isNew = searchParams.get('new') === 'true';
+  const autoAdd = searchParams.get('autoAdd') === 'true';
+  
+  // State management
+  const [activeTab, setActiveTab] = useState("overview");
+  const [familyMembers, setFamilyMembers] = useState([]);
+  const [familyMarriages, setFamilyMarriages] = useState([]);
+  const [familyData, setFamilyData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [memberListLoading, setMemberListLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [memberProfileData, setMemberProfileData] = useState(null);
+
+  // Form panel states
+  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>('view');
+  const [editingMember, setEditingMember] = useState<any>(null);
+  const [currentStep, setCurrentStep] = useState(1);
+
+  // Mobile drawer state
+  const [isMemberListOpen, setIsMemberListOpen] = useState(false);
+
+  // Delete and upgrade modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<any>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Generation count calculation
   const generationCount = useMemo(() => {
     console.log('🔍 calculateGenerationCount called with familyMembers.length:', familyMembers.length);
     console.log('🔍 familyMarriages.length:', familyMarriages?.length || 0);
@@ -133,64 +172,6 @@ const FamilyBuilderNew = () => {
     console.log("🔍 Max generation calculated:", maxGeneration);
     return maxGeneration;
   }, [familyMembers, familyMarriages, loading]);
-
-  const { toast } = useToast();
-  const { t, direction } = useLanguage();
-  const { notifications, profile } = useDashboardData();
-
-  // Package and subscription data
-  const [packageData, setPackageData] = useState(null);
-  const [subscriptionData, setSubscriptionData] = useState(null);
-  const familyId = searchParams.get('family');
-  const treeId = searchParams.get('treeId');
-  const isNew = searchParams.get('new') === 'true';
-  const autoAdd = searchParams.get('autoAdd') === 'true';
-  const [activeTab, setActiveTab] = useState("overview");
-  const [familyMembers, setFamilyMembers] = useState([]);
-  const [familyMarriages, setFamilyMarriages] = useState([]);
-  const [familyData, setFamilyData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [memberListLoading, setMemberListLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [memberProfileData, setMemberProfileData] = useState(null);
-
-  // Form panel states
-  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>('view');
-  const [editingMember, setEditingMember] = useState<any>(null);
-  const [currentStep, setCurrentStep] = useState(1);
-
-  // Mobile drawer state
-  const [isMemberListOpen, setIsMemberListOpen] = useState(false);
-
-  // Delete and upgrade modal states
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [memberToDelete, setMemberToDelete] = useState<any>(null);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const familyId = searchParams.get('family');
-  const treeId = searchParams.get('treeId');
-  const isNew = searchParams.get('new') === 'true';
-  const autoAdd = searchParams.get('autoAdd') === 'true';
-  const [activeTab, setActiveTab] = useState("overview");
-  const [familyMembers, setFamilyMembers] = useState([]);
-  const [familyMarriages, setFamilyMarriages] = useState([]);
-  const [familyData, setFamilyData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [memberListLoading, setMemberListLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [memberProfileData, setMemberProfileData] = useState(null);
-
-  // Form panel states
-  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>('view');
-  const [editingMember, setEditingMember] = useState<any>(null);
-  const [currentStep, setCurrentStep] = useState(1);
-
-  // Mobile drawer state
-  const [isMemberListOpen, setIsMemberListOpen] = useState(false);
-
-  // Delete and upgrade modal states
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [memberToDelete, setMemberToDelete] = useState<any>(null);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const fetchFamilyData = async () => {
     try {
@@ -410,12 +391,13 @@ const FamilyBuilderNew = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <SmartSearchBar 
-              onMemberSelect={(member) => handleViewProfile(member)}
+              familyId={familyId || ''}
+              onResultSelect={(member) => handleViewProfile(member)}
             />
             
             {hasAIFeatures && (
               <SuggestionPanel 
-                onAddSuggestion={(suggestion) => console.log('Add suggestion:', suggestion)}
+                familyId={familyId || ''}
                 className="flex-shrink-0"
               />
             )}
@@ -575,17 +557,22 @@ const FamilyBuilderNew = () => {
                       <MemberProfileView 
                         member={editingMember}
                         onEdit={() => setFormMode('edit')}
+                        onDelete={() => handleDeleteMember(editingMember)}
+                        onBack={() => setFormMode('view')}
+                        familyMembers={familyMembers}
+                        marriages={familyMarriages}
                       />
                     )}
                   </div>
                 ) : formMode === 'tree-settings' ? (
                   <TreeSettingsView
                     familyData={familyData}
-                    onUpdate={refreshFamilyData}
+                    onBack={() => setFormMode('view')}
                   />
                 ) : (
                   // Use FormLogicManager for add/edit modes
                   <FormLogicManager
+                    familyId={familyId || ''}
                     familyData={familyData}
                     familyMembers={familyMembers}
                     familyMarriages={familyMarriages}
@@ -593,8 +580,9 @@ const FamilyBuilderNew = () => {
                     subscriptionData={subscriptionData}
                     editingMember={editingMember}
                     formMode={formMode}
-                    onCancel={handleCancelForm}
-                    onComplete={refreshFamilyData}
+                    refreshFamilyData={refreshFamilyData}
+                    onFormModeChange={(mode) => setFormMode(mode as 'view' | 'add' | 'edit' | 'profile' | 'tree-settings')}
+                    onCurrentStepChange={setCurrentStep}
                   />
                 )}
               </CardContent>
@@ -614,10 +602,26 @@ const FamilyBuilderNew = () => {
                 <DrawerContent className="h-[80vh]">
                   <div className="p-4 h-full overflow-y-auto">
                     <MemberListComponent
+                      members={familyMembers}
                       familyMembers={familyMembers}
+                      marriages={familyMarriages}
+                      searchTerm=""
+                      selectedFilter="all"
+                      memberListLoading={memberListLoading}
+                      formMode={formMode}
+                      packageData={packageData}
+                      isMemberListOpen={isMemberListOpen}
+                      onSearchChange={() => {}}
+                      onFilterChange={() => {}}
                       onEditMember={handleEditMember}
+                      onViewMember={handleViewProfile}
                       onDeleteMember={handleDeleteMember}
-                      loading={memberListLoading}
+                      onSpouseEditAttempt={() => {}}
+                      onAddMember={handleAddMember}
+                      onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
+                      checkIfMemberIsSpouse={() => false}
+                      getAdditionalInfo={() => ({ isSpouse: false, spouseOf: null })}
+                      getGenderColor={() => "bg-blue-500"}
                     />
                   </div>
                 </DrawerContent>
@@ -634,10 +638,26 @@ const FamilyBuilderNew = () => {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <MemberListComponent
+                    members={familyMembers}
                     familyMembers={familyMembers}
+                    marriages={familyMarriages}
+                    searchTerm=""
+                    selectedFilter="all"
+                    memberListLoading={memberListLoading}
+                    formMode={formMode}
+                    packageData={packageData}
+                    isMemberListOpen={isMemberListOpen}
+                    onSearchChange={() => {}}
+                    onFilterChange={() => {}}
                     onEditMember={handleEditMember}
+                    onViewMember={handleViewProfile}
                     onDeleteMember={handleDeleteMember}
-                    loading={memberListLoading}
+                    onSpouseEditAttempt={() => {}}
+                    onAddMember={handleAddMember}
+                    onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
+                    checkIfMemberIsSpouse={() => false}
+                    getAdditionalInfo={() => ({ isSpouse: false, spouseOf: null })}
+                    getGenderColor={() => "bg-blue-500"}
                   />
                 </CardContent>
               </Card>
