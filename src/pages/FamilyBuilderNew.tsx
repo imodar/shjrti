@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle, Gem, Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -2816,25 +2816,32 @@ const FamilyBuilderNew = () => {
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? <div className="py-8 px-6">
-                       {/* Family Overview Header - Redesigned */}
-                        <div className="relative overflow-hidden bg-gradient-to-br from-background via-card/50 to-accent/5 rounded-3xl p-8 sm:p-12 mb-8 border border-border/50 shadow-2xl backdrop-blur-sm animate-fade-in">
-                          {/* Dynamic Background Pattern */}
-                          <div className="absolute inset-0 opacity-5">
-                            <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary rounded-full"></div>
-                            <div className="absolute top-20 right-20 w-24 h-24 border border-secondary rounded-full"></div>
-                            <div className="absolute bottom-10 left-20 w-20 h-20 border-2 border-accent rounded-full"></div>
-                            <div className="absolute bottom-20 right-10 w-16 h-16 border border-primary/50 rounded-full"></div>
+                       {/* Family Overview Header - Luxury Redesign */}
+                        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/80 to-amber-50/70 dark:from-emerald-950/90 dark:via-teal-950/80 dark:to-amber-950/70 rounded-3xl p-8 sm:p-12 mb-8 border border-emerald-200/30 dark:border-emerald-800/30 shadow-2xl backdrop-blur-xl animate-fade-in">
+                          {/* Luxury Background Pattern */}
+                          <div className="absolute inset-0 opacity-10">
+                            <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-2xl"></div>
+                            <div className="absolute top-20 right-20 w-24 h-24 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-xl"></div>
+                            <div className="absolute bottom-10 left-20 w-20 h-20 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-lg"></div>
+                            <div className="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-md"></div>
                           </div>
                           
-                          {/* Animated Background Orbs */}
-                          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                          {/* Floating Decorative Elements */}
+                          <div className="absolute top-16 right-16 animate-bounce">
+                            <Crown className="h-8 w-8 text-amber-400/60" />
+                          </div>
+                          <div className="absolute bottom-16 left-16 animate-pulse">
+                            <Gem className="h-6 w-6 text-emerald-400/60" />
+                          </div>
+                          <div className="absolute top-1/2 right-1/4 animate-pulse delay-500">
+                            <Star className="h-5 w-5 text-yellow-400/60" />
+                          </div>
                           
-                          {/* Settings Button - Enhanced */}
+                          {/* Settings Button - Luxury Style */}
                           <div className="absolute top-6 left-6 z-20">
                             <div className="relative group">
-                              <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-xl blur opacity-20 group-hover:opacity-40 transition-all duration-500 animate-pulse"></div>
-                              <div className="relative bg-card/80 backdrop-blur-md rounded-xl p-2 border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-all duration-500"></div>
+                              <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl p-3 border border-emerald-200/50 dark:border-emerald-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1">
                                 <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
                               </div>
                             </div>
@@ -2842,67 +2849,109 @@ const FamilyBuilderNew = () => {
                           
                           <div className="relative z-10 pt-4">
                             {/* Hero Content */}
-                            <div className="text-center space-y-8">
-                              {/* Logo Section with Enhanced Design */}
+                            <div className="text-center space-y-10">
+                              {/* Logo Section with Luxury Design */}
                               <div className="relative inline-block">
                                 <div className="relative group">
                                   {/* Main Icon Container */}
-                                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
-                                    {/* Animated background rings */}
-                                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-spin" style={{animationDuration: '10s'}}></div>
-                                    <div className="absolute inset-2 rounded-full border-2 border-secondary/30 animate-spin" style={{animationDuration: '8s', animationDirection: 'reverse'}}></div>
+                                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto">
+                                    {/* Luxury animated rings */}
+                                    <div className="absolute inset-0 rounded-full border-4 border-emerald-300/30 dark:border-emerald-700/30 animate-spin" style={{animationDuration: '12s'}}></div>
+                                    <div className="absolute inset-2 rounded-full border-2 border-teal-300/40 dark:border-teal-700/40 animate-spin" style={{animationDuration: '10s', animationDirection: 'reverse'}}></div>
+                                    <div className="absolute inset-4 rounded-full border border-amber-300/50 dark:border-amber-700/50 animate-spin" style={{animationDuration: '8s'}}></div>
                                     
-                                    {/* Main icon */}
-                                    <div className="absolute inset-4 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-full flex items-center justify-center shadow-2xl shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-500 border-2 border-primary/20">
-                                      <TreePine className="h-12 w-12 sm:h-14 sm:w-14 text-primary-foreground drop-shadow-lg" />
+                                    {/* Main luxury icon */}
+                                    <div className="absolute inset-6 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40 group-hover:shadow-emerald-500/60 transition-all duration-700 border-4 border-white/20 dark:border-gray-800/20 group-hover:scale-110">
+                                      <TreePine className="h-16 w-16 sm:h-20 sm:w-20 text-white drop-shadow-2xl" />
                                     </div>
                                     
-                                    {/* Active Status Indicator */}
-                                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full border-4 border-card shadow-xl flex items-center justify-center">
-                                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                                    {/* Premium Status Indicator */}
+                                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full border-4 border-white dark:border-gray-800 shadow-xl flex items-center justify-center group-hover:animate-bounce">
+                                      <Crown className="h-5 w-5 text-white" />
+                                    </div>
+                                    
+                                    {/* Sparkle Effects */}
+                                    <div className="absolute -top-4 -left-4 w-6 h-6 text-yellow-400 animate-pulse">
+                                      <Sparkles className="h-full w-full" />
+                                    </div>
+                                    <div className="absolute -bottom-4 -right-4 w-4 h-4 text-pink-400 animate-pulse delay-300">
+                                      <Sparkles className="h-full w-full" />
                                     </div>
                                   </div>
                                 </div>
                               </div>
                               
-                              {/* Title Section with Enhanced Typography */}
-                              <div className="space-y-6">
-                                <div className="space-y-3">
-                                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-                                    <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in">
+                              {/* Title Section with Luxury Typography */}
+                              <div className="space-y-8">
+                                <div className="space-y-4">
+                                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg">
+                                    <Sparkles className="h-4 w-4" />
+                                    إرث عائلي فاخر
+                                    <Sparkles className="h-4 w-4" />
+                                  </div>
+                                  
+                                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                       عائلة {familyData?.name || 'غير محدد'}
                                     </span>
                                   </h1>
                                   
-                                  {/* Animated Decorative Line */}
-                                  <div className="flex items-center justify-center space-x-2">
-                                    <div className="h-1 w-8 bg-gradient-to-r from-transparent to-primary rounded-full animate-fade-in delay-200"></div>
-                                    <div className="h-2 w-20 bg-gradient-to-r from-primary via-accent to-secondary rounded-full animate-fade-in delay-100"></div>
-                                    <div className="h-1 w-8 bg-gradient-to-r from-secondary to-transparent rounded-full animate-fade-in delay-200"></div>
-                                  </div>
+                                  {/* Luxury Decorative Elements */}
+                                  <div className="flex items-center justify-center gap-4">
+                                    <div className="h-1 w-12 bg-gradient-to-r from-transparent via-emerald-500 to-teal-500 rounded-full"></div>
+                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse"></div>
+                                    <div className="h-2 w-24 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-full"></div>
+                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse delay-200"></div>
+                                    <div className="h-1 w-12 bg-gradient-to-r from-teal-500 via-emerald-500 to-transparent rounded-full"></div>
+                                   </div>
                                 </div>
                                 
-                                {/* Family Description with Glass Morphism */}
+                                {/* Family Description with Luxury Glass Morphism */}
                                 {familyData?.description && (
-                                  <div className="max-w-2xl mx-auto animate-fade-in delay-300">
+                                  <div className="max-w-3xl mx-auto animate-fade-in delay-300">
                                     <div className="relative group">
-                                      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-card/20 to-secondary/10 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
-                                      <div className="relative bg-card/60 backdrop-blur-md rounded-2xl p-6 border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
-                                        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
-                                          {familyData.description}
-                                        </p>
+                                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-white/20 to-teal-500/20 rounded-3xl blur-md group-hover:blur-lg transition-all duration-300"></div>
+                                      <div className="relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 border border-emerald-200/50 dark:border-emerald-800/50 shadow-2xl group-hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]">
+                                        <div className="text-center">
+                                          <Quote className="h-8 w-8 text-emerald-500 mx-auto mb-4 opacity-60" />
+                                          <p className="text-gray-700 dark:text-gray-300 text-lg sm:text-xl leading-relaxed font-medium italic">
+                                            "{familyData.description}"
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 )}
                                 
-                                {/* Interactive Elements */}
-                                <div className="flex items-center justify-center pt-6">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-3 h-3 bg-primary rounded-full animate-bounce shadow-lg"></div>
-                                    <div className="w-2 h-2 bg-accent rounded-full animate-bounce delay-100 shadow-md"></div>
-                                    <div className="w-3 h-3 bg-secondary rounded-full animate-bounce delay-200 shadow-lg"></div>
-                                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce delay-300 shadow-md"></div>
+                                {/* Luxury Action Buttons */}
+                                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
+                                  <Button 
+                                    size="lg" 
+                                    className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1 font-medium"
+                                    onClick={() => setFormMode('add')}
+                                  >
+                                    <UserPlus className="h-5 w-5 ml-2" />
+                                    إضافة عضو جديد
+                                  </Button>
+                                  
+                                  <Button 
+                                    variant="outline" 
+                                    size="lg" 
+                                    className="w-full sm:w-auto border-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:rotate-1 font-medium"
+                                    onClick={() => window.open(`/family-tree/${familyData?.id}`, '_blank')}
+                                  >
+                                    <TreePine className="h-5 w-5 ml-2" />
+                                    عرض الشجرة
+                                  </Button>
+                                </div>
+                                
+                                {/* Luxury Interactive Elements */}
+                                <div className="flex items-center justify-center pt-8">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-bounce shadow-lg"></div>
+                                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-bounce delay-100 shadow-md"></div>
+                                    <div className="w-4 h-4 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-bounce delay-200 shadow-lg"></div>
+                                    <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full animate-bounce delay-300 shadow-md"></div>
                                   </div>
                                 </div>
                               </div>
@@ -2910,44 +2959,76 @@ const FamilyBuilderNew = () => {
                           </div>
                         </div>
 
-                      {/* Statistics Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        {/* Total Members */}
-                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl p-4 text-center border border-emerald-200 dark:border-emerald-700">
-                          <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
-                            {familyMembers.length}
-                          </div>
-                          <div className="text-xs text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
-                        </div>
+                       {/* Luxury Statistics Grid */}
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+                         {/* Total Members Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <Users className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent mb-2">
+                               {familyMembers.length}
+                             </div>
+                             <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
+                           </CardContent>
+                         </Card>
 
-                        {/* Generations */}
-                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700">
-                          <Crown className="h-6 w-6 text-amber-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                            {generationCount}
-                          </div>
-                          <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
-                        </div>
+                         {/* Generations Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-950 dark:to-teal-900 border-teal-200 dark:border-teal-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:-rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-cyan-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-teal-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <TreePine className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent mb-2">
+                               {generationCount}
+                             </div>
+                             <div className="text-sm font-medium text-teal-600 dark:text-teal-400">الأجيال</div>
+                           </CardContent>
+                         </Card>
 
-                        {/* Males */}
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-700">
-                          <UserIcon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                            {familyMembers.filter(m => m.gender === 'male').length}
-                          </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
-                        </div>
+                         {/* Males Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-sky-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <UserIcon className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
+                               {familyMembers.filter(m => m.gender === 'male').length}
+                             </div>
+                             <div className="text-sm font-medium text-blue-600 dark:text-blue-400">الذكور</div>
+                           </CardContent>
+                         </Card>
 
-                        {/* Females */}
-                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-xl p-4 text-center border border-pink-200 dark:border-pink-700">
-                          <UserRoundIcon className="h-6 w-6 text-pink-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-pink-700 dark:text-pink-300">
-                            {familyMembers.filter(m => m.gender === 'female').length}
-                          </div>
-                          <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
-                        </div>
-                      </div>
+                         {/* Females Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900 border-rose-200 dark:border-rose-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:-rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-rose-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-500 to-rose-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <UserRoundIcon className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-rose-600 to-rose-700 bg-clip-text text-transparent mb-2">
+                               {familyMembers.filter(m => m.gender === 'female').length}
+                             </div>
+                             <div className="text-sm font-medium text-rose-600 dark:text-rose-400">الإناث</div>
+                           </CardContent>
+                         </Card>
+                       </div>
 
                       {/* Navigation Icons */}
                       <div className="flex justify-center mb-6">
