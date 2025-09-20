@@ -3181,8 +3181,8 @@ const FamilyBuilderNew = () => {
                           formMode={formMode}
                           currentStep={currentStep}
                           formData={{
-                            first_name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
-                            name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
+                            first_name: altFormData.firstName || '',
+                            name: altFormData.firstName || '',
                             relation: '',
                             relatedPersonId: null,
                             selectedParent: (() => {
@@ -3190,14 +3190,14 @@ const FamilyBuilderNew = () => {
                               const match = familyMarriages.find((m: any) => m?.husband?.id === editingMember.father_id && m?.wife?.id === editingMember.mother_id);
                               return match?.id || null;
                             })(),
-                            gender: altFormData.gender || editingMember?.gender || 'male',
-                            birthDate: (altFormData.birthDate ?? parseDateFromDatabase(editingMember?.birth_date) ?? null) as Date | null,
-                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : (editingMember?.death_date ? false : (editingMember?.is_alive !== false)),
-                            deathDate: (altFormData.deathDate ?? parseDateFromDatabase(editingMember?.death_date) ?? null) as Date | null,
-                            bio: altFormData.biography || editingMember?.biography || '',
+                            gender: altFormData.gender || 'male',
+                            birthDate: altFormData.birthDate || null,
+                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : true,
+                            deathDate: altFormData.deathDate || null,
+                            bio: altFormData.biography || '',
                             imageUrl: editingMember?.image_url || '',
                             croppedImage: croppedImage,
-                            isFounder: altFormData.isFounder !== undefined ? altFormData.isFounder : (editingMember?.is_founder || false)
+                            isFounder: altFormData.isFounder || false
                           }}
                           setFormData={(data) => {
                             // Map data back to altFormData structure
