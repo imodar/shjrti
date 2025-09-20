@@ -1321,9 +1321,11 @@ const FamilyBuilderNew = () => {
       return;
     }
     setFormMode('add');
+    setAltFormMode('add');
     setEditingMember(null);
     setCurrentStep(1);
     resetFormData();
+    resetAltForm();
     if (isMobile) setIsMemberListOpen(false);
   };
 
@@ -1429,11 +1431,12 @@ const FamilyBuilderNew = () => {
   }, [isMobile, familyId, toast]);
   const handleEditMember = useCallback((member: any) => {
     setFormMode('edit');
+    setAltFormMode('edit');
     setEditingMember(member);
     setCurrentStep(1);
     loadMemberToForm(member); // Use the proper form loading function
     if (isMobile) setIsMemberListOpen(false);
-  }, [isMobile, loadMemberToForm]);
+  }, [isMobile, loadMemberToForm, setAltFormMode]);
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
@@ -3168,7 +3171,8 @@ const FamilyBuilderNew = () => {
                     </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={memberProfileData} isSpouse={checkIfMemberIsSpouse(memberProfileData)} onEdit={() => {
                   setFormMode('edit');
                   setCurrentStep(1);
-                  populateFormData(memberProfileData);
+                  setAltFormMode('edit');
+                  loadMemberToForm(memberProfileData);
                 }} onBack={() => setFormMode('view')} onDelete={() => handleDeleteMember(memberProfileData)} familyMembers={familyMembers} marriages={familyMarriages} onSpouseEditWarning={() => handleSpouseEditWarning(memberProfileData)} onSpouseDeleteWarning={() => handleSpouseDeleteWarning(memberProfileData)} onMemberClick={async member => {
                   setEditingMember(member);
                   setFormMode('profile');
@@ -3181,8 +3185,8 @@ const FamilyBuilderNew = () => {
                           formMode={formMode}
                           currentStep={currentStep}
                           formData={{
-                            first_name: altFormData.firstName || '',
-                            name: altFormData.firstName || '',
+                            first_name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
+                            name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
                             relation: '',
                             relatedPersonId: null,
                             selectedParent: (() => {
@@ -3190,14 +3194,14 @@ const FamilyBuilderNew = () => {
                               const match = familyMarriages.find((m: any) => m?.husband?.id === editingMember.father_id && m?.wife?.id === editingMember.mother_id);
                               return match?.id || null;
                             })(),
-                            gender: altFormData.gender || 'male',
-                            birthDate: altFormData.birthDate || null,
-                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : true,
-                            deathDate: altFormData.deathDate || null,
-                            bio: altFormData.biography || '',
+                            gender: altFormData.gender || editingMember?.gender || 'male',
+                            birthDate: (altFormData.birthDate ?? parseDateFromDatabase(editingMember?.birth_date) ?? null) as Date | null,
+                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : (editingMember?.death_date ? false : (editingMember?.is_alive !== false)),
+                            deathDate: (altFormData.deathDate ?? parseDateFromDatabase(editingMember?.death_date) ?? null) as Date | null,
+                            bio: altFormData.biography || editingMember?.biography || '',
                             imageUrl: editingMember?.image_url || '',
                             croppedImage: croppedImage,
-                            isFounder: altFormData.isFounder || false
+                            isFounder: altFormData.isFounder !== undefined ? altFormData.isFounder : (editingMember?.is_founder || false)
                           }}
                           setFormData={(data) => {
                             // Map data back to altFormData structure
@@ -3553,9 +3557,10 @@ const FamilyBuilderNew = () => {
               const memberToEdit = familyMembers.find(member => member.first_name === spousePartnerDetails.name || member.name === spousePartnerDetails.name || `${member.first_name} ${member.last_name}`.trim() === spousePartnerDetails.name);
               if (memberToEdit) {
                 setFormMode('edit');
+                setAltFormMode('edit');
                 setEditingMember(memberToEdit);
                 setCurrentStep(1);
-                populateFormData(memberToEdit);
+                loadMemberToForm(memberToEdit);
                 if (isMobile) setIsMemberListOpen(false);
               }
             }}>
