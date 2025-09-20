@@ -3025,7 +3025,7 @@ const FamilyBuilderNew = () => {
                       {/* Navigation Icons */}
                       <div className="flex justify-center mb-6">
                         <div className="flex items-center gap-4">
-                          <div className="flex flex-col items-center cursor-pointer group">
+                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('view')}>
                             <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
                               <Users className="h-5 w-5" />
                             </div>
