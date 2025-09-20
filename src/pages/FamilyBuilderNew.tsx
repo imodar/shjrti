@@ -3191,9 +3191,9 @@ const FamilyBuilderNew = () => {
                               return match?.id || null;
                             })(),
                             gender: altFormData.gender || editingMember?.gender || 'male',
-                            birthDate: altFormData.birthDate || (editingMember?.birth_date ? new Date(editingMember.birth_date) : undefined),
-                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : (editingMember?.is_alive !== false),
-                            deathDate: altFormData.deathDate || (editingMember?.death_date ? new Date(editingMember.death_date) : undefined),
+                            birthDate: (altFormData.birthDate ?? parseDateFromDatabase(editingMember?.birth_date) ?? null) as Date | null,
+                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : (editingMember?.death_date ? false : (editingMember?.is_alive !== false)),
+                            deathDate: (altFormData.deathDate ?? parseDateFromDatabase(editingMember?.death_date) ?? null) as Date | null,
                             bio: altFormData.biography || editingMember?.biography || '',
                             imageUrl: editingMember?.image_url || '',
                             croppedImage: croppedImage,
