@@ -53,8 +53,8 @@ export const useMemberOperations = (): UseMemberOperationsResult => {
         biography: formData.biography,
         is_alive: formData.isAlive,
         is_founder: formData.isFounder,
-        father_id: formData.fatherId || null,
-        mother_id: formData.motherId || null,
+        father_id: formData.fatherId && formData.fatherId !== 'none' ? formData.fatherId : null,
+        mother_id: formData.motherId && formData.motherId !== 'none' ? formData.motherId : null,
         image_url: formData.imageUrl
       };
 
@@ -109,8 +109,8 @@ export const useMemberOperations = (): UseMemberOperationsResult => {
         biography: formData.biography,
         is_alive: formData.isAlive,
         is_founder: formData.isFounder,
-        father_id: formData.fatherId || null,
-        mother_id: formData.motherId || null,
+        father_id: formData.fatherId && formData.fatherId !== 'none' ? formData.fatherId : null,
+        mother_id: formData.motherId && formData.motherId !== 'none' ? formData.motherId : null,
         image_url: formData.imageUrl
       };
 

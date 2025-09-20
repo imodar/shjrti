@@ -210,7 +210,7 @@ export const MemberDetailForm: React.FC<MemberDetailFormProps> = ({
               <SelectValue placeholder="اختر الأب" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">بدون أب مسجل</SelectItem>
+              <SelectItem value="none">بدون أب مسجل</SelectItem>
               {potentialFathers.map((father) => (
                 <SelectItem key={father.id} value={father.id}>
                   {getMemberDisplayName(father)}
@@ -226,7 +226,7 @@ export const MemberDetailForm: React.FC<MemberDetailFormProps> = ({
               <SelectValue placeholder="اختر الأم" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">بدون أم مسجلة</SelectItem>
+              <SelectItem value="none">بدون أم مسجلة</SelectItem>
               {potentialMothers.map((mother) => (
                 <SelectItem key={mother.id} value={mother.id}>
                   {getMemberDisplayName(mother)}
