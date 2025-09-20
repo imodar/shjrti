@@ -82,6 +82,9 @@ const FamilyBuilderNew = () => {
     loadMemberToForm
   } = useFormState();
 
+  // Add missing fileInputRef
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     createMember,
     updateMember,
@@ -3179,7 +3182,7 @@ const FamilyBuilderNew = () => {
                           currentStep={currentStep}
                           formData={{
                             first_name: altFormData.firstName || '',
-                            name: altFormData.name || '',
+                            name: altFormData.firstName || '', // Use firstName for name
                             relation: '',
                             relatedPersonId: null,
                             selectedParent: null,
@@ -3189,7 +3192,7 @@ const FamilyBuilderNew = () => {
                             deathDate: altFormData.deathDate,
                             bio: altFormData.biography || '',
                             imageUrl: '',
-                            croppedImage: altFormData.croppedImage,
+                            croppedImage: croppedImage, // Use croppedImage from hook
                             isFounder: altFormData.isFounder || false
                           }}
                           setFormData={(data) => setAltFormData({...altFormData, ...data})}
@@ -3206,11 +3209,14 @@ const FamilyBuilderNew = () => {
                           setShowWifeForm={() => {}}
                           wiveFamilyStatus={{}}
                           setWiveFamilyStatus={() => {}}
-                          croppedImage={altFormData.croppedImage}
-                          setCroppedImage={(img) => setAltFormData({...altFormData, croppedImage: img})}
+                          croppedImage={croppedImage} // Use croppedImage from hook
+                          setCroppedImage={(img) => {
+                            // Update image management hook instead
+                            console.log('Setting cropped image:', img);
+                          }}
                           selectedImage={null}
                           setSelectedImage={() => {}}
-                          imageChanged={false}
+                          imageChanged={imageChanged}
                           setImageChanged={() => {}}
                           fileInputRef={fileInputRef}
                           isImageUploadEnabled={isImageUploadEnabled}
@@ -3219,7 +3225,20 @@ const FamilyBuilderNew = () => {
                           handleImageSelect={(e) => {}}
                           handleEditImage={() => {}}
                           handleDeleteImage={() => {}}
-                          handleSubmit={handleSubmit}
+                          handleSubmit={() => {
+                            // Create submission data from current form state
+                            const submissionData = {
+                              firstName: altFormData.firstName,
+                              gender: altFormData.gender,
+                              birthDate: altFormData.birthDate,
+                              isAlive: altFormData.isAlive,
+                              deathDate: altFormData.deathDate,
+                              biography: altFormData.biography,
+                              isFounder: altFormData.isFounder,
+                              croppedImage: croppedImage
+                            };
+                            handleFormSubmit(submissionData);
+                          }}
                           handleSpouseDelete={() => {}}
                           nextStep={() => setCurrentStep(2)}
                           prevStep={() => setCurrentStep(1)}
