@@ -2818,7 +2818,7 @@ const FamilyBuilderNew = () => {
                   {/* Family Overview Header - Luxury Redesign */}
                   <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/80 to-amber-50/70 dark:from-emerald-950/90 dark:via-teal-950/80 dark:to-amber-950/70 rounded-2xl p-4 sm:p-6 mb-4 border border-emerald-200/30 dark:border-emerald-800/30 shadow-2xl backdrop-blur-xl animate-fade-in">
                     {/* Luxury Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
+                    <div className={`absolute inset-0 opacity-10 ${formMode !== 'view' ? 'hidden' : ''}`}>
                       <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-2xl"></div>
                       <div className="absolute top-20 right-20 w-24 h-24 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-xl"></div>
                       <div className="absolute bottom-10 left-20 w-20 h-20 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-lg"></div>
