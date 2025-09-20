@@ -48,10 +48,7 @@ import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/Membe
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
 import { useImageManagement } from "@/pages/FamilyBuilderNew/hooks/useImageManagement";
-import { FormLogicManager } from "@/pages/FamilyBuilderNew/components/Forms/FormLogicManager";
-import { MemberFormContainer } from "@/pages/FamilyBuilderNew/components/Forms/MemberFormContainer";
-import { MemberFormWithImage } from "@/pages/FamilyBuilderNew/components/Forms/MemberFormWithImage";
-import { ModernFamilyMemberModal } from "@/components/ModernFamilyMemberModal";
+import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
 import { useFormState } from "@/pages/FamilyBuilderNew/hooks/useFormState";
 import { useMemberOperations } from "@/pages/FamilyBuilderNew/hooks/useMemberOperations";
 import { useGenerationCalculation } from "@/pages/FamilyBuilderNew/hooks/useGenerationCalculation";
@@ -152,6 +149,13 @@ const FamilyBuilderNew = () => {
 
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
+
+  // Load member data when editing
+  useEffect(() => {
+    if (editingMember && altFormMode === 'edit') {
+      loadMemberToForm(editingMember);
+    }
+  }, [editingMember, altFormMode, loadMemberToForm]);
 
   // Alternative form save handler
   const handleAltFormSave = async () => {
@@ -1424,9 +1428,9 @@ const FamilyBuilderNew = () => {
     setFormMode('edit');
     setEditingMember(member);
     setCurrentStep(1);
-    populateFormData(member);
+    loadMemberToForm(member); // Use the proper form loading function
     if (isMobile) setIsMemberListOpen(false);
-  }, [isMobile]);
+  }, [isMobile, loadMemberToForm]);
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
@@ -3168,111 +3172,33 @@ const FamilyBuilderNew = () => {
                   await fetchMemberProfile(member.id);
                 }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
 
-                      {/* Form Switcher - Test Different Form Versions */}
-                      {/* Debug Banner - Shows current form variant and test URLs */}
-                      {formVariant && (
-                        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                              اختبار النماذج المختلفة - النموذج الحالي: {formVariant}
-                            </h4>
-                          </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-300 space-y-1">
-                            <div>النسخ المتاحة للاختبار:</div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mt-2">
-                              <div>• ?form=logic - النسخة الحالية (FormLogicManager)</div>
-                              <div>• ?form=container - النسخة بـ Zod validation</div>
-                              <div>• ?form=with-image - نموذج مع الصور</div>
-                              <div>• /family-builder-new-refactored - النسخة المعاد هيكلتها</div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {formVariant === 'logic' ? (
-                        /* Original FormLogicManager */
-                        <FormLogicManager
-                          familyId={familyId || ''}
-                          familyData={familyData}
-                          familyMembers={familyMembers}
-                          familyMarriages={familyMarriages}
-                          packageData={packageData}
-                          subscriptionData={subscriptionData}
-                          editingMember={editingMember}
-                          formMode={formMode}
-                          refreshFamilyData={refreshFamilyData}
-                          onFormModeChange={(mode: string) => setFormMode(mode as 'view' | 'add' | 'edit' | 'profile' | 'tree-settings')}
-                          onCurrentStepChange={setCurrentStep}
-                        />
-                      ) : formVariant === 'container' ? (
-                        /* MemberFormContainer with Zod validation */
-                        <MemberFormContainer
+                      {/* Member Detail Form - Restored September 16th Version */}
+                      <div className="space-y-4">
+                        <MemberDetailForm
                           formData={altFormData}
                           setFormData={setAltFormData}
                           familyMembers={familyMembers}
-                          familyMarriages={familyMarriages}
-                          currentStep={currentStep}
-                          setCurrentStep={setCurrentStep}
-                          isSaving={isSaving}
-                          loading={loading}
-                          onSave={handleAltFormSave}
                           editingMember={editingMember}
                         />
-                      ) : formVariant === 'with-image' ? (
-                        /* MemberFormWithImage */
-                        <div className="space-y-4">
-                          <MemberFormWithImage
-                            formData={{...altFormData, croppedImage}}
-                            setFormData={(data) => {
-                              const {croppedImage: newImage, ...rest} = data;
-                              setAltFormData(rest);
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              resetAltForm();
+                              setEditingMember(null);
+                              setFormMode('view');
                             }}
-                            familyMembers={familyMembers}
-                            editingMember={editingMember}
-                            currentStep={currentStep}
-                          />
-                          <div className="flex justify-end gap-2">
-                            <Button 
-                              onClick={() => {
-                                setEditingMember(null);
-                                resetAltForm();
-                                setFormMode('view');
-                              }}
-                              variant="outline"
-                            >
-                              إلغاء
-                            </Button>
-                            <Button 
-                              onClick={handleAltFormSave}
-                              disabled={isSaving || !altFormData.firstName}
-                            >
-                              {isSaving ? "جاري الحفظ..." : editingMember ? "تحديث" : "حفظ"}
-                            </Button>
-                          </div>
+                          >
+                            إلغاء
+                          </Button>
+                          <Button 
+                            onClick={handleAltFormSave}
+                            disabled={isSaving}
+                          >
+                            {isSaving ? "جاري الحفظ..." : editingMember ? "تحديث" : "حفظ"}
+                          </Button>
                         </div>
-                      ) : formVariant === 'modal' ? (
-                        /* ModernFamilyMemberModal as inline form */
-                        <div className="space-y-4">
-                          <p className="text-sm text-muted-foreground">
-                            نموذج ModernFamilyMemberModal (النسخة القديمة الأساسية)
-                          </p>
-                          <div className="bg-muted/50 p-4 rounded-lg">
-                            <p className="text-sm">
-                              هذا النموذج يتطلب Modal منفصل. لتجربته، استخدم النسخة الكاملة.
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        /* Default fallback */
-                        <div className="space-y-4">
-                          <p className="text-sm text-muted-foreground">
-                            نموذج غير معروف: {formVariant}
-                          </p>
-                          <p className="text-sm">
-                            النسخ المتاحة: logic, container, with-image, modal
-                          </p>
-                        </div>
-                      )}
+                      </div>
 
                    </div>}
                 </CardContent>
@@ -3609,8 +3535,7 @@ const FamilyBuilderNew = () => {
       </Dialog>
 
       <GlobalFooterSimplified />
-    </div>;
+    </div>
 };
 
-// Member List Component
 export default FamilyBuilderNew;
