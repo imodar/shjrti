@@ -28,6 +28,7 @@ interface MemberListComponentProps {
   onSpouseEditAttempt: (member: any) => void;
   onAddMember: () => void;
   onToggleMemberList: () => void;
+  onShowUpgradeModal: () => void;
   checkIfMemberIsSpouse: (member: any) => boolean;
   getAdditionalInfo: (member: any) => string;
   getGenderColor: (gender: string) => string;
@@ -51,6 +52,7 @@ const MemberList = ({
   memberListLoading,
   formMode,
   onAddMember,
+  onShowUpgradeModal,
   packageData
 }: {
   members: any[];
@@ -70,6 +72,7 @@ const MemberList = ({
   memberListLoading: boolean;
   formMode: string;
   onAddMember: () => void;
+  onShowUpgradeModal: () => void;
   packageData: any;
 }) => {
   return (
@@ -108,9 +111,14 @@ const MemberList = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
-                onClick={onAddMember} 
+                onClick={() => {
+                  if (packageData && familyMembers.length >= packageData.max_family_members) {
+                    onShowUpgradeModal();
+                  } else {
+                    onAddMember();
+                  }
+                }} 
                 className="w-full flex items-center gap-2"
-                disabled={packageData && familyMembers.length >= packageData.max_family_members}
               >
                 <Plus className="h-4 w-4" />
                 {packageData && familyMembers.length >= packageData.max_family_members 
@@ -207,6 +215,7 @@ export const MemberListComponent: React.FC<MemberListComponentProps> = ({
   onSpouseEditAttempt,
   onAddMember,
   onToggleMemberList,
+  onShowUpgradeModal,
   checkIfMemberIsSpouse,
   getAdditionalInfo,
   getGenderColor
@@ -260,6 +269,7 @@ export const MemberListComponent: React.FC<MemberListComponentProps> = ({
               memberListLoading={memberListLoading}
               formMode={formMode}
               onAddMember={onAddMember}
+              onShowUpgradeModal={onShowUpgradeModal}
               packageData={packageData}
             />
           </div>
@@ -289,10 +299,11 @@ export const MemberListComponent: React.FC<MemberListComponentProps> = ({
           getGenderColor={getGenderColor}
           familyMembers={familyMembers}
           marriages={marriages}
-          memberListLoading={memberListLoading}
-          formMode={formMode}
-          onAddMember={onAddMember}
-          packageData={packageData}
+              memberListLoading={memberListLoading}
+              formMode={formMode}
+              onAddMember={onAddMember}
+              onShowUpgradeModal={onShowUpgradeModal}
+              packageData={packageData}
         />
       </CardContent>
     </Card>

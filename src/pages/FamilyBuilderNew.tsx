@@ -3394,6 +3394,7 @@ const FamilyBuilderNew = () => {
                 onSpouseEditAttempt={handleSpouseEditWarning}
                 onAddMember={handleAddMember}
                 onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
+                onShowUpgradeModal={() => setShowUpgradeModal(true)}
                 checkIfMemberIsSpouse={checkIfMemberIsSpouse}
                 getAdditionalInfo={getAdditionalInfo}
                 getGenderColor={getGenderColor}
