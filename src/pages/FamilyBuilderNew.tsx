@@ -881,9 +881,9 @@ const FamilyBuilderNew = () => {
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
 
-    // Get the current member's father and grandfather information (not the partner's)
-    const currentMember = familyMembers.find(m => m.id === spouseMember.id);
-    const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
+    // Get the partner's father and grandfather information
+    const partnerMember = familyMembers.find(m => m.id === partner.id);
+    const father = partnerMember ? familyMembers.find(m => m.id === partnerMember.father_id) : null;
     const fatherName = father?.name || "";
 
     // Get grandfather information (father's father)
@@ -893,7 +893,7 @@ const FamilyBuilderNew = () => {
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
-      isFounder: currentMember?.is_founder || false
+      isFounder: partnerMember?.is_founder || false
     });
 
     // Show the spouse edit warning modal
@@ -928,9 +928,9 @@ const FamilyBuilderNew = () => {
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
 
-    // Get the current member's father and grandfather information (not the partner's)
-    const currentMember = familyMembers.find(m => m.id === spouseMember.id);
-    const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
+    // Get the partner's father and grandfather information
+    const partnerMember = familyMembers.find(m => m.id === partner.id);
+    const father = partnerMember ? familyMembers.find(m => m.id === partnerMember.father_id) : null;
     const fatherName = father?.name || "";
 
     // Get grandfather information (father's father)
@@ -940,7 +940,7 @@ const FamilyBuilderNew = () => {
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
-      isFounder: currentMember?.is_founder || false
+      isFounder: partnerMember?.is_founder || false
     });
 
     // Show the spouse edit warning modal (same for delete)
@@ -3607,12 +3607,6 @@ const FamilyBuilderNew = () => {
                         {spousePartnerDetails.name}
                       </div>
                         
-                        {/* Debug info - temporary */}
-                        <div className="text-xs bg-yellow-100 p-2 mt-2 rounded border">
-                          <div>isFounder: {spousePartnerDetails.isFounder ? 'true' : 'false'}</div>
-                          <div>fatherName: "{spousePartnerDetails.fatherName}"</div>
-                          <div>grandfatherName: "{spousePartnerDetails.grandfatherName}"</div>
-                        </div>
 
                         {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && spousePartnerDetails.fatherName !== 'غير محدد' && <div className="text-sm text-gray-600 mt-1">
                             ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
