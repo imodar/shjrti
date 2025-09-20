@@ -47,8 +47,7 @@ import { MemberProfileView } from "@/components/MemberProfileView";
 import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsButton";
 import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
-import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
-import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
+import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainCard";
 
 
 const FamilyBuilderNew = () => {
@@ -3209,41 +3208,251 @@ const FamilyBuilderNew = () => {
                 }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
 
                       {/* Step Content */}
-                      {currentStep === 1 && (
-                        <MemberDetailForm
-                          formData={{
-                            firstName: formData.first_name || '',
-                            middleName: '',
-                            lastName: '',
-                            nickname: '',
-                            gender: formData.gender,
-                            birthDate: formData.birthDate,
-                            deathDate: formData.deathDate,
-                            birthPlace: '',
-                            deathPlace: '',
-                            currentResidence: '',
-                            occupation: '',
-                            education: '',
-                            biography: '',
-                            isAlive: formData.isAlive,
-                            isFounder: formData.isFounder || false,
-                            fatherId: formData.selectedParent || '',
-                            motherId: ''
-                          }}
-                          setFormData={(data) => setFormData({
-                            ...formData,
-                            first_name: data.firstName || formData.first_name,
-                            gender: data.gender || formData.gender,
-                            birthDate: data.birthDate,
-                            deathDate: data.deathDate,
-                            isAlive: data.isAlive !== undefined ? data.isAlive : formData.isAlive,
-                            isFounder: data.isFounder !== undefined ? data.isFounder : formData.isFounder,
-                            selectedParent: data.fatherId || formData.selectedParent
-                          })}
-                          familyMembers={familyMembers}
-                          editingMember={editingMember}
-                        />
-                      )}
+                      {currentStep === 1 && <div className="space-y-6">
+                            <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
+                             
+                              {/* First row: First Name (1/2), Gender (1/4), Birthdate (1/4) */}
+                              <div className="grid grid-cols-12 gap-6">
+                                 <div className="col-span-12 md:col-span-6">
+                                     <Label htmlFor="first_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                       <UserCircle className="h-4 w-4 text-primary" />
+                                       الاسم الأول *
+                                    </Label>
+                                     <Input id="first_name" value={formData.first_name} onChange={e => setFormData({
+                          ...formData,
+                          first_name: e.target.value
+                        })} placeholder="أدخل الاسم الأول" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" required />
+                                 </div>
+                                 
+                                 <div className="col-span-6 md:col-span-3">
+                                    <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      <Zap className="h-4 w-4 text-primary" />
+                                      الجنس *
+                                   </Label>
+                                   <Select value={formData.gender} onValueChange={value => setFormData({
+                          ...formData,
+                          gender: value
+                        })}>
+                                     <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                       <SelectValue placeholder="اختر الجنس" />
+                                     </SelectTrigger>
+                                     <SelectContent className="rounded-lg border-2">
+                                       <SelectItem value="male" className="font-arabic rounded-md">ذكر</SelectItem>
+                                       <SelectItem value="female" className="font-arabic rounded-md">أنثى</SelectItem>
+                                     </SelectContent>
+                                   </Select>
+                                </div>
+                                 
+                                <div className="col-span-6 md:col-span-3">
+                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      <CalendarDays className="h-4 w-4 text-primary" />
+                                      تاريخ الميلاد
+                                   </Label>
+                                   <EnhancedDatePicker value={formData.birthDate} onChange={date => setFormData({
+                          ...formData,
+                          birthDate: date
+                        })} placeholder="اختر تاريخ الميلاد" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
+                                </div>
+                              </div>
+                             
+                             {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
+                             <div className="grid grid-cols-12 gap-6">
+                                <div className="col-span-12 md:col-span-6">
+                                   <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                     <UsersIcon className="h-4 w-4 text-primary" />
+                                     العلاقة العائلية (الوالدين) *
+                                    {formData.isFounder && <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>}
+                                  </Label>
+                                   <SearchableDropdown options={loading || !familyMarriages || !familyMembers ? [{
+                          value: "loading",
+                          label: "جاري تحميل البيانات...",
+                          disabled: true
+                        }] : familyMarriages.length > 0 ? familyMarriages.filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife).map(marriage => {
+                          // Get full member details for proper naming
+                          const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
+                          const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
+                          let displayName = '';
+
+                          // Helper function to get father's name
+                          const getFatherName = (member: any) => {
+                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                            return father?.name || '';
+                          };
+
+                          // Helper function to get grandfather's name
+                          const getGrandfatherName = (member: any) => {
+                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                            if (father) {
+                              const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                              return grandfather?.name || '';
+                            }
+                            return '';
+                          };
+
+                          // Helper function to build full genealogical name
+                          const buildFullName = (member: any, isWife: boolean = false) => {
+                            if (!member) return '';
+                            const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                            const mainFamilyName = "الشيخ سعيد"; // Main family surname
+
+                            // For founders, show full name with surname
+                            if (member.is_founder) {
+                              const lastName = member.last_name || mainFamilyName;
+                              return `${firstName} ${lastName}`;
+                            }
+
+                            // Check if member is from external family
+                            const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
+
+                            // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
+                            if (isExternalFamily) {
+                              return `${firstName} ${member.last_name}`;
+                            }
+
+                            // For internal family members
+                            if (isWife) {
+                              // For wives from internal family, show "ابنة" format
+                              const father = familyMembers.find(m => m?.id === member?.fatherId);
+                              if (father) {
+                                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                                return `${firstName} ابنة ${fatherFirstName}`;
+                              }
+                              return firstName;
+                            } else {
+                              // For internal family males (not founders), show "ابن" format with grandfather if available
+                              const father = familyMembers.find(m => m?.id === member?.fatherId);
+                              if (father) {
+                                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                                const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                                if (grandfather) {
+                                  const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                                  return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
+                                }
+                                return `${firstName} ابن ${fatherFirstName}`;
+                              }
+                            }
+
+                            // Fallback
+                            return firstName || member.name;
+                          };
+                          const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
+                          const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
+                          const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
+
+                          // Debug logging
+                          console.log('🔍 Marriage Display Debug:', {
+                            husbandName: husbandMember?.name,
+                            husbandFirstName: husbandMember?.first_name,
+                            husbandIsFounder: husbandMember?.is_founder,
+                            generatedFamilyMember: familyMember,
+                            wifeName: wifeMember?.name,
+                            wifeFirstName: wifeMember?.first_name,
+                            generatedSpouse: spouse,
+                            maritalStatus: marriage.marital_status,
+                            heartIcon
+                          });
+                          return {
+                            value: marriage.id,
+                            familyMember,
+                            spouse,
+                            heartIcon,
+                            isFounder: husbandMember?.is_founder || false
+                          };
+                        }) : [{
+                          value: "no-data",
+                          label: "لا توجد زيجات مسجلة في هذه العائلة",
+                          disabled: true
+                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
+                          ...formData,
+                          selectedParent: value === "none" ? null : value
+                        })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder} placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : "اختر الوالدين"} searchPlaceholder="ابحث عن الوالدين..." emptyMessage="لا توجد نتائج تطابق البحث" />
+                               </div>
+                              
+                               <div className="col-span-6 md:col-span-3">
+                                  <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                    <Activity className="h-4 w-4 text-primary" />
+                                    الحالة الحيوية
+                                 </Label>
+                                 <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={value => setFormData({
+                          ...formData,
+                          isAlive: value === "alive"
+                        })}>
+                                   <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                     <SelectValue placeholder="اختر الحالة الحيوية" />
+                                   </SelectTrigger>
+                                   <SelectContent className="rounded-lg border-2">
+                                     <SelectItem value="alive" className="font-arabic rounded-md">على قيد الحياة</SelectItem>
+                                     <SelectItem value="deceased" className="font-arabic rounded-md">متوفى</SelectItem>
+                                   </SelectContent>
+                                 </Select>
+                               </div>
+
+                                {!formData.isAlive && <div className="col-span-6 md:col-span-3">
+                                     <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                       <Skull className="h-4 w-4 text-primary" />
+                                       تاريخ الوفاة
+                                    </Label>
+                                    <EnhancedDatePicker value={formData.deathDate} onChange={date => setFormData({
+                          ...formData,
+                          deathDate: date
+                        })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
+                                  </div>}
+                             </div>
+
+                             {/* Biography and Profile Picture - Side by Side Layout */}
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               {/* Biography Section - 1/2 */}
+                               <div>
+                                 <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                   <FileText className="h-4 w-4 text-primary" />
+                                   السيرة الذاتية
+                                 </Label>
+                                 <Textarea id="bio" value={formData.bio} onChange={e => setFormData({
+                          ...formData,
+                          bio: e.target.value
+                        })} placeholder="أدخل معلومات إضافية عن العضو" rows={6} className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none" />
+                               </div>
+
+                               {/* Profile Picture Section - 1/2 */}
+                               {(formMode === 'add' || formMode === 'edit') && <div className="space-y-3">
+                                 <Label htmlFor="picture" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                   <Camera className="h-4 w-4 text-primary" />
+                                   الصورة الشخصية
+                                 </Label>
+                              
+                              {croppedImage || editingMember && editingMember.image ? <div className="space-y-3">
+                                  <div className="relative group flex justify-center">
+                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
+                                       <img src={croppedImage || editingMember && editingMember.image} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex justify-center gap-2">
+                                    <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
+                                      <Edit2 className="h-3 w-3 ml-1" />
+                                      تعديل
+                                    </Button>
+                                    <Button type="button" size="sm" variant="destructive" onClick={handleDeleteImage} className="h-8 px-3">
+                                      <Trash2 className="h-3 w-3 ml-1" />
+                                      حذف
+                                    </Button>
+                                  </div>
+                                </div> : <div className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 h-[140px] flex items-center justify-center ${isImageUploadEnabled ? 'border-primary/40 cursor-pointer hover:border-primary/60' : 'border-gray-300 opacity-70 cursor-not-allowed'}`} onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}>
+                                  {isImageUploadEnabled ? <div className="space-y-2">
+                                      <Upload className="h-8 w-8 text-primary mx-auto" />
+                                      <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
+                                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
+                                    </div> : <div className="space-y-2">
+                                      <Upload className="h-8 w-8 text-gray-400 mx-auto" />
+                                      <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
+                                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
+                                    </div>}
+                                </div>}
+                              
+                              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" disabled={!isImageUploadEnabled} />
+                             </div>}
+                           </div>
+                         </div>}
 
                        {currentStep === 2 && <div className="space-y-4">
                            <h3 className="text-lg font-semibold">
@@ -3485,28 +3694,32 @@ const FamilyBuilderNew = () => {
 
             {/* Member List - Left Side on Desktop */}
             <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
-              <MemberListComponent 
-                members={familyMembers}
-                familyMembers={familyMembers}
-                marriages={familyMarriages}
-                searchTerm={searchTerm}
-                selectedFilter={selectedFilter}
-                memberListLoading={memberListLoading}
-                formMode={formMode}
-                packageData={packageData}
-                isMemberListOpen={isMemberListOpen}
-                onSearchChange={setSearchTerm}
-                onFilterChange={setSelectedFilter}
-                onEditMember={handleEditMember}
-                onViewMember={handleViewMember}
-                onDeleteMember={handleDeleteMember}
-                onSpouseEditAttempt={handleSpouseEditWarning}
-                onAddMember={handleAddMember}
-                onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
-                checkIfMemberIsSpouse={checkIfMemberIsSpouse}
-                getAdditionalInfo={getAdditionalInfo}
-                getGenderColor={getGenderColor}
-              />
+              {isMobile ? <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" className="w-full flex items-center gap-2">
+                      <Menu className="h-4 w-4" />
+                      عرض قائمة الأعضاء ({familyMembers.length})
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent className="h-[80vh]">
+                    <div className="p-4">
+                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
+                    </div>
+                  </DrawerContent>
+                </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
+                  <CardHeader className="pb-4 relative">
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                         أعضاء العائلة ({familyMembers.length})
+                       </span>
+                     </CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative">
+                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
+                  </CardContent>
+                </Card>}
             </div>
           </div>
         </div>
@@ -3846,4 +4059,112 @@ const FamilyBuilderNew = () => {
 };
 
 // Member List Component
+const MemberList = ({
+  members,
+  onEditMember,
+  onViewMember,
+  onDeleteMember,
+  onSpouseEditAttempt,
+  checkIfMemberIsSpouse,
+  searchTerm,
+  onSearchChange,
+  selectedFilter,
+  onFilterChange,
+  getAdditionalInfo,
+  getGenderColor,
+  familyMembers,
+  marriages,
+  memberListLoading,
+  formMode,
+  onAddMember,
+  packageData
+}: any) => {
+  return <div className="space-y-4">
+      {/* Search and Filter on the same row */}
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
+        </div>
+        <div className="flex-1">
+          <Select value={selectedFilter} onValueChange={onFilterChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="تصفية حسب..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">جميع الأعضاء</SelectItem>
+          <SelectItem value="alive">الأحياء</SelectItem>
+          <SelectItem value="deceased">المتوفين</SelectItem>
+          <SelectItem value="male">الذكور</SelectItem>
+          <SelectItem value="female">الإناث</SelectItem>
+          <SelectItem value="founders">المؤسسون</SelectItem>
+        </SelectContent>
+      </Select>
+        </div>
+      </div>
+
+      {/* Add Member Button */}
+      {formMode === 'view' && <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={onAddMember} className="w-full flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                {packageData && familyMembers.length >= packageData.max_family_members ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)` : 'إضافة عضو جديد'}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs" side="top">
+              {packageData && familyMembers.length >= packageData.max_family_members ? <div className="text-center">
+                  <p className="font-semibold text-destructive mb-1">
+                    🚫 تم الوصول للحد الأقصى
+                  </p>
+                  <p className="text-sm">
+                    باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
+                  </p>
+                  <p className="text-xs mt-2 text-muted-foreground">
+                    قم بترقية باقتك لإضافة المزيد من الأعضاء
+                  </p>
+                </div> : <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>}
+
+      {/* Member List */}
+      <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
+        {memberListLoading ?
+      // Loading skeletons
+      Array.from({
+        length: 3
+      }).map((_, index) => <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
+              <div className="flex items-start gap-3">
+                <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+              </div>
+            </div>) : members.length === 0 ? <div className="text-center py-8 text-muted-foreground">
+            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <p>لا توجد أعضاء</p>
+          </div> : members.map((member: any) => (
+            <MemberCard
+              key={member.id}
+              member={member}
+              familyMembers={familyMembers}
+              marriages={marriages}
+              onViewMember={onViewMember}
+              onEditMember={onEditMember}
+              onDeleteMember={onDeleteMember}
+              onSpouseEditAttempt={onSpouseEditAttempt}
+              checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+              getGenderColor={getGenderColor}
+            />
+          ))}
+      </div>
+    </div>;
+};
 export default FamilyBuilderNew;

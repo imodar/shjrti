@@ -22,10 +22,10 @@ interface FormData {
 }
 
 interface UseFormStateResult {
-  formMode: 'add' | 'edit' | 'view' | 'profile' | 'tree-settings';
+  formMode: 'add' | 'edit' | 'view';
   formData: FormData;
   selectedMemberId: string | null;
-  setFormMode: (mode: 'add' | 'edit' | 'view' | 'profile' | 'tree-settings') => void;
+  setFormMode: (mode: 'add' | 'edit' | 'view') => void;
   setFormData: (data: Partial<FormData>) => void;
   setSelectedMemberId: (id: string | null) => void;
   resetForm: () => void;
@@ -53,7 +53,7 @@ const initialFormData: FormData = {
 };
 
 export const useFormState = (): UseFormStateResult => {
-  const [formMode, setFormMode] = useState<'add' | 'edit' | 'view' | 'profile' | 'tree-settings'>('view');
+  const [formMode, setFormMode] = useState<'add' | 'edit' | 'view'>('view');
   const [formData, setFormDataState] = useState<FormData>(initialFormData);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 

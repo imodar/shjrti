@@ -30,9 +30,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   getGenderColor
 }) => {
   const generateMemberDisplayName = () => {
-    const isSpouse = checkIfMemberIsSpouse(member);
+    const isSpouse = !member.father_id && !member.mother_id && !member.is_founder;
     if (isSpouse) {
-      // For spouses: show full name (first_name + last_name)
+      // For spouses: show first_name + last_name, or name if missing
       const firstName = member.first_name || '';
       const lastName = member.last_name || '';
       if (firstName && lastName) {
@@ -40,23 +40,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       }
       return (member as any).name || "غير معروف";
     } else {
-      // For family members: show first name only
-      if (member.first_name) {
-        return member.first_name;
-      } else if ((member as any).name) {
-        // Extract first word from name field
-        return ((member as any).name).split(' ')[0];
-      }
-      return "غير معروف";
+      // For founders and other native family members: show first_name, or split name if missing
+      return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
     }
   };
 
   const renderRelationship = () => {
     // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
-    const fatherId = member.father_id || (member as any).fatherId;
-    const isFounder = member.is_founder || (member as any).isFounder;
-    const memberHasFamilyFather = fatherId && familyMembers?.find(m => m?.id === fatherId);
-    const isDescendant = !isFounder && memberHasFamilyFather;
+    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+    const isDescendant = !member.is_founder && memberHasFamilyFather;
     if (isDescendant) {
       return (
         <span className="text-xs text-muted-foreground font-normal">
@@ -68,38 +60,21 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
 
   const renderParentage = () => {
-    const fatherId = member.father_id || (member as any).fatherId;
-    const father = familyMembers?.find(m => m?.id === fatherId);
-    
-    // Check for external father name (stored as full name when father is outside family)
-    const externalFatherName = (member as any).father_name || (member as any).fatherName;
-    
-    if (father) {
-      // Father is in the family tree
-      const grandfatherFatherId = father.father_id || (father as any)?.fatherId;
-      const grandfather = familyMembers?.find(m => m?.id === grandfatherFatherId);
-      
-      if (grandfather) {
-        const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-        const grandfatherFirstName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
-        return (
-          <p className="text-sm text-muted-foreground truncate font-arabic">
-            {fatherFirstName} ابن {grandfatherFirstName}
-          </p>
-        );
-      } else {
-        const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-        return (
-          <p className="text-sm text-muted-foreground truncate font-arabic">
-            {fatherFirstName}
-          </p>
-        );
-      }
-    } else if (externalFatherName) {
-      // Father is external to the family - show full name
+    const father = familyMembers?.find(m => m?.id === member.father_id);
+    const grandfather = father ? familyMembers?.find(m => m?.id === father.father_id) : null;
+    if (father && grandfather) {
+      const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
+      const grandfatherFirstName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
       return (
         <p className="text-sm text-muted-foreground truncate font-arabic">
-          {externalFatherName}
+          {fatherFirstName} ابن {grandfatherFirstName}
+        </p>
+      );
+    } else if (father) {
+      const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
+      return (
+        <p className="text-sm text-muted-foreground truncate font-arabic">
+          {fatherFirstName}
         </p>
       );
     }
@@ -108,8 +83,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   const renderSpouseInfo = () => {
     // Show founder text for founders
-    const isFounder = member.is_founder || (member as any).isFounder;
-    if (isFounder) {
+    if (member.is_founder) {
       return (
         <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
           الجد الأكبر للعائلة
@@ -132,14 +106,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
       if (spouse) {
         // Check if current member is a non-family member (married into the family)
-        const memberFatherId = member.father_id || (member as any).fatherId;
-        const memberHasFamilyFather = memberFatherId && familyMembers?.find(m => m?.id === memberFatherId);
+        const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
 
         // Only show spouse info for non-family members (those without family fathers)
         if (!memberHasFamilyFather) {
           // Get spouse's father from familyMembers
-          const spouseFatherId = spouse.father_id || (spouse as any).fatherId;
-          const spouseFather = familyMembers?.find(m => m?.id === spouseFatherId);
+          const spouseFather = familyMembers?.find(m => m?.id === spouse.father_id);
 
           // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
           const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
@@ -150,44 +122,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
           }
 
-          // For wives: show husband's name, for husbands: show relation only
-          if (member.gender === 'female') {
-            // For wives: show "زوجة [husband name]" with full lineage
-            let husbandName = spouse.first_name;
-            if (!husbandName && (spouse as any).name) {
-              // Extract only the first word from the full name
-              husbandName = (spouse as any).name.split(' ')[0];
-            }
-            if (!husbandName) {
-              husbandName = "غير معروف";
-            }
-            
-            // Build husband's lineage
-            const husbandFatherId = spouse.father_id || (spouse as any).fatherId;
-            const husbandFather = familyMembers?.find(m => m?.id === husbandFatherId);
-            let husbandLineage = husbandName;
-            
-            if (husbandFather) {
-              const fatherFirstName = husbandFather.first_name || (husbandFather as any).name?.split(' ')[0] || (husbandFather as any).name;
-              husbandLineage += ` ابن ${fatherFirstName}`;
-              
-              // Check for grandfather
-              const grandfatherFatherId = husbandFather.father_id || (husbandFather as any).fatherId;
-              const husbandGrandfather = familyMembers?.find(m => m?.id === grandfatherFatherId);
-              if (husbandGrandfather) {
-                const grandfatherFirstName = husbandGrandfather.first_name || (husbandGrandfather as any).name?.split(' ')[0] || (husbandGrandfather as any).name;
-                husbandLineage += ` ابن ${grandfatherFirstName}`;
-              }
-            }
-            return (
-              <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                زوجة {husbandLineage}
-              </p>
-            );
-          } else {
-            // For husbands: don't show spouse info
-            return null;
-          }
+          // Use زوج for husband, زوجة for wife (from member's perspective)
+          const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+          return (
+            <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+              {relationLabel} {spouseInfo}
+            </p>
+          );
         }
       }
     }
@@ -196,72 +137,100 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   return (
     <Card 
-      className="group relative cursor-pointer bg-card/95 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-primary/10" 
+      className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" 
       onClick={() => onViewMember(member)}
     >
       <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          {/* Avatar section */}
-          <div className="relative flex-shrink-0">
-            <Avatar className="h-12 w-12 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
-              <AvatarImage src={(member as any).image} className="object-cover" />
-              <AvatarFallback className={`${getGenderColor(member.gender)} text-sm font-semibold`}>
+        <div className="flex items-center justify-between gap-3 min-h-[80px]">
+          <div className="flex items-start gap-3 flex-1">
+            <Avatar className="h-12 w-12 flex-shrink-0">
+              <AvatarImage src={(member as any).image} />
+              <AvatarFallback className={getGenderColor(member.gender)}>
                 {((member as any).name || member.first_name || "؟").charAt(0)}
               </AvatarFallback>
             </Avatar>
             
-            {/* Gender & Status indicators */}
-            <div className="absolute -bottom-1 -right-1 flex">
-              <div className={`w-4 h-4 rounded-full border-2 border-background flex items-center justify-center ${
-                member.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'
-              }`}>
+            <div className="flex-1 min-w-0 space-y-1">
+              {/* Name */}
+              <div className="flex items-center gap-2">
                 {member.gender === 'male' ? 
-                  <User className="h-2 w-2 text-white" /> : 
-                  <UserIcon className="h-2 w-2 text-white" />
+                  <User className="h-3 w-3 text-blue-500" /> : 
+                  <UserIcon className="h-3 w-3 text-pink-500" />
                 }
+                <h3 className="font-semibold text-base font-arabic leading-tight">
+                  {generateMemberDisplayName()}
+                </h3>
+                {renderRelationship()}
               </div>
-            </div>
-          </div>
-          
-          {/* Content */}
-          <div className="flex-1 min-w-0 space-y-1">
-            {/* Name and relationship */}
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-foreground font-arabic leading-tight truncate">
-                {generateMemberDisplayName()}
-              </h3>
-              {renderRelationship() && (
-                <span className="px-2 py-0.5 text-xs bg-primary/15 text-primary rounded-md font-medium flex-shrink-0">
-                  {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                </span>
-              )}
-            </div>
-            
-            {/* Additional info */}
-            <div className="space-y-0.5 text-xs text-muted-foreground">
+              
+              {/* Father + Grandfather names */}
               {renderParentage()}
+              
+              {/* Spouse information - show founder text for founders, spouse info for non-family members */}
               {renderSpouseInfo()}
-              {member.birth_date && (
-                <DateDisplay date={member.birth_date} className="text-xs text-muted-foreground font-arabic block" />
-              )}
+              
+              {/* Birth date and other icons */}
+              <div className="flex items-center gap-2">
+                {member.birth_date && <DateDisplay date={member.birth_date} className="text-xs text-muted-foreground font-arabic" />}
+                {member.is_founder && <Crown className="h-3 w-3 text-yellow-500" />}
+                {!(member as any).isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
+              </div>
             </div>
           </div>
           
-          {/* Status and actions */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            {/* Status icons */}
-            {member.is_founder && (
-              <div className="w-6 h-6 bg-primary/15 rounded-full flex items-center justify-center">
-                <Crown className="h-3 w-3 text-primary" />
-              </div>
-            )}
-            {!(member as any).isAlive && (
-              <div className="w-6 h-6 bg-muted/30 rounded-full flex items-center justify-center">
-                <Skull className="h-3 w-3 text-muted-foreground" />
-              </div>
+          {/* Edit & Remove buttons at the most left */}
+          <div className="flex flex-col gap-1 flex-shrink-0">
+            {/* Only show edit button for non-spouse members */}
+            {!checkIfMemberIsSpouse(member) ? (
+              <Button 
+                type="button" 
+                size="sm" 
+                variant="outline" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditMember(member);
+                }} 
+                className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
+              >
+                <Edit2 className="h-3 w-3 text-gray-600" />
+              </Button>
+            ) : (
+              <Button 
+                type="button" 
+                size="sm" 
+                variant="outline" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSpouseEditAttempt(member);
+                }} 
+                className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm"
+              >
+                <Edit2 className="h-3 w-3 text-yellow-600" />
+              </Button>
             )}
             
-            {/* Action buttons removed */}
+            <Button 
+              type="button" 
+              size="sm" 
+              variant="outline" 
+              onClick={(e) => {
+                e.stopPropagation();
+                if (checkIfMemberIsSpouse(member)) {
+                  onSpouseEditAttempt(member);
+                } else {
+                  onDeleteMember(member);
+                }
+              }} 
+              className={`h-7 w-7 p-0 border shadow-sm ${
+                checkIfMemberIsSpouse(member) 
+                  ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' 
+                  : 'bg-red-50/80 hover:bg-red-100 border-red-200'
+              }`}
+            >
+              <Trash2 className={`h-3 w-3 ${
+                checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'
+              }`} />
+            </Button>
           </div>
         </div>
       </CardContent>
