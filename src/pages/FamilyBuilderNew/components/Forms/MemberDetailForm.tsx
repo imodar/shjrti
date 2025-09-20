@@ -205,12 +205,12 @@ export const MemberDetailForm: React.FC<MemberDetailFormProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>الأب</Label>
-          <Select value={formData.fatherId} onValueChange={(value) => setFormData({ fatherId: value })}>
+          <Select value={formData.fatherId || "none"} onValueChange={(value) => setFormData({ fatherId: value === "none" ? "" : value })}>
             <SelectTrigger>
               <SelectValue placeholder="اختر الأب" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">بدون أب مسجل</SelectItem>
+              <SelectItem value="none">بدون أب مسجل</SelectItem>
               {potentialFathers.map((father) => (
                 <SelectItem key={father.id} value={father.id}>
                   {getMemberDisplayName(father)}
@@ -221,12 +221,12 @@ export const MemberDetailForm: React.FC<MemberDetailFormProps> = ({
         </div>
         <div className="space-y-2">
           <Label>الأم</Label>
-          <Select value={formData.motherId} onValueChange={(value) => setFormData({ motherId: value })}>
+          <Select value={formData.motherId || "none"} onValueChange={(value) => setFormData({ motherId: value === "none" ? "" : value })}>
             <SelectTrigger>
               <SelectValue placeholder="اختر الأم" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">بدون أم مسجلة</SelectItem>
+              <SelectItem value="none">بدون أم مسجلة</SelectItem>
               {potentialMothers.map((mother) => (
                 <SelectItem key={mother.id} value={mother.id}>
                   {getMemberDisplayName(mother)}
