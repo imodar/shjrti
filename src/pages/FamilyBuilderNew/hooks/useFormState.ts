@@ -1,13 +1,12 @@
 import { useState, useCallback } from "react";
 import { Member } from "../types/family.types";
-import { parseDateFromDatabase } from "@/lib/dateUtils";
 
 interface FormData {
   firstName: string;
   middleName: string;
   lastName: string;
   nickname: string;
-  gender: "male" | "female" | "";
+  gender: string;
   birthDate: Date | undefined;
   deathDate: Date | undefined;
   birthPlace: string;
@@ -74,16 +73,16 @@ export const useFormState = (): UseFormStateResult => {
       middleName: '',
       lastName: member.last_name || '',
       nickname: '',
-      gender: (member.gender as "male" | "female") || "",
-      birthDate: member.birth_date ? parseDateFromDatabase(member.birth_date) : undefined,
-      deathDate: member.death_date ? parseDateFromDatabase(member.death_date) : undefined,
+      gender: member.gender,
+      birthDate: member.birth_date ? new Date(member.birth_date) : undefined,
+      deathDate: member.death_date ? new Date(member.death_date) : undefined,
       birthPlace: member.birth_place || '',
       deathPlace: '',
       currentResidence: '',
       occupation: '',
       education: '',
       biography: member.biography || '',
-      isAlive: member.death_date ? false : (member.is_alive !== false),
+      isAlive: member.is_alive !== false,
       isFounder: member.is_founder || false,
       fatherId: member.father_id || '',
       motherId: member.mother_id || ''

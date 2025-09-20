@@ -22,7 +22,6 @@ import DashboardBackup from "./pages/DashboardBackup";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilderNew from "./pages/FamilyBuilderNew";
-import FamilyBuilderNewRefactored from "./pages/FamilyBuilderNew/FamilyBuilderNewRefactored";
 
 import FamilyTreeView from "./pages/FamilyTreeView";
 import FamilyStatistics from "./pages/FamilyStatistics";
@@ -93,13 +92,6 @@ const App = () => (
             <ProtectedRoute requireActiveSubscription={true}>
               <ProtectedFamilyRoute>
                 <FamilyBuilderNew />
-              </ProtectedFamilyRoute>
-            </ProtectedRoute>
-          } />
-          <Route path="/family-builder-new-refactored" element={
-            <ProtectedRoute requireActiveSubscription={true}>
-              <ProtectedFamilyRoute>
-                <FamilyBuilderNewRefactored />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />

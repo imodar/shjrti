@@ -8,7 +8,7 @@ interface FormData {
   middleName: string;
   lastName: string;
   nickname: string;
-  gender: "male" | "female" | "";
+  gender: string;
   birthDate: Date | undefined;
   deathDate: Date | undefined;
   birthPlace: string;
