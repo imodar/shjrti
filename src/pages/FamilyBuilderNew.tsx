@@ -3181,21 +3181,32 @@ const FamilyBuilderNew = () => {
                           formMode={formMode}
                           currentStep={currentStep}
                           formData={{
-                            first_name: altFormData.firstName || '',
-                            name: altFormData.firstName || '', // Use firstName for name
+                            first_name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
+                            name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
                             relation: '',
                             relatedPersonId: null,
                             selectedParent: null,
-                            gender: altFormData.gender || 'male',
-                            birthDate: altFormData.birthDate,
-                            isAlive: altFormData.isAlive ?? true,
-                            deathDate: altFormData.deathDate,
-                            bio: altFormData.biography || '',
-                            imageUrl: '',
-                            croppedImage: croppedImage, // Use croppedImage from hook
-                            isFounder: altFormData.isFounder || false
+                            gender: altFormData.gender || editingMember?.gender || 'male',
+                            birthDate: altFormData.birthDate || (editingMember?.birth_date ? new Date(editingMember.birth_date) : undefined),
+                            isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : (editingMember?.is_alive !== false),
+                            deathDate: altFormData.deathDate || (editingMember?.death_date ? new Date(editingMember.death_date) : undefined),
+                            bio: altFormData.biography || editingMember?.biography || '',
+                            imageUrl: editingMember?.image_url || '',
+                            croppedImage: croppedImage,
+                            isFounder: altFormData.isFounder !== undefined ? altFormData.isFounder : (editingMember?.is_founder || false)
                           }}
-                          setFormData={(data) => setAltFormData({...altFormData, ...data})}
+                          setFormData={(data) => {
+                            // Map data back to altFormData structure
+                            const mappedData: any = {};
+                            if (data.first_name !== undefined) mappedData.firstName = data.first_name;
+                            if (data.gender !== undefined) mappedData.gender = data.gender;
+                            if (data.isAlive !== undefined) mappedData.isAlive = data.isAlive;
+                            if (data.birthDate !== undefined) mappedData.birthDate = data.birthDate;
+                            if (data.deathDate !== undefined) mappedData.deathDate = data.deathDate;
+                            if (data.bio !== undefined) mappedData.biography = data.bio;
+                            if (data.isFounder !== undefined) mappedData.isFounder = data.isFounder;
+                            setAltFormData(mappedData);
+                          }}
                           editingMember={editingMember}
                           familyMembers={familyMembers}
                           familyMarriages={familyMarriages}
