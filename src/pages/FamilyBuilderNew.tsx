@@ -3602,17 +3602,25 @@ const FamilyBuilderNew = () => {
                      <Edit className="h-5 w-5 text-primary mr-2" />
                      <div className="text-sm text-gray-600">للتعديل، انتقل إلى:</div>
                    </div>
-                   <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
-                     <div className="font-bold text-primary text-lg animate-pulse">
-                       {spousePartnerDetails.name}
-                     </div>
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && <div className="text-sm text-gray-600 mt-1">
-                           ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                         </div>}
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && <div className="text-xs text-gray-500 mt-1">
-                           حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                         </div>}
-                   </div>
+                    <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
+                      <div className="font-bold text-primary text-lg animate-pulse">
+                        {spousePartnerDetails.name}
+                      </div>
+                        
+                        {/* Debug info - temporary */}
+                        <div className="text-xs bg-yellow-100 p-2 mt-2 rounded border">
+                          <div>isFounder: {spousePartnerDetails.isFounder ? 'true' : 'false'}</div>
+                          <div>fatherName: "{spousePartnerDetails.fatherName}"</div>
+                          <div>grandfatherName: "{spousePartnerDetails.grandfatherName}"</div>
+                        </div>
+
+                        {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && spousePartnerDetails.fatherName !== 'غير محدد' && <div className="text-sm text-gray-600 mt-1">
+                            ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
+                          </div>}
+                        {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && spousePartnerDetails.grandfatherName !== 'غير محدد' && <div className="text-xs text-gray-500 mt-1">
+                            حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
+                          </div>}
+                    </div>
                 </div>}
 
               {/* Info section */}
