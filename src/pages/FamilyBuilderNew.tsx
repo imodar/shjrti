@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle, Gem, Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -37,1181 +37,23 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
-import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SpouseForm, SpouseData } from "@/components/SpouseForm";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSkeleton";
 import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
+import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsButton";
+import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
+import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
+import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
+import { useImageManagement } from "@/pages/FamilyBuilderNew/hooks/useImageManagement";
+import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
+import { useFormState } from "@/pages/FamilyBuilderNew/hooks/useFormState";
+import { useMemberOperations } from "@/pages/FamilyBuilderNew/hooks/useMemberOperations";
+import { useGenerationCalculation } from "@/pages/FamilyBuilderNew/hooks/useGenerationCalculation";
 
-// Tree Settings Button Component
-const TreeSettingsButton = ({
-  onShowSettings
-}: {
-  onShowSettings: () => void;
-}) => {
-  return <Button variant="outline" size="sm" className="ml-2" onClick={onShowSettings}>
-      <Settings className="h-4 w-4 ml-2" />
-      إعدادات الشجرة
-    </Button>;
-};
 
-// Custom Domain Card Component
-const CustomDomainCard = ({
-  familyData
-}: {
-  familyData: any;
-}) => {
-  const {
-    toast
-  } = useToast();
-  const {
-    subscription
-  } = useSubscription();
-  const [customDomain, setCustomDomain] = useState(familyData?.custom_domain || "");
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
-  const [validationError, setValidationError] = useState("");
-  const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
-  const [checkingFeature, setCheckingFeature] = useState(true);
-  const [sharePassword, setSharePassword] = useState(familyData?.share_password || "");
-  const [isPasswordProtected, setIsPasswordProtected] = useState(!!familyData?.share_password);
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-
-  // Check if user's package has custom domains enabled
-  useEffect(() => {
-    const checkCustomDomainFeature = async () => {
-      setCheckingFeature(true);
-      try {
-        // Get current user's active subscription
-        const {
-          data: userSub,
-          error: subError
-        } = await supabase.from('user_subscriptions').select(`
-            *,
-            packages(
-              custom_domains_enabled,
-              name
-            )
-          `).eq('user_id', (await supabase.auth.getUser()).data.user?.id).eq('status', 'active').single();
-        if (userSub && userSub.packages && !subError) {
-          setHasCustomDomainFeature(userSub.packages.custom_domains_enabled);
-          console.log('Custom domain feature enabled:', userSub.packages.custom_domains_enabled);
-        } else {
-          console.log('No active subscription or package found');
-          setHasCustomDomainFeature(false);
-        }
-      } catch (error) {
-        console.error('Error checking custom domain feature:', error);
-        setHasCustomDomainFeature(false);
-      } finally {
-        setCheckingFeature(false);
-      }
-    };
-    checkCustomDomainFeature();
-  }, [subscription?.package_name]);
-
-  // Validation function
-  const validateCustomDomain = async (domain: string) => {
-    setValidationError("");
-    setIsValidating(true);
-
-    try {
-      // Client-side validation
-      if (!domain.trim()) {
-        setValidationError("يرجى إدخال اسم النطاق المطلوب");
-        return false;
-      }
-
-      if (domain.length < 5) {
-        setValidationError("يجب أن يكون اسم النطاق 5 أحرف على الأقل");
-        return false;
-      }
-
-      if (domain.includes('.')) {
-        setValidationError("لا يمكن أن يحتوي اسم النطاق على نقاط");
-        return false;
-      }
-
-      if (!/^[a-z0-9-]+$/.test(domain)) {
-        setValidationError("استخدم أحرف إنجليزية صغيرة وأرقام وشرطات فقط");
-        return false;
-      }
-
-      // Check availability in database
-      const { data: existingFamily, error } = await supabase
-        .from('families')
-        .select('id')
-        .eq('custom_domain', domain)
-        .neq('id', familyData?.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error checking domain availability:', error);
-        setValidationError("خطأ في التحقق من توفر النطاق");
-        return false;
-      }
-
-      if (existingFamily) {
-        setValidationError("هذا النطاق مستخدم بالفعل، يرجى اختيار نطاق آخر");
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Validation error:', error);
-      setValidationError("خطأ في التحقق من صحة النطاق");
-      return false;
-    } finally {
-      setIsValidating(false);
-    }
-  };
-  const hasAccess = !checkingFeature && hasCustomDomainFeature;
-  const handleSaveCustomDomain = async () => {
-    const isValid = await validateCustomDomain(customDomain);
-    if (!isValid) return;
-
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('families')
-        .update({ 
-          custom_domain: customDomain.trim().toLowerCase(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', familyData?.id);
-
-      if (error) {
-        console.error('Error saving custom domain:', error);
-        toast({
-          title: "خطأ",
-          description: "فشل في حفظ الرابط المخصص",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      toast({
-        title: "تم الحفظ",
-        description: "تم حفظ الرابط المخصص بنجاح"
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error saving custom domain:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حفظ الرابط المخصص",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteCustomDomain = async () => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('families')
-        .update({ 
-          custom_domain: null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', familyData?.id);
-
-      if (error) {
-        console.error('Error deleting custom domain:', error);
-        toast({
-          title: "خطأ",
-          description: "فشل في حذف الرابط المخصص",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      setCustomDomain("");
-      toast({
-        title: "تم الحذف",
-        description: "تم حذف الرابط المخصص بنجاح"
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error deleting custom domain:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حذف الرابط المخصص",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const customUrl = customDomain ? `https://shjrti.com/${customDomain}` : "";
-  const shareableTreeLink = `${window.location.origin}/tree?family=${familyData?.id}`;
-  if (checkingFeature) {
-    return <Card className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
-        <CardHeader className="relative pb-3">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-4 rounded" />
-            <Skeleton className="h-5 w-32" />
-          </div>
-        </CardHeader>
-        <CardContent className="relative">
-          <Skeleton className="h-20 w-full" />
-        </CardContent>
-      </Card>;
-  }
-  return <Card className={`relative overflow-hidden transition-all duration-300 ${!hasAccess ? "opacity-60" : "hover:shadow-lg border-primary/20"}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 pointer-events-none" />
-      <CardHeader className="relative pb-4">
-        <CardTitle className="text-lg flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Globe className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              رابط مخصص للشجرة
-              <Badge variant="outline" className="text-xs bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-                ميزة متقدمة
-              </Badge>
-            </div>
-          </div>
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground mt-2">
-          احصل على رابط مخصص وسهل التذكر لشجرة عائلتك واجعل المشاركة أسهل
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-0">
-        {checkingFeature ? <div className="flex items-center justify-center py-12">
-            <div className="flex flex-col items-center gap-3 text-muted-foreground">
-              <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent"></div>
-              <span className="text-sm">جاري فحص صلاحيات الباقة...</span>
-            </div>
-          </div> : (/* Unified Tree Sharing Component */
-      <div className="divide-y">
-          {/* Default Sharing Option */}
-          <div className="p-6 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
-                <Share2 className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground text-lg mb-1">مشاركة عامة</h3>
-                <p className="text-sm text-muted-foreground">رابط افتراضي آمن للمشاركة الخارجية</p>
-              </div>
-            </div>
-            
-            <div className="bg-muted/50 rounded-xl p-4 space-y-4">
-              <div className="bg-background rounded-lg p-3 border border-border/50">
-                <div className="flex items-center gap-2 text-sm">
-                  <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="truncate font-mono text-foreground">{shareableTreeLink}</span>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-                <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
-                navigator.clipboard.writeText(shareableTreeLink);
-                toast({
-                  title: "تم نسخ الرابط",
-                  description: "تم نسخ رابط الشجرة إلى الحافظة"
-                });
-              }}>
-                  <Copy className="h-4 w-4" />
-                  <span className="hidden sm:inline">نسخ الرابط</span>
-                  <span className="sm:hidden">نسخ</span>
-                </Button>
-                <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                    url: shareableTreeLink
-                  });
-                } else {
-                  window.open(`https://wa.me/?text=${encodeURIComponent(shareableTreeLink)}`, '_blank');
-                }
-              }}>
-                  <Share2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">مشاركة</span>
-                  <span className="sm:hidden">شارك</span>
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Password Protection Option */}
-          <div className="p-6 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
-                <Lock className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground text-lg mb-1">الحماية بكلمة مرور</h3>
-                <p className="text-sm text-muted-foreground">احم شجرتك بكلمة مرور للمشاركة الآمنة</p>
-              </div>
-            </div>
-            
-            <div className="bg-muted/50 rounded-xl p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password-toggle" className="text-sm font-medium">
-                  تفعيل الحماية بكلمة مرور
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    id="password-toggle"
-                    type="checkbox"
-                    checked={isPasswordProtected}
-                    onChange={async (e) => {
-                      const enabled = e.target.checked;
-                      setIsPasswordProtected(enabled);
-                      
-                      if (!enabled) {
-                        // Remove password protection
-                        setIsUpdatingPassword(true);
-                        try {
-                          const { error } = await supabase
-                            .from('families')
-                            .update({ share_password: null })
-                            .eq('id', familyData?.id);
-                          
-                          if (error) throw error;
-                          
-                          setSharePassword("");
-                          toast({
-                            title: "تم إلغاء الحماية",
-                            description: "تم إلغاء الحماية بكلمة المرور بنجاح"
-                          });
-                        } catch (error) {
-                          console.error('Error removing password:', error);
-                          setIsPasswordProtected(true); // Revert on error
-                          toast({
-                            title: "خطأ",
-                            description: "حدث خطأ أثناء إلغاء الحماية",
-                            variant: "destructive"
-                          });
-                        } finally {
-                          setIsUpdatingPassword(false);
-                        }
-                      }
-                    }}
-                    className="sr-only"
-                  />
-                  <div 
-                    className={cn(
-                      "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer",
-                      isPasswordProtected ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
-                    )}
-                    onClick={() => document.getElementById('password-toggle')?.click()}
-                  >
-                    <span
-                      className={cn(
-                        "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                        isPasswordProtected ? "translate-x-6" : "translate-x-1"
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {isPasswordProtected && (
-                <div className="space-y-3">
-                  <Label htmlFor="share-password" className="text-sm font-medium">
-                    كلمة المرور للمشاركة
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="share-password"
-                      type="text"
-                      value={sharePassword}
-                      onChange={(e) => setSharePassword(e.target.value)}
-                      placeholder="أدخل كلمة مرور قوية"
-                      className="flex-1"
-                      disabled={isUpdatingPassword}
-                    />
-                    <Button 
-                      size="sm" 
-                      onClick={async () => {
-                        if (!sharePassword.trim()) {
-                          toast({
-                            title: "خطأ",
-                            description: "يرجى إدخال كلمة مرور",
-                            variant: "destructive"
-                          });
-                          return;
-                        }
-                        
-                        setIsUpdatingPassword(true);
-                        try {
-                          const { error } = await supabase
-                            .from('families')
-                            .update({ share_password: sharePassword.trim() })
-                            .eq('id', familyData?.id);
-                          
-                          if (error) throw error;
-                          
-                          toast({
-                            title: "تم الحفظ",
-                            description: "تم حفظ كلمة المرور بنجاح"
-                          });
-                        } catch (error) {
-                          console.error('Error updating password:', error);
-                          toast({
-                            title: "خطأ",
-                            description: "حدث خطأ أثناء حفظ كلمة المرور",
-                            variant: "destructive"
-                          });
-                        } finally {
-                          setIsUpdatingPassword(false);
-                        }
-                      }}
-                      disabled={isUpdatingPassword || !sharePassword.trim()}
-                      className="gap-2"
-                    >
-                      {isUpdatingPassword ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                      ) : (
-                        <Save className="h-4 w-4" />
-                      )}
-                      حفظ
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    ستحتاج إلى كلمة المرور هذه لعرض الشجرة عبر الرابط المشترك
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Custom Domain Option - Premium Feature */}
-          <div className="p-6 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 via-violet-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
-                <Crown className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-foreground text-lg">رابط مخصص</h3>
-                  <Badge variant="secondary" className="text-xs px-2 py-1">
-                    <Crown className="h-3 w-3 mr-1" />
-                    مميز
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">اختر اسم مستخدم مخصص لعائلتك</p>
-              </div>
-            </div>
-
-            {!hasAccess ? <div className="bg-muted/50 rounded-xl p-6 text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                  <Crown className="h-8 w-8 text-white" />
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-lg">ميزة مميزة</h4>
-                  <p className="text-sm text-muted-foreground max-w-sm mx-auto">هذه الميزة متاحة في الباقات المدفوعة فقط للحصول على رابط مخصص جميل</p>
-                </div>
-                <Button variant="outline" size="sm" className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 hover:from-purple-600 hover:to-indigo-600 h-10">
-                  <Crown className="h-4 w-4 mr-2" />
-                  ترقية الباقة
-                </Button>
-              </div> : <div className="bg-muted/50 rounded-xl p-4 space-y-4">
-                {isEditing ? <div className="space-y-3">
-                    <Label htmlFor="customDomain" className="text-sm font-medium flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      اسم المستخدم (بالإنجليزية فقط)
-                    </Label>
-                    <div className="space-y-2">
-                      <div className="flex rounded-lg overflow-hidden border flex-row-reverse">
-                        <div className="flex items-center px-4 bg-muted text-sm text-muted-foreground font-mono border-l" dir="ltr">
-                          https://shjrti.com/
-                        </div>
-                        <Input id="customDomain" value={customDomain} onChange={e => setCustomDomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="family-username" className="border-0 rounded-none font-mono focus-visible:ring-0 flex-1" dir="ltr" />
-                      </div>
-                      {customDomain && <div className="bg-background rounded-lg p-3 border border-border/50">
-                          <p className="text-xs text-muted-foreground flex items-center gap-2">
-                            <Link className="h-3 w-3" />
-                            معاينة الرابط: <span className="font-mono text-foreground">shjrti.com/{customDomain}</span>
-                          </p>
-                        </div>}
-                      {validationError && <div className="bg-destructive/10 text-destructive rounded-lg p-3 border border-destructive/20">
-                          <p className="text-xs">{validationError}</p>
-                        </div>}
-                      {isValidating && <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
-                          جاري التحقق من النطاق...
-                        </div>}
-                      <p className="text-xs text-muted-foreground">
-                        استخدم أحرف إنجليزية وأرقام وشرطات فقط. مثال: al-smith-family
-                      </p>
-                    </div>
-                  </div> : customDomain && <div className="space-y-3">
-                      <div className="bg-background rounded-lg p-3 border border-border/50">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="truncate font-mono text-foreground">{customUrl}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-                        <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
-                  navigator.clipboard.writeText(customUrl);
-                  toast({
-                    title: "تم نسخ الرابط",
-                    description: "تم نسخ الرابط المخصص إلى الحافظة"
-                  });
-                }}>
-                          <Copy className="h-4 w-4" />
-                          <span className="hidden sm:inline">نسخ الرابط</span>
-                          <span className="sm:hidden">نسخ</span>
-                        </Button>
-                        <Button variant="outline" size="sm" className="flex-1 gap-2 h-10" onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-                      url: customUrl
-                    });
-                  } else {
-                    window.open(`https://wa.me/?text=${encodeURIComponent(customUrl)}`, '_blank');
-                  }
-                }}>
-                          <Share2 className="h-4 w-4" />
-                          <span className="hidden sm:inline">مشاركة</span>
-                          <span className="sm:hidden">شارك</span>
-                        </Button>
-                      </div>
-                    </div>}
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  {isEditing ? <>
-                      <Button size="sm" onClick={handleSaveCustomDomain} disabled={isLoading} className="flex-1 gap-2 h-10">
-                        {isLoading ? <>
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                            جاري الحفظ...
-                          </> : <>
-                            <Save className="h-4 w-4" />
-                            حفظ الرابط المخصص
-                          </>}
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setIsEditing(false)} className="h-10">
-                        إلغاء
-                      </Button>
-                    </> : <div className="flex gap-2">
-                        <Button size="sm" onClick={() => setIsEditing(true)} variant="outline" className="flex-1 gap-2 h-10">
-                          <Edit className="h-4 w-4" />
-                          {customDomain ? "تعديل الرابط" : "إنشاء رابط مخصص"}
-                        </Button>
-                        {customDomain && (
-                          <Button 
-                            size="sm" 
-                            onClick={handleDeleteCustomDomain} 
-                            disabled={isLoading}
-                            variant="destructive" 
-                            className="gap-2 h-10"
-                          >
-                            {isLoading ? (
-                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                          </Button>
-                        )}
-                      </div>}
-                </div>
-
-                {customDomain && !isEditing && <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      <span className="text-emerald-700 dark:text-emerald-300">رابطك المخصص النشط:</span>
-                      <span className="font-mono text-emerald-800 dark:text-emerald-200 break-all">shjrti.com/{customDomain}</span>
-                    </div>
-                  </div>}
-              </div>}
-          </div>
-
-          {/* Benefits Info */}
-          <div className="p-6 pt-0">
-            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-4 space-y-3 border border-primary/20">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-sm font-semibold text-primary">مميزات المشاركة</span>
-              </div>
-              <div className="text-sm text-muted-foreground space-y-1 leading-relaxed">
-                <p>• الرابط الافتراضي: مجاني ومتاح لجميع المستخدمين</p>
-                <p>• الرابط المخصص: أسهل في التذكر والمشاركة (shjrti.com/username)</p>
-                <p>• يمكن تغيير الرابط المخصص مرة واحدة كل شهر</p>
-                <p>• الرابط المخصص متاح للحزم المميزة فقط</p>
-              </div>
-            </div>
-          </div>
-        </div>)}
-      </CardContent>
-    </Card>;
-};
-
-// Tree Settings View Component
-const TreeSettingsView = ({
-  familyData,
-  onBack
-}: {
-  familyData: any;
-  onBack: () => void;
-}) => {
-  const {
-    toast
-  } = useToast();
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [description, setDescription] = useState(familyData?.description || '');
-  const [isUpdatingDescription, setIsUpdatingDescription] = useState(false);
-  const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [sharePassword, setSharePassword] = useState(familyData?.share_password || '');
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  
-  const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
-  const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
-  
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareableLink);
-    toast({
-      title: "تم نسخ الرابط",
-      description: "تم نسخ رابط الشجرة إلى الحافظة"
-    });
-  };
-
-  const handleCopyPublicLink = () => {
-    navigator.clipboard.writeText(publicShareableLink);
-    toast({
-      title: "تم نسخ الرابط العام",
-      description: "تم نسخ رابط المشاركة العام إلى الحافظة"
-    });
-  };
-  
-  const handleShareTree = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
-        url: shareableLink
-      });
-    } else {
-      handleCopyLink();
-    }
-  };
-
-  const handleSaveDescription = async () => {
-    setIsUpdatingDescription(true);
-    try {
-      const { error } = await supabase
-        .from('families')
-        .update({ 
-          description: description.trim() || null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', familyData?.id);
-
-      if (error) {
-        console.error('Error updating family description:', error);
-        toast({
-          title: "خطأ",
-          description: "فشل في حفظ وصف العائلة",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Update the local family data
-      familyData.description = description.trim() || null;
-      
-      toast({
-        title: "تم الحفظ",
-        description: "تم حفظ وصف العائلة بنجاح"
-      });
-      setIsEditingDescription(false);
-    } catch (error) {
-      console.error('Error updating family description:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حفظ وصف العائلة",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUpdatingDescription(false);
-    }
-  };
-
-  const handleCancelEditDescription = () => {
-    setDescription(familyData?.description || '');
-    setIsEditingDescription(false);
-  };
-
-  const handleSavePassword = async () => {
-    setIsUpdatingPassword(true);
-    try {
-      const { error } = await supabase
-        .from('families')
-        .update({ 
-          share_password: sharePassword.trim() || null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', familyData?.id);
-
-      if (error) {
-        console.error('Error updating family password:', error);
-        toast({
-          title: "خطأ",
-          description: "فشل في حفظ كلمة مرور المشاركة",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Update the local family data
-      familyData.share_password = sharePassword.trim() || null;
-      
-      toast({
-        title: "تم الحفظ",
-        description: sharePassword.trim() ? "تم تعيين كلمة مرور للمشاركة العامة" : "تم إزالة كلمة مرور المشاركة"
-      });
-      setIsEditingPassword(false);
-    } catch (error) {
-      console.error('Error updating family password:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حفظ كلمة المرور",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUpdatingPassword(false);
-    }
-  };
-
-  const handleCancelEditPassword = () => {
-    setSharePassword(familyData?.share_password || '');
-    setIsEditingPassword(false);
-  };
-
-  return <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-3 p-6 border-b">
-        <Button variant="ghost" size="sm" onClick={onBack} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-          العودة
-        </Button>
-        <div className="flex items-center gap-3 flex-1">
-          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-md">
-            
-          </div>
-          <div>
-            <h2 className="font-semibold text-foreground">إعدادات الشجرة</h2>
-            <p className="text-xs text-muted-foreground">عائلة {familyData?.name || 'غير محدد'}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-
-        {/* الرابط المخصص - ميزة مدفوعة */}
-        <CustomDomainCard familyData={familyData} />
-
-        {/* معلومات الشجرة */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <TreePine className="h-4 w-4" />
-              معلومات الشجرة
-            </CardTitle>
-            <CardDescription className="text-xs">
-              معلومات أساسية عن شجرة العائلة
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-xs">اسم العائلة</Label>
-              <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
-                {familyData?.name || 'غير محدد'}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-xs">تاريخ الإنشاء</Label>
-              <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
-                {familyData?.created_at ? new Date(familyData.created_at).toLocaleDateString('ar-SA') : 'غير محدد'}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs">وصف العائلة</Label>
-                {!isEditingDescription && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setIsEditingDescription(true)}
-                    className="h-6 px-2 text-xs"
-                  >
-                    <Edit2 className="h-3 w-3 ml-1" />
-                    تعديل
-                  </Button>
-                )}
-              </div>
-              
-              {isEditingDescription ? (
-                <div className="space-y-3">
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="أدخل وصف العائلة..."
-                    className="min-h-[100px] text-sm"
-                    disabled={isUpdatingDescription}
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      onClick={handleSaveDescription}
-                      disabled={isUpdatingDescription}
-                      className="text-xs"
-                    >
-                      {isUpdatingDescription ? (
-                        <>
-                          <div className="w-3 h-3 animate-spin rounded-full border-2 border-white border-t-transparent ml-1" />
-                          حفظ...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-3 w-3 ml-1" />
-                          حفظ
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleCancelEditDescription}
-                      disabled={isUpdatingDescription}
-                      className="text-xs"
-                    >
-                      <X className="h-3 w-3 ml-1" />
-                      إلغاء
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2 min-h-[60px]">
-                  {familyData?.description || 'لا يوجد وصف للعائلة. اضغط على "تعديل" لإضافة وصف.'}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* مشاركة الشجرة */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Share2 className="h-4 w-4" />
-              مشاركة الشجرة
-            </CardTitle>
-            <CardDescription className="text-xs">
-              روابط لمشاركة شجرة العائلة مع الآخرين
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* الرابط الخاص (يتطلب تسجيل الدخول) */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium">الرابط الخاص (يتطلب تسجيل الدخول)</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={shareableLink}
-                  readOnly
-                  className="text-xs bg-muted/50"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyLink}
-                  className="shrink-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-
-            {/* الرابط العام (بدون تسجيل دخول) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-medium">الرابط العام (بدون تسجيل دخول)</Label>
-                {familyData?.share_password && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Lock className="h-3 w-3 ml-1" />
-                    محمي
-                  </Badge>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  value={publicShareableLink}
-                  readOnly
-                  className="text-xs bg-muted/50"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyPublicLink}
-                  className="shrink-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                يمكن لأي شخص الوصول لهذا الرابط {familyData?.share_password ? 'بعد إدخال كلمة المرور' : 'مباشرة'}
-              </p>
-            </div>
-
-            {/* كلمة مرور المشاركة العامة */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-medium">كلمة مرور المشاركة العامة (اختيارية)</Label>
-                {!isEditingPassword && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setIsEditingPassword(true)}
-                    className="h-6 px-2 text-xs"
-                  >
-                    <Edit2 className="h-3 w-3 ml-1" />
-                    {familyData?.share_password ? 'تعديل' : 'إضافة'}
-                  </Button>
-                )}
-              </div>
-              
-              {isEditingPassword ? (
-                <div className="space-y-3">
-                  <Input
-                    type="password"
-                    value={sharePassword}
-                    onChange={(e) => setSharePassword(e.target.value)}
-                    placeholder="أدخل كلمة المرور أو اتركها فارغة لإزالة الحماية"
-                    className="text-sm"
-                    disabled={isUpdatingPassword}
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      onClick={handleSavePassword}
-                      disabled={isUpdatingPassword}
-                      className="text-xs"
-                    >
-                      {isUpdatingPassword ? (
-                        <>
-                          <div className="w-3 h-3 animate-spin rounded-full border-2 border-white border-t-transparent ml-1" />
-                          حفظ...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-3 w-3 ml-1" />
-                          حفظ
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleCancelEditPassword}
-                      disabled={isUpdatingPassword}
-                      className="text-xs"
-                    >
-                      <X className="h-3 w-3 ml-1" />
-                      إلغاء
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
-                  {familyData?.share_password ? 
-                    '••••••••••••' : 
-                    'لا توجد كلمة مرور. الشجرة متاحة للعموم بدون قيود.'
-                  }
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* مشاركة الشجرة */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Share2 className="h-4 w-4" />
-              مشاركة الشجرة
-            </CardTitle>
-            <CardDescription className="text-xs">
-              روابط لمشاركة شجرة العائلة مع الآخرين
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* الرابط الخاص (يتطلب تسجيل الدخول) */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium">الرابط الخاص (يتطلب تسجيل الدخول)</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={shareableLink}
-                  readOnly
-                  className="text-xs bg-muted/50"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyLink}
-                  className="shrink-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-
-            {/* الرابط العام (بدون تسجيل دخول) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-medium">الرابط العام (بدون تسجيل دخول)</Label>
-                {familyData?.share_password && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Lock className="h-3 w-3 ml-1" />
-                    محمي
-                  </Badge>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  value={publicShareableLink}
-                  readOnly
-                  className="text-xs bg-muted/50"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyPublicLink}
-                  className="shrink-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                يمكن لأي شخص الوصول لهذا الرابط {familyData?.share_password ? 'بعد إدخال كلمة المرور' : 'مباشرة'}
-              </p>
-            </div>
-
-            {/* كلمة مرور المشاركة العامة */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-medium">كلمة مرور المشاركة العامة (اختيارية)</Label>
-                {!isEditingPassword && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setIsEditingPassword(true)}
-                    className="h-6 px-2 text-xs"
-                  >
-                    <Edit2 className="h-3 w-3 ml-1" />
-                    {familyData?.share_password ? 'تعديل' : 'إضافة'}
-                  </Button>
-                )}
-              </div>
-              
-              {isEditingPassword ? (
-                <div className="space-y-3">
-                  <Input
-                    type="password"
-                    value={sharePassword}
-                    onChange={(e) => setSharePassword(e.target.value)}
-                    placeholder="أدخل كلمة المرور أو اتركها فارغة لإزالة الحماية"
-                    className="text-sm"
-                    disabled={isUpdatingPassword}
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      onClick={handleSavePassword}
-                      disabled={isUpdatingPassword}
-                      className="text-xs"
-                    >
-                      {isUpdatingPassword ? (
-                        <>
-                          <div className="w-3 h-3 animate-spin rounded-full border-2 border-white border-t-transparent ml-1" />
-                          حفظ...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-3 w-3 ml-1" />
-                          حفظ
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleCancelEditPassword}
-                      disabled={isUpdatingPassword}
-                      className="text-xs"
-                    >
-                      <X className="h-3 w-3 ml-1" />
-                      إلغاء
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
-                  {familyData?.share_password ? 
-                    '••••••••••••' : 
-                    'لا توجد كلمة مرور. الشجرة متاحة للعموم بدون قيود.'
-                  }
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              إعدادات متقدمة
-            </CardTitle>
-            <CardDescription className="text-xs">
-              خيارات إضافية (قريباً)
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
-                <Download className="h-3 w-3 ml-2" />
-                تصدير بيانات الشجرة
-              </Button>
-              
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
-                <Lock className="h-3 w-3 ml-2" />
-                إعدادات الخصوصية
-              </Button>
-              
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
-                <Users className="h-3 w-3 ml-2" />
-                إدارة الأذونات
-              </Button>
-            </div>
-
-            <Separator />
-
-            <Button variant="destructive" size="sm" className="w-full justify-start text-xs" disabled>
-              <Trash2 className="h-3 w-3 ml-2" />
-              حذف الشجرة نهائياً
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              تحذير: هذا الإجراء لا يمكن التراجع عنه
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>;
-};
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -1219,121 +61,34 @@ const FamilyBuilderNew = () => {
     hasAIFeatures
   } = useSubscription();
   const isMobile = useIsMobile();
-  const getGenerationStats = () => {
-    if (familyMembers.length === 0) return [];
-    const generationMap = new Map();
 
-    // Step 1: Assign generation 1 to founders and members without parents
-    familyMembers.forEach(member => {
-      if (member.isFounder || !member.fatherId && !member.motherId) {
-        generationMap.set(member.id, 1);
-      }
-    });
+  // Image management hook
+  const {
+    croppedImage,
+    imageChanged,
+    resetImageState: resetImage,
+    initializeImage
+  } = useImageManagement();
 
-    // Step 2: Calculate generations based on parent-child relationships
-    let changed = true;
-    let maxIterations = familyMembers.length * 2;
-    let iterations = 0;
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      familyMembers.forEach(member => {
-        if (generationMap.has(member.id)) return;
-        if (!member.fatherId && !member.motherId) {
-          generationMap.set(member.id, 1);
-          changed = true;
-          return;
-        }
-        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
-        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
-          generationMap.set(member.id, parentGeneration + 1);
-          changed = true;
-        }
-      });
-    }
-    const generationCounts = new Map();
-    generationMap.forEach(generation => {
-      generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
-    });
-    return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
-  };
+  // Form state hooks for alternative forms
+  const {
+    formMode: altFormMode,
+    formData: altFormData,
+    selectedMemberId,
+    setFormMode: setAltFormMode,
+    setFormData: setAltFormData,
+    setSelectedMemberId,
+    resetForm: resetAltForm,
+    loadMemberToForm
+  } = useFormState();
 
-  // Image Upload and Crop Component (consolidated states)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [showCropDialog, setShowCropDialog] = useState(false);
-  const [imageChanged, setImageChanged] = useState(false);
-  const [crop, setCrop] = useState({
-    x: 0,
-    y: 0
-  });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
-    const image = document.createElement('img');
-    image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', error => reject(error));
-    image.setAttribute('crossOrigin', 'anonymous');
-    image.src = url;
-  });
-  const getCroppedImg = async (imageSrc: string, pixelCrop: any) => {
-    const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
-    return new Promise<string>(resolve => {
-      canvas.toBlob(blob => {
-        if (!blob) return;
-        const reader = new FileReader();
-        reader.addEventListener('load', () => resolve(reader.result as string));
-        reader.readAsDataURL(blob);
-      }, 'image/jpeg', 0.95);
-    });
-  };
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        const result = reader.result as string;
-        setSelectedImage(result);
-        setShowCropDialog(true);
-      });
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleCropSave = async () => {
-    if (selectedImage && croppedAreaPixels) {
-      const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
-      if (croppedImg) {
-        setCroppedImage(croppedImg);
-        setImageChanged(true);
-        setShowCropDialog(false);
-      }
-    }
-  };
-  const handleDeleteImage = () => {
-    setCroppedImage(null);
-    setSelectedImage(null);
-    setImageChanged(true);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-  const handleEditImage = () => {
-    if (selectedImage) {
-      setShowCropDialog(true);
-    }
-  };
+  const {
+    createMember,
+    updateMember,
+    deleteMember,
+    uploadMemberImage,
+    isLoading: memberOpsLoading
+  } = useMemberOperations();
 
   // Get image upload permission state from top level
   const {
@@ -1360,6 +115,7 @@ const FamilyBuilderNew = () => {
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';
   const autoAdd = searchParams.get('autoAdd') === 'true';
+  const formVariant = searchParams.get('form') || 'logic'; // Default to logic (current)
   const [activeTab, setActiveTab] = useState("overview");
   const [familyMembers, setFamilyMembers] = useState([]);
   const [familyMarriages, setFamilyMarriages] = useState([]);
@@ -1369,103 +125,19 @@ const FamilyBuilderNew = () => {
   const [profileLoading, setProfileLoading] = useState(false);
   const [memberProfileData, setMemberProfileData] = useState(null);
 
-  // Memoized generation count calculation
-  const generationCount = useMemo(() => {
-    console.log('🔍 calculateGenerationCount called with familyMembers.length:', familyMembers.length);
-    console.log('🔍 familyMarriages.length:', familyMarriages?.length || 0);
-    console.log('🔍 loading state:', loading);
-    if (familyMembers.length === 0) {
-      console.log('🔍 No family members, returning 1');
-      return 1;
-    }
-    console.log('🔍 Starting generation calculation with members:', familyMembers.map(m => ({
-      id: m.id,
-      name: m.name,
-      isFounder: m.isFounder,
-      fatherId: m.fatherId,
-      motherId: m.motherId
-    })));
-    const generationMap = new Map();
+  // استخدام hook منفصل لحساب الأجيال
+  const { 
+    generationCount, 
+    generationStats, 
+    generationMap, 
+    getMemberGeneration 
+  } = useGenerationCalculation(familyMembers, familyMarriages, loading);
+  
+  const getGenerationStats = () => {
+    return generationStats.map(stat => [stat.generation, stat.count]);
+  };
 
-    // Step 1: Find the founder and assign generation 1
-    const founder = familyMembers.find(member => member.isFounder);
-    if (founder) {
-      generationMap.set(founder.id, 1);
-      console.log(`🔍 Assigned generation 1 to founder: ${founder.name}`);
-
-      // Step 2: Find founder's spouse(s) from marriages and assign generation 1
-      familyMarriages.forEach(marriage => {
-        if (marriage.husband_id === founder.id && marriage.wife_id) {
-          generationMap.set(marriage.wife_id, 1);
-          const spouse = familyMembers.find(m => m.id === marriage.wife_id);
-          console.log(`🔍 Assigned generation 1 to founder's spouse: ${spouse?.name}`);
-        } else if (marriage.wife_id === founder.id && marriage.husband_id) {
-          generationMap.set(marriage.husband_id, 1);
-          const spouse = familyMembers.find(m => m.id === marriage.husband_id);
-          console.log(`🔍 Assigned generation 1 to founder's spouse: ${spouse?.name}`);
-        }
-      });
-    }
-
-    // Step 3: Iteratively assign generations based on parent-child relationships
-    let changed = true;
-    let iterations = 0;
-    const maxIterations = 10;
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      familyMembers.forEach(member => {
-        if (generationMap.has(member.id)) return; // Skip if already assigned
-
-        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
-        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-
-        // If at least one parent has a generation, assign child generation
-        if (fatherGeneration !== undefined && fatherGeneration !== null || motherGeneration !== undefined && motherGeneration !== null) {
-          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
-          const childGeneration = parentGeneration + 1;
-          generationMap.set(member.id, childGeneration);
-          console.log(`🔍 Assigned generation ${childGeneration} to ${member.name} (child of generation ${parentGeneration})`);
-          changed = true;
-
-          // Step 4: Also assign the same generation to their spouse(s)
-          familyMarriages.forEach(marriage => {
-            let spouseId = null;
-            if (marriage.husband_id === member.id && marriage.wife_id) {
-              spouseId = marriage.wife_id;
-            } else if (marriage.wife_id === member.id && marriage.husband_id) {
-              spouseId = marriage.husband_id;
-            }
-            if (spouseId && !generationMap.has(spouseId)) {
-              generationMap.set(spouseId, childGeneration);
-              const spouse = familyMembers.find(m => m.id === spouseId);
-              console.log(`🔍 Assigned generation ${childGeneration} to spouse: ${spouse?.name}`);
-              changed = true;
-            }
-          });
-        }
-      });
-      console.log(`🔍 Iteration ${iterations}: ${generationMap.size} members assigned`);
-    }
-
-    // Step 5: Assign generation 1 to any remaining members without parents (fallback)
-    familyMembers.forEach(member => {
-      if (!generationMap.has(member.id) && !member.fatherId && !member.motherId) {
-        generationMap.set(member.id, 1);
-        console.log(`🔍 Assigned generation 1 to ${member.name} (no parents, fallback)`);
-      }
-    });
-
-    // Final log of all assignments
-    console.log("🔍 Final generation assignments:");
-    familyMembers.forEach(member => {
-      const gen = generationMap.get(member.id) || 1;
-      console.log(`🔍 ${member.name} -> Generation ${gen}`);
-    });
-    const maxGeneration = Math.max(...Array.from(generationMap.values()));
-    console.log("🔍 Max generation calculated:", maxGeneration);
-    return maxGeneration;
-  }, [familyMembers, familyMarriages, loading]);
+  // تم نقل حساب الأجيال إلى hook منفصل أعلاه
   const calculateGenerationCount = () => generationCount;
 
   // Form panel states
@@ -1477,6 +149,56 @@ const FamilyBuilderNew = () => {
 
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
+
+  // Load member data when editing
+  useEffect(() => {
+    if (editingMember && altFormMode === 'edit') {
+      loadMemberToForm(editingMember);
+    }
+  }, [editingMember, altFormMode, loadMemberToForm]);
+
+  // Alternative form save handler
+  const handleAltFormSave = async () => {
+    if (!familyId) return;
+    
+    setIsSaving(true);
+    try {
+      const memberData = {
+        ...altFormData,
+        fatherId: altFormData.fatherId === 'none' ? null : altFormData.fatherId,
+        motherId: altFormData.motherId === 'none' ? null : altFormData.motherId,
+        croppedImage: croppedImage
+      };
+
+      let result;
+      if (editingMember) {
+        result = await updateMember(editingMember.id, memberData);
+      } else {
+        result = await createMember(familyId, memberData);
+      }
+
+      if (result) {
+        resetAltForm();
+        setEditingMember(null);
+        setFormMode('view');
+        setCurrentStep(1);
+        await refreshFamilyData();
+        toast({
+          title: editingMember ? "تم تحديث العضو" : "تم إضافة العضو",
+          description: editingMember ? "تم تحديث بيانات العضو بنجاح" : "تم إضافة العضو الجديد بنجاح",
+        });
+      }
+    } catch (error) {
+      console.error('Error saving member:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حفظ البيانات",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const fetchFamilyData = async () => {
     try {
       setLoading(true);
@@ -2231,9 +953,9 @@ const FamilyBuilderNew = () => {
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
 
-    // Get the current member's father and grandfather information (not the partner's)
-    const currentMember = familyMembers.find(m => m.id === spouseMember.id);
-    const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
+    // Get the partner's father and grandfather information
+    const partnerMember = familyMembers.find(m => m.id === partner.id);
+    const father = partnerMember ? familyMembers.find(m => m.id === partnerMember.father_id) : null;
     const fatherName = father?.name || "";
 
     // Get grandfather information (father's father)
@@ -2243,7 +965,7 @@ const FamilyBuilderNew = () => {
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
-      isFounder: currentMember?.is_founder || false
+      isFounder: partnerMember?.is_founder || false
     });
 
     // Show the spouse edit warning modal
@@ -2278,9 +1000,9 @@ const FamilyBuilderNew = () => {
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
 
-    // Get the current member's father and grandfather information (not the partner's)
-    const currentMember = familyMembers.find(m => m.id === spouseMember.id);
-    const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
+    // Get the partner's father and grandfather information
+    const partnerMember = familyMembers.find(m => m.id === partner.id);
+    const father = partnerMember ? familyMembers.find(m => m.id === partnerMember.father_id) : null;
     const fatherName = father?.name || "";
 
     // Get grandfather information (father's father)
@@ -2290,7 +1012,7 @@ const FamilyBuilderNew = () => {
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
-      isFounder: currentMember?.is_founder || false
+      isFounder: partnerMember?.is_founder || false
     });
 
     // Show the spouse edit warning modal (same for delete)
@@ -2706,9 +1428,9 @@ const FamilyBuilderNew = () => {
     setFormMode('edit');
     setEditingMember(member);
     setCurrentStep(1);
-    populateFormData(member);
+    loadMemberToForm(member); // Use the proper form loading function
     if (isMobile) setIsMemberListOpen(false);
-  }, [isMobile]);
+  }, [isMobile, loadMemberToForm]);
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
@@ -2736,12 +1458,7 @@ const FamilyBuilderNew = () => {
     setOriginalWivesData([]);
     setOriginalHusbandData(null);
     // Clear image states
-    setCroppedImage(null);
-    setSelectedImage(null);
-    setImageChanged(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    resetImage();
   };
   const populateFormData = (member: any) => {
     setFormData({
@@ -2764,8 +1481,12 @@ const FamilyBuilderNew = () => {
     // Load existing spouses
     loadExistingSpouses(member);
 
-    // Reset image change tracking
-    setImageChanged(false);
+    // If we have an existing image, initialize it
+    if (member.image_url) {
+      initializeImage(member.image_url);
+    } else {
+      resetImage();
+    }
   };
   const loadExistingSpouses = (member: any) => {
     if (!familyMarriages || familyMarriages.length === 0) return;
@@ -4017,6 +2738,7 @@ const FamilyBuilderNew = () => {
       setIsSaving(false);
     }
   }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
+  
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -4166,172 +2888,253 @@ const FamilyBuilderNew = () => {
 
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
-                  {formMode === 'view' ? <div className="py-8 px-6">
-                       {/* Family Overview Header - Redesigned */}
-                        <div className="relative overflow-hidden bg-gradient-to-br from-background via-card/50 to-accent/5 rounded-3xl p-8 sm:p-12 mb-8 border border-border/50 shadow-2xl backdrop-blur-sm animate-fade-in">
-                          {/* Dynamic Background Pattern */}
-                          <div className="absolute inset-0 opacity-5">
-                            <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary rounded-full"></div>
-                            <div className="absolute top-20 right-20 w-24 h-24 border border-secondary rounded-full"></div>
-                            <div className="absolute bottom-10 left-20 w-20 h-20 border-2 border-accent rounded-full"></div>
-                            <div className="absolute bottom-20 right-10 w-16 h-16 border border-primary/50 rounded-full"></div>
-                          </div>
-                          
-                          {/* Animated Background Orbs */}
-                          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-                          
-                          {/* Settings Button - Enhanced */}
-                          <div className="absolute top-6 left-6 z-20">
-                            <div className="relative group">
-                              <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-xl blur opacity-20 group-hover:opacity-40 transition-all duration-500 animate-pulse"></div>
-                              <div className="relative bg-card/80 backdrop-blur-md rounded-xl p-2 border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="relative z-10 pt-4">
-                            {/* Hero Content */}
-                            <div className="text-center space-y-8">
-                              {/* Logo Section with Enhanced Design */}
-                              <div className="relative inline-block">
-                                <div className="relative group">
-                                  {/* Main Icon Container */}
-                                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
-                                    {/* Animated background rings */}
-                                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-spin" style={{animationDuration: '10s'}}></div>
-                                    <div className="absolute inset-2 rounded-full border-2 border-secondary/30 animate-spin" style={{animationDuration: '8s', animationDirection: 'reverse'}}></div>
-                                    
-                                    {/* Main icon */}
-                                    <div className="absolute inset-4 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-full flex items-center justify-center shadow-2xl shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-500 border-2 border-primary/20">
-                                      <TreePine className="h-12 w-12 sm:h-14 sm:w-14 text-primary-foreground drop-shadow-lg" />
-                                    </div>
-                                    
-                                    {/* Active Status Indicator */}
-                                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full border-4 border-card shadow-xl flex items-center justify-center">
-                                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-                                    </div>
-                                  </div>
-                                </div>
+                  {/* Family Overview Header - Luxury Redesign */}
+                  <div className={`relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-teal-50/80 to-amber-50/70 dark:from-emerald-950/90 dark:via-teal-950/80 dark:to-amber-950/70 rounded-2xl p-4 sm:p-6 mb-4 border border-emerald-200/30 dark:border-emerald-800/30 shadow-2xl backdrop-blur-xl animate-fade-in ${formMode !== 'view' ? 'hidden' : ''}`}>
+                    {/* Luxury Background Pattern */}
+                    <div className={`absolute inset-0 opacity-10 ${formMode !== 'view' ? 'hidden' : ''}`}>
+                      <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-2xl"></div>
+                      <div className="absolute top-20 right-20 w-24 h-24 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-xl"></div>
+                      <div className="absolute bottom-10 left-20 w-20 h-20 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-lg"></div>
+                      <div className="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-md"></div>
+                    </div>
+                    
+                    {/* Floating Decorative Elements */}
+                    <div className="absolute top-16 right-16 animate-bounce">
+                      <Crown className="h-8 w-8 text-amber-400/60" />
+                    </div>
+                    <div className="absolute bottom-16 left-16 animate-pulse">
+                      <Gem className="h-6 w-6 text-emerald-400/60" />
+                    </div>
+                    <div className="absolute top-1/2 right-1/4 animate-pulse delay-500">
+                      <Star className="h-5 w-5 text-yellow-400/60" />
+                    </div>
+                    
+                    
+                    <div className="relative z-10 pt-4">
+                      {/* Hero Content */}
+                      <div className="text-center space-y-10">
+                        {/* Logo Section with Luxury Design */}
+                        <div className="relative inline-block">
+                          <div className="relative group">
+                            {/* Main Icon Container */}
+                            <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto">
+                              {/* Luxury animated rings */}
+                              <div className="absolute inset-0 rounded-full border-4 border-emerald-300/30 dark:border-emerald-700/30 animate-spin" style={{animationDuration: '12s'}}></div>
+                              <div className="absolute inset-2 rounded-full border-2 border-teal-300/40 dark:border-teal-700/40 animate-spin" style={{animationDuration: '10s', animationDirection: 'reverse'}}></div>
+                              <div className="absolute inset-4 rounded-full border border-amber-300/50 dark:border-amber-700/50 animate-spin" style={{animationDuration: '8s'}}></div>
+                              
+                              {/* Main luxury icon */}
+                              <div className="absolute inset-6 bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40 group-hover:shadow-emerald-500/60 transition-all duration-700 border-4 border-white/20 dark:border-gray-800/20 group-hover:scale-110">
+                                <TreePine className="h-16 w-16 sm:h-20 sm:w-20 text-white drop-shadow-2xl" />
                               </div>
                               
-                              {/* Title Section with Enhanced Typography */}
-                              <div className="space-y-6">
-                                <div className="space-y-3">
-                                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-                                    <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in">
-                                      عائلة {familyData?.name || 'غير محدد'}
-                                    </span>
-                                  </h1>
-                                  
-                                  {/* Animated Decorative Line */}
-                                  <div className="flex items-center justify-center space-x-2">
-                                    <div className="h-1 w-8 bg-gradient-to-r from-transparent to-primary rounded-full animate-fade-in delay-200"></div>
-                                    <div className="h-2 w-20 bg-gradient-to-r from-primary via-accent to-secondary rounded-full animate-fade-in delay-100"></div>
-                                    <div className="h-1 w-8 bg-gradient-to-r from-secondary to-transparent rounded-full animate-fade-in delay-200"></div>
-                                  </div>
-                                </div>
-                                
-                                {/* Family Description with Glass Morphism */}
-                                {familyData?.description && (
-                                  <div className="max-w-2xl mx-auto animate-fade-in delay-300">
-                                    <div className="relative group">
-                                      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-card/20 to-secondary/10 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
-                                      <div className="relative bg-card/60 backdrop-blur-md rounded-2xl p-6 border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
-                                        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
-                                          {familyData.description}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                
-                                {/* Interactive Elements */}
-                                <div className="flex items-center justify-center pt-6">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-3 h-3 bg-primary rounded-full animate-bounce shadow-lg"></div>
-                                    <div className="w-2 h-2 bg-accent rounded-full animate-bounce delay-100 shadow-md"></div>
-                                    <div className="w-3 h-3 bg-secondary rounded-full animate-bounce delay-200 shadow-lg"></div>
-                                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce delay-300 shadow-md"></div>
-                                  </div>
-                                </div>
+                              {/* Premium Status Indicator */}
+                              <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full border-4 border-white dark:border-gray-800 shadow-xl flex items-center justify-center group-hover:animate-bounce">
+                                <Crown className="h-5 w-5 text-white" />
+                              </div>
+                              
+                              {/* Sparkle Effects */}
+                              <div className="absolute -top-4 -left-4 w-6 h-6 text-yellow-400 animate-pulse">
+                                <Sparkles className="h-full w-full" />
+                              </div>
+                              <div className="absolute -bottom-4 -right-4 w-4 h-4 text-pink-400 animate-pulse delay-300">
+                                <Sparkles className="h-full w-full" />
                               </div>
                             </div>
                           </div>
                         </div>
-
-                      {/* Statistics Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        {/* Total Members */}
-                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl p-4 text-center border border-emerald-200 dark:border-emerald-700">
-                          <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
-                            {familyMembers.length}
+                        
+                        {/* Title Section with Luxury Typography */}
+                        <div className="space-y-8">
+                          <div className="space-y-4">
+                            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg">
+                              <Sparkles className="h-4 w-4" />
+                              إرث عائلي فاخر
+                              <Sparkles className="h-4 w-4" />
+                            </div>
+                            
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                                عائلة {familyData?.name || 'غير محدد'}
+                              </span>
+                            </h1>
+                            
+                            {/* Luxury Decorative Elements */}
+                            <div className="flex items-center justify-center gap-4">
+                              <div className="h-1 w-12 bg-gradient-to-r from-transparent via-emerald-500 to-teal-500 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse"></div>
+                              <div className="h-2 w-24 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse delay-200"></div>
+                              <div className="h-1 w-12 bg-gradient-to-r from-teal-500 via-emerald-500 to-transparent rounded-full"></div>
+                             </div>
                           </div>
-                          <div className="text-xs text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
-                        </div>
-
-                        {/* Generations */}
-                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700">
-                          <Crown className="h-6 w-6 text-amber-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                            {generationCount}
+                          
+                          {/* Family Description with Luxury Glass Morphism */}
+                          {familyData?.description && (
+                            <div className="max-w-3xl mx-auto animate-fade-in delay-300">
+                              <div className="relative group">
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-white/20 to-teal-500/20 rounded-3xl blur-md group-hover:blur-lg transition-all duration-300"></div>
+                                <div className="relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 border border-emerald-200/50 dark:border-emerald-800/50 shadow-2xl group-hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]">
+                                  <div className="text-center">
+                                    <Quote className="h-8 w-8 text-emerald-500 mx-auto mb-4 opacity-60" />
+                                    <p className="text-gray-700 dark:text-gray-300 text-lg sm:text-xl leading-relaxed font-medium italic">
+                                      "{familyData.description}"
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Luxury Action Buttons */}
+                          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
+                            <Button 
+                              size="lg" 
+                              className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1 font-medium"
+                              onClick={() => setFormMode('add')}
+                            >
+                              <UserPlus className="h-5 w-5 ml-2" />
+                              إضافة عضو جديد
+                            </Button>
+                            
+                            <Button 
+                              variant="outline" 
+                              size="lg" 
+                              className="w-full sm:w-auto border-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:rotate-1 font-medium"
+                              onClick={() => window.open(`/family-tree/${familyData?.id}`, '_blank')}
+                            >
+                              <TreePine className="h-5 w-5 ml-2" />
+                              عرض الشجرة
+                            </Button>
                           </div>
-                          <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
-                        </div>
-
-                        {/* Males */}
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-700">
-                          <UserIcon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                            {familyMembers.filter(m => m.gender === 'male').length}
+                          
+                          {/* Luxury Interactive Elements */}
+                          <div className="flex items-center justify-center pt-8">
+                            <div className="flex items-center gap-3">
+                              <div className="w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-bounce shadow-lg"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-bounce delay-100 shadow-md"></div>
+                              <div className="w-4 h-4 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-bounce delay-200 shadow-lg"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full animate-bounce delay-300 shadow-md"></div>
+                            </div>
                           </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
-                        </div>
-
-                        {/* Females */}
-                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-xl p-4 text-center border border-pink-200 dark:border-pink-700">
-                          <UserRoundIcon className="h-6 w-6 text-pink-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-pink-700 dark:text-pink-300">
-                            {familyMembers.filter(m => m.gender === 'female').length}
-                          </div>
-                          <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
                         </div>
                       </div>
+                    </div>
+                  </div>
 
-                      {/* Navigation Icons */}
-                      <div className="flex justify-center mb-6">
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-col items-center cursor-pointer group">
-                            <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
-                              <Users className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <TreePine className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <Store className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <Star className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
-                          </div>
-                        </div>
-                      </div>
+                  {formMode === 'view' ? <div className="py-8 px-6">
+
+                       {/* Navigation Icons */}
+                       <div className="flex justify-center mb-6">
+                         <div className="flex items-center gap-4">
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('view')}>
+                             <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
+                               <Users className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <TreePine className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <Store className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <Star className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <Settings className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">إعدادات الشجرة</span>
+                           </div>
+                         </div>
+                       </div>
+
+                       {/* Luxury Statistics Grid */}
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+                         {/* Total Members Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <Users className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent mb-2">
+                               {familyMembers.length}
+                             </div>
+                             <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
+                           </CardContent>
+                         </Card>
+
+                         {/* Generations Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-950 dark:to-teal-900 border-teal-200 dark:border-teal-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:-rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-cyan-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-teal-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <TreePine className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent mb-2">
+                               {generationCount}
+                             </div>
+                             <div className="text-sm font-medium text-teal-600 dark:text-teal-400">الأجيال</div>
+                           </CardContent>
+                         </Card>
+
+                         {/* Males Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-sky-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <UserIcon className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
+                               {familyMembers.filter(m => m.gender === 'male').length}
+                             </div>
+                             <div className="text-sm font-medium text-blue-600 dark:text-blue-400">الذكور</div>
+                           </CardContent>
+                         </Card>
+
+                         {/* Females Card */}
+                         <Card className="group relative overflow-hidden bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900 border-rose-200 dark:border-rose-800 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:-rotate-1">
+                           <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-500 opacity-0 group-hover:opacity-10 transition-all duration-500"></div>
+                           <CardContent className="relative p-6 text-center">
+                             <div className="relative mb-4">
+                               <div className="absolute inset-0 bg-rose-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                               <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-500 to-rose-600 rounded-full shadow-xl group-hover:shadow-2xl group-hover:scale-110 transition-all duration-500">
+                                 <UserRoundIcon className="h-8 w-8 text-white" />
+                               </div>
+                             </div>
+                             <div className="text-3xl font-bold bg-gradient-to-r from-rose-600 to-rose-700 bg-clip-text text-transparent mb-2">
+                               {familyMembers.filter(m => m.gender === 'female').length}
+                             </div>
+                             <div className="text-sm font-medium text-rose-600 dark:text-rose-400">الإناث</div>
+                           </CardContent>
+                         </Card>
+                       </div>
+
 
                       {/* Quick Actions */}
                       <div className="space-y-3">
@@ -4359,529 +3162,74 @@ const FamilyBuilderNew = () => {
                       })}
                           </div>
                         </div>}
-                    </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={editingMember} isSpouse={checkIfMemberIsSpouse(editingMember)} onEdit={() => {
+                    </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={memberProfileData} isSpouse={checkIfMemberIsSpouse(memberProfileData)} onEdit={() => {
                   setFormMode('edit');
                   setCurrentStep(1);
-                  populateFormData(editingMember);
-                }} onBack={() => setFormMode('view')} onDelete={() => handleDeleteMember(editingMember)} familyMembers={familyMembers} marriages={familyMarriages} onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)} onSpouseDeleteWarning={() => handleSpouseDeleteWarning(editingMember)} onMemberClick={async member => {
+                  populateFormData(memberProfileData);
+                }} onBack={() => setFormMode('view')} onDelete={() => handleDeleteMember(memberProfileData)} familyMembers={familyMembers} marriages={familyMarriages} onSpouseEditWarning={() => handleSpouseEditWarning(memberProfileData)} onSpouseDeleteWarning={() => handleSpouseDeleteWarning(memberProfileData)} onMemberClick={async member => {
                   setEditingMember(member);
                   setFormMode('profile');
                   await fetchMemberProfile(member.id);
                 }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
 
-                      {/* Step Content */}
-                      {currentStep === 1 && <div className="space-y-6">
-                            <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
-                             
-                              {/* First row: First Name (1/2), Gender (1/4), Birthdate (1/4) */}
-                              <div className="grid grid-cols-12 gap-6">
-                                 <div className="col-span-12 md:col-span-6">
-                                     <Label htmlFor="first_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                       <UserCircle className="h-4 w-4 text-primary" />
-                                       الاسم الأول *
-                                    </Label>
-                                     <Input id="first_name" value={formData.first_name} onChange={e => setFormData({
-                          ...formData,
-                          first_name: e.target.value
-                        })} placeholder="أدخل الاسم الأول" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" required />
-                                 </div>
-                                 
-                                 <div className="col-span-6 md:col-span-3">
-                                    <Label htmlFor="gender" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                      <Zap className="h-4 w-4 text-primary" />
-                                      الجنس *
-                                   </Label>
-                                   <Select value={formData.gender} onValueChange={value => setFormData({
-                          ...formData,
-                          gender: value
-                        })}>
-                                     <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
-                                       <SelectValue placeholder="اختر الجنس" />
-                                     </SelectTrigger>
-                                     <SelectContent className="rounded-lg border-2">
-                                       <SelectItem value="male" className="font-arabic rounded-md">ذكر</SelectItem>
-                                       <SelectItem value="female" className="font-arabic rounded-md">أنثى</SelectItem>
-                                     </SelectContent>
-                                   </Select>
-                                </div>
-                                 
-                                <div className="col-span-6 md:col-span-3">
-                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                      <CalendarDays className="h-4 w-4 text-primary" />
-                                      تاريخ الميلاد
-                                   </Label>
-                                   <EnhancedDatePicker value={formData.birthDate} onChange={date => setFormData({
-                          ...formData,
-                          birthDate: date
-                        })} placeholder="اختر تاريخ الميلاد" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
-                                </div>
-                              </div>
-                             
-                             {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
-                             <div className="grid grid-cols-12 gap-6">
-                                <div className="col-span-12 md:col-span-6">
-                                   <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                     <UsersIcon className="h-4 w-4 text-primary" />
-                                     العلاقة العائلية (الوالدين) *
-                                    {formData.isFounder && <span className="text-xs text-muted-foreground mr-2">(مؤسس العائلة - لا يحتاج لوالدين)</span>}
-                                  </Label>
-                                   <SearchableDropdown options={loading || !familyMarriages || !familyMembers ? [{
-                          value: "loading",
-                          label: "جاري تحميل البيانات...",
-                          disabled: true
-                        }] : familyMarriages.length > 0 ? familyMarriages.filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife).map(marriage => {
-                          // Get full member details for proper naming
-                          const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
-                          const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
-                          let displayName = '';
-
-                          // Helper function to get father's name
-                          const getFatherName = (member: any) => {
-                            const father = familyMembers.find(m => m?.id === member?.fatherId);
-                            return father?.name || '';
-                          };
-
-                          // Helper function to get grandfather's name
-                          const getGrandfatherName = (member: any) => {
-                            const father = familyMembers.find(m => m?.id === member?.fatherId);
-                            if (father) {
-                              const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
-                              return grandfather?.name || '';
-                            }
-                            return '';
-                          };
-
-                          // Helper function to build full genealogical name
-                          const buildFullName = (member: any, isWife: boolean = false) => {
-                            if (!member) return '';
-                            const firstName = member.first_name || member.name?.split(' ')[0] || '';
-                            const mainFamilyName = "الشيخ سعيد"; // Main family surname
-
-                            // For founders, show full name with surname
-                            if (member.is_founder) {
-                              const lastName = member.last_name || mainFamilyName;
-                              return `${firstName} ${lastName}`;
-                            }
-
-                            // Check if member is from external family
-                            const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
-
-                            // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
-                            if (isExternalFamily) {
-                              return `${firstName} ${member.last_name}`;
-                            }
-
-                            // For internal family members
-                            if (isWife) {
-                              // For wives from internal family, show "ابنة" format
-                              const father = familyMembers.find(m => m?.id === member?.fatherId);
-                              if (father) {
-                                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                return `${firstName} ابنة ${fatherFirstName}`;
-                              }
-                              return firstName;
-                            } else {
-                              // For internal family males (not founders), show "ابن" format with grandfather if available
-                              const father = familyMembers.find(m => m?.id === member?.fatherId);
-                              if (father) {
-                                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
-                                if (grandfather) {
-                                  const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                                  return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
-                                }
-                                return `${firstName} ابن ${fatherFirstName}`;
-                              }
-                            }
-
-                            // Fallback
-                            return firstName || member.name;
-                          };
-                          const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
-                          const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
-                          const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
-
-                          // Debug logging
-                          console.log('🔍 Marriage Display Debug:', {
-                            husbandName: husbandMember?.name,
-                            husbandFirstName: husbandMember?.first_name,
-                            husbandIsFounder: husbandMember?.is_founder,
-                            generatedFamilyMember: familyMember,
-                            wifeName: wifeMember?.name,
-                            wifeFirstName: wifeMember?.first_name,
-                            generatedSpouse: spouse,
-                            maritalStatus: marriage.marital_status,
-                            heartIcon
-                          });
-                          return {
-                            value: marriage.id,
-                            familyMember,
-                            spouse,
-                            heartIcon,
-                            isFounder: husbandMember?.is_founder || false
-                          };
-                        }) : [{
-                          value: "no-data",
-                          label: "لا توجد زيجات مسجلة في هذه العائلة",
-                          disabled: true
-                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
-                          ...formData,
-                          selectedParent: value === "none" ? null : value
-                        })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder} placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : "اختر الوالدين"} searchPlaceholder="ابحث عن الوالدين..." emptyMessage="لا توجد نتائج تطابق البحث" />
-                               </div>
-                              
-                               <div className="col-span-6 md:col-span-3">
-                                  <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                    <Activity className="h-4 w-4 text-primary" />
-                                    الحالة الحيوية
-                                 </Label>
-                                 <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={value => setFormData({
-                          ...formData,
-                          isAlive: value === "alive"
-                        })}>
-                                   <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
-                                     <SelectValue placeholder="اختر الحالة الحيوية" />
-                                   </SelectTrigger>
-                                   <SelectContent className="rounded-lg border-2">
-                                     <SelectItem value="alive" className="font-arabic rounded-md">على قيد الحياة</SelectItem>
-                                     <SelectItem value="deceased" className="font-arabic rounded-md">متوفى</SelectItem>
-                                   </SelectContent>
-                                 </Select>
-                               </div>
-
-                                {!formData.isAlive && <div className="col-span-6 md:col-span-3">
-                                     <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                       <Skull className="h-4 w-4 text-primary" />
-                                       تاريخ الوفاة
-                                    </Label>
-                                    <EnhancedDatePicker value={formData.deathDate} onChange={date => setFormData({
-                          ...formData,
-                          deathDate: date
-                        })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
-                                  </div>}
-                             </div>
-
-                             {/* Biography and Profile Picture - Side by Side Layout */}
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               {/* Biography Section - 1/2 */}
-                               <div>
-                                 <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                   <FileText className="h-4 w-4 text-primary" />
-                                   السيرة الذاتية
-                                 </Label>
-                                 <Textarea id="bio" value={formData.bio} onChange={e => setFormData({
-                          ...formData,
-                          bio: e.target.value
-                        })} placeholder="أدخل معلومات إضافية عن العضو" rows={6} className="font-arabic rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm resize-none" />
-                               </div>
-
-                               {/* Profile Picture Section - 1/2 */}
-                               {(formMode === 'add' || formMode === 'edit') && <div className="space-y-3">
-                                 <Label htmlFor="picture" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                   <Camera className="h-4 w-4 text-primary" />
-                                   الصورة الشخصية
-                                 </Label>
-                              
-                              {croppedImage || editingMember && editingMember.image ? <div className="space-y-3">
-                                  <div className="relative group flex justify-center">
-                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                       <img src={croppedImage || editingMember && editingMember.image} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex justify-center gap-2">
-                                    <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
-                                      <Edit2 className="h-3 w-3 ml-1" />
-                                      تعديل
-                                    </Button>
-                                    <Button type="button" size="sm" variant="destructive" onClick={handleDeleteImage} className="h-8 px-3">
-                                      <Trash2 className="h-3 w-3 ml-1" />
-                                      حذف
-                                    </Button>
-                                  </div>
-                                </div> : <div className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 h-[140px] flex items-center justify-center ${isImageUploadEnabled ? 'border-primary/40 cursor-pointer hover:border-primary/60' : 'border-gray-300 opacity-70 cursor-not-allowed'}`} onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}>
-                                  {isImageUploadEnabled ? <div className="space-y-2">
-                                      <Upload className="h-8 w-8 text-primary mx-auto" />
-                                      <p className="text-sm font-medium text-foreground">انقر لرفع الصورة</p>
-                                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF حتى 10MB</p>
-                                    </div> : <div className="space-y-2">
-                                      <Upload className="h-8 w-8 text-gray-400 mx-auto" />
-                                      <p className="text-sm font-medium text-gray-500">رفع الصور غير متاح</p>
-                                      <p className="text-xs text-gray-400">يتطلب اشتراك مدفوع</p>
-                                    </div>}
-                                </div>}
-                              
-                              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" disabled={!isImageUploadEnabled} />
-                             </div>}
-                           </div>
-                         </div>}
-
-                       {currentStep === 2 && <div className="space-y-4">
-                           <h3 className="text-lg font-semibold">
-                             {formData.gender === "male" ? "معلومات الزوجة/الزوجات" : "معلومات الزوج"}
-                           </h3>
-                           <p className="text-sm text-muted-foreground -mt-1">
-                             {formData.gender === "male" ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً" : "أضف معلومات الزوج إذا كانت متزوجة"}
-                           </p>
-                           
-                             {formData.gender === "male" ? <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                 {/* Wives Display Panel */}
-                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-2 mb-4 w-full">
-                                     <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                       <Heart className="w-3 h-3 text-white" />
-                                     </div>
-                                     <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">الزوجات</h4>
-                                   </div>
-                                   
-                                   <div className="space-y-3">
-                                     {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
-                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
-                                       </div> : wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
-                                              <div className="h-full flex flex-col justify-between">
-                                                {/* Header Section */}
-                                                <div className="flex items-start justify-between">
-                                                  <div className="flex items-start gap-4 flex-1">
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
-                                                      {index + 1}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                      <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
-                                                        {wife.name || `الزوجة ${index + 1}`}
-                                                      </h5>
-                                                      
-                                                      <div className="space-y-2">
-                                                        
-                                                        <div className="flex items-center gap-2">
-                                                          {wife.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                              <Check className="h-3 w-3" />
-                                                              محفوظة
-                                                            </span>}
-                                                          <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                            <Heart className="h-3 w-3" />
-                                                            {wife.maritalStatus === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                
-                                                {/* Action Buttons at bottom */}
-                                                <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
-                                                  {wife.isSaved && <Button variant="secondary" size="sm" onClick={() => {
-                                  // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                  const resetWives = wives.map(w => ({
-                                    ...w,
-                                    isSaved: true
-                                  }));
-                                  // ثم تعيين الزوجة المحددة للتعديل
-                                  const updatedWives = [...resetWives];
-                                  updatedWives[index] = {
-                                    ...wife,
-                                    isSaved: false
-                                  };
-                                  setWives(updatedWives);
-                                  setCurrentWife(wife);
-                                  setShowWifeForm(true);
-                                  setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                  toast({
-                                    title: "وضع التعديل",
-                                    description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                    variant: "default"
-                                  });
-                                }} className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300">
-                                                      <Edit className="h-3 w-3 ml-1" />
-                                                      تعديل
-                                                    </Button>}
-                                                 <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300">
-                                                   <X className="h-3 w-3 ml-1" />
-                                                   حذف
-                                                 </Button>
-                                               </div>
-                                                
-                                                {/* Interactive Area removed - using edit button instead */}
-                                              </div>
-                                           </div>)}
-                                   </div>
-                                 </div>
-
-                                  {/* Unified Wife Form */}
-                                  <div className="space-y-4 lg:col-span-2">
-                                    <div className="flex items-center gap-2 mb-4 w-full">
-                                      <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                                        <Heart className="w-3 h-3 text-white" />
-                                      </div>
-                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
-                                    </div>
-                                    
-                                      <SpouseForm spouseType="wife" spouse={currentWife || {
-                          id: '',
-                          firstName: '',
-                          lastName: '',
-                          name: '',
-                          isAlive: true,
-                          birthDate: null,
-                          deathDate: null,
-                          maritalStatus: 'married',
-                          isFamilyMember: false,
-                          existingFamilyMemberId: '',
-                          croppedImage: null,
-                          biography: '',
-                          isSaved: false
-                        }} onSpouseChange={setCurrentWife} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={wifeCommandOpen} onCommandOpenChange={setWifeCommandOpen} familyStatus={wifeFamilyStatus} onFamilyStatusChange={handleWifeFamilyStatusChange} onSave={handleWifeSave} onAdd={handleAddWife} onClose={handleCloseWifeEdit} showForm={showWifeForm} />
-                                  </div>
-                               </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                 {/* Husband Display Panel */}
-                                 <div className="space-y-4">
-                                   <div className="flex items-center gap-2 mb-4">
-                                     <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                       <User className="w-3 h-3 text-white" />
-                                     </div>
-                                     <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
-                                   </div>
-                                   
-                                   <div className="space-y-3">
-                                     {!husband ? <div className="text-center py-8 text-muted-foreground">
-                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
-                                       </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
-                                         <div className="flex items-center justify-between">
-                                           <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
-                                if (husband.isSaved) {
-                                  setHusband({
-                                    ...husband,
-                                    isSaved: false
-                                  });
-                                  setCurrentHusband(husband);
-                                  setShowHusbandForm(true);
-                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
-                                  toast({
-                                    title: "وضع التعديل",
-                                    description: "يمكنك الآن تعديل بيانات الزوج",
-                                    variant: "default"
-                                  });
-                                }
-                              }}>
-                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                               <User className="w-4 h-4" />
-                                             </div>
-                                             <div>
-                                               <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                 {husband.name || 'الزوج'}
-                                               </h5>
-                                               <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                 {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                 {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                     <Check className="h-3 w-3" />
-                                                     محفوظ
-                                                   </span>}
-                                               </p>
-                                               {husband.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
-                                                   انقر للتعديل
-                                                 </p>}
-                                             </div>
-                                           </div>
-                                           <div className="flex gap-2">
-                                              {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
-                                  if (husband.isSaved) {
-                                    handleSpouseEditAttempt('husband', husband, -1);
-                                  }
-                                }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
-                                                 <Edit className="h-3 w-3" />
-                                               </Button>}
-                                             <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
-                                               <X className="h-3 w-3" />
-                                             </Button>
-                                           </div>
-                                         </div>
-                                       </div>}
-                                   </div>
-                                 </div>
-
-                                 {/* Unified Husband Form */}
-                                    <SpouseForm spouseType="husband" spouse={currentHusband || {
-                        id: '',
-                        firstName: '',
-                        lastName: '',
-                        name: '',
-                        isAlive: true,
-                        birthDate: null,
-                        deathDate: null,
-                        maritalStatus: 'married',
-                        isFamilyMember: false,
-                        existingFamilyMemberId: '',
-                        croppedImage: null,
-                        biography: '',
-                        isSaved: false
-                      }} onSpouseChange={setCurrentHusband} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={husbandCommandOpen} onCommandOpenChange={setHusbandCommandOpen} familyStatus={husbandFamilyStatus} onFamilyStatusChange={handleHusbandFamilyStatusChange} onSave={handleHusbandSave} onAdd={handleAddHusband} onClose={handleCloseHusbandEdit} showForm={showHusbandForm} />
-                               </div>}
-                          </div>}
-
-                        {/* Navigation Buttons */}
-                        <div className="flex justify-between pt-6">
-                          <Button type="button" variant="outline" onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      e.nativeEvent.stopImmediatePropagation();
-                      handleCancelForm();
-                    }} size="lg" className="flex items-center gap-2">
+                      {/* Member Detail Form - Restored September 16th Version */}
+                      <div className="space-y-4">
+                        <MemberDetailForm
+                          formData={altFormData}
+                          setFormData={setAltFormData}
+                          familyMembers={familyMembers}
+                          editingMember={editingMember}
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              resetAltForm();
+                              setEditingMember(null);
+                              setFormMode('view');
+                            }}
+                          >
                             إلغاء
                           </Button>
-                         
-                         {currentStep < 2 ? <Button type="button" onClick={nextStep} size="lg" className="flex items-center gap-2">
-                             التالي
-                             <ArrowLeft className="h-4 w-4" />
-                           </Button> : <div className="flex items-center gap-3">
-                              <Button type="button" variant="outline" onClick={prevStep} size="lg" className="flex items-center gap-2">
-                                <ArrowRight className="h-4 w-4" />
-                                العودة
-                              </Button>
-                              <Button type="button" onClick={() => handleFormSubmit(formData)} disabled={isSaving} size="lg" className="flex items-center gap-2">
-                                {isSaving ? <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                    جاري الحفظ...
-                                  </> : <>
-                                    <Save className="h-4 w-4" />
-                                    حفظ
-                                  </>}
-                              </Button>
-                            </div>}
+                          <Button 
+                            onClick={handleAltFormSave}
+                            disabled={isSaving}
+                          >
+                            {isSaving ? "جاري الحفظ..." : editingMember ? "تحديث" : "حفظ"}
+                          </Button>
+                        </div>
                       </div>
-                    </div>}
+
+                   </div>}
                 </CardContent>
               </Card>
             </div>
 
             {/* Member List - Left Side on Desktop */}
             <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
-              {isMobile ? <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
-                  <DrawerTrigger asChild>
-                    <Button variant="outline" className="w-full flex items-center gap-2">
-                      <Menu className="h-4 w-4" />
-                      عرض قائمة الأعضاء ({familyMembers.length})
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent className="h-[80vh]">
-                    <div className="p-4">
-                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
-                    </div>
-                  </DrawerContent>
-                </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
-                  <CardHeader className="pb-4 relative">
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                         أعضاء العائلة ({familyMembers.length})
-                       </span>
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent className="relative">
-                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
-                  </CardContent>
-                </Card>}
+              <MemberListComponent 
+                members={familyMembers}
+                familyMembers={familyMembers}
+                marriages={familyMarriages}
+                searchTerm={searchTerm}
+                selectedFilter={selectedFilter}
+                memberListLoading={memberListLoading}
+                formMode={formMode}
+                packageData={packageData}
+                isMemberListOpen={isMemberListOpen}
+                onSearchChange={setSearchTerm}
+                onFilterChange={setSelectedFilter}
+                onEditMember={handleEditMember}
+                onViewMember={handleViewMember}
+                onDeleteMember={handleDeleteMember}
+                onSpouseEditAttempt={handleSpouseEditWarning}
+                onAddMember={handleAddMember}
+                onToggleMemberList={() => setIsMemberListOpen(!isMemberListOpen)}
+                onShowUpgradeModal={() => setShowUpgradeModal(true)}
+                checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+                getAdditionalInfo={getAdditionalInfo}
+                getGenderColor={getGenderColor}
+              />
             </div>
           </div>
         </div>
@@ -4920,39 +3268,7 @@ const FamilyBuilderNew = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Image Crop Dialog */}
-      <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>اقتصاص الصورة</DialogTitle>
-            <DialogDescription>
-              استخدم الأدوات أدناه لاقتصاص وتعديل الصورة كما تريد
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {selectedImage && <div className="relative h-96">
-                <Cropper image={selectedImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onCropComplete={onCropComplete} onZoomChange={setZoom} />
-              </div>}
-            
-            <div className="space-y-2">
-              <Label>التكبير</Label>
-              <Slider value={[zoom]} onValueChange={value => setZoom(value[0])} min={1} max={3} step={0.1} className="w-full" />
-            </div>
-          </div>
-          
-          <DialogFooter className="flex gap-2">
-            <Button variant="outline" onClick={() => setShowCropDialog(false)}>
-              إلغاء
-            </Button>
-            <Button onClick={handleCropSave}>
-              حفظ الصورة
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Keep existing delete modals */}
+      {/* Spouse delete confirmation modal with enhanced design */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <AlertDialogContent className="max-w-lg animate-scale-in">
           <div className="relative overflow-hidden">
@@ -5117,17 +3433,19 @@ const FamilyBuilderNew = () => {
                      <Edit className="h-5 w-5 text-primary mr-2" />
                      <div className="text-sm text-gray-600">للتعديل، انتقل إلى:</div>
                    </div>
-                   <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
-                     <div className="font-bold text-primary text-lg animate-pulse">
-                       {spousePartnerDetails.name}
-                     </div>
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && <div className="text-sm text-gray-600 mt-1">
-                           ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                         </div>}
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && <div className="text-xs text-gray-500 mt-1">
-                           حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                         </div>}
-                   </div>
+                    <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
+                      <div className="font-bold text-primary text-lg animate-pulse">
+                        {spousePartnerDetails.name}
+                      </div>
+                        
+
+                        {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && spousePartnerDetails.fatherName !== 'غير محدد' && <div className="text-sm text-gray-600 mt-1">
+                            ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
+                          </div>}
+                        {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && spousePartnerDetails.grandfatherName !== 'غير محدد' && <div className="text-xs text-gray-500 mt-1">
+                            حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
+                          </div>}
+                    </div>
                 </div>}
 
               {/* Info section */}
@@ -5217,265 +3535,7 @@ const FamilyBuilderNew = () => {
       </Dialog>
 
       <GlobalFooterSimplified />
-    </div>;
+    </div>
 };
 
-// Member List Component
-const MemberList = ({
-  members,
-  onEditMember,
-  onViewMember,
-  onDeleteMember,
-  onSpouseEditAttempt,
-  checkIfMemberIsSpouse,
-  searchTerm,
-  onSearchChange,
-  selectedFilter,
-  onFilterChange,
-  getAdditionalInfo,
-  getGenderColor,
-  familyMembers,
-  marriages,
-  memberListLoading,
-  formMode,
-  onAddMember,
-  packageData
-}: any) => {
-  return <div className="space-y-4">
-      {/* Search and Filter on the same row */}
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
-        </div>
-        <div className="flex-1">
-          <Select value={selectedFilter} onValueChange={onFilterChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="تصفية حسب..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">جميع الأعضاء</SelectItem>
-          <SelectItem value="alive">الأحياء</SelectItem>
-          <SelectItem value="deceased">المتوفين</SelectItem>
-          <SelectItem value="male">الذكور</SelectItem>
-          <SelectItem value="female">الإناث</SelectItem>
-          <SelectItem value="founders">المؤسسون</SelectItem>
-        </SelectContent>
-      </Select>
-        </div>
-      </div>
-
-      {/* Add Member Button */}
-      {formMode === 'view' && <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button onClick={onAddMember} className="w-full flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                {packageData && familyMembers.length >= packageData.max_family_members ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)` : 'إضافة عضو جديد'}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs" side="top">
-              {packageData && familyMembers.length >= packageData.max_family_members ? <div className="text-center">
-                  <p className="font-semibold text-destructive mb-1">
-                    🚫 تم الوصول للحد الأقصى
-                  </p>
-                  <p className="text-sm">
-                    باقتك الحالية تسمح بإضافة {packageData.max_family_members} أعضاء فقط
-                  </p>
-                  <p className="text-xs mt-2 text-muted-foreground">
-                    قم بترقية باقتك لإضافة المزيد من الأعضاء
-                  </p>
-                </div> : <p className="text-sm">انقر لإضافة عضو جديد إلى الشجرة</p>}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>}
-
-      {/* Member List */}
-      <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
-        {memberListLoading ?
-      // Loading skeletons
-      Array.from({
-        length: 3
-      }).map((_, index) => <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
-              <div className="flex items-start gap-3">
-                <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
-                <div className="flex gap-2">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                </div>
-              </div>
-            </div>) : members.length === 0 ? <div className="text-center py-8 text-muted-foreground">
-            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>لا توجد أعضاء</p>
-          </div> : members.map((member: any) => <Card key={member.id} className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between gap-3 min-h-[80px]">
-                  <div className="flex items-start gap-3 flex-1">
-                    <Avatar className="h-12 w-12 flex-shrink-0">
-                      <AvatarImage src={member.image} />
-                      <AvatarFallback className={getGenderColor(member.gender)}>
-                        {member.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 min-w-0 space-y-1">
-                      {/* Name */}
-                      <div className="flex items-center gap-2">
-                        {member.gender === 'male' ? <User className="h-3 w-3 text-blue-500" /> : <UserIcon className="h-3 w-3 text-pink-500" />}
-                        <h3 className="font-semibold text-base font-arabic leading-tight">
-                         {(() => {
-                      const isSpouse = !member.fatherId && !member.motherId && !member.isFounder;
-                      if (isSpouse) {
-                        // For spouses: show first_name + last_name, or name if missing
-                        const firstName = member.first_name || '';
-                        const lastName = member.last_name || '';
-                        if (firstName && lastName) {
-                          return `${firstName} ${lastName}`;
-                        }
-                        return member.name || "غير معروف";
-                      } else {
-                        // For founders and other native family members: show first_name, or split name if missing
-                        return member.first_name || member.name?.split(' ')[0] || member.name || "غير معروف";
-                      }
-                    })()}
-                        </h3>
-                        {(() => {
-                    // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
-                    const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-                    const isDescendant = !member.isFounder && memberHasFamilyFather;
-                    if (isDescendant) {
-                      return <span className="text-xs text-muted-foreground font-normal">
-                                {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                              </span>;
-                    }
-                    return null;
-                  })()}
-                      </div>
-                      
-                      {/* Father + Grandfather names */}
-                      {(() => {
-                  const father = familyMembers?.find(m => m?.id === member.fatherId);
-                  const grandfather = father ? familyMembers?.find(m => m?.id === father.fatherId) : null;
-                  if (father && grandfather) {
-                    const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                    const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                    return <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {fatherFirstName} ابن {grandfatherFirstName}
-                            </p>;
-                  } else if (father) {
-                    const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                    return <p className="text-sm text-muted-foreground truncate font-arabic">
-                              {fatherFirstName}
-                            </p>;
-                  }
-                  return null;
-                })()}
-                      
-                      {/* Spouse information - show founder text for founders, spouse info for non-family members */}
-                      {(() => {
-                  // Show founder text for founders
-                  if (member.isFounder) {
-                    return <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                              الجد الأكبر للعائلة
-                            </p>;
-                  }
-
-                  // Find marriage where this member is husband or wife
-                  const marriage = marriages?.find(m => m.husband?.id === member.id || m.wife?.id === member.id || m.husband_id === member.id || m.wife_id === member.id);
-                  if (marriage) {
-                    // Determine if this member is the husband or wife
-                    const isHusband = marriage.husband?.id === member.id || marriage.husband_id === member.id;
-
-                    // Get spouse data - try both nested object and direct ID approaches
-                    let spouse;
-                    let spouseId;
-                    if (isHusband) {
-                      spouse = marriage.wife;
-                      spouseId = marriage.wife_id;
-                    } else {
-                      spouse = marriage.husband;
-                      spouseId = marriage.husband_id;
-                    }
-
-                    // If spouse is not in nested object, find by ID
-                    if (!spouse && spouseId) {
-                      spouse = familyMembers?.find(m => m?.id === spouseId);
-                    }
-                    if (spouse) {
-                      // Check if current member is a non-family member (married into the family)
-                      // A non-family member would not have father/grandfather in the family tree
-                      const memberHasFamilyFather = member.fatherId && familyMembers?.find(m => m?.id === member.fatherId);
-
-                      // Only show spouse info for non-family members (those without family fathers)
-                      if (!memberHasFamilyFather) {
-                        // Get spouse's father from familyMembers
-                        const spouseFullData = familyMembers?.find(m => m?.id === spouse.id);
-                        const spouseFather = familyMembers?.find(m => m?.id === (spouseFullData?.fatherId || spouse.fatherId));
-
-                        // Build simplified spouse info: زوجة محمد ابن سعيد (first name only)
-                        const spouseName = spouseFullData?.first_name || spouse.first_name || spouse.name?.split(' ')[0] || spouse.name;
-                        let spouseInfo = spouseName;
-                        if (spouseFather) {
-                          const fatherFirstName = spouseFather.first_name || spouseFather.name?.split(' ')[0] || spouseFather.name;
-                          const genderTerm = spouseFullData?.gender === 'female' ? 'ابنة' : 'ابن';
-                          spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
-                        }
-
-                        // Use زوج for husband, زوجة for wife (from member's perspective)
-                        const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-                        return <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-                                  {relationLabel} {spouseInfo}
-                                </p>;
-                      }
-                    }
-                  }
-                  return null;
-                })()}
-                      
-                      {/* Birth date and other icons */}
-                      <div className="flex items-center gap-2">
-                        {member.birthDate && <DateDisplay date={member.birthDate} className="text-xs text-muted-foreground font-arabic" />}
-                        {member.isFounder && <Crown className="h-3 w-3 text-yellow-500" />}
-                        {!member.isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
-                      </div>
-                    </div>
-                  </div>
-                  
-                   {/* Edit & Remove buttons at the most left */}
-                  <div className="flex flex-col gap-1 flex-shrink-0">
-                     {/* Only show edit button for non-spouse members */}
-                     {!checkIfMemberIsSpouse(member) ? <Button type="button" size="sm" variant="outline" onClick={e => {
-                e.stopPropagation();
-                onEditMember(member);
-              }} className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm">
-                         <Edit2 className="h-3 w-3 text-gray-600" />
-                       </Button> : <Button type="button" size="sm" variant="outline" onClick={e => {
-                e.stopPropagation();
-                onSpouseEditAttempt(member);
-              }} className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm">
-                         <Edit2 className="h-3 w-3 text-yellow-600" />
-                       </Button>}
-                    
-                     <Button type="button" size="sm" variant="outline" onClick={e => {
-                e.stopPropagation();
-                if (checkIfMemberIsSpouse(member)) {
-                  onSpouseEditAttempt(member);
-                } else {
-                  onDeleteMember(member);
-                }
-              }} className={`h-7 w-7 p-0 border shadow-sm ${checkIfMemberIsSpouse(member) ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' : 'bg-red-50/80 hover:bg-red-100 border-red-200'}`}>
-                       <Trash2 className={`h-3 w-3 ${checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'}`} />
-                     </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>)}
-      </div>
-    </div>;
-};
 export default FamilyBuilderNew;
