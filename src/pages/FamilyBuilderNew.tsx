@@ -3107,7 +3107,7 @@ const FamilyBuilderNew = () => {
                             middleName: '',
                             lastName: '',
                             nickname: '',
-                            gender: formData.gender,
+                            gender: (formData.gender as "male" | "female") || "",
                             birthDate: formData.birthDate,
                             deathDate: formData.deathDate,
                             birthPlace: '',

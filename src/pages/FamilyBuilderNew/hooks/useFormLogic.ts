@@ -7,7 +7,7 @@ import { SpouseData } from "@/components/SpouseForm";
 interface FormData {
   id: string;
   first_name: string;
-  gender: string;
+  gender: "male" | "female" | "";
   birth_date: Date | null;
   death_date: Date | null;
   is_alive: boolean;

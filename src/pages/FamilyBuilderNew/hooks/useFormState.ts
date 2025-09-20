@@ -6,7 +6,7 @@ interface FormData {
   middleName: string;
   lastName: string;
   nickname: string;
-  gender: string;
+  gender: "male" | "female" | "";
   birthDate: Date | undefined;
   deathDate: Date | undefined;
   birthPlace: string;
@@ -73,7 +73,7 @@ export const useFormState = (): UseFormStateResult => {
       middleName: '',
       lastName: member.last_name || '',
       nickname: '',
-      gender: member.gender,
+      gender: (member.gender as "male" | "female") || "",
       birthDate: member.birth_date ? new Date(member.birth_date) : undefined,
       deathDate: member.death_date ? new Date(member.death_date) : undefined,
       birthPlace: member.birth_place || '',
