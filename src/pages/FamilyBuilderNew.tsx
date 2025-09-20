@@ -1355,10 +1355,13 @@ const FamilyBuilderNew = () => {
       if (marriagesError) throw marriagesError;
 
       // Get detailed marriage data with member info
-      let memberMarriages = [];
+      let memberMarriages = [] as any[];
       if (marriages) {
         memberMarriages = await Promise.all(marriages.map(async marriage => {
-          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
+          const [husbandResult, wifeResult] = await Promise.all([
+            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
+          ]);
           return {
             ...marriage,
             husband: husbandResult.data,
@@ -1410,6 +1413,8 @@ const FamilyBuilderNew = () => {
           return updatedMarriages;
         });
       }
+
+      return transformedMember;
     } catch (error) {
       console.error('Error fetching member profile:', error);
       toast({
@@ -1417,6 +1422,7 @@ const FamilyBuilderNew = () => {
         description: "حدث خطأ في تحميل بيانات العضو",
         variant: "destructive"
       });
+      return null;
     } finally {
       setProfileLoading(false);
     }
@@ -1429,13 +1435,16 @@ const FamilyBuilderNew = () => {
     // Fetch fresh member profile data
     await fetchMemberProfile(member.id);
   }, [isMobile, familyId, toast]);
-  const handleEditMember = useCallback((member: any) => {
+  const handleEditMember = useCallback(async (member: any) => {
     setFormMode('edit');
     setAltFormMode('edit');
-    setEditingMember(member);
     setCurrentStep(1);
-    loadMemberToForm(member); // Use the proper form loading function
     if (isMobile) setIsMemberListOpen(false);
+
+    const detailed = await fetchMemberProfile(member.id);
+    const memberToUse = detailed || member;
+    setEditingMember(memberToUse);
+    loadMemberToForm(memberToUse);
   }, [isMobile, loadMemberToForm, setAltFormMode]);
   const handleCancelForm = () => {
     setFormMode('view');
