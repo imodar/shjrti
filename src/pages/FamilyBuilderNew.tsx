@@ -2951,6 +2951,46 @@ const FamilyBuilderNew = () => {
 
                   {formMode === 'view' ? <div className="py-8 px-6">
 
+                       {/* Navigation Icons */}
+                       <div className="flex justify-center mb-6">
+                         <div className="flex items-center gap-4">
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('view')}>
+                             <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
+                               <Users className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <TreePine className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <Store className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <Star className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
+                           </div>
+                           
+                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')}>
+                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                               <Settings className="h-5 w-5" />
+                             </div>
+                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">إعدادات الشجرة</span>
+                           </div>
+                         </div>
+                       </div>
+
                        {/* Luxury Statistics Grid */}
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
                          {/* Total Members Card */}
@@ -3022,45 +3062,6 @@ const FamilyBuilderNew = () => {
                          </Card>
                        </div>
 
-                      {/* Navigation Icons */}
-                      <div className="flex justify-center mb-6">
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('view')}>
-                            <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
-                              <Users className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <TreePine className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <Store className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <Star className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
-                          </div>
-                          
-                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')}>
-                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                              <Settings className="h-5 w-5" />
-                            </div>
-                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">إعدادات الشجرة</span>
-                          </div>
-                        </div>
-                      </div>
 
                       {/* Quick Actions */}
                       <div className="space-y-3">
