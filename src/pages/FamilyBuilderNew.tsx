@@ -46,7 +46,7 @@ import { MemberProfileView } from "@/components/MemberProfileView";
 import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsButton";
 import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
-import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
+import { ModernFamilyMemberModal } from "@/components/ModernFamilyMemberModal";
 import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
 import { useImageManagement } from "@/pages/FamilyBuilderNew/hooks/useImageManagement";
 import { FormLogicManager } from "@/pages/FamilyBuilderNew/components/Forms/FormLogicManager";
@@ -2666,6 +2666,16 @@ const FamilyBuilderNew = () => {
       setIsSaving(false);
     }
   }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
+
+  // Wrapper function for ModernFamilyMemberModal compatibility
+  const handleSaveMember = useCallback(async (memberData: any) => {
+    await handleFormSubmit(memberData);
+    // Close the modal after successful save
+    setFormMode('view');
+    setEditingMember(null);
+    setCurrentStep(1);
+  }, [handleFormSubmit]);
+  
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -3099,42 +3109,14 @@ const FamilyBuilderNew = () => {
                   await fetchMemberProfile(member.id);
                 }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
 
-                      {/* Step Content */}
-                      {currentStep === 1 && (
-                        <MemberDetailForm
-                          formData={{
-                            firstName: formData.first_name || '',
-                            middleName: '',
-                            lastName: '',
-                            nickname: '',
-                            gender: (formData.gender as "male" | "female") || "",
-                            birthDate: formData.birthDate,
-                            deathDate: formData.deathDate,
-                            birthPlace: '',
-                            deathPlace: '',
-                            currentResidence: '',
-                            occupation: '',
-                            education: '',
-                            biography: '',
-                            isAlive: formData.isAlive,
-                            isFounder: formData.isFounder || false,
-                            fatherId: formData.selectedParent || '',
-                            motherId: ''
-                          }}
-                          setFormData={(data) => setFormData({
-                            ...formData,
-                            first_name: data.firstName || formData.first_name,
-                            gender: data.gender || formData.gender,
-                            birthDate: data.birthDate,
-                            deathDate: data.deathDate,
-                            isAlive: data.isAlive !== undefined ? data.isAlive : formData.isAlive,
-                            isFounder: data.isFounder !== undefined ? data.isFounder : formData.isFounder,
-                            selectedParent: data.fatherId || formData.selectedParent
-                          })}
-                          familyMembers={familyMembers}
-                          editingMember={editingMember}
-                        />
-                      )}
+                      {/* Modern Family Member Modal */}
+                      <ModernFamilyMemberModal
+                        isOpen={formMode === 'add' || formMode === 'edit'}
+                        onClose={handleCancelForm}
+                        onSubmit={handleSaveMember}
+                        familyId={familyId || ''}
+                        editMember={formMode === 'edit' ? editingMember : undefined}
+                      />
 
                        {currentStep === 2 && <div className="space-y-4">
                            <h3 className="text-lg font-semibold">
