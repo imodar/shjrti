@@ -907,7 +907,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                         )}
                                       </div>
                                     )}
-                                    {event.description && (
+                                    {event.description && event.type !== 'marriage' && (
                                       <p className="text-sm text-muted-foreground mt-2">
                                         {event.description}
                                       </p>
