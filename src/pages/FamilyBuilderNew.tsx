@@ -48,7 +48,7 @@ import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/Membe
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { MemberListComponent } from "@/pages/FamilyBuilderNew/components/MemberList/MemberListComponent";
 import { useImageManagement } from "@/pages/FamilyBuilderNew/hooks/useImageManagement";
-import { MemberDetailForm } from "@/pages/FamilyBuilderNew/components/Forms/MemberDetailForm";
+import { EnhancedMemberForm } from "@/pages/FamilyBuilderNew/components/Forms/EnhancedMemberForm";
 import { useFormState } from "@/pages/FamilyBuilderNew/hooks/useFormState";
 import { useMemberOperations } from "@/pages/FamilyBuilderNew/hooks/useMemberOperations";
 import { useGenerationCalculation } from "@/pages/FamilyBuilderNew/hooks/useGenerationCalculation";
@@ -3174,11 +3174,58 @@ const FamilyBuilderNew = () => {
 
                       {/* Member Detail Form - Restored September 16th Version */}
                       <div className="space-y-4">
-                        <MemberDetailForm
-                          formData={altFormData}
-                          setFormData={setAltFormData}
-                          familyMembers={familyMembers}
+                        <EnhancedMemberForm
+                          formMode={formMode}
+                          currentStep={currentStep}
+                          formData={{
+                            first_name: altFormData.firstName || '',
+                            name: altFormData.name || '',
+                            relation: '',
+                            relatedPersonId: null,
+                            selectedParent: null,
+                            gender: altFormData.gender || 'male',
+                            birthDate: altFormData.birthDate,
+                            isAlive: altFormData.isAlive ?? true,
+                            deathDate: altFormData.deathDate,
+                            bio: altFormData.biography || '',
+                            imageUrl: '',
+                            croppedImage: altFormData.croppedImage,
+                            isFounder: altFormData.isFounder || false
+                          }}
+                          setFormData={(data) => setAltFormData({...altFormData, ...data})}
                           editingMember={editingMember}
+                          familyMembers={familyMembers}
+                          familyMarriages={familyMarriages}
+                          wives={[]}
+                          setWives={() => {}}
+                          husband={null}
+                          setHusband={() => {}}
+                          currentWife={null}
+                          setCurrentWife={() => {}}
+                          showWifeForm={false}
+                          setShowWifeForm={() => {}}
+                          wiveFamilyStatus={{}}
+                          setWiveFamilyStatus={() => {}}
+                          croppedImage={altFormData.croppedImage}
+                          setCroppedImage={(img) => setAltFormData({...altFormData, croppedImage: img})}
+                          selectedImage={null}
+                          setSelectedImage={() => {}}
+                          imageChanged={false}
+                          setImageChanged={() => {}}
+                          fileInputRef={fileInputRef}
+                          isImageUploadEnabled={isImageUploadEnabled}
+                          loading={loading}
+                          isSaving={isSaving}
+                          handleImageSelect={(e) => {}}
+                          handleEditImage={() => {}}
+                          handleDeleteImage={() => {}}
+                          handleSubmit={handleSubmit}
+                          handleSpouseDelete={() => {}}
+                          nextStep={() => setCurrentStep(2)}
+                          prevStep={() => setCurrentStep(1)}
+                          handleCancelForm={handleCancelForm}
+                          onSaveSpouse={() => {}}
+                          onCancelSpouse={() => {}}
                         />
                         <div className="flex justify-end gap-2">
                           <Button 
