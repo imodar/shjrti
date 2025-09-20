@@ -3089,11 +3089,11 @@ const FamilyBuilderNew = () => {
                       })}
                           </div>
                         </div>}
-                    </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={editingMember} isSpouse={checkIfMemberIsSpouse(editingMember)} onEdit={() => {
+                    </div> : formMode === 'profile' ? profileLoading ? <MemberProfileSkeleton /> : <MemberProfileView member={memberProfileData} isSpouse={checkIfMemberIsSpouse(memberProfileData)} onEdit={() => {
                   setFormMode('edit');
                   setCurrentStep(1);
-                  populateFormData(editingMember);
-                }} onBack={() => setFormMode('view')} onDelete={() => handleDeleteMember(editingMember)} familyMembers={familyMembers} marriages={familyMarriages} onSpouseEditWarning={() => handleSpouseEditWarning(editingMember)} onSpouseDeleteWarning={() => handleSpouseDeleteWarning(editingMember)} onMemberClick={async member => {
+                  populateFormData(memberProfileData);
+                }} onBack={() => setFormMode('view')} onDelete={() => handleDeleteMember(memberProfileData)} familyMembers={familyMembers} marriages={familyMarriages} onSpouseEditWarning={() => handleSpouseEditWarning(memberProfileData)} onSpouseDeleteWarning={() => handleSpouseDeleteWarning(memberProfileData)} onMemberClick={async member => {
                   setEditingMember(member);
                   setFormMode('profile');
                   await fetchMemberProfile(member.id);
