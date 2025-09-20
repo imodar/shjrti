@@ -3185,7 +3185,11 @@ const FamilyBuilderNew = () => {
                             name: altFormData.firstName || (editingMember?.first_name || editingMember?.name?.split(' ')[0]) || '',
                             relation: '',
                             relatedPersonId: null,
-                            selectedParent: null,
+                            selectedParent: (() => {
+                              if (!editingMember || !familyMarriages) return null;
+                              const match = familyMarriages.find((m: any) => m?.husband?.id === editingMember.father_id && m?.wife?.id === editingMember.mother_id);
+                              return match?.id || null;
+                            })(),
                             gender: altFormData.gender || editingMember?.gender || 'male',
                             birthDate: altFormData.birthDate || (editingMember?.birth_date ? new Date(editingMember.birth_date) : undefined),
                             isAlive: altFormData.isAlive !== undefined ? altFormData.isAlive : (editingMember?.is_alive !== false),
