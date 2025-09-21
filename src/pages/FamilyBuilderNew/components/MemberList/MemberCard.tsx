@@ -143,101 +143,136 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {/* Status indicator bar */}
       <div className={`absolute top-0 left-0 right-0 h-1 ${member.is_founder ? 'bg-gradient-to-r from-yellow-400 to-amber-500' : member.gender === 'male' ? 'bg-gradient-to-r from-blue-400 to-blue-600' : 'bg-gradient-to-r from-pink-400 to-rose-500'}`} />
       
-      <CardContent className="p-3">
-        <div className="flex items-start gap-3">
-          {/* Avatar with status indicators */}
-          <div className="relative flex-shrink-0">
-            <Avatar className="h-11 w-11 ring-2 ring-white dark:ring-gray-800 group-hover:ring-primary/20">
-              <AvatarImage src={(member as any).image} className="object-cover" />
-              <AvatarFallback className={`${getGenderColor(member.gender)} text-sm font-semibold`}>
-                {((member as any).name || member.first_name || "؟").charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            
-            {/* Status badges */}
-            <div className="absolute -bottom-1 -right-1 flex gap-1">
-              {member.is_founder && (
-                <div className="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full p-0.5">
-                  <Crown className="h-2.5 w-2.5 text-white" />
-                </div>
-              )}
-              {!(member as any).isAlive && (
-                <div className="bg-gray-500 rounded-full p-0.5">
-                  <Skull className="h-2.5 w-2.5 text-white" />
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="flex-1 min-w-0 space-y-0.5">
-            {/* Compact parentage display */}
-            {renderParentage() && (
-              <p className="text-xs text-muted-foreground/80 font-arabic leading-tight truncate">
-                {(() => {
-                  const father = familyMembers?.find(m => m?.id === member.father_id);
-                  const grandfather = father ? familyMembers?.find(m => m?.id === father.father_id) : null;
-                  if (father && grandfather) {
-                    const fatherName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-                    const grandfatherName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
-                    return `${fatherName} ابن ${grandfatherName}`;
-                  } else if (father) {
-                    return father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-                  }
-                  return null;
-                })()}
-              </p>
-            )}
-            
-            {/* Member name with gender indicator */}
-            <div className="flex items-center gap-1.5">
-              <h3 className="font-semibold text-sm font-arabic leading-tight text-foreground group-hover:text-primary transition-colors truncate">
-                {member.name || member.first_name || "غير معروف"}
-              </h3>
-              <div className="flex items-center gap-1">
-                {member.gender === 'male' ? 
-                  <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-0.5">
-                    <User className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400" />
-                  </div> : 
-                  <div className="bg-pink-100 dark:bg-pink-900/30 rounded-full p-0.5">
-                    <UserIcon className="h-2.5 w-2.5 text-pink-600 dark:text-pink-400" />
+      <CardContent className="relative p-4 overflow-hidden">
+        {/* Creative background pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-primary/20" />
+          <div className="absolute bottom-4 left-4 w-6 h-6 rounded-full bg-secondary/20" />
+          <div className="absolute top-1/2 right-1/4 w-4 h-4 rounded-full bg-accent/20" />
+        </div>
+
+        <div className="relative z-10">
+          {/* Header section with avatar and status */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
+              {/* Enhanced avatar with glow effect */}
+              <div className="relative">
+                <div className={`absolute inset-0 rounded-full blur-md opacity-30 ${
+                  member.is_founder 
+                    ? 'bg-gradient-to-br from-yellow-400 to-amber-500' 
+                    : member.gender === 'male' 
+                    ? 'bg-gradient-to-br from-blue-400 to-cyan-500' 
+                    : 'bg-gradient-to-br from-pink-400 to-rose-500'
+                }`} />
+                <Avatar className="relative h-12 w-12 ring-2 ring-background shadow-lg">
+                  <AvatarImage src={(member as any).image} className="object-cover" />
+                  <AvatarFallback className={`${getGenderColor(member.gender)} text-sm font-bold shadow-inner`}>
+                    {((member as any).name || member.first_name || "؟").charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                
+                {/* Floating status indicators */}
+                {member.is_founder && (
+                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full p-1 shadow-lg animate-pulse">
+                    <Crown className="h-3 w-3 text-white" />
                   </div>
-                }
-                {renderRelationship() && (
-                  <span className="text-xs text-muted-foreground/70 font-normal">
-                    {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                  </span>
+                )}
+                {!(member as any).isAlive && (
+                  <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full p-1 shadow-lg">
+                    <Skull className="h-3 w-3 text-white" />
+                  </div>
                 )}
               </div>
             </div>
             
-            {/* Spouse/founder info - compact */}
-            {renderSpouseInfo() && (
-              <p className="text-xs text-primary/70 dark:text-primary/60 font-arabic leading-tight truncate">
-                {member.is_founder ? 'الجد الأكبر للعائلة' : (() => {
-                  const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
-                  if (marriage) {
-                    const isHusband = marriage.husband_id === member.id;
-                    const spouseId = isHusband ? marriage.wife_id : marriage.husband_id;
-                    const spouse = familyMembers?.find(m => m?.id === spouseId);
-                    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
-                    
-                    if (spouse && !memberHasFamilyFather) {
-                      const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
-                      const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-                      return `${relationLabel} ${spouseName}`;
+            {/* Gender indicator pill */}
+            <div className={`px-2 py-1 rounded-full text-xs font-medium shadow-sm ${
+              member.gender === 'male' 
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' 
+                : 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300'
+            }`}>
+              {member.gender === 'male' ? '♂' : '♀'}
+            </div>
+          </div>
+
+          {/* Main content section */}
+          <div className="space-y-2">
+            {/* Parentage line - decorative */}
+            {renderParentage() && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                <span className="font-arabic px-2 bg-background/50 backdrop-blur-sm rounded-full border">
+                  {(() => {
+                    const father = familyMembers?.find(m => m?.id === member.father_id);
+                    const grandfather = father ? familyMembers?.find(m => m?.id === father.father_id) : null;
+                    if (father && grandfather) {
+                      const fatherName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
+                      const grandfatherName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
+                      return `${fatherName} ابن ${grandfatherName}`;
+                    } else if (father) {
+                      return father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
                     }
-                  }
-                  return null;
-                })()}
-              </p>
+                    return null;
+                  })()}
+                </span>
+                <div className="flex-1 h-px bg-gradient-to-r from-border via-transparent to-transparent" />
+              </div>
             )}
             
-            {/* Birth date - minimal */}
+            {/* Member name - prominent */}
+            <div className="text-center">
+              <h3 className="font-bold text-lg font-arabic text-foreground group-hover:text-primary transition-colors duration-300 mb-1">
+                {member.name || member.first_name || "غير معروف"}
+              </h3>
+              
+              {/* Relationship badge */}
+              {renderRelationship() && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-accent/20 text-accent-foreground text-xs rounded-full font-medium">
+                  <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />
+                  {member.gender === 'female' ? 'ابنة' : 'ابن'}
+                </span>
+              )}
+            </div>
+            
+            {/* Special info section */}
+            {(renderSpouseInfo() || member.is_founder) && (
+              <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-2 border border-primary/10">
+                <p className="text-xs text-primary font-arabic text-center leading-relaxed">
+                  {member.is_founder ? (
+                    <span className="flex items-center justify-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      الجد الأكبر للعائلة
+                    </span>
+                  ) : (() => {
+                    const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
+                    if (marriage) {
+                      const isHusband = marriage.husband_id === member.id;
+                      const spouseId = isHusband ? marriage.wife_id : marriage.husband_id;
+                      const spouse = familyMembers?.find(m => m?.id === spouseId);
+                      const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+                      
+                      if (spouse && !memberHasFamilyFather) {
+                        const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
+                        const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+                        return `${relationLabel} ${spouseName}`;
+                      }
+                    }
+                    return null;
+                  })()}
+                </p>
+              </div>
+            )}
+            
+            {/* Birth date - elegant */}
             {member.birth_date && (
-              <DateDisplay 
-                date={member.birth_date} 
-                className="text-xs text-muted-foreground/60 font-arabic leading-tight" 
-              />
+              <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground/80">
+                <div className="w-1 h-1 bg-current rounded-full opacity-50" />
+                <DateDisplay 
+                  date={member.birth_date} 
+                  className="font-arabic" 
+                />
+                <div className="w-1 h-1 bg-current rounded-full opacity-50" />
+              </div>
             )}
           </div>
         </div>
