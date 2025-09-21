@@ -154,15 +154,17 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* Father + Grandfather names */}
               {renderParentage()}
               
-              {/* Name */}
+              {/* Individual Name */}
+              <h3 className="font-semibold text-base font-arabic leading-tight">
+                {generateMemberDisplayName()}
+              </h3>
+              
+              {/* Gender icon and relationship */}
               <div className="flex items-center gap-2">
                 {member.gender === 'male' ? 
                   <User className="h-3 w-3 text-blue-500" /> : 
                   <UserIcon className="h-3 w-3 text-pink-500" />
                 }
-                <h3 className="font-semibold text-base font-arabic leading-tight">
-                  {generateMemberDisplayName()}
-                </h3>
                 {renderRelationship()}
               </div>
               
