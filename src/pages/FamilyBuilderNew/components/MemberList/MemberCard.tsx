@@ -151,6 +151,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             </Avatar>
             
             <div className="flex-1 min-w-0 space-y-1">
+              {/* Father + Grandfather names */}
+              {renderParentage()}
+              
               {/* Name */}
               <div className="flex items-center gap-2">
                 {member.gender === 'male' ? 
@@ -162,9 +165,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 </h3>
                 {renderRelationship()}
               </div>
-              
-              {/* Father + Grandfather names */}
-              {renderParentage()}
               
               {/* Spouse information - show founder text for founders, spouse info for non-family members */}
               {renderSpouseInfo()}
