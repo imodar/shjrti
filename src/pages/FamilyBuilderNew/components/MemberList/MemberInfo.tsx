@@ -9,10 +9,10 @@ interface MemberInfoProps {
 
 export const MemberInfo: React.FC<MemberInfoProps> = ({ member, children }) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {/* Member name */}
       <div className="text-center">
-        <h3 className="font-bold text-xl font-arabic text-foreground group-hover:text-primary transition-colors duration-300 drop-shadow-sm">
+        <h3 className="font-bold text-lg font-arabic text-foreground group-hover:text-primary transition-colors duration-300 drop-shadow-sm">
           {member.name || member.first_name || "غير معروف"}
         </h3>
       </div>

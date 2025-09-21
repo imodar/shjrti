@@ -45,7 +45,7 @@ export const MemberRelationships: React.FC<MemberRelationshipsProps> = ({
   const renderSpouseInfo = () => {
     if (member.is_founder) {
       return (
-        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20 rounded-xl p-3 border border-amber-200/50 dark:border-amber-800/30">
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20 rounded-lg p-2 border border-amber-200/50 dark:border-amber-800/30">
           <p className="text-sm text-amber-700 dark:text-amber-300 font-arabic text-center font-medium flex items-center justify-center gap-2">
             <Crown className="h-4 w-4" />
             الجد الأكبر للعائلة
@@ -67,7 +67,7 @@ export const MemberRelationships: React.FC<MemberRelationshipsProps> = ({
         const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
         
         return (
-          <div className="bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20 rounded-xl p-3 border border-rose-200/50 dark:border-rose-800/30">
+          <div className="bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20 rounded-lg p-2 border border-rose-200/50 dark:border-rose-800/30">
             <p className="text-sm text-rose-700 dark:text-rose-300 font-arabic text-center font-medium flex items-center justify-center gap-2">
               <Heart className="h-4 w-4" />
               {relationLabel} {spouseName}
@@ -82,7 +82,7 @@ export const MemberRelationships: React.FC<MemberRelationshipsProps> = ({
   const parentageText = renderParentage();
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Parentage */}
       {parentageText && (
         <div className="relative">
