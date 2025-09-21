@@ -156,7 +156,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               
               {/* Individual Name */}
               <h3 className="font-semibold text-base font-arabic leading-tight">
-                {generateMemberDisplayName()}
+                {member.name || member.first_name || "غير معروف"}
               </h3>
               
               {/* Gender icon and relationship */}
