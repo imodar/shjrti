@@ -177,61 +177,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               </div>
             </div>
           </div>
-          
-          {/* Edit & Remove buttons at the most left */}
-          <div className="flex flex-col gap-1 flex-shrink-0">
-            {/* Only show edit button for non-spouse members */}
-            {!checkIfMemberIsSpouse(member) ? (
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="outline" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditMember(member);
-                }} 
-                className="h-7 w-7 p-0 bg-white/80 hover:bg-white border border-gray-200 shadow-sm"
-              >
-                <Edit2 className="h-3 w-3 text-gray-600" />
-              </Button>
-            ) : (
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="outline" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSpouseEditAttempt(member);
-                }} 
-                className="h-7 w-7 p-0 bg-yellow-50/80 hover:bg-yellow-100 border border-yellow-200 shadow-sm"
-              >
-                <Edit2 className="h-3 w-3 text-yellow-600" />
-              </Button>
-            )}
-            
-            <Button 
-              type="button" 
-              size="sm" 
-              variant="outline" 
-              onClick={(e) => {
-                e.stopPropagation();
-                if (checkIfMemberIsSpouse(member)) {
-                  onSpouseEditAttempt(member);
-                } else {
-                  onDeleteMember(member);
-                }
-              }} 
-              className={`h-7 w-7 p-0 border shadow-sm ${
-                checkIfMemberIsSpouse(member) 
-                  ? 'bg-yellow-50/80 hover:bg-yellow-100 border-yellow-200' 
-                  : 'bg-red-50/80 hover:bg-red-100 border-red-200'
-              }`}
-            >
-              <Trash2 className={`h-3 w-3 ${
-                checkIfMemberIsSpouse(member) ? 'text-yellow-600' : 'text-red-500'
-              }`} />
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
