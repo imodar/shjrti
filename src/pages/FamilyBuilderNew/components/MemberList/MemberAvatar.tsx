@@ -23,9 +23,9 @@ export const MemberAvatar: React.FC<MemberAvatarProps> = ({
           : 'bg-gradient-to-br from-rose-400 to-pink-500'
       }`} />
       
-      <Avatar className="relative h-12 w-12 ring-2 ring-background/80 shadow-lg group-hover:ring-primary/30 transition-all duration-300">
+      <Avatar className="relative h-10 w-10 ring-1 ring-background/80 shadow-md group-hover:ring-primary/30 transition-all duration-300">
         <AvatarImage src={(member as any).image} className="object-cover" />
-        <AvatarFallback className={`${getGenderColor(member.gender)} text-sm font-bold`}>
+        <AvatarFallback className={`${getGenderColor(member.gender)} text-xs font-bold`}>
           {((member as any).name || member.first_name || "؟").charAt(0)}
         </AvatarFallback>
       </Avatar>
@@ -33,12 +33,12 @@ export const MemberAvatar: React.FC<MemberAvatarProps> = ({
       {/* Status indicators */}
       {member.is_founder && (
         <div className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full p-1 shadow-lg animate-pulse">
-          <Crown className="h-3 w-3 text-white drop-shadow-sm" />
+          <Crown className="h-2.5 w-2.5 text-white drop-shadow-sm" />
         </div>
       )}
       {!(member as any).isAlive && (
         <div className="absolute -bottom-1 -left-1 bg-gradient-to-r from-gray-500 to-slate-600 rounded-full p-1 shadow-lg">
-          <Skull className="h-3 w-3 text-white drop-shadow-sm" />
+          <Skull className="h-2.5 w-2.5 text-white drop-shadow-sm" />
         </div>
       )}
     </div>

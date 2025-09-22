@@ -62,7 +62,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         } group-hover:opacity-10 transition-opacity duration-700`} />
       </div>
 
-      <CardContent className="relative p-2.5 space-y-1.5">
+      <CardContent className="relative p-1.5 space-y-0.5">
         {/* Center avatar */}
         <div className="flex justify-center">
           <MemberAvatar member={member} getGenderColor={getGenderColor} />

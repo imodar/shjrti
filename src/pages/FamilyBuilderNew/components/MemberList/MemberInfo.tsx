@@ -9,10 +9,10 @@ interface MemberInfoProps {
 
 export const MemberInfo: React.FC<MemberInfoProps> = ({ member, children }) => {
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5">
       {/* Member name */}
       <div className="text-center">
-        <h3 className="font-bold text-base font-arabic text-foreground group-hover:text-primary transition-colors duration-300 drop-shadow-sm">
+        <h3 className="font-bold text-sm font-arabic text-foreground group-hover:text-primary transition-colors duration-300 drop-shadow-sm">
           {member.name || member.first_name || "غير معروف"}
         </h3>
       </div>
@@ -22,7 +22,7 @@ export const MemberInfo: React.FC<MemberInfoProps> = ({ member, children }) => {
       
       {/* Birth date */}
       {member.birth_date && (
-        <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground/70 bg-muted/30 rounded-full px-2 py-0.5 backdrop-blur-sm">
+        <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground/70 bg-muted/30 rounded-full px-1.5 py-0.5 backdrop-blur-sm">
           <div className="w-1 h-1 bg-current rounded-full opacity-60" />
           <DateDisplay date={member.birth_date} className="font-arabic font-medium" />
           <div className="w-1 h-1 bg-current rounded-full opacity-60" />
