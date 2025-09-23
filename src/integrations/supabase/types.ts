@@ -962,6 +962,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_change_user_package: {
+        Args: {
+          change_type?: string
+          new_package_id: string
+          target_user_id: string
+        }
+        Returns: boolean
+      }
+      admin_extend_subscription: {
+        Args: { new_expiry_date: string; target_user_id: string }
+        Returns: boolean
+      }
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
@@ -1092,7 +1104,7 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: unknown
+        Returns: string
       }
       sparsevec_out: {
         Args: { "": unknown }
