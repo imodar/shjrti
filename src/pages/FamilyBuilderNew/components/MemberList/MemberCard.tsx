@@ -193,6 +193,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* Birth date and other icons */}
               <div className="flex items-center gap-2">
                 {member.birth_date && <DateDisplay date={member.birth_date} className="text-xs text-muted-foreground font-arabic" />}
+                {!(member as any).isAlive && (member as any).death_date && (
+                  <DateDisplay date={(member as any).death_date} className="text-xs text-red-600 dark:text-red-400 font-arabic" />
+                )}
                 {member.is_founder && <Crown className="h-3 w-3 text-yellow-500" />}
                 {!(member as any).isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
               </div>
