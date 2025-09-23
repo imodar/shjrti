@@ -30,16 +30,23 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   getGenderColor
 }) => {
   const generateMemberDisplayName = () => {
-    // Check if this member is a spouse (married into the family)
-    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
-    const isSpouseFromOutsideFamily = !memberHasFamilyFather && !member.is_founder;
+    // Check if this member is married into the family (actual spouse from outside)
+    const marriage = marriages?.find(m => 
+      m.husband_id === member.id || m.wife_id === member.id
+    );
     
-    if (isSpouseFromOutsideFamily && member.last_name) {
-      // For spouses from outside: show first_name + family name (last_name)
+    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+    
+    // Only show family name for actual spouses who married into the family
+    // (have a marriage record, no family father, not founder, and have last_name)
+    const isActualSpouseFromOutside = marriage && !memberHasFamilyFather && !member.is_founder && member.last_name;
+    
+    if (isActualSpouseFromOutside) {
+      // For actual spouses from outside: show first_name + family name (last_name)
       const firstName = member.first_name || (member as any).name?.split(' ')[0] || (member as any).name;
       return `${firstName} ${member.last_name}`;
     } else {
-      // For family members and founders: show only first name
+      // For all family members (including those without recorded fathers): show only first name
       return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
     }
   };
