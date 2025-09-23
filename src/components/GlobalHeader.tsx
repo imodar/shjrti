@@ -214,7 +214,7 @@ export const GlobalHeader = () => {
                             <TreePine className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{t('nav.dashboard', 'لوحة التحكم')}</p>
+                            <p className="font-medium text-white">{t('nav.dashboard', 'حسابي')}</p>
                             <p className="text-xs text-gray-400">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
                         </Link>
