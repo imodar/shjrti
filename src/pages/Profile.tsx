@@ -29,17 +29,21 @@ export default function Profile() {
   const formatDateWithPreference = (date: Date | string, preference: DatePreference): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
+    console.log('formatDateWithPreference called with:', { date, preference, dateObj });
+    
     if (isNaN(dateObj.getTime())) {
       return 'تاريخ غير صحيح';
     }
 
     if (preference === 'gregorian') {
+      console.log('Using gregorian format');
       return dateObj.toLocaleDateString('ar-SA', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
     } else if (preference === 'gregorian-levantine') {
+      console.log('Using gregorian-levantine format');
       const levantineMonths = [
         'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
         'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
@@ -51,6 +55,7 @@ export default function Profile() {
       
       return `${day} ${month} ${year}`;
     } else {
+      console.log('Using hijri format');
       // Hijri format - simplified version
       try {
         const gYear = dateObj.getFullYear();
