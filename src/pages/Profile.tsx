@@ -24,6 +24,62 @@ export default function Profile() {
   const { format } = useDateFormat();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+
+  // Helper function to format date with specific preference
+  const formatDateWithPreference = (date: Date | string, preference: DatePreference): string => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    if (isNaN(dateObj.getTime())) {
+      return 'تاريخ غير صحيح';
+    }
+
+    if (preference === 'gregorian') {
+      return dateObj.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } else if (preference === 'gregorian-levantine') {
+      const levantineMonths = [
+        'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+        'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+      ];
+      
+      const day = dateObj.getDate();
+      const month = levantineMonths[dateObj.getMonth()];
+      const year = dateObj.getFullYear();
+      
+      return `${day} ${month} ${year}`;
+    } else {
+      // Hijri format - simplified version
+      try {
+        const gYear = dateObj.getFullYear();
+        const gMonth = dateObj.getMonth() + 1;
+        const gDay = dateObj.getDate();
+        
+        const jDay = Math.floor((1461 * (gYear + 4800 + Math.floor((gMonth - 14) / 12))) / 4) +
+                     Math.floor((367 * (gMonth - 2 - 12 * (Math.floor((gMonth - 14) / 12)))) / 12) -
+                     Math.floor((3 * (Math.floor((gYear + 4900 + Math.floor((gMonth - 14) / 12)) / 100))) / 4) +
+                     gDay - 32075;
+        
+        const islamicJDay = jDay - 1948440.5;
+        const hYear = Math.floor((30 * islamicJDay + 10646) / 10631);
+        const hMonth = Math.min(12, Math.ceil((islamicJDay - 29.5 - 354 * hYear) / 29.5) + 1);
+        const hDay = Math.ceil(islamicJDay - (29.5 * hMonth - 29.5) - 354 * hYear) + 1;
+        
+        const hijriMonths = [
+          'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية',
+          'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+        ];
+        
+        const monthIndex = Math.max(0, Math.min(11, Math.floor(hMonth) - 1));
+        return `${Math.floor(hDay)} ${hijriMonths[monthIndex]} ${Math.floor(hYear)} هـ`;
+      } catch (error) {
+        console.error('Error converting to Hijri:', error);
+        return dateObj.toLocaleDateString('ar-SA');
+      }
+    }
+  };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [currentPackage, setCurrentPackage] = useState<{
@@ -197,13 +253,15 @@ export default function Profile() {
       }
 
       // Set profile data from database or fallback to user auth data
+      const userDatePreference = (profileData?.date_preference || "gregorian") as DatePreference;
+      
       const userData = {
         firstName: profileData?.first_name || "",
         lastName: profileData?.last_name || "",
         email: profileData?.email || user?.email || "",
         phone: profileData?.phone || "",
-        joinDate: profileData?.created_at ? format(new Date(profileData.created_at)) : format(new Date()),
-        datePreference: (profileData?.date_preference || "gregorian") as DatePreference
+        joinDate: profileData?.created_at ? formatDateWithPreference(new Date(profileData.created_at), userDatePreference) : formatDateWithPreference(new Date(), userDatePreference),
+        datePreference: userDatePreference
       };
 
       console.log('Setting profile data:', userData);
