@@ -89,15 +89,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
 
   const renderSpouseInfo = () => {
-    // Debug logging for this member
-    console.log('renderSpouseInfo called for member:', {
-      id: member.id,
-      name: member.first_name || (member as any).name,
-      is_founder: member.is_founder,
-      father_id: member.father_id,
-      marriages_count: marriages?.length || 0
-    });
-
     // Show founder text for founders
     if (member.is_founder) {
       return (
@@ -111,12 +102,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     const marriage = marriages?.find(m => 
       m.husband_id === member.id || m.wife_id === member.id
     );
-    
-    console.log('Marriage found for member:', {
-      memberId: member.id,
-      memberName: member.first_name || (member as any).name,
-      marriage: marriage ? { husband_id: marriage.husband_id, wife_id: marriage.wife_id } : null
-    });
     
     if (marriage) {
       // Determine if this member is the husband or wife
@@ -135,15 +120,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           // Get spouse's father and grandfather from familyMembers
           const spouseFather = familyMembers?.find(m => m?.id === spouse.father_id);
           const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.father_id) : null;
-
-          // Debug logging
-          console.log('Spouse data:', {
-            spouseName: spouse.first_name || (spouse as any).name,
-            spouseId: spouse.id,
-            fatherId: spouse.father_id,
-            spouseFather: spouseFather ? (spouseFather.first_name || (spouseFather as any).name) : 'Not found',
-            spouseGrandfather: spouseGrandfather ? (spouseGrandfather.first_name || (spouseGrandfather as any).name) : 'Not found'
-          });
 
           // Build detailed spouse info: زوجة مضر ابن أمير ابن مظهر
           const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
