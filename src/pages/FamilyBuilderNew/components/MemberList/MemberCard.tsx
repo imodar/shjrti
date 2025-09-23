@@ -53,7 +53,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       
       if (isDescendant) {
         const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
-        return `${firstName} ${genderTerm}`;
+        return (
+          <span>
+            {firstName} <span className="text-xs bg-muted px-1.5 py-0.5 rounded-md font-normal">{genderTerm}</span>
+          </span>
+        );
       }
       
       return firstName;
