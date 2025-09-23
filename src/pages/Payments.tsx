@@ -778,7 +778,9 @@ export default function Payments() {
                             'مجاني للأبد'
                           }
                         </p>
-                      <p className="text-muted-foreground">شهرياً</p>
+                       {(currentPlan && currentPlanData?.price && parseFloat(currentPlanData.price) > 0) && (
+                         <p className="text-muted-foreground">شهرياً</p>
+                       )}
                     </div>
                     
                     <div className="space-y-2 text-sm">
