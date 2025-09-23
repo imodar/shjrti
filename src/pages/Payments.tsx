@@ -1267,13 +1267,17 @@ export default function Payments() {
                                   <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                     {plan.price}
                                   </span>
-                                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    ريال/سنة
-                                  </span>
+                                  {plan.price !== "مجاني للأبد" && (
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                      ريال/سنة
+                                    </span>
+                                  )}
                                 </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                  {Math.round(parseFloat(plan.price) / 12)} ريال شهرياً
-                                </p>
+                                {plan.price !== "مجاني للأبد" && (
+                                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                                    {Math.round(parseFloat(plan.price) / 12)} ريال شهرياً
+                                  </p>
+                                )}
                               </div>
                             )}
                           </div>
