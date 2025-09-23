@@ -98,9 +98,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   const renderSpouseInfo = () => {
     // Show founder text for founders
-    if (member.is_founder) {
+    const isFounder = member.is_founder || (member as any).isFounder;
+    if (isFounder) {
       return (
-        <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+        <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic whitespace-normal break-words">
           الجد الأكبر
         </p>
       );
