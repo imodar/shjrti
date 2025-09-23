@@ -121,6 +121,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           const spouseFather = familyMembers?.find(m => m?.id === spouse.father_id);
           const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.father_id) : null;
 
+          // Debug logging
+          console.log('Spouse data:', {
+            spouseName: spouse.first_name || (spouse as any).name,
+            spouseId: spouse.id,
+            fatherId: spouse.father_id,
+            spouseFather: spouseFather ? (spouseFather.first_name || (spouseFather as any).name) : 'Not found',
+            spouseGrandfather: spouseGrandfather ? (spouseGrandfather.first_name || (spouseGrandfather as any).name) : 'Not found'
+          });
+
           // Build detailed spouse info: زوجة مضر ابن أمير ابن مظهر
           const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
           let spouseInfo = spouseName;
