@@ -151,22 +151,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             </Avatar>
             
             <div className="flex-1 min-w-0 space-y-1">
-              {/* Father + Grandfather names */}
-              {renderParentage()}
-              
-              {/* Individual Name */}
+              {/* Individual Name with relationship */}
               <h3 className="font-semibold text-base font-arabic leading-tight">
-                {member.name || member.first_name || "غير معروف"}
+                {generateMemberDisplayName()}
+                {!member.is_founder && member.father_id && familyMembers?.find(m => m?.id === member.father_id) && (
+                  <span className="text-xs text-muted-foreground font-normal mr-2">
+                    {member.gender === 'female' ? 'ابنة' : 'ابن'}
+                  </span>
+                )}
               </h3>
               
-              {/* Gender icon and relationship */}
-              <div className="flex items-center gap-2">
-                {member.gender === 'male' ? 
-                  <User className="h-3 w-3 text-blue-500" /> : 
-                  <UserIcon className="h-3 w-3 text-pink-500" />
-                }
-                {renderRelationship()}
-              </div>
+              {/* Father + Grandfather names */}
+              {renderParentage()}
               
               {/* Spouse information - show founder text for founders, spouse info for non-family members */}
               {renderSpouseInfo()}
