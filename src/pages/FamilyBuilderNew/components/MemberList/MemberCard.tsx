@@ -101,7 +101,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     if (member.is_founder) {
       return (
         <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
-          الجد الأكبر للعائلة
+          الجد الأكبر
         </p>
       );
     }
