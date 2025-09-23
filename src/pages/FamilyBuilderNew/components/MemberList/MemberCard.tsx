@@ -30,8 +30,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   getGenderColor
 }) => {
   const generateMemberDisplayName = () => {
-    // Always show only the first name
-    return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
+    // Check if this member is a spouse (married into the family)
+    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+    const isSpouseFromOutsideFamily = !memberHasFamilyFather && !member.is_founder;
+    
+    if (isSpouseFromOutsideFamily && member.last_name) {
+      // For spouses from outside: show first_name + family name (last_name)
+      const firstName = member.first_name || (member as any).name?.split(' ')[0] || (member as any).name;
+      return `${firstName} ${member.last_name}`;
+    } else {
+      // For family members and founders: show only first name
+      return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
+    }
   };
 
   const renderRelationship = () => {
