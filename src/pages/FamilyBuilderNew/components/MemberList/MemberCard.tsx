@@ -37,14 +37,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
     
-    // Only show full name for actual spouses who married into the family
-    const isActualSpouseFromOutside = marriage && !memberHasFamilyFather && !member.is_founder;
+    // Show full name for spouses who married into the family (not blood family members)
+    const isSpouseFromOutside = marriage && !memberHasFamilyFather && !member.is_founder;
     
-    if (isActualSpouseFromOutside) {
-      // For actual spouses from outside: show full name (first_name + last_name or complete name)
+    if (isSpouseFromOutside) {
+      // For spouses from outside: show full name (first_name + last_name or complete name)
       if (member.first_name && member.last_name) {
         return `${member.first_name} ${member.last_name}`;
       }
+      // If full name is available in the name field, use it
       return (member as any).name || member.first_name || "غير معروف";
     } else {
       // For all family members: show first name with ابن/ابنة if they are descendants
