@@ -37,11 +37,11 @@ export default function Profile() {
 
     if (preference === 'gregorian') {
       console.log('Using gregorian format');
-      return dateObj.toLocaleDateString('ar-SA', {
+      return new Intl.DateTimeFormat('ar-SA-u-ca-gregory', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
-      });
+      }).format(dateObj);
     } else if (preference === 'gregorian-levantine') {
       console.log('Using gregorian-levantine format');
       const levantineMonths = [
