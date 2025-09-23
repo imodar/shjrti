@@ -774,8 +774,8 @@ export default function Payments() {
                       </h3>
                         <p className="text-3xl font-bold text-emerald-600">
                           {currentPlan ? 
-                            (currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `${currentPlanData.price} ريال` : '0') : 
-                            '0'
+                            (currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `${currentPlanData.price} ريال` : 'مجاني للأبد') : 
+                            'مجاني للأبد'
                           }
                         </p>
                       <p className="text-muted-foreground">شهرياً</p>
