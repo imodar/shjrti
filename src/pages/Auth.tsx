@@ -618,11 +618,11 @@ const Auth = () => {
                             <Label htmlFor="email">{t('email', 'البريد الإلكتروني')}</Label>
                             <div className="relative">
                               <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                id="email"
-                                type="email"
-                                placeholder="example@domain.com"
-                                className="pr-10"
+                               <Input
+                                 id="email"
+                                 type="email"
+                                 placeholder={t('email_placeholder', 'example@domain.com')}
+                                 className="pr-10"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 tabIndex={3}
@@ -638,7 +638,7 @@ const Auth = () => {
                               <Input
                                 id="phone"
                                 type="tel"
-                                placeholder="+966 50 123 4567"
+                                placeholder={t('phone_placeholder', '+966 50 123 4567')}
                                 className="pr-10"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
@@ -683,11 +683,11 @@ const Auth = () => {
                             <Label htmlFor="loginEmail">{t('email', 'البريد الإلكتروني')}</Label>
                             <div className="relative">
                               <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                id="loginEmail"
-                                type="email"
-                                placeholder="example@domain.com"
-                                className="pr-10"
+                               <Input
+                                 id="loginEmail"
+                                 type="email"
+                                 placeholder={t('email_placeholder', 'example@domain.com')}
+                                 className="pr-10"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
