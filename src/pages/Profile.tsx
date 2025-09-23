@@ -198,7 +198,7 @@ export default function Profile() {
 
       // Set profile data from database or fallback to user auth data
       const userData = {
-        firstName: profileData?.first_name || user?.email?.split('@')[0] || "",
+        firstName: profileData?.first_name || "",
         lastName: profileData?.last_name || "",
         email: profileData?.email || user?.email || "",
         phone: profileData?.phone || "",
