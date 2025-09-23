@@ -89,6 +89,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
 
   const renderSpouseInfo = () => {
+    // Debug logging for this member
+    console.log('renderSpouseInfo called for member:', {
+      id: member.id,
+      name: member.first_name || (member as any).name,
+      is_founder: member.is_founder,
+      father_id: member.father_id,
+      marriages_count: marriages?.length || 0
+    });
+
     // Show founder text for founders
     if (member.is_founder) {
       return (
@@ -102,6 +111,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     const marriage = marriages?.find(m => 
       m.husband_id === member.id || m.wife_id === member.id
     );
+    
+    console.log('Marriage found for member:', {
+      memberId: member.id,
+      memberName: member.first_name || (member as any).name,
+      marriage: marriage ? { husband_id: marriage.husband_id, wife_id: marriage.wife_id } : null
+    });
     
     if (marriage) {
       // Determine if this member is the husband or wife
