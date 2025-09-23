@@ -35,7 +35,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       m.husband_id === member.id || m.wife_id === member.id
     );
     
-    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+    const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
     
     // Only show full name for actual spouses who married into the family
     const isActualSpouseFromOutside = marriage && !memberHasFamilyFather && !member.is_founder;
@@ -54,7 +54,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   const renderRelationship = () => {
     // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
-    const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+    const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
     const isDescendant = !member.is_founder && memberHasFamilyFather;
     if (isDescendant) {
       return (
@@ -67,8 +67,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
 
   const renderParentage = () => {
-    const father = familyMembers?.find(m => m?.id === member.father_id);
-    const grandfather = father ? familyMembers?.find(m => m?.id === father.father_id) : null;
+    const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
+    const grandfather = father ? familyMembers?.find(m => m?.id === (father.father_id || (father as any).fatherId)) : null;
     if (father && grandfather) {
       const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
       const grandfatherFirstName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
@@ -113,13 +113,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
       if (spouse) {
         // Check if current member is a non-family member (married into the family)
-        const memberHasFamilyFather = member.father_id && familyMembers?.find(m => m?.id === member.father_id);
+        const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
 
         // Only show spouse info for non-family members (those without family fathers)
         if (!memberHasFamilyFather) {
           // Get spouse's father and grandfather from familyMembers
-          const spouseFather = familyMembers?.find(m => m?.id === spouse.father_id);
-          const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === spouseFather.father_id) : null;
+          const spouseFather = familyMembers?.find(m => m?.id === (spouse.father_id || (spouse as any).fatherId));
+          const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === (spouseFather.father_id || (spouseFather as any).fatherId)) : null;
 
           // Build detailed spouse info: زوجة مضر ابن أمير ابن مظهر
           const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
