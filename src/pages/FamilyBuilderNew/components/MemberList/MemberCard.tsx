@@ -152,7 +152,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
           // Use زوج for husband, زوجة for wife (from member's perspective)
           const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-          return null;
+          return (
+            <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic whitespace-normal break-words">
+              {relationLabel} {spouseInfo}
+            </p>
+          );
         }
       }
     }
@@ -186,8 +190,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* Spouse information - show founder text for founders, spouse info for non-family members */}
               {renderSpouseInfo()}
               
-              {/* Spouse information - show founder text for founders, spouse info for non-family members */}
-              {renderSpouseInfo()}
+              {/* Birth date and other icons */}
+              <div className="flex items-center gap-2">
+                {member.birth_date && <DateDisplay date={member.birth_date} className="text-xs text-muted-foreground font-arabic" />}
+                {member.is_founder && <Crown className="h-3 w-3 text-yellow-500" />}
+                {!(member as any).isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
+              </div>
             </div>
           </div>
         </div>
