@@ -140,7 +140,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           // Use زوج for husband, زوجة for wife (from member's perspective)
           const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
           return (
-            <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-arabic">
+            <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic whitespace-normal break-words">
               {relationLabel} {spouseInfo}
             </p>
           );
