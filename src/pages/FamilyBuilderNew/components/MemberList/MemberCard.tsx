@@ -47,8 +47,16 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       }
       return (member as any).name || member.first_name || "غير معروف";
     } else {
-      // For all family members: show only first name
-      return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
+      // For all family members: show first name with ابن/ابنة if they are descendants
+      const firstName = member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
+      const isDescendant = !member.is_founder && memberHasFamilyFather;
+      
+      if (isDescendant) {
+        const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
+        return `${firstName} ${genderTerm}`;
+      }
+      
+      return firstName;
     }
   };
 
@@ -169,11 +177,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* Individual Name with relationship inline */}
               <h3 className="font-semibold text-base font-arabic leading-tight">
                 {generateMemberDisplayName()}
-                {!member.is_founder && member.father_id && familyMembers?.find(m => m?.id === member.father_id) && (
-                  <span className="text-xs text-muted-foreground font-normal mr-1">
-                    {member.gender === 'female' ? 'ابنة' : 'ابن'}
-                  </span>
-                )}
               </h3>
               
               {/* Father + Grandfather names */}
