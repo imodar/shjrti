@@ -2923,6 +2923,47 @@ const FamilyBuilderNew = () => {
                     </div>
                   </div>
 
+                  {/* Statistics Grid - Moved from below */}
+                  <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {/* Total Members */}
+                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
+                        <Users className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
+                        <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                          {familyMembers.length}
+                        </div>
+                        <div className="text-xs text-emerald-600 dark:text-emerald-400">الأعضاء</div>
+                      </div>
+
+                      {/* Generations */}
+                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
+                        <Crown className="h-4 w-4 text-amber-600 mx-auto mb-1" />
+                        <div className="text-lg font-bold text-amber-700 dark:text-amber-300">
+                          {generationCount}
+                        </div>
+                        <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
+                      </div>
+
+                      {/* Males */}
+                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
+                        <UserIcon className="h-4 w-4 text-blue-600 mx-auto mb-1" />
+                        <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
+                          {familyMembers.filter(m => m.gender === 'male').length}
+                        </div>
+                        <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
+                      </div>
+
+                      {/* Females */}
+                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
+                        <UserRoundIcon className="h-4 w-4 text-pink-600 mx-auto mb-1" />
+                        <div className="text-lg font-bold text-pink-700 dark:text-pink-300">
+                          {familyMembers.filter(m => m.gender === 'female').length}
+                        </div>
+                        <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Navigation Icons - Inside the main container */}
                   <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
                     <div className="flex items-center justify-center gap-3 sm:gap-4">
@@ -3104,45 +3145,6 @@ const FamilyBuilderNew = () => {
                             </div>
                           </div>
                         </div>
-
-                      {/* Statistics Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        {/* Total Members */}
-                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl p-4 text-center border border-emerald-200 dark:border-emerald-700">
-                          <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
-                            {familyMembers.length}
-                          </div>
-                          <div className="text-xs text-emerald-600 dark:text-emerald-400">إجمالي الأعضاء</div>
-                        </div>
-
-                        {/* Generations */}
-                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700">
-                          <Crown className="h-6 w-6 text-amber-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                            {generationCount}
-                          </div>
-                          <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
-                        </div>
-
-                        {/* Males */}
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 text-center border border-blue-200 dark:border-blue-700">
-                          <UserIcon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                            {familyMembers.filter(m => m.gender === 'male').length}
-                          </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
-                        </div>
-
-                        {/* Females */}
-                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 rounded-xl p-4 text-center border border-pink-200 dark:border-pink-700">
-                          <UserRoundIcon className="h-6 w-6 text-pink-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-pink-700 dark:text-pink-300">
-                            {familyMembers.filter(m => m.gender === 'female').length}
-                          </div>
-                          <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
-                        </div>
-                      </div>
 
                       {/* Quick Actions */}
                       <div className="space-y-3">
