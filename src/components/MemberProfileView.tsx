@@ -418,7 +418,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
                 <div className="absolute top-0 left-0 z-10">
-                  <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent"></div>
+                  <svg width="40" height="40" viewBox="0 0 40 40" className="overflow-visible">
+                    <path 
+                      d="M0,8 Q0,0 8,0 L40,0 L0,40 Q0,32 0,8 Z" 
+                      fill="black"
+                    />
+                  </svg>
                 </div>
               )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
