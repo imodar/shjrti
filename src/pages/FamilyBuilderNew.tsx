@@ -311,6 +311,7 @@ const FamilyBuilderNew = () => {
   const [editingMember, setEditingMember] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const isSavingRef = useRef(false);
   const [relationshipPopoverOpen, setRelationshipPopoverOpen] = useState(false);
 
   // Mobile drawer state
@@ -2153,6 +2154,11 @@ const FamilyBuilderNew = () => {
     console.log('🚨 Current wives:', wives);
     console.log('🚨 Original wives data:', originalWivesData);
     try {
+      if (isSavingRef.current) {
+        console.warn('⛔️ Duplicate submit ignored');
+        return;
+      }
+      isSavingRef.current = true;
       setIsSaving(true);
 
       // Determine marital status based on presence of spouses
@@ -2663,6 +2669,7 @@ const FamilyBuilderNew = () => {
         variant: "destructive"
       });
     } finally {
+      isSavingRef.current = false;
       setIsSaving(false);
     }
   }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
