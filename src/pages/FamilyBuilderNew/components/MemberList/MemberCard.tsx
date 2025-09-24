@@ -193,10 +193,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               
               {/* Birth date and other icons */}
               <div className="flex items-center gap-2">
-                {member.birth_date && (
+                {(member.birth_date || (member as any).birthDate) && (
                   <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
                     <Calendar className="h-3 w-3 text-blue-600" />
-                    <DateDisplay date={member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
+                    <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
                   </div>
                 )}
                 {member.is_founder && (
