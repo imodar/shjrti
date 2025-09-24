@@ -478,19 +478,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <Link2 className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-sm">رابط الشجرة الخاص</p>
-                      <p className="text-xs text-muted-foreground">للأعضاء المسجلين فقط</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleCopyLink}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
                     <Eye className="h-5 w-5 text-green-600" />
                     <div>
                       <p className="font-medium text-sm">رابط العرض العام</p>
