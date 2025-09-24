@@ -21,7 +21,7 @@ export const CustomDomainCard: React.FC<CustomDomainCardProps> = ({
   const { toast } = useToast();
   const { subscription } = useSubscription();
   
-  const [customDomain, setCustomDomain] = useState(familyData?.custom_link || "");
+  const [customDomain, setCustomDomain] = useState(familyData?.custom_domain || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
@@ -87,7 +87,7 @@ export const CustomDomainCard: React.FC<CustomDomainCardProps> = ({
       const { data: existingDomain } = await supabase
         .from('families')
         .select('id')
-        .eq('custom_link', domain)
+        .eq('custom_domain', domain)
         .neq('id', familyData.id)
         .single();
         
@@ -111,7 +111,7 @@ export const CustomDomainCard: React.FC<CustomDomainCardProps> = ({
     try {
       const { error } = await supabase
         .from('families')
-        .update({ custom_link: customDomain || null })
+        .update({ custom_domain: customDomain || null })
         .eq('id', familyData.id);
         
       if (error) throw error;
@@ -259,12 +259,12 @@ export const CustomDomainCard: React.FC<CustomDomainCardProps> = ({
               )}
             </div>
             
-            {familyData?.custom_link && (
+            {familyData?.custom_domain && (
               <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
                 <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                   <CheckCircle className="h-4 w-4" />
                   <span className="text-sm font-medium">
-                    النطاق المخصص نشط: {familyData.custom_link}
+                    النطاق المخصص نشط: {familyData.custom_domain}
                   </span>
                 </div>
               </div>

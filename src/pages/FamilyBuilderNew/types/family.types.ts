@@ -2,7 +2,7 @@ export interface Family {
   id: string;
   name: string;
   description?: string;
-  custom_link?: string;
+  custom_domain?: string;
   share_password?: string;
   creator_id: string;
   is_archived?: boolean;

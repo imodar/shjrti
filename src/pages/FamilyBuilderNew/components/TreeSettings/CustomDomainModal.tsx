@@ -82,7 +82,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       const { data: existingDomain } = await supabase
         .from('families')
         .select('id, name')
-        .eq('custom_link', domain)
+        .eq('custom_domain', domain)
         .neq('id', familyId)
         .maybeSingle();
         
@@ -132,7 +132,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       const { error } = await supabase
         .from('families')
         .update({ 
-          custom_link: domainValue || null,
+          custom_domain: domainValue || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', familyId);
@@ -165,7 +165,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       const { error } = await supabase
         .from('families')
         .update({ 
-          custom_link: null,
+          custom_domain: null,
           updated_at: new Date().toISOString()
         })
         .eq('id', familyId);

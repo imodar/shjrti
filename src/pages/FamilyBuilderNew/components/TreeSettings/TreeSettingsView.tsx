@@ -52,7 +52,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   
   // Custom Domain state
-  const [customDomain, setCustomDomain] = useState(familyData?.custom_link || "");
+  const [customDomain, setCustomDomain] = useState(familyData?.custom_domain || "");
   const [isEditingDomain, setIsEditingDomain] = useState(false);
   const [isLoadingDomain, setIsLoadingDomain] = useState(false);
   const [isValidatingDomain, setIsValidatingDomain] = useState(false);
@@ -485,12 +485,12 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     </div>
                   )}
                   
-                  {familyData?.custom_link && (
+                  {familyData?.custom_domain && (
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
                       <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                         <CheckCircle className="h-4 w-4" />
                         <span className="text-sm font-medium">
-                          الرابط المخصص نشط: https://shjrti.com/{familyData.custom_link}
+                          الرابط المخصص نشط: https://shjrti.com/{familyData.custom_domain}
                         </span>
                       </div>
                     </div>
@@ -654,10 +654,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
         isOpen={isDomainModalOpen}
         onClose={() => setIsDomainModalOpen(false)}
         familyId={familyData?.id || ''}
-        currentDomain={familyData?.custom_link || undefined}
+        currentDomain={familyData?.custom_domain || undefined}
         onDomainUpdated={(newDomain) => {
           if (familyData) {
-            familyData.custom_link = newDomain;
+            familyData.custom_domain = newDomain;
             setCustomDomain(newDomain || '');
           }
         }}
