@@ -2968,7 +2968,6 @@ const FamilyBuilderNew = () => {
                           {/* Settings Button - Enhanced */}
                           <div className="absolute top-6 left-6 z-20">
                             <div className="relative group">
-                              <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-secondary rounded-xl blur opacity-20 group-hover:opacity-40 transition-all duration-500 animate-pulse"></div>
                               <div className="relative bg-card/80 backdrop-blur-md rounded-xl p-2 border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                                 <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
                               </div>
