@@ -2567,8 +2567,10 @@ const FamilyBuilderNew = () => {
             });
             
             const isWife = spouseType === 'wife';
-            // Prefer known IDs: in-family uses existingFamilyMemberId, external spouses use their own id
-            let spouseId = spouseData.existingFamilyMemberId || spouseData.id || null;
+            // Prefer known IDs: in-family uses existingFamilyMemberId, external spouses use their own id (only if UUID)
+            const isValidUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+            const candidateId = spouseData.existingFamilyMemberId || spouseData.id || null;
+            let spouseId = candidateId && typeof candidateId === 'string' && isValidUuid(candidateId) ? candidateId : null;
 
             // Ensure we have a proper name for the spouse
             const firstName = spouseData.firstName || '';
