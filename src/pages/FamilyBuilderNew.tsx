@@ -587,7 +587,7 @@ const FamilyBuilderNew = () => {
     }
   }, [croppedImage, formData.croppedImage]);
 
-  // Command states for search
+  // Command states for search (keep legacy states for now)
   const [husbandCommandOpen, setHusbandCommandOpen] = useState(false);
   const [wivesCommandOpen, setWivesCommandOpen] = useState<{
     [key: number]: boolean;
@@ -597,24 +597,29 @@ const FamilyBuilderNew = () => {
   }>({});
 
   // Unified spouse form states
-  const [currentWife, setCurrentWife] = useState<SpouseData | null>(null);
-  const [currentHusband, setCurrentHusband] = useState<SpouseData | null>(null);
-  const [wifeCommandOpen, setWifeCommandOpen] = useState(false);
-  const [wifeFamilyStatus, setWifeFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [husbandFamilyStatus, setHusbandFamilyStatus] = useState<'yes' | 'no' | null>(null);
-  const [showWifeForm, setShowWifeForm] = useState(false);
-  const [showHusbandForm, setShowHusbandForm] = useState(false);
+  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
+  const [activeSpouseType, setActiveSpouseType] = useState<'wife' | 'husband' | null>(null);
+  const [showSpouseForm, setShowSpouseForm] = useState(false);
+  const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
+  const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
 
+  // Legacy state getters for backward compatibility
+  const currentWife = activeSpouseType === 'wife' ? currentSpouse : null;
+  const currentHusband = activeSpouseType === 'husband' ? currentSpouse : null;
+  const showWifeForm = showSpouseForm && activeSpouseType === 'wife';
+  const showHusbandForm = showSpouseForm && activeSpouseType === 'husband';
+  const wifeCommandOpen = activeSpouseType === 'wife' ? spouseCommandOpen : false;
+  const wifeFamilyStatus = activeSpouseType === 'wife' ? spouseFamilyStatus : null;
+  const husbandFamilyStatus = activeSpouseType === 'husband' ? spouseFamilyStatus : null;
+
   // Unified spouse form handlers
-  const handleWifeFamilyStatusChange = (status: string) => {
-    setWifeFamilyStatus(status as 'yes' | 'no');
+  const handleSpouseFamilyStatusChange = (status: string) => {
+    setSpouseFamilyStatus(status as 'yes' | 'no');
   };
-  const handleHusbandFamilyStatusChange = (status: string) => {
-    setHusbandFamilyStatus(status as 'yes' | 'no');
-  };
-  const handleAddWife = () => {
-    setCurrentWife({
+  
+  const handleAddSpouse = (spouseType: 'wife' | 'husband') => {
+    setCurrentSpouse({
       id: '',
       firstName: '',
       lastName: '',
@@ -628,27 +633,80 @@ const FamilyBuilderNew = () => {
       croppedImage: null,
       isSaved: false
     });
-    setShowWifeForm(true);
+    setActiveSpouseType(spouseType);
+    setShowSpouseForm(true);
   };
-  const handleAddHusband = () => {
-    setCurrentHusband({
-      id: '',
-      firstName: '',
-      lastName: '',
-      name: '',
-      isAlive: true,
-      birthDate: null,
-      deathDate: null,
-      maritalStatus: 'married',
-      isFamilyMember: false,
-      existingFamilyMemberId: '',
-      croppedImage: null,
-      isSaved: false
-    });
-    setShowHusbandForm(true);
+
+  // Legacy handlers for backward compatibility
+  const handleWifeFamilyStatusChange = handleSpouseFamilyStatusChange;
+  const handleHusbandFamilyStatusChange = handleSpouseFamilyStatusChange;
+  const handleAddWife = () => handleAddSpouse('wife');
+  const handleAddHusband = () => handleAddSpouse('husband');
+  
+  // Legacy setters for backward compatibility
+  const setCurrentWife = (spouse: SpouseData | null) => {
+    if (spouse === null) {
+      if (activeSpouseType === 'wife') {
+        setCurrentSpouse(null);
+        setActiveSpouseType(null);
+      }
+    } else {
+      setCurrentSpouse(spouse);
+      setActiveSpouseType('wife');
+    }
+  };
+  
+  const setCurrentHusband = (spouse: SpouseData | null) => {
+    if (spouse === null) {
+      if (activeSpouseType === 'husband') {
+        setCurrentSpouse(null);
+        setActiveSpouseType(null);
+      }
+    } else {
+      setCurrentSpouse(spouse);
+      setActiveSpouseType('husband');
+    }
+  };
+  
+  const setShowWifeForm = (show: boolean) => {
+    if (show) {
+      setActiveSpouseType('wife');
+      setShowSpouseForm(true);
+    } else if (activeSpouseType === 'wife') {
+      setShowSpouseForm(false);
+      setActiveSpouseType(null);
+    }
+  };
+  
+  const setShowHusbandForm = (show: boolean) => {
+    if (show) {
+      setActiveSpouseType('husband');
+      setShowSpouseForm(true);
+    } else if (activeSpouseType === 'husband') {
+      setShowSpouseForm(false);
+      setActiveSpouseType(null);
+    }
+  };
+  
+  const setWifeCommandOpen = (open: boolean) => {
+    if (activeSpouseType === 'wife') {
+      setSpouseCommandOpen(open);
+    }
+  };
+  
+  const setWifeFamilyStatus = (status: 'yes' | 'no' | null) => {
+    if (activeSpouseType === 'wife') {
+      setSpouseFamilyStatus(status);
+    }
+  };
+  
+  const setHusbandFamilyStatus = (status: 'yes' | 'no' | null) => {
+    if (activeSpouseType === 'husband') {
+      setSpouseFamilyStatus(status);
+    }
   };
   const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
-    const currentSpouse = spouseType === 'wife' ? currentWife : currentHusband;
+    if (!currentSpouse || activeSpouseType !== spouseType) return;
     if (!currentSpouse) return;
     try {
       let spouseId = currentSpouse.id;
@@ -794,15 +852,10 @@ const FamilyBuilderNew = () => {
       }
 
       // Reset form state
-      if (spouseType === 'wife') {
-        setCurrentWife(null);
-        setShowWifeForm(false);
-        setWifeFamilyStatus(null);
-      } else {
-        setCurrentHusband(null);
-        setShowHusbandForm(false);
-        setHusbandFamilyStatus(null);
-      }
+      setCurrentSpouse(null);
+      setActiveSpouseType(null);
+      setShowSpouseForm(false);
+      setSpouseFamilyStatus(null);
       toast({
         title: "تم حفظ البيانات",
         description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
@@ -835,8 +888,9 @@ const FamilyBuilderNew = () => {
     return null;
   };
   const closeActiveSpouseEdit = () => {
-    console.log('closeActiveSpouseEdit called, showWifeForm:', showWifeForm, 'showHusbandForm:', showHusbandForm, 'editingWifeIndex:', editingWifeIndex);
-    if (showWifeForm) {
+    console.log('closeActiveSpouseEdit called, activeSpouseType:', activeSpouseType, 'showSpouseForm:', showSpouseForm, 'editingWifeIndex:', editingWifeIndex);
+    
+    if (activeSpouseType === 'wife' && showSpouseForm) {
       console.log('Closing wife form, current wives before close:', wives);
 
       // Ensure all wives are marked as saved when closing
@@ -845,15 +899,11 @@ const FamilyBuilderNew = () => {
         isSaved: true
       }));
       setWives(updatedWives);
-
-      // Close the form
-      setShowWifeForm(false);
-      setCurrentWife(null);
-      setWifeFamilyStatus('no');
       setEditingWifeIndex(null);
       console.log('Wife form closed, all wives marked as saved');
     }
-    if (showHusbandForm) {
+    
+    if (activeSpouseType === 'husband' && showSpouseForm) {
       console.log('Closing husband form, current husband before close:', husband);
 
       // Ensure husband is marked as saved when closing
@@ -863,13 +913,14 @@ const FamilyBuilderNew = () => {
           isSaved: true
         });
       }
-
-      // Close the form
-      setShowHusbandForm(false);
-      setCurrentHusband(null);
-      setHusbandFamilyStatus('no');
       console.log('Husband form closed, husband marked as saved');
     }
+
+    // Close the form
+    setCurrentSpouse(null);
+    setActiveSpouseType(null);
+    setShowSpouseForm(false);
+    setSpouseFamilyStatus('no');
   };
   const handleSpouseEditAttempt = (spouseType: 'wife' | 'husband', spouseData: any, index: number) => {
     const activeEdit = checkForActiveSpouseEdit();
@@ -897,20 +948,20 @@ const FamilyBuilderNew = () => {
         isFamilyMember: isSpouseFamilyMember
       };
       setWives(updatedWives);
-      setCurrentWife({...spouseData, isFamilyMember: isSpouseFamilyMember});
-      setShowWifeForm(true);
       setEditingWifeIndex(index);
-      setWifeFamilyStatus(familyStatus);
     } else {
       setHusband({
         ...spouseData,
         isSaved: false,
         isFamilyMember: isSpouseFamilyMember
       });
-      setCurrentHusband({...spouseData, isFamilyMember: isSpouseFamilyMember});
-      setShowHusbandForm(true);
-      setHusbandFamilyStatus(familyStatus);
     }
+    
+    // Set unified spouse state
+    setCurrentSpouse({...spouseData, isFamilyMember: isSpouseFamilyMember});
+    setActiveSpouseType(spouseType);
+    setShowSpouseForm(true);
+    setSpouseFamilyStatus(familyStatus);
     toast({
       title: "وضع التعديل",
       description: `يمكنك الآن تعديل بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'}`,
@@ -3647,26 +3698,7 @@ const FamilyBuilderNew = () => {
                                                 {/* Action Buttons at bottom */}
                                                 <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
                                                   {wife.isSaved && <Button variant="secondary" size="sm" onClick={() => {
-                                  // إعادة تعيين جميع الزوجات إلى الحالة المحفوظة أولاً
-                                  const resetWives = wives.map(w => ({
-                                    ...w,
-                                    isSaved: true
-                                  }));
-                                  // ثم تعيين الزوجة المحددة للتعديل
-                                  const updatedWives = [...resetWives];
-                                  updatedWives[index] = {
-                                    ...wife,
-                                    isSaved: false
-                                  };
-                                  setWives(updatedWives);
-                                  setCurrentWife(wife);
-                                  setShowWifeForm(true);
-                                  setWifeFamilyStatus(wife.isFamilyMember ? 'yes' : 'no');
-                                  toast({
-                                    title: "وضع التعديل",
-                                    description: `يمكنك الآن تعديل بيانات الزوجة ${index + 1}`,
-                                    variant: "default"
-                                  });
+                                  handleSpouseEditAttempt('wife', wife, index);
                                 }} className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300">
                                                       <Edit className="h-3 w-3 ml-1" />
                                                       تعديل
@@ -3692,39 +3724,72 @@ const FamilyBuilderNew = () => {
                                       <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">إضافة زوجة</h4>
                                     </div>
                                     
-                                      <SpouseForm spouseType="wife" spouse={currentWife || {
-                          id: '',
-                          firstName: '',
-                          lastName: '',
-                          name: '',
-                          isAlive: true,
-                          birthDate: null,
-                          deathDate: null,
-                          maritalStatus: 'married',
-                          isFamilyMember: false,
-                          existingFamilyMemberId: '',
-                          croppedImage: null,
-                          biography: '',
-                          isSaved: false
-                        }} onSpouseChange={setCurrentWife} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={wifeCommandOpen} onCommandOpenChange={setWifeCommandOpen} familyStatus={wifeFamilyStatus} onFamilyStatusChange={handleWifeFamilyStatusChange} onSave={handleWifeSave} onAdd={handleAddWife} onClose={handleCloseWifeEdit} showForm={showWifeForm} />
+                                      {/* Unified Spouse Form */}
+                                      {activeSpouseType && showSpouseForm && (
+                                        <SpouseForm 
+                                          spouseType={activeSpouseType} 
+                                          spouse={currentSpouse || {
+                                            id: '',
+                                            firstName: '',
+                                            lastName: '',
+                                            name: '',
+                                            isAlive: true,
+                                            birthDate: null,
+                                            deathDate: null,
+                                            maritalStatus: 'married',
+                                            isFamilyMember: false,
+                                            existingFamilyMemberId: '',
+                                            croppedImage: null,
+                                            biography: '',
+                                            isSaved: false
+                                          }} 
+                                          onSpouseChange={setCurrentSpouse} 
+                                          familyMembers={familyMembers} 
+                                          selectedMember={selectedMember} 
+                                          commandOpen={spouseCommandOpen} 
+                                          onCommandOpenChange={setSpouseCommandOpen} 
+                                          familyStatus={spouseFamilyStatus} 
+                                          onFamilyStatusChange={handleSpouseFamilyStatusChange} 
+                                          onSave={() => handleSpouseSave(activeSpouseType)} 
+                                          onAdd={() => handleAddSpouse(activeSpouseType)} 
+                                          onClose={activeSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit} 
+                                          showForm={showSpouseForm} 
+                                        />
+                                      )}
                                   </div>
                                 </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                  {/* Unified Husband Form */}
-                                     <SpouseForm spouseType="husband" spouse={currentHusband || {
-                        id: '',
-                        firstName: '',
-                        lastName: '',
-                        name: '',
-                        isAlive: true,
-                        birthDate: null,
-                        deathDate: null,
-                        maritalStatus: 'married',
-                        isFamilyMember: false,
-                        existingFamilyMemberId: '',
-                        croppedImage: null,
-                        biography: '',
-                        isSaved: false
-                      }} onSpouseChange={setCurrentHusband} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={husbandCommandOpen} onCommandOpenChange={setHusbandCommandOpen} familyStatus={husbandFamilyStatus} onFamilyStatusChange={handleHusbandFamilyStatusChange} onSave={handleHusbandSave} onAdd={handleAddHusband} onClose={handleCloseHusbandEdit} showForm={showHusbandForm} />
+                                  {/* Unified Spouse Form */}
+                                  {activeSpouseType && showSpouseForm && (
+                                    <SpouseForm 
+                                      spouseType={activeSpouseType} 
+                                      spouse={currentSpouse || {
+                                        id: '',
+                                        firstName: '',
+                                        lastName: '',
+                                        name: '',
+                                        isAlive: true,
+                                        birthDate: null,
+                                        deathDate: null,
+                                        maritalStatus: 'married',
+                                        isFamilyMember: false,
+                                        existingFamilyMemberId: '',
+                                        croppedImage: null,
+                                        biography: '',
+                                        isSaved: false
+                                      }} 
+                                      onSpouseChange={setCurrentSpouse} 
+                                      familyMembers={familyMembers} 
+                                      selectedMember={selectedMember} 
+                                      commandOpen={spouseCommandOpen} 
+                                      onCommandOpenChange={setSpouseCommandOpen} 
+                                      familyStatus={spouseFamilyStatus} 
+                                      onFamilyStatusChange={handleSpouseFamilyStatusChange} 
+                                      onSave={() => handleSpouseSave(activeSpouseType)} 
+                                      onAdd={() => handleAddSpouse(activeSpouseType)} 
+                                      onClose={activeSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit} 
+                                      showForm={showSpouseForm} 
+                                    />
+                                  )}
 
                                   {/* Husband Display Panel */}
                                   <div className="space-y-4">
@@ -3743,18 +3808,7 @@ const FamilyBuilderNew = () => {
                                           <div className="flex items-center justify-between">
                                             <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
                                  if (husband.isSaved) {
-                                   setHusband({
-                                     ...husband,
-                                     isSaved: false
-                                   });
-                                   setCurrentHusband(husband);
-                                   setShowHusbandForm(true);
-                                   setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
-                                   toast({
-                                     title: "وضع التعديل",
-                                     description: "يمكنك الآن تعديل بيانات الزوج",
-                                     variant: "default"
-                                   });
+                                   handleSpouseEditAttempt('husband', husband, -1);
                                  }
                                }}>
                                               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
