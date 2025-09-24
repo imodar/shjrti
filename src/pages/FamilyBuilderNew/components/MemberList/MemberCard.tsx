@@ -162,19 +162,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               
               {/* Spouse information - show founder text for founders, spouse info for non-family members */}
               {renderSpouseInfo()}
-               
-               {/* Birth date and other icons */}
-               <div className="flex items-center gap-2">
-                 {(member.birth_date || (member as any).birthDate) && <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
-                     <Calendar className="h-3 w-3 text-blue-600" />
-                     <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
-                   </div>}
-                 {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
-                   <Crown className="h-4 w-4 text-yellow-600" />
-                   <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
-                 </div>}
-                {!(member as any).isAlive && <Skull className="h-4 w-4 text-red-500" />}
-              </div>
+                
+                {/* Birth date and other icons */}
+                <div className="flex items-center gap-2">
+                  {(member.birth_date || (member as any).birthDate) && <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                      <Calendar className="h-3 w-3 text-blue-600" />
+                      <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
+                    </div>}
+                  {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+                    <Crown className="h-4 w-4 text-yellow-600" />
+                    <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
+                  </div>}
+                </div>
             </div>
           </div>
         </div>
