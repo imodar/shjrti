@@ -938,11 +938,28 @@ const FamilyBuilderNew = () => {
     const isSpouseFamilyMember = spouseData.isFamilyMember || Boolean(spouseData.existingFamilyMemberId);
     const familyStatus = isSpouseFamilyMember ? 'yes' : 'no';
 
+    // Normalize spouse data to match SpouseForm interface
+    const normalizedSpouseData = {
+      id: spouseData.id || '',
+      firstName: spouseData.firstName || spouseData.first_name || '',
+      lastName: spouseData.lastName || spouseData.last_name || '',
+      name: spouseData.name || `${spouseData.firstName || spouseData.first_name || ''} ${spouseData.lastName || spouseData.last_name || ''}`.trim(),
+      isAlive: spouseData.isAlive !== undefined ? spouseData.isAlive : (spouseData.is_alive !== undefined ? spouseData.is_alive : true),
+      birthDate: spouseData.birthDate ? new Date(spouseData.birthDate) : (spouseData.birth_date ? new Date(spouseData.birth_date) : null),
+      deathDate: spouseData.deathDate ? new Date(spouseData.deathDate) : (spouseData.death_date ? new Date(spouseData.death_date) : null),
+      maritalStatus: spouseData.maritalStatus || spouseData.marital_status || 'married',
+      isFamilyMember: isSpouseFamilyMember,
+      existingFamilyMemberId: spouseData.existingFamilyMemberId || '',
+      croppedImage: spouseData.croppedImage || spouseData.image_url || null,
+      biography: spouseData.biography || '',
+      isSaved: spouseData.isSaved || false
+    };
+
     // No active edit, proceed with editing
     if (spouseType === 'wife') {
       const updatedWives = [...wives];
       updatedWives[index] = {
-        ...spouseData,
+        ...normalizedSpouseData,
         isSaved: false,
         isFamilyMember: isSpouseFamilyMember
       };
@@ -950,14 +967,14 @@ const FamilyBuilderNew = () => {
       setEditingWifeIndex(index);
     } else {
       setHusband({
-        ...spouseData,
+        ...normalizedSpouseData,
         isSaved: false,
         isFamilyMember: isSpouseFamilyMember
       });
     }
     
-    // Set unified spouse state
-    setCurrentSpouse({...spouseData, isFamilyMember: isSpouseFamilyMember});
+    // Set unified spouse state with normalized data
+    setCurrentSpouse(normalizedSpouseData);
     setActiveSpouseType(spouseType);
     setShowSpouseForm(true);
     setSpouseFamilyStatus(familyStatus);
