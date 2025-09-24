@@ -3419,7 +3419,7 @@ const FamilyBuilderNew = () => {
                                    </div>
                                    
                                     <div className="space-y-3">
-                                      {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
+                                       {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
                                            <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                            <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
                                            <Button
@@ -3435,7 +3435,15 @@ const FamilyBuilderNew = () => {
                                                 <div className="flex items-start justify-between">
                                                   <div className="flex items-start gap-4 flex-1">
                                                     <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
-                                                      {index + 1}
+                                                      {wife.croppedImage ? (
+                                                        <img 
+                                                          src={wife.croppedImage} 
+                                                          alt={wife.name || `الزوجة ${index + 1}`}
+                                                          className="w-full h-full object-cover rounded-2xl"
+                                                        />
+                                                      ) : (
+                                                        <Heart className="w-5 h-5" />
+                                                      )}
                                                     </div>
                                                     <div className="flex-1">
                                                       <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
@@ -3443,37 +3451,38 @@ const FamilyBuilderNew = () => {
                                                       </h5>
                                                       
                                                       <div className="space-y-2">
-                                                        
-                                                        <div className="flex items-center gap-2">
+                                                        <div className="flex items-center gap-2 flex-wrap">
                                                           {wife.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
                                                               <Check className="h-3 w-3" />
                                                               محفوظة
                                                             </span>}
                                                           <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
                                                             <Heart className="h-3 w-3" />
-                                                            {wife.maritalStatus === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
+                                                            {wife.maritalStatus === 'divorced' ? 'مطلقة' : 'متزوجة'}
+                                                          </span>
+                                                          <span className="text-xs text-muted-foreground font-arabic">
+                                                            {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
                                                           </span>
                                                         </div>
+                                                        {wife.isSaved && <p className="text-xs text-pink-600 dark:text-pink-400 font-arabic">
+                                                            انقر للتعديل
+                                                          </p>}
                                                       </div>
                                                     </div>
                                                   </div>
+                                                  
+                                                  {/* Action Buttons */}
+                                                  <div className="flex gap-2 flex-shrink-0">
+                                                    {wife.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                                      handleSpouseEditAttempt('wife', wife, index);
+                                                    }} className="gap-1 border-pink-200/50 dark:border-pink-700/50 text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/50 transition-all duration-300 h-8 px-2">
+                                                        <Edit className="h-3 w-3" />
+                                                      </Button>}
+                                                    <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                      <X className="h-3 w-3" />
+                                                    </Button>
+                                                  </div>
                                                 </div>
-                                                
-                                                {/* Action Buttons at bottom */}
-                                                <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200/50 dark:border-gray-600/50">
-                                                  {wife.isSaved && <Button variant="secondary" size="sm" onClick={() => {
-                                  handleSpouseEditAttempt('wife', wife, index);
-                                }} className="h-8 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 transition-all duration-300">
-                                                      <Edit className="h-3 w-3 ml-1" />
-                                                      تعديل
-                                                    </Button>}
-                                                 <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="h-8 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700 transition-all duration-300">
-                                                   <X className="h-3 w-3 ml-1" />
-                                                   حذف
-                                                 </Button>
-                                               </div>
-                                                
-                                                {/* Interactive Area removed - using edit button instead */}
                                               </div>
                                             </div>)}
                                       
@@ -3560,7 +3569,15 @@ const FamilyBuilderNew = () => {
                                                 <div className="flex items-start justify-between">
                                                   <div className="flex items-start gap-4 flex-1">
                                                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
-                                                      <User className="w-5 h-5" />
+                                                      {husband.croppedImage ? (
+                                                        <img 
+                                                          src={husband.croppedImage} 
+                                                          alt={husband.name || 'الزوج'}
+                                                          className="w-full h-full object-cover rounded-2xl"
+                                                        />
+                                                      ) : (
+                                                        <User className="w-5 h-5" />
+                                                      )}
                                                     </div>
                                                     <div className="flex-1">
                                                       <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
@@ -3568,17 +3585,19 @@ const FamilyBuilderNew = () => {
                                                       </h5>
                                                       
                                                       <div className="space-y-2">
-                                                        
-                                                        <div className="flex items-center gap-2">
+                                                        <div className="flex items-center gap-2 flex-wrap">
                                                           {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
                                                               <Check className="h-3 w-3" />
                                                               محفوظ
                                                             </span>}
+                                                          <span className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                            <User className="h-3 w-3" />
+                                                            {husband.maritalStatus === 'divorced' ? 'زوج سابق' : 'متزوج'}
+                                                          </span>
                                                           <span className="text-xs text-muted-foreground font-arabic">
                                                             {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
                                                           </span>
                                                         </div>
-
                                                         {husband.isSaved && <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic">
                                                             انقر للتعديل
                                                           </p>}
