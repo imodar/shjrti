@@ -3219,15 +3219,15 @@ const FamilyBuilderNew = () => {
 
                           // Helper function to get father's name
                           const getFatherName = (member: any) => {
-                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                            const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                             return father?.name || '';
                           };
 
                           // Helper function to get grandfather's name
                           const getGrandfatherName = (member: any) => {
-                            const father = familyMembers.find(m => m?.id === member?.fatherId);
+                            const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                             if (father) {
-                              const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                              const grandfather = familyMembers.find(m => m?.id === father?.father_id || m?.id === father?.fatherId);
                               return grandfather?.name || '';
                             }
                             return '';
@@ -3245,18 +3245,18 @@ const FamilyBuilderNew = () => {
                               return `${firstName} ${lastName}`;
                             }
 
-                            // Check if member is from external family
+                            // Check if member is from external family - Use full name if they have a different last name
                             const isExternalFamily = member.last_name && member.last_name !== mainFamilyName;
 
-                            // For external family members (like خالد الوتار, فايز الوتار), always show full name with surname
+                            // For external family members (like مضر الشيخ سعيد from different branch), always show full name with surname
                             if (isExternalFamily) {
-                              return `${firstName} ${member.last_name}`;
+                              return member.first_name && member.last_name ? `${member.first_name} ${member.last_name}` : member.name;
                             }
 
                             // For internal family members
                             if (isWife) {
                               // For wives from internal family, show "ابنة" format
-                              const father = familyMembers.find(m => m?.id === member?.fatherId);
+                              const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                               if (father) {
                                 const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                                 return `${firstName} ابنة ${fatherFirstName}`;
@@ -3264,10 +3264,10 @@ const FamilyBuilderNew = () => {
                               return firstName;
                             } else {
                               // For internal family males (not founders), show "ابن" format with grandfather if available
-                              const father = familyMembers.find(m => m?.id === member?.fatherId);
+                              const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                               if (father) {
                                 const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                const grandfather = familyMembers.find(m => m?.id === father?.fatherId);
+                                const grandfather = familyMembers.find(m => m?.id === father?.father_id || m?.id === father?.fatherId);
                                 if (grandfather) {
                                   const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
                                   return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
