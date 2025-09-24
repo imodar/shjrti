@@ -420,8 +420,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <div className="absolute top-0 left-0 z-10">
                   <svg width="40" height="40" viewBox="0 0 40 40" className="overflow-visible">
                     <path 
-                      d="M0,8 Q0,0 8,0 L40,0 L0,40 Q0,32 0,8 Z" 
+                      d="M0,12 Q0,0 12,0 L40,0 L0,40 Q0,28 0,12 Z" 
                       fill="black"
+                      className="sm:hidden"
+                    />
+                    <path 
+                      d="M0,16 Q0,0 16,0 L40,0 L0,40 Q0,24 0,16 Z" 
+                      fill="black"
+                      className="hidden sm:block"
                     />
                   </svg>
                 </div>
