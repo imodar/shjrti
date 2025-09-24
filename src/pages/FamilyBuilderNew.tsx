@@ -2909,24 +2909,6 @@ const FamilyBuilderNew = () => {
                       </div>
                     </div>
 
-                    {/* Center: Member Count & Description */}
-                    <div className="flex-1 text-center">
-                      <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
-                        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full shadow-lg">
-                          <Users className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
-                          <div className="flex items-center gap-1 sm:gap-2">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">الأعضاء:</span>
-                            <span className="text-xs sm:text-sm md:text-base font-bold text-emerald-700 dark:text-emerald-300">
-                              {familyMembers.length}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300">
-                        {generationCount > 1 ? `${generationCount} أجيال` : 'جيل واحد'}
-                      </p>
-                    </div>
-
                     {/* Right: Generation Stats */}
                     <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
                       <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
