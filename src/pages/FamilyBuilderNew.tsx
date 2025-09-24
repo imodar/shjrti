@@ -3760,7 +3760,7 @@ const FamilyBuilderNew = () => {
               <div className="mx-auto w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center mb-4 animate-pulse shadow-lg ring-4 ring-red-100">
                 <AlertTriangle className="h-10 w-10 text-white animate-fade-in" />
               </div>
-              <AlertDialogTitle className="text-2xl font-bold text-gray-900 font-arabic mb-2">
+              <AlertDialogTitle className="text-2xl font-bold text-gray-900 font-arabic mb-2 text-center">
                 تأكيد حذف الزوجة
               </AlertDialogTitle>
               <AlertDialogDescription className="text-gray-600 text-base leading-relaxed font-arabic whitespace-pre-line">
