@@ -361,14 +361,28 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                const isNotSelf = member.id !== selectedMember?.id;
                                const isAvailableForMarriage = 
                                  member.marital_status === "single" || 
-                                 member.marital_status === "divorced";
+                                 member.marital_status === "divorced" ||
+                                 member.marital_status === null ||
+                                 member.marital_status === undefined;
                                const isOriginalFamilyMember = 
                                  member.father_id || 
                                  member.mother_id || 
                                  member.is_founder || 
                                  (member.last_name && member.last_name.includes("الشيخ سعيد"));
                                
-                               return hasValidGender && isNotSelf && isAvailableForMarriage && isOriginalFamilyMember;
+                               // Additional check: exclude if marital_status is explicitly "married"
+                               const isNotAlreadyMarried = member.marital_status !== "married";
+                               
+                               console.log('🔍 Spouse filter check for:', member.name, {
+                                 hasValidGender,
+                                 isNotSelf,
+                                 isAvailableForMarriage,
+                                 isOriginalFamilyMember,
+                                 isNotAlreadyMarried,
+                                 maritalStatus: member.marital_status
+                               });
+                               
+                               return hasValidGender && isNotSelf && isAvailableForMarriage && isOriginalFamilyMember && isNotAlreadyMarried;
                           }).map((member) => (
                             <CommandItem
                               key={member.id}

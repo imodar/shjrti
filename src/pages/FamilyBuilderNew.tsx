@@ -2124,11 +2124,41 @@ const FamilyBuilderNew = () => {
     const husbandId = isWife ? memberData.id : spouseId;
     const wifeId = isWife ? spouseId : memberData.id;
 
-    // Check if marriage already exists
+    console.log('🔍 Creating marriage between:', { husbandId, wifeId, spouseName: spouse.name });
+
+    // Check if either person is already married to someone else
+    const { data: existingHusbandMarriage } = await supabase
+      .from('marriages')
+      .select('id, wife_id')
+      .eq('husband_id', husbandId)
+      .eq('is_active', true)
+      .neq('wife_id', wifeId)
+      .maybeSingle();
+
+    const { data: existingWifeMarriage } = await supabase
+      .from('marriages')
+      .select('id, husband_id')
+      .eq('wife_id', wifeId)
+      .eq('is_active', true)
+      .neq('husband_id', husbandId)
+      .maybeSingle();
+
+    if (existingHusbandMarriage || existingWifeMarriage) {
+      console.error('❌ Cannot create marriage - one of the parties is already married:', {
+        existingHusbandMarriage,
+        existingWifeMarriage
+      });
+      marriageResults.failed++;
+      marriageResults.details.push(`لا يمكن ربط علاقة الزواج مع ${spouse.name} - الشخص متزوج بالفعل`);
+      return;
+    }
+
+    // Check if marriage already exists between these two people
     const {
       data: existingMarriage
     } = await supabase.from('marriages').select('id').eq('husband_id', husbandId).eq('wife_id', wifeId).maybeSingle();
     let marriageError;
+    
     if (existingMarriage) {
       // Update existing marriage to ensure it's active
       const {
@@ -2139,6 +2169,7 @@ const FamilyBuilderNew = () => {
       }).eq('id', existingMarriage.id);
       marriageError = error;
       activeMarriageIds.push(existingMarriage.id);
+      console.log('✅ Updated existing marriage:', existingMarriage.id);
     } else {
       // Create new marriage record
       const {
@@ -2154,8 +2185,10 @@ const FamilyBuilderNew = () => {
       marriageError = error;
       if (newMarriage) {
         activeMarriageIds.push(newMarriage.id);
+        console.log('✅ Created new marriage:', newMarriage.id);
       }
     }
+    
     if (marriageError) {
       console.error('Error creating/updating marriage:', marriageError);
       marriageResults.failed++;
