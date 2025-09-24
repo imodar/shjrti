@@ -435,17 +435,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               ) : !hasCustomDomainFeature ? (
-                <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Shield className="h-5 w-5 text-yellow-600" />
-                    <span className="font-semibold text-yellow-800 dark:text-yellow-200">
-                      ميزة النطاق المخصص غير متاحة
-                    </span>
+                  <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Shield className="h-5 w-5 text-yellow-600" />
+                      <span className="font-semibold text-yellow-800 dark:text-yellow-200">
+                        {t('tree_settings.custom_domain_not_available', 'ميزة النطاق المخصص غير متاحة')}
+                      </span>
+                    </div>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                      {t('tree_settings.custom_domain_upgrade_message', 'قم بترقية باقتك للحصول على إمكانية استخدام نطاق مخصص لشجرة عائلتك')}
+                    </p>
                   </div>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                    قم بترقية باقتك للحصول على إمكانية استخدام نطاق مخصص لشجرة عائلتك
-                  </p>
-                </div>
               ) : (
                 <div className="space-y-3">
                   <div className="flex gap-2">
