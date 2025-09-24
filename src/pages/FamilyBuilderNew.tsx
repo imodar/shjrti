@@ -3779,7 +3779,7 @@ const FamilyBuilderNew = () => {
                 <AlertTriangle className="h-10 w-10 text-white animate-fade-in" />
               </div>
               <AlertDialogTitle className="text-2xl font-bold text-gray-900 font-arabic mb-2 text-center">
-                تأكيد حذف الزوجة
+                تأكيد حذف {spouseToDelete?.wife?.name || 'الزوجة'}
               </AlertDialogTitle>
               <AlertDialogDescription className="text-gray-600 text-base leading-relaxed font-arabic whitespace-pre-line rtl:text-right">
                 {spouseDeleteWarning}
