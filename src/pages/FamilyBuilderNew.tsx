@@ -3451,45 +3451,61 @@ const FamilyBuilderNew = () => {
                                              <Plus className="w-4 h-4 ml-2" />
                                              إضافة زوج
                                            </Button>
-                                        </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
-                                          <div className="flex items-center justify-between">
-                                            <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
-                                 if (husband.isSaved) {
-                                   handleSpouseEditAttempt('husband', husband, -1);
-                                 }
-                               }}>
-                                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                <User className="w-4 h-4" />
-                                              </div>
-                                              <div>
-                                                <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                  {husband.name || 'الزوج'}
-                                                </h5>
-                                                <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                  {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                  {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                      <Check className="h-3 w-3" />
-                                                      محفوظ
-                                                    </span>}
-                                                </p>
-                                                {husband.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
-                                                    انقر للتعديل
-                                                  </p>}
-                                              </div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                               {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                        </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60 min-h-[160px]">
+                                              <div className="h-full flex flex-col justify-between">
+                                                {/* Header Section */}
+                                                <div className="flex items-start justify-between">
+                                                  <div className="flex items-start gap-4 flex-1">
+                                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
+                                                      <User className="w-5 h-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                      <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
+                                                        {husband.name || 'الزوج'}
+                                                      </h5>
+                                                      
+                                                      <div className="space-y-2">
+                                                        
+                                                        <div className="flex items-center gap-2">
+                                                          {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                              <Check className="h-3 w-3" />
+                                                              محفوظ
+                                                            </span>}
+                                                          <span className="text-xs text-muted-foreground font-arabic">
+                                                            {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                          </span>
+                                                        </div>
+
+                                                        {husband.isSaved && <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic">
+                                                            انقر للتعديل
+                                                          </p>}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  
+                                                  {/* Action Buttons */}
+                                                  <div className="flex gap-2 flex-shrink-0">
+                                                   {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
                                    if (husband.isSaved) {
                                      handleSpouseEditAttempt('husband', husband, -1);
                                    }
                                  }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
-                                                  <Edit className="h-3 w-3" />
-                                                </Button>}
-                                              <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
-                                                <X className="h-3 w-3" />
-                                              </Button>
-                                            </div>
-                                          </div>
+                                                      <Edit className="h-3 w-3" />
+                                                    </Button>}
+                                                  <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                    <X className="h-3 w-3" />
+                                                  </Button>
+                                                  </div>
+                                                </div>
+
+                                                {/* Clickable area for editing */}
+                                                {husband.isSaved && (
+                                                  <div 
+                                                    className="absolute inset-0 cursor-pointer hover:bg-blue-50/10 dark:hover:bg-blue-950/10 rounded-xl transition-colors"
+                                                    onClick={() => handleSpouseEditAttempt('husband', husband, -1)}
+                                                  />
+                                                )}
+                                              </div>
                                         </div>}
                                     </div>
                                   </div>
