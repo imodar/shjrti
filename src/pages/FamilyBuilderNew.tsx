@@ -3348,18 +3348,18 @@ const FamilyBuilderNew = () => {
                                      <h4 className="text-lg font-semibold text-pink-700 dark:text-pink-300 font-arabic">الزوجات</h4>
                                    </div>
                                    
-                                   <div className="space-y-3">
-                                     {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
-                                          <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                          <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
-                                          <Button
-                                            onClick={handleAddWife}
-                                            className="bg-pink-500 hover:bg-pink-600 text-white font-arabic"
-                                          >
-                                            <Plus className="w-4 h-4 ml-2" />
-                                            إضافة زوجة
-                                          </Button>
-                                       </div> : wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
+                                    <div className="space-y-3">
+                                      {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
+                                           <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                           <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
+                                           <Button
+                                             onClick={handleAddWife}
+                                             className="bg-pink-500 hover:bg-pink-600 text-white font-arabic"
+                                           >
+                                             <Plus className="w-4 h-4 ml-2" />
+                                             إضافة زوجة
+                                           </Button>
+                                        </div> : <>{wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
                                                 {/* Header Section */}
                                                 <div className="flex items-start justify-between">
@@ -3405,8 +3405,20 @@ const FamilyBuilderNew = () => {
                                                 
                                                 {/* Interactive Area removed - using edit button instead */}
                                               </div>
-                                           </div>)}
-                                   </div>
+                                            </div>)}
+                                      
+                                      {/* Always show Add Wife button */}
+                                      <div className="text-center py-4">
+                                        <Button
+                                          onClick={handleAddWife}
+                                          variant="outline"
+                                          className="border-2 border-dashed border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 font-arabic"
+                                        >
+                                          <Plus className="w-4 h-4 ml-2" />
+                                          إضافة زوجة أخرى
+                                        </Button>
+                                      </div></>}
+                                    </div>
                                  </div>
 
                                   {/* Unified Wife Form */}
@@ -3461,18 +3473,18 @@ const FamilyBuilderNew = () => {
                                       <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
                                     </div>
                                     
-                                    <div className="space-y-3">
-                                      {!husband ? <div className="text-center py-8 text-muted-foreground">
-                                           <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                           <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
-                                           <Button
-                                             onClick={handleAddHusband}
-                                             className="bg-blue-500 hover:bg-blue-600 text-white font-arabic"
-                                           >
-                                             <Plus className="w-4 h-4 ml-2" />
-                                             إضافة زوج
-                                           </Button>
-                                        </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60 min-h-[160px]">
+                                     <div className="space-y-3">
+                                       {!husband ? <div className="text-center py-8 text-muted-foreground">
+                                            <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                            <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
+                                            <Button
+                                              onClick={handleAddHusband}
+                                              className="bg-blue-500 hover:bg-blue-600 text-white font-arabic"
+                                            >
+                                              <Plus className="w-4 h-4 ml-2" />
+                                              إضافة زوج
+                                            </Button>
+                                         </div> : <><div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
                                                 {/* Header Section */}
                                                 <div className="flex items-start justify-between">
@@ -3520,8 +3532,20 @@ const FamilyBuilderNew = () => {
                                                 </div>
 
                                               </div>
-                                        </div>}
-                                    </div>
+                                         </div>
+                                      
+                                      {/* Always show Add Husband button */}
+                                      <div className="text-center py-4">
+                                        <Button
+                                          onClick={handleAddHusband}
+                                          variant="outline"
+                                          className="border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-arabic"
+                                        >
+                                          <Plus className="w-4 h-4 ml-2" />
+                                          إضافة زوج آخر
+                                        </Button>
+                                      </div></>}
+                                     </div>
                                   </div>
 
                                   {/* Unified Spouse Form */}
