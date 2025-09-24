@@ -111,7 +111,7 @@ export function ProtectedFamilyRoute({ children }: ProtectedFamilyRouteProps) {
     };
 
     validateFamilyAccess();
-  }, [user, authLoading, familyId, t]);
+  }, [user, authLoading, familyId]);
 
   if (loading || authLoading) {
     return (

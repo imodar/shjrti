@@ -3,6 +3,7 @@ import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkl
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -130,7 +131,7 @@ const Header = () => {
                       
                       {/* Menu Items */}
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-primary/10 transition-all duration-300 cursor-pointer" asChild>
-                        <a href="/dashboard" className="flex items-center gap-3 flex-row-reverse">
+                        <Link to="/dashboard" className="flex items-center gap-3 flex-row-reverse">
                           <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
                             <TreePine className="h-4 w-4 text-primary" />
                           </div>
@@ -138,11 +139,11 @@ const Header = () => {
                             <p className="font-medium">{t('nav.dashboard', 'لوحة التحكم')}</p>
                             <p className="text-xs text-muted-foreground">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
-                        </a>
+                        </Link>
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-accent/10 transition-all duration-300 cursor-pointer" asChild>
-                        <a href="/profile" className="flex items-center gap-3 flex-row-reverse">
+                        <Link to="/profile" className="flex items-center gap-3 flex-row-reverse">
                           <div className="p-2 bg-accent/10 rounded-lg group-hover:bg-accent/20 transition-colors">
                             <Settings className="h-4 w-4 text-accent" />
                           </div>
@@ -150,11 +151,11 @@ const Header = () => {
                             <p className="font-medium">{t('nav.settings', 'الإعدادات')}</p>
                             <p className="text-xs text-muted-foreground">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
                           </div>
-                        </a>
+                        </Link>
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-secondary/10 transition-all duration-300 cursor-pointer" asChild>
-                        <a href="/payments" className="flex items-center gap-3 flex-row-reverse">
+                        <Link to="/payments" className="flex items-center gap-3 flex-row-reverse">
                           <div className="p-2 bg-secondary/10 rounded-lg group-hover:bg-secondary/20 transition-colors">
                             <CreditCard className="h-4 w-4 text-secondary" />
                           </div>
@@ -162,7 +163,7 @@ const Header = () => {
                             <p className="font-medium">{t('nav.billing', 'الفواتير')}</p>
                             <p className="text-xs text-muted-foreground">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
                           </div>
-                        </a>
+                        </Link>
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem className="group p-3 rounded-xl hover:bg-primary/10 transition-all duration-300 cursor-pointer">
@@ -201,18 +202,18 @@ const Header = () => {
               <div className="flex items-center gap-3">
                 {/* Simple Login Button */}
                 <Button variant="ghost" size="sm" asChild>
-                  <a href="/auth" className="flex items-center gap-2">
+                  <Link to="/auth" className="flex items-center gap-2">
                     <LogIn className="h-4 w-4" />
                     <span>{t('nav.login', 'تسجيل الدخول')}</span>
-                  </a>
+                  </Link>
                 </Button>
                 
                 {/* Simple Register Button */}
                 <Button size="sm" asChild>
-                  <a href="/auth" className="flex items-center gap-2">
+                  <Link to="/auth" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>{t('nav.register', 'إنشاء حساب')}</span>
-                  </a>
+                  </Link>
                 </Button>
               </div>
             )}
