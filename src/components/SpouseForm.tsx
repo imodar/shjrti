@@ -387,21 +387,22 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                             <CommandItem
                               key={member.id}
                               value={member.name}
-                              onSelect={() => {
-                                onSpouseChange({
-                                  ...spouse,
-                                  existingFamilyMemberId: member.id,
-                                  firstName: member.first_name || '',
-                                  lastName: member.last_name || '',
-                                  name: member.name,
-                                  birthDate: member.birth_date ? new Date(member.birth_date) : null,
-                                  isAlive: member.is_alive ?? true,
-                                  deathDate: member.death_date ? new Date(member.death_date) : null,
-                                  maritalStatus: member.marital_status || 'single',
-                                  croppedImage: member.image_url || null
-                                });
-                                onCommandOpenChange(false);
-                              }}
+                                onSelect={() => {
+                                 onSpouseChange({
+                                   ...spouse,
+                                   existingFamilyMemberId: member.id,
+                                   firstName: member.first_name || '',
+                                   lastName: member.last_name || '',
+                                   name: member.name,
+                                   birthDate: member.birth_date ? new Date(member.birth_date) : null,
+                                   isAlive: member.is_alive ?? true,
+                                   deathDate: member.death_date ? new Date(member.death_date) : null,
+                                   maritalStatus: member.marital_status || 'single',
+                                   croppedImage: member.image_url || null,
+                                   biography: member.biography || ''
+                                 });
+                                 onCommandOpenChange(false);
+                               }}
                               className="font-arabic"
                             >
                               <Check
