@@ -706,83 +706,71 @@ const FamilyBuilderNew = () => {
       setSpouseFamilyStatus(status);
     }
   };
+  // Helper functions for localStorage spouse data management
+  const saveSpouseDataToLocalStorage = (spouseType: 'wife' | 'husband', spouseData: any) => {
+    try {
+      const key = `family_builder_${familyId}_${spouseType}_data`;
+      localStorage.setItem(key, JSON.stringify(spouseData));
+    } catch (error) {
+      console.warn('Failed to save spouse data to localStorage:', error);
+    }
+  };
+
+  const loadSpouseDataFromLocalStorage = (spouseType: 'wife' | 'husband') => {
+    try {
+      const key = `family_builder_${familyId}_${spouseType}_data`;
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.warn('Failed to load spouse data from localStorage:', error);
+      return null;
+    }
+  };
+
+  const clearSpouseDataFromLocalStorage = () => {
+    try {
+      const wifeKey = `family_builder_${familyId}_wife_data`;
+      const husbandKey = `family_builder_${familyId}_husband_data`;
+      localStorage.removeItem(wifeKey);
+      localStorage.removeItem(husbandKey);
+    } catch (error) {
+      console.warn('Failed to clear spouse data from localStorage:', error);
+    }
+  };
+
+  // Deduplication helper for spouses
+  const deduplicateSpouses = (spouses: any[]) => {
+    const seen = new Set();
+    return spouses.filter(spouse => {
+      const id = spouse.id || spouse.existingFamilyMemberId;
+      if (!id || seen.has(id)) {
+        return false;
+      }
+      seen.add(id);
+      return true;
+    });
+  };
+
   const handleSpouseSave = async (spouseType: 'wife' | 'husband') => {
     if (!currentSpouse || activeSpouseType !== spouseType) return;
     if (!currentSpouse) return;
+    
     try {
+      console.log('🔄 Saving spouse to LOCAL STATE ONLY (no DB write):', spouseType, currentSpouse.name);
+      
+      // Generate a temporary ID for new spouses if they don't have one
       let spouseId = currentSpouse.id;
-
-      // For new spouses without an ID or external spouses, handle database creation
-      if (!currentSpouse.isFamilyMember) {
-        // External spouse - create or update in database
-        const existingId = currentSpouse.existingFamilyMemberId || currentSpouse.id;
-        if (!existingId || existingId === '' || existingId.startsWith('temp_')) {
-          // Create new external spouse in database
-          const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-          const {
-            data: {
-              user
-            }
-          } = await supabase.auth.getUser();
-          const {
-            data: newSpouseData,
-            error: insertError
-          } = await supabase.from('family_tree_members').insert({
-            family_id: familyId,
-            name: spouseName,
-            first_name: currentSpouse.firstName || null,
-            last_name: currentSpouse.lastName || null,
-            gender: spouseType === 'wife' ? 'female' : 'male',
-            birth_date: formatDateForDatabase(currentSpouse.birthDate),
-            is_alive: currentSpouse.isAlive ?? true,
-            death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
-            marital_status: 'married',
-            image_url: currentSpouse.croppedImage || null,
-            created_by: user?.id,
-            is_founder: false
-          }).select().single();
-          if (insertError) {
-            throw insertError;
-          }
-          spouseId = newSpouseData.id;
-        } else {
-          // Update existing external spouse
-          const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-          await supabase.from('family_tree_members').update({
-            name: spouseName,
-            first_name: currentSpouse.firstName || null,
-            last_name: currentSpouse.lastName || null,
-            birth_date: formatDateForDatabase(currentSpouse.birthDate),
-            is_alive: currentSpouse.isAlive ?? true,
-            death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
-            marital_status: 'married',
-            image_url: currentSpouse.croppedImage || null,
-            updated_at: new Date().toISOString()
-          }).eq('id', spouseId);
-        }
-      } else if (currentSpouse.isFamilyMember && currentSpouse.existingFamilyMemberId) {
-        // Update existing family member spouse
-        const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
-        await supabase.from('family_tree_members').update({
-          name: spouseName,
-          first_name: currentSpouse.firstName || null,
-          last_name: currentSpouse.lastName || null,
-          birth_date: formatDateForDatabase(currentSpouse.birthDate),
-          is_alive: currentSpouse.isAlive ?? true,
-          death_date: !currentSpouse.isAlive ? formatDateForDatabase(currentSpouse.deathDate) : null,
-          marital_status: 'married',
-          image_url: currentSpouse.croppedImage || null,
-          updated_at: new Date().toISOString()
-        }).eq('id', currentSpouse.existingFamilyMemberId);
-        spouseId = currentSpouse.existingFamilyMemberId;
+      if (!spouseId || spouseId.startsWith('temp_')) {
+        spouseId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       }
 
-      // Update local state with the correct spouse ID
+      // Update local state with the spouse data (marked as saved for UI purposes)
       const updatedSpouse = {
         ...currentSpouse,
         id: spouseId,
-        isSaved: true
+        isSaved: true // Mark as saved in local state
       };
+      
       if (spouseType === 'wife') {
         console.log('🔍 WIFE SAVE - Determining index logic...');
         console.log('🔍 currentSpouse.id:', currentSpouse.id);
@@ -821,6 +809,9 @@ const FamilyBuilderNew = () => {
           updatedWives[wifeIndex] = updatedWife;
           setWives(updatedWives);
 
+          // Save updated wives list to localStorage
+          saveSpouseDataToLocalStorage('wife', updatedWives);
+
           // Update originalWivesData to track changes for new members
           if (originalWivesData.length === 0 && formMode === 'add') {
             // For new members, initialize originalWivesData with the first save
@@ -841,6 +832,9 @@ const FamilyBuilderNew = () => {
           const newWives = [...wives, updatedSpouse];
           setWives(newWives);
 
+          // Save updated wives list to localStorage
+          saveSpouseDataToLocalStorage('wife', newWives);
+
           // Update originalWivesData for new members
           if (originalWivesData.length === 0 && formMode === 'add') {
             setOriginalWivesData([...newWives]);
@@ -850,6 +844,9 @@ const FamilyBuilderNew = () => {
       } else {
         // Update husband
         setHusband(updatedSpouse);
+        
+        // Save husband to localStorage
+        saveSpouseDataToLocalStorage('husband', updatedSpouse);
       }
 
       // Reset form state
@@ -857,16 +854,17 @@ const FamilyBuilderNew = () => {
       setActiveSpouseType(null);
       setShowSpouseForm(false);
       setSpouseFamilyStatus(null);
+      
       toast({
-        title: "تم حفظ البيانات",
-        description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} بنجاح`,
+        title: "تم حفظ البيانات محلياً",
+        description: `تم حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} محلياً. سيتم حفظها في قاعدة البيانات عند حفظ العضو.`,
         variant: "default"
       });
     } catch (error) {
-      console.error(`Error saving ${spouseType} data:`, error);
+      console.error(`Error saving ${spouseType} data locally:`, error);
       toast({
-        title: "خطأ في الحفظ",
-        description: `حدث خطأ أثناء حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'}`,
+        title: "خطأ في الحفظ المحلي",
+        description: `حدث خطأ أثناء حفظ بيانات ${spouseType === 'wife' ? 'الزوجة' : 'الزوج'} محلياً`,
         variant: "destructive"
       });
     }
@@ -2596,11 +2594,12 @@ const FamilyBuilderNew = () => {
           }
         };
 
-        // Process wives for male members
+        // Process wives for male members with deduplication
         if (submissionData.gender === 'male' && wives.length > 0) {
           const savedWives = wives.filter(w => w.isSaved === true);
-          console.log('🔍 Processing wives for male member:', savedWives.length, 'wives');
-          for (const wife of savedWives) {
+          const deduplicatedWives = deduplicateSpouses(savedWives);
+          console.log('🔍 Processing wives for male member:', deduplicatedWives.length, 'wives (deduplicated from', savedWives.length, 'saved wives)');
+          for (const wife of deduplicatedWives) {
             console.log('🔍 Processing wife:', wife.name, 'ID:', wife.id || wife.existingFamilyMemberId);
             await processSpouseMarriage(wife, 'wife');
           }
@@ -2612,6 +2611,9 @@ const FamilyBuilderNew = () => {
           await processSpouseMarriage(husband, 'husband');
         }
       }
+
+      // Clear localStorage spouse data after successful submission
+      clearSpouseDataFromLocalStorage();
 
       // Refresh family data to show updated information
       await refreshFamilyData();
