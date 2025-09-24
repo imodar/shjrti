@@ -1323,6 +1323,9 @@ const FamilyBuilderNew = () => {
         title: t('family_builder.deleted', 'تم الحذف بنجاح'),
         description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} علاقة زواج من شجرة العائلة`
       });
+
+      // Refresh family data to reflect changes in the member list
+      await fetchFamilyData();
     } catch (error) {
       console.error('Error in cascading delete:', error);
       throw error;
@@ -2769,6 +2772,9 @@ const FamilyBuilderNew = () => {
           });
         }, 1000);
       }
+
+      // Refresh family data to reflect all changes in the member list
+      await fetchFamilyData();
     } catch (error) {
       console.error('Error submitting form:', error);
       let errorMessage = "حدث خطأ أثناء حفظ البيانات";
