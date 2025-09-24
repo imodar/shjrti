@@ -2555,9 +2555,27 @@ const FamilyBuilderNew = () => {
         // Unified spouse processing function
         const processSpouseMarriage = async (spouseData: any, spouseType: 'wife' | 'husband') => {
           try {
+            console.log('🔍 processSpouseMarriage called with:', {
+              spouseType,
+              spouseData: {
+                id: spouseData.id,
+                name: spouseData.name,
+                firstName: spouseData.firstName,
+                lastName: spouseData.lastName,
+                existingFamilyMemberId: spouseData.existingFamilyMemberId
+              }
+            });
+            
             const isWife = spouseType === 'wife';
             // Prefer known IDs: in-family uses existingFamilyMemberId, external spouses use their own id
             let spouseId = spouseData.existingFamilyMemberId || spouseData.id || null;
+
+            // Ensure we have a proper name for the spouse
+            const firstName = spouseData.firstName || '';
+            const lastName = spouseData.lastName || familyData?.name || '';
+            const spouseName = spouseData.name || (firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName || 'غير محدد'));
+            
+            console.log('🔍 Computed spouse name:', spouseName);
 
             // If we already have an ID, update existing spouse record accordingly
             if (spouseId) {
@@ -2612,12 +2630,6 @@ const FamilyBuilderNew = () => {
               }
             } else {
               // No existing ID → create a brand new external spouse
-              const firstName = spouseData.firstName || '';
-              const lastName = spouseData.lastName || familyData?.name || '';
-              const spouseName = firstName && lastName
-                ? `${firstName} ${lastName}`
-                : (spouseData.name || firstName || lastName || '');
-
               const { data: newSpouseMember, error: spouseError } = await supabase
                 .from('family_tree_members')
                 .insert({
@@ -2670,12 +2682,24 @@ const FamilyBuilderNew = () => {
               }
 
               marriageResults.successful++;
-              marriageResults.details.push(`تم ربط الزواج مع ${spouseData.name}`);
+              marriageResults.details.push(`تم ربط الزواج مع ${spouseName}`);
             }
           } catch (error) {
             console.error(`Error processing ${spouseType}:`, error);
+            console.error('Error details:', {
+              spouseData: {
+                id: spouseData.id,
+                name: spouseData.name,
+                firstName: spouseData.firstName,
+                lastName: spouseData.lastName
+              }
+            });
             marriageResults.failed++;
-            marriageResults.details.push(`خطأ في ربط الزواج مع ${spouseData.name}`);
+            // Use computed name to ensure we always have a name in the error message
+            const displayName = spouseData.name || 
+                              (spouseData.firstName && spouseData.lastName ? `${spouseData.firstName} ${spouseData.lastName}` : 
+                               (spouseData.firstName || spouseData.lastName || 'الشخص المحدد'));
+             marriageResults.details.push(`خطأ في ربط الزواج مع ${displayName}: ${error.message || error}`);
           }
         };
 
