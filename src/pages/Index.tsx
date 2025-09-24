@@ -129,9 +129,11 @@ const Home2 = () => {
 
   return (
     <>
-      <div className={`min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 ${currentLanguage === 'en' ? 'font-poppins' : ''}`}>
+      <div className={`min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 ${currentLanguage === 'en' ? 'font-poppins' : ''}`}>
       <GlobalHeader />
 
+      {/* Main content that grows to fill space */}
+      <main className="flex-1">
       {/* Hero Section with Animated Elements */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-transparent to-amber-900/20"></div>
@@ -575,24 +577,25 @@ const Home2 = () => {
                     <div className="flex items-center gap-1">
                       <Heart className="h-4 w-4" />
                       <span>{t('newsletter_trust_2', 'بدون إزعاج')}</span>
-                    </div>
-                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4" />
-                      <span>{t('newsletter_trust_3', 'محتوى حصري')}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-    
-    <GlobalFooter />
-    </>
-  );
+                     </div>
+                     <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                     <div className="flex items-center gap-1">
+                       <Star className="h-4 w-4" />
+                       <span>{t('newsletter_trust_3', 'محتوى حصري')}</span>
+                     </div>
+                   </div>
+                 )}
+               </div>
+             </div>
+           </div>
+         </div>
+       </section>
+       </main>
+       
+       <GlobalFooter />
+     </div>
+     </>
+   );
 };
 
 export default Home2;
