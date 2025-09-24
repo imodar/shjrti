@@ -38,8 +38,23 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
             console.error('Error checking admin status:', error);
             setIsAdmin(false);
           } else {
-            const isAdminResult = Boolean(data);
-            console.log('🔧 Setting isAdmin to:', isAdminResult);
+            const rawData: any = data;
+            let isAdminResult = false;
+            // Normalize various possible return shapes
+            if (rawData === true) {
+              isAdminResult = true;
+            } else if (typeof rawData === 'string') {
+              isAdminResult = rawData.toLowerCase() === 'true' || rawData === 't';
+            } else if (typeof rawData === 'number') {
+              isAdminResult = rawData === 1;
+            } else if (rawData && typeof rawData === 'object') {
+              // Some PostgREST configs wrap scalars
+              if ('is_admin_secure' in rawData) {
+                const val: any = rawData.is_admin_secure;
+                isAdminResult = val === true || val === 'true' || val === 't' || val === 1;
+              }
+            }
+            console.log('🔧 Normalized isAdminResult:', { data: rawData, isAdminResult });
             setIsAdmin(isAdminResult);
           }
         } catch (error) {
