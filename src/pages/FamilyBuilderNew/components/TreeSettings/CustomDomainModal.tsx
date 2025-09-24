@@ -82,7 +82,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       const { data: existingDomain } = await supabase
         .from('families')
         .select('id, name')
-        .eq('custom_domain', domain)
+        .eq('custom_link', domain)
         .neq('id', familyId)
         .maybeSingle();
         
@@ -132,7 +132,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       const { error } = await supabase
         .from('families')
         .update({ 
-          custom_domain: domainValue || null,
+          custom_link: domainValue || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', familyId);
@@ -141,17 +141,17 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       
       onDomainUpdated(domainValue || null);
       toast({
-        title: domainValue ? "تم حفظ النطاق المخصص" : "تم إزالة النطاق المخصص",
+        title: domainValue ? "تم حفظ الرابط المخصص" : "تم إزالة الرابط المخصص",
         description: domainValue 
-          ? `تم تعيين النطاق: ${domainValue}` 
-          : "تم إزالة النطاق المخصص بنجاح"
+          ? `تم تعيين الرابط: ${domainValue}` 
+          : "تم إزالة الرابط المخصص بنجاح"
       });
       onClose();
     } catch (error) {
       console.error('Error saving custom domain:', error);
       toast({
-        title: "خطأ في حفظ النطاق",
-        description: "حدث خطأ أثناء حفظ النطاق المخصص",
+        title: "خطأ في حفظ الرابط",
+        description: "حدث خطأ أثناء حفظ الرابط المخصص",
         variant: "destructive"
       });
     } finally {
@@ -165,7 +165,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       const { error } = await supabase
         .from('families')
         .update({ 
-          custom_domain: null,
+          custom_link: null,
           updated_at: new Date().toISOString()
         })
         .eq('id', familyId);
@@ -175,15 +175,15 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
       setCustomDomain("");
       onDomainUpdated(null);
       toast({
-        title: "تم حذف النطاق المخصص",
-        description: "تم إزالة النطاق المخصص بنجاح"
+        title: "تم حذف الرابط المخصص",
+        description: "تم إزالة الرابط المخصص بنجاح"
       });
       onClose();
     } catch (error) {
       console.error('Error deleting custom domain:', error);
       toast({
-        title: "خطأ في حذف النطاق",
-        description: "حدث خطأ أثناء حذف النطاق المخصص",
+        title: "خطأ في حذف الرابط",
+        description: "حدث خطأ أثناء حذف الرابط المخصص",
         variant: "destructive"
       });
     } finally {
