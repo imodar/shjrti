@@ -934,8 +934,10 @@ const FamilyBuilderNew = () => {
       closeActiveSpouseEdit();
     }
 
-    // Determine if this spouse is a family member
-    const isSpouseFamilyMember = spouseData.isFamilyMember || Boolean(spouseData.existingFamilyMemberId);
+    // Determine if this spouse is a family member - be more explicit
+    const hasExistingFamilyId = Boolean(spouseData.existingFamilyMemberId && spouseData.existingFamilyMemberId.trim() !== '');
+    const isExplicitlyFamilyMember = spouseData.isFamilyMember === true;
+    const isSpouseFamilyMember = isExplicitlyFamilyMember && hasExistingFamilyId;
     const familyStatus = isSpouseFamilyMember ? 'yes' : 'no';
 
     // Normalize spouse data to match SpouseForm interface
