@@ -1388,62 +1388,159 @@ const FamilyBuilderNew = () => {
     console.log('🚨 DELETE MODAL SHOULD BE SHOWN NOW');
   };
 
-  // Confirm spouse deletion (just mark for deletion)
-  const confirmSpouseDelete = () => {
+  // Confirm spouse deletion (immediate database deletion)
+  const confirmSpouseDelete = async () => {
     console.log('🚨 CONFIRM SPOUSE DELETE CALLED');
     if (!spouseToDelete) {
       console.log('❌ No spouse to delete');
       return;
     }
-    const {
-      wife,
-      index
-    } = spouseToDelete;
-    console.log('🚨 DELETING SPOUSE:', {
-      wife: wife?.name,
-      index
-    });
-    if (index === -1) {
-      // This is a husband deletion
-      console.log('🚨 DELETING HUSBAND');
-      setHusband(null);
-      toast({
-        title: "تم تحديد الزوج للحذف",
-        description: "سيتم حذف الزوج نهائياً عند حفظ بيانات العضو",
-        variant: "destructive"
-      });
-    } else {
-      // This is a wife deletion
-      console.log('🚨 DELETING WIFE AT INDEX:', index);
-      console.log('🚨 WIVES BEFORE DELETION:', wives.length, wives.map(w => w.name));
-      const newWives = wives.filter((_, i) => i !== index);
-      console.log('🚨 WIVES AFTER DELETION:', newWives.length, newWives.map(w => w.name));
-      setWives(newWives);
-
-      // Update family status object
-      const newStatus = {
-        ...wiveFamilyStatus
-      };
-      delete newStatus[index];
-      // Reindex the remaining statuses
-      const reindexedStatus: {
-        [key: number]: 'yes' | 'no' | null;
-      } = {};
-      Object.keys(newStatus).forEach((key, newIndex) => {
-        const oldIndex = parseInt(key);
-        if (oldIndex > index) {
-          reindexedStatus[newIndex] = newStatus[oldIndex];
-        } else if (oldIndex < index) {
-          reindexedStatus[oldIndex] = newStatus[oldIndex];
+    
+    const { wife, index } = spouseToDelete;
+    console.log('🚨 DELETING SPOUSE:', { wife: wife?.name, index });
+    
+    try {
+      if (index === -1) {
+        // This is a husband deletion
+        console.log('🚨 DELETING HUSBAND');
+        
+        if (husband && husband.isSaved && editingMember) {
+          const husbandId = husband.id || husband.existingFamilyMemberId;
+          
+          // Delete marriage record
+          const { error: marriageDeleteError } = await supabase
+            .from('marriages')
+            .delete()
+            .eq('wife_id', editingMember.id)
+            .eq('husband_id', husbandId);
+            
+          if (marriageDeleteError) {
+            console.error('Error deleting marriage:', marriageDeleteError);
+            toast({
+              title: "خطأ في الحذف",
+              description: "فشل في حذف علاقة الزواج",
+              variant: "destructive"
+            });
+            return;
+          }
+          
+          // If husband is not a family member, delete his record
+          if (!husband.isFamilyMember) {
+            const { error: husbandDeleteError } = await supabase
+              .from('family_tree_members')
+              .delete()
+              .eq('id', husbandId);
+              
+            if (husbandDeleteError) {
+              console.error('Error deleting husband member:', husbandDeleteError);
+              toast({
+                title: "خطأ في الحذف",
+                description: "فشل في حذف بيانات الزوج",
+                variant: "destructive"
+              });
+              return;
+            }
+          } else {
+            // Update family member husband to single
+            await supabase
+              .from('family_tree_members')
+              .update({ marital_status: 'single' })
+              .eq('id', husbandId);
+          }
         }
-      });
-      setWiveFamilyStatus(reindexedStatus);
+        
+        setHusband(null);
+        toast({
+          title: "تم الحذف بنجاح",
+          description: "تم حذف الزوج نهائياً",
+          variant: "default"
+        });
+      } else {
+        // This is a wife deletion
+        console.log('🚨 DELETING WIFE AT INDEX:', index);
+        
+        const wifeToDelete = wives[index];
+        if (wifeToDelete && wifeToDelete.isSaved && editingMember) {
+          const wifeId = wifeToDelete.id || wifeToDelete.existingFamilyMemberId;
+          
+          // Delete marriage record
+          const { error: marriageDeleteError } = await supabase
+            .from('marriages')
+            .delete()
+            .eq('husband_id', editingMember.id)
+            .eq('wife_id', wifeId);
+            
+          if (marriageDeleteError) {
+            console.error('Error deleting marriage:', marriageDeleteError);
+            toast({
+              title: "خطأ في الحذف",
+              description: "فشل في حذف علاقة الزواج",
+              variant: "destructive"
+            });
+            return;
+          }
+          
+          // If wife is not a family member, delete her record
+          if (!wifeToDelete.isFamilyMember) {
+            const { error: wifeDeleteError } = await supabase
+              .from('family_tree_members')
+              .delete()
+              .eq('id', wifeId);
+              
+            if (wifeDeleteError) {
+              console.error('Error deleting wife member:', wifeDeleteError);
+              toast({
+                title: "خطأ في الحذف",
+                description: "فشل في حذف بيانات الزوجة",
+                variant: "destructive"
+              });
+              return;
+            }
+          } else {
+            // Update family member wife to single
+            await supabase
+              .from('family_tree_members')
+              .update({ marital_status: 'single' })
+              .eq('id', wifeId);
+          }
+        }
+        
+        const newWives = wives.filter((_, i) => i !== index);
+        setWives(newWives);
+
+        // Update family status object
+        const newStatus = { ...wiveFamilyStatus };
+        delete newStatus[index];
+        const reindexedStatus: { [key: number]: 'yes' | 'no' | null; } = {};
+        Object.keys(newStatus).forEach((key, newIndex) => {
+          const oldIndex = parseInt(key);
+          if (oldIndex > index) {
+            reindexedStatus[newIndex] = newStatus[oldIndex];
+          } else if (oldIndex < index) {
+            reindexedStatus[oldIndex] = newStatus[oldIndex];
+          }
+        });
+        setWiveFamilyStatus(reindexedStatus);
+        
+        toast({
+          title: "تم الحذف بنجاح",
+          description: "تم حذف الزوجة نهائياً",
+          variant: "default"
+        });
+      }
+      
+      // Refresh family data to reflect changes
+      await fetchFamilyData();
+      
+    } catch (error) {
+      console.error('Error during spouse deletion:', error);
       toast({
-        title: "تم تحديد الزوجة للحذف",
-        description: "سيتم حذف الزوجة نهائياً عند حفظ بيانات العضو",
+        title: "خطأ في الحذف",
+        description: "حدث خطأ أثناء عملية الحذف",
         variant: "destructive"
       });
     }
+    
     setShowSpouseDeleteModal(false);
     setSpouseToDelete(null);
     console.log('🚨 SPOUSE DELETE COMPLETED');
