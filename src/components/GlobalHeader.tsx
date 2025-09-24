@@ -134,14 +134,6 @@ export const GlobalHeader = () => {
                     <span>حسابي</span>
                   </Link>
 
-                  {/* Contact Us Link */}
-                  <a 
-                    href="#contact" 
-                    className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-teal-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-teal-400/30 group"
-                  >
-                    <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span>{t('nav.contact', 'تواصل معنا')}</span>
-                  </a>
 
                   {/* User Avatar Menu */}
                   <DropdownMenu>
