@@ -414,7 +414,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
           {/* Profile Info Card */}
           <div className="relative -mt-6 sm:-mt-8 mx-2 sm:mx-4">
-            <div className="bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-xl">
+            <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-xl">
+              {/* Black ribbon for deceased members */}
+              {(member.deathDate || member.death_date || !member.isAlive) && (
+                <div className="absolute top-0 left-0 z-10">
+                  <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent"></div>
+                </div>
+              )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
                 <div className="flex flex-row-reverse items-center gap-4 sm:gap-6 flex-1">
                   {/* Basic Info - Name and Stats on the left */}
