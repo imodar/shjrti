@@ -28,10 +28,13 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
           const { data, error } = await supabase
             .rpc('is_admin_secure', { user_uuid: user.id });
 
+          console.log('🔧 Admin check result:', { data, error, user_id: user.id });
+
           if (error) {
             console.error('Error checking admin status:', error);
             setIsAdmin(false);
           } else {
+            console.log('🔧 Setting isAdmin to:', data || false);
             setIsAdmin(data || false);
           }
         } catch (error) {
