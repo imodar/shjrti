@@ -297,15 +297,14 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 <Label htmlFor={`${spouseType}-family-no`} className="text-sm font-arabic">لا</Label>
               </div>
             </div>
-            
-            <p className="text-xs text-muted-foreground mb-3 font-arabic">
-              يُسمح فقط باختيار {spouseLabel} من أفراد العائلة المسجلين
-            </p>
           </div>
 
           {/* Conditional rendering based on radio button selection */}
           {familyStatus === 'yes' ? (
             <>
+              <p className="text-xs text-muted-foreground mb-3 font-arabic">
+                يُسمح فقط باختيار {spouseLabel} من أفراد العائلة المسجلين
+              </p>
               {/* Select Existing Family Member */}
               <div className="space-y-3">
                 <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
