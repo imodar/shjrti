@@ -17,14 +17,14 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
     const [adminLoading, setAdminLoading] = useState(true);
 
     useEffect(() => {
-      // Reset admin state on user change to avoid stale values
-      setIsAdmin(false);
-      setAdminLoading(true);
-
+      let isMounted = true;
+      
       const checkAdminStatus = async () => {
         if (!user) {
-          setIsAdmin(false);
-          setAdminLoading(false);
+          if (isMounted) {
+            setIsAdmin(false);
+            setAdminLoading(false);
+          }
           return;
         }
 
@@ -32,7 +32,7 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
           const { data, error } = await supabase
             .rpc('is_admin_secure', { user_uuid: user.id });
 
-          console.log('🔧 Admin check result:', { data, error, user_id: user.id });
+          if (!isMounted) return;
 
           if (error) {
             console.error('Error checking admin status:', error);
@@ -54,19 +54,26 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
                 isAdminResult = val === true || val === 'true' || val === 't' || val === 1;
               }
             }
-            console.log('🔧 Normalized isAdminResult:', { data: rawData, isAdminResult });
             setIsAdmin(isAdminResult);
           }
         } catch (error) {
           console.error('Error checking admin status:', error);
-          setIsAdmin(false);
+          if (isMounted) {
+            setIsAdmin(false);
+          }
         } finally {
-          setAdminLoading(false);
+          if (isMounted) {
+            setAdminLoading(false);
+          }
         }
       };
 
       checkAdminStatus();
-    }, [user]);
+      
+      return () => {
+        isMounted = false;
+      };
+    }, [user?.id]);
 
     // Show loading while checking maintenance mode or admin status
     if (maintenanceLoading || authLoading || adminLoading) {
@@ -81,9 +88,6 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
     }
 
     // If maintenance mode is enabled and user is not admin, show maintenance page
-    console.log('🔧 MaintenanceGuard check:', { isMaintenanceMode, isAdmin, shouldShowMaintenance: isMaintenanceMode && !isAdmin });
-    console.log('🔧 Detailed check - isMaintenanceMode:', isMaintenanceMode, 'type:', typeof isMaintenanceMode);
-    console.log('🔧 Detailed check - isAdmin:', isAdmin, 'type:', typeof isAdmin);
     
     if (isMaintenanceMode && !isAdmin) {
       console.log('🔧 Showing maintenance page');

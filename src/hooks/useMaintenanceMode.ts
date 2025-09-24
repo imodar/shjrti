@@ -8,14 +8,13 @@ export const useMaintenanceMode = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Wait for auth to finish loading before checking maintenance mode
+    // Only check once after initial auth load
     if (authLoading) {
       return;
     }
     
     const checkMaintenanceMode = async () => {
       try {
-        console.log('🔧 Checking maintenance mode using is_maintenance_mode_enabled function');
         const { data, error } = await supabase
           .rpc('is_maintenance_mode_enabled');
 
@@ -24,12 +23,8 @@ export const useMaintenanceMode = () => {
           setIsMaintenanceMode(false);
           return;
         }
-
-        console.log('🔧 Raw maintenance data from function:', data);
         
         const maintenanceEnabled = Boolean(data);
-        
-        console.log('🔧 Maintenance mode set to:', maintenanceEnabled);
         setIsMaintenanceMode(maintenanceEnabled);
       } catch (error) {
         console.error('Error checking maintenance mode:', error);
@@ -53,13 +48,11 @@ export const useMaintenanceMode = () => {
           filter: `setting_key=eq.maintenance_mode`
         },
         async (payload) => {
-          console.log('🔧 Real-time update received:', payload);
           // Re-fetch using the secure function instead of parsing payload
           try {
             const { data, error } = await supabase.rpc('is_maintenance_mode_enabled');
             if (!error) {
               const enabled = Boolean(data);
-              console.log('🔧 Real-time maintenance mode update:', enabled);
               setIsMaintenanceMode(enabled);
             }
           } catch (error) {
@@ -72,7 +65,7 @@ export const useMaintenanceMode = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [authLoading, user]);
+  }, [authLoading]);
 
   return { isMaintenanceMode, loading };
 };
