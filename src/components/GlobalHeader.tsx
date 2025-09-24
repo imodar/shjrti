@@ -33,18 +33,15 @@ export const GlobalHeader = () => {
 
       try {
         const { data, error } = await supabase
-          .from('admin_users')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
+          .rpc('is_admin_secure', { user_uuid: user.id });
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           console.error('Error checking admin status:', error);
           setIsAdmin(false);
           return;
         }
 
-        setIsAdmin(!!data && data.role === 'admin');
+        setIsAdmin(Boolean(data));
       } catch (error) {
         console.error('Error checking admin status:', error);
         setIsAdmin(false);
