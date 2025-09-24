@@ -216,6 +216,49 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
     setIsEditingPassword(false);
   };
 
+  const handleDeletePassword = async () => {
+    setIsUpdatingPassword(true);
+    try {
+      const { error } = await supabase
+        .from('families')
+        .update({ 
+          share_password: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', familyData?.id);
+
+      if (error) {
+        console.error('Error deleting family password:', error);
+        toast({
+          title: "خطأ",
+          description: "فشل في حذف كلمة مرور المشاركة",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update the local family data
+      if (familyData) {
+        familyData.share_password = null;
+      }
+      
+      setSharePassword('');
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف كلمة مرور المشاركة بنجاح"
+      });
+    } catch (error) {
+      console.error('Error deleting family password:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حذف كلمة المرور",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
   // Domain validation
   const validateDomain = async (domain: string) => {
     if (!domain) return true;
@@ -530,13 +573,25 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   <p className="text-sm text-muted-foreground">
                     {sharePassword ? "🔒 الشجرة محمية بكلمة مرور" : "🔓 الشجرة متاحة بدون كلمة مرور"}
                   </p>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsEditingPassword(true)}
-                    size="sm"
-                  >
-                    {sharePassword ? "تغيير كلمة المرور" : "إضافة كلمة مرور"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setIsEditingPassword(true)}
+                      size="sm"
+                    >
+                      {sharePassword ? "تغيير كلمة المرور" : "إضافة كلمة مرور"}
+                    </Button>
+                    {sharePassword && (
+                      <Button 
+                        variant="destructive" 
+                        onClick={handleDeletePassword}
+                        disabled={isUpdatingPassword}
+                        size="sm"
+                      >
+                        {isUpdatingPassword ? "جاري الحذف..." : "حذف كلمة المرور"}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
