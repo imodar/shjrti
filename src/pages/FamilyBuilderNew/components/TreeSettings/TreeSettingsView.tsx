@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Family } from "../../types/family.types";
+import { ShareLinkModal } from "./ShareLinkModal";
 
 interface TreeSettingsViewProps {
   familyData: Family;
@@ -55,6 +56,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const [domainValidationError, setDomainValidationError] = useState("");
   const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
   const [checkingFeature, setCheckingFeature] = useState(true);
+  
+  // Share Modal state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
@@ -527,9 +531,20 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       <p className="text-xs text-muted-foreground">يمكن لأي شخص الوصول إليه</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      onClick={() => setIsShareModalOpen(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Share2 className="h-4 w-4" />
+                      مشاركة
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -639,6 +654,14 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           </CardContent>
         </Card>
       </div>
+      
+      {/* Share Link Modal */}
+      <ShareLinkModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        familyName={familyData?.name || 'غير محدد'}
+        shareLink={publicShareableLink}
+      />
     </div>
   );
 };
