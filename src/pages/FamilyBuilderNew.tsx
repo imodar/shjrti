@@ -2965,12 +2965,6 @@ const FamilyBuilderNew = () => {
                           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
                           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
                           
-                          {/* Settings Button - Enhanced */}
-                          <div className="absolute top-6 left-6 z-20">
-                            <div className="relative group">
-                              <TreeSettingsButton onShowSettings={() => setFormMode('tree-settings')} />
-                            </div>
-                          </div>
                           
                           <div className="relative z-10 pt-4">
                             {/* Hero Content */}
