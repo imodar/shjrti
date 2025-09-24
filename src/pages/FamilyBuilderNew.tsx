@@ -3518,13 +3518,6 @@ const FamilyBuilderNew = () => {
                                                   </div>
                                                 </div>
 
-                                                {/* Clickable area for editing */}
-                                                {husband.isSaved && !showSpouseForm && (
-                                                  <div 
-                                                    className="absolute inset-0 cursor-pointer hover:bg-blue-50/10 dark:hover:bg-blue-950/10 rounded-xl transition-colors"
-                                                    onClick={() => handleSpouseEditAttempt('husband', husband, -1)}
-                                                  />
-                                                )}
                                               </div>
                                         </div>}
                                     </div>
