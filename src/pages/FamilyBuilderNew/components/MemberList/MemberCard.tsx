@@ -169,6 +169,16 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" 
       onClick={() => onViewMember(member)}
     >
+      {/* Black ribbon for deceased members */}
+      {!(member as any).isAlive && (
+        <div className="absolute top-0 left-0 z-10">
+          <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent"></div>
+          <div className="absolute top-1 left-1 text-white text-xs font-bold transform -rotate-45 origin-top-left">
+            ✝
+          </div>
+        </div>
+      )}
+      
       <CardContent className="p-4">
         <div className="flex items-center justify-between gap-3 min-h-[80px]">
           <div className="flex items-start gap-3 flex-1">
