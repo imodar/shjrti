@@ -2920,16 +2920,20 @@ const FamilyBuilderNew = () => {
     return gender === "female" ? "text-pink-600" : "text-blue-600";
   };
   if (loading) {
-    return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+    return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
         <GlobalHeader />
-        <div className="container mx-auto px-4 py-6">
-          <FamilyBuilderNewSkeleton />
-        </div>
+        <main className="flex-1">
+          <div className="container mx-auto px-4 py-6">
+            <FamilyBuilderNewSkeleton />
+          </div>
+        </main>
         <GlobalFooterSimplified />
       </div>;
+
   }
   return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
+      <main className="flex-1 relative">
       
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -4051,6 +4055,7 @@ const FamilyBuilderNew = () => {
         </DialogContent>
       </Dialog>
 
+      </main>
       <GlobalFooterSimplified />
     </div>;
 };
