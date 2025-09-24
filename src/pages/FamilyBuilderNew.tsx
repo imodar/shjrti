@@ -3943,9 +3943,9 @@ const FamilyBuilderNew = () => {
                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-2">
                      <Users className="h-4 w-4 text-amber-600" />
                    </div>
-                   <div className="text-gray-700 font-medium">
-                     لا يمكن تعديل بيانات الزوج/الزوجة مباشرة
-                   </div>
+                    <div className="text-gray-700 font-medium">
+                      لا يمكن تعديل بيانات ({spousePartnerDetails.name}) مباشرة
+                    </div>
                  </div>
               </div>
 
