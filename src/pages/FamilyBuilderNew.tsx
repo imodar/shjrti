@@ -3400,39 +3400,6 @@ const FamilyBuilderNew = () => {
                                       )}
                                   </div>
                                 </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                  {/* Unified Spouse Form */}
-                                  {activeSpouseType && showSpouseForm && (
-                                    <SpouseForm 
-                                      spouseType={activeSpouseType} 
-                                      spouse={currentSpouse || {
-                                        id: '',
-                                        firstName: '',
-                                        lastName: '',
-                                        name: '',
-                                        isAlive: true,
-                                        birthDate: null,
-                                        deathDate: null,
-                                        maritalStatus: 'married',
-                                        isFamilyMember: false,
-                                        existingFamilyMemberId: '',
-                                        croppedImage: null,
-                                        biography: '',
-                                        isSaved: false
-                                      }} 
-                                      onSpouseChange={setCurrentSpouse} 
-                                      familyMembers={familyMembers} 
-                                      selectedMember={selectedMember} 
-                                      commandOpen={spouseCommandOpen} 
-                                      onCommandOpenChange={setSpouseCommandOpen} 
-                                      familyStatus={spouseFamilyStatus} 
-                                      onFamilyStatusChange={handleSpouseFamilyStatusChange} 
-                                      onSave={() => handleSpouseSave(activeSpouseType)} 
-                                      onAdd={() => handleAddSpouse(activeSpouseType)} 
-                                      onClose={activeSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit} 
-                                      showForm={showSpouseForm} 
-                                    />
-                                  )}
-
                                   {/* Husband Display Panel */}
                                   <div className="space-y-4">
                                     <div className="flex items-center gap-2 mb-4">
@@ -3494,6 +3461,41 @@ const FamilyBuilderNew = () => {
                                           </div>
                                         </div>}
                                     </div>
+                                  </div>
+
+                                  {/* Unified Spouse Form */}
+                                  <div className="space-y-4">
+                                    {activeSpouseType && showSpouseForm && (
+                                      <SpouseForm 
+                                        spouseType={activeSpouseType} 
+                                        spouse={currentSpouse || {
+                                          id: '',
+                                          firstName: '',
+                                          lastName: '',
+                                          name: '',
+                                          isAlive: true,
+                                          birthDate: null,
+                                          deathDate: null,
+                                          maritalStatus: 'married',
+                                          isFamilyMember: false,
+                                          existingFamilyMemberId: '',
+                                          croppedImage: null,
+                                          biography: '',
+                                          isSaved: false
+                                        }} 
+                                        onSpouseChange={setCurrentSpouse} 
+                                        familyMembers={familyMembers} 
+                                        selectedMember={selectedMember} 
+                                        commandOpen={spouseCommandOpen} 
+                                        onCommandOpenChange={setSpouseCommandOpen} 
+                                        familyStatus={spouseFamilyStatus} 
+                                        onFamilyStatusChange={handleSpouseFamilyStatusChange} 
+                                        onSave={() => handleSpouseSave(activeSpouseType)} 
+                                        onAdd={() => handleAddSpouse(activeSpouseType)} 
+                                        onClose={activeSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit} 
+                                        showForm={showSpouseForm} 
+                                      />
+                                    )}
                                   </div>
                                </div>}
                           </div>}
