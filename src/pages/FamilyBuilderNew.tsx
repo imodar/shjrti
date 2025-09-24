@@ -3947,7 +3947,7 @@ const FamilyBuilderNew = () => {
                      <Users className="h-4 w-4 text-amber-600" />
                    </div>
                      <div className="text-gray-700 font-medium">
-                       لا يمكن تعديل بيانات (منال النشواتي) مباشرة
+                       لا يمكن تعديل بيانات منال النشواتي مباشرة
                      </div>
                  </div>
               </div>
