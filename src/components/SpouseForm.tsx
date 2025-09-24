@@ -257,47 +257,68 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
       <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/50 dark:border-gray-700/30 rounded-xl p-6 shadow-md">
         <div className="space-y-6">
-          {/* Family Member Selection */}
-          <div>
-            <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
-              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
-              هل {spouseLabel} من أفراد العائلة ؟
-            </Label>
-            
-            <div className="flex items-center gap-6 mb-3">
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  id={`${spouseType}-family-yes`}
-                  name={`${spouseType}-family`}
-                  value="yes"
-                  checked={familyStatus === 'yes'}
-                  onChange={() => {
-                    onFamilyStatusChange('yes');
-                    onSpouseChange({ ...spouse, isFamilyMember: true });
-                  }}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <Label htmlFor={`${spouseType}-family-yes`} className="text-sm font-arabic">نعم</Label>
-              </div>
+          {/* Family Member Selection - Only show when adding new spouse, not when editing existing */}
+          {!spouse.isSaved && (
+            <div>
+              <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 font-arabic">
+                <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full shadow-lg"></div>
+                هل {spouseLabel} من أفراد العائلة ؟
+              </Label>
               
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  id={`${spouseType}-family-no`}
-                  name={`${spouseType}-family`}
-                  value="no"
-                  checked={familyStatus === 'no'}
-                  onChange={() => {
-                    onFamilyStatusChange('no');
-                    onSpouseChange({ ...spouse, isFamilyMember: false, existingFamilyMemberId: '' });
-                  }}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <Label htmlFor={`${spouseType}-family-no`} className="text-sm font-arabic">لا</Label>
+              <div className="flex items-center gap-6 mb-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={`${spouseType}-family-yes`}
+                    name={`${spouseType}-family`}
+                    value="yes"
+                    checked={familyStatus === 'yes'}
+                    onChange={() => {
+                      onFamilyStatusChange('yes');
+                      onSpouseChange({ ...spouse, isFamilyMember: true });
+                    }}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <Label htmlFor={`${spouseType}-family-yes`} className="text-sm font-arabic">نعم</Label>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={`${spouseType}-family-no`}
+                    name={`${spouseType}-family`}
+                    value="no"
+                    checked={familyStatus === 'no'}
+                    onChange={() => {
+                      onFamilyStatusChange('no');
+                      onSpouseChange({ ...spouse, isFamilyMember: false, existingFamilyMemberId: '' });
+                    }}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <Label htmlFor={`${spouseType}-family-no`} className="text-sm font-arabic">لا</Label>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Show spouse type info when editing */}
+          {spouse.isSaved && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <div className="flex items-center gap-3">
+                <div className={cn("w-8 h-8 bg-gradient-to-r rounded-full flex items-center justify-center", colorScheme.gradient)}>
+                  <Heart className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                    تعديل بيانات {spouseLabel}: {spouse.name}
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 font-arabic">
+                    {spouse.isFamilyMember ? 'من أفراد العائلة' : 'خارج العائلة'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Conditional rendering based on radio button selection */}
           {familyStatus === 'yes' ? (
