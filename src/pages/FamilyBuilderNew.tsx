@@ -977,6 +977,13 @@ const FamilyBuilderNew = () => {
   const [deleteWarningMessage, setDeleteWarningMessage] = useState("");
   const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
   const [spousePartnerName, setSpousePartnerName] = useState("");
+  const [spouseToEdit, setSpouseToEdit] = useState({
+    name: "",
+    fatherName: "",
+    grandfatherName: "",
+    isFounder: false,
+    first_name: ""
+  });
   const [spousePartnerDetails, setSpousePartnerDetails] = useState({
     name: "",
     fatherName: "",
@@ -1077,7 +1084,7 @@ const FamilyBuilderNew = () => {
     // Set spouse partner details for the modal
     setSpousePartnerName(partner.name || "غير محدد");
 
-    // Get the current member's father and grandfather information (not the partner's)
+    // Get the current member's father and grandfather information (the spouse who cannot be edited)
     const currentMember = familyMembers.find(m => m.id === spouseMember.id);
     const father = currentMember ? familyMembers.find(m => m.id === currentMember.father_id) : null;
     const fatherName = father?.name || "";
@@ -1085,6 +1092,17 @@ const FamilyBuilderNew = () => {
     // Get grandfather information (father's father)
     const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
     const grandfatherName = grandfather?.name || "";
+    
+    // Set spouse information (the person who cannot be edited - for dialog message)
+    setSpouseToEdit({
+      name: spouseMember.name || "غير محدد",
+      fatherName: fatherName || "غير محدد",
+      grandfatherName: grandfatherName || "غير محدد",
+      isFounder: currentMember?.is_founder || false,
+      first_name: spouseMember.first_name || "غير محدد"
+    });
+    
+    // Set partner information (the person who can be edited - for navigation)
     setSpousePartnerDetails({
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
@@ -3967,7 +3985,7 @@ const FamilyBuilderNew = () => {
                      <Users className="h-4 w-4 text-amber-600" />
                    </div>
                       <div className="text-gray-700 font-medium">
-                        لا يمكن تعديل بيانات {spousePartnerDetails.name} مباشرة
+                        لا يمكن تعديل بيانات {spouseToEdit.name} مباشرة
                       </div>
                  </div>
               </div>
