@@ -3371,9 +3371,9 @@ const FamilyBuilderNew = () => {
                              {formData.gender === "male" ? "أضف معلومات الزوجة أو الزوجات إذا كان متزوجاً" : "أضف معلومات الزوج إذا كانت متزوجة"}
                            </p>
                            
-                             {formData.gender === "male" ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                 {/* Wives Display Panel */}
-                                 <div className="space-y-4">
+                              {formData.gender === "male" ? <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                  {/* Wives Display Panel */}
+                                  <div className="space-y-4 lg:col-span-1">
                                     <div className="flex items-center gap-2 mb-4 w-full">
                                      <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
                                        <Heart className="w-3 h-3 text-white" />
@@ -3454,8 +3454,8 @@ const FamilyBuilderNew = () => {
                                     </div>
                                  </div>
 
-                                  {/* Unified Wife Form */}
-                                  <div className="space-y-4">
+                                   {/* Unified Wife Form */}
+                                   <div className="space-y-4 lg:col-span-2">
                                     <div className="flex items-center gap-2 mb-4 w-full">
                                       <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
                                         <Heart className="w-3 h-3 text-white" />
@@ -3496,9 +3496,9 @@ const FamilyBuilderNew = () => {
                                         />
                                       )}
                                   </div>
-                                </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                  {/* Husband Display Panel */}
-                                  <div className="space-y-4">
+                                 </div> : <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                   {/* Husband Display Panel */}
+                                   <div className="space-y-4 lg:col-span-1">
                                     <div className="flex items-center gap-2 mb-4">
                                       <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
                                         <User className="w-3 h-3 text-white" />
@@ -3581,8 +3581,8 @@ const FamilyBuilderNew = () => {
                                      </div>
                                   </div>
 
-                                  {/* Unified Spouse Form */}
-                                  <div className="space-y-4">
+                                   {/* Unified Spouse Form */}
+                                   <div className="space-y-4 lg:col-span-2">
                                     {activeSpouseType && showSpouseForm && (
                                       <SpouseForm 
                                         spouseType={activeSpouseType} 
