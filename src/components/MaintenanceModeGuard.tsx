@@ -17,6 +17,10 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
     const [adminLoading, setAdminLoading] = useState(true);
 
     useEffect(() => {
+      // Reset admin state on user change to avoid stale values
+      setIsAdmin(false);
+      setAdminLoading(true);
+
       const checkAdminStatus = async () => {
         if (!user) {
           setIsAdmin(false);
@@ -34,8 +38,9 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
             console.error('Error checking admin status:', error);
             setIsAdmin(false);
           } else {
-            console.log('🔧 Setting isAdmin to:', data || false);
-            setIsAdmin(data || false);
+            const isAdminResult = Boolean(data);
+            console.log('🔧 Setting isAdmin to:', isAdminResult);
+            setIsAdmin(isAdminResult);
           }
         } catch (error) {
           console.error('Error checking admin status:', error);
