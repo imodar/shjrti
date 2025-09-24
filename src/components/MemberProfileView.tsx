@@ -897,14 +897,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     <h4 className="font-semibold text-foreground mb-1">
                                       {event.title}
                                     </h4>
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                      <Calendar className="w-4 h-4" />
-                                      {event.date ? (
-                                        <DateDisplay date={event.date} className="inline" />
-                                      ) : (
-                                        <span>تاريخ غير محدد</span>
-                                      )}
-                                    </div>
+                                     {event.type !== 'marriage' && (
+                                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                         <Calendar className="w-4 h-4" />
+                                         {event.date ? (
+                                           <DateDisplay date={event.date} className="inline" />
+                                         ) : (
+                                           <span>تاريخ غير محدد</span>
+                                         )}
+                                       </div>
+                                     )}
                                     {event.description && (
                                       <p className="text-sm text-muted-foreground mt-2">
                                         {event.description}
