@@ -907,11 +907,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                          )}
                                        </div>
                                      )}
-                                    {event.description && (
-                                      <p className="text-sm text-muted-foreground mt-2">
-                                        {event.description}
-                                      </p>
-                                    )}
+                                     {event.description && event.type !== 'marriage' && (
+                                       <p className="text-sm text-muted-foreground mt-2">
+                                         {event.description}
+                                       </p>
+                                     )}
                                   </div>
                                   
                                   {/* Event Type Badge */}
