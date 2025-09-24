@@ -113,6 +113,7 @@
 .theme-professional [data-variant="secondary"]:hover,
 .theme-professional .bg-secondary:hover {
   background: hsl(240 12% 95%) !important;
+  color: var(--facebook-text) !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
@@ -290,4 +291,20 @@
   border: 1px solid var(--facebook-border) !important;
   border-radius: 8px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Global Hover Text Color Fix */
+.theme-professional *:hover {
+  color: var(--facebook-text) !important;
+}
+
+.theme-professional button:hover,
+.theme-professional [role="button"]:hover {
+  color: inherit !important;
+}
+
+.theme-professional .bg-primary:hover,
+.theme-professional [class*="bg-primary"]:hover,
+.theme-professional [data-variant="default"]:hover {
+  color: var(--facebook-white) !important;
 }

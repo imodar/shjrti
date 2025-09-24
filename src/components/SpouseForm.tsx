@@ -259,7 +259,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
         <h4 className={cn("text-lg font-semibold font-arabic", colorScheme.textColor)}>{addFormTitle}</h4>
       </div>
 
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/50 dark:border-gray-700/30 rounded-xl p-6 shadow-md">
+      <div className="bg-card backdrop-blur-sm border border-border rounded-xl p-6 shadow-md">
         <div className="space-y-6">
           {/* Family Member Selection - Only show when adding new spouse, not when editing existing */}
           {!spouse.isSaved && (
@@ -700,14 +700,14 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
           {/* Action Buttons - Only show when radio button is selected or editing saved spouse */}
           {(familyStatus === 'yes' || familyStatus === 'no' || spouse.isSaved) && (
-            <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
+            <div className="pt-4 border-t border-border space-y-3">
               {/* Close Button - Always show when form is open */}
               {onClose && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onClose}
-                  className="w-full h-10 font-arabic text-sm border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+                  className="w-full h-10 font-arabic text-sm"
                 >
                   إغلاق
                 </Button>
