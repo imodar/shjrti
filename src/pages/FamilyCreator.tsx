@@ -365,8 +365,17 @@ const FamilyCreator = () => {
       console.log('Inserting founder for family:', family.id);
       console.log('Founder data:', founderData);
       console.log('Tree data:', treeData);
-      const founderName = `${founderData.name || 'مؤسس'} ${treeData.name || ''}`.trim() || 'مؤسس العائلة';
+      
+      // استخراج اسم العائلة الفعلي (إزالة كلمة "عائلة" إذا كانت موجودة)
+      const extractFamilyName = (fullFamilyName: string) => {
+        if (!fullFamilyName) return '';
+        return fullFamilyName.replace(/^عائلة\s+/, '').trim();
+      };
+      
+      const cleanFamilyName = extractFamilyName(treeData.name || '');
+      const founderName = `${founderData.name || 'مؤسس'} ${cleanFamilyName}`.trim() || 'مؤسس العائلة';
       console.log('Computed founder name:', founderName);
+      console.log('Clean family name:', cleanFamilyName);
       
       const { data: founder, error: founderError } = await supabase
         .from('family_tree_members')
@@ -374,7 +383,7 @@ const FamilyCreator = () => {
           family_id: family.id,
           name: founderName,
           first_name: founderData.name,
-          last_name: treeData.name,
+          last_name: cleanFamilyName,
           gender: founderData.gender,
           birth_date: formatDateForDatabase(founderData.birthDate),
           death_date: formatDateForDatabase(founderData.deathDate),
@@ -406,7 +415,7 @@ const FamilyCreator = () => {
             family_id: family.id,
             name: wifeName,
             first_name: wife.first_name || wife.name || 'زوجة',
-            last_name: wife.last_name || treeData.name,
+            last_name: wife.last_name || cleanFamilyName,
             gender: 'female',
             marital_status: wife.maritalStatus || 'married',
             birth_date: formatDateForDatabase(wife.birthDate),
