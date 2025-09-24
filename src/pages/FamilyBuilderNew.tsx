@@ -2592,13 +2592,17 @@ const FamilyBuilderNew = () => {
 
         // Process wives for male members
         if (submissionData.gender === 'male' && wives.length > 0) {
-          for (const wife of wives.filter(w => w.isSaved === true)) {
+          const savedWives = wives.filter(w => w.isSaved === true);
+          console.log('🔍 Processing wives for male member:', savedWives.length, 'wives');
+          for (const wife of savedWives) {
+            console.log('🔍 Processing wife:', wife.name, 'ID:', wife.id || wife.existingFamilyMemberId);
             await processSpouseMarriage(wife, 'wife');
           }
         }
 
         // Process husband for female members
         if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
+          console.log('🔍 Processing husband for female member:', husband.name, 'ID:', husband.id || husband.existingFamilyMemberId);
           await processSpouseMarriage(husband, 'husband');
         }
       }
