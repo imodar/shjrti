@@ -935,10 +935,11 @@ const FamilyBuilderNew = () => {
     }
 
     // Determine if this spouse is a family member - be more explicit
-    const hasExistingFamilyId = Boolean(spouseData.existingFamilyMemberId && spouseData.existingFamilyMemberId.trim() !== '');
+    const hasExistingFamilyId = Boolean(spouseData.existingFamilyMemberId && String(spouseData.existingFamilyMemberId).trim() !== '');
     const isExplicitlyFamilyMember = spouseData.isFamilyMember === true;
     const isSpouseFamilyMember = isExplicitlyFamilyMember && hasExistingFamilyId;
     const familyStatus = isSpouseFamilyMember ? 'yes' : 'no';
+    console.log('Spouse edit detection:', { spouseType, name: spouseData?.name, isExplicitlyFamilyMember, hasExistingFamilyId, isSpouseFamilyMember, familyStatus });
 
     // Normalize spouse data to match SpouseForm interface
     const normalizedSpouseData = {
@@ -1875,6 +1876,8 @@ const FamilyBuilderNew = () => {
       if (memberMarriages.length > 0) {
         const marriage = memberMarriages[0]; // Take the first marriage
         const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
+        // Determine if spouse is external similar to wives logic
+        const isExternalSpouse = husbandMember ? (!husbandMember.father_id && !husbandMember.is_founder) : true;
         const husbandData = {
           id: marriage.husband?.id || '',
           firstName: husbandMember?.first_name || marriage.husband?.firstName || '',
@@ -1886,9 +1889,7 @@ const FamilyBuilderNew = () => {
           deathDate: parseDateFromDatabase(husbandMember?.death_date),
           croppedImage: husbandMember?.image_url || null,
           biography: husbandMember?.biography || '',
-          // Add missing biography field
-          isFamilyMember: !!husbandMember,
-          // If found in family members, it's a family member
+          isFamilyMember: !isExternalSpouse,
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
@@ -3518,7 +3519,7 @@ const FamilyBuilderNew = () => {
                                                 </div>
 
                                                 {/* Clickable area for editing */}
-                                                {husband.isSaved && (
+                                                {husband.isSaved && !showSpouseForm && (
                                                   <div 
                                                     className="absolute inset-0 cursor-pointer hover:bg-blue-50/10 dark:hover:bg-blue-950/10 rounded-xl transition-colors"
                                                     onClick={() => handleSpouseEditAttempt('husband', husband, -1)}
