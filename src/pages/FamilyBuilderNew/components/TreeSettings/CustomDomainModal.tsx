@@ -60,14 +60,25 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
     setValidationSuccess("");
     
     try {
-      // Basic domain format validation
-      const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
-      if (!domainRegex.test(domain)) {
-        setValidationError("تنسيق النطاق غير صحيح. يرجى إدخال نطاق صالح (مثال: mydomain.com)");
+      // Basic path validation (only letters, numbers, and hyphens)
+      const pathRegex = /^[a-zA-Z0-9-]+$/;
+      if (!pathRegex.test(domain)) {
+        setValidationError("يمكن استخدام الحروف والأرقام والشرطات فقط (مثال: my-family)");
         return false;
       }
       
-      // Check if domain is already taken
+      // Check minimum and maximum length
+      if (domain.length < 3) {
+        setValidationError("يجب أن يكون الرابط 3 أحرف على الأقل");
+        return false;
+      }
+      
+      if (domain.length > 30) {
+        setValidationError("يجب أن يكون الرابط 30 حرف كحد أقصى");
+        return false;
+      }
+      
+      // Check if path is already taken
       const { data: existingDomain } = await supabase
         .from('families')
         .select('id, name')
@@ -76,15 +87,15 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
         .maybeSingle();
         
       if (existingDomain) {
-        setValidationError(`هذا النطاق مستخدم بالفعل من قبل عائلة أخرى: ${existingDomain.name}`);
+        setValidationError(`هذا الرابط مستخدم بالفعل من قبل عائلة أخرى: ${existingDomain.name}`);
         return false;
       }
       
-      setValidationSuccess("النطاق متاح ويمكن استخدامه");
+      setValidationSuccess("الرابط متاح ويمكن استخدامه");
       return true;
     } catch (error) {
       console.error('Error validating domain:', error);
-      setValidationError("حدث خطأ أثناء التحقق من النطاق");
+      setValidationError("حدث خطأ أثناء التحقق من الرابط");
       return false;
     } finally {
       setIsValidating(false);
@@ -181,9 +192,9 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
   };
 
   const handleGenerateSubdomain = () => {
-    // Generate a random subdomain suggestion
+    // Generate a random path suggestion
     const randomString = Math.random().toString(36).substring(2, 8);
-    const suggestion = `family-${randomString}.example.com`;
+    const suggestion = `family-${randomString}`;
     setCustomDomain(suggestion);
     validateDomain(suggestion);
   };
@@ -194,10 +205,10 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            إدارة النطاق المخصص
+            إدارة الرابط المخصص
           </DialogTitle>
           <DialogDescription>
-            قم بتعيين نطاق مخصص لشجرة عائلتك أو إزالة النطاق الحالي
+            قم بتعيين رابط مخصص لشجرة عائلتك أو إزالة الرابط الحالي
           </DialogDescription>
         </DialogHeader>
 
@@ -207,22 +218,28 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
             <Alert>
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>
-                النطاق الحالي: <strong>{currentDomain}</strong>
+                الرابط الحالي: <strong>https://shjrti.com/{currentDomain}</strong>
               </AlertDescription>
             </Alert>
           )}
 
           {/* Domain Input */}
           <div className="space-y-2">
-            <Label htmlFor="custom-domain">النطاق المخصص</Label>
+            <Label htmlFor="custom-domain">الرابط المخصص</Label>
             <div className="flex gap-2">
-              <Input
-                id="custom-domain"
-                value={customDomain}
-                onChange={(e) => handleDomainChange(e.target.value)}
-                placeholder="mydomain.com"
-                disabled={isLoading}
-              />
+              <div className="flex items-center">
+                <span className="px-3 py-2 bg-muted text-sm rounded-l-md border border-r-0">
+                  https://shjrti.com/
+                </span>
+                <Input
+                  id="custom-domain"
+                  value={customDomain}
+                  onChange={(e) => handleDomainChange(e.target.value)}
+                  placeholder="my-family"
+                  disabled={isLoading}
+                  className="rounded-l-none"
+                />
+              </div>
               <Button
                 type="button"
                 variant="outline"
@@ -240,7 +257,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
             {isValidating && (
               <div className="flex items-center gap-2 text-sm text-blue-600">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                جاري التحقق من النطاق...
+                جاري التحقق من الرابط...
               </div>
             )}
             
@@ -263,9 +280,9 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
 
           {/* Help Text */}
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>• يجب أن يكون النطاق بتنسيق صحيح (مثال: mydomain.com)</p>
-            <p>• تأكد من ملكيتك للنطاق قبل ربطه</p>
-            <p>• سيحتاج النطاق إلى إعداد DNS للعمل بشكل صحيح</p>
+            <p>• يمكن استخدام الحروف الإنجليزية والأرقام والشرطات فقط</p>
+            <p>• يجب أن يكون الرابط بين 3 و 30 حرف</p>
+            <p>• سيصبح الرابط: https://shjrti.com/[رابطك]</p>
           </div>
         </div>
 
@@ -282,7 +299,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
               ) : (
                 <Trash2 className="h-4 w-4" />
               )}
-              حذف النطاق
+              حذف الرابط
             </Button>
           )}
           
@@ -302,7 +319,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
             ) : (
               <Trash2 className="h-4 w-4" />
             )}
-            {customDomain.trim() ? "حفظ النطاق" : "إزالة النطاق"}
+            {customDomain.trim() ? "حفظ الرابط" : "إزالة الرابط"}
           </Button>
         </DialogFooter>
       </DialogContent>
