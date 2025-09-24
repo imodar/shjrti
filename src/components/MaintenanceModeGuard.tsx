@@ -59,6 +59,9 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
 
     // If maintenance mode is enabled and user is not admin, show maintenance page
     console.log('🔧 MaintenanceGuard check:', { isMaintenanceMode, isAdmin, shouldShowMaintenance: isMaintenanceMode && !isAdmin });
+    console.log('🔧 Detailed check - isMaintenanceMode:', isMaintenanceMode, 'type:', typeof isMaintenanceMode);
+    console.log('🔧 Detailed check - isAdmin:', isAdmin, 'type:', typeof isAdmin);
+    
     if (isMaintenanceMode && !isAdmin) {
       console.log('🔧 Showing maintenance page');
       return <MaintenancePage />;

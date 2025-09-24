@@ -18,17 +18,25 @@ export const useMaintenanceMode = () => {
         const { data, error } = await supabase
           .from('admin_settings')
           .select('setting_value')
-          .eq('setting_key', 'maintenance_mode');
+          .eq('setting_key', 'maintenance_mode')
+          .single();
 
         if (error) {
           console.error('Error checking maintenance mode:', error);
+          setIsMaintenanceMode(false);
           return;
         }
 
-        // Handle both array and single object responses
-        const settingData = Array.isArray(data) ? data[0] : data;
-        const settingValue = settingData?.setting_value as { enabled?: boolean } | null;
-        const maintenanceEnabled = settingValue?.enabled || false;
+        console.log('🔧 Raw maintenance data:', data);
+        
+        // Get the setting_value object
+        const settingValue = data?.setting_value;
+        console.log('🔧 Setting value object:', settingValue);
+        
+        let maintenanceEnabled = false;
+        if (settingValue && typeof settingValue === 'object' && 'enabled' in settingValue) {
+          maintenanceEnabled = Boolean(settingValue.enabled);
+        }
         
         console.log('🔧 Maintenance mode set to:', maintenanceEnabled);
         setIsMaintenanceMode(maintenanceEnabled);
@@ -56,8 +64,14 @@ export const useMaintenanceMode = () => {
         (payload) => {
           console.log('🔧 Real-time update received:', payload);
           if (payload.new && typeof payload.new === 'object') {
-            const newData = payload.new as { setting_value: { enabled?: boolean } };
-            const enabled = newData.setting_value?.enabled || false;
+            const newData = payload.new as { setting_value: any };
+            const settingValue = newData.setting_value;
+            
+            let enabled = false;
+            if (settingValue && typeof settingValue === 'object' && 'enabled' in settingValue) {
+              enabled = Boolean(settingValue.enabled);
+            }
+            
             console.log('🔧 Real-time maintenance mode update:', enabled);
             setIsMaintenanceMode(enabled);
           }
