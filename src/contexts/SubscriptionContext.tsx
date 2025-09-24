@@ -40,7 +40,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         const cachedData = JSON.parse(cached);
         // Check if cache is less than 1 hour old
         if (Date.now() - cachedData.timestamp < 3600000) {
-          console.log('Loading subscription from cache:', cachedData.data);
           setSubscription(cachedData.data);
           return true;
         }
@@ -73,7 +72,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
     // Don't fetch if we already have data for this user and it's not a forced refresh
     if (!forceRefresh && lastFetchedUserId === user.id && subscription) {
-      console.log('Subscription already loaded for this user, skipping fetch');
       setLoading(false);
       setHasInitialized(true);
       return;
@@ -89,12 +87,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
     try {
       setLoading(true);
-      console.log('Fetching subscription for user:', user.id);
       const { data, error } = await supabase.rpc('get_user_subscription_details', {
         user_uuid: user.id
       });
-
-      console.log('Subscription data received:', data);
 
       let subscriptionData: SubscriptionDetails;
 
@@ -111,10 +106,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           ai_features_enabled: false
         };
       } else if (data && data.length > 0) {
-        console.log('Setting subscription data:', data[0]);
         subscriptionData = data[0];
       } else {
-        console.log('No active subscription found in data - defaulting to free plan');
         // No active subscription found - user is on free plan
         subscriptionData = {
           subscription_id: null,
@@ -154,7 +147,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     // Only fetch subscription when user logs in (user changes from null to a user)
     if (user && !hasInitialized) {
-      console.log('User logged in, fetching subscription');
       fetchSubscriptionDetails();
     } else if (!user) {
       // Clear subscription when user logs out
@@ -174,7 +166,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   // Auto-refresh removed - only check subscription on login or manual refresh
 
   const refreshSubscription = async () => {
-    console.log('Manual subscription refresh requested');
     await fetchSubscriptionDetails(true); // Force refresh
   };
 

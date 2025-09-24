@@ -162,7 +162,6 @@ export const ModernFamilyMemberModal = ({
   // Separate useEffect for populating edit form when marriages data is available
   useEffect(() => {
     if (editMember && isOpen && marriages.length > 0 && familyMembers.length > 0) {
-      console.log('🔥 Populating edit form with marriages and family members available');
       // Use setTimeout to ensure state updates are complete
       setTimeout(() => {
         populateEditForm();
@@ -171,14 +170,10 @@ export const ModernFamilyMemberModal = ({
   }, [editMember, isOpen, marriages, familyMembers]);
   const populateEditForm = () => {
     if (!editMember) return;
-    console.log('🔥 Populating edit form for member:', editMember);
-    console.log('🔥 Available marriages:', marriages);
-    console.log('🔥 Available family members:', familyMembers);
     
     // Store original image URL and reset image change flag
     setOriginalImageUrl(editMember.image || null);
     setImageChanged(false);
-    console.log('🔍 Image Debug - Original image URL set to:', editMember.image);
 
     // Find the parent marriage for this member
     let selectedParent = null;

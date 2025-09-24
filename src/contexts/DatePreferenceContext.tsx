@@ -123,10 +123,6 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
   const formatDate = (date: Date | string): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
-    // Debug logging
-    console.log('DatePreferenceContext formatDate - datePreference:', datePreference);
-    console.log('DatePreferenceContext formatDate - input date:', date);
-    
     if (isNaN(dateObj.getTime())) {
       return 'تاريخ غير صحيح';
     }
@@ -153,7 +149,6 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
     } else {
       // Hijri format
       const hijriResult = toHijri(dateObj);
-      console.log('DatePreferenceContext formatDate - hijri result:', hijriResult);
       return hijriResult;
     }
     

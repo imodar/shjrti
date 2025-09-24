@@ -92,11 +92,6 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
   const { formatDate, datePreference } = useDatePreference();
   let formattedDate: string = '';
 
-  // Debug logging
-  console.log('DateDisplay - datePreference:', datePreference);
-  console.log('DateDisplay - input date:', date);
-  console.log('DateDisplay - format:', format);
-
   try {
     switch (format) {
       case 'relative':
@@ -109,9 +104,6 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
         formattedDate = formatDateNumeric(date, formatDate, datePreference);
         break;
     }
-    
-    // Debug logging
-    console.log('DateDisplay - formatted result:', formattedDate);
   } catch (error) {
     console.error('Error in DateDisplay:', error);
     formattedDate = '';
