@@ -1082,6 +1082,10 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: boolean
       }
+      is_maintenance_mode_enabled: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_subscription_expired: {
         Args: { user_uuid: string }
         Returns: boolean

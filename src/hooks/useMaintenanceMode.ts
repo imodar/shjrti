@@ -15,11 +15,9 @@ export const useMaintenanceMode = () => {
     
     const checkMaintenanceMode = async () => {
       try {
+        console.log('🔧 Checking maintenance mode using is_maintenance_mode_enabled function');
         const { data, error } = await supabase
-          .from('admin_settings')
-          .select('setting_value')
-          .eq('setting_key', 'maintenance_mode')
-          .single();
+          .rpc('is_maintenance_mode_enabled');
 
         if (error) {
           console.error('Error checking maintenance mode:', error);
@@ -27,16 +25,9 @@ export const useMaintenanceMode = () => {
           return;
         }
 
-        console.log('🔧 Raw maintenance data:', data);
+        console.log('🔧 Raw maintenance data from function:', data);
         
-        // Get the setting_value object
-        const settingValue = data?.setting_value;
-        console.log('🔧 Setting value object:', settingValue);
-        
-        let maintenanceEnabled = false;
-        if (settingValue && typeof settingValue === 'object' && 'enabled' in settingValue) {
-          maintenanceEnabled = Boolean(settingValue.enabled);
-        }
+        const maintenanceEnabled = Boolean(data);
         
         console.log('🔧 Maintenance mode set to:', maintenanceEnabled);
         setIsMaintenanceMode(maintenanceEnabled);
@@ -61,19 +52,18 @@ export const useMaintenanceMode = () => {
           table: 'admin_settings',
           filter: `setting_key=eq.maintenance_mode`
         },
-        (payload) => {
+        async (payload) => {
           console.log('🔧 Real-time update received:', payload);
-          if (payload.new && typeof payload.new === 'object') {
-            const newData = payload.new as { setting_value: any };
-            const settingValue = newData.setting_value;
-            
-            let enabled = false;
-            if (settingValue && typeof settingValue === 'object' && 'enabled' in settingValue) {
-              enabled = Boolean(settingValue.enabled);
+          // Re-fetch using the secure function instead of parsing payload
+          try {
+            const { data, error } = await supabase.rpc('is_maintenance_mode_enabled');
+            if (!error) {
+              const enabled = Boolean(data);
+              console.log('🔧 Real-time maintenance mode update:', enabled);
+              setIsMaintenanceMode(enabled);
             }
-            
-            console.log('🔧 Real-time maintenance mode update:', enabled);
-            setIsMaintenanceMode(enabled);
+          } catch (error) {
+            console.error('Error in real-time maintenance mode update:', error);
           }
         }
       )
