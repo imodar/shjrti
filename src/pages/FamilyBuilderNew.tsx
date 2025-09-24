@@ -3085,7 +3085,7 @@ const FamilyBuilderNew = () => {
                       </div>
 
                       {/* Navigation Icons */}
-                      <div className="flex justify-center mb-6">
+                       <div className="flex justify-center mb-6">
                         <div className="flex items-center gap-4">
                           <div className="flex flex-col items-center cursor-pointer group">
                             <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
@@ -3099,6 +3099,13 @@ const FamilyBuilderNew = () => {
                               <TreePine className="h-5 w-5" />
                             </div>
                             <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
+                          </div>
+                          
+                          <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')}>
+                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                              <Settings className="h-5 w-5" />
+                            </div>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.settings', 'الإعدادات')}</span>
                           </div>
                           
                           <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
