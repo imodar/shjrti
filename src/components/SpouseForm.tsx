@@ -344,7 +344,9 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                       aria-expanded={commandOpen}
                       className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
                     >
-                      {spouse.existingFamilyMemberId && spouse.name ? spouse.name : "اختر فرد من العائلة..."}
+                       {spouse.existingFamilyMemberId && spouse.name ? 
+                         (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.name) 
+                         : "اختر فرد من العائلة..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -393,7 +395,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                    existingFamilyMemberId: member.id,
                                    firstName: member.first_name || '',
                                    lastName: member.last_name || '',
-                                   name: member.name,
+                                   name: member.first_name && member.last_name ? `${member.first_name} ${member.last_name}` : member.name,
                                    birthDate: member.birth_date ? new Date(member.birth_date) : null,
                                    isAlive: member.is_alive ?? true,
                                    deathDate: member.death_date ? new Date(member.death_date) : null,
@@ -411,7 +413,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                   spouse.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0"
                                 )}
                               />
-                              {member.name}
+                              {member.first_name && member.last_name ? `${member.first_name} ${member.last_name}` : member.name}
                             </CommandItem>
                           ))}
                         </CommandGroup>
