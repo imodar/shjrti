@@ -139,7 +139,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {/* Black ribbon for deceased members */}
       {!(member as any).isAlive && <div className="absolute top-0 left-0 z-10">
           <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent"></div>
-          <div className="absolute top-1 left-1 text-white text-xs font-bold transform -rotate-45 origin-top-left">re✝re</div>
         </div>}
       
       <CardContent className="p-4">
