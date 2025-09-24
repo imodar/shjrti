@@ -29,6 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Family } from "../../types/family.types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ShareLinkModal } from "./ShareLinkModal";
+import { CustomDomainModal } from "./CustomDomainModal";
 
 interface TreeSettingsViewProps {
   familyData: Family;
@@ -61,6 +62,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   
   // Share Modal state
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  
+  // Custom Domain Modal state
+  const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
   
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
@@ -454,37 +458,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       onChange={(e) => setCustomDomain(e.target.value)}
                       placeholder="example.com"
                       disabled={!isEditingDomain || isLoadingDomain}
+                      readOnly
                     />
-                    {isEditingDomain ? (
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={handleSaveCustomDomain} 
-                          disabled={isLoadingDomain || isValidatingDomain}
-                          size="sm"
-                        >
-                          {isLoadingDomain ? "جاري الحفظ..." : "حفظ"}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => {
-                            setIsEditingDomain(false);
-                            setCustomDomain(familyData?.custom_domain || "");
-                            setDomainValidationError("");
-                          }}
-                          size="sm"
-                        >
-                          إلغاء
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setIsEditingDomain(true)}
-                        size="sm"
-                      >
-                        تعديل
-                      </Button>
-                    )}
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setIsDomainModalOpen(true)}
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <Globe className="h-4 w-4" />
+                      {customDomain ? "تعديل" : "إضافة"}
+                    </Button>
                   </div>
                   
                   {domainValidationError && (
@@ -663,6 +647,42 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
         onClose={() => setIsShareModalOpen(false)}
         familyName={familyData?.name || 'غير محدد'}
         shareLink={publicShareableLink}
+      />
+      
+      {/* Custom Domain Modal */}
+      <CustomDomainModal
+        isOpen={isDomainModalOpen}
+        onClose={() => setIsDomainModalOpen(false)}
+        familyId={familyData?.id || ''}
+        currentDomain={familyData?.custom_domain || undefined}
+        onDomainUpdated={(newDomain) => {
+          if (familyData) {
+            familyData.custom_domain = newDomain;
+            setCustomDomain(newDomain || '');
+          }
+        }}
+      />
+      
+      {/* Share Link Modal */}
+      <ShareLinkModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        familyName={familyData?.name || 'غير محدد'}
+        shareLink={publicShareableLink}
+      />
+      
+      {/* Custom Domain Modal */}
+      <CustomDomainModal
+        isOpen={isDomainModalOpen}
+        onClose={() => setIsDomainModalOpen(false)}
+        familyId={familyData?.id || ''}
+        currentDomain={familyData?.custom_domain || undefined}
+        onDomainUpdated={(newDomain) => {
+          if (familyData) {
+            familyData.custom_domain = newDomain;
+            setCustomDomain(newDomain || '');
+          }
+        }}
       />
     </div>
   );
