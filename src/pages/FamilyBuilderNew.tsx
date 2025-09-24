@@ -656,7 +656,8 @@ const FamilyBuilderNew = () => {
       // For new spouses without an ID or external spouses, handle database creation
       if (!currentSpouse.isFamilyMember) {
         // External spouse - create or update in database
-        if (!spouseId || spouseId === '' || spouseId.startsWith('temp_')) {
+        const existingId = currentSpouse.existingFamilyMemberId || currentSpouse.id;
+        if (!existingId || existingId === '' || existingId.startsWith('temp_')) {
           // Create new external spouse in database
           const spouseName = currentSpouse.name || (currentSpouse.firstName && currentSpouse.lastName ? `${currentSpouse.firstName} ${currentSpouse.lastName}` : currentSpouse.firstName || currentSpouse.lastName || '');
           const {
@@ -1800,13 +1801,22 @@ const FamilyBuilderNew = () => {
   };
   const createOrUpdateSpouseMember = async (spouse, spouseType, familyId, familyData) => {
     const isWife = spouseType === 'wife';
+    
+    console.log('🔍 SPOUSE CREATION/UPDATE DEBUG:', {
+      spouseName: spouse.name,
+      spouseType,
+      existingFamilyMemberId: spouse.existingFamilyMemberId,
+      spouseId: spouse.id,
+      isFamilyMember: spouse.isFamilyMember
+    });
 
-    // If spouse has existing ID, update the record
-    if (spouse.existingFamilyMemberId && spouse.id) {
+    // If spouse has existing ID (either from existingFamilyMemberId or id), update the record
+    const existingId = spouse.existingFamilyMemberId || spouse.id;
+    if (existingId && !existingId.startsWith('temp_')) {
       // Get current image to handle image state properly
       const {
         data: currentSpouse
-      } = await supabase.from('family_tree_members').select('image_url').eq('id', spouse.existingFamilyMemberId).maybeSingle();
+      } = await supabase.from('family_tree_members').select('image_url').eq('id', existingId).maybeSingle();
 
       // Handle image state properly
       let imageUrl;
@@ -1830,7 +1840,7 @@ const FamilyBuilderNew = () => {
         image_url: imageUrl,
         biography: spouse.biography || null,
         updated_at: new Date().toISOString()
-      }).eq('id', spouse.existingFamilyMemberId).select().single();
+      }).eq('id', existingId).select().single();
       if (spouseUpdateError) {
         console.error(`Error updating ${spouseType} member:`, spouse.name, spouseUpdateError);
         throw spouseUpdateError;
