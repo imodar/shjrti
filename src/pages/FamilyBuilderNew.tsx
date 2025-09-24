@@ -18,6 +18,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
+import { Gem } from "lucide-react";
 import { ar } from "date-fns/locale";
 import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -2874,6 +2875,79 @@ const FamilyBuilderNew = () => {
       <div className="relative z-10 pt-20">
         {/* Header Box from FamilyBuilder */}
         <div className="container mx-auto px-4 pt-2 pb-0">
+          {/* Hero Section - Adapted from Dashboard */}
+          <section className="py-2 relative">
+            <div className="mb-2 relative">
+              {/* Main Content Container - Horizontal Rectangle */}
+              <div className="relative w-full mx-auto">
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
+                
+                <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-1 px-3 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                  <div className="flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
+                    {/* Left: Avatar & Welcome */}
+                    <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                      {/* Family Avatar */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+                        <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30">
+                          <TreePine className="h-6 w-6 text-white" />
+                        </div>
+                        {/* Status Indicator */}
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Family Name */}
+                      <div className="text-right">
+                        <h1 className="text-sm sm:text-base md:text-lg font-bold">
+                          <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                            {familyData?.name || 'شجرة العائلة'}
+                          </span>
+                        </h1>
+                      </div>
+                    </div>
+
+                    {/* Center: Member Count & Description */}
+                    <div className="flex-1 text-center">
+                      <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
+                        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full shadow-lg">
+                          <Users className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">الأعضاء:</span>
+                            <span className="text-xs sm:text-sm md:text-base font-bold text-emerald-700 dark:text-emerald-300">
+                              {familyMembers.length}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300">
+                        {generationCount > 1 ? `${generationCount} أجيال` : 'جيل واحد'}
+                      </p>
+                    </div>
+
+                    {/* Right: Generation Stats */}
+                    <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
+                      <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
+                        <span>
+                          {familyMembers.length === 0 
+                            ? 'ابدأ بإضافة الأعضاء'
+                            : `${generationCount} ${generationCount === 1 ? 'جيل' : 'أجيال'}`
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Decorative Elements */}
+                  <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
+                  <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-emerald-300/40 dark:border-emerald-700/40"></div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
         {/* Header Section */}
