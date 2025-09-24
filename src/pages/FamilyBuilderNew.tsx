@@ -883,26 +883,32 @@ const FamilyBuilderNew = () => {
       closeActiveSpouseEdit();
     }
 
+    // Determine if this spouse is a family member
+    const isSpouseFamilyMember = spouseData.isFamilyMember || Boolean(spouseData.existingFamilyMemberId);
+    const familyStatus = isSpouseFamilyMember ? 'yes' : 'no';
+
     // No active edit, proceed with editing
     if (spouseType === 'wife') {
       const updatedWives = [...wives];
       updatedWives[index] = {
         ...spouseData,
-        isSaved: false
+        isSaved: false,
+        isFamilyMember: isSpouseFamilyMember
       };
       setWives(updatedWives);
-      setCurrentWife(spouseData);
+      setCurrentWife({...spouseData, isFamilyMember: isSpouseFamilyMember});
       setShowWifeForm(true);
       setEditingWifeIndex(index);
-      setWifeFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
+      setWifeFamilyStatus(familyStatus);
     } else {
       setHusband({
         ...spouseData,
-        isSaved: false
+        isSaved: false,
+        isFamilyMember: isSpouseFamilyMember
       });
-      setCurrentHusband(spouseData);
+      setCurrentHusband({...spouseData, isFamilyMember: isSpouseFamilyMember});
       setShowHusbandForm(true);
-      setHusbandFamilyStatus(spouseData.isFamilyMember ? 'yes' : 'no');
+      setHusbandFamilyStatus(familyStatus);
     }
     toast({
       title: "وضع التعديل",
