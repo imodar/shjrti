@@ -199,7 +199,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
                   </div>
                 )}
-                {member.is_founder && (
+                {(member.is_founder || (member as any).family_founder || (member as any).founder) && (
                   <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
                     <Crown className="h-4 w-4 text-yellow-600" />
                     <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
