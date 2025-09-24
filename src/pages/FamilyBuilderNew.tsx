@@ -3605,25 +3605,24 @@ const FamilyBuilderNew = () => {
                                                     </div>
                                                   </div>
                                                   
-                                                  {/* Action Buttons */}
-                                                  <div className="flex gap-2 flex-shrink-0">
-                                                   {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                                   {/* Action Buttons */}
+                                                   <div className="flex gap-2 flex-shrink-0">
+                                                    {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
                                    if (husband.isSaved) {
                                      handleSpouseEditAttempt('husband', husband, -1);
                                    }
                                  }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
-                                                      <Edit className="h-3 w-3" />
-                                                    </Button>}
-                                                  <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
-                                                    <X className="h-3 w-3" />
-                                                  </Button>
-                                                  </div>
-                                                </div>
-
-                                              </div>
-                                         </div>
-                                      
-                                      {/* Always show Add Husband button */}
+                                                       <Edit className="h-3 w-3" />
+                                                     </Button>}
+                                                   <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                     <X className="h-3 w-3" />
+                                                   </Button>
+                                                   </div>
+                                                 </div>
+                                               </div>
+                                          </div>
+                                       
+                                       {/* Always show Add Husband button */}
                                       <div className="text-center py-4">
                                         <Button
                                           onClick={handleAddHusband}
