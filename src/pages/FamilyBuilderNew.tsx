@@ -2940,50 +2940,50 @@ const FamilyBuilderNew = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Navigation Icons - Inside the main container */}
+                  <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
+                    <div className="flex items-center justify-center gap-3 sm:gap-4">
+                      <div className="flex flex-col items-center cursor-pointer group" title="نظرة عامة">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-500/90 text-white shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 transition-all duration-200 backdrop-blur-sm">
+                          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.overview', 'عام')}</span>
+                      </div>
+                      
+                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)} title="مخطط الشجرة">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
+                          <TreePine className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.tree_diagram', 'الشجرة')}</span>
+                      </div>
+                      
+                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')} title="الإعدادات">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
+                          <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.settings', 'الإعدادات')}</span>
+                      </div>
+                      
+                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')} title="المتجر">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
+                          <Store className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.store', 'المتجر')}</span>
+                      </div>
+                      
+                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)} title="الإحصائيات">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
+                          <Star className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.statistics', 'إحصائيات')}</span>
+                      </div>
+                    </div>
+                  </div>
                   
                   {/* Decorative Elements */}
                   <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
                   <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-emerald-300/40 dark:border-emerald-700/40"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Icons - Moved from below */}
-            <div className="flex justify-center mt-4">
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-center cursor-pointer group">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-all">
-                    <Users className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.overview', 'نظرة عامة')}</span>
-                </div>
-                
-                <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
-                  <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                    <TreePine className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.tree_diagram', 'مخطط الشجرة')}</span>
-                </div>
-                
-                <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')}>
-                  <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                    <Settings className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.settings', 'الإعدادات')}</span>
-                </div>
-                
-                <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')}>
-                  <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                    <Store className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.store', 'المتجر')}</span>
-                </div>
-                
-                <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)}>
-                  <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-105 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                    <Star className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_builder.statistics', 'الإحصائيات')}</span>
                 </div>
               </div>
             </div>
@@ -2993,7 +2993,7 @@ const FamilyBuilderNew = () => {
         {/* Header Section */}
 
         {/* Main Content */}
-                <div className="container mx-auto px-4 pt-2 pb-6">
+        <div className="container mx-auto px-4 pt-2 pb-6">
           <div className={cn("grid gap-6", isMobile ? "grid-cols-1" : "grid-cols-12")}>
             {/* Form Panel - Right Side on Desktop */}
             <div className={cn("space-y-6", isMobile ? "order-2" : "col-span-8 order-2")}>
