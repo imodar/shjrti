@@ -29,8 +29,8 @@ export function ErrorPage({
     t('error.default_title', 'حدث خطأ');
     
   const defaultMessage = code === "404" ? 
-    t('error.not_found_message', 'عذراً، الصفحة التي تبحث عنها غير موجودة أو لا تملك صلاحية للوصول إليها') :
-    t('error.default_message', 'حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى');
+    t('error.not_found_message', 'عذراً، الصفحة التي تبحث عنها غير موجودة أو قد تحتاج إلى تجديد اشتراكك للوصول إليها') :
+    t('error.default_message', 'حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى أو التحقق من صلاحية اشتراكك');
 
   const handleBack = () => {
     if (onBackClick) {
@@ -67,26 +67,37 @@ export function ErrorPage({
               </p>
             </div>
             
-            <div className={`flex gap-3 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'} justify-center pt-4`}>
-              {showBackButton && (
-                <Button 
-                  variant="outline" 
-                  onClick={handleBack}
-                  className="flex-1 max-w-32"
-                >
-                  <ArrowRight className={`h-4 w-4 ${direction === 'rtl' ? '' : 'rotate-180'}`} />
-                  {t('error.back_button', 'رجوع')}
-                </Button>
-              )}
-              {showHomeButton && (
-                <Button 
-                  onClick={handleHome}
-                  className="flex-1 max-w-32 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
-                >
-                  <Home className="h-4 w-4" />
-                  {t('error.home_button', 'الرئيسية')}
-                </Button>
-              )}
+            <div className={`flex flex-col gap-3 pt-4`}>
+              <div className={`flex gap-3 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'} justify-center`}>
+                {showBackButton && (
+                  <Button 
+                    variant="outline" 
+                    onClick={handleBack}
+                    className="flex-1 max-w-32"
+                  >
+                    <ArrowRight className={`h-4 w-4 ${direction === 'rtl' ? '' : 'rotate-180'}`} />
+                    {t('error.back_button', 'رجوع')}
+                  </Button>
+                )}
+                {showHomeButton && (
+                  <Button 
+                    onClick={handleHome}
+                    className="flex-1 max-w-32 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
+                  >
+                    <Home className="h-4 w-4" />
+                    {t('error.home_button', 'الرئيسية')}
+                  </Button>
+                )}
+              </div>
+              
+              {/* زر للذهاب لصفحة الباقات */}
+              <Button 
+                onClick={() => navigate('/plan-selection')}
+                variant="outline"
+                className="w-full border-emerald-500 text-emerald-700 hover:bg-emerald-50"
+              >
+                📦 عرض الباقات وتجديد الاشتراك
+              </Button>
             </div>
           </CardContent>
         </Card>

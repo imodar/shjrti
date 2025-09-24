@@ -58,10 +58,17 @@ export function SubscriptionGuard({
                 <AlertTriangle className="h-8 w-8 text-orange-600 dark:text-orange-400 relative z-10" />
               </div>
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-amber-600 bg-clip-text text-transparent">
-                انتهت صلاحية الاشتراك
+                🚫 انتهت صلاحية اشتراكك
               </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
-                يجب تجديد اشتراكك للمتابعة واستخدام جميع الميزات
+              <CardDescription className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium">
+                <div className="space-y-2">
+                  <div className="text-red-600 dark:text-red-400 font-semibold">
+                    ⚠️ لا يمكنك الوصول لحسابك حالياً
+                  </div>
+                  <div>
+                    يجب تجديد اشتراكك أو اختيار باقة جديدة للمتابعة واستخدام جميع الميزات
+                  </div>
+                </div>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -96,12 +103,19 @@ export function SubscriptionGuard({
                   onClick={() => navigate('/plan-selection')} 
                   className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 rounded-xl shadow-lg transition-all duration-300 text-base font-medium"
                 >
-                  تجديد الاشتراك
+                  🔄 اختر باقة جديدة أو جدد اشتراكك
+                </Button>
+                <Button 
+                  onClick={() => navigate('/plan-selection')} 
+                  variant="outline"
+                  className="w-full border-2 border-emerald-500 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 py-6 rounded-xl transition-all duration-300 text-base font-medium"
+                >
+                  📦 عرض جميع الباقات المتاحة
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={() => navigate('/dashboard')} 
-                  className="w-full border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 py-6 rounded-xl transition-all duration-300 text-base"
+                  className="w-full border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900/20 py-4 rounded-xl transition-all duration-300 text-sm"
                 >
                   العودة للرئيسية
                 </Button>
