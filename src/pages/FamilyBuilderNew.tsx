@@ -974,7 +974,8 @@ const FamilyBuilderNew = () => {
     name: "",
     fatherName: "",
     grandfatherName: "",
-    isFounder: false
+    isFounder: false,
+    first_name: ""
   });
 
   // Spouse deletion modal states
@@ -1081,7 +1082,8 @@ const FamilyBuilderNew = () => {
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
-      isFounder: currentMember?.is_founder || false
+      isFounder: currentMember?.is_founder || false,
+      first_name: partner.first_name || "غير محدد"
     });
 
     // Show the spouse edit warning modal
@@ -1128,7 +1130,8 @@ const FamilyBuilderNew = () => {
       name: partner.name || "غير محدد",
       fatherName: fatherName || "غير محدد",
       grandfatherName: grandfatherName || "غير محدد",
-      isFounder: currentMember?.is_founder || false
+      isFounder: currentMember?.is_founder || false,
+      first_name: partner.first_name || "غير محدد"
     });
 
     // Show the spouse edit warning modal (same for delete)
@@ -3999,7 +4002,7 @@ const FamilyBuilderNew = () => {
               }
             }}>
                 <Edit className="h-4 w-4 mr-2" />
-                تعديل بيانات {spousePartnerDetails.name ? spousePartnerDetails.name.split(' ')[0] : "العضو"}
+                تعديل بيانات {spousePartnerDetails.first_name || "العضو"}
               </Button>
             </AlertDialogFooter>
           </div>
