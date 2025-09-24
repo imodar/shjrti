@@ -237,7 +237,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
                   onChange={(e) => handleDomainChange(e.target.value)}
                   placeholder="my-family"
                   disabled={isLoading}
-                  className="rounded-l-none rtl:rounded-r-none rtl:rounded-l-md"
+                  className="rounded-l-none rtl:rounded-r-none rtl:rounded-l-md focus-visible:ring-0 focus-visible:ring-offset-0 border-input"
                 />
               </div>
               <Button
