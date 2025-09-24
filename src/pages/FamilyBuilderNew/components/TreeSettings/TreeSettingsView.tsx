@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { 
   ArrowLeft, 
   Settings, 
@@ -16,12 +17,16 @@ import {
   Lock, 
   Users, 
   Trash2,
-  FileText 
+  FileText,
+  Globe,
+  Shield,
+  AlertTriangle,
+  CheckCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Family } from "../../types/family.types";
-import { CustomDomainCard } from "./CustomDomainCard";
 
 interface TreeSettingsViewProps {
   familyData: Family;
@@ -33,6 +38,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   onBack 
 }) => {
   const { toast } = useToast();
+  const { subscription } = useSubscription();
   
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(familyData?.description || '');
@@ -41,8 +47,51 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const [sharePassword, setSharePassword] = useState(familyData?.share_password || '');
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   
+  // Custom Domain state
+  const [customDomain, setCustomDomain] = useState(familyData?.custom_domain || "");
+  const [isEditingDomain, setIsEditingDomain] = useState(false);
+  const [isLoadingDomain, setIsLoadingDomain] = useState(false);
+  const [isValidatingDomain, setIsValidatingDomain] = useState(false);
+  const [domainValidationError, setDomainValidationError] = useState("");
+  const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
+  const [checkingFeature, setCheckingFeature] = useState(true);
+  
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
+  
+  // Check if user's package has custom domains enabled
+  useEffect(() => {
+    const checkCustomDomainFeature = async () => {
+      setCheckingFeature(true);
+      try {
+        const { data: userSub, error: subError } = await supabase
+          .from('user_subscriptions')
+          .select(`
+            *,
+            packages(
+              custom_domains_enabled,
+              name
+            )
+          `)
+          .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+          .eq('status', 'active')
+          .single();
+          
+        if (userSub && userSub.packages && !subError) {
+          setHasCustomDomainFeature(userSub.packages.custom_domains_enabled);
+        } else {
+          setHasCustomDomainFeature(false);
+        }
+      } catch (error) {
+        console.error('Error checking custom domain feature:', error);
+        setHasCustomDomainFeature(false);
+      } finally {
+        setCheckingFeature(false);
+      }
+    };
+
+    checkCustomDomainFeature();
+  }, []);
   
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareableLink);
@@ -167,6 +216,71 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
     setIsEditingPassword(false);
   };
 
+  // Domain validation
+  const validateDomain = async (domain: string) => {
+    if (!domain) return true;
+    
+    setIsValidatingDomain(true);
+    setDomainValidationError("");
+    
+    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+    if (!domainRegex.test(domain)) {
+      setDomainValidationError("تنسيق النطاق غير صحيح");
+      setIsValidatingDomain(false);
+      return false;
+    }
+    
+    try {
+      const { data: existingDomain } = await supabase
+        .from('families')
+        .select('id')
+        .eq('custom_domain', domain)
+        .neq('id', familyData.id)
+        .single();
+        
+      if (existingDomain) {
+        setDomainValidationError("هذا النطاق مستخدم بالفعل");
+        setIsValidatingDomain(false);
+        return false;
+      }
+    } catch (error) {
+      // If no existing domain found, that's good
+    }
+    
+    setIsValidatingDomain(false);
+    return true;
+  };
+
+  const handleSaveCustomDomain = async () => {
+    if (!(await validateDomain(customDomain))) return;
+    
+    setIsLoadingDomain(true);
+    try {
+      const { error } = await supabase
+        .from('families')
+        .update({ custom_domain: customDomain || null })
+        .eq('id', familyData.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "تم حفظ النطاق المخصص",
+        description: customDomain ? `تم تعيين النطاق: ${customDomain}` : "تم إزالة النطاق المخصص"
+      });
+      
+      setIsEditingDomain(false);
+    } catch (error) {
+      console.error('Error saving custom domain:', error);
+      toast({
+        title: "خطأ في حفظ النطاق",
+        description: "حدث خطأ أثناء حفظ النطاق المخصص",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingDomain(false);
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -193,8 +307,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
 
       {/* Content */}
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-        {/* Custom Domain Card */}
-        <CustomDomainCard familyData={familyData} />
 
         {/* Family Description */}
         <Card>
@@ -250,51 +362,157 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           </CardContent>
         </Card>
 
-        {/* Sharing Settings */}
+        {/* Sharing & Domain Settings */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Share2 className="h-5 w-5" />
-              إعدادات المشاركة
+              إعدادات المشاركة والنطاق
             </CardTitle>
             <CardDescription>
-              تحكم في كيفية مشاركة شجرة العائلة
+              تحكم في كيفية مشاركة شجرة العائلة ونطاقها المخصص
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Link2 className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-sm">رابط الشجرة الخاص</p>
-                    <p className="text-xs text-muted-foreground">للأعضاء المسجلين فقط</p>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" onClick={handleCopyLink}>
-                  <Copy className="h-4 w-4" />
-                </Button>
+          <CardContent className="space-y-6">
+            {/* Custom Domain Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                <Label className="text-base font-semibold">النطاق المخصص</Label>
               </div>
               
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Eye className="h-5 w-5 text-green-600" />
-                  <div>
-                    <p className="font-medium text-sm">رابط العرض العام</p>
-                    <p className="text-xs text-muted-foreground">يمكن لأي شخص الوصول إليه</p>
-                  </div>
+              {checkingFeature ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
-                <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
-                  <Copy className="h-4 w-4" />
-                </Button>
+              ) : !hasCustomDomainFeature ? (
+                <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="h-5 w-5 text-yellow-600" />
+                    <span className="font-semibold text-yellow-800 dark:text-yellow-200">
+                      ميزة النطاق المخصص غير متاحة
+                    </span>
+                  </div>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                    قم بترقية باقتك للحصول على إمكانية استخدام نطاق مخصص لشجرة عائلتك
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={customDomain}
+                      onChange={(e) => setCustomDomain(e.target.value)}
+                      placeholder="example.com"
+                      disabled={!isEditingDomain || isLoadingDomain}
+                    />
+                    {isEditingDomain ? (
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={handleSaveCustomDomain} 
+                          disabled={isLoadingDomain || isValidatingDomain}
+                          size="sm"
+                        >
+                          {isLoadingDomain ? "جاري الحفظ..." : "حفظ"}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setIsEditingDomain(false);
+                            setCustomDomain(familyData?.custom_domain || "");
+                            setDomainValidationError("");
+                          }}
+                          size="sm"
+                        >
+                          إلغاء
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsEditingDomain(true)}
+                        size="sm"
+                      >
+                        تعديل
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {domainValidationError && (
+                    <div className="flex items-center gap-2 text-sm text-red-600">
+                      <AlertTriangle className="h-4 w-4" />
+                      {domainValidationError}
+                    </div>
+                  )}
+                  
+                  {isValidatingDomain && (
+                    <div className="flex items-center gap-2 text-sm text-blue-600">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      جاري التحقق من النطاق...
+                    </div>
+                  )}
+                  
+                  {familyData?.custom_domain && (
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+                      <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="text-sm font-medium">
+                          النطاق المخصص نشط: {familyData.custom_domain}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <Separator />
+            
+            {/* Sharing Links Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Link2 className="h-5 w-5" />
+                <Label className="text-base font-semibold">روابط المشاركة</Label>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Link2 className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-sm">رابط الشجرة الخاص</p>
+                      <p className="text-xs text-muted-foreground">للأعضاء المسجلين فقط</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleCopyLink}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Eye className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-medium text-sm">رابط العرض العام</p>
+                      <p className="text-xs text-muted-foreground">يمكن لأي شخص الوصول إليه</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
             
             <Separator />
             
-            {/* Password Protection */}
-            <div className="space-y-3">
-              <Label>حماية بكلمة مرور (المشاركة العامة)</Label>
+            {/* Password Protection Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Lock className="h-5 w-5" />
+                <Label className="text-base font-semibold">حماية بكلمة مرور</Label>
+              </div>
+              
               {isEditingPassword ? (
                 <div className="space-y-3">
                   <Input
