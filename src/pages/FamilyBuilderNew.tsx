@@ -3959,15 +3959,12 @@ const FamilyBuilderNew = () => {
                      <div className="text-sm text-gray-600">للتعديل، انتقل إلى:</div>
                    </div>
                    <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
-                     <div className="font-bold text-primary text-lg animate-pulse">
-                       {spousePartnerDetails.name}
-                     </div>
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.fatherName && spousePartnerDetails.fatherName.trim() !== '' && <div className="text-sm text-gray-600 mt-1">
-                           ابن: <span className="font-medium text-gray-700">{spousePartnerDetails.fatherName}</span>
-                         </div>}
-                       {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && <div className="text-xs text-gray-500 mt-1">
-                           حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
-                         </div>}
+                      <div className="font-bold text-primary text-lg animate-pulse">
+                        {spousePartnerDetails.name}
+                      </div>
+                        {!spousePartnerDetails.isFounder && spousePartnerDetails.grandfatherName && spousePartnerDetails.grandfatherName.trim() !== '' && <div className="text-xs text-gray-500 mt-1">
+                            حفيد: <span className="font-medium text-gray-600">{spousePartnerDetails.grandfatherName}</span>
+                          </div>}
                    </div>
                 </div>}
 
