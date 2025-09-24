@@ -3663,8 +3663,15 @@ const FamilyBuilderNew = () => {
                                    
                                    <div className="space-y-3">
                                      {wives.length === 0 ? <div className="text-center py-8 text-muted-foreground">
-                                         <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوجات بعد</p>
+                                          <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                          <p className="font-arabic mb-4">لم يتم إضافة زوجات بعد</p>
+                                          <Button
+                                            onClick={handleAddWife}
+                                            className="bg-pink-500 hover:bg-pink-600 text-white font-arabic"
+                                          >
+                                            <Plus className="w-4 h-4 ml-2" />
+                                            إضافة زوجة
+                                          </Button>
                                        </div> : wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
                                                 {/* Header Section */}
@@ -3802,8 +3809,15 @@ const FamilyBuilderNew = () => {
                                     
                                     <div className="space-y-3">
                                       {!husband ? <div className="text-center py-8 text-muted-foreground">
-                                          <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                          <p className="font-arabic">لم يتم إضافة زوج بعد</p>
+                                           <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                           <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
+                                           <Button
+                                             onClick={handleAddHusband}
+                                             className="bg-blue-500 hover:bg-blue-600 text-white font-arabic"
+                                           >
+                                             <Plus className="w-4 h-4 ml-2" />
+                                             إضافة زوج
+                                           </Button>
                                         </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                           <div className="flex items-center justify-between">
                                             <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
