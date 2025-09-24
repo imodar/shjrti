@@ -414,7 +414,7 @@ const Dashboard = () => {
                 </div>
               </section>
             ) : familyTrees.length === 0 ? (
-              <section className="py-2 pb-16 relative">
+              <section className="py-2 pb-32 relative">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* البحث الذكي والاقتراحات - يظهر فقط إذا كانت ميزات الـ AI مفعلة */}
                   {hasAIFeatures && (
