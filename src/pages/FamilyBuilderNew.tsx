@@ -464,7 +464,12 @@ const FamilyBuilderNew = () => {
           mother_id,
           is_founder,
           gender,
-          marital_status
+          marital_status,
+          biography,
+          birth_date,
+          death_date,
+          is_alive,
+          image_url
         `).eq('family_id', family.id);
       if (membersError) throw membersError;
       const transformedMembers = members.map(member => ({
@@ -1815,7 +1820,7 @@ const FamilyBuilderNew = () => {
       if (memberMarriages.length > 0) {
         const memberWives = memberMarriages.map(marriage => {
           // Use the wife data from the marriage object directly (it already has all fields from the database)
-          const wifeMember = marriage.wife || familyMembers.find(fm => fm.id === marriage.wife?.id);
+          const wifeMember = marriage.wife; // Use marriage.wife directly instead of searching in familyMembers
 
           // Determine if spouse is external: no father_id and not founder
           const isExternalSpouse = wifeMember ? !wifeMember.father_id && !wifeMember.is_founder : true;
@@ -1876,7 +1881,7 @@ const FamilyBuilderNew = () => {
       const memberMarriages = familyMarriages.filter(marriage => marriage.wife?.id === member.id);
       if (memberMarriages.length > 0) {
         const marriage = memberMarriages[0]; // Take the first marriage
-        const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
+        const husbandMember = marriage.husband; // Use marriage.husband directly instead of searching in familyMembers
         // Determine if spouse is external similar to wives logic
         const isExternalSpouse = husbandMember ? (!husbandMember.father_id && !husbandMember.is_founder) : true;
         const husbandData = {
