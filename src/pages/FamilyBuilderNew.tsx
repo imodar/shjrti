@@ -3573,76 +3573,9 @@ const FamilyBuilderNew = () => {
                           isSaved: false
                         }} onSpouseChange={setCurrentWife} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={wifeCommandOpen} onCommandOpenChange={setWifeCommandOpen} familyStatus={wifeFamilyStatus} onFamilyStatusChange={handleWifeFamilyStatusChange} onSave={handleWifeSave} onAdd={handleAddWife} onClose={handleCloseWifeEdit} showForm={showWifeForm} />
                                   </div>
-                               </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                 {/* Husband Display Panel */}
-                                 <div className="space-y-4">
-                                   <div className="flex items-center gap-2 mb-4">
-                                     <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
-                                       <User className="w-3 h-3 text-white" />
-                                     </div>
-                                     <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
-                                   </div>
-                                   
-                                   <div className="space-y-3">
-                                     {!husband ? <div className="text-center py-8 text-muted-foreground">
-                                         <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                         <p className="font-arabic">لم يتم إضافة زوج بعد</p>
-                                       </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
-                                         <div className="flex items-center justify-between">
-                                           <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
-                                if (husband.isSaved) {
-                                  setHusband({
-                                    ...husband,
-                                    isSaved: false
-                                  });
-                                  setCurrentHusband(husband);
-                                  setShowHusbandForm(true);
-                                  setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
-                                  toast({
-                                    title: "وضع التعديل",
-                                    description: "يمكنك الآن تعديل بيانات الزوج",
-                                    variant: "default"
-                                  });
-                                }
-                              }}>
-                                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                               <User className="w-4 h-4" />
-                                             </div>
-                                             <div>
-                                               <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                                                 {husband.name || 'الزوج'}
-                                               </h5>
-                                               <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
-                                                 {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                 {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                                                     <Check className="h-3 w-3" />
-                                                     محفوظ
-                                                   </span>}
-                                               </p>
-                                               {husband.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
-                                                   انقر للتعديل
-                                                 </p>}
-                                             </div>
-                                           </div>
-                                           <div className="flex gap-2">
-                                              {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
-                                  if (husband.isSaved) {
-                                    handleSpouseEditAttempt('husband', husband, -1);
-                                  }
-                                }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
-                                                 <Edit className="h-3 w-3" />
-                                               </Button>}
-                                             <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
-                                               <X className="h-3 w-3" />
-                                             </Button>
-                                           </div>
-                                         </div>
-                                       </div>}
-                                   </div>
-                                 </div>
-
-                                 {/* Unified Husband Form */}
-                                    <SpouseForm spouseType="husband" spouse={currentHusband || {
+                                </div> : <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                  {/* Unified Husband Form */}
+                                     <SpouseForm spouseType="husband" spouse={currentHusband || {
                         id: '',
                         firstName: '',
                         lastName: '',
@@ -3657,6 +3590,73 @@ const FamilyBuilderNew = () => {
                         biography: '',
                         isSaved: false
                       }} onSpouseChange={setCurrentHusband} familyMembers={familyMembers} selectedMember={selectedMember} commandOpen={husbandCommandOpen} onCommandOpenChange={setHusbandCommandOpen} familyStatus={husbandFamilyStatus} onFamilyStatusChange={handleHusbandFamilyStatusChange} onSave={handleHusbandSave} onAdd={handleAddHusband} onClose={handleCloseHusbandEdit} showForm={showHusbandForm} />
+
+                                  {/* Husband Display Panel */}
+                                  <div className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-4">
+                                      <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center">
+                                        <User className="w-3 h-3 text-white" />
+                                      </div>
+                                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 font-arabic">معلومات الزوج</h4>
+                                    </div>
+                                    
+                                    <div className="space-y-3">
+                                      {!husband ? <div className="text-center py-8 text-muted-foreground">
+                                          <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                          <p className="font-arabic">لم يتم إضافة زوج بعد</p>
+                                        </div> : <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
+                                          <div className="flex items-center justify-between">
+                                            <div className={cn("flex items-center gap-3 flex-1", husband.isSaved ? "cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-950/20 rounded-lg p-2 -m-2 transition-colors" : "")} onClick={() => {
+                                 if (husband.isSaved) {
+                                   setHusband({
+                                     ...husband,
+                                     isSaved: false
+                                   });
+                                   setCurrentHusband(husband);
+                                   setShowHusbandForm(true);
+                                   setHusbandFamilyStatus(husband.isFamilyMember ? 'yes' : 'no');
+                                   toast({
+                                     title: "وضع التعديل",
+                                     description: "يمكنك الآن تعديل بيانات الزوج",
+                                     variant: "default"
+                                   });
+                                 }
+                               }}>
+                                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                <User className="w-4 h-4" />
+                                              </div>
+                                              <div>
+                                                <h5 className="font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                                                  {husband.name || 'الزوج'}
+                                                </h5>
+                                                <p className="text-xs text-muted-foreground font-arabic flex items-center gap-1">
+                                                  {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                  {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
+                                                      <Check className="h-3 w-3" />
+                                                      محفوظ
+                                                    </span>}
+                                                </p>
+                                                {husband.isSaved && <p className="text-xs text-blue-600 font-arabic mt-1">
+                                                    انقر للتعديل
+                                                  </p>}
+                                              </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                               {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                   if (husband.isSaved) {
+                                     handleSpouseEditAttempt('husband', husband, -1);
+                                   }
+                                 }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
+                                                  <Edit className="h-3 w-3" />
+                                                </Button>}
+                                              <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                <X className="h-3 w-3" />
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </div>}
+                                    </div>
+                                  </div>
                                </div>}
                           </div>}
 
