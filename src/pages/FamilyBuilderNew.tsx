@@ -3360,16 +3360,16 @@ const FamilyBuilderNew = () => {
                                     </div>
                                   </div>
                                   
-                                  <div className="flex justify-center gap-2">
-                                    <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
-                                      <Edit2 className="h-3 w-3 ml-1" />
-                                      تعديل
-                                    </Button>
-                                    <Button type="button" size="sm" variant="destructive" onClick={handleDeleteImage} className="h-8 px-3">
-                                      <Trash2 className="h-3 w-3 ml-1" />
-                                      حذف
-                                    </Button>
-                                  </div>
+                                   {isImageUploadEnabled && <div className="flex justify-center gap-2">
+                                     <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
+                                       <Edit2 className="h-3 w-3 ml-1" />
+                                       تعديل
+                                     </Button>
+                                     <Button type="button" size="sm" variant="destructive" onClick={handleDeleteImage} className="h-8 px-3">
+                                       <Trash2 className="h-3 w-3 ml-1" />
+                                       حذف
+                                     </Button>
+                                   </div>}
                                 </div> : <div className={`relative overflow-hidden border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-300 h-[140px] flex items-center justify-center ${isImageUploadEnabled ? 'border-primary/40 cursor-pointer hover:border-primary/60' : 'border-gray-300 opacity-70 cursor-not-allowed'}`} onClick={() => isImageUploadEnabled && fileInputRef.current?.click()}>
                                   {isImageUploadEnabled ? <div className="space-y-2">
                                       <Upload className="h-8 w-8 text-primary mx-auto" />
