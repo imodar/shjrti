@@ -261,69 +261,6 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
       <div className="bg-card backdrop-blur-sm border border-border rounded-xl p-6 shadow-md">
         <div className="space-y-6">
-          {/* Image Upload Section - Common for all cases if package allows */}
-          {isImageUploadEnabled && (familyStatus || spouse.isSaved) && (
-            <div className="space-y-3">
-              <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
-                <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg"></div>
-                صورة {spouseLabel}
-              </Label>
-              
-              <div className="flex items-center gap-4">
-                {spouse.croppedImage && (
-                  <div className="relative">
-                    <img 
-                      src={spouse.croppedImage} 
-                      alt={`صورة ${spouseLabel}`}
-                      className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
-                    />
-                  </div>
-                )}
-                
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById(`${spouseType}-image-input`)?.click()}
-                    className="flex items-center gap-2 font-arabic"
-                  >
-                    <Camera className="h-4 w-4" />
-                    {spouse.croppedImage ? 'تغيير الصورة' : 'إضافة صورة'}
-                  </Button>
-                  
-                  {spouse.croppedImage && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onSpouseChange({ ...spouse, croppedImage: null })}
-                      className="flex items-center gap-2 font-arabic text-red-600 hover:text-red-700"
-                    >
-                      حذف الصورة
-                    </Button>
-                  )}
-                </div>
-                
-                <input
-                  id={`${spouseType}-image-input`}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                />
-              </div>
-              
-              {!isImageUploadEnabled && (
-                <div className="text-center p-4 bg-muted/20 rounded-lg border border-dashed">
-                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground font-arabic">
-                    رفع الصور غير متاح في باقتك الحالية
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
           {/* Family Member Selection - Only show when adding new spouse, not when editing existing */}
           {!spouse.isSaved && (
             <div>
@@ -667,6 +604,61 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   )}
                 </div>
               </div>
+              
+              {/* Image Upload Section - if package allows */}
+              {isImageUploadEnabled && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg"></div>
+                    صورة {spouseLabel}
+                  </Label>
+                  
+                  <div className="flex items-center gap-4">
+                    {spouse.croppedImage && (
+                      <div className="relative">
+                        <img 
+                          src={spouse.croppedImage} 
+                          alt={`صورة ${spouseLabel}`}
+                          className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById(`${spouseType}-image-input`)?.click()}
+                        className="flex items-center gap-2 font-arabic"
+                      >
+                        <Camera className="h-4 w-4" />
+                        {spouse.croppedImage ? 'تغيير الصورة' : 'إضافة صورة'}
+                      </Button>
+                      
+                      {spouse.croppedImage && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onSpouseChange({ ...spouse, croppedImage: null })}
+                          className="flex items-center gap-2 font-arabic text-red-600 hover:text-red-700"
+                        >
+                          حذف الصورة
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <input
+                      id={`${spouseType}-image-input`}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              )}
               
               {/* Biography/Notes Section */}
               <div className="space-y-3">
