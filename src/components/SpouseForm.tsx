@@ -320,8 +320,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
             </div>
           )}
 
-          {/* Conditional rendering based on radio button selection */}
-          {familyStatus === 'yes' ? (
+          {/* Conditional rendering based on radio button selection or saved spouse type */}
+          {(familyStatus === 'yes' || (spouse.isSaved && spouse.isFamilyMember)) ? (
             <>
               <p className="text-xs text-muted-foreground mb-3 font-arabic">
                 يُسمح فقط باختيار {spouseLabel} من أفراد العائلة المسجلين
@@ -427,7 +427,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 </div>
               </div>
             </>
-          ) : familyStatus === 'no' ? (
+          ) : (familyStatus === 'no' || (spouse.isSaved && !spouse.isFamilyMember)) ? (
             <>
               {/* Image Upload Section - for non-family members and if package allows */}
               {isImageUploadEnabled && (
@@ -653,7 +653,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 </p>
               </div>
             </>
-          ) : (
+          ) : (!spouse.isSaved && !familyStatus) ? (
             /* When no radio button is selected, show cancel option */
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground mb-4 font-arabic">
@@ -672,10 +672,10 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 الغاء إضافة {isWife ? 'زوجة' : 'زوج'} جديدة
               </Button>
             </div>
-          )}
+          ) : null}
 
-          {/* Action Buttons - Only show when radio button is selected */}
-          {(familyStatus === 'yes' || familyStatus === 'no') && (
+          {/* Action Buttons - Only show when radio button is selected or editing saved spouse */}
+          {(familyStatus === 'yes' || familyStatus === 'no' || spouse.isSaved) && (
             <div className="pt-4 border-t border-gray-200/30 dark:border-gray-700/30 space-y-3">
               {/* Close Button - Always show when form is open */}
               {onClose && (
