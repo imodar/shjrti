@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, UserIcon, Crown, Skull, Edit2, Trash2 } from "lucide-react";
+import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "../../types/family.types";
 
@@ -193,9 +193,19 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               
               {/* Birth date and other icons */}
               <div className="flex items-center gap-2">
-                {member.birth_date && <DateDisplay date={member.birth_date} className="text-xs text-muted-foreground font-arabic" />}
-                {member.is_founder && <Crown className="h-3 w-3 text-yellow-500" />}
-                {!(member as any).isAlive && <Skull className="h-3 w-3 text-muted-foreground" />}
+                {member.birth_date && (
+                  <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                    <Calendar className="h-3 w-3 text-blue-600" />
+                    <DateDisplay date={member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
+                  </div>
+                )}
+                {member.is_founder && (
+                  <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+                    <Crown className="h-4 w-4 text-yellow-600" />
+                    <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
+                  </div>
+                )}
+                {!(member as any).isAlive && <Skull className="h-4 w-4 text-red-500" />}
               </div>
             </div>
           </div>
