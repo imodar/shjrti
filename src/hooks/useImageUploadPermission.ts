@@ -23,20 +23,20 @@ export function useImageUploadPermission() {
       // Use cache if it's less than 1 hour old
       if (cachedPermission && cacheTimestamp) {
         const isExpired = Date.now() - parseInt(cacheTimestamp) > 60 * 60 * 1000; // 1 hour
-        if (!isExpired) {
-          setIsImageUploadEnabled(cachedPermission === 'true');
+        // Trust cache only if it's TRUE and not expired, otherwise re-validate from server
+        if (!isExpired && cachedPermission === 'true') {
+          setIsImageUploadEnabled(true);
           setLoading(false);
           return;
         }
       }
 
       try {
-        // Get user's subscription details with package info
         const { data: subscriptionData, error } = await supabase
           .from('user_subscriptions')
           .select(`
             *,
-            packages (
+            packages:package_id (
               image_upload_enabled
             )
           `)
