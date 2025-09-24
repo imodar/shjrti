@@ -2502,14 +2502,68 @@ const FamilyBuilderNew = () => {
         const processSpouseMarriage = async (spouseData: any, spouseType: 'wife' | 'husband') => {
           try {
             const isWife = spouseType === 'wife';
-            let spouseId = spouseData.existingFamilyMemberId;
+            // Prefer known IDs: in-family uses existingFamilyMemberId, external spouses use their own id
+            let spouseId = spouseData.existingFamilyMemberId || spouseData.id || null;
 
-            // Create new family member if not existing
-            if (!spouseData.isFamilyMember || !spouseData.existingFamilyMemberId) {
+            // If we already have an ID, update existing spouse record accordingly
+            if (spouseId) {
+              // Preserve existing image if user didn't change it
+              const { data: currentSpouse } = await supabase
+                .from('family_tree_members')
+                .select('image_url')
+                .eq('id', spouseId)
+                .maybeSingle();
+
+              const imageUrl = (spouseData.croppedImage !== undefined)
+                ? (spouseData.croppedImage || null)
+                : (currentSpouse?.image_url || null);
+
+              if (spouseData.isFamilyMember) {
+                // Update minimal fields for family members we don't own
+                await supabase
+                  .from('family_tree_members')
+                  .update({
+                    marital_status: spouseData.maritalStatus,
+                    image_url: imageUrl,
+                    biography: spouseData.biography || null,
+                  })
+                  .eq('id', spouseId);
+
+                await supabase
+                  .from('marriages')
+                  .update({ marital_status: spouseData.maritalStatus })
+                  .eq(isWife ? 'wife_id' : 'husband_id', spouseId);
+              } else {
+                // External spouse we created earlier: safely update full profile fields
+                const firstName = spouseData.firstName || '';
+                const lastName = spouseData.lastName || familyData?.name || '';
+                const spouseName = firstName && lastName
+                  ? `${firstName} ${lastName}`
+                  : (spouseData.name || firstName || lastName || '');
+
+                await supabase
+                  .from('family_tree_members')
+                  .update({
+                    name: spouseName,
+                    first_name: firstName,
+                    last_name: lastName,
+                    birth_date: formatDateForDatabase(spouseData.birthDate),
+                    is_alive: spouseData.isAlive ?? true,
+                    death_date: !spouseData.isAlive ? formatDateForDatabase(spouseData.deathDate) : null,
+                    marital_status: spouseData.maritalStatus || 'married',
+                    image_url: imageUrl,
+                    biography: spouseData.biography || null,
+                  })
+                  .eq('id', spouseId);
+              }
+            } else {
+              // No existing ID → create a brand new external spouse
               const firstName = spouseData.firstName || '';
               const lastName = spouseData.lastName || familyData?.name || '';
-              const spouseName = firstName && lastName ? `${firstName} ${lastName}` : spouseData.name || firstName || lastName || '';
-              
+              const spouseName = firstName && lastName
+                ? `${firstName} ${lastName}`
+                : (spouseData.name || firstName || lastName || '');
+
               const { data: newSpouseMember, error: spouseError } = await supabase
                 .from('family_tree_members')
                 .insert({
@@ -2525,7 +2579,7 @@ const FamilyBuilderNew = () => {
                   is_founder: false,
                   marital_status: spouseData.maritalStatus || 'married',
                   image_url: spouseData.croppedImage || null,
-                  biography: spouseData.biography || null
+                  biography: spouseData.biography || null,
                 })
                 .select()
                 .single();
@@ -2536,32 +2590,6 @@ const FamilyBuilderNew = () => {
               spouseId = newSpouseMember.id;
             }
 
-            // Update existing family member
-            if (spouseData.isFamilyMember && spouseData.existingFamilyMemberId) {
-              const { data: currentSpouse } = await supabase
-                .from('family_tree_members')
-                .select('image_url')
-                .eq('id', spouseData.existingFamilyMemberId)
-                .maybeSingle();
-
-              let imageUrl;
-              if (spouseData.croppedImage !== undefined) {
-                imageUrl = spouseData.croppedImage || null;
-              } else {
-                imageUrl = currentSpouse?.image_url || null;
-              }
-
-              await supabase.from('family_tree_members').update({
-                marital_status: spouseData.maritalStatus,
-                image_url: imageUrl,
-                biography: spouseData.biography || null
-              }).eq('id', spouseData.existingFamilyMemberId);
-
-              await supabase.from('marriages').update({
-                marital_status: spouseData.maritalStatus
-              }).eq(isWife ? 'wife_id' : 'husband_id', spouseData.existingFamilyMemberId);
-            }
-
             // Upsert marriage record to prevent duplicates
             if (spouseId) {
               const husbandId = isWife ? memberData.id : spouseId;
@@ -2569,16 +2597,19 @@ const FamilyBuilderNew = () => {
 
               const { error: marriageError } = await supabase
                 .from('marriages')
-                .upsert({
-                  family_id: familyId,
-                  husband_id: husbandId,
-                  wife_id: wifeId,
-                  is_active: true,
-                  marital_status: spouseData.maritalStatus || 'married'
-                }, {
-                  onConflict: 'husband_id,wife_id',
-                  ignoreDuplicates: false
-                });
+                .upsert(
+                  {
+                    family_id: familyId,
+                    husband_id: husbandId,
+                    wife_id: wifeId,
+                    is_active: true,
+                    marital_status: spouseData.maritalStatus || 'married',
+                  },
+                  {
+                    onConflict: 'husband_id,wife_id',
+                    ignoreDuplicates: false,
+                  },
+                );
 
               if (marriageError) {
                 throw marriageError;
