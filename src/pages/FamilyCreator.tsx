@@ -1406,7 +1406,7 @@ const FamilyCreator = () => {
             <Button
               onClick={handleSkipTodashboard}
               variant="outline"
-              className="flex-1 h-12 border-2 border-gray-300/50 hover:border-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all duration-300 text-lg"
+              className="flex-1 h-12 border-2 border-gray-300/50 hover:border-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:font-semibold transition-all duration-300 text-lg"
             >
               تخطي الآن
             </Button>
