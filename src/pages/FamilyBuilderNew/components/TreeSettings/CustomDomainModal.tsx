@@ -226,19 +226,19 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
           {/* Domain Input */}
           <div className="space-y-2">
             <Label htmlFor="custom-domain">الرابط المخصص</Label>
-            <div className="flex gap-2">
-              <div className="flex items-center">
-                <span className="px-3 py-2 bg-muted text-sm rounded-l-md border border-r-0">
-                  https://shjrti.com/
-                </span>
+            <div className="flex gap-2 rtl:flex-row-reverse">
+              <div className="flex items-center rtl:flex-row-reverse">
                 <Input
                   id="custom-domain"
                   value={customDomain}
                   onChange={(e) => handleDomainChange(e.target.value)}
                   placeholder="my-family"
                   disabled={isLoading}
-                  className="rounded-l-none"
+                  className="rounded-r-none rtl:rounded-l-none rtl:rounded-r-md"
                 />
+                <span className="px-3 py-2 bg-muted text-sm rounded-r-md border border-l-0 rtl:border-l rtl:border-r-0 rtl:rounded-r-none rtl:rounded-l-md">
+                  https://shjrti.com/
+                </span>
               </div>
               <Button
                 type="button"
