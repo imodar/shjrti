@@ -939,7 +939,7 @@ const FamilyBuilderNew = () => {
     const isExplicitlyFamilyMember = spouseData.isFamilyMember === true;
     const isSpouseFamilyMember = isExplicitlyFamilyMember && hasExistingFamilyId;
     const familyStatus = isSpouseFamilyMember ? 'yes' : 'no';
-    console.log('Spouse edit detection:', { spouseType, name: spouseData?.name, isExplicitlyFamilyMember, hasExistingFamilyId, isSpouseFamilyMember, familyStatus });
+    console.log('Spouse edit detection:', { spouseType, name: spouseData?.name, isExplicitlyFamilyMember, hasExistingFamilyId, isSpouseFamilyMember, familyStatus, birthDate: spouseData?.birthDate, biography: spouseData?.biography });
 
     // Normalize spouse data to match SpouseForm interface
     const normalizedSpouseData = {
@@ -948,8 +948,8 @@ const FamilyBuilderNew = () => {
       lastName: spouseData.lastName || spouseData.last_name || '',
       name: spouseData.name || `${spouseData.firstName || spouseData.first_name || ''} ${spouseData.lastName || spouseData.last_name || ''}`.trim(),
       isAlive: spouseData.isAlive !== undefined ? spouseData.isAlive : (spouseData.is_alive !== undefined ? spouseData.is_alive : true),
-      birthDate: spouseData.birthDate ? new Date(spouseData.birthDate) : (spouseData.birth_date ? new Date(spouseData.birth_date) : null),
-      deathDate: spouseData.deathDate ? new Date(spouseData.deathDate) : (spouseData.death_date ? new Date(spouseData.death_date) : null),
+      birthDate: spouseData.birthDate instanceof Date ? spouseData.birthDate : (spouseData.birthDate ? new Date(spouseData.birthDate) : (spouseData.birth_date ? new Date(spouseData.birth_date) : null)),
+      deathDate: spouseData.deathDate instanceof Date ? spouseData.deathDate : (spouseData.deathDate ? new Date(spouseData.deathDate) : (spouseData.death_date ? new Date(spouseData.death_date) : null)),
       maritalStatus: spouseData.maritalStatus || spouseData.marital_status || 'married',
       isFamilyMember: isSpouseFamilyMember,
       existingFamilyMemberId: spouseData.existingFamilyMemberId || '',
@@ -977,6 +977,7 @@ const FamilyBuilderNew = () => {
     }
     
     // Set unified spouse state with normalized data
+    console.log('📝 Setting currentSpouse with data:', { name: normalizedSpouseData.name, birthDate: normalizedSpouseData.birthDate, biography: normalizedSpouseData.biography });
     setCurrentSpouse(normalizedSpouseData);
     setActiveSpouseType(spouseType);
     setShowSpouseForm(true);

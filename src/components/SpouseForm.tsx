@@ -76,11 +76,15 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   // Initialize original spouse data when spouse prop changes
   useEffect(() => {
     if (spouse && spouse.isSaved) {
-      setOriginalSpouse({ ...spouse });
+      // Only set original data if we don't have it yet, to avoid overwriting during edits
+      if (!originalSpouse) {
+        console.log('🔍 Setting originalSpouse for change detection:', { name: spouse.name, birthDate: spouse.birthDate, biography: spouse.biography });
+        setOriginalSpouse({ ...spouse });
+      }
     } else if (!spouse.isSaved) {
       setOriginalSpouse(null);
     }
-  }, [spouse.isSaved, spouse.id]);
+  }, [spouse.isSaved, spouse.id, spouse.name]); // Include name to detect when spouse changes
   
   // Check if data has changed
   const hasChanges = originalSpouse && (
@@ -544,7 +548,10 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   <div className="relative">
                     <EnhancedDatePicker
                       value={spouse.birthDate}
-                      onChange={(date) => onSpouseChange({ ...spouse, birthDate: date })}
+                      onChange={(date) => {
+                        console.log('📅 Birth date changed:', date);
+                        onSpouseChange({ ...spouse, birthDate: date });
+                      }}
                       placeholder="اختر تاريخ الميلاد"
                       className="h-11 text-sm border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12 font-arabic"
                     />
@@ -641,9 +648,12 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   <div className="w-2 h-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-lg"></div>
                   معلومات إضافية عن {spouseLabel}
                 </Label>
-                <Textarea
-                  value={spouse.biography || ''}
-                  onChange={(e) => onSpouseChange({ ...spouse, biography: e.target.value })}
+                  <Textarea
+                    value={spouse.biography || ''}
+                    onChange={(e) => {
+                      console.log('📝 Biography changed:', e.target.value);
+                      onSpouseChange({ ...spouse, biography: e.target.value });
+                    }}
                   placeholder={`أضف معلومات إضافية عن ${spouseLabel} (السيرة الذاتية، المهنة، الهوايات، إلخ...)`}
                   className="min-h-[80px] border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic resize-none"
                   rows={3}
