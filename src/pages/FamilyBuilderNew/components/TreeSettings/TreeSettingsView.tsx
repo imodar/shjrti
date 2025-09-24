@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Family } from "../../types/family.types";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { ShareLinkModal } from "./ShareLinkModal";
 
 interface TreeSettingsViewProps {
@@ -40,6 +41,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
 }) => {
   const { toast } = useToast();
   const { subscription } = useSubscription();
+  const { t } = useLanguage();
   
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(familyData?.description || '');
@@ -425,7 +427,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5" />
-                <Label className="text-base font-semibold">النطاق المخصص</Label>
+                <Label className="text-base font-semibold">{t('tree_settings.custom_domain', 'النطاق المخصص')}</Label>
               </div>
               
               {checkingFeature ? (
@@ -519,7 +521,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Link2 className="h-5 w-5" />
-                <Label className="text-base font-semibold">روابط المشاركة</Label>
+                <Label className="text-base font-semibold">{t('tree_settings.sharing_links', 'روابط المشاركة')}</Label>
               </div>
               
               <div className="space-y-3">
@@ -555,7 +557,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
-                <Label className="text-base font-semibold">حماية بكلمة مرور</Label>
+                <Label className="text-base font-semibold">{t('tree_settings.password_protection', 'حماية بكلمة مرور')}</Label>
               </div>
               
               {isEditingPassword ? (
