@@ -307,26 +307,138 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
 
           {/* Show spouse type info when editing */}
           {spouse.isSaved && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-              <div className="flex items-center gap-3">
-                <div className={cn("w-8 h-8 bg-gradient-to-r rounded-full flex items-center justify-center", colorScheme.gradient)}>
-                  <Heart className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 font-arabic">
-                    تعديل بيانات {spouseLabel}: {spouse.name}
-                  </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-arabic">
-                    {spouse.isFamilyMember ? 'من أفراد العائلة' : 'خارج العائلة'}
-                  </p>
+            <>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={cn("w-8 h-8 bg-gradient-to-r rounded-full flex items-center justify-center", colorScheme.gradient)}>
+                    <Heart className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 font-arabic">
+                      تعديل بيانات {spouseLabel}: {spouse.name}
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 font-arabic">
+                      {spouse.isFamilyMember ? 'من أفراد العائلة' : 'خارج العائلة'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+
+              {/* Image Upload Section for saved spouses - if package allows */}
+              {isImageUploadEnabled && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg"></div>
+                    صورة {spouseLabel}
+                  </Label>
+                  
+                  <div className="flex items-center gap-4">
+                    {spouse.croppedImage && (
+                      <div className="relative">
+                        <img 
+                          src={spouse.croppedImage} 
+                          alt={`صورة ${spouseLabel}`}
+                          className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById(`${spouseType}-image-input-saved`)?.click()}
+                        className="flex items-center gap-2 font-arabic"
+                      >
+                        <Camera className="h-4 w-4" />
+                        {spouse.croppedImage ? 'تغيير الصورة' : 'إضافة صورة'}
+                      </Button>
+                      
+                      {spouse.croppedImage && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onSpouseChange({ ...spouse, croppedImage: null })}
+                          className="flex items-center gap-2 font-arabic text-red-600 hover:text-red-700"
+                        >
+                          حذف الصورة
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <input
+                      id={`${spouseType}-image-input-saved`}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Conditional rendering based on radio button selection or saved spouse type */}
           {(familyStatus === 'yes' || (spouse.isSaved && spouse.isFamilyMember)) ? (
             <>
+              {/* Image Upload Section - if package allows */}
+              {isImageUploadEnabled && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 font-arabic">
+                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg"></div>
+                    صورة {spouseLabel}
+                  </Label>
+                  
+                  <div className="flex items-center gap-4">
+                    {spouse.croppedImage && (
+                      <div className="relative">
+                        <img 
+                          src={spouse.croppedImage} 
+                          alt={`صورة ${spouseLabel}`}
+                          className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById(`${spouseType}-image-input-family`)?.click()}
+                        className="flex items-center gap-2 font-arabic"
+                      >
+                        <Camera className="h-4 w-4" />
+                        {spouse.croppedImage ? 'تغيير الصورة' : 'إضافة صورة'}
+                      </Button>
+                      
+                      {spouse.croppedImage && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onSpouseChange({ ...spouse, croppedImage: null })}
+                          className="flex items-center gap-2 font-arabic text-red-600 hover:text-red-700"
+                        >
+                          حذف الصورة
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <input
+                      id={`${spouseType}-image-input-family`}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              )}
+
               <p className="text-xs text-muted-foreground mb-3 font-arabic">
                 يُسمح فقط باختيار {spouseLabel} من أفراد العائلة المسجلين
               </p>
