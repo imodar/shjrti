@@ -3154,22 +3154,6 @@ const FamilyBuilderNew = () => {
                           </div>
                         </div>
 
-                      {/* Quick Actions */}
-                      <div className="space-y-3">
-                        <div className="text-center">
-                          <p className="text-muted-foreground text-sm mb-4">اختر إجراءً للبدء</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <Button variant="outline" className="flex items-center gap-2 h-12" onClick={() => setFormMode('add')}>
-                            <UserPlus className="h-4 w-4" />
-                            إضافة عضو جديد
-                          </Button>
-                          <Button variant="outline" className="flex items-center gap-2 h-12" onClick={() => navigate(`/family-tree-view?family=${familyId}`)}>
-                            <TreePine className="h-4 w-4" />
-                            عرض شجرة العائلة
-                          </Button>
-                        </div>
-                      </div>
 
                       {/* Last Updated Info */}
                       {familyData?.updated_at && <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
