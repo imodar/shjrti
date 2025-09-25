@@ -2944,33 +2944,63 @@ const FamilyBuilderNew = () => {
                        </div>
                     </div>
 
-                    {/* Right: Generation Stats */}
-                    <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
-                      <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
-                        <div className="flex items-center justify-center gap-1">
-                          <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs">
-                            <Users className="h-3 w-3 text-primary" />
-                            <span className="font-medium">{familyMembers.length}</span>
+                     {/* Right: Generation Stats */}
+                     <TooltipProvider>
+                       <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
+                         <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                           <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
+                           <div className="flex items-center justify-center gap-1">
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs cursor-help">
+                                 <Users className="h-3 w-3 text-primary" />
+                                 <span className="font-medium">{familyMembers.length}</span>
+                               </div>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <p>إجمالي أعضاء العائلة</p>
+                             </TooltipContent>
+                           </Tooltip>
+                           <div className="w-1 h-1 bg-border rounded-full"></div>
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs cursor-help">
+                                 <UserIcon className="h-3 w-3 text-blue-600" />
+                                 <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
+                               </div>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <p>عدد الذكور في العائلة</p>
+                             </TooltipContent>
+                           </Tooltip>
+                           <div className="w-1 h-1 bg-border rounded-full"></div>
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs cursor-help">
+                                 <UserRoundIcon className="h-3 w-3 text-rose-600" />
+                                 <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
+                               </div>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <p>عدد الإناث في العائلة</p>
+                             </TooltipContent>
+                           </Tooltip>
+                           <div className="w-1 h-1 bg-border rounded-full"></div>
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs cursor-help">
+                                 <Crown className="h-3 w-3 text-amber-600" />
+                                 <span className="font-medium text-amber-600">{generationCount}</span>
+                               </div>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <p>عدد الأجيال في العائلة</p>
+                             </TooltipContent>
+                            </Tooltip>
                           </div>
-                          <div className="w-1 h-1 bg-border rounded-full"></div>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs">
-                            <UserIcon className="h-3 w-3 text-blue-600" />
-                            <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
-                          </div>
-                          <div className="w-1 h-1 bg-border rounded-full"></div>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs">
-                            <UserRoundIcon className="h-3 w-3 text-rose-600" />
-                            <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
-                          </div>
-                          <div className="w-1 h-1 bg-border rounded-full"></div>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs">
-                            <Crown className="h-3 w-3 text-amber-600" />
-                            <span className="font-medium text-amber-600">{generationCount}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                       </div>
+                       </div>
+                     </TooltipProvider>
                   </div>
                   
                   {/* Decorative Elements */}
