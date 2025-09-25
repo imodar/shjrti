@@ -38,11 +38,8 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    // احصل على رأس التصريح من الطلب
-    const authHeader = req.headers.get('authorization');
-    if (authHeader) {
-      supabase.auth.setAuth(authHeader.replace('Bearer ', ''));
-    }
+    // احصل على رأس التصريح من الطلب - Note: setAuth is deprecated in newer Supabase versions
+    // Authentication will be handled automatically by the client with proper headers
 
     // إنشاء embedding للاستعلام
     const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
@@ -137,7 +134,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in intelligent search:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }

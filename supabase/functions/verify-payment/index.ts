@@ -87,9 +87,12 @@ serve(async (req) => {
     }
   } catch (error) {
     // Log full error details for debugging without exposing to client
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
+    
     console.error('Payment verification error:', {
-      message: error.message,
-      stack: error.stack,
+      message: errorMessage,
+      stack: errorStack,
       timestamp: new Date().toISOString()
     });
     

@@ -32,10 +32,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     
     // احصل على رأس التصريح من الطلب
-    const authHeader = req.headers.get('authorization');
-    if (authHeader) {
-      supabase.auth.setAuth(authHeader.replace('Bearer ', ''));
-    }
+    // Authentication headers are handled automatically by the Supabase client
 
     // احصل على بيانات العائلة
     const { data: familyMembers, error: membersError } = await supabase
@@ -48,7 +45,7 @@ serve(async (req) => {
       throw membersError;
     }
 
-    let suggestions = [];
+    let suggestions: any[] = [];
 
     if (action === 'get_suggestions') {
       // توليد اقتراحات ذكية
@@ -84,7 +81,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in smart suggestions:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }

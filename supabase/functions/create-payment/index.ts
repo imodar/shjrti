@@ -169,14 +169,17 @@ serve(async (req) => {
     });
   } catch (error) {
     // Log full error details for debugging without exposing to client
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
+    
     console.error('Payment creation error:', {
-      message: error.message,
-      stack: error.stack,
+      message: errorMessage,
+      stack: errorStack,
       timestamp: new Date().toISOString()
     });
     
     // Return sanitized error message to client
-    const userMessage = error.message?.includes('Stripe') ? 
+    const userMessage = errorMessage?.includes('Stripe') ? 
       'Payment processing error. Please try again.' : 
       'An error occurred while processing your request.';
       
