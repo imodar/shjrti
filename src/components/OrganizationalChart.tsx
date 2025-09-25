@@ -167,6 +167,29 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const positions = calculatePositions();
 
+  // Center content on initial load
+  useEffect(() => {
+    if (familyUnits.size > 0 && panOffset.x === 0 && panOffset.y === 0) {
+      const allPositions = Array.from(positions.values());
+      const chartWidth = Math.max(
+        1000,
+        Math.max(...allPositions.map(pos => pos.x)) + UNIT_WIDTH + 100
+      );
+      const chartHeight = Math.max(
+        600,
+        Math.max(...allPositions.map(pos => pos.y)) + UNIT_HEIGHT + 100
+      );
+      
+      const containerWidth = 1200; // Approximate container width
+      const containerHeight = 600; // Minimum container height
+      
+      const centerX = Math.max(0, (containerWidth - chartWidth) / 2);
+      const centerY = Math.max(0, (containerHeight - chartHeight) / 2);
+      
+      setPanOffset({ x: centerX, y: centerY });
+    }
+  }, [familyUnits.size, positions, panOffset.x, panOffset.y]);
+
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
     if (unit.type === 'married' && unit.members.length === 2) {
