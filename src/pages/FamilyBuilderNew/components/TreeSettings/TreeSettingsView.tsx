@@ -28,6 +28,8 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Family } from "../../types/family.types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 import { ShareLinkModal } from "./ShareLinkModal";
 import { CustomDomainModal } from "./CustomDomainModal";
 import TreeDeleteModal from "@/components/TreeDeleteModal";
@@ -44,6 +46,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const { toast } = useToast();
   const { subscription } = useSubscription();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [description, setDescription] = useState(familyData?.description || '');
@@ -66,6 +69,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   
   // Custom Domain Modal state
   const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
+  
+  // Upgrade Modal state
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
   // Delete Modal state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -443,7 +449,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               ) : !hasCustomDomainFeature ? (
-                  <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                  <div 
+                    className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors"
+                    onClick={() => setShowUpgradeModal(true)}
+                  >
                     <div className="flex items-center gap-2 mb-2">
                       <Shield className="h-5 w-5 text-yellow-600" />
                       <span className="font-semibold text-yellow-800 dark:text-yellow-200">
@@ -452,6 +461,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     </div>
                     <p className="text-sm text-yellow-700 dark:text-yellow-300">
                       {t('tree_settings.custom_domain_upgrade_message', 'قم بترقية باقتك للحصول على إمكانية استخدام نطاق مخصص لشجرة عائلتك')}
+                    </p>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2 font-medium">
+                      اضغط هنا للترقية
                     </p>
                   </div>
               ) : (
@@ -762,6 +774,49 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           }
         }}
       />
+      
+      {/* Upgrade Package Modal */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center">
+            <div className="mx-auto w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mb-4">
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+            <DialogTitle className="text-xl font-bold">
+              ترقية الباقة مطلوبة
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 mt-2">
+              للوصول إلى ميزة النطاق المخصص وميزات أخرى متطورة، تحتاج إلى ترقية باقتك الحالية.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+              <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                المميزات المتاحة بعد الترقية:
+              </h4>
+              <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                <li>• نطاق مخصص لشجرة العائلة</li>
+                <li>• ميزات متقدمة للمشاركة</li>
+                <li>• دعم أولوية</li>
+                <li>• مساحة تخزين إضافية</li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
+            <Button variant="outline" onClick={() => setShowUpgradeModal(false)} className="flex-1">
+              إلغاء
+            </Button>
+            <Button onClick={() => {
+            setShowUpgradeModal(false);
+            navigate('/plan-selection');
+          }} className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+              ترقية الآن
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {/* Tree Delete Modal */}
       <TreeDeleteModal
