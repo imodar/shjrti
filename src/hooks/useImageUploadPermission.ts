@@ -37,7 +37,9 @@ export function useImageUploadPermission() {
           .select(`
             *,
             packages:package_id (
-              image_upload_enabled
+              image_upload_enabled,
+              features,
+              updated_at
             )
           `)
           .eq('user_id', user.id)
@@ -51,8 +53,11 @@ export function useImageUploadPermission() {
           return;
         }
 
-        // If user has an active subscription with image upload enabled
-        const hasPermission = Boolean(subscriptionData?.packages?.image_upload_enabled);
+        // If user has an active subscription, allow if either the boolean flag or the feature toggle is enabled
+        const pkg: any = subscriptionData?.packages;
+        const featureFlag = pkg?.features?.member_memories;
+        const memberMemoriesEnabled = featureFlag === true || featureFlag === 'true' || featureFlag === 1;
+        const hasPermission = Boolean(pkg?.image_upload_enabled) || memberMemoriesEnabled;
         setIsImageUploadEnabled(hasPermission);
         
         // Cache the result
