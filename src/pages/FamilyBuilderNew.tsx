@@ -31,6 +31,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
+import { FamilyHeader } from "@/components/FamilyHeader";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { DateDisplay } from "@/components/DateDisplay";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
@@ -3018,10 +3019,21 @@ const FamilyBuilderNew = () => {
                  
                </div>
              </div>
-           </section>
-        </div>
+            </section>
+         </div>
 
-        {/* Header Section */}
+         {/* Test FamilyHeader Component */}
+         <div className="container mx-auto px-4">
+           <FamilyHeader
+             familyData={familyData}
+             familyId={familyId}
+             familyMembers={familyMembers}
+             generationCount={generationCount}
+             onSettingsClick={() => setFormMode('tree-settings')}
+           />
+         </div>
+
+         {/* Header Section */}
 
         {/* Main Content */}
         <div className="container mx-auto px-4 pt-2 pb-6">
