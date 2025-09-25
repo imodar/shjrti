@@ -2962,10 +2962,8 @@ const FamilyBuilderNew = () => {
                         <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Navigation Icons - Inside the main container */}
-                  <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
+                    {/* Navigation Icons - Inside the same container */}
                     <div className="flex items-center justify-center gap-3 sm:gap-4">
                       <div className="flex flex-col items-center cursor-pointer group" title="نظرة عامة">
                         <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-500/90 text-white shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 transition-all duration-200 backdrop-blur-sm">
