@@ -289,7 +289,47 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     const lineages = [];
     const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
     
-    // 2. Members with father_id (original family members) - HIGHEST PRIORITY
+    // 2. Check if member is married (spouse display logic) - PRIORITY CHECK
+    const marriage = marriages?.find(m => 
+      m.husband_id === member.id || m.wife_id === member.id
+    );
+    
+    if (marriage) {
+      const spouseId = member.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
+      const spouse = familyMembers?.find(s => s.id === spouseId);
+      
+      if (spouse) {
+        const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
+        
+        // Get spouse's lineage - find their father
+        let spouseLineage = '';
+        if (spouse.father_id) {
+          const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
+          if (spouseFather) {
+            const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
+            spouseLineage = ` ابن ${spouseFatherFirstName}`;
+          }
+        }
+        
+        // Check if the member has no family connection (external spouse)
+        const isExternalSpouse = !member.father_id && !member.mother_id;
+        
+        // Check if spouse has family connection but member doesn't
+        const spouseHasLineage = spouse.father_id || spouse.mother_id;
+        
+        if (isExternalSpouse && spouseHasLineage) {
+          // Build the marriage lineage for external spouses
+          if (member.gender === 'male') {
+            lineages.push(`زوج ${spouseFirstName}${spouseLineage}`);
+          } else {
+            lineages.push(`زوجة ${spouseFirstName}${spouseLineage}`);
+          }
+          return lineages; // Return early for external spouses
+        }
+      }
+    }
+    
+    // 3. Members with father_id (original family members) - HIGHEST PRIORITY for family members
     if (member.father_id) {
       const father = familyMembers?.find(f => f.id === member.father_id);
       if (father) {
@@ -311,7 +351,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }
     }
     
-    // 3. Check if member is a child of any family member (fallback for missing father_id)
+    // 4. Check if member is a child of any family member (fallback for missing father_id)
     else {
       const parentRelation = familyMembers?.find(parent => {
         const children = familyMembers?.filter(child => 
@@ -338,7 +378,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         }
       }
       
-      // 4. Maternal grandchildren (members with mother_id but no father_id)
+      // 5. Maternal grandchildren (members with mother_id but no father_id)
       else if (member.mother_id) {
         const mother = familyMembers?.find(m => m.id === member.mother_id);
         if (mother && mother.father_id) {
@@ -347,39 +387,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           if (maternalGrandfather) {
             const maternalGrandfatherFirstName = maternalGrandfather.first_name || maternalGrandfather.name.split(' ')[0];
             lineages.push(`${genderTerm} ${motherFirstName} بنت ${maternalGrandfatherFirstName}`);
-          }
-        }
-      }
-      
-      // 5. Spouses from outside family (LOWEST PRIORITY - only if not a child)
-      else {
-        const marriage = marriages?.find(m => 
-          m.husband_id === member.id || m.wife_id === member.id
-        );
-        
-        if (marriage) {
-          const spouseId = member.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
-          const spouse = familyMembers?.find(s => s.id === spouseId);
-          
-          if (spouse) {
-            const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
-            
-            // Get spouse's lineage - simplified to show only direct father
-            let spouseLineage = '';
-            if (spouse.father_id) {
-              const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
-              if (spouseFather) {
-                const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
-                spouseLineage = ` ابن ${spouseFatherFirstName}`;
-              }
-            }
-            
-            // Build the marriage lineage
-            if (member.gender === 'male') {
-              lineages.push(`زوج ${spouseFirstName}${spouseLineage}`);
-            } else {
-              lineages.push(`زوجة ${spouseFirstName}${spouseLineage}`);
-            }
           }
         }
       }
