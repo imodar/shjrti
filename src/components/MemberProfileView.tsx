@@ -443,7 +443,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 </div>
               )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
-                <div className="flex flex-row-reverse items-center gap-4 sm:gap-6 flex-1">
+                <div className="flex flex-row-reverse items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
                   {/* Basic Info - Name and Stats on the left */}
                   <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
@@ -503,7 +503,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     {!member.image_url && !member.image && (
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
                     )}
-                    <Avatar className="relative h-32 w-32 border-4 border-white shadow-2xl">
+                    <Avatar className="relative h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 border-4 border-white shadow-2xl flex-shrink-0">
                       {(member.image_url || member.image) ? (
                         <AvatarImage 
                           src={member.image_url || member.image} 
