@@ -535,13 +535,15 @@ const FamilyTreeView = () => {
       <main className="relative z-10 pt-20">
         {/* Family Header */}
         {familyData && (
-          <FamilyHeader
-            familyData={familyData}
-            familyId={familyId || ''}
-            familyMembers={familyMembers}
-            generationCount={Math.max(...familyTree.map(group => group.generation || 0)) + 1}
-            onSettingsClick={() => {}}
-          />
+          <div className="container mx-auto px-4">
+            <FamilyHeader
+              familyData={familyData}
+              familyId={familyId || ''}
+              familyMembers={familyMembers}
+              generationCount={Math.max(...familyTree.map(group => group.generation || 0)) + 1}
+              onSettingsClick={() => {}}
+            />
+          </div>
         )}
         
         {/* Hero Section */}
