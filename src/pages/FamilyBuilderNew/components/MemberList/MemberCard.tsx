@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "../../types/family.types";
@@ -135,10 +136,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     }
     return null;
   };
-  return <Card className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
+  return <TooltipProvider>
+    <Card className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
       {/* Black ribbon for deceased members */}
       {!(member as any).isAlive && <div className="absolute top-0 left-0 z-10">
-          <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent"></div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent cursor-help"></div>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>متوفى</p>
+            </TooltipContent>
+          </Tooltip>
         </div>}
       
       <CardContent className="p-4">
@@ -178,5 +187,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           </div>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  </TooltipProvider>;
 };
