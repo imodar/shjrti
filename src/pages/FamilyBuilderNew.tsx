@@ -4295,7 +4295,8 @@ const FamilyBuilderNew = () => {
 
       </main>
       <GlobalFooterSimplified />
-    </div>;
+    </div>
+  );
 };
 
 // Member List Component
@@ -4402,9 +4403,9 @@ const MemberList = ({
               onSpouseEditAttempt={onSpouseEditAttempt}
               checkIfMemberIsSpouse={checkIfMemberIsSpouse}
               getGenderColor={getGenderColor}
-            />
-          ))}
-      </div>
-    </div>;
-};
+             />
+           ))}
+       </div>
+     </div>
+
 export default FamilyBuilderNew;
