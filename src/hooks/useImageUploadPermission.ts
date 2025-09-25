@@ -15,21 +15,12 @@ export function useImageUploadPermission() {
         return;
       }
 
-      // Check cached permission first
+      // Clear cache to force fresh check
       const cacheKey = `image_upload_permission_${user.id}`;
-      const cachedPermission = localStorage.getItem(cacheKey);
-      const cacheTimestamp = localStorage.getItem(`${cacheKey}_timestamp`);
+      localStorage.removeItem(cacheKey);
+      localStorage.removeItem(`${cacheKey}_timestamp`);
       
-      // Use cache if it's less than 1 hour old
-      if (cachedPermission && cacheTimestamp) {
-        const isExpired = Date.now() - parseInt(cacheTimestamp) > 60 * 60 * 1000; // 1 hour
-        // Trust cache only if it's TRUE and not expired, otherwise re-validate from server
-        if (!isExpired && cachedPermission === 'true') {
-          setIsImageUploadEnabled(true);
-          setLoading(false);
-          return;
-        }
-      }
+      console.log('🔍 Checking image upload permission for user:', user.id);
 
       try {
         const { data: subscriptionData, error } = await supabase
@@ -53,11 +44,20 @@ export function useImageUploadPermission() {
           return;
         }
 
+        console.log('📦 Subscription data:', subscriptionData);
+        console.log('📋 Package data:', subscriptionData?.packages);
+
         // If user has an active subscription, allow if either the boolean flag or the feature toggle is enabled
         const pkg: any = subscriptionData?.packages;
         const featureFlag = pkg?.features?.member_memories;
         const memberMemoriesEnabled = featureFlag === true || featureFlag === 'true' || featureFlag === 1;
         const hasPermission = Boolean(pkg?.image_upload_enabled) || memberMemoriesEnabled;
+        
+        console.log('🎛️ Image upload enabled (boolean):', pkg?.image_upload_enabled);
+        console.log('🎛️ Feature flag value:', featureFlag);
+        console.log('🎛️ Member memories enabled:', memberMemoriesEnabled);
+        console.log('✅ Final permission result:', hasPermission);
+        
         setIsImageUploadEnabled(hasPermission);
         
         // Cache the result
