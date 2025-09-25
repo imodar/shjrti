@@ -15,6 +15,7 @@ import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
+import FamilyTreeViewSkeleton from "@/components/skeletons/FamilyTreeViewSkeleton";
 const FamilyTreeView = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -368,10 +369,7 @@ const FamilyTreeView = () => {
     return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
         <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-            <p className="text-emerald-600 mr-4">جاري تحميل شجرة العائلة...</p>
-          </div>
+          <FamilyTreeViewSkeleton />
         </div>
         <GlobalFooter />
       </div>;
