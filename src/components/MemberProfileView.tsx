@@ -450,7 +450,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     {!member.image_url && !member.image && (
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
                     )}
-                    <Avatar className="relative h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 border-4 border-white shadow-2xl flex-shrink-0">
+                    <Avatar className="relative h-32 w-32 sm:h-36 sm:w-36 lg:h-40 lg:w-40 border-4 border-white shadow-2xl flex-shrink-0">
                       {(member.image_url || member.image) ? (
                         <AvatarImage 
                           src={member.image_url || member.image} 
@@ -458,7 +458,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           className="object-cover w-full h-full"
                         />
                       ) : (
-                        <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
+                        <AvatarFallback className={`text-5xl font-bold text-white ${getGenderColor(member.gender)}`}>
                           {member.name.charAt(0)}
                         </AvatarFallback>
                       )}
