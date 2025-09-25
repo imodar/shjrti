@@ -468,11 +468,6 @@ const FamilyTreeView = () => {
               
               <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:py-6 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  {/* Left: Back Button */}
-                  <Button variant="ghost" onClick={() => navigate('/dashboard')} className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    العودة للوحة الإدارة
-                  </Button>
 
                   {/* Center: Title */}
                   <div className="text-center">
