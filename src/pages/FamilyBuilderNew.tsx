@@ -2925,79 +2925,93 @@ const FamilyBuilderNew = () => {
 
                   {/* Statistics Grid - Moved from below */}
                   <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {/* Total Members */}
-                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
-                        <Users className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
-                          {familyMembers.length}
-                        </div>
-                        <div className="text-xs text-emerald-600 dark:text-emerald-400">الأعضاء</div>
-                      </div>
-
-                      {/* Generations */}
-                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
-                        <Crown className="h-4 w-4 text-amber-600 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-amber-700 dark:text-amber-300">
-                          {generationCount}
-                        </div>
-                        <div className="text-xs text-amber-600 dark:text-amber-400">الأجيال</div>
-                      </div>
-
-                      {/* Males */}
-                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
-                        <UserIcon className="h-4 w-4 text-blue-600 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
-                          {familyMembers.filter(m => m.gender === 'male').length}
-                        </div>
-                        <div className="text-xs text-blue-600 dark:text-blue-400">الذكور</div>
-                      </div>
-
-                      {/* Females */}
-                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/30 dark:border-gray-600/30">
-                        <UserRoundIcon className="h-4 w-4 text-pink-600 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-pink-700 dark:text-pink-300">
-                          {familyMembers.filter(m => m.gender === 'female').length}
-                        </div>
-                        <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
+                    <div className="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hidden py-2">
+                       {/* Total Members - Creative Circle */}
+                       <div className="group relative">
+                         <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                         <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 backdrop-blur-sm rounded-full border border-emerald-300/30 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                           <Users className="h-3 w-3 text-emerald-600 mb-0.5" />
+                           <div className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{familyMembers.length}</div>
+                           <div className="text-[10px] text-emerald-600 dark:text-emerald-400 leading-none">أعضاء</div>
+                         </div>
                        </div>
-                     
-                     {/* Navigation Icons - Inside the same grid container */}
-                     <div className="col-span-2 md:col-span-4 mt-4 pt-4 border-t border-white/10 dark:border-gray-600/10 flex items-center justify-center gap-3 sm:gap-4">
-                      <div className="flex flex-col items-center cursor-pointer group" title="نظرة عامة">
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-500/90 text-white shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 transition-all duration-200 backdrop-blur-sm">
-                          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.overview', 'عام')}</span>
-                      </div>
-                      
-                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-tree-view?family=${familyId}`)} title="مخطط الشجرة">
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
-                          <TreePine className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.tree_diagram', 'الشجرة')}</span>
-                      </div>
-                      
-                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => setFormMode('tree-settings')} title="الإعدادات">
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
-                          <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.settings', 'الإعدادات')}</span>
-                      </div>
-                      
-                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate('/store')} title="المتجر">
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
-                          <Store className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.store', 'المتجر')}</span>
-                      </div>
-                      
-                      <div className="flex flex-col items-center cursor-pointer group" onClick={() => navigate(`/family-statistics?family=${familyId}`)} title="الإحصائيات">
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/20 dark:bg-gray-700/30 text-gray-600 dark:text-gray-300 shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 backdrop-blur-sm">
-                          <Star className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.statistics', 'إحصائيات')}</span>
-                        </div>
+
+                       {/* Separator */}
+                       <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+
+                       {/* Generations - Creative Hexagon */}
+                       <div className="group relative">
+                         <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg blur opacity-30 group-hover:opacity-50 transition-opacity duration-300 transform rotate-45"></div>
+                         <div className="relative w-16 h-16 bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-sm rounded-lg border border-amber-300/30 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-200 transform rotate-45">
+                           <div className="transform -rotate-45 flex flex-col items-center">
+                             <Crown className="h-3 w-3 text-amber-600 mb-0.5" />
+                             <div className="text-sm font-bold text-amber-700 dark:text-amber-300">{generationCount}</div>
+                             <div className="text-[10px] text-amber-600 dark:text-amber-400 leading-none">أجيال</div>
+                           </div>
+                         </div>
+                       </div>
+
+                       {/* Separator */}
+                       <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+
+                       {/* Males - Creative Triangle */}
+                       <div className="group relative">
+                         <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-lg blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                         <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 backdrop-blur-sm rounded-lg border border-blue-300/30 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-200 clip-path-triangle">
+                           <UserIcon className="h-3 w-3 text-blue-600 mb-0.5" />
+                           <div className="text-sm font-bold text-blue-700 dark:text-blue-300">{familyMembers.filter(m => m.gender === 'male').length}</div>
+                           <div className="text-[10px] text-blue-600 dark:text-blue-400 leading-none">ذكور</div>
+                         </div>
+                       </div>
+
+                       {/* Separator */}
+                       <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+
+                       {/* Females - Creative Circle */}
+                       <div className="group relative">
+                         <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-500 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                         <div className="relative w-16 h-16 bg-gradient-to-br from-pink-500/20 to-rose-500/20 backdrop-blur-sm rounded-full border border-pink-300/30 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                           <UserRoundIcon className="h-3 w-3 text-pink-600 mb-0.5" />
+                           <div className="text-sm font-bold text-pink-700 dark:text-pink-300">{familyMembers.filter(m => m.gender === 'female').length}</div>
+                           <div className="text-[10px] text-pink-600 dark:text-pink-400 leading-none">إناث</div>
+                         </div>
+                       </div>
+
+                       {/* Divider */}
+                       <div className="h-16 w-px bg-gradient-to-b from-emerald-300/20 via-emerald-300/40 to-emerald-300/20 mx-2"></div>
+
+                       {/* Navigation Icons - Integrated in same line */}
+                       <div className="flex items-center gap-1 sm:gap-2">
+                         {/* Overview - Compact */}
+                         <div className="group relative cursor-pointer" title="نظرة عامة">
+                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-teal-500/30 backdrop-blur-sm border border-emerald-300/30 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
+                             <Users className="h-4 w-4 text-emerald-600" />
+                           </div>
+                         </div>
+                         
+                         <div className="group relative cursor-pointer" onClick={() => navigate(`/family-tree-view?family=${familyId}`)} title="مخطط الشجرة">
+                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/30 to-emerald-500/30 backdrop-blur-sm border border-green-300/30 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
+                             <TreePine className="h-4 w-4 text-green-600" />
+                           </div>
+                         </div>
+                         
+                         <div className="group relative cursor-pointer" onClick={() => setFormMode('tree-settings')} title="الإعدادات">
+                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/30 to-slate-500/30 backdrop-blur-sm border border-gray-300/30 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
+                             <Settings className="h-4 w-4 text-gray-600" />
+                           </div>
+                         </div>
+                         
+                         <div className="group relative cursor-pointer" onClick={() => navigate('/store')} title="المتجر">
+                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500/30 to-purple-500/30 backdrop-blur-sm border border-violet-300/30 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
+                             <Store className="h-4 w-4 text-violet-600" />
+                           </div>
+                         </div>
+                         
+                         <div className="group relative cursor-pointer" onClick={() => navigate(`/family-statistics?family=${familyId}`)} title="الإحصائيات">
+                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/30 backdrop-blur-sm border border-yellow-300/30 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
+                             <Star className="h-4 w-4 text-yellow-600" />
+                           </div>
+                         </div>
                       </div>
                     </div>
                    </div>
