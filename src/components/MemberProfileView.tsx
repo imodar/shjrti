@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Edit, 
   Trash2, 
@@ -418,18 +419,27 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
                 <div className="absolute top-0 left-0 z-10">
-                  <svg width="40" height="40" viewBox="0 0 40 40" className="overflow-visible">
-                    <path 
-                      d="M0,12 Q0,0 12,0 L40,0 L0,40 Q0,28 0,12 Z" 
-                      fill="black"
-                      className="sm:hidden"
-                    />
-                    <path 
-                      d="M0,16 Q0,0 16,0 L40,0 L0,40 Q0,24 0,16 Z" 
-                      fill="black"
-                      className="hidden sm:block"
-                    />
-                  </svg>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <svg width="40" height="40" viewBox="0 0 40 40" className="overflow-visible cursor-help">
+                          <path 
+                            d="M0,12 Q0,0 12,0 L40,0 L0,40 Q0,28 0,12 Z" 
+                            fill="black"
+                            className="sm:hidden"
+                          />
+                          <path 
+                            d="M0,16 Q0,0 16,0 L40,0 L0,40 Q0,24 0,16 Z" 
+                            fill="black"
+                            className="hidden sm:block"
+                          />
+                        </svg>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>متوفى</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
