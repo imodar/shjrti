@@ -1,0 +1,51 @@
+-- Insert translation keys for Member Memories feature
+INSERT INTO translations (language_code, key, value, category) VALUES 
+-- Arabic translations
+('ar', 'member_memories', 'ذكريات الأفراد', 'family'),
+('ar', 'feature_not_available', 'ميزة غير متاحة', 'general'),
+('ar', 'upgrade_package_required', 'تحتاج إلى ترقية باقتك لتتمكن من رفع صور الذكريات', 'subscription'),
+('ar', 'premium_package_required', 'باقة مميزة مطلوبة', 'subscription'),
+('ar', 'drag_drop_images', 'اسحب وأفلت الصور هنا', 'upload'),
+('ar', 'uploading', 'جاري الرفع...', 'upload'),
+('ar', 'drop_here', 'اتركها هنا', 'upload'),
+('ar', 'click_to_select', 'أو انقر لتحديد الصور', 'upload'),
+('ar', 'max_file_size', 'الحد الأقصى 1 ميجابايت لكل صورة', 'upload'),
+('ar', 'file_too_large', 'حجم الملف كبير جداً', 'upload'),
+('ar', 'upload_success', 'تم رفع الصور بنجاح', 'upload'),
+('ar', 'upload_error', 'خطأ في الرفع', 'upload'),
+('ar', 'delete_image', 'تم حذف الصورة', 'general'),
+('ar', 'delete_error', 'خطأ في الحذف', 'general'),
+('ar', 'no_images_uploaded', 'لا توجد صور مرفقة حالياً', 'media'),
+('ar', 'upload_first_memory', 'ابدأ برفع أول صورة لذكريات', 'media'),
+('ar', 'upload_date', 'تاريخ الرفع', 'general'),
+('ar', 'file_size', 'الحجم', 'general'),
+('ar', 'close', 'إغلاق', 'general'),
+('ar', 'delete', 'حذف', 'general'),
+('ar', 'view', 'عرض', 'general'),
+
+-- English translations  
+('en', 'member_memories', 'Member Memories', 'family'),
+('en', 'feature_not_available', 'Feature Not Available', 'general'),
+('en', 'upgrade_package_required', 'You need to upgrade your package to upload memory photos', 'subscription'),
+('en', 'premium_package_required', 'Premium Package Required', 'subscription'),
+('en', 'drag_drop_images', 'Drag and drop images here', 'upload'),
+('en', 'uploading', 'Uploading...', 'upload'),
+('en', 'drop_here', 'Drop here', 'upload'),
+('en', 'click_to_select', 'Or click to select images', 'upload'),
+('en', 'max_file_size', 'Maximum 1MB per image', 'upload'),
+('en', 'file_too_large', 'File too large', 'upload'),
+('en', 'upload_success', 'Images uploaded successfully', 'upload'),
+('en', 'upload_error', 'Upload error', 'upload'),
+('en', 'delete_image', 'Image deleted', 'general'),
+('en', 'delete_error', 'Delete error', 'general'),
+('en', 'no_images_uploaded', 'No images uploaded currently', 'media'),
+('en', 'upload_first_memory', 'Start by uploading the first memory photo', 'media'),
+('en', 'upload_date', 'Upload Date', 'general'),
+('en', 'file_size', 'Size', 'general'),
+('en', 'close', 'Close', 'general'),
+('en', 'delete', 'Delete', 'general'),
+('en', 'view', 'View', 'general')
+
+ON CONFLICT (language_code, key) DO UPDATE SET
+value = EXCLUDED.value,
+updated_at = now();
