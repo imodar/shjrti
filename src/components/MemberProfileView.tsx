@@ -366,8 +366,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             
             // Get spouse's lineage - simplified to show only direct father
             let spouseLineage = '';
-            if (spouse.father_id) {
-              const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
+            const spouseFatherId = spouse.father_id || spouse.fatherId;
+            if (spouseFatherId) {
+              const spouseFather = familyMembers?.find(f => f.id === spouseFatherId);
               if (spouseFather) {
                 const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
                 spouseLineage = ` ابن ${spouseFatherFirstName}`;
