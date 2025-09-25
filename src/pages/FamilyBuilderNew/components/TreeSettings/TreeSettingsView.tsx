@@ -495,6 +495,38 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       </div>
                     </div>
                   )}
+                  
+                  {/* Public Link Sharing Section */}
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                        <Link2 className="h-4 w-4" />
+                        <span className="text-sm font-medium">
+                          الرابط العام: {window.location.origin}/tree/{familyData.id}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={handleCopyPublicLink}
+                          className="flex items-center gap-1 text-xs px-2 py-1"
+                        >
+                          <Copy className="h-3 w-3" />
+                          نسخ
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setIsShareModalOpen(true)}
+                          className="flex items-center gap-1 text-xs px-2 py-1"
+                        >
+                          <Share2 className="h-3 w-3" />
+                          مشاركة
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
