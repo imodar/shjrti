@@ -30,6 +30,7 @@ import { Family } from "../../types/family.types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ShareLinkModal } from "./ShareLinkModal";
 import { CustomDomainModal } from "./CustomDomainModal";
+import TreeDeleteModal from "@/components/TreeDeleteModal";
 
 interface TreeSettingsViewProps {
   familyData: Family;
@@ -65,6 +66,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   
   // Custom Domain Modal state
   const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
+  
+  // Delete Modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
@@ -680,7 +684,12 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
 
             <Separator />
 
-            <Button variant="destructive" size="sm" className="w-full justify-start text-xs" disabled>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="w-full justify-start text-xs"
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
               <Trash2 className="h-3 w-3 ml-2" />
               حذف الشجرة نهائياً
             </Button>
@@ -732,6 +741,18 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             familyData.custom_domain = newDomain;
             setCustomDomain(newDomain || '');
           }
+        }}
+      />
+      
+      {/* Tree Delete Modal */}
+      <TreeDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        treeId={familyData?.id || ''}
+        treeName={familyData?.name || ''}
+        onSuccess={(treeId) => {
+          // Navigate back to dashboard after successful deletion
+          window.location.href = '/dashboard';
         }}
       />
     </div>
