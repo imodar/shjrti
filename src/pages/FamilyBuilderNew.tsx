@@ -2911,28 +2911,6 @@ const FamilyBuilderNew = () => {
 
                     {/* Center: Compact Creative Stats */}
                     <div className="flex-1 px-2">
-                      {/* Mini Stats Bar */}
-                      <div className="flex items-center justify-center gap-1 mb-2">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs">
-                          <Users className="h-3 w-3 text-primary" />
-                          <span className="font-medium">{familyMembers.length}</span>
-                        </div>
-                        <div className="w-1 h-1 bg-border rounded-full"></div>
-                        <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs">
-                          <UserIcon className="h-3 w-3 text-blue-600" />
-                          <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
-                        </div>
-                        <div className="w-1 h-1 bg-border rounded-full"></div>
-                        <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs">
-                          <UserRoundIcon className="h-3 w-3 text-rose-600" />
-                          <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
-                        </div>
-                        <div className="w-1 h-1 bg-border rounded-full"></div>
-                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs">
-                          <Crown className="h-3 w-3 text-amber-600" />
-                          <span className="font-medium text-amber-600">{generationCount}</span>
-                        </div>
-                      </div>
 
                       {/* Compact Actions */}
                       <div className="flex items-center justify-center gap-1">
