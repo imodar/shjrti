@@ -2909,22 +2909,7 @@ const FamilyBuilderNew = () => {
                       </div>
                     </div>
 
-                    {/* Right: Generation Stats */}
-                    <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
-                      <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
-                        <span>
-                          {familyMembers.length === 0 
-                            ? 'ابدأ بإضافة الأعضاء'
-                            : `${generationCount} ${generationCount === 1 ? 'جيل' : 'أجيال'}`
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Statistics Grid - Moved from below */}
-                  <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-600/20">
+                    {/* Center: Statistics */}
                     <div className="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hidden py-2">
                        {/* Total Members - Creative Circle */}
                        <div className="group relative">
@@ -3014,7 +2999,20 @@ const FamilyBuilderNew = () => {
                          </div>
                       </div>
                     </div>
-                   </div>
+
+                    {/* Right: Generation Stats */}
+                    <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
+                      <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
+                        <span>
+                          {familyMembers.length === 0 
+                            ? 'ابدأ بإضافة الأعضاء'
+                            : `${generationCount} ${generationCount === 1 ? 'جيل' : 'أجيال'}`
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                   
                   {/* Decorative Elements */}
                   <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
