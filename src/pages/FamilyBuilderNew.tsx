@@ -282,7 +282,11 @@ const FamilyBuilderNew = () => {
   const calculateGenerationCount = () => generationCount;
 
   // Form panel states
-  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>('view');
+  const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>(() => {
+    // Check if settings parameter is present in URL
+    const settingsParam = searchParams.get('settings');
+    return settingsParam === 'true' ? 'tree-settings' : 'view';
+  });
   const [editingMember, setEditingMember] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);

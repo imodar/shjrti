@@ -541,7 +541,7 @@ const FamilyTreeView = () => {
               familyId={familyId || ''}
               familyMembers={familyMembers}
               generationCount={Math.max(...familyTree.map(group => group.generation || 0)) + 1}
-              onSettingsClick={() => {}}
+              onSettingsClick={() => navigate(`/family-builder-new?family=${familyId}&settings=true`)}
             />
           </div>
         )}
