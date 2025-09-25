@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { FamilyHeader } from "@/components/FamilyHeader";
+import FamilyStatisticsSkeleton from "@/components/skeletons/FamilyStatisticsSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 
 const FamilyStatistics = () => {
@@ -225,14 +226,22 @@ const FamilyStatistics = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-            <p className="text-emerald-600 mr-4">جاري تحميل الإحصائيات...</p>
-          </div>
+        
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
         </div>
+
+        <main className="relative z-10 pt-20">
+          <div className="container mx-auto px-4 sm:px-6 py-8">
+            <FamilyStatisticsSkeleton />
+          </div>
+        </main>
+        
         <GlobalFooter />
       </div>
     );
