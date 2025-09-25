@@ -24,6 +24,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { FamilyHeader } from "@/components/FamilyHeader";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
@@ -38,6 +39,7 @@ const FamilyTreeView = () => {
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
+  const [familyData, setFamilyData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [user, setUser] = useState<any>(null);
@@ -86,6 +88,8 @@ const FamilyTreeView = () => {
         navigate('/dashboard');
         return;
       }
+
+      setFamilyData(family);
 
       // Fetch family tree members for the specific family only
       const { data: members, error: membersError } = await supabase
@@ -529,6 +533,17 @@ const FamilyTreeView = () => {
       </div>
 
       <main className="relative z-10 pt-20">
+        {/* Family Header */}
+        {familyData && (
+          <FamilyHeader
+            familyData={familyData}
+            familyId={familyId || ''}
+            familyMembers={familyMembers}
+            generationCount={Math.max(...familyTree.map(group => group.generation || 0)) + 1}
+            onSettingsClick={() => {}}
+          />
+        )}
+        
         {/* Hero Section */}
         <section className="py-8 relative">
           <div className="container mx-auto px-6 relative z-10">
