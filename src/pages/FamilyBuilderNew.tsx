@@ -2960,11 +2960,10 @@ const FamilyBuilderNew = () => {
                           {familyMembers.filter(m => m.gender === 'female').length}
                         </div>
                         <div className="text-xs text-pink-600 dark:text-pink-400">الإناث</div>
-                      </div>
-                    </div>
-
-                    {/* Navigation Icons - Inside the same container */}
-                    <div className="flex items-center justify-center gap-3 sm:gap-4">
+                       </div>
+                     
+                     {/* Navigation Icons - Inside the same grid container */}
+                     <div className="col-span-2 md:col-span-4 mt-4 pt-4 border-t border-white/10 dark:border-gray-600/10 flex items-center justify-center gap-3 sm:gap-4">
                       <div className="flex flex-col items-center cursor-pointer group" title="نظرة عامة">
                         <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-500/90 text-white shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 transition-all duration-200 backdrop-blur-sm">
                           <Users className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -2998,9 +2997,10 @@ const FamilyBuilderNew = () => {
                           <Star className="h-4 w-4 sm:h-5 sm:w-5" />
                         </div>
                         <span className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium opacity-90">{t('family_builder.statistics', 'إحصائيات')}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                   </div>
                   
                   {/* Decorative Elements */}
                   <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
