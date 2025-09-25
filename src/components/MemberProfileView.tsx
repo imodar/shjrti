@@ -443,7 +443,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 </div>
               )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
-                <div className="flex flex-col-reverse sm:flex-row items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
+                <div className="flex flex-col-reverse sm:flex-row-reverse items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
                   {/* Basic Info - Name and Stats on the left */}
                   <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
