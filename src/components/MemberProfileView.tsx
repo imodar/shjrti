@@ -274,11 +274,104 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
   
   const getFather = () => {
-    return familyMembers.find(m => m.id === member.fatherId);
+    return familyMembers.find(m => m.id === member.father_id);
   };
   
   const getMother = () => {
-    return familyMembers.find(m => m.id === member.motherId);
+    return familyMembers.find(m => m.id === member.mother_id);
+  };
+
+  // Get lineage display according to the updated rules
+  const getLineageDisplay = () => {
+    // 1. Founder: No lineage
+    if (member.is_founder) return [];
+    
+    const lineages = [];
+    const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
+    
+    // 2. Members with father_id (original family members)
+    if (member.father_id) {
+      const father = familyMembers?.find(f => f.id === member.father_id);
+      if (father) {
+        const fatherFirstName = father.first_name || father.name.split(' ')[0];
+        
+        // Check if father is founder (children of founder)
+        if (father.is_founder) {
+          lineages.push(`${genderTerm} ${fatherFirstName}`);
+        } else {
+          // Later generations: include grandfather
+          const grandfather = familyMembers?.find(f => f.id === father.father_id);
+          if (grandfather) {
+            const grandfatherFirstName = grandfather.first_name || grandfather.name.split(' ')[0];
+            lineages.push(`${genderTerm} ${fatherFirstName} ابن ${grandfatherFirstName}`);
+          } else {
+            lineages.push(`${genderTerm} ${fatherFirstName}`);
+          }
+        }
+      }
+    }
+    
+    // 3. Maternal grandchildren (members with mother_id but no father_id)
+    else if (member.mother_id && !member.father_id) {
+      const mother = familyMembers?.find(m => m.id === member.mother_id);
+      if (mother && mother.father_id) {
+        const motherFirstName = mother.first_name || mother.name.split(' ')[0];
+        const maternalGrandfather = familyMembers?.find(f => f.id === mother.father_id);
+        if (maternalGrandfather) {
+          const maternalGrandfatherFirstName = maternalGrandfather.first_name || maternalGrandfather.name.split(' ')[0];
+          lineages.push(`${genderTerm} ${motherFirstName} بنت ${maternalGrandfatherFirstName}`);
+        }
+      }
+    }
+    
+    // 4. Spouses from outside family (no father_id, no mother_id)
+    else if (!member.father_id && !member.mother_id) {
+      const marriage = marriages?.find(m => 
+        m.husband_id === member.id || m.wife_id === member.id
+      );
+      
+      if (marriage) {
+        const spouseId = member.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
+        const spouse = familyMembers?.find(s => s.id === spouseId);
+        
+        if (spouse) {
+          const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
+          
+          // Get spouse's lineage
+          let spouseLineage = '';
+          if (spouse.father_id) {
+            const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
+            if (spouseFather) {
+              const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
+              const spouseGenderTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
+              
+              // Check if spouse's father is founder
+              if (spouseFather.is_founder) {
+                spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
+              } else {
+                // Get spouse's grandfather
+                const spouseGrandfather = familyMembers?.find(f => f.id === spouseFather.father_id);
+                if (spouseGrandfather) {
+                  const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
+                  spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
+                } else {
+                  spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
+                }
+              }
+            }
+          }
+          
+          // Build the marriage lineage
+          if (member.gender === 'male') {
+            lineages.push(`زوج ${spouseFirstName}${spouseLineage}`);
+          } else {
+            lineages.push(`زوجة ${spouseFirstName}${spouseLineage}`);
+          }
+        }
+      }
+    }
+    
+    return lineages;
   };
 
   const getGenerationName = (generationNumber: number): string => {
@@ -469,26 +562,20 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {/* Basic Info - Name and Stats after picture */}
                   <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
+                      {/* Member Name */}
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
-                        {(() => {
-                          let displayName = member.name;
-                          
-                          // Get father's name
-                          const father = familyMembers.find(m => m.id === member.father_id);
-                          if (father) {
-                            const genderTerm = member.gender === 'male' ? 'ابن' : 'ابنة';
-                            displayName += ` ${genderTerm} ${father.name}`;
-                            
-                            // Get grandfather's name
-                            const grandfather = familyMembers.find(m => m.id === father.father_id);
-                            if (grandfather) {
-                              displayName += ` ابن ${grandfather.name}`;
-                            }
-                          }
-                          
-                          return displayName;
-                        })()}
+                        {member.name}
                       </h1>
+                      
+                      {/* Lineage Display */}
+                      {(() => {
+                        const lineages = getLineageDisplay();
+                        return lineages.map((lineage, index) => (
+                          <p key={index} className="text-lg text-muted-foreground mb-1">
+                            {lineage}
+                          </p>
+                        ));
+                      })()}
                       {member.bio && (
                         <p className="text-lg italic text-muted-foreground max-w-md">
                           "{member.bio}"
