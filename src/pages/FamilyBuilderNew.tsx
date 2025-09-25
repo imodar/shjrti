@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { Gem } from "lucide-react";
 import { ar } from "date-fns/locale";
-import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle } from "lucide-react";
+import { CalendarIcon, Upload, Users, ArrowRight, Save, Plus, Search, X, TreePine, ArrowLeft, UserIcon, UserRoundIcon, Edit, Edit2, Trash2, Heart, User, Baby, Crown, MapPin, FileText, Camera, Clock, Skull, Bell, Settings, LogOut, UserPlus, UploadCloud, Crop, Star, Sparkles, Image, Store, MoreVertical, Menu, ChevronsUpDown, Check, ChevronDown, Shield, AlertTriangle, UserCircle, Zap, Calendar as CalendarDays, UsersIcon, Activity, Share2, Link2, Eye, Copy, Download, Lock, Globe, Link, CheckCircle, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -3019,10 +3019,126 @@ const FamilyBuilderNew = () => {
                   {/* Decorative Elements */}
                   <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
                   <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-emerald-300/40 dark:border-emerald-700/40"></div>
-                </div>
-              </div>
-            </div>
-          </section>
+                 </div>
+               </div>
+             </div>
+
+             {/* New Statistics & Actions Container */}
+             <div className="mt-4 relative">
+               <div className="relative w-full mx-auto">
+                 {/* Background Glow */}
+                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/20 to-indigo-500/10 rounded-2xl blur-2xl"></div>
+                 
+                 <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                   {/* Statistics Grid */}
+                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                     {/* Active Members */}
+                     <div className="group relative text-center">
+                       <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-500/20 rounded-xl blur opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
+                       <div className="relative bg-green-500/10 backdrop-blur-sm rounded-xl p-4 border border-green-300/30 group-hover:scale-105 transition-transform duration-200">
+                         <div className="flex items-center justify-center mb-2">
+                           <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                             <Users className="h-4 w-4 text-green-600" />
+                           </div>
+                         </div>
+                         <div className="text-lg font-bold text-green-700 dark:text-green-300">{familyMembers.filter(m => m.is_alive !== false).length}</div>
+                         <div className="text-xs text-green-600 dark:text-green-400">نشط</div>
+                       </div>
+                     </div>
+
+                     {/* Deceased Members */}
+                     <div className="group relative text-center">
+                       <div className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-slate-500/20 rounded-xl blur opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
+                       <div className="relative bg-gray-500/10 backdrop-blur-sm rounded-xl p-4 border border-gray-300/30 group-hover:scale-105 transition-transform duration-200">
+                         <div className="flex items-center justify-center mb-2">
+                           <div className="w-8 h-8 bg-gray-500/20 rounded-full flex items-center justify-center">
+                             <Heart className="h-4 w-4 text-gray-600" />
+                           </div>
+                         </div>
+                         <div className="text-lg font-bold text-gray-700 dark:text-gray-300">{familyMembers.filter(m => m.is_alive === false).length}</div>
+                         <div className="text-xs text-gray-600 dark:text-gray-400">متوفى</div>
+                       </div>
+                     </div>
+
+                     {/* Marriages */}
+                     <div className="group relative text-center">
+                       <div className="absolute inset-0 bg-gradient-to-r from-rose-400/20 to-pink-500/20 rounded-xl blur opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
+                       <div className="relative bg-rose-500/10 backdrop-blur-sm rounded-xl p-4 border border-rose-300/30 group-hover:scale-105 transition-transform duration-200">
+                         <div className="flex items-center justify-center mb-2">
+                           <div className="w-8 h-8 bg-rose-500/20 rounded-full flex items-center justify-center">
+                             <Heart className="h-4 w-4 text-rose-600" />
+                           </div>
+                         </div>
+                         <div className="text-lg font-bold text-rose-700 dark:text-rose-300">{familyMarriages.length}</div>
+                         <div className="text-xs text-rose-600 dark:text-rose-400">زواج</div>
+                       </div>
+                     </div>
+
+                     {/* Recent Updates */}
+                     <div className="group relative text-center">
+                       <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-yellow-500/20 rounded-xl blur opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
+                       <div className="relative bg-amber-500/10 backdrop-blur-sm rounded-xl p-4 border border-amber-300/30 group-hover:scale-105 transition-transform duration-200">
+                         <div className="flex items-center justify-center mb-2">
+                           <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center">
+                             <Star className="h-4 w-4 text-amber-600" />
+                           </div>
+                         </div>
+                         <div className="text-lg font-bold text-amber-700 dark:text-amber-300">3</div>
+                         <div className="text-xs text-amber-600 dark:text-amber-400">حديث</div>
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* Action Buttons Row */}
+                   <div className="flex items-center justify-center gap-3 flex-wrap">
+                     <button 
+                       onClick={() => setFormMode('add')}
+                       className="group relative px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 backdrop-blur-sm rounded-xl border border-emerald-300/30 hover:border-emerald-300/50 transition-all duration-200 hover:scale-105"
+                     >
+                       <div className="flex items-center gap-2">
+                         <Plus className="h-4 w-4 text-emerald-600" />
+                         <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">إضافة عضو</span>
+                       </div>
+                     </button>
+
+                     <button 
+                       onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
+                       className="group relative px-4 py-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 hover:from-blue-500/30 hover:to-indigo-500/30 backdrop-blur-sm rounded-xl border border-blue-300/30 hover:border-blue-300/50 transition-all duration-200 hover:scale-105"
+                     >
+                       <div className="flex items-center gap-2">
+                         <TreePine className="h-4 w-4 text-blue-600" />
+                         <span className="text-sm font-medium text-blue-700 dark:text-blue-300">عرض الشجرة</span>
+                       </div>
+                     </button>
+
+                     <button 
+                       onClick={() => navigate(`/family-statistics?family=${familyId}`)}
+                       className="group relative px-4 py-2 bg-gradient-to-r from-purple-500/20 to-violet-500/20 hover:from-purple-500/30 hover:to-violet-500/30 backdrop-blur-sm rounded-xl border border-purple-300/30 hover:border-purple-300/50 transition-all duration-200 hover:scale-105"
+                     >
+                       <div className="flex items-center gap-2">
+                         <BarChart3 className="h-4 w-4 text-purple-600" />
+                         <span className="text-sm font-medium text-purple-700 dark:text-purple-300">الإحصائيات</span>
+                       </div>
+                     </button>
+
+                     <button 
+                       onClick={() => setFormMode('tree-settings')}
+                       className="group relative px-4 py-2 bg-gradient-to-r from-gray-500/20 to-slate-500/20 hover:from-gray-500/30 hover:to-slate-500/30 backdrop-blur-sm rounded-xl border border-gray-300/30 hover:border-gray-300/50 transition-all duration-200 hover:scale-105"
+                     >
+                       <div className="flex items-center gap-2">
+                         <Settings className="h-4 w-4 text-gray-600" />
+                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">الإعدادات</span>
+                       </div>
+                     </button>
+                   </div>
+
+                   {/* Decorative Elements */}
+                   <div className="absolute top-2 right-2 w-4 h-4 border-r border-t border-purple-300/40 dark:border-purple-700/40"></div>
+                   <div className="absolute bottom-2 left-2 w-4 h-4 border-l border-b border-purple-300/40 dark:border-purple-700/40"></div>
+                 </div>
+               </div>
+             </div>
+           </section>
         </div>
 
         {/* Header Section */}
