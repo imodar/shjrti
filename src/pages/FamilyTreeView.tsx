@@ -482,24 +482,6 @@ const FamilyTreeView = () => {
                     </p>
                   </div>
 
-                  {/* Right: Zoom Controls & Action Buttons */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3">
-                    <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
-                      <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                        <ZoomOut className="h-4 w-4" />
-                      </Button>
-                      <span className="text-sm min-w-[3rem] text-center font-medium">
-                        {Math.round(zoomLevel * 100)}%
-                      </span>
-                      <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                        <ZoomIn className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={handleResetZoom} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                        <Maximize className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                  </div>
                 </div>
               </div>
             </div>
@@ -518,6 +500,24 @@ const FamilyTreeView = () => {
 
               {/* شجرة العائلة */}
               <div className={hasAIFeatures ? "lg:col-span-3" : "col-span-1"}>
+                {/* Zoom Controls */}
+                <div className="flex justify-center mb-6">
+                  <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
+                    <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                      <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm min-w-[3rem] text-center font-medium">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+                    <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                      <ZoomIn className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={handleResetZoom} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                      <Maximize className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
                 {/* Tree Container */}
                 <Tabs defaultValue="traditional" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
