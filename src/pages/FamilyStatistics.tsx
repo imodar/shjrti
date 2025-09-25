@@ -317,25 +317,6 @@ const FamilyStatistics = () => {
                     </p>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto order-3 sm:order-3">
-                    <Button
-                      onClick={() => navigate('/dashboard')}
-                      variant="outline"
-                      className="w-full sm:w-auto gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
-                    >
-                      <Users className="h-4 w-4" />
-                      إدارة الأعضاء
-                    </Button>
-                    <Button
-                      onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                      variant="outline"
-                      className="w-full sm:w-auto gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20"
-                    >
-                      <TreePine className="h-4 w-4" />
-                      عرض الشجرة
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>
