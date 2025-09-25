@@ -241,14 +241,14 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
     if (files.length > 0) {
       await onDrop(files);
     }
-  }, []);
+  }, [onDrop]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       onDrop(files);
     }
-  }, []);
+  }, [onDrop]);
 
   if (permissionLoading) {
     return (
