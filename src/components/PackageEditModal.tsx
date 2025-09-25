@@ -126,6 +126,10 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
 
   const handleSave = async () => {
     try {
+      // Log the features data for debugging
+      console.log('Saving features:', formData.features);
+      console.log('Member memories value:', (formData.features as any)?.member_memories);
+      
       const updateData = {
         name: formData.name,  // Send as object, not JSON string
         description: formData.description,  // Send as object, not JSON string
@@ -141,6 +145,8 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
         image_upload_enabled: formData.image_upload_enabled,
         custom_domains_enabled: formData.custom_domains_enabled
       };
+
+      console.log('Update data being sent:', updateData);
 
       const { error } = await supabase
         .from('packages')
@@ -357,14 +363,17 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
               <div className="flex items-center space-x-2">
                 <Switch
                   id="member_memories"
-                  checked={(formData.features as any)?.member_memories === true || (formData.features as any)?.member_memories === 'true'}
-                  onCheckedChange={(checked) => setFormData(prev => ({
-                    ...prev,
-                    features: {
-                      ...prev.features,
-                      member_memories: checked
-                    }
-                  }))}
+                  checked={Boolean((formData.features as any)?.member_memories)}
+                  onCheckedChange={(checked) => {
+                    console.log('Member memories toggle changed:', checked);
+                    setFormData(prev => ({
+                      ...prev,
+                      features: {
+                        ...prev.features,
+                        member_memories: checked
+                      }
+                    }));
+                  }}
                 />
                 <Label htmlFor="member_memories">ذكريات الأفراد</Label>
               </div>
