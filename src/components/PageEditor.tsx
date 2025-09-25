@@ -12,6 +12,8 @@ import { Trash2, Save, Plus, Edit, Eye, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface Page {
   id: string;
@@ -301,16 +303,25 @@ export default function PageEditor() {
 
                     <div>
                       <Label>Content ({lang.name})</Label>
-                      <Textarea
+                      <ReactQuill
                         value={(newPage.content as any)[lang.code] || ''}
-                        onChange={(e) => 
+                        onChange={(value) => 
                           setNewPage({ 
                             ...newPage, 
-                            content: { ...newPage.content, [lang.code]: e.target.value }
+                            content: { ...newPage.content, [lang.code]: value }
                           })
                         }
-                        placeholder={`Page content in ${lang.name} (HTML supported)`}
-                        rows={10}
+                        placeholder={`Page content in ${lang.name}`}
+                        style={{ minHeight: '200px' }}
+                        modules={{
+                          toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link', 'image'],
+                            ['clean']
+                          ]
+                        }}
                       />
                     </div>
 
@@ -401,12 +412,21 @@ export default function PageEditor() {
 
                       <div>
                         <Label>Content ({lang.name})</Label>
-                        <Textarea
+                        <ReactQuill
                           value={getFieldValue(editingPage, 'content', lang.code)}
-                          onChange={(e) => 
-                            setEditingPage(updatePageField(editingPage, 'content', e.target.value, lang.code))
+                          onChange={(value) => 
+                            setEditingPage(updatePageField(editingPage, 'content', value, lang.code))
                           }
-                          rows={15}
+                          style={{ minHeight: '300px' }}
+                          modules={{
+                            toolbar: [
+                              [{ 'header': [1, 2, 3, false] }],
+                              ['bold', 'italic', 'underline', 'strike'],
+                              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                              ['link', 'image'],
+                              ['clean']
+                            ]
+                          }}
                         />
                       </div>
 
