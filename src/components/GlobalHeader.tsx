@@ -293,9 +293,6 @@ export const GlobalHeader = () => {
                     >
                       <div className="flex items-center gap-2">
                         <Globe className="h-4 w-4 group-hover:rotate-12 transition-transform duration-300" />
-                        <span className="text-sm font-medium">
-                          {languages.find(lang => lang.code === currentLanguage)?.name || currentLanguage.toUpperCase()}
-                        </span>
                         <ChevronDown className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
                       </div>
                     </Button>
