@@ -2964,12 +2964,27 @@ const FamilyBuilderNew = () => {
                     <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
                       <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                         <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
-                        <span>
-                          {familyMembers.length === 0 
-                            ? 'ابدأ بإضافة الأعضاء'
-                            : `${generationCount} ${generationCount === 1 ? 'جيل' : 'أجيال'}`
-                          }
-                        </span>
+                        <div className="flex items-center justify-center gap-1">
+                          <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs">
+                            <Users className="h-3 w-3 text-primary" />
+                            <span className="font-medium">{familyMembers.length}</span>
+                          </div>
+                          <div className="w-1 h-1 bg-border rounded-full"></div>
+                          <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs">
+                            <UserIcon className="h-3 w-3 text-blue-600" />
+                            <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
+                          </div>
+                          <div className="w-1 h-1 bg-border rounded-full"></div>
+                          <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs">
+                            <UserRoundIcon className="h-3 w-3 text-rose-600" />
+                            <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
+                          </div>
+                          <div className="w-1 h-1 bg-border rounded-full"></div>
+                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs">
+                            <Crown className="h-3 w-3 text-amber-600" />
+                            <span className="font-medium text-amber-600">{generationCount}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
