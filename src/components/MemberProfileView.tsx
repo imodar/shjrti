@@ -364,27 +364,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           if (spouse) {
             const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
             
-            // Get spouse's lineage
+            // Get spouse's lineage - simplified to show only direct father
             let spouseLineage = '';
             if (spouse.father_id) {
               const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
               if (spouseFather) {
                 const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
-                const spouseGenderTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
-                
-                // Check if spouse's father is founder
-                if (spouseFather.is_founder) {
-                  spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
-                } else {
-                  // Get spouse's grandfather
-                  const spouseGrandfather = familyMembers?.find(f => f.id === spouseFather.father_id);
-                  if (spouseGrandfather) {
-                    const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
-                    spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
-                  } else {
-                    spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
-                  }
-                }
+                spouseLineage = ` ابن ${spouseFatherFirstName}`;
               }
             }
             
