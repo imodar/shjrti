@@ -69,14 +69,25 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
       // Get public URLs for each memory
       const memoriesWithUrls = await Promise.all(
         (memoriesData || []).map(async (memory) => {
-          const { data: urlData } = supabase.storage
-            .from('member-memories')
-            .getPublicUrl(memory.file_path);
-          
-          return {
-            ...memory,
-            url: urlData.publicUrl
-          };
+           const { data: signedData, error: signedError } = await supabase.storage
+             .from('member-memories')
+             .createSignedUrl(memory.file_path, 60 * 60); // 1 hour
+
+           if (signedError) {
+             console.warn('Failed to create signed URL, falling back to public URL:', signedError);
+             const { data: urlData } = supabase.storage
+               .from('member-memories')
+               .getPublicUrl(memory.file_path);
+             return {
+               ...memory,
+               url: urlData.publicUrl
+             };
+           }
+           
+           return {
+             ...memory,
+             url: signedData?.signedUrl || ''
+           };
         })
       );
 
@@ -350,8 +361,13 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
               <div key={memory.id} className="group relative aspect-square">
                 <img
                   src={memory.url}
-                  alt={memory.original_filename}
+                  alt={`${memberName} - ${memory.original_filename}`}
+                  loading="lazy"
                   className="w-full h-full object-cover rounded-lg cursor-pointer transition-transform group-hover:scale-105"
+                  onError={() => {
+                    console.warn('Image failed to load, refreshing signed URL');
+                    loadMemories();
+                  }}
                   onClick={() => {
                     setSelectedMemory(memory);
                     setShowModal(true);
