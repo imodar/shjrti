@@ -2909,97 +2909,53 @@ const FamilyBuilderNew = () => {
                       </div>
                     </div>
 
-                    {/* Center: Modern Statistics Grid */}
-                    <div className="flex-1 px-4">
-                      {/* Statistics Cards */}
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                        {/* Total Members */}
-                        <div className="group relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl"></div>
-                          <div className="relative p-3 bg-background/60 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="p-1.5 bg-primary/10 rounded-lg">
-                                <Users className="h-3.5 w-3.5 text-primary" />
-                              </div>
-                              <span className="text-xs font-medium text-muted-foreground">إجمالي الأعضاء</span>
-                            </div>
-                            <div className="text-xl font-bold text-foreground">{familyMembers.length}</div>
-                            <div className="text-xs text-muted-foreground">عضو نشط</div>
-                          </div>
+                    {/* Center: Compact Creative Stats */}
+                    <div className="flex-1 px-2">
+                      {/* Mini Stats Bar */}
+                      <div className="flex items-center justify-center gap-1 mb-2">
+                        <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs">
+                          <Users className="h-3 w-3 text-primary" />
+                          <span className="font-medium">{familyMembers.length}</span>
                         </div>
-
-                        {/* Males */}
-                        <div className="group relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10 rounded-xl"></div>
-                          <div className="relative p-3 bg-background/60 backdrop-blur-sm rounded-xl border border-border/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="p-1.5 bg-blue-500/10 rounded-lg">
-                                <UserIcon className="h-3.5 w-3.5 text-blue-600" />
-                              </div>
-                              <span className="text-xs font-medium text-muted-foreground">الذكور</span>
-                            </div>
-                            <div className="text-xl font-bold text-foreground">{familyMembers.filter(m => m.gender === 'male').length}</div>
-                            <div className="text-xs text-blue-600">
-                              {familyMembers.length > 0 ? Math.round((familyMembers.filter(m => m.gender === 'male').length / familyMembers.length) * 100) : 0}%
-                            </div>
-                          </div>
+                        <div className="w-1 h-1 bg-border rounded-full"></div>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs">
+                          <UserIcon className="h-3 w-3 text-blue-600" />
+                          <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
                         </div>
-
-                        {/* Females */}
-                        <div className="group relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-pink-600/10 rounded-xl"></div>
-                          <div className="relative p-3 bg-background/60 backdrop-blur-sm rounded-xl border border-border/50 hover:border-rose-500/30 transition-all duration-300 hover:shadow-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="p-1.5 bg-rose-500/10 rounded-lg">
-                                <UserRoundIcon className="h-3.5 w-3.5 text-rose-600" />
-                              </div>
-                              <span className="text-xs font-medium text-muted-foreground">الإناث</span>
-                            </div>
-                            <div className="text-xl font-bold text-foreground">{familyMembers.filter(m => m.gender === 'female').length}</div>
-                            <div className="text-xs text-rose-600">
-                              {familyMembers.length > 0 ? Math.round((familyMembers.filter(m => m.gender === 'female').length / familyMembers.length) * 100) : 0}%
-                            </div>
-                          </div>
+                        <div className="w-1 h-1 bg-border rounded-full"></div>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs">
+                          <UserRoundIcon className="h-3 w-3 text-rose-600" />
+                          <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
                         </div>
-
-                        {/* Generations */}
-                        <div className="group relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-600/10 rounded-xl"></div>
-                          <div className="relative p-3 bg-background/60 backdrop-blur-sm rounded-xl border border-border/50 hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="p-1.5 bg-amber-500/10 rounded-lg">
-                                <Crown className="h-3.5 w-3.5 text-amber-600" />
-                              </div>
-                              <span className="text-xs font-medium text-muted-foreground">الأجيال</span>
-                            </div>
-                            <div className="text-xl font-bold text-foreground">{generationCount}</div>
-                            <div className="text-xs text-amber-600">جيل</div>
-                          </div>
+                        <div className="w-1 h-1 bg-border rounded-full"></div>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs">
+                          <Crown className="h-3 w-3 text-amber-600" />
+                          <span className="font-medium text-amber-600">{generationCount}</span>
                         </div>
                       </div>
 
-                      {/* Quick Actions */}
-                      <div className="flex items-center justify-center gap-2 pt-2 border-t border-border/30">
+                      {/* Compact Actions */}
+                      <div className="flex items-center justify-center gap-1">
                         <button 
                           onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary hover:text-primary/80 bg-primary/5 hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-105"
+                          className="group flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary hover:text-primary/80 bg-primary/5 hover:bg-primary/10 rounded-md transition-all duration-200"
                         >
-                          <TreePine className="h-3.5 w-3.5" />
-                          عرض الشجرة
+                          <TreePine className="h-3 w-3" />
+                          <span className="hidden sm:inline">الشجرة</span>
                         </button>
                         <button 
                           onClick={() => navigate(`/family-statistics?family=${familyId}`)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-lg transition-all duration-200 hover:scale-105"
+                          className="group flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/30 rounded-md transition-all duration-200"
                         >
-                          <Star className="h-3.5 w-3.5" />
-                          الإحصائيات
+                          <Star className="h-3 w-3" />
+                          <span className="hidden sm:inline">الإحصائيات</span>
                         </button>
                         <button 
                           onClick={() => setFormMode('tree-settings')}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-lg transition-all duration-200 hover:scale-105"
+                          className="group flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/30 rounded-md transition-all duration-200"
                         >
-                          <Settings className="h-3.5 w-3.5" />
-                          الإعدادات
+                          <Settings className="h-3 w-3" />
+                          <span className="hidden sm:inline">الإعدادات</span>
                         </button>
                       </div>
                     </div>
