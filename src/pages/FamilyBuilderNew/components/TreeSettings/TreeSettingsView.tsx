@@ -678,11 +678,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               </Button>
               
               <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
-                <Lock className="h-3 w-3 ml-2" />
-                إعدادات الخصوصية
-              </Button>
-              
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
                 <Users className="h-3 w-3 ml-2" />
                 إدارة الأذونات
               </Button>
