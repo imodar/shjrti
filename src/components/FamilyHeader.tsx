@@ -49,11 +49,11 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                   </div>
                 </div>
                 
-                {/* Family Name */}
+                 {/* Family Name */}
                 <div className="text-right">
                   <h1 className="text-sm sm:text-base md:text-lg font-bold">
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                      {familyData?.name || 'شجرة العائلة'}
+                      عائلة {familyData?.name || 'شجرة العائلة'}
                     </span>
                   </h1>
                 </div>
