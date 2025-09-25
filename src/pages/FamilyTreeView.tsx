@@ -480,7 +480,7 @@ const FamilyTreeView = () => {
                       </h1>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300">
-                      {t('familyTreeDescription')} - {familyTree.length} {t('family')}
+                      {t('familyTreeDescription')}
                     </p>
                   </div>
 
