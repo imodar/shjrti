@@ -69,8 +69,8 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                      className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
                    >
                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                     <TreePine className="h-4 w-4 relative z-10" />
-                     <span className="hidden sm:inline relative z-10">الشجرة</span>
+                      <TreePine className="h-4 w-4 relative z-10" />
+                      <span className="hidden sm:inline relative z-10">عرض الشجرة</span>
                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>
                    </button>
                    
