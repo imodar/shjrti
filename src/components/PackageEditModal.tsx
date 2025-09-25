@@ -320,7 +320,7 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 flex-wrap gap-y-2">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="ai_features_enabled"
@@ -353,6 +353,20 @@ export const PackageEditModal: React.FC<PackageEditModalProps> = ({
                   }))}
                 />
                 <Label htmlFor="custom_domains_enabled">الروابط المخصصة</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="member_memories"
+                  checked={(formData.features as any)?.member_memories === true || (formData.features as any)?.member_memories === 'true'}
+                  onCheckedChange={(checked) => setFormData(prev => ({
+                    ...prev,
+                    features: {
+                      ...prev.features,
+                      member_memories: checked
+                    }
+                  }))}
+                />
+                <Label htmlFor="member_memories">ذكريات الأفراد</Label>
               </div>
             </div>
           </TabsContent>
