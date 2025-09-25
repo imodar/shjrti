@@ -415,7 +415,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
           {/* Profile Info Card */}
           <div className="relative -mt-6 sm:-mt-8 mx-2 sm:mx-4">
-            <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-xl">
+            <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
                 <div className="absolute top-0 left-0 z-10">
@@ -443,7 +443,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 </div>
               )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
-                <div className="flex flex-row-reverse items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
+                <div className="flex flex-col-reverse sm:flex-row-reverse items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
                   {/* Basic Info - Name and Stats on the left */}
                   <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
@@ -498,7 +498,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
 
                   {/* Profile Avatar - Now on the right */}
-                  <div className="relative order-1 sm:order-2">
+                  <div className="relative order-1 sm:order-2 mx-auto sm:mx-0 flex-shrink-0">
                     {/* Show gradient background only when there's no profile picture */}
                     {!member.image_url && !member.image && (
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
