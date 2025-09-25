@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TreePine, Star, Settings, Users, UserIcon, UserRoundIcon, Crown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
 interface FamilyHeaderProps {
   familyData?: {
     name?: string;
@@ -15,7 +14,6 @@ interface FamilyHeaderProps {
   generationCount: number;
   onSettingsClick?: () => void;
 }
-
 export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
   familyData,
   familyId,
@@ -25,13 +23,11 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Determine which page is currently active
   const isTreeBuilderActive = location.pathname.includes('/family-builder-new');
   const isTreeViewActive = location.pathname.includes('/family-tree-view');
-
-  return (
-    <section className="py-2 relative">
+  return <section className="py-2 relative">
       <div className="mb-2 relative">
         {/* Main Content Container - Horizontal Rectangle */}
         <div className="relative w-full mx-auto">
@@ -69,61 +65,29 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
 
                 {/* Compact Actions */}
                  <div className="flex items-center justify-center gap-2">
-                   <button 
-                     onClick={() => navigate(`/family-builder-new?family=${familyId}`)}
-                     className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${
-                       isTreeBuilderActive 
-                         ? "text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 overflow-hidden"
-                         : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"
-                     }`}
-                   >
-                     {isTreeBuilderActive && (
-                       <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                     )}
+                   <button onClick={() => navigate(`/family-builder-new?family=${familyId}`)} className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isTreeBuilderActive ? "text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                     {isTreeBuilderActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
                      <Users className={`h-4 w-4 ${isTreeBuilderActive ? 'relative z-10' : 'text-emerald-500 group-hover:text-emerald-600 transition-colors duration-300'}`} />
-                     <span className={`hidden sm:inline ${isTreeBuilderActive ? 'relative z-10' : ''}`}>الشجرة</span>
-                     {isTreeBuilderActive && (
-                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>
-                     )}
-                     {!isTreeBuilderActive && (
-                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
-                     )}
+                     <span className={`hidden sm:inline ${isTreeBuilderActive ? 'relative z-10' : ''}`}>أعضاء العائلة</span>
+                     {isTreeBuilderActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
+                     {!isTreeBuilderActive && <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                    </button>
                    
-                   <button 
-                     onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                     className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${
-                       isTreeViewActive 
-                         ? "text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 overflow-hidden"
-                         : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"
-                     }`}
-                   >
-                     {isTreeViewActive && (
-                       <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                     )}
+                   <button onClick={() => navigate(`/family-tree-view?family=${familyId}`)} className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isTreeViewActive ? "text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                     {isTreeViewActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
                      <TreePine className={`h-4 w-4 ${isTreeViewActive ? 'relative z-10' : 'text-emerald-500 group-hover:text-emerald-600 transition-colors duration-300'}`} />
                      <span className={`hidden sm:inline ${isTreeViewActive ? 'relative z-10' : ''}`}>عرض الشجرة</span>
-                     {isTreeViewActive && (
-                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>
-                     )}
-                     {!isTreeViewActive && (
-                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
-                     )}
+                     {isTreeViewActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
+                     {!isTreeViewActive && <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                    </button>
                    
-                   <button 
-                     onClick={() => navigate(`/family-statistics?family=${familyId}`)}
-                     className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm"
-                   >
+                   <button onClick={() => navigate(`/family-statistics?family=${familyId}`)} className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
                      <Star className="h-4 w-4 text-amber-500 group-hover:text-amber-600 transition-colors duration-300" />
                      <span className="hidden sm:inline">الإحصائيات</span>
                      <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
                    </button>
                    
-                   <button 
-                     onClick={onSettingsClick}
-                     className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm"
-                   >
+                   <button onClick={onSettingsClick} className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
                      <Settings className="h-4 w-4 text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 group-hover:rotate-90 transition-all duration-300" />
                      <span className="hidden sm:inline">الإعدادات</span>
                      <div className="absolute inset-0 bg-gradient-to-r from-slate-500/10 to-slate-600/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
@@ -196,6 +160,5 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
            </div>
          </div>
        </div>
-    </section>
-  );
+    </section>;
 };
