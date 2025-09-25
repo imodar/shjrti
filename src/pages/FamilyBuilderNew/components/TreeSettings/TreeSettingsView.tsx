@@ -676,11 +676,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <Download className="h-3 w-3 ml-2" />
                 تصدير بيانات الشجرة
               </Button>
-              
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs" disabled>
-                <Users className="h-3 w-3 ml-2" />
-                إدارة الأذونات
-              </Button>
             </div>
 
             <Separator />
