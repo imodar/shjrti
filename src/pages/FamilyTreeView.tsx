@@ -677,17 +677,6 @@ const FamilyTreeView = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="mt-12 flex justify-center gap-6">
-              <Button onClick={() => navigate('/dashboard')} variant="outline" className="gap-3 bg-white/60 hover:bg-white/80 border-emerald-200 text-emerald-600 dark:bg-gray-800/60 dark:hover:bg-gray-800/80 dark:border-emerald-700 dark:text-emerald-400">
-                <Users className="h-5 w-5" />
-                إدارة الأعضاء
-              </Button>
-              <Button onClick={() => navigate('/family-statistics')} variant="outline" className="gap-3 bg-white/60 hover:bg-white/80 border-teal-200 text-teal-600 dark:bg-gray-800/60 dark:hover:bg-gray-800/80 dark:border-teal-700 dark:text-teal-400">
-                <BarChart3 className="h-5 w-5" />
-                إحصائيات العائلة
-              </Button>
-            </div>
           </div>
         </section>
       </main>
