@@ -289,7 +289,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     const lineages = [];
     const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
     
-    // 2. Members with father_id (original family members)
+    // 2. Members with father_id (original family members) - HIGHEST PRIORITY
     if (member.father_id) {
       const father = familyMembers?.find(f => f.id === member.father_id);
       if (father) {
@@ -311,61 +311,89 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }
     }
     
-    // 3. Maternal grandchildren (members with mother_id but no father_id)
-    else if (member.mother_id && !member.father_id) {
-      const mother = familyMembers?.find(m => m.id === member.mother_id);
-      if (mother && mother.father_id) {
-        const motherFirstName = mother.first_name || mother.name.split(' ')[0];
-        const maternalGrandfather = familyMembers?.find(f => f.id === mother.father_id);
-        if (maternalGrandfather) {
-          const maternalGrandfatherFirstName = maternalGrandfather.first_name || maternalGrandfather.name.split(' ')[0];
-          lineages.push(`${genderTerm} ${motherFirstName} بنت ${maternalGrandfatherFirstName}`);
+    // 3. Check if member is a child of any family member (fallback for missing father_id)
+    else {
+      const parentRelation = familyMembers?.find(parent => {
+        const children = familyMembers?.filter(child => 
+          child.fatherId === parent.id || child.motherId === parent.id
+        );
+        return children?.some(child => child.id === member.id);
+      });
+      
+      if (parentRelation) {
+        const parentFirstName = parentRelation.first_name || parentRelation.name.split(' ')[0];
+        
+        // If this parent is founder
+        if (parentRelation.is_founder) {
+          lineages.push(`${genderTerm} ${parentFirstName}`);
+        } else {
+          // Get grandparent
+          const grandParent = familyMembers?.find(f => f.id === parentRelation.father_id);
+          if (grandParent) {
+            const grandParentFirstName = grandParent.first_name || grandParent.name.split(' ')[0];
+            lineages.push(`${genderTerm} ${parentFirstName} ابن ${grandParentFirstName}`);
+          } else {
+            lineages.push(`${genderTerm} ${parentFirstName}`);
+          }
         }
       }
-    }
-    
-    // 4. Spouses from outside family (no father_id, no mother_id)
-    else if (!member.father_id && !member.mother_id) {
-      const marriage = marriages?.find(m => 
-        m.husband_id === member.id || m.wife_id === member.id
-      );
       
-      if (marriage) {
-        const spouseId = member.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
-        const spouse = familyMembers?.find(s => s.id === spouseId);
+      // 4. Maternal grandchildren (members with mother_id but no father_id)
+      else if (member.mother_id) {
+        const mother = familyMembers?.find(m => m.id === member.mother_id);
+        if (mother && mother.father_id) {
+          const motherFirstName = mother.first_name || mother.name.split(' ')[0];
+          const maternalGrandfather = familyMembers?.find(f => f.id === mother.father_id);
+          if (maternalGrandfather) {
+            const maternalGrandfatherFirstName = maternalGrandfather.first_name || maternalGrandfather.name.split(' ')[0];
+            lineages.push(`${genderTerm} ${motherFirstName} بنت ${maternalGrandfatherFirstName}`);
+          }
+        }
+      }
+      
+      // 5. Spouses from outside family (LOWEST PRIORITY - only if not a child)
+      else {
+        const marriage = marriages?.find(m => 
+          m.husband_id === member.id || m.wife_id === member.id
+        );
         
-        if (spouse) {
-          const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
+        if (marriage) {
+          const spouseId = member.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
+          const spouse = familyMembers?.find(s => s.id === spouseId);
           
-          // Get spouse's lineage
-          let spouseLineage = '';
-          if (spouse.father_id) {
-            const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
-            if (spouseFather) {
-              const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
-              const spouseGenderTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
-              
-              // Check if spouse's father is founder
-              if (spouseFather.is_founder) {
-                spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
-              } else {
-                // Get spouse's grandfather
-                const spouseGrandfather = familyMembers?.find(f => f.id === spouseFather.father_id);
-                if (spouseGrandfather) {
-                  const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
-                  spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
-                } else {
+          if (spouse) {
+            const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
+            
+            // Get spouse's lineage
+            let spouseLineage = '';
+            if (spouse.father_id) {
+              const spouseFather = familyMembers?.find(f => f.id === spouse.father_id);
+              if (spouseFather) {
+                const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
+                const spouseGenderTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
+                
+                // Check if spouse's father is founder
+                if (spouseFather.is_founder) {
                   spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
+                } else {
+                  // Get spouse's grandfather
+                  const spouseGrandfather = familyMembers?.find(f => f.id === spouseFather.father_id);
+                  if (spouseGrandfather) {
+                    const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
+                    spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
+                  } else {
+                    spouseLineage = ` ${spouseGenderTerm} ${spouseFatherFirstName}`;
+                  }
                 }
               }
             }
-          }
-          
-          // Build the marriage lineage
-          if (member.gender === 'male') {
-            lineages.push(`زوج ${spouseFirstName}${spouseLineage}`);
-          } else {
-            lineages.push(`زوجة ${spouseFirstName}${spouseLineage}`);
+            
+            // Build the marriage lineage
+            if (member.gender === 'male') {
+              lineages.push(`زوج ${spouseFirstName}${spouseLineage}`);
+            } else {
+              lineages.push(`زوجة ${spouseFirstName}${spouseLineage}`);
+            }
           }
         }
       }
