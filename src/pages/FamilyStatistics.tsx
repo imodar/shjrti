@@ -22,6 +22,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { FamilyHeader } from "@/components/FamilyHeader";
 import { supabase } from "@/integrations/supabase/client";
 
 const FamilyStatistics = () => {
@@ -32,6 +33,7 @@ const FamilyStatistics = () => {
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
+  const [familyData, setFamilyData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch family data
@@ -77,6 +79,7 @@ const FamilyStatistics = () => {
         }
 
         if (familyData) {
+          setFamilyData(familyData);
           // Fetch family members
           const { data: membersData, error: membersError } = await supabase
             .from('family_tree_members')
@@ -258,6 +261,16 @@ const FamilyStatistics = () => {
       </div>
 
       <main className="relative z-10 pt-20">
+        {/* Family Header */}
+        <div className="container mx-auto px-4">
+          <FamilyHeader 
+            familyData={familyData}
+            familyId={familyId}
+            familyMembers={familyMembers}
+            generationCount={generationCount}
+          />
+        </div>
+        
         {/* Hero Section */}
         <section className="py-8 relative">
           <div className="container mx-auto px-4 sm:px-6 relative z-10">

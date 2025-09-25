@@ -27,6 +27,7 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
   // Determine which page is currently active
   const isTreeBuilderActive = location.pathname.includes('/family-builder-new');
   const isTreeViewActive = location.pathname.includes('/family-tree-view');
+  const isStatisticsActive = location.pathname.includes('/family-statistics');
   return <section className="py-2 relative">
       <div className="mb-2 relative">
         {/* Main Content Container - Horizontal Rectangle */}
@@ -81,11 +82,13 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                      {!isTreeViewActive && <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                    </button>
                    
-                   <button onClick={() => navigate(`/family-statistics?family=${familyId}`)} className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
-                     <Star className="h-4 w-4 text-amber-500 group-hover:text-amber-600 transition-colors duration-300" />
-                     <span className="hidden sm:inline">الإحصائيات</span>
-                     <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
-                   </button>
+                    <button onClick={() => navigate(`/family-statistics?family=${familyId}`)} className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isStatisticsActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                      {isStatisticsActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
+                      <Star className={`h-4 w-4 ${isStatisticsActive ? 'relative z-10' : 'text-amber-500 group-hover:text-amber-600 transition-colors duration-300'}`} />
+                      <span className={`hidden sm:inline ${isStatisticsActive ? 'relative z-10' : ''}`}>الإحصائيات</span>
+                      {isStatisticsActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
+                      {!isStatisticsActive && <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
+                    </button>
                    
                    <button onClick={onSettingsClick} className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
                      <Settings className="h-4 w-4 text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 group-hover:rotate-90 transition-all duration-300" />
