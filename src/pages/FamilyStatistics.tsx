@@ -268,6 +268,7 @@ const FamilyStatistics = () => {
             familyId={familyId}
             familyMembers={familyMembers}
             generationCount={generationCount}
+            onSettingsClick={() => navigate(`/family-builder-new?family=${familyId}`)}
           />
         </div>
         
