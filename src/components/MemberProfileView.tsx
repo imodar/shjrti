@@ -570,11 +570,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       {/* Lineage Display */}
                       {(() => {
                         const lineages = getLineageDisplay();
-                        return lineages.map((lineage, index) => (
+                        return lineages.length > 0 ? lineages.map((lineage, index) => (
                           <p key={index} className="text-lg text-muted-foreground mb-1">
                             {lineage}
                           </p>
-                        ));
+                        )) : null;
                       })()}
                       {member.bio && (
                         <p className="text-lg italic text-muted-foreground max-w-md">
