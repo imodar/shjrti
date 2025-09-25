@@ -293,11 +293,36 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Global Hover Text Color Fix */
-.theme-professional *:hover {
+/* Destructive Button Styles */
+.theme-professional [data-variant="destructive"],
+.theme-professional .bg-destructive {
+  background: hsl(0 84% 60%) !important;
+  color: var(--facebook-white) !important;
+  border: none !important;
+  box-shadow: var(--facebook-shadow) !important;
+}
+
+.theme-professional [data-variant="destructive"]:hover,
+.theme-professional .bg-destructive:hover {
+  background: hsl(0 84% 55%) !important;
+  color: var(--facebook-white) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Global Hover Text Color Fix - More Specific */
+.theme-professional div:hover,
+.theme-professional span:hover,
+.theme-professional p:hover,
+.theme-professional h1:hover,
+.theme-professional h2:hover,
+.theme-professional h3:hover,
+.theme-professional h4:hover,
+.theme-professional h5:hover,
+.theme-professional h6:hover {
   color: var(--facebook-text) !important;
 }
 
+/* Button Hover Overrides - Ensure Proper Colors */
 .theme-professional button:hover,
 .theme-professional [role="button"]:hover {
   color: inherit !important;
@@ -306,5 +331,16 @@
 .theme-professional .bg-primary:hover,
 .theme-professional [class*="bg-primary"]:hover,
 .theme-professional [data-variant="default"]:hover {
+  color: var(--facebook-white) !important;
+}
+
+.theme-professional [data-variant="outline"]:hover,
+.theme-professional [data-variant="secondary"]:hover,
+.theme-professional .bg-secondary:hover {
+  color: var(--facebook-text) !important;
+}
+
+.theme-professional [data-variant="destructive"]:hover,
+.theme-professional .bg-destructive:hover {
   color: var(--facebook-white) !important;
 }
