@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { MemberMemories } from '@/components/MemberMemories';
 import { 
   Edit, 
   Trash2, 
@@ -974,18 +975,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {/* Media Tab */}
             {activeTab === 'media' && (
               <div className="space-y-6">
-                {/* Media content goes here */}
-                <div className="bg-card rounded-xl border border-border p-6">
-                  <h3 className="font-bold text-lg mb-4">الصور والذكريات</h3>
-                  <div className="text-center py-12">
-                    <Camera className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                    <p className="text-gray-500">لا توجد صور مرفقة حالياً</p>
-                    <Button className="facebook-button-primary mt-4">
-                      <Camera className="h-4 w-4 ml-2" />
-                      إضافة صور
-                    </Button>
-                  </div>
-                </div>
+                <MemberMemories 
+                  memberId={member.id}
+                  memberName={member.name}
+                />
               </div>
             )}
           </div>

@@ -496,6 +496,56 @@ export type Database = {
           },
         ]
       }
+      member_memories: {
+        Row: {
+          caption: string | null
+          content_type: string
+          created_at: string
+          file_path: string
+          file_size: number
+          id: string
+          member_id: string
+          original_filename: string
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          caption?: string | null
+          content_type: string
+          created_at?: string
+          file_path: string
+          file_size: number
+          id?: string
+          member_id: string
+          original_filename: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Update: {
+          caption?: string | null
+          content_type?: string
+          created_at?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          member_id?: string
+          original_filename?: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_memories_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscriptions: {
         Row: {
           created_at: string
