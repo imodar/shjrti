@@ -14,10 +14,12 @@ import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import FamilyTreeViewSkeleton from "@/components/skeletons/FamilyTreeViewSkeleton";
 const FamilyTreeView = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const {
     toast
@@ -474,11 +476,11 @@ const FamilyTreeView = () => {
                         <TreePine className="h-6 w-6 text-white" />
                       </div>
                       <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        شجرة العائلة
+                        {t('familyTree')}
                       </h1>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300">
-                      عرض تفاعلي وجميل لشجرة عائلتك - {familyTree.length} عائلة
+                      {t('familyTreeDescription')} - {familyTree.length} {t('family')}
                     </p>
                   </div>
 
