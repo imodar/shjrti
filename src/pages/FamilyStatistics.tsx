@@ -289,21 +289,9 @@ const FamilyStatistics = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
               
               <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 sm:py-6 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-0 sm:justify-between">
-                  {/* Back Button */}
-                  <div className="w-full sm:w-auto order-1 sm:order-1">
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate(`/family-builder?family=${familyId}`)}
-                      className="w-full sm:w-auto group bg-white/20 dark:bg-gray-700/20 border-emerald-300/50 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-900/30 dark:border-emerald-600/30 transition-all duration-300 shadow-sm hover:shadow-md"
-                    >
-                      <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-                      العودة الى أفراد العائلة
-                    </Button>
-                  </div>
-
+                <div className="text-center">
                   {/* Title */}
-                  <div className="text-center order-2 sm:order-2">
+                  <div>
                     <div className="flex items-center justify-center gap-3 mb-2">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
                         <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
