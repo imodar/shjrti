@@ -444,7 +444,28 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               )}
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
-                  {/* Basic Info - Name and Stats on the left */}
+                  {/* Profile Avatar - Now first in DOM */}
+                  <div className="relative mx-auto sm:mx-0 flex-shrink-0">
+                    {/* Show gradient background only when there's no profile picture */}
+                    {!member.image_url && !member.image && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
+                    )}
+                    <Avatar className="relative h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 border-4 border-white shadow-2xl flex-shrink-0">
+                      {(member.image_url || member.image) ? (
+                        <AvatarImage 
+                          src={member.image_url || member.image} 
+                          alt={member.name} 
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
+                          {member.name.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </div>
+
+                  {/* Basic Info - Name and Stats after picture */}
                   <div className="space-y-3 text-center sm:text-right flex-1">
                     <div>
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
@@ -495,27 +516,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="text-sm text-muted-foreground">الأحفاد</div>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Profile Avatar - Now on the right */}
-                  <div className="relative mx-auto sm:mx-0 flex-shrink-0">
-                    {/* Show gradient background only when there's no profile picture */}
-                    {!member.image_url && !member.image && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
-                    )}
-                    <Avatar className="relative h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 border-4 border-white shadow-2xl flex-shrink-0">
-                      {(member.image_url || member.image) ? (
-                        <AvatarImage 
-                          src={member.image_url || member.image} 
-                          alt={member.name} 
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <AvatarFallback className={`text-4xl font-bold text-white ${getGenderColor(member.gender)}`}>
-                          {member.name.charAt(0)}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
                   </div>
                 </div>
 
