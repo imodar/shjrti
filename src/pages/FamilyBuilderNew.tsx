@@ -2913,29 +2913,35 @@ const FamilyBuilderNew = () => {
                     <div className="flex-1 px-2">
 
                       {/* Compact Actions */}
-                      <div className="flex items-center justify-center gap-1">
-                        <button 
-                          onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
-                          className="group flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary hover:text-primary/80 bg-primary/5 hover:bg-primary/10 rounded-md transition-all duration-200"
-                        >
-                          <TreePine className="h-3 w-3" />
-                          <span className="hidden sm:inline">الشجرة</span>
-                        </button>
-                        <button 
-                          onClick={() => navigate(`/family-statistics?family=${familyId}`)}
-                          className="group flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/30 rounded-md transition-all duration-200"
-                        >
-                          <Star className="h-3 w-3" />
-                          <span className="hidden sm:inline">الإحصائيات</span>
-                        </button>
-                        <button 
-                          onClick={() => setFormMode('tree-settings')}
-                          className="group flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/30 rounded-md transition-all duration-200"
-                        >
-                          <Settings className="h-3 w-3" />
-                          <span className="hidden sm:inline">الإعدادات</span>
-                        </button>
-                      </div>
+                       <div className="flex items-center justify-center gap-2">
+                         <button 
+                           onClick={() => navigate(`/family-tree-view?family=${familyId}`)}
+                           className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+                         >
+                           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                           <TreePine className="h-4 w-4 relative z-10" />
+                           <span className="hidden sm:inline relative z-10">الشجرة</span>
+                           <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>
+                         </button>
+                         
+                         <button 
+                           onClick={() => navigate(`/family-statistics?family=${familyId}`)}
+                           className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm"
+                         >
+                           <Star className="h-4 w-4 text-amber-500 group-hover:text-amber-600 transition-colors duration-300" />
+                           <span className="hidden sm:inline">الإحصائيات</span>
+                           <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
+                         </button>
+                         
+                         <button 
+                           onClick={() => setFormMode('tree-settings')}
+                           className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm"
+                         >
+                           <Settings className="h-4 w-4 text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 group-hover:rotate-90 transition-all duration-300" />
+                           <span className="hidden sm:inline">الإعدادات</span>
+                           <div className="absolute inset-0 bg-gradient-to-r from-slate-500/10 to-slate-600/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
+                         </button>
+                       </div>
                     </div>
 
                     {/* Right: Generation Stats */}
