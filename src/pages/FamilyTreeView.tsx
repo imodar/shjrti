@@ -506,19 +506,6 @@ const FamilyTreeView = () => {
                       </Button>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-                      <Button onClick={() => navigate('/dashboard')} variant="outline" size="sm" className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
-                        <Users className="h-4 w-4" />
-                        <span className="hidden sm:inline">إدارة الأعضاء</span>
-                        <span className="sm:hidden">إدارة الأعضا
-الإحصائيات</span>
-                      </Button>
-                      <Button onClick={() => navigate('/family-statistics')} variant="outline" size="sm" className="gap-2 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/20">
-                        <BarChart3 className="h-4 w-4" />
-                        <span className="hidden sm:inline">الإحصائيات</span>
-                        <span className="sm:hidden">الإحصائيات</span>
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </div>
