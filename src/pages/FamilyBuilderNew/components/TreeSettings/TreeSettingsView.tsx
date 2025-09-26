@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowLeft, 
+  ArrowRight,
   Settings, 
   Share2, 
   Link2, 
@@ -352,9 +353,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           variant="ghost" 
           size="sm" 
           onClick={onBack} 
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4" />
           العودة
         </Button>
         <div className="flex items-center gap-3 flex-1">
