@@ -2879,7 +2879,7 @@ const FamilyBuilderNew = () => {
 
       <div className="relative z-10 pt-20">
         {/* Header Box from FamilyBuilder */}
-        <div className="container mx-auto px-4 pt-2 pb-0">
+        <div className="container mx-auto px-4 pt-0 pb-0">
           {/* Hero Section - Adapted from Dashboard */}
          </div>
 
