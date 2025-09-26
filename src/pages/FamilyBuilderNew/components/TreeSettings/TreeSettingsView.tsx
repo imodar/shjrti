@@ -353,7 +353,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           variant="ghost" 
           size="sm" 
           onClick={onBack} 
-          className="flex items-center gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
+          className="flex items-center gap-2 text-primary hover:text-primary/80 hover:bg-primary/10 border border-primary/20"
         >
           <ArrowRight className="h-4 w-4" />
           العودة
