@@ -15,8 +15,16 @@ export const useMaintenanceMode = () => {
     
     const checkMaintenanceMode = async () => {
       try {
-        const { data, error } = await supabase
-          .rpc('is_maintenance_mode_enabled');
+        console.log('🔧 Checking maintenance mode...');
+        
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Maintenance check timeout')), 5000)
+        );
+        
+        const maintenancePromise = supabase.rpc('is_maintenance_mode_enabled');
+        
+        const { data, error } = await Promise.race([maintenancePromise, timeoutPromise]) as any;
 
         if (error) {
           console.error('Error checking maintenance mode:', error);
@@ -25,11 +33,14 @@ export const useMaintenanceMode = () => {
         }
         
         const maintenanceEnabled = Boolean(data);
+        console.log('🔧 Maintenance mode status:', maintenanceEnabled);
         setIsMaintenanceMode(maintenanceEnabled);
       } catch (error) {
-        console.error('Error checking maintenance mode:', error);
+        console.error('Error checking maintenance mode (with timeout):', error);
+        // Default to false if check fails
         setIsMaintenanceMode(false);
       } finally {
+        console.log('🔧 Maintenance mode check completed');
         setLoading(false);
       }
     };
