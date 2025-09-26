@@ -1294,7 +1294,7 @@ export default function Payments() {
                         <CardContent className="px-6 pb-6">
                           {/* Features list */}
                           <div className="space-y-2 mb-6">
-                            {getLocalizedFeatures(plan).slice(0, 4).map((feature, featureIndex) => (
+                            {getLocalizedFeatures(plan).map((feature, featureIndex) => (
                               <div 
                                 key={featureIndex}
                                 className="flex items-center gap-2 text-sm"
