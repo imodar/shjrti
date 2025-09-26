@@ -602,18 +602,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           <div className="text-sm text-muted-foreground">سنة</div>
                         </div>
                       )}
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
-                        <div className="text-sm text-muted-foreground">الأزواج</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">{children.length}</div>
-                        <div className="text-sm text-muted-foreground">الأطفال</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
-                        <div className="text-sm text-muted-foreground">الأحفاد</div>
-                      </div>
+                      {spouses.length > 0 && (
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
+                          <div className="text-sm text-muted-foreground">الأزواج</div>
+                        </div>
+                      )}
+                      {children.length > 0 && (
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-primary">{children.length}</div>
+                          <div className="text-sm text-muted-foreground">الأطفال</div>
+                        </div>
+                      )}
+                      {grandchildren.length > 0 && (
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
+                          <div className="text-sm text-muted-foreground">الأحفاد</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
