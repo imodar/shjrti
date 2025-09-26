@@ -517,17 +517,22 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       <div className="container mx-auto px-2 sm:px-4 pb-3 sm:pb-6 max-w-6xl">
         {/* Hero Section */}
         <div className="relative mb-4 sm:mb-8">
-          {/* Close Button */}
-          <button
-            onClick={onBack}
-            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105"
-          >
-            <X className="w-4 h-4 text-gray-600" />
-          </button>
           
           
           {/* Profile Info Card */}
           <div className="relative">
+            {/* Back Button - Better Design */}
+            <div className="flex items-start justify-between mb-4">
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-4 py-2 transition-all duration-300 group"
+              >
+                <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
+                <span className="text-sm font-medium">العودة</span>
+              </Button>
+            </div>
+            
             <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
