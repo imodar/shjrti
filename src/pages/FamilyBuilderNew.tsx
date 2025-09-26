@@ -2943,7 +2943,6 @@ const FamilyBuilderNew = () => {
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   {formMode === 'view' ? <div className="py-8 px-6">
                        {/* Family Overview Header - Redesigned */}
-                        <div className="relative overflow-hidden bg-gradient-to-br from-background via-card/50 to-accent/5 rounded-3xl p-8 sm:p-12 mb-8 border border-border/50 shadow-2xl backdrop-blur-sm animate-fade-in">
                           
                           {/* Animated Background Orbs */}
                           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
@@ -3018,7 +3017,6 @@ const FamilyBuilderNew = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
 
 
                       {/* Last Updated Info */}
