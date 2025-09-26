@@ -579,7 +579,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
-                  <div className="space-y-3 text-center sm:text-right flex-[2]">
+                  <div className="space-y-2 text-center sm:text-right flex-[3]">
                     <div>
                       {/* Member Name */}
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
