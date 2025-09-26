@@ -571,7 +571,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
-                  <div className="space-y-3 text-center sm:text-right flex-1">
+                  <div className="space-y-3 text-center sm:text-right flex-[2]">
                     <div>
                       {/* Member Name */}
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
@@ -628,7 +628,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         onEdit();
                       }
                     }}
-                    className="facebook-button-primary px-6 py-3"
+                    className="facebook-button-primary px-4 py-2"
                   >
                     <Edit className="h-4 w-4 ml-2" />
                     تعديل المعلومات
