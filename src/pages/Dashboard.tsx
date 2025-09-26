@@ -28,7 +28,6 @@ import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -339,12 +338,7 @@ const Dashboard = () => {
                           {/* Right: Badge & Subscription Status */}
                           <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
             {/* Subscription Status */}
-            {loading ? (
-              <div className="flex flex-col items-center gap-1 sm:gap-2">
-                <Skeleton className="h-6 sm:h-8 w-24 sm:w-32 rounded-full" />
-                <Skeleton className="h-6 sm:h-8 w-20 sm:w-28 rounded-full" />
-              </div>
-            ) : userSubscription?.package_name && !userSubscription?.is_expired && (userSubscription?.price_sar > 0 || userSubscription?.price_usd > 0) ? (
+            {userSubscription?.package_name && !userSubscription?.is_expired && (userSubscription?.price_sar > 0 || userSubscription?.price_usd > 0) ? (
               <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full shadow-lg">
                 <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
                  <span className="text-xs font-bold">{t('dashboard.package_prefix', 'Package')} {(() => {
