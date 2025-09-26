@@ -519,7 +519,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           
           
           {/* Profile Info Card */}
-          <div className="relative mx-2 sm:mx-4">
+          <div className="relative">
             <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
