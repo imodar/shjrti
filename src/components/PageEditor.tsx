@@ -315,10 +315,18 @@ export default function PageEditor() {
                         style={{ minHeight: '200px' }}
                         modules={{
                           toolbar: [
-                            [{ 'header': [1, 2, 3, false] }],
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            [{ 'font': [] }],
+                            [{ 'size': ['small', false, 'large', 'huge'] }],
                             ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'script': 'sub'}, { 'script': 'super' }],
+                            [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
                             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            ['link', 'image'],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            [{ 'direction': 'rtl' }],
+                            [{ 'align': [] }],
+                            ['link', 'image', 'video'],
                             ['clean']
                           ]
                         }}
@@ -420,10 +428,18 @@ export default function PageEditor() {
                           style={{ minHeight: '300px' }}
                           modules={{
                             toolbar: [
-                              [{ 'header': [1, 2, 3, false] }],
+                              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                              [{ 'font': [] }],
+                              [{ 'size': ['small', false, 'large', 'huge'] }],
                               ['bold', 'italic', 'underline', 'strike'],
+                              [{ 'color': [] }, { 'background': [] }],
+                              [{ 'script': 'sub'}, { 'script': 'super' }],
+                              [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
                               [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                              ['link', 'image'],
+                              [{ 'indent': '-1'}, { 'indent': '+1' }],
+                              [{ 'direction': 'rtl' }],
+                              [{ 'align': [] }],
+                              ['link', 'image', 'video'],
                               ['clean']
                             ]
                           }}
