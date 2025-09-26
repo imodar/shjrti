@@ -483,6 +483,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const spouses = getSpouses();
   const children = getChildren();
   const grandchildren = getGrandchildren();
+  
+  // Debugging logs
+  console.log('🔍 Debug - spouses:', spouses);
+  console.log('🔍 Debug - spouses.length:', spouses?.length);
+  console.log('🔍 Debug - children:', children);
+  console.log('🔍 Debug - children.length:', children?.length);
+  console.log('🔍 Debug - grandchildren:', grandchildren);
+  console.log('🔍 Debug - grandchildren.length:', grandchildren?.length);
   const memberGeneration = calculateMemberGeneration();
 
   const tabItems = [
@@ -602,19 +610,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           <div className="text-sm text-muted-foreground">سنة</div>
                         </div>
                       )}
-                      {spouses.length > 0 && (
+                      {spouses && spouses.length > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
                           <div className="text-sm text-muted-foreground">الأزواج</div>
                         </div>
                       )}
-                      {children.length > 0 && (
+                      {children && children.length > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-primary">{children.length}</div>
                           <div className="text-sm text-muted-foreground">الأطفال</div>
                         </div>
                       )}
-                      {grandchildren.length > 0 && (
+                      {grandchildren && grandchildren.length > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
                           <div className="text-sm text-muted-foreground">الأحفاد</div>
