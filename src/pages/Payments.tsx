@@ -20,13 +20,25 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { DateDisplay } from "@/components/DateDisplay";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { usePackageTransition } from "@/hooks/usePackageTransition";
-
 export default function Payments() {
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const { currentLanguage, formatPrice } = useLanguage();
-  const { refreshSubscription, subscription } = useSubscription();
-  const { processPackageTransition, loading: transitionLoading } = usePackageTransition();
+  const {
+    toast
+  } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    currentLanguage,
+    formatPrice
+  } = useLanguage();
+  const {
+    refreshSubscription,
+    subscription
+  } = useSubscription();
+  const {
+    processPackageTransition,
+    loading: transitionLoading
+  } = usePackageTransition();
   const navigate = useNavigate();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,41 +71,33 @@ export default function Payments() {
         return value;
       }
     }
-    
     if (typeof value === 'object' && value !== null) {
       return (value as any)[currentLanguage] || (value as any)['en'] || '';
     }
-    
     return String(value || '');
   };
 
   // Helper function to get localized package field
   const getLocalizedPackageField = (pkg: any, field: string, fallbackLang = 'en') => {
     if (!pkg || !pkg[field]) return '';
-    
     if (typeof pkg[field] === 'string') {
       return pkg[field];
     }
-    
     if (typeof pkg[field] === 'object') {
       return pkg[field][currentLanguage] || pkg[field][fallbackLang] || '';
     }
-    
     return '';
   };
 
   // Helper function to get localized features
   const getLocalizedFeatures = (pkg: any, language = currentLanguage) => {
     if (!pkg || !pkg.features) return [];
-    
     if (Array.isArray(pkg.features)) {
       return pkg.features;
     }
-    
     if (typeof pkg.features === 'object') {
       return pkg.features[language] || pkg.features['en'] || [];
     }
-    
     return [];
   };
 
@@ -101,9 +105,10 @@ export default function Payments() {
   const loadPackages = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('packages')
-        .select(`
+      const {
+        data,
+        error
+      } = await supabase.from('packages').select(`
           *,
           name,
           description,
@@ -114,17 +119,15 @@ export default function Payments() {
           max_family_trees,
           ai_features_enabled,
           image_upload_enabled
-        `)
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
+        `).eq('is_active', true).order('display_order', {
+        ascending: true
+      });
       if (error) throw error;
 
       // Transform database data to match UI format while preserving original pricing data
       const transformedPackages = data.map(pkg => {
         // Select price based on current language for display
-        const price = currentLanguage === 'ar' ? (pkg.price_sar || 0) : (pkg.price_usd || 0);
-        
+        const price = currentLanguage === 'ar' ? pkg.price_sar || 0 : pkg.price_usd || 0;
         return {
           id: pkg.id,
           name: pkg.name,
@@ -137,21 +140,18 @@ export default function Payments() {
           // Preserve original pricing data
           price_sar: pkg.price_sar,
           price_usd: pkg.price_usd,
-          icon: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? Shield :
-                getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? Star : Crown,
-          color: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? "bg-gray-500" :
-                 getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? "bg-emerald-500" : "bg-purple-500",
+          icon: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? Shield : getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? Star : Crown,
+          color: getLocalizedPackageField(pkg, 'name', 'en').includes('مجاني') || getLocalizedPackageField(pkg, 'name', 'en').includes('free') ? "bg-gray-500" : getLocalizedPackageField(pkg, 'name', 'en').includes('أساسي') || getLocalizedPackageField(pkg, 'name', 'en').includes('basic') ? "bg-emerald-500" : "bg-purple-500",
           popular: pkg.is_featured || false
         };
       });
-
       setPackages(transformedPackages);
     } catch (error) {
       console.error('Error loading packages:', error);
       toast({
         title: "خطأ",
         description: "فشل في تحميل الباقات. يرجى المحاولة مرة أخرى.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
@@ -161,17 +161,18 @@ export default function Payments() {
   // Cancel old invoices with improved logic and retry mechanism
   const cancelOldPendingInvoices = async (retryCount = 0) => {
     if (!user) return;
-    
     try {
-      const { data, error } = await supabase.functions.invoke('cleanup-old-invoices');
-      
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('cleanup-old-invoices');
       if (error) {
         console.error('Error cleaning up old invoices:', error);
       } else if (data?.cancelledCount > 0) {
         toast({
           title: "تم إلغاء الفواتير القديمة",
           description: data.message,
-          variant: "default",
+          variant: "default"
         });
       }
     } catch (error) {
@@ -186,31 +187,28 @@ export default function Payments() {
   // Load user's invoices
   const loadInvoices = async () => {
     if (!user) return;
-    
     try {
       setInvoicesLoading(true);
-      
+
       // إلغاء الفواتير المعلقة القديمة أولاً
       await cancelOldPendingInvoices();
-      
-      const { data, error } = await supabase
-        .from('invoices')
-        .select(`
+      const {
+        data,
+        error
+      } = await supabase.from('invoices').select(`
           *,
           packages (name)
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
+        `).eq('user_id', user.id).order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
-
       setInvoices(data || []);
     } catch (error) {
       console.error('Error loading invoices:', error);
       toast({
         title: "خطأ",
         description: "فشل في تحميل الفواتير. يرجى المحاولة مرة أخرى.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setInvoicesLoading(false);
@@ -220,22 +218,16 @@ export default function Payments() {
   // Load user's current family and subscription with retry mechanism
   const loadUserSubscription = async (retryCount = 0) => {
     if (!user) return;
-    
     try {
       console.log('🔍 Loading user subscription for user:', user.id);
-      
+
       // Get user's subscription directly from user_subscriptions table
-      const { data: subscriptionData, error: subscriptionError } = await supabase
-        .from('user_subscriptions')
-        .select('package_id')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-
+      const {
+        data: subscriptionData,
+        error: subscriptionError
+      } = await supabase.from('user_subscriptions').select('package_id').eq('user_id', user.id).eq('status', 'active').maybeSingle();
       if (subscriptionError) throw subscriptionError;
-
       console.log('📦 Subscription data:', subscriptionData);
-
       if (subscriptionData) {
         setCurrentPlan(subscriptionData.package_id);
         console.log('✅ Current plan set to:', subscriptionData.package_id);
@@ -246,14 +238,14 @@ export default function Payments() {
       }
     } catch (error) {
       console.error('❌ Error loading user subscription:', error);
-      
+
       // Retry once on network errors
       if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
         console.log('🔄 Retrying user subscription load in 2 seconds...');
         setTimeout(() => loadUserSubscription(1), 2000);
         return;
       }
-      
+
       // Default to free plan on error
       setCurrentPlan(null);
     }
@@ -262,18 +254,14 @@ export default function Payments() {
   // Function to load scheduled downgrades with retry mechanism
   const loadScheduledDowngrade = async (retryCount = 0) => {
     if (!user) return;
-
     try {
-      const { data, error } = await supabase
-        .from('scheduled_package_changes')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'pending')
-        .maybeSingle();
-
+      const {
+        data,
+        error
+      } = await supabase.from('scheduled_package_changes').select('*').eq('user_id', user.id).eq('status', 'pending').maybeSingle();
       if (error) {
         console.error('Error loading scheduled downgrade:', error);
-        
+
         // Retry once on network errors
         if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
           console.log('🔄 Retrying scheduled downgrade load in 2 seconds...');
@@ -282,22 +270,15 @@ export default function Payments() {
         }
         return;
       }
-
       if (data) {
         // Get package details separately
-        const [currentPackageData, targetPackageData] = await Promise.all([
-          supabase.from('packages').select('name').eq('id', data.current_package_id).maybeSingle(),
-          supabase.from('packages').select('name').eq('id', data.target_package_id).maybeSingle()
-        ]);
-
+        const [currentPackageData, targetPackageData] = await Promise.all([supabase.from('packages').select('name').eq('id', data.current_package_id).maybeSingle(), supabase.from('packages').select('name').eq('id', data.target_package_id).maybeSingle()]);
         const scheduleData = {
           ...data,
           current_package: currentPackageData.data,
           target_package: targetPackageData.data
         };
-
         setScheduledDowngrade(scheduleData);
-        
         console.log('✅ Scheduled downgrade loaded:', scheduleData);
       } else {
         console.log('❌ No scheduled downgrade found');
@@ -305,7 +286,7 @@ export default function Payments() {
       }
     } catch (error) {
       console.error('Error in loadScheduledDowngrade:', error);
-      
+
       // Retry once on network errors
       if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
         console.log('🔄 Retrying scheduled downgrade load in 2 seconds...');
@@ -318,54 +299,38 @@ export default function Payments() {
   // Function to cancel scheduled downgrade
   const cancelScheduledDowngrade = async () => {
     if (!user || !scheduledDowngrade || cancellingDowngrade) return;
-
     setCancellingDowngrade(true);
-    
     try {
       console.log('🔄 Cancelling scheduled downgrade...');
-      
-      const { error } = await supabase
-        .from('scheduled_package_changes')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('status', 'pending');
-
+      const {
+        error
+      } = await supabase.from('scheduled_package_changes').delete().eq('user_id', user.id).eq('status', 'pending');
       if (error) {
         console.error('Error cancelling scheduled downgrade:', error);
         toast({
           title: currentLanguage === 'ar' ? "خطأ" : "Error",
-          description: currentLanguage === 'ar' 
-            ? "فشل في إلغاء التغيير المجدول" 
-            : "Failed to cancel scheduled change",
-          variant: "destructive",
+          description: currentLanguage === 'ar' ? "فشل في إلغاء التغيير المجدول" : "Failed to cancel scheduled change",
+          variant: "destructive"
         });
         return;
       }
-
       setScheduledDowngrade(null);
-      
       console.log('✅ Scheduled downgrade cancelled successfully');
-      
       toast({
         title: currentLanguage === 'ar' ? "تم الإلغاء" : "Cancelled",
-        description: currentLanguage === 'ar' 
-          ? "تم إلغاء التغيير المجدول بنجاح. ستبقى على باقتك الحالية." 
-          : "Scheduled change has been cancelled successfully. You will stay on your current plan.",
+        description: currentLanguage === 'ar' ? "تم إلغاء التغيير المجدول بنجاح. ستبقى على باقتك الحالية." : "Scheduled change has been cancelled successfully. You will stay on your current plan."
       });
     } catch (error) {
       console.error('Error in cancelScheduledDowngrade:', error);
       toast({
         title: currentLanguage === 'ar' ? "خطأ" : "Error",
-        description: currentLanguage === 'ar' 
-          ? "حدث خطأ أثناء إلغاء التغيير المجدول" 
-          : "An error occurred while cancelling the scheduled change",
-        variant: "destructive",
+        description: currentLanguage === 'ar' ? "حدث خطأ أثناء إلغاء التغيير المجدول" : "An error occurred while cancelling the scheduled change",
+        variant: "destructive"
       });
     } finally {
       setCancellingDowngrade(false);
     }
   };
-
   useEffect(() => {
     loadPackages();
     loadUserSubscription();
@@ -374,11 +339,9 @@ export default function Payments() {
       loadScheduledDowngrade();
     }
   }, [user, currentLanguage]);
-
   const handleDeletePaymentMethod = (id: number) => {
     setPaymentMethods(paymentMethods.filter(method => method.id !== id));
   };
-
   const getPlanIndex = (planId: string | null) => {
     if (!planId) return -1; // Free plan has lowest index
     return packages.findIndex(p => p.id === planId);
@@ -389,22 +352,17 @@ export default function Payments() {
     if (!user) {
       toast({
         title: currentLanguage === 'ar' ? "تسجيل الدخول مطلوب" : "Login Required",
-        description: currentLanguage === 'ar' 
-          ? "يجب تسجيل الدخول أولاً لاختيار باقة" 
-          : "Please login first to select a plan",
-        variant: "destructive",
+        description: currentLanguage === 'ar' ? "يجب تسجيل الدخول أولاً لاختيار باقة" : "Please login first to select a plan",
+        variant: "destructive"
       });
       return;
     }
-
     const selectedPackage = packages.find(pkg => pkg.id === planId);
     if (!selectedPackage) {
       toast({
         title: currentLanguage === 'ar' ? "خطأ" : "Error",
-        description: currentLanguage === 'ar' 
-          ? "الباقة المحددة غير موجودة" 
-          : "Selected package not found",
-        variant: "destructive",
+        description: currentLanguage === 'ar' ? "الباقة المحددة غير موجودة" : "Selected package not found",
+        variant: "destructive"
       });
       return;
     }
@@ -412,7 +370,6 @@ export default function Payments() {
     // التحقق من أن هذا تراجع (downgrade)
     const currentPlanIndex = getPlanIndex(currentPlan);
     const selectedPlanIndex = getPlanIndex(planId);
-    
     if (currentPlan && selectedPlanIndex < currentPlanIndex) {
       // هذا downgrade - إظهار modal
       setSelectedDowngradePlan(selectedPackage);
@@ -428,22 +385,17 @@ export default function Payments() {
     if (!user) {
       toast({
         title: currentLanguage === 'ar' ? "تسجيل الدخول مطلوب" : "Login Required",
-        description: currentLanguage === 'ar' 
-          ? "يجب تسجيل الدخول أولاً لاختيار باقة" 
-          : "Please login first to select a plan",
-        variant: "destructive",
+        description: currentLanguage === 'ar' ? "يجب تسجيل الدخول أولاً لاختيار باقة" : "Please login first to select a plan",
+        variant: "destructive"
       });
       return;
     }
-
     const selectedPackage = packages.find(pkg => pkg.id === planId);
     if (!selectedPackage) {
       toast({
         title: currentLanguage === 'ar' ? "خطأ" : "Error",
-        description: currentLanguage === 'ar' 
-          ? "الباقة المحددة غير موجودة" 
-          : "Selected package not found",
-        variant: "destructive",
+        description: currentLanguage === 'ar' ? "الباقة المحددة غير موجودة" : "Selected package not found",
+        variant: "destructive"
       });
       return;
     }
@@ -455,7 +407,6 @@ export default function Payments() {
       status: 'active',
       expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // افتراض سنة من الآن
     } : null;
-
     console.log('🔍 Plan transition analysis:', {
       selectedPackage: selectedPackage.name,
       currentPlan,
@@ -465,24 +416,21 @@ export default function Payments() {
 
     // تحليل عملية التنقل بين الباقات
     const transitionResult = await processPackageTransition(selectedPackage, currentSubscription, packages);
-    
     console.log('🔍 Transition result:', transitionResult);
-    
     if (!transitionResult.canProceed) {
       if (transitionResult.action === 'block_downgrade') {
         setPackageWarning(transitionResult.message);
         toast({
           title: currentLanguage === 'ar' ? "تنبيه" : "Warning",
           description: transitionResult.message + (transitionResult.requirements ? '\n' + transitionResult.requirements.join('\n') : ''),
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
-      
       toast({
         title: currentLanguage === 'ar' ? "تنبيه" : "Notice",
         description: transitionResult.message,
-        variant: "default",
+        variant: "default"
       });
       return;
     }
@@ -492,28 +440,25 @@ export default function Payments() {
       toast({
         title: currentLanguage === 'ar' ? "تنبيه مهم" : "Important Notice",
         description: transitionResult.message,
-        variant: "default",
+        variant: "default"
       });
     }
 
     // التعامل مع التنزيل المجدول
     if (transitionResult.action === 'schedule_downgrade') {
       console.log('✅ Scheduling downgrade, refreshing data...');
-      
+
       // تحديث فوري أولاً
       await loadScheduledDowngrade();
-      
+
       // تحديث إضافي بعد ثانية للتأكد
       setTimeout(async () => {
         await loadScheduledDowngrade();
         console.log('✅ Scheduled downgrade data refreshed (delayed)');
       }, 1000);
-      
       toast({
         title: currentLanguage === 'ar' ? "تم الجدولة" : "Scheduled",
-        description: currentLanguage === 'ar' 
-          ? "تم جدولة تغيير الباقة بنجاح. ستبقى على باقتك الحالية حتى التاريخ المحدد." 
-          : "Package change has been scheduled successfully. You will stay on your current plan until the scheduled date.",
+        description: currentLanguage === 'ar' ? "تم جدولة تغيير الباقة بنجاح. ستبقى على باقتك الحالية حتى التاريخ المحدد." : "Package change has been scheduled successfully. You will stay on your current plan until the scheduled date."
       });
       return;
     }
@@ -521,7 +466,6 @@ export default function Payments() {
     // Continue with payment process for upgrades
     setSelectedPlan(planId);
     setProcessingInvoice(true);
-
     try {
       // Log the package data for debugging
       console.log('🔍 Selected package data:', {
@@ -533,9 +477,8 @@ export default function Payments() {
       });
 
       // Calculate amount based on language - use the same logic as PlanSelection
-      const amount = currentLanguage === 'ar' ? (selectedPackage.price_sar || 0) : (selectedPackage.price_usd || 0);
+      const amount = currentLanguage === 'ar' ? selectedPackage.price_sar || 0 : selectedPackage.price_usd || 0;
       const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
-
       console.log('🔍 Package details for payment:', {
         packageId: planId,
         amount: amount,
@@ -544,35 +487,37 @@ export default function Payments() {
       });
 
       // Create invoice for user subscription (no family needed)
-      const { data: invoiceId, error: invoiceError } = await supabase.rpc('create_invoice', {
+      const {
+        data: invoiceId,
+        error: invoiceError
+      } = await supabase.rpc('create_invoice', {
         p_user_id: user.id,
         p_package_id: planId,
         p_amount: amount,
         p_currency: currency
         // p_family_id is optional and defaults to null
       });
-
       if (invoiceError) {
         console.error('Error creating invoice:', invoiceError);
         throw new Error('Failed to create invoice');
       }
-
       console.log('✅ Invoice created successfully:', invoiceId);
 
       // For free plans, complete immediately
       if (amount === 0) {
-        const { data: success, error: upgradeError } = await supabase.rpc('complete_payment_and_upgrade', {
+        const {
+          data: success,
+          error: upgradeError
+        } = await supabase.rpc('complete_payment_and_upgrade', {
           p_invoice_id: invoiceId
         });
-
         if (upgradeError) {
           console.error('Error completing free upgrade:', upgradeError);
           throw new Error('Failed to complete free upgrade');
         }
-
         toast({
           title: "تم تفعيل الخطة المجانية",
-          description: "تم تفعيل الخطة المجانية بنجاح",
+          description: "تم تفعيل الخطة المجانية بنجاح"
         });
 
         // Reload data
@@ -582,7 +527,10 @@ export default function Payments() {
       }
 
       // Create payment session for paid plans
-      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment', {
+      const {
+        data: paymentData,
+        error: paymentError
+      } = await supabase.functions.invoke('create-payment', {
         body: {
           packageId: planId,
           amount: amount,
@@ -590,34 +538,27 @@ export default function Payments() {
           invoiceId: invoiceId
         }
       });
-
       if (paymentError) {
         console.error('Payment session error:', paymentError);
         throw new Error(`Payment session failed: ${paymentError.message}`);
       }
-
       if (!paymentData?.url) {
         throw new Error('No payment URL received');
       }
-
       console.log('✅ Payment session created:', paymentData.url);
 
       // Open payment in new tab
       window.open(paymentData.url, '_blank');
-
       toast({
         title: "تم إنشاء جلسة الدفع",
-        description: "تم توجيهك لصفحة الدفع في نافذة جديدة",
+        description: "تم توجيهك لصفحة الدفع في نافذة جديدة"
       });
 
       // Reload invoices
       loadInvoices();
-
     } catch (error: any) {
       console.error('Error in handlePlanSelect:', error);
-      
       let errorMessage = "فشل في إنشاء جلسة الدفع";
-      
       if (error?.message?.includes('STRIPE_SECRET_KEY')) {
         errorMessage = "خطأ في إعداد نظام الدفع";
       } else if (error?.message?.includes('Invoice')) {
@@ -625,18 +566,16 @@ export default function Payments() {
       } else if (error?.message?.includes('Payment')) {
         errorMessage = "فشل في إنشاء جلسة الدفع";
       }
-
       toast({
         title: "خطأ في الدفع",
         description: `${errorMessage}. تفاصيل الخطأ: ${error?.message || 'Unknown error'}`,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setProcessingInvoice(false);
       setSelectedPlan(null);
     }
   };
-
   const handlePaymentMethodChoice = (type: 'credit-card' | 'paypal') => {
     if (type === 'credit-card') {
       setShowAddPaymentModal(false);
@@ -654,11 +593,10 @@ export default function Payments() {
       setShowAddPaymentModal(false);
     }
   };
-
   const handleCreditCardSubmit = (e?: React.MouseEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
-    
+
     // Add credit card (simulated)
     const newPaymentMethod = {
       id: paymentMethods.length + 1,
@@ -671,7 +609,6 @@ export default function Payments() {
     setSelectedPaymentMethod(newPaymentMethod.id);
     setShowCreditCardForm(false);
   };
-
   const getInvoiceStatusBadge = (status: string) => {
     switch (status) {
       case 'paid':
@@ -684,12 +621,9 @@ export default function Payments() {
         return <Badge className="bg-gray-500 text-white">{status}</Badge>;
     }
   };
-
   const selectedPlanData = packages.find(p => p.id === selectedPlan);
   const currentPlanData = packages.find(p => p.id === currentPlan);
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
@@ -730,17 +664,13 @@ export default function Payments() {
                     </div>
                   </div>
                   
-                  {currentPlanData ? (
-                    <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
+                  {currentPlanData ? <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
                       <Crown className="h-4 w-4" />
                       <span className="text-sm font-bold">{getLocalizedPackageField(currentPlanData, 'name') || currentPlanData.name}</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-full shadow-lg">
+                    </div> : <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-full shadow-lg">
                       <Shield className="h-4 w-4" />
                       <span className="text-sm font-bold">الباقة المجانية</span>
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </div>
             </div>
@@ -754,33 +684,21 @@ export default function Payments() {
                 <CardTitle className="text-emerald-800 dark:text-emerald-200">خطتك الحالية</CardTitle>
               </CardHeader>
               <CardContent>
-                {loading ? (
-                  <div className="text-center">
+                {loading ? <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
                     <p className="text-muted-foreground mt-2">جاري التحميل...</p>
-                  </div>
-                ) : (
-                  <>
+                  </div> : <>
                     <div className="text-center mb-4">
                       <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                        {currentPlan ? (
-                          currentPlanData?.icon ? <currentPlanData.icon className="h-8 w-8 text-emerald-600" /> : <Crown className="h-8 w-8 text-emerald-600" />
-                        ) : (
-                          <Shield className="h-8 w-8 text-emerald-600" />
-                        )}
+                        {currentPlan ? currentPlanData?.icon ? <currentPlanData.icon className="h-8 w-8 text-emerald-600" /> : <Crown className="h-8 w-8 text-emerald-600" /> : <Shield className="h-8 w-8 text-emerald-600" />}
                       </div>
                       <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
                         {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || 'الباقة المدفوعة' : 'الباقة المجانية'}
                       </h3>
                         <p className="text-3xl font-bold text-emerald-600">
-                          {currentPlan ? 
-                            (currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `${currentPlanData.price} ريال` : 'مجاني للأبد') : 
-                            'مجاني للأبد'
-                          }
+                          {currentPlan ? currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `${currentPlanData.price} ريال` : 'مجاني للأبد' : 'مجاني للأبد'}
                         </p>
-                       {(currentPlan && currentPlanData?.price && parseFloat(currentPlanData.price) > 0) && (
-                         <p className="text-muted-foreground">شهرياً</p>
-                       )}
+                       {currentPlan && currentPlanData?.price && parseFloat(currentPlanData.price) > 0 && <p className="text-muted-foreground">سنوياً</p>}
                     </div>
                     
                     <div className="space-y-2 text-sm">
@@ -795,44 +713,39 @@ export default function Payments() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">حالة الاشتراك</span>
                         <span className={`${currentPlan ? 'text-green-600' : 'text-gray-600'}`}>
-                          {currentFamily?.subscription_status === 'active' ? 'نشط' : 
-                           currentFamily?.subscription_status === 'expired' ? 'منتهي الصلاحية' : 
-                           currentPlan ? 'نشط' : 'مجاني'}
+                          {currentFamily?.subscription_status === 'active' ? 'نشط' : currentFamily?.subscription_status === 'expired' ? 'منتهي الصلاحية' : currentPlan ? 'نشط' : 'مجاني'}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">تاريخ التجديد</span>
                         <span className="font-medium">
                           {(() => {
-                            // إذا كان هناك اشتراك مجدول للتنزيل، استخدم تاريخه
-                            if (scheduledDowngrade) {
-                              const scheduledDate = new Date(scheduledDowngrade.scheduled_date);
-                              return scheduledDate.toLocaleDateString('en-GB');
-                            }
-                            
-                            // إذا كان هناك اشتراك حالي، جلب تاريخ الانتهاء من قاعدة البيانات
-                            if (currentPlan) {
-                              // استخدام أحدث فاتورة مدفوعة لتحديد تاريخ الانتهاء
-                              const currentInvoice = invoices.find(inv => 
-                                inv.package_id === currentPlan && inv.payment_status === 'paid'
-                              );
-                              if (currentInvoice) {
-                                // حساب تاريخ الانتهاء: تاريخ إنشاء الفاتورة + سنة واحدة
-                                const startDate = new Date(currentInvoice.created_at);
-                                const endDate = new Date(startDate);
-                                endDate.setFullYear(endDate.getFullYear() + 1);
-                                return endDate.toLocaleDateString('en-GB');
+                              // إذا كان هناك اشتراك مجدول للتنزيل، استخدم تاريخه
+                              if (scheduledDowngrade) {
+                                const scheduledDate = new Date(scheduledDowngrade.scheduled_date);
+                                return scheduledDate.toLocaleDateString('en-GB');
                               }
-                              return 'غير محدد';
-                            } else {
-                              return <span className="text-emerald-600 font-bold">مجاناً للأبد</span>;
-                            }
-                          })()}
+
+                              // إذا كان هناك اشتراك حالي، جلب تاريخ الانتهاء من قاعدة البيانات
+                              if (currentPlan) {
+                                // استخدام أحدث فاتورة مدفوعة لتحديد تاريخ الانتهاء
+                                const currentInvoice = invoices.find(inv => inv.package_id === currentPlan && inv.payment_status === 'paid');
+                                if (currentInvoice) {
+                                  // حساب تاريخ الانتهاء: تاريخ إنشاء الفاتورة + سنة واحدة
+                                  const startDate = new Date(currentInvoice.created_at);
+                                  const endDate = new Date(startDate);
+                                  endDate.setFullYear(endDate.getFullYear() + 1);
+                                  return endDate.toLocaleDateString('en-GB');
+                                }
+                                return 'غير محدد';
+                              } else {
+                                return <span className="text-emerald-600 font-bold">مجاناً للأبد</span>;
+                              }
+                            })()}
                         </span>
                       </div>
                     </div>
-                  </>
-                )}
+                  </>}
               </CardContent>
             </Card>
 
@@ -902,7 +815,9 @@ export default function Payments() {
                                   <SelectValue placeholder="MM" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-gray-800 z-50">
-                                  {Array.from({length: 12}, (_, i) => <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                  {Array.from({
+                                        length: 12
+                                      }, (_, i) => <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
                                       {String(i + 1).padStart(2, '0')}
                                     </SelectItem>)}
                                 </SelectContent>
@@ -915,7 +830,9 @@ export default function Payments() {
                                   <SelectValue placeholder="YYYY" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-gray-800 z-50">
-                                  {Array.from({length: 10}, (_, i) => <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
+                                  {Array.from({
+                                        length: 10
+                                      }, (_, i) => <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
                                       {new Date().getFullYear() + i}
                                     </SelectItem>)}
                                 </SelectContent>
@@ -1119,8 +1036,7 @@ export default function Payments() {
               </CardHeader>
               <CardContent className="relative overflow-hidden py-12">
                 {/* شريط التحذير للتغيير المجدول */}
-                {scheduledDowngrade && (
-                  <div className="relative z-50 mb-8 mx-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-lg">
+                {scheduledDowngrade && <div className="relative z-50 mb-8 mx-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-lg">
                     <div className="flex items-start gap-3">
                       <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
@@ -1128,10 +1044,7 @@ export default function Payments() {
                           {currentLanguage === 'ar' ? 'تغيير مجدول للباقة' : 'Scheduled Package Change'}
                         </h4>
                         <p className="text-amber-700 dark:text-amber-300 text-sm leading-relaxed mb-3">
-                          {currentLanguage === 'ar' 
-                            ? `قمت بجدولة تنزيل باقتك من "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" إلى "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". سيتم تطبيق هذا التغيير في تاريخ ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-GB')} وسيتم إرسال فاتورة إليك عند الاستحقاق.`
-                            : `You have scheduled a downgrade from "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" to "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". This change will be applied on ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-US')} and you will be billed accordingly.`
-                          }
+                          {currentLanguage === 'ar' ? `قمت بجدولة تنزيل باقتك من "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" إلى "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". سيتم تطبيق هذا التغيير في تاريخ ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-GB')} وسيتم إرسال فاتورة إليك عند الاستحقاق.` : `You have scheduled a downgrade from "${getLocalizedValue(scheduledDowngrade.current_package?.name)}" to "${getLocalizedValue(scheduledDowngrade.target_package?.name)}". This change will be applied on ${new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('en-US')} and you will be billed accordingly.`}
                         </p>
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
@@ -1140,38 +1053,24 @@ export default function Payments() {
                               {currentLanguage === 'ar' ? 'ستستمر في الاستفادة من باقتك الحالية حتى التاريخ المحدد' : 'You will continue to enjoy your current plan until the scheduled date'}
                             </span>
                           </div>
-                          <button
-                            onClick={cancelScheduledDowngrade}
-                            disabled={cancellingDowngrade}
-                            className="relative z-50 self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm"
-                          >
-                            {cancellingDowngrade 
-                              ? (currentLanguage === 'ar' ? "جاري الإلغاء..." : "Cancelling...")
-                              : (currentLanguage === 'ar' ? "إلغاء التغيير المجدول" : "Cancel Scheduled Change")
-                            }
+                          <button onClick={cancelScheduledDowngrade} disabled={cancellingDowngrade} className="relative z-50 self-start px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm">
+                            {cancellingDowngrade ? currentLanguage === 'ar' ? "جاري الإلغاء..." : "Cancelling..." : currentLanguage === 'ar' ? "إلغاء التغيير المجدول" : "Cancel Scheduled Change"}
                           </button>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  </div>}
                 
                 {/* Animated background elements */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-2xl animate-pulse"></div>
-                  <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-gradient-to-tr from-teal-400/30 to-cyan-400/30 rounded-full blur-2xl animate-pulse" style={{
+                        animationDelay: '1s'
+                      }}></div>
                 </div>
                 
-                <div className={`grid gap-8 mx-auto py-8 ${
-                  packages.length === 1 
-                    ? 'grid-cols-1 max-w-md'
-                    : packages.length === 2
-                    ? 'grid-cols-1 md:grid-cols-2 max-w-4xl'
-                    : 'grid-cols-1 md:grid-cols-3 max-w-5xl'
-                }`}>
-                  {loading ? (
-                    Array(3).fill(0).map((_, index) => (
-                      <Card key={index} className="h-96 animate-pulse backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border-emerald-200/30 dark:border-emerald-700/30">
+                <div className={`grid gap-8 mx-auto py-8 ${packages.length === 1 ? 'grid-cols-1 max-w-md' : packages.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' : 'grid-cols-1 md:grid-cols-3 max-w-5xl'}`}>
+                  {loading ? Array(3).fill(0).map((_, index) => <Card key={index} className="h-96 animate-pulse backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border-emerald-200/30 dark:border-emerald-700/30">
                         <CardContent className="p-6">
                           <div className="h-full flex flex-col justify-between">
                             <div className="space-y-4">
@@ -1186,63 +1085,46 @@ export default function Payments() {
                             <div className="h-10 bg-gray-300 rounded"></div>
                           </div>
                         </CardContent>
-                      </Card>
-                    ))
-                  ) : packages.map((plan, index) => {
-                    const isFeatured = plan.popular;
-                    const currentPlanActive = currentPlan === plan.id;
-                    
-                    // إذا كان هناك تغيير مجدول، فقط الباقة الحالية تظهر كنشطة حتى التاريخ المحدد
-                    const shouldShowAsActive = currentPlanActive && (!scheduledDowngrade || scheduledDowngrade.current_package_id === plan.id);
-                    
-                    return (
-                      <Card 
-                        key={plan.id} 
-                        className={`
+                      </Card>) : packages.map((plan, index) => {
+                        const isFeatured = plan.popular;
+                        const currentPlanActive = currentPlan === plan.id;
+
+                        // إذا كان هناك تغيير مجدول، فقط الباقة الحالية تظهر كنشطة حتى التاريخ المحدد
+                        const shouldShowAsActive = currentPlanActive && (!scheduledDowngrade || scheduledDowngrade.current_package_id === plan.id);
+                        return <Card key={plan.id} className={`
                           relative h-full transition-all duration-500 hover:scale-105 hover:shadow-xl
                           ${isFeatured ? 'ring-4 ring-gradient-to-r ring-orange-400 border-orange-300 dark:border-orange-600 scale-105 shadow-orange-200/50 dark:shadow-orange-800/50' : ''}
                           ${shouldShowAsActive ? 'ring-2 ring-amber-200 dark:ring-amber-700' : ''}
                           ${isFeatured ? 'bg-gradient-to-br from-orange-50/80 via-white/70 to-amber-50/80 dark:from-orange-950/20 dark:via-gray-800/70 dark:to-amber-950/20' : 'bg-white/70 dark:bg-gray-800/70'}
                           backdrop-blur-xl border shadow-xl
                           ${!isFeatured ? 'border-emerald-200/30 dark:border-emerald-700/30' : ''}
-                        `}
-                      >
+                        `}>
                         <div className="absolute -top-3 inset-x-0 z-10">
                           {/* إذا كانت الباقة نشطة ومميزة معاً، نعرض بادج واحد مدمج */}
-                          {isFeatured && shouldShowAsActive ? (
-                            <div className="flex justify-center">
+                          {isFeatured && shouldShowAsActive ? <div className="flex justify-center">
                               <Badge className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-white px-4 py-1.5 text-xs font-semibold shadow-lg animate-pulse">
                                 <Crown className="h-3 w-3 mr-1" />
                                 باقتك المميزة
                               </Badge>
-                            </div>
-                          ) : (
-                            <div className="flex justify-between items-start px-4">
+                            </div> : <div className="flex justify-between items-start px-4">
                               {/* Featured badge - الأكثر شعبية */}
-                              {isFeatured && (
-                                <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
+                              {isFeatured && <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 text-xs font-semibold shadow-lg animate-bounce">
                                   <Sparkles className="h-3 w-3 mr-1" />
                                   الأكثر شعبية
-                                </Badge>
-                              )}
+                                </Badge>}
 
                               {/* Current plan badge - نشطة */}
-                              {shouldShowAsActive && (
-                                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs shadow-lg">
+                              {shouldShowAsActive && <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs shadow-lg">
                                   <CheckCircle className="h-3 w-3 mr-1" />
                                   نشطة
-                                </Badge>
-                              )}
+                                </Badge>}
                               
                               {/* Scheduled downgrade badge للباقة المستهدفة */}
-                              {scheduledDowngrade && scheduledDowngrade.target_package_id === plan.id && (
-                                <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-1.5 text-xs shadow-lg">
+                              {scheduledDowngrade && scheduledDowngrade.target_package_id === plan.id && <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-1.5 text-xs shadow-lg">
                                   <Calendar className="h-3 w-3 mr-1" />
                                   مجدولة
-                                </Badge>
-                              )}
-                            </div>
-                          )}
+                                </Badge>}
+                            </div>}
                         </div>
                         
                         <CardHeader className="text-center pb-4 pt-8">
@@ -1260,105 +1142,76 @@ export default function Payments() {
                           
                           {/* Pricing */}
                           <div className="mb-4">
-                            {plan.price.includes('مجاني') ? (
-                              <div className="text-center">
+                            {plan.price.includes('مجاني') ? <div className="text-center">
                                 <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                                   مجاني
                                 </div>
                                 <p className="text-xs text-gray-600 dark:text-gray-400">
                                   للأبد
                                 </p>
-                              </div>
-                            ) : (
-                              <div className="text-center">
+                              </div> : <div className="text-center">
                                 <div className="flex items-baseline justify-center gap-1 mb-1">
                                   <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                                     {plan.price}
                                   </span>
-                                  {plan.price !== "مجاني للأبد" && (
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  {plan.price !== "مجاني للأبد" && <span className="text-sm text-gray-600 dark:text-gray-400">
                                       ريال/سنة
-                                    </span>
-                                  )}
+                                    </span>}
                                 </div>
-                                {plan.price !== "مجاني للأبد" && (
-                                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {plan.price !== "مجاني للأبد" && <p className="text-xs text-gray-600 dark:text-gray-400">
                                     {Math.round(parseFloat(plan.price) / 12)} ريال شهرياً
-                                  </p>
-                                )}
-                              </div>
-                            )}
+                                  </p>}
+                              </div>}
                           </div>
                         </CardHeader>
                         
                         <CardContent className="px-6 pb-6">
                           {/* Features list */}
                           <div className="space-y-2 mb-6">
-                            {getLocalizedFeatures(plan).map((feature, featureIndex) => (
-                              <div 
-                                key={featureIndex}
-                                className="flex items-center gap-2 text-sm"
-                              >
+                            {getLocalizedFeatures(plan).map((feature, featureIndex) => <div key={featureIndex} className="flex items-center gap-2 text-sm">
                                 <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
                                   <CheckCircle className="h-2.5 w-2.5 text-white" />
                                 </div>
                                 <span className="text-gray-700 dark:text-gray-300 text-sm">
                                   {feature}
                                 </span>
-                              </div>
-                            ))}
+                              </div>)}
                           </div>
                           
                           {/* CTA Button */}
-                            <Button 
-                              onClick={() => {
-                                console.log('🔍 Plan comparison:', {
-                                  planId: plan.id,
-                                  currentPlan: currentPlan,
-                                  isEqual: currentPlan === plan.id,
-                                  shouldShowAsActive,
-                                  scheduledDowngrade
-                                });
-                                
-                                // فقط إذا لم تكن الباقة نشطة حالياً أو إذا كانت هناك جدولة معلقة
-                                if (!shouldShowAsActive) {
-                                  checkDowngradeAndShowModal(plan.id);
-                                }
-                              }}
-                              disabled={shouldShowAsActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id}
-                              className={`
+                            <Button onClick={() => {
+                              console.log('🔍 Plan comparison:', {
+                                planId: plan.id,
+                                currentPlan: currentPlan,
+                                isEqual: currentPlan === plan.id,
+                                shouldShowAsActive,
+                                scheduledDowngrade
+                              });
+
+                              // فقط إذا لم تكن الباقة نشطة حالياً أو إذا كانت هناك جدولة معلقة
+                              if (!shouldShowAsActive) {
+                                checkDowngradeAndShowModal(plan.id);
+                              }
+                            }} disabled={shouldShowAsActive || processingInvoice && selectedPlan === plan.id || processingPayment === plan.id} className={`
                                 w-full h-10 text-sm font-medium rounded-lg transition-all duration-300
-                                ${shouldShowAsActive || (processingInvoice && selectedPlan === plan.id) || processingPayment === plan.id
-                                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
-                                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'
-                                }
-                            `}
-                          >
+                                ${shouldShowAsActive || processingInvoice && selectedPlan === plan.id || processingPayment === plan.id ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white hover:scale-105'}
+                            `}>
                             <span className="flex items-center gap-2">
-                              {currentPlanActive ? (
-                                'خطتك الحالية النشطة'
-                              ) : processingInvoice && selectedPlan === plan.id ? (
-                                <>
+                              {currentPlanActive ? 'خطتك الحالية النشطة' : processingInvoice && selectedPlan === plan.id ? <>
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                   جاري إنشاء الفاتورة...
-                                </>
-                              ) : processingPayment === plan.id ? (
-                                <>
+                                </> : processingPayment === plan.id ? <>
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                   جاري تحضير الدفع...
-                                </>
-                              ) : (
-                                <>
+                                </> : <>
                                   اشترك الآن
                                   <CreditCard className="h-4 w-4" />
-                                </>
-                              )}
+                                </>}
                             </span>
                           </Button>
                         </CardContent>
-                      </Card>
-                    );
-                  })}
+                      </Card>;
+                      })}
                 </div>
               </CardContent>
             </Card>
@@ -1369,57 +1222,44 @@ export default function Payments() {
                 <CardTitle className="text-emerald-800 dark:text-emerald-200">سجل الفواتير</CardTitle>
               </CardHeader>
               <CardContent>
-                {invoicesLoading ? (
-                  <div className="text-center py-8">
+                {invoicesLoading ? <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
                     <p className="text-muted-foreground mt-2">جاري تحميل الفواتير...</p>
-                  </div>
-                ) : invoices.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  </div> : invoices.length === 0 ? <div className="text-center py-8 text-muted-foreground">
                     <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p>لا توجد فواتير بعد</p>
                     <p className="text-sm">ستظهر فواتيرك هنا بعد الترقية لخطة مدفوعة</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {invoices.map((invoice: any) => (
-                      <div 
-                        key={invoice.id} 
-                        className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors ${
-                          invoice.payment_status === 'pending' 
-                            ? 'hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer border-yellow-200 dark:border-yellow-700' 
-                            : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
-                        }`}
-                        onClick={async () => {
-                          if (invoice.payment_status === 'pending') {
-                            // إذا كانت الفاتورة في انتظار الدفع، توجيه للدفع
-                            try {
-                              const { data, error } = await supabase.functions.invoke('create-payment', {
-                                body: { 
-                                  packageId: invoice.package_id,
-                                  amount: invoice.amount,
-                                  currency: invoice.currency,
-                                  invoiceId: invoice.id
-                                }
-                              });
-
-                              if (error) throw error;
-
-                              if (data.url) {
-                                // فتح صفحة الدفع في تبويب جديد
-                                window.open(data.url, '_blank');
+                  </div> : <div className="space-y-4">
+                    {invoices.map((invoice: any) => <div key={invoice.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors ${invoice.payment_status === 'pending' ? 'hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer border-yellow-200 dark:border-yellow-700' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}`} onClick={async () => {
+                        if (invoice.payment_status === 'pending') {
+                          // إذا كانت الفاتورة في انتظار الدفع، توجيه للدفع
+                          try {
+                            const {
+                              data,
+                              error
+                            } = await supabase.functions.invoke('create-payment', {
+                              body: {
+                                packageId: invoice.package_id,
+                                amount: invoice.amount,
+                                currency: invoice.currency,
+                                invoiceId: invoice.id
                               }
-                            } catch (error) {
-                              console.error('Error redirecting to payment:', error);
-                              toast({
-                                title: "خطأ في عملية الدفع",
-                                description: "حدث خطأ أثناء توجيهك لصفحة الدفع. يرجى المحاولة مرة أخرى.",
-                                variant: "destructive",
-                              });
+                            });
+                            if (error) throw error;
+                            if (data.url) {
+                              // فتح صفحة الدفع في تبويب جديد
+                              window.open(data.url, '_blank');
                             }
+                          } catch (error) {
+                            console.error('Error redirecting to payment:', error);
+                            toast({
+                              title: "خطأ في عملية الدفع",
+                              description: "حدث خطأ أثناء توجيهك لصفحة الدفع. يرجى المحاولة مرة أخرى.",
+                              variant: "destructive"
+                            });
                           }
-                        }}
-                      >
+                        }
+                      }}>
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -1427,11 +1267,9 @@ export default function Payments() {
                                 {invoice.invoice_number}
                               </span>
                               {getInvoiceStatusBadge(invoice.payment_status)}
-                              {invoice.payment_status === 'pending' && (
-                                <span className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                              {invoice.payment_status === 'pending' && <span className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
                                   اضغط للدفع
-                                </span>
-                              )}
+                                </span>}
                             </div>
                             <div className="text-sm text-muted-foreground space-y-1">
                               <p>الخطة: {getLocalizedPackageField(invoice.packages, 'name') || 'غير محدد'}</p>
@@ -1447,25 +1285,19 @@ export default function Payments() {
                             </p>
                             <p className="text-sm text-muted-foreground">{invoice.currency}</p>
                             <div className="flex gap-2 mt-2">
-                              {invoice.amount > 0 && (
-                                <Button variant="outline" size="sm">
+                              {invoice.amount > 0 && <Button variant="outline" size="sm">
                                   <Download className="h-4 w-4 mr-1" />
                                   تحميل
-                                </Button>
-                              )}
-                              {invoice.payment_status === 'pending' && (
-                                <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white">
+                                </Button>}
+                              {invoice.payment_status === 'pending' && <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white">
                                   <CreditCard className="h-4 w-4 mr-1" />
                                   ادفع الآن
-                                </Button>
-                              )}
+                                </Button>}
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      </div>)}
+                  </div>}
               </CardContent>
             </Card>
           </div>
@@ -1489,10 +1321,7 @@ export default function Payments() {
             </DialogHeader>
             
             <div className="space-y-4 py-6">
-              <div 
-                onClick={() => handlePaymentMethodChoice('credit-card')}
-                className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-all duration-300"
-              >
+              <div onClick={() => handlePaymentMethodChoice('credit-card')} className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-all duration-300">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                     <CreditCard className="h-6 w-6 text-white" />
@@ -1504,10 +1333,7 @@ export default function Payments() {
                 </div>
               </div>
 
-              <div 
-                onClick={() => handlePaymentMethodChoice('paypal')}
-                className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-950/30 transition-all duration-300"
-              >
+              <div onClick={() => handlePaymentMethodChoice('paypal')} className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-950/30 transition-all duration-300">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
                     <Wallet className="h-6 w-6 text-white" />
@@ -1521,11 +1347,7 @@ export default function Payments() {
             </div>
             
             <div className="flex gap-3 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowAddPaymentModal(false)}
-                className="flex-1 h-12"
-              >
+              <Button variant="outline" onClick={() => setShowAddPaymentModal(false)} className="flex-1 h-12">
                 إلغاء
               </Button>
             </div>
@@ -1553,38 +1375,22 @@ export default function Payments() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="card-number">رقم البطاقة</Label>
-                  <Input 
-                    id="card-number" 
-                    placeholder="1234 5678 9012 3456" 
-                    className="bg-white dark:bg-gray-800 text-right" 
-                  />
+                  <Input id="card-number" placeholder="1234 5678 9012 3456" className="bg-white dark:bg-gray-800 text-right" />
                 </div>
                 <div>
                   <Label htmlFor="card-name">اسم حامل البطاقة</Label>
-                  <Input 
-                    id="card-name" 
-                    placeholder="أحمد محمد" 
-                    className="bg-white dark:bg-gray-800 text-right" 
-                  />
+                  <Input id="card-name" placeholder="أحمد محمد" className="bg-white dark:bg-gray-800 text-right" />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="expiry">تاريخ الانتهاء</Label>
-                  <Input 
-                    id="expiry" 
-                    placeholder="MM/YY" 
-                    className="bg-white dark:bg-gray-800 text-center" 
-                  />
+                  <Input id="expiry" placeholder="MM/YY" className="bg-white dark:bg-gray-800 text-center" />
                 </div>
                 <div>
                   <Label htmlFor="cvv">CVV</Label>
-                  <Input 
-                    id="cvv" 
-                    placeholder="123" 
-                    className="bg-white dark:bg-gray-800 text-center" 
-                  />
+                  <Input id="cvv" placeholder="123" className="bg-white dark:bg-gray-800 text-center" />
                 </div>
               </div>
 
@@ -1597,19 +1403,10 @@ export default function Payments() {
             </div>
             
             <div className="flex gap-3 pt-4">
-              <Button 
-                type="button"
-                variant="outline" 
-                onClick={() => setShowCreditCardForm(false)}
-                className="flex-1 h-12"
-              >
+              <Button type="button" variant="outline" onClick={() => setShowCreditCardForm(false)} className="flex-1 h-12">
                 إلغاء
               </Button>
-              <Button 
-                type="button"
-                onClick={handleCreditCardSubmit}
-                className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-              >
+              <Button type="button" onClick={handleCreditCardSubmit} className="flex-1 h-12 font-bold shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
                 إضافة والدفع
               </Button>
             </div>
@@ -1631,14 +1428,11 @@ export default function Payments() {
               {currentLanguage === 'ar' ? 'تأكيد تغيير الباقة' : 'Confirm Plan Change'}
             </DialogTitle>
             <DialogDescription className="text-center">
-              {currentLanguage === 'ar' 
-                ? 'أنت على وشك تخفيض باقتك. يرجى مراجعة المقارنة أدناه.'
-                : 'You are about to downgrade your plan. Please review the comparison below.'}
+              {currentLanguage === 'ar' ? 'أنت على وشك تخفيض باقتك. يرجى مراجعة المقارنة أدناه.' : 'You are about to downgrade your plan. Please review the comparison below.'}
             </DialogDescription>
           </DialogHeader>
 
-          {selectedDowngradePlan && (
-            <div className="space-y-6">
+          {selectedDowngradePlan && <div className="space-y-6">
               {/* تحذير مهم */}
               <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
                 <div className="flex items-start gap-3">
@@ -1648,9 +1442,7 @@ export default function Payments() {
                       {currentLanguage === 'ar' ? 'تحذير مهم' : 'Important Warning'}
                     </h4>
                     <p className="text-amber-700 dark:text-amber-300 text-sm leading-relaxed">
-                      {currentLanguage === 'ar'
-                        ? 'في حال كانت الباقة الجديدة غير مستوفية لمتطلباتك الحالية (عدد العائلات، الأعضاء، إلخ)، سيتم الاحتفاظ بباقتك الحالية تلقائياً حتى تقوم بحل المشكلة.'
-                        : 'If the new plan does not meet your current requirements (number of families, members, etc.), your current plan will be automatically maintained until you resolve the issue.'}
+                      {currentLanguage === 'ar' ? 'في حال كانت الباقة الجديدة غير مستوفية لمتطلباتك الحالية (عدد العائلات، الأعضاء، إلخ)، سيتم الاحتفاظ بباقتك الحالية تلقائياً حتى تقوم بحل المشكلة.' : 'If the new plan does not meet your current requirements (number of families, members, etc.), your current plan will be automatically maintained until you resolve the issue.'}
                     </p>
                   </div>
                 </div>
@@ -1663,8 +1455,7 @@ export default function Payments() {
                   <h3 className="text-lg font-semibold text-center text-blue-600 dark:text-blue-400">
                     {currentLanguage === 'ar' ? 'باقتك الحالية' : 'Your Current Plan'}
                   </h3>
-                  {packages.find(p => p.id === currentPlan) && (
-                    <Card className="border-2 border-blue-200 dark:border-blue-800">
+                  {packages.find(p => p.id === currentPlan) && <Card className="border-2 border-blue-200 dark:border-blue-800">
                       <CardHeader>
                         <CardTitle className="text-center">
                           {getLocalizedValue(packages.find(p => p.id === currentPlan)?.name)}
@@ -1680,13 +1471,10 @@ export default function Payments() {
                       </CardHeader>
                       <CardContent>
                         <ul className="space-y-2">
-                          {getLocalizedFeatures(packages.find(p => p.id === currentPlan), currentLanguage).map((feature, index) => (
-                            <li key={index} className="flex items-center gap-2">
+                          {getLocalizedFeatures(packages.find(p => p.id === currentPlan), currentLanguage).map((feature, index) => <li key={index} className="flex items-center gap-2">
                               <CheckCircle className="h-4 w-4 text-green-500" />
                               <span className="text-sm">{feature}</span>
-                            </li>
-                          )) || (
-                            <>
+                            </li>) || <>
                               <li className="flex items-center gap-2">
                                 <CheckCircle className="h-4 w-4 text-green-500" />
                                 <span className="text-sm">
@@ -1708,12 +1496,10 @@ export default function Payments() {
                                   {packages.find(p => p.id === currentPlan)?.storage_limit || '∞'} GB
                                 </span>
                               </li>
-                            </>
-                          )}
+                            </>}
                         </ul>
                       </CardContent>
-                    </Card>
-                  )}
+                    </Card>}
                 </div>
 
                 {/* الباقة الجديدة */}
@@ -1737,13 +1523,10 @@ export default function Payments() {
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2">
-                        {getLocalizedFeatures(selectedDowngradePlan, currentLanguage).map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {getLocalizedFeatures(selectedDowngradePlan, currentLanguage).map((feature, index) => <li key={index} className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-green-500" />
                             <span className="text-sm">{feature}</span>
-                          </li>
-                        )) || (
-                          <>
+                          </li>) || <>
                             <li className="flex items-center gap-2">
                               <CheckCircle className="h-4 w-4 text-green-500" />
                               <span className="text-sm">
@@ -1765,8 +1548,7 @@ export default function Payments() {
                                 {selectedDowngradePlan?.storage_limit || '∞'} GB
                               </span>
                             </li>
-                          </>
-                        )}
+                          </>}
                       </ul>
                     </CardContent>
                   </Card>
@@ -1775,46 +1557,28 @@ export default function Payments() {
 
               {/* أزرار التحكم */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowDowngradeModal(false)}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={() => setShowDowngradeModal(false)} className="flex-1">
                   {currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
                 </Button>
-                <Button
-                  onClick={() => {
-                    setShowDowngradeModal(false);
-                    if (selectedDowngradePlan) {
-                      handlePlanSelect(selectedDowngradePlan.id);
-                    }
-                  }}
-                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
-                  disabled={transitionLoading}
-                >
-                  {transitionLoading ? (
-                    <>
+                <Button onClick={() => {
+              setShowDowngradeModal(false);
+              if (selectedDowngradePlan) {
+                handlePlanSelect(selectedDowngradePlan.id);
+              }
+            }} className="flex-1 bg-orange-600 hover:bg-orange-700 text-white" disabled={transitionLoading}>
+                  {transitionLoading ? <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       {currentLanguage === 'ar' ? 'جاري المعالجة...' : 'Processing...'}
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       {currentLanguage === 'ar' ? 'تأكيد التغيير' : 'Confirm Change'}
-                      {currentLanguage === 'ar' ? (
-                        <ChevronLeft className="h-4 w-4 mr-2" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 ml-2" />
-                      )}
-                    </>
-                  )}
+                      {currentLanguage === 'ar' ? <ChevronLeft className="h-4 w-4 mr-2" /> : <ChevronRight className="h-4 w-4 ml-2" />}
+                    </>}
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
       
       <Toaster />
-    </div>
-  );
+    </div>;
 }
