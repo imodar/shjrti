@@ -521,17 +521,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           
           {/* Profile Info Card */}
           <div className="relative">
-            {/* Back Button - Better Design */}
-            <div className="flex items-start justify-between mb-4">
-              <Button
-                onClick={onBack}
-                variant="ghost"
-                className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-4 py-2 transition-all duration-300 group"
-              >
-                <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
-                <span className="text-sm font-medium">العودة</span>
-              </Button>
-            </div>
             
             <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               {/* Black ribbon for deceased members */}
@@ -1151,6 +1140,18 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               </p>
             </div>
           </div>
+        </div>
+        
+        {/* Back Button */}
+        <div className="flex justify-center mt-8 pt-6 border-t border-border">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-6 py-3 transition-all duration-300 group"
+          >
+            <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
+            <span className="font-medium">العودة</span>
+          </Button>
         </div>
       </div>
     </div>
