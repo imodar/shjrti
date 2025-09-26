@@ -519,7 +519,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           
           {/* Cover Ribbon */}
           <div className="relative h-12 sm:h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-lg sm:rounded-xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
           </div>
 
           {/* Profile Info Card */}
