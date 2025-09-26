@@ -628,30 +628,30 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           <div className="text-sm text-muted-foreground">الأحفاد</div>
                         </div>
                       )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3 mt-6 lg:mt-0">
-                  <Button 
-                    onClick={() => {
-                      if (isSpouse && onSpouseEditWarning) {
-                        onSpouseEditWarning();
-                      } else {
-                        onEdit();
-                      }
-                    }}
-                    className="facebook-button-primary px-4 py-2"
-                  >
-                    <Edit className="h-4 w-4 ml-2" />
-                    تعديل المعلومات
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                     </div>
+                     
+                     {/* Action Button */}
+                     <div className="flex justify-center sm:justify-start mt-4">
+                       <Button 
+                         onClick={() => {
+                           if (isSpouse && onSpouseEditWarning) {
+                             onSpouseEditWarning();
+                           } else {
+                             onEdit();
+                           }
+                         }}
+                         className="facebook-button-primary px-4 py-2"
+                       >
+                         <Edit className="h-4 w-4 ml-2" />
+                         تعديل المعلومات
+                       </Button>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
 
         {/* Navigation Tabs */}
         <div className="bg-card rounded-lg border border-border mb-6">
