@@ -2944,13 +2944,6 @@ const FamilyBuilderNew = () => {
                   {formMode === 'view' ? <div className="py-8 px-6">
                        {/* Family Overview Header - Redesigned */}
                         <div className="relative overflow-hidden bg-gradient-to-br from-background via-card/50 to-accent/5 rounded-3xl p-8 sm:p-12 mb-8 border border-border/50 shadow-2xl backdrop-blur-sm animate-fade-in">
-                          {/* Dynamic Background Pattern */}
-                          <div className="absolute inset-0 opacity-5">
-                            <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary rounded-full"></div>
-                            <div className="absolute top-20 right-20 w-24 h-24 border border-secondary rounded-full"></div>
-                            <div className="absolute bottom-10 left-20 w-20 h-20 border-2 border-accent rounded-full"></div>
-                            <div className="absolute bottom-20 right-10 w-16 h-16 border border-primary/50 rounded-full"></div>
-                          </div>
                           
                           {/* Animated Background Orbs */}
                           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
