@@ -460,7 +460,7 @@ const FamilyTreeView = () => {
           </div>}
         
         {/* Hero Section */}
-        <section className="py-8 relative">
+        <section className="pt-4 pb-8 relative">
           <div className="container mx-auto px-6 relative z-10">
             {/* Header Card */}
             <div className="relative max-w-5xl mx-auto mb-8">
