@@ -77,11 +77,23 @@ export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) =>
 
     // Show loading while checking maintenance mode or admin status
     if (maintenanceLoading || authLoading || adminLoading) {
+      console.log('🔄 MaintenanceModeGuard loading states:', {
+        maintenanceLoading,
+        authLoading,
+        adminLoading,
+        userId: user?.id
+      });
+      
       return (
         <div className="min-h-screen flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
             <Loader className="h-8 w-8 animate-spin text-primary" />
             <p className="text-muted-foreground">جاري التحميل...</p>
+            <div className="text-xs text-muted-foreground mt-2">
+              {maintenanceLoading && "فحص وضع الصيانة..."}
+              {authLoading && "فحص المصادقة..."}
+              {adminLoading && "فحص صلاحيات المدير..."}
+            </div>
           </div>
         </div>
       );
