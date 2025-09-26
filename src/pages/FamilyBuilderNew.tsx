@@ -3305,48 +3305,48 @@ const FamilyBuilderNew = () => {
                                            </Button>
                                         </div> : <>{wives.map((wife, index) => <div key={index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-pink-400/60 dark:border-pink-500/60 min-h-[160px]">
                                               <div className="h-full flex flex-col justify-between">
-                                                {/* Header Section */}
-                                                <div className="flex items-start justify-between">
-                                                  <div className="flex items-start gap-4 flex-1">
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
-                                                      {wife.croppedImage ? (
-                                                        <img 
-                                                          src={wife.croppedImage} 
-                                                          alt={wife.name || `الزوجة ${index + 1}`}
-                                                          className="w-full h-full object-cover rounded-2xl"
-                                                        />
-                                                      ) : (
-                                                        <Heart className="w-5 h-5" />
-                                                      )}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                      <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
-                                                        {wife.name || `الزوجة ${index + 1}`}
-                                                      </h5>
-                                                      
-                                                      <div className="space-y-2">
-                                                        <div className="flex items-center gap-2 flex-wrap">
-                                                          {wife.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                              <Check className="h-3 w-3" />
-                                                              محفوظة
-                                                            </span>}
-                                                          <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                            <Heart className="h-3 w-3" />
-                                                            {wife.maritalStatus === 'divorced' ? 'مطلقة' : 'متزوجة'}
-                                                          </span>
-                                                          <span className="text-xs text-muted-foreground font-arabic">
-                                                            {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                          </span>
-                                                        </div>
-                                                        {wife.isSaved && <p className="text-xs text-pink-600 dark:text-pink-400 font-arabic">
-                                                            انقر للتعديل
-                                                          </p>}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  
-                                                  {/* Action Buttons */}
-                                                  <div className="flex gap-2 flex-shrink-0">
+                                                 {/* Header Section */}
+                                                 <div className="flex items-start justify-between">
+                                                   <div className="flex items-start gap-4 flex-1">
+                                                     <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
+                                                       {wife.croppedImage ? (
+                                                         <img 
+                                                           src={wife.croppedImage} 
+                                                           alt={wife.name || `الزوجة ${index + 1}`}
+                                                           className="w-full h-full object-cover rounded-2xl"
+                                                         />
+                                                       ) : (
+                                                         <Heart className="w-5 h-5" />
+                                                       )}
+                                                     </div>
+                                                     <div className="flex-1">
+                                                       <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
+                                                         {wife.name || `الزوجة ${index + 1}`}
+                                                       </h5>
+                                                       
+                                                       <div className="space-y-2">
+                                                         <div className="flex items-center gap-2 flex-wrap">
+                                                           {wife.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                               <Check className="h-3 w-3" />
+                                                               محفوظة
+                                                             </span>}
+                                                           <span className="inline-flex items-center gap-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                             <Heart className="h-3 w-3" />
+                                                             {wife.maritalStatus === 'divorced' ? 'مطلقة' : 'متزوجة'}
+                                                           </span>
+                                                           <span className="text-xs text-muted-foreground font-arabic">
+                                                             {wife.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                           </span>
+                                                         </div>
+                                                         {wife.isSaved && <p className="text-xs text-pink-600 dark:text-pink-400 font-arabic">
+                                                             انقر للتعديل
+                                                           </p>}
+                                                       </div>
+                                                     </div>
+                                                   </div>
+                                                   
+                                                   {/* Action Buttons */}
+                                                   <div className="flex gap-2 flex-shrink-0">
                                                     {wife.isSaved && <Button variant="outline" size="sm" onClick={() => {
                                                       handleSpouseEditAttempt('wife', wife, index);
                                                     }} className="gap-1 border-pink-200/50 dark:border-pink-700/50 text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/50 transition-all duration-300 h-8 px-2">
