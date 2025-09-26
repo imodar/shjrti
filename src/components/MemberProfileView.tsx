@@ -517,12 +517,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             <X className="w-4 h-4 text-gray-600" />
           </button>
           
-          {/* Cover Ribbon */}
-          <div className="relative h-12 sm:h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-lg sm:rounded-xl overflow-hidden">
-          </div>
-
+          
           {/* Profile Info Card */}
-          <div className="relative -mt-6 sm:-mt-8 mx-2 sm:mx-4">
+          <div className="relative mx-2 sm:mx-4">
             <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
