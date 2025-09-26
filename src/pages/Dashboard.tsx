@@ -268,15 +268,8 @@ const Dashboard = () => {
           </div>
 
           <main className="relative z-10 pt-20">
-            {/* Hero Section */}
-            {loading ? (
-              <section className="py-4 relative">
-                <div className="container mx-auto px-4 relative z-10">
-                  <DashboardHeroSkeleton />
-                </div>
-              </section>
-            ) : (
-              <section className={`${familyTrees.length > 0 ? 'py-2' : 'py-4'} relative`}>
+            {/* Hero Section - Always show, no loading skeleton */}
+            <section className={`${familyTrees.length > 0 ? 'py-2' : 'py-4'} relative`}>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="mb-2 relative">
                       {/* Main Content Container - Horizontal Rectangle */}
@@ -404,7 +397,6 @@ const Dashboard = () => {
                   </div>
                 </div>
               </section>
-            )}
 
             {loading ? (
               <section className="py-4 relative mt-2">

@@ -21,19 +21,7 @@ export function SubscriptionGuard({
   const { subscription, loading, isExpired, daysUntilExpiry, showExpiryWarning } = useSubscription();
   const navigate = useNavigate();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-6">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-teal-500 rounded-full animate-spin animate-reverse"></div>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 animate-pulse text-lg font-medium">جاري التحقق من الاشتراك...</p>
-        </div>
-      </div>
-    );
-  }
+  // Silent loading - render children directly without spinner
 
   // If subscription is required and user is expired, show renewal prompt
   if (requireActiveSubscription && isExpired) {
