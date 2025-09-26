@@ -604,7 +604,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     
                     {/* Quick Stats */}
                     <div className="flex gap-6 pt-2 justify-center sm:justify-start">
-                      {getAge() && (
+                      {Boolean(getAge()) && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-accent">{getAge()}</div>
                           <div className="text-sm text-muted-foreground">سنة</div>
