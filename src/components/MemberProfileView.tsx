@@ -869,11 +869,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
                 )}
 
-                {/* Spouses and Children Section - Only show if there are spouses */}
+                {/* Spouses and Children Section */}
                 {(() => {
                   const spouses = getSpouses();
+                  
                   if (spouses.length === 0) {
-                    return null;
+                    return (
+                      <div className="bg-card rounded-xl border border-border p-6">
+                        <h3 className="font-bold text-lg mb-4 text-primary">الحالة الاجتماعية</h3>
+                        <div className="text-center p-8">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                            <Heart className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                          <p className="text-muted-foreground text-lg">غير متزوج</p>
+                          <p className="text-sm text-muted-foreground mt-2">لا توجد علاقات زواج مسجلة</p>
+                        </div>
+                      </div>
+                    );
                   }
                   
                   return (
