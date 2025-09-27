@@ -2731,7 +2731,8 @@ const FamilyBuilderNew = () => {
       // Show success toast with detailed information
       const actionText = isEditMode ? "تحديث" : "إضافة";
       const actionedText = isEditMode ? "تم تحديث" : "تم إضافة";
-      let toastDescription = `${actionedText} العضو "${submissionData.name}" بنجاح`;
+      const memberName = submissionData.name || submissionData.first_name || "العضو";
+      let toastDescription = `${actionedText} العضو "${memberName}" بنجاح`;
 
       // Add marriage information to toast
       if (marriageResults.successful > 0) {
