@@ -139,7 +139,7 @@ export function EnhancedDatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] bg-white dark:bg-gray-800" 
+        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] bg-white dark:bg-gray-800 !fixed !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2" 
         align="center" 
         sideOffset={0}
         avoidCollisions={false}
@@ -149,7 +149,8 @@ export function EnhancedDatePicker({
           left: '50%', 
           top: '50%', 
           transform: 'translate(-50%, -50%)',
-          zIndex: 10020
+          zIndex: 10020,
+          margin: 0
         }}
       >
         {/* Enhanced Header */}
