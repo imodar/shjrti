@@ -28,7 +28,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   familyUnits,
   zoomLevel
 }) => {
-  const UNIT_WIDTH = 320;
+  const UNIT_WIDTH = 380;
   const UNIT_HEIGHT = 180;
   const VERTICAL_SPACING = 120;
   const HORIZONTAL_SPACING = 60;
@@ -234,7 +234,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       </AvatarFallback>
                     )}
                   </Avatar>
-                  <h4 className="font-semibold text-sm text-foreground truncate">{wife.name}</h4>
+                  <h4 className="font-semibold text-sm text-foreground text-center break-words">{wife.name}</h4>
                   <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
                     الزوجة
                   </Badge>
@@ -260,7 +260,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       </AvatarFallback>
                     )}
                   </Avatar>
-                  <h4 className="font-semibold text-sm text-foreground truncate">{husband.name}</h4>
+                  <h4 className="font-semibold text-sm text-foreground text-center break-words">{husband.name}</h4>
                   <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
                     الزوج
                   </Badge>
