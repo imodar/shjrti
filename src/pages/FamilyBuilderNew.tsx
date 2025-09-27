@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +55,7 @@ import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettin
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     hasAIFeatures
   } = useSubscription();
@@ -528,6 +529,10 @@ const FamilyBuilderNew = () => {
   useEffect(() => {
     if (autoAdd && !loading && familyData && formMode === 'view') {
       handleAddMember();
+      // Remove autoAdd from URL to prevent reopening after cancel/save
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('autoAdd');
+      navigate({ pathname: location.pathname, search: newParams.toString() }, { replace: true });
     }
   }, [autoAdd, loading, familyData, formMode]);
 
