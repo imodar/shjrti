@@ -596,10 +596,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       </h1>
                       
                       {/* Lineage Display or Founder Badge */}
-                      {member.is_founder ? (
-                        <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-                          <Crown className="h-6 w-6 text-yellow-600" />
-                          <span className="text-lg text-yellow-700 font-medium font-arabic">الجد الأكبر</span>
+                      {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') ? (
+                        <div className="flex items-center justify-center sm:justify-start gap-1 mb-2">
+                          <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+                            <Crown className="h-4 w-4 text-yellow-600" />
+                            <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
+                          </div>
                         </div>
                       ) : (
                         (() => {
