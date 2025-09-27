@@ -4019,7 +4019,7 @@ const MemberList = ({
         </TooltipProvider>}
 
       {/* Member List */}
-      <div className="space-y-3 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
+      <div className="space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
         {memberListLoading ?
       // Loading skeletons
       Array.from({
