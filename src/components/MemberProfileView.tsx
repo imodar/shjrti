@@ -595,15 +595,22 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         {member.name}
                       </h1>
                       
-                      {/* Lineage Display */}
-                      {(() => {
-                        const lineages = getLineageDisplay();
-                        return lineages.length > 0 ? lineages.map((lineage, index) => (
-                          <p key={index} className="text-lg text-muted-foreground mb-1">
-                            {lineage}
-                          </p>
-                        )) : null;
-                      })()}
+                      {/* Lineage Display or Founder Badge */}
+                      {member.is_founder ? (
+                        <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                          <Crown className="h-6 w-6 text-yellow-600" />
+                          <span className="text-lg text-yellow-700 font-medium font-arabic">الجد الأكبر</span>
+                        </div>
+                      ) : (
+                        (() => {
+                          const lineages = getLineageDisplay();
+                          return lineages.length > 0 ? lineages.map((lineage, index) => (
+                            <p key={index} className="text-lg text-muted-foreground mb-1">
+                              {lineage}
+                            </p>
+                          )) : null;
+                        })()
+                      )}
                       {member.bio && (
                         <p className="text-lg italic text-muted-foreground max-w-md">
                           "{member.bio}"
