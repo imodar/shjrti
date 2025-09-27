@@ -304,7 +304,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           const grandfather = familyMembers?.find(f => f.id === grandfatherId);
           if (grandfather) {
             const grandfatherFirstName = grandfather.first_name || grandfather.name.split(' ')[0];
-            lineages.push(`${genderTerm} ${fatherFirstName} ابن ${grandfatherFirstName}`);
+            // Use gender-aware term for father's relation to grandfather
+            const fatherChildTerm = father.gender === 'female' ? 'بنت' : 'ابن';
+            lineages.push(`${genderTerm} ${fatherFirstName} ${fatherChildTerm} ${grandfatherFirstName}`);
           } else {
             lineages.push(`${genderTerm} ${fatherFirstName}`);
           }
@@ -333,7 +335,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           const grandParent = familyMembers?.find(f => f.id === grandParentId);
           if (grandParent) {
             const grandParentFirstName = grandParent.first_name || grandParent.name.split(' ')[0];
-            lineages.push(`${genderTerm} ${parentFirstName} ابن ${grandParentFirstName}`);
+            // Use gender-aware term for parent's relation to grandparent
+            const parentChildTerm = parentRelation.gender === 'female' ? 'بنت' : 'ابن';
+            lineages.push(`${genderTerm} ${parentFirstName} ${parentChildTerm} ${grandParentFirstName}`);
           } else {
             lineages.push(`${genderTerm} ${parentFirstName}`);
           }
