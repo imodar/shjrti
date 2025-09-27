@@ -300,7 +300,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           lineages.push(`${genderTerm} ${fatherFirstName}`);
         } else {
           // Later generations: include grandfather
-          const grandfather = familyMembers?.find(f => f.id === father.father_id);
+          const grandfatherId = father.father_id || father.fatherId;
+          const grandfather = familyMembers?.find(f => f.id === grandfatherId);
           if (grandfather) {
             const grandfatherFirstName = grandfather.first_name || grandfather.name.split(' ')[0];
             lineages.push(`${genderTerm} ${fatherFirstName} ابن ${grandfatherFirstName}`);
@@ -328,7 +329,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           lineages.push(`${genderTerm} ${parentFirstName}`);
         } else {
           // Get grandparent
-          const grandParent = familyMembers?.find(f => f.id === parentRelation.father_id);
+          const grandParentId = parentRelation.father_id || parentRelation.fatherId;
+          const grandParent = familyMembers?.find(f => f.id === grandParentId);
           if (grandParent) {
             const grandParentFirstName = grandParent.first_name || grandParent.name.split(' ')[0];
             lineages.push(`${genderTerm} ${parentFirstName} ابن ${grandParentFirstName}`);
