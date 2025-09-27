@@ -914,7 +914,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     <span className="mr-2">👶</span>
                                     الأبناء ({childrenWithSpouse.length})
                                   </h5>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                      {childrenWithSpouse.map((child) => (
                                        <div 
                                          key={child.id} 
