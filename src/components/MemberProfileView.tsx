@@ -379,6 +379,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             const spouseFather = familyMembers?.find(f => f.id === spouseFatherId);
             if (spouseFather) {
               const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
+
+              // Use gender-aware term for child-of: female => "ابنة", male => "ابن"
+              const childOfTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
               
               // Check if grandfather exists for the spouse's father
               const spouseGrandfatherId = spouseFather.father_id || spouseFather.fatherId;
@@ -386,12 +389,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 const spouseGrandfather = familyMembers?.find(f => f.id === spouseGrandfatherId);
                 if (spouseGrandfather) {
                   const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
-                  spouseLineage = ` ابن ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
+                  spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
                 } else {
-                  spouseLineage = ` ابن ${spouseFatherFirstName}`;
+                  spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName}`;
                 }
               } else {
-                spouseLineage = ` ابن ${spouseFatherFirstName}`;
+                spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName}`;
               }
             }
           }
