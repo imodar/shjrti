@@ -275,8 +275,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden">
-            <CardContent className="p-6">
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden" 
+                style={{ height: `${UNIT_HEIGHT}px` }}>
+            <CardContent className="p-4 h-full flex flex-col justify-between">
               {isFounder && (
                 <div className="flex justify-center mb-3">
                   <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
@@ -335,32 +336,37 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   )}
                 </div>
               ) : (
-                // Multiple wives layout
-                <div className="space-y-4">
-                  {/* Husband at top */}
+                // Multiple wives layout - compact design within fixed box height
+                <div className="space-y-2">
+                  {/* Husband at top - smaller to fit more content */}
                   {husband && (
                     <div className="text-center">
-                      <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
+                      <Avatar className="h-12 w-12 mx-auto mb-1 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
                         {husband.image_url ? (
                           <AvatarImage src={husband.image_url} alt={husband.name} />
                         ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold">
+                          <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold text-sm">
                             {husband.name.slice(0, 2)}
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <h4 className="font-semibold text-base text-foreground text-center break-words">{husband.name}</h4>
-                      <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
+                      <h4 className="font-semibold text-sm text-foreground text-center break-words leading-tight">{husband.name}</h4>
+                      <Badge variant="outline" className="text-xs border-blue-200 text-blue-700 dark:text-blue-300">
                         الزوج
                       </Badge>
                     </div>
                   )}
                   
-                  {/* Wives in a grid */}
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Marriage hearts - compact */}
+                  <div className="flex justify-center">
+                    <Heart className="h-4 w-4 text-pink-500 animate-pulse" />
+                  </div>
+                  
+                  {/* Wives in a compact grid */}
+                  <div className="grid grid-cols-2 gap-2">
                     {wives.map((wife, index) => (
                       <div key={wife.id} className="text-center">
-                        <Avatar className="h-12 w-12 mx-auto mb-1 border-2 border-pink-300 ring-2 ring-pink-100 dark:ring-pink-900">
+                        <Avatar className="h-10 w-10 mx-auto mb-1 border-2 border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
                           {wife.image_url ? (
                             <AvatarImage src={wife.image_url} alt={wife.name} />
                           ) : (
@@ -369,23 +375,18 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <h5 className="font-medium text-xs text-foreground text-center break-words">{wife.name}</h5>
-                        <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                          الزوجة {index + 1}
+                        <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight">{wife.name}</h5>
+                        <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300">
+                          ز{index + 1}
                         </Badge>
                       </div>
                     ))}
                   </div>
-                  
-                  {/* Marriage hearts */}
-                  <div className="flex justify-center">
-                    <Heart className="h-5 w-5 text-pink-500 animate-pulse" />
-                  </div>
                 </div>
               )}
 
-              <div className="text-center mt-4">
-                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
+              <div className="text-center">
+                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm text-xs">
                   <Users className="h-3 w-3 mr-1" />
                   عائلة {husband?.name || unit.members[0]?.name}
                 </Badge>
@@ -408,8 +409,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden">
-            <CardContent className="p-6">
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
+                style={{ height: `${UNIT_HEIGHT}px` }}>
+            <CardContent className="p-4 h-full flex flex-col justify-between">
               {isFounder && (
                 <div className="flex justify-center mb-3">
                   <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
