@@ -275,140 +275,143 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden" 
-                style={{ height: `${UNIT_HEIGHT}px` }}>
-            <CardContent className="p-4 h-full flex flex-col justify-between">
-              {isFounder && (
-                <div className="flex justify-center mb-3">
-                  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
-                    <Crown className="h-3 w-3 mr-1" />
-                    المؤسس
-                  </Badge>
-                </div>
-              )}
-              
-              {wives.length === 1 ? (
-                // Single wife layout (original layout)
-                <div className="flex items-center justify-between gap-4">
-                  {/* Wife */}
-                  <div className="flex-1 text-center">
-                    <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-pink-300 ring-2 ring-pink-100 dark:ring-pink-900">
-                      {wives[0].image_url ? (
-                        <AvatarImage src={wives[0].image_url} alt={wives[0].name} />
-                      ) : (
-                        <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold">
-                          {wives[0].name.slice(0, 2)}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                    <h4 className="font-semibold text-sm text-foreground text-center break-words">{wives[0].name}</h4>
-                    <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                      الزوجة
+          <div className="relative">
+            {/* Family badge on top border */}
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+              <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm text-xs">
+                <Users className="h-3 w-3 mr-1" />
+                عائلة {husband?.name || unit.members[0]?.name}
+              </Badge>
+            </div>
+            
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden" 
+                  style={{ height: `${UNIT_HEIGHT}px` }}>
+              <CardContent className="p-4 h-full flex flex-col justify-between">
+                {isFounder && (
+                  <div className="flex justify-center mb-3">
+                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
+                      <Crown className="h-3 w-3 mr-1" />
+                      المؤسس
                     </Badge>
                   </div>
+                )}
+                
+                {wives.length === 1 ? (
+                  // Single wife layout (original layout)
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Wife */}
+                    <div className="flex-1 text-center">
+                      <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-pink-300 ring-2 ring-pink-100 dark:ring-pink-900">
+                        {wives[0].image_url ? (
+                          <AvatarImage src={wives[0].image_url} alt={wives[0].name} />
+                        ) : (
+                          <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold">
+                            {wives[0].name.slice(0, 2)}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <h4 className="font-semibold text-sm text-foreground text-center break-words">{wives[0].name}</h4>
+                      <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
+                        الزوجة
+                      </Badge>
+                    </div>
 
-                  {/* Marriage Status */}
-                  <div className="flex flex-col items-center justify-center">
-                    {(husband?.marital_status === 'divorced' || wives[0].marital_status === 'divorced') ? (
-                      <HeartCrack className="h-6 w-6 text-muted-foreground/60" />
-                    ) : (
-                      <Heart className="h-6 w-6 text-pink-500 animate-pulse" />
+                    {/* Marriage Status */}
+                    <div className="flex flex-col items-center justify-center">
+                      {(husband?.marital_status === 'divorced' || wives[0].marital_status === 'divorced') ? (
+                        <HeartCrack className="h-6 w-6 text-muted-foreground/60" />
+                      ) : (
+                        <Heart className="h-6 w-6 text-pink-500 animate-pulse" />
+                      )}
+                    </div>
+
+                    {/* Husband */}
+                    {husband && (
+                      <div className="flex-1 text-center">
+                        <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
+                          {husband.image_url ? (
+                            <AvatarImage src={husband.image_url} alt={husband.name} />
+                          ) : (
+                            <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold">
+                              {husband.name.slice(0, 2)}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <h4 className="font-semibold text-sm text-foreground text-center break-words">{husband.name}</h4>
+                        <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
+                          الزوج
+                        </Badge>
+                      </div>
                     )}
                   </div>
-
-                  {/* Husband */}
-                  {husband && (
-                    <div className="flex-1 text-center">
-                      <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
-                        {husband.image_url ? (
-                          <AvatarImage src={husband.image_url} alt={husband.name} />
-                        ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold">
-                            {husband.name.slice(0, 2)}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <h4 className="font-semibold text-sm text-foreground text-center break-words">{husband.name}</h4>
-                      <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
-                        الزوج
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                // Multiple wives layout - optimized to show more details
-                <div className="h-full flex flex-col">
-                  {/* Husband section - compact */}
-                  {husband && (
-                    <div className="text-center mb-2">
-                      <Avatar className="h-10 w-10 mx-auto mb-1 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
-                        {husband.image_url ? (
-                          <AvatarImage src={husband.image_url} alt={husband.name} />
-                        ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold text-xs">
-                            {husband.name.slice(0, 2)}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-1">{husband.name}</h4>
-                      <Badge variant="outline" className="text-xs border-blue-200 text-blue-700 dark:text-blue-300 px-1 py-0">
-                        الزوج
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  {/* Separator with heart */}
-                  <div className="flex items-center justify-center mb-2">
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-                    <Heart className="h-3 w-3 text-pink-500 mx-2 animate-pulse" />
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-                  </div>
-                  
-                  {/* Wives section - flexible grid */}
-                  <div className="flex-1 flex flex-col">
-                    <div className="grid gap-1" style={{ 
-                      gridTemplateColumns: wives.length <= 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
-                      gridTemplateRows: wives.length <= 2 ? '1fr' : 'repeat(2, 1fr)'
-                    }}>
-                      {wives.map((wife, index) => (
-                        <div key={wife.id} className="text-center p-1">
-                          <Avatar className="h-8 w-8 mx-auto mb-1 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
-                            {wife.image_url ? (
-                              <AvatarImage src={wife.image_url} alt={wife.name} />
-                            ) : (
-                              <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold text-xs">
-                                {wife.name.slice(0, 2)}
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                          <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-1" 
-                              style={{ fontSize: '10px', lineHeight: '1.1' }}>
-                            {wife.name.length > 8 ? wife.name.slice(0, 8) + '...' : wife.name}
-                          </h5>
-                          <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-1 py-0" 
-                                 style={{ fontSize: '9px' }}>
-                            ز{index + 1}
-                          </Badge>
-                          {wife.birth_date && (
-                            <div className="text-xs text-muted-foreground mt-1" style={{ fontSize: '8px' }}>
-                              {new Date(wife.birth_date).getFullYear()}
-                            </div>
+                ) : (
+                  // Multiple wives layout - optimized to show more details
+                  <div className="h-full flex flex-col">
+                    {/* Husband section - compact */}
+                    {husband && (
+                      <div className="text-center mb-2">
+                        <Avatar className="h-10 w-10 mx-auto mb-1 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
+                          {husband.image_url ? (
+                            <AvatarImage src={husband.image_url} alt={husband.name} />
+                          ) : (
+                            <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold text-xs">
+                              {husband.name.slice(0, 2)}
+                            </AvatarFallback>
                           )}
-                        </div>
-                      ))}
+                        </Avatar>
+                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-1">{husband.name}</h4>
+                        <Badge variant="outline" className="text-xs border-blue-200 text-blue-700 dark:text-blue-300 px-1 py-0">
+                          الزوج
+                        </Badge>
+                      </div>
+                    )}
+                    
+                    {/* Separator with heart */}
+                    <div className="flex items-center justify-center mb-2">
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+                      <Heart className="h-3 w-3 text-pink-500 mx-2 animate-pulse" />
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+                    </div>
+                    
+                    {/* Wives section - flexible grid */}
+                    <div className="flex-1 flex flex-col">
+                      <div className="grid gap-1" style={{ 
+                        gridTemplateColumns: wives.length <= 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+                        gridTemplateRows: wives.length <= 2 ? '1fr' : 'repeat(2, 1fr)'
+                      }}>
+                        {wives.map((wife, index) => (
+                          <div key={wife.id} className="text-center p-1">
+                            <Avatar className="h-8 w-8 mx-auto mb-1 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
+                              {wife.image_url ? (
+                                <AvatarImage src={wife.image_url} alt={wife.name} />
+                              ) : (
+                                <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold text-xs">
+                                  {wife.name.slice(0, 2)}
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
+                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-1" 
+                                style={{ fontSize: '10px', lineHeight: '1.1' }}>
+                              {wife.name.length > 8 ? wife.name.slice(0, 8) + '...' : wife.name}
+                            </h5>
+                            <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-1 py-0" 
+                                   style={{ fontSize: '9px' }}>
+                              ز{index + 1}
+                            </Badge>
+                            {wife.birth_date && (
+                              <div className="text-xs text-muted-foreground mt-1" style={{ fontSize: '8px' }}>
+                                {new Date(wife.birth_date).getFullYear()}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              <div className="text-center">
-                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm text-xs">
-                  <Users className="h-3 w-3 mr-1" />
-                  عائلة {husband?.name || unit.members[0]?.name}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       );
     } else {
@@ -425,52 +428,62 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
-                style={{ height: `${UNIT_HEIGHT}px` }}>
-            <CardContent className="p-4 h-full flex flex-col justify-between">
-              {isFounder && (
-                <div className="flex justify-center mb-3">
-                  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
-                    <Crown className="h-3 w-3 mr-1" />
-                    المؤسس
-                  </Badge>
-                </div>
-              )}
-              
-              <div className="text-center">
-                <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-primary/30 ring-2 ring-primary/10">
-                  {member.image_url ? (
-                    <AvatarImage src={member.image_url} alt={member.name} />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/30 text-primary font-semibold text-lg">
-                      {member.name.slice(0, 2)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <h3 className="font-bold text-lg text-foreground mb-2">{member.name}</h3>
+          <div className="relative">
+            {/* Individual badge on top border */}
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+              <Badge className="bg-gradient-to-r from-primary/80 to-primary text-white shadow-sm text-xs">
+                <UserRound className="h-3 w-3 mr-1" />
+                {member.name}
+              </Badge>
+            </div>
+            
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
+                  style={{ height: `${UNIT_HEIGHT}px` }}>
+              <CardContent className="p-4 h-full flex flex-col justify-between">
+                {isFounder && (
+                  <div className="flex justify-center mb-3">
+                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
+                      <Crown className="h-3 w-3 mr-1" />
+                      المؤسس
+                    </Badge>
+                  </div>
+                )}
                 
-                <div className="flex justify-center gap-2 flex-wrap">
-                  <Badge variant="outline" className="text-xs">
-                    <UserRound className="h-3 w-3 mr-1" />
-                    {member.gender === 'male' ? 'ذكر' : 'أنثى'}
-                  </Badge>
-                  {member.birth_date && (
-                    <Badge variant="secondary" className="text-xs">
-                      {new Date(member.birth_date).getFullYear()}
+                <div className="text-center">
+                  <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-primary/30 ring-2 ring-primary/10">
+                    {member.image_url ? (
+                      <AvatarImage src={member.image_url} alt={member.name} />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/30 text-primary font-semibold text-lg">
+                        {member.name.slice(0, 2)}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <h3 className="font-bold text-lg text-foreground mb-2">{member.name}</h3>
+                  
+                  <div className="flex justify-center gap-2 flex-wrap">
+                    <Badge variant="outline" className="text-xs">
+                      <UserRound className="h-3 w-3 mr-1" />
+                      {member.gender === 'male' ? 'ذكر' : 'أنثى'}
+                    </Badge>
+                    {member.birth_date && (
+                      <Badge variant="secondary" className="text-xs">
+                        {new Date(member.birth_date).getFullYear()}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {member.marital_status && (
+                    <Badge variant="outline" className="mt-2 text-xs">
+                      {member.marital_status === 'single' ? 'أعزب' : 
+                       member.marital_status === 'married' ? 'متزوج' :
+                       member.marital_status === 'divorced' ? 'مطلق' : 'أرمل'}
                     </Badge>
                   )}
                 </div>
-                
-                {member.marital_status && (
-                  <Badge variant="outline" className="mt-2 text-xs">
-                    {member.marital_status === 'single' ? 'أعزب' : 
-                     member.marital_status === 'married' ? 'متزوج' :
-                     member.marital_status === 'divorced' ? 'مطلق' : 'أرمل'}
-                  </Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       );
     }
