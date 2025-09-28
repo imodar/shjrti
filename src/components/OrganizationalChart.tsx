@@ -433,7 +433,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Determine mother when father has 2+ wives (with sibling inference)
+      // Determine mother when father has 2+ wives (robust)
       const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
       const wives = parentUnit && (parentUnit as any).type === 'married'
         ? (parentUnit as any).members.filter((m: any) => m?.gender === 'female')
@@ -446,6 +446,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         (member as any).motherID ||
         (member as any)?.mother?.id;
 
+      // Try to infer from siblings if missing
       if (!motherId && parentUnit) {
         const siblingUnits = ((parentUnit as any).childUnits || [])
           .map((id: string) => displayUnits.get(id))
@@ -454,13 +455,27 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           .map((u: FamilyUnit) => (u as any).members?.[0])
           .find((s: any) => s && s.id !== (member as any).id && (s.motherId || s.mother_id));
         const inferredMotherId = inferred?.motherId || inferred?.mother_id;
-        if (inferredMotherId) {
-          motherId = inferredMotherId;
-        }
+        if (inferredMotherId) motherId = inferredMotherId;
       }
 
-      const motherInUnit = motherId ? wives.find((w: any) => (w?.id === motherId)) : undefined;
-      const motherName = (motherInUnit?.name as string | undefined) || undefined;
+      // Match mother by id within wives
+      let motherName: string | undefined;
+      let motherInUnit = motherId ? wives.find((w: any) => (w?.id === motherId)) : undefined;
+      motherName = (motherInUnit?.name as string | undefined);
+
+      // Last resort: map via original married units (per-wife child mapping)
+      if (!motherName && parentUnit && (parentUnit as any).originalUnitIds) {
+        const originalIds = ((parentUnit as any).originalUnitIds as string[]) || [];
+        for (const oid of originalIds) {
+          const original = familyUnits.get(oid) as any;
+          if (!original) continue;
+          const wife = (original.members || []).find((m: any) => m?.gender === 'female');
+          if ((original.childUnits || []).includes(unit.id)) {
+            motherName = wife?.name;
+            break;
+          }
+        }
+      }
 
       const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');
       
