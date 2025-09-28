@@ -411,20 +411,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                                    style={{ 
                                      fontSize: wives.length <= 4 ? '6px' : wives.length <= 6 ? '5px' : '4px' 
                                    }}>
-                              {(() => {
-                                const baseLabel = wife.marital_status === 'divorced' ? 'زوجة سابقة' : 'زوجة';
-                                const husbandId = husband?.id;
-                                if (!husbandId) return baseLabel;
-                                const husbandMarriedUnits = Array.from(displayUnits.values()).filter(unit =>
-                                  unit.type === 'married' &&
-                                  unit.members.some(m => m?.id === husbandId && m?.gender === 'male')
-                                );
-                                const totalWives = husbandMarriedUnits.reduce((count, unit) =>
-                                  count + unit.members.filter(m => m?.gender === 'female').length, 0
-                                );
-                                return totalWives > 1 ? `${baseLabel} (أم ${wife.name})` : baseLabel;
-                              })()}
-
+                              {wife.marital_status === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                             </Badge>
                             {wife.birth_date && wives.length <= 6 && (
                               <div className="text-xs text-muted-foreground mt-0.5" style={{ fontSize: '7px' }}>
