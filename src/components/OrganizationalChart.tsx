@@ -378,8 +378,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                         {wives.map((wife, index) => (
                           <div key={wife.id} className="text-center py-0.5 px-0.5">
                             <Avatar className={`mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900 ${
-                              wives.length <= 4 ? 'h-7 w-7' : 
-                              wives.length <= 6 ? 'h-6 w-6' : 'h-5 w-5'
+                              wives.length <= 4 ? 'h-9 w-9' : 
+                              wives.length <= 6 ? 'h-8 w-8' : 'h-7 w-7'
                             }`}>
                               {wife.image_url ? (
                                 <AvatarImage src={wife.image_url} alt={wife.name} />
@@ -391,14 +391,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                             </Avatar>
                             <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5" 
                                 style={{ 
-                                  fontSize: wives.length <= 4 ? '9px' : wives.length <= 6 ? '8px' : '7px', 
+                                  fontSize: wives.length <= 4 ? '11px' : wives.length <= 6 ? '10px' : '9px', 
                                   lineHeight: '1.1' 
                                 }}>
                               {wives.length > 6 && wife.name.length > 5 ? wife.name.slice(0, 5) + '...' : wife.name}
                             </h5>
                             <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-0.5 py-0" 
                                    style={{ 
-                                     fontSize: wives.length <= 4 ? '8px' : wives.length <= 6 ? '7px' : '6px' 
+                                     fontSize: wives.length <= 4 ? '6px' : wives.length <= 6 ? '5px' : '4px' 
                                    }}>
                               {wife.marital_status === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                             </Badge>
