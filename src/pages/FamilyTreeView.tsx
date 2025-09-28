@@ -390,7 +390,10 @@ const FamilyTreeView = () => {
     // Create family units
     const units = createFamilyUnits();
 
-    // Filter units based on selected root marriage
+    // Assign generations to units first (establishes parent-child relationships)
+    assignGenerationsToUnits(units);
+
+    // Filter units based on selected root marriage AFTER relationships are established
     if (selectedRootMarriage !== "all") {
       const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
       if (rootMarriage) {
@@ -405,6 +408,7 @@ const FamilyTreeView = () => {
           const unit = units.get(unitId);
           if (unit) {
             filteredUnits.set(unitId, unit);
+            // Now childUnits should be populated
             unit.childUnits.forEach(childId => collectDescendants(childId, visited));
           }
         };
@@ -412,14 +416,16 @@ const FamilyTreeView = () => {
         // Start from root marriage and collect all descendants
         collectDescendants(rootUnitId);
         
-        // Update units to only filtered ones
+        // Update units to only filtered ones - preserve the relationships
+        const originalUnits = new Map(units);
         units.clear();
-        filteredUnits.forEach((unit, id) => units.set(id, unit));
+        filteredUnits.forEach((unit, id) => {
+          units.set(id, unit);
+        });
+        
+        console.log(`Filtered to ${filteredUnits.size} units from original ${originalUnits.size} units`);
       }
     }
-
-    // Assign generations to units
-    assignGenerationsToUnits(units);
 
     // Group units by generation with sibling grouping
     const generations = new Map<number, FamilyUnit[][]>();
