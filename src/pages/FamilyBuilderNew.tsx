@@ -3003,9 +3003,10 @@ const FamilyBuilderNew = () => {
                                     <div className="relative group">
                                       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-card/20 to-secondary/10 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
                                       <div className="relative bg-card/60 backdrop-blur-md rounded-2xl p-6 border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
-                                        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium">
-                                          {familyData.description}
-                                        </p>
+                                        <div 
+                                          className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium"
+                                          dangerouslySetInnerHTML={{ __html: familyData.description }}
+                                        />
                                       </div>
                                     </div>
                                   </div>
