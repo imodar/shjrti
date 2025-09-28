@@ -78,12 +78,74 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     };
   }, [isDragging, dragStart.x, dragStart.y]);
 
+  // Merge married units with the same husband into a single box
+  const mergeMarriedUnits = (units: Map<string, FamilyUnit>) => {
+    const merged = new Map<string, any>();
+    const originalToMerged = new Map<string, string>();
+
+    units.forEach((unit) => {
+      if (unit.type === 'married') {
+        const husband = unit.members.find((m: any) => m?.gender === 'male');
+        const wives = unit.members.filter((m: any) => m?.gender === 'female');
+        const key = husband?.id ? `merged-${husband.id}` : unit.id;
+
+        if (!merged.has(key)) {
+          merged.set(key, {
+            id: key,
+            type: 'married',
+            members: husband ? [husband, ...wives] : [...unit.members],
+            generation: unit.generation,
+            parentUnitId: unit.parentUnitId,
+            childUnits: [...unit.childUnits],
+            originalUnitIds: [unit.id],
+            parentCandidates: [unit.parentUnitId],
+          });
+        } else {
+          const mu = merged.get(key);
+          const existingKeys = new Set((mu.members || []).map((m: any) => m?.id || m?.name));
+          const addMember = (m: any) => {
+            const mk = m?.id || m?.name;
+            if (!existingKeys.has(mk)) {
+              mu.members.push(m);
+              existingKeys.add(mk);
+            }
+          };
+          wives.forEach(addMember);
+          if (husband && !mu.members.some((m: any) => (m?.id || m?.name) === (husband.id || husband.name))) {
+            mu.members.unshift(husband);
+          }
+          mu.generation = Math.min(mu.generation, unit.generation);
+          mu.parentCandidates.push(unit.parentUnitId);
+          mu.childUnits = Array.from(new Set([...(mu.childUnits || []), ...unit.childUnits]));
+          mu.originalUnitIds.push(unit.id);
+        }
+        originalToMerged.set(unit.id, key);
+      } else {
+        merged.set(unit.id, { ...unit, originalUnitIds: [unit.id], parentCandidates: [unit.parentUnitId] });
+        originalToMerged.set(unit.id, unit.id);
+      }
+    });
+
+    const mapId = (id?: string) => (id ? originalToMerged.get(id) || id : undefined);
+
+    merged.forEach((mu: any) => {
+      const parent = mu.parentCandidates.find((p: any) => p != null);
+      mu.parentUnitId = mapId(parent);
+      mu.childUnits = Array.from(new Set((mu.childUnits || []).map((cid: string) => mapId(cid)).filter(Boolean)));
+      delete mu.parentCandidates;
+    });
+
+    return { displayUnits: merged as Map<string, FamilyUnit>, originalToMerged };
+  };
+
+  const { displayUnits } = mergeMarriedUnits(familyUnits);
+
   // Build hierarchical structure
   const buildHierarchy = () => {
     const hierarchy: { [generation: number]: FamilyUnit[] } = {};
     const rootUnits: FamilyUnit[] = [];
 
-    familyUnits.forEach(unit => {
+    displayUnits.forEach(unit => {
       if (!hierarchy[unit.generation]) {
         hierarchy[unit.generation] = [];
       }
@@ -111,7 +173,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     
     const calculateSubtreeWidth = (unit: FamilyUnit): number => {
       const children = unit.childUnits
-        .map(id => familyUnits.get(id))
+        .map(id => displayUnits.get(id))
         .filter(Boolean) as FamilyUnit[];
       
       if (children.length === 0) {
@@ -136,7 +198,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       });
 
       const children = unit.childUnits
-        .map(id => familyUnits.get(id))
+        .map(id => displayUnits.get(id))
         .filter(Boolean) as FamilyUnit[];
 
       if (children.length > 0) {
@@ -171,7 +233,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    if (familyUnits.size > 0 && !hasInitialized) {
+    if (displayUnits.size > 0 && !hasInitialized) {
       const allPositions = Array.from(positions.values());
       if (allPositions.length > 0) {
         const chartWidth = Math.max(
@@ -193,7 +255,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         setHasInitialized(true);
       }
     }
-  }, [familyUnits.size, hasInitialized]);
+  }, [displayUnits.size, hasInitialized]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -400,9 +462,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const renderConnections = () => {
     const connections: JSX.Element[] = [];
 
-    familyUnits.forEach(parentUnit => {
+    displayUnits.forEach(parentUnit => {
       const children = parentUnit.childUnits
-        .map(id => familyUnits.get(id))
+        .map(id => displayUnits.get(id))
         .filter(Boolean) as FamilyUnit[];
 
       if (children.length === 0) return;
@@ -516,7 +578,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     return connections;
   };
 
-  if (familyUnits.size === 0) {
+  if (displayUnits.size === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-center">
         <div className="text-muted-foreground">
@@ -591,7 +653,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             </svg>
 
             {/* Render all family units */}
-            {Array.from(familyUnits.values()).map(unit => {
+            {Array.from(displayUnits.values()).map(unit => {
               const position = positions.get(unit.id);
               if (!position) return null;
               return renderFamilyUnit(unit, position);
