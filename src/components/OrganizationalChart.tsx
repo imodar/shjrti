@@ -363,15 +363,24 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       </div>
                     )}
                     
-                    {/* Wives section - moved up with tighter spacing */}
+                    {/* Wives section - flexible grid that adapts to number of wives */}
                     <div className="flex-1 flex flex-col justify-start">
-                      <div className="grid gap-0.5 pt-1" style={{ 
-                        gridTemplateColumns: wives.length <= 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
-                        gridTemplateRows: wives.length <= 2 ? '1fr' : 'repeat(2, 1fr)'
+                      <div className="grid gap-0.5 pt-1" style={{
+                        gridTemplateColumns: wives.length === 2 ? 'repeat(2, 1fr)' :
+                                           wives.length === 3 ? 'repeat(3, 1fr)' :
+                                           wives.length === 4 ? 'repeat(2, 1fr)' :
+                                           wives.length <= 6 ? 'repeat(3, 1fr)' :
+                                           wives.length <= 9 ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)',
+                        gridTemplateRows: wives.length <= 3 ? '1fr' :
+                                        wives.length <= 6 ? 'repeat(2, 1fr)' :
+                                        wives.length <= 9 ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)'
                       }}>
                         {wives.map((wife, index) => (
                           <div key={wife.id} className="text-center py-0.5 px-0.5">
-                            <Avatar className="h-7 w-7 mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
+                            <Avatar className={`mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900 ${
+                              wives.length <= 4 ? 'h-7 w-7' : 
+                              wives.length <= 6 ? 'h-6 w-6' : 'h-5 w-5'
+                            }`}>
                               {wife.image_url ? (
                                 <AvatarImage src={wife.image_url} alt={wife.name} />
                               ) : (
@@ -381,14 +390,19 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                               )}
                             </Avatar>
                             <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5" 
-                                style={{ fontSize: '9px', lineHeight: '1.1' }}>
-                              {wife.name}
+                                style={{ 
+                                  fontSize: wives.length <= 4 ? '9px' : wives.length <= 6 ? '8px' : '7px', 
+                                  lineHeight: '1.1' 
+                                }}>
+                              {wives.length > 6 && wife.name.length > 5 ? wife.name.slice(0, 5) + '...' : wife.name}
                             </h5>
                             <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-0.5 py-0" 
-                                   style={{ fontSize: '8px' }}>
+                                   style={{ 
+                                     fontSize: wives.length <= 4 ? '8px' : wives.length <= 6 ? '7px' : '6px' 
+                                   }}>
                               ز{index + 1}
                             </Badge>
-                            {wife.birth_date && (
+                            {wife.birth_date && wives.length <= 6 && (
                               <div className="text-xs text-muted-foreground mt-0.5" style={{ fontSize: '7px' }}>
                                 {new Date(wife.birth_date).getFullYear()}
                               </div>
