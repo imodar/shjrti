@@ -67,34 +67,59 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return null;
   };
   const renderParentage = () => {
+    if (member.is_founder) return null;
+    
     const mother = familyMembers?.find(m => m?.id === (member.mother_id || (member as any).motherId));
-    const memberHasMother = !member.is_founder && mother;
+    const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
     
-    if (!memberHasMother) return null;
-    
-    // Build lineage for mother (limited to 3 generations: mother, mother's father, mother's grandfather)
-    const motherName = mother.first_name || (mother as any).name?.split(' ')[0] || (mother as any).name;
-    const motherFather = familyMembers?.find(m => m?.id === (mother.father_id || (mother as any).fatherId));
-    
-    let lineage = motherName;
-    
-    if (motherFather) {
-      const motherFatherName = motherFather.first_name || (motherFather as any).name?.split(' ')[0] || (motherFather as any).name;
-      lineage += ` بنت ${motherFatherName}`;
-      
-      // Add grandfather if exists
-      const motherGrandfather = familyMembers?.find(m => m?.id === (motherFather.father_id || (motherFather as any).fatherId));
-      if (motherGrandfather) {
-        const motherGrandfatherName = motherGrandfather.first_name || (motherGrandfather as any).name?.split(' ')[0] || (motherGrandfather as any).name;
-        lineage += ` ابن ${motherGrandfatherName}`;
-      }
-    }
+    // Check if mother is from Sheikh Saeed's family (has father_id in family tree)
+    const motherIsFromFamily = mother && (mother.father_id || (mother as any).fatherId) && 
+                              familyMembers?.find(m => m?.id === (mother.father_id || (mother as any).fatherId));
     
     const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
     
-    return <p className="text-sm text-muted-foreground truncate font-arabic">
-        {genderTerm} {lineage}
-      </p>;
+    // If mother is from Sheikh Saeed's family, show mother's lineage
+    if (motherIsFromFamily) {
+      const motherName = mother.first_name || (mother as any).name?.split(' ')[0] || (mother as any).name;
+      const motherFather = familyMembers?.find(m => m?.id === (mother.father_id || (mother as any).fatherId));
+      
+      let lineage = motherName;
+      
+      if (motherFather) {
+        const motherFatherName = motherFather.first_name || (motherFather as any).name?.split(' ')[0] || (motherFather as any).name;
+        lineage += ` بنت ${motherFatherName}`;
+        
+        // Add grandfather if exists
+        const motherGrandfather = familyMembers?.find(m => m?.id === (motherFather.father_id || (motherFather as any).fatherId));
+        if (motherGrandfather) {
+          const motherGrandfatherName = motherGrandfather.first_name || (motherGrandfather as any).name?.split(' ')[0] || (motherGrandfather as any).name;
+          lineage += ` ابن ${motherGrandfatherName}`;
+        }
+      }
+      
+      return <p className="text-sm text-muted-foreground truncate font-arabic">
+          {genderTerm} {lineage}
+        </p>;
+    }
+    
+    // Otherwise, show father's lineage (for members like Ibrahim)
+    if (father) {
+      const fatherName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
+      const grandfather = familyMembers?.find(m => m?.id === (father.father_id || (father as any).fatherId));
+      
+      let lineage = fatherName;
+      
+      if (grandfather) {
+        const grandfatherName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
+        lineage += ` ابن ${grandfatherName}`;
+      }
+      
+      return <p className="text-sm text-muted-foreground truncate font-arabic">
+          {genderTerm} {lineage}
+        </p>;
+    }
+    
+    return null;
   };
   const renderSpouseInfo = () => {
     // Show founder text for founders
