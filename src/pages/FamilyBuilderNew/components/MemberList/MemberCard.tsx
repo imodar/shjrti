@@ -67,13 +67,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return null;
   };
   const renderParentage = () => {
-    const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-    const memberHasFamilyFather = !member.is_founder && father;
+    const mother = familyMembers?.find(m => m?.id === (member.mother_id || (member as any).motherId));
+    const memberHasMother = !member.is_founder && mother;
     
-    if (!memberHasFamilyFather) return null;
+    if (!memberHasMother) return null;
     
-    // Build full Arabic lineage chain
-    const buildLineage = (person: any): string => {
+    // Build full Arabic lineage chain for mother
+    const buildMotherLineage = (person: any): string => {
       if (!person) return "";
       
       const personName = person.first_name || (person as any).name?.split(' ')[0] || (person as any).name;
@@ -81,17 +81,17 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       
       if (personFather) {
         const genderTerm = person.gender === 'female' ? 'بنت' : 'ابن';
-        return `${personName} ${genderTerm} ${buildLineage(personFather)}`;
+        return `${personName} ${genderTerm} ${buildMotherLineage(personFather)}`;
       }
       
       return personName;
     };
     
     const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
-    const lineage = buildLineage(father);
+    const motherLineage = buildMotherLineage(mother);
     
     return <p className="text-sm text-muted-foreground truncate font-arabic">
-        {genderTerm} {lineage}
+        {genderTerm} {motherLineage}
       </p>;
   };
   const renderSpouseInfo = () => {
