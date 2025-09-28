@@ -325,6 +325,54 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                           return totalWives > 1 ? `الزوجة (أم ${wives[0].name})` : 'الزوجة';
                         })()}
                       </Badge>
+                      {(() => {
+                        try {
+                          const wife = wives[0];
+                          // Find wife's single unit to determine parents
+                          const wifeSingleUnit = Array.from(displayUnits.values()).find((u: any) =>
+                            u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
+                          ) as any | undefined;
+                          const wParent: any = wifeSingleUnit?.parentUnitId ? displayUnits.get(wifeSingleUnit.parentUnitId) : undefined;
+                          const candidates = wParent && wParent.type === 'married' ? (wParent.members || []).filter((m: any) => m?.gender === 'female') : [];
+                          const hasMulti = (candidates?.length || 0) >= 2;
+                          let mId: string | undefined = (wife as any).motherId || (wife as any).mother_id || (wife as any).motherID || (wife as any)?.mother?.id;
+                          if (!mId && wParent) {
+                            const siblingUnits = (wParent.childUnits || [])
+                              .map((id: string) => displayUnits.get(id))
+                              .filter(Boolean) as any[];
+                            const inferred = siblingUnits
+                              .map((u: any) => (u as any).members?.[0])
+                              .find((s: any) => s && s.id !== wife.id && (s.motherId || s.mother_id));
+                            mId = inferred?.motherId || inferred?.mother_id;
+                          }
+                          let mName: string | undefined;
+                          if (mId) {
+                            const found = candidates.find((w: any) => w?.id === mId);
+                            mName = found?.name;
+                          }
+                          if (!mName && wParent && (wParent as any).originalUnitIds && wifeSingleUnit) {
+                            for (const oid of ((wParent as any).originalUnitIds as string[]) || []) {
+                              const original: any = familyUnits.get(oid);
+                              if (!original) continue;
+                              if ((original.childUnits || []).includes(wifeSingleUnit.id)) {
+                                const wifeMother = (original.members || []).find((m: any) => m?.gender === 'female');
+                                mName = wifeMother?.name;
+                                break;
+                              }
+                            }
+                          }
+                          if (hasMulti && mName) {
+                            return (
+                              <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
+                                والدتها {mName}
+                              </Badge>
+                            );
+                          }
+                        } catch (e) {
+                          // no-op
+                        }
+                        return null;
+                      })()}
                     </div>
 
                     {/* Marriage Status */}
