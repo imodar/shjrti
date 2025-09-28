@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, TreePine, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
+import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, Minimize, TreePine, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -57,6 +57,25 @@ const FamilyTreeView = () => {
       }
     }, 0);
   };
+
+  const [activeTab, setActiveTab] = useState<string>("traditional");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleToggleFullscreen = () => {
+    const el = (activeTab === 'traditional' ? traditionalRef.current : diagramRef.current);
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      (el as any).requestFullscreen?.();
+    }
+  };
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
 
   // Get family ID from URL parameters
   const familyId = searchParams.get('family');
@@ -625,7 +644,7 @@ const FamilyTreeView = () => {
               {/* شجرة العائلة */}
               <div className={hasAIFeatures ? "lg:col-span-3" : "col-span-1"}>
                 {/* Tree Container */}
-                <Tabs defaultValue="traditional" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
                 <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
                   <TreePine className="ml-2 h-4 w-4" />
@@ -652,8 +671,8 @@ const FamilyTreeView = () => {
                       <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                         <ZoomIn className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={handleResetZoom} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                        <Maximize className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                        {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
@@ -676,8 +695,8 @@ const FamilyTreeView = () => {
                       <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                         <ZoomIn className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={handleResetZoom} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                        <Maximize className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                        {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
