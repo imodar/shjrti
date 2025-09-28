@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import ReactQuill from 'react-quill';
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -386,11 +386,25 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           <CardContent className="space-y-4">
             {isEditingDescription ? (
               <div className="space-y-3">
-                <Textarea
+                <ReactQuill
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={setDescription}
                   placeholder="أدخل وصف العائلة..."
-                  rows={4}
+                  style={{ height: '120px', marginBottom: '50px' }}
+                  modules={{
+                    toolbar: [
+                      [{ 'header': [1, 2, 3, false] }],
+                      ['bold', 'italic', 'underline'],
+                      [{ 'color': [] }, { 'background': [] }],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      ['link'],
+                      ['clean']
+                    ]
+                  }}
+                  formats={[
+                    'header', 'bold', 'italic', 'underline',
+                    'color', 'background', 'list', 'bullet', 'link'
+                  ]}
                 />
                 <div className="flex gap-2">
                   <Button 
