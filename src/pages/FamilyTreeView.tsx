@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -36,10 +36,26 @@ const FamilyTreeView = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
 
-  // Reset zoom when filter changes
+  const traditionalRef = useRef<HTMLDivElement>(null);
+  const diagramRef = useRef<HTMLDivElement>(null);
+
+  // Reset zoom and center when filter changes
   const handleRootMarriageChange = (value: string) => {
     setSelectedRootMarriage(value);
     setZoomLevel(1); // Reset zoom to default
+    // Center both containers on next tick
+    setTimeout(() => {
+      if (traditionalRef.current) {
+        const el = traditionalRef.current;
+        el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
+        el.scrollTop = 0;
+      }
+      if (diagramRef.current) {
+        const el = diagramRef.current;
+        el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
+        el.scrollTop = 0;
+      }
+    }, 0);
   };
 
   // Get family ID from URL parameters
@@ -433,6 +449,36 @@ const FamilyTreeView = () => {
       }
     }
 
+    // Ensure generations exist in the current subset
+    let hasAnyGeneration = false;
+    units.forEach(u => { if (u.generation > 0) hasAnyGeneration = true; });
+
+    if (!hasAnyGeneration) {
+      // Determine roots: selected root marriage if provided, otherwise units without parents
+      const roots: string[] = [];
+      if (selectedRootMarriage !== "all") {
+        const rm = familyMarriages.find(m => m.id === selectedRootMarriage);
+        if (rm) roots.push(`married_${rm.id}`);
+      }
+      if (roots.length === 0) {
+        units.forEach((u, id) => { if (!u.parentUnitId) roots.push(id); });
+      }
+
+      // Reset generations and BFS assign
+      units.forEach(u => { u.generation = 0; });
+      const queue: Array<{ id: string; gen: number }> = roots.map(id => ({ id, gen: 1 }));
+      const visited = new Set<string>();
+      while (queue.length) {
+        const { id, gen } = queue.shift()!;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        const u = units.get(id);
+        if (!u) continue;
+        u.generation = gen;
+        u.childUnits.forEach(cid => { if (units.has(cid)) queue.push({ id: cid, gen: gen + 1 }); });
+      }
+    }
+
     // Group units by generation with sibling grouping
     const generations = new Map<number, FamilyUnit[][]>();
     const generationUnits = new Map<number, FamilyUnit[]>();
@@ -593,7 +639,7 @@ const FamilyTreeView = () => {
               
               {/* Traditional Tree View - Organizational Chart Style */}
               <TabsContent value="traditional">
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl relative">
+                <div ref={traditionalRef} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl relative">
                   {/* Zoom Controls */}
                   <div className="absolute top-4 right-4 z-10">
                     <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
@@ -617,7 +663,7 @@ const FamilyTreeView = () => {
 
               {/* Diagram Tree View - Enhanced for Cousin Visualization */}
               <TabsContent value="diagram">
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl relative">
+                <div ref={diagramRef} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl relative">
                   {/* Zoom Controls */}
                   <div className="absolute top-4 right-4 z-10">
                     <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
