@@ -328,13 +328,13 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       {(() => {
                         try {
                           const wife = wives[0];
-                          // Find wife's single unit to determine parents
+                          // Find wife's single unit to determine parents (display units)
                           const wifeSingleUnit = Array.from(displayUnits.values()).find((u: any) =>
                             u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
                           ) as any | undefined;
                           const wParent: any = wifeSingleUnit?.parentUnitId ? displayUnits.get(wifeSingleUnit.parentUnitId) : undefined;
                           const candidates = wParent && wParent.type === 'married' ? (wParent.members || []).filter((m: any) => m?.gender === 'female') : [];
-                          const hasMulti = (candidates?.length || 0) >= 2;
+                          let hasMulti = (candidates?.length || 0) >= 2;
                           let mId: string | undefined = (wife as any).motherId || (wife as any).mother_id || (wife as any).motherID || (wife as any)?.mother?.id;
                           if (!mId && wParent) {
                             const siblingUnits = (wParent.childUnits || [])
@@ -350,15 +350,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                             const found = candidates.find((w: any) => w?.id === mId);
                             mName = found?.name;
                           }
-                          if (!mName && wParent && (wParent as any).originalUnitIds && wifeSingleUnit) {
-                            for (const oid of ((wParent as any).originalUnitIds as string[]) || []) {
-                              const original: any = familyUnits.get(oid);
-                              if (!original) continue;
-                              if ((original.childUnits || []).includes(wifeSingleUnit.id)) {
-                                const wifeMother = (original.members || []).find((m: any) => m?.gender === 'female');
-                                mName = wifeMother?.name;
-                                break;
-                              }
+                          // Fallback: resolve via original (familyUnits) even if no single display unit exists
+                          if (!mName) {
+                            const wifeSingleOriginal = Array.from(familyUnits.values()).find((u: any) =>
+                              u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
+                            ) as any | undefined;
+                            const parentOriginal: any = wifeSingleOriginal?.parentUnitId ? familyUnits.get(wifeSingleOriginal.parentUnitId) : undefined;
+                            if (parentOriginal) {
+                              const father = (parentOriginal.members || []).find((m: any) => m?.gender === 'male');
+                              const mother = (parentOriginal.members || []).find((m: any) => m?.gender === 'female');
+                              const fatherMarriedUnits = Array.from(familyUnits.values()).filter((u: any) =>
+                                u.type === 'married' && (u.members || []).some((m: any) => m?.id === father?.id && m?.gender === 'male')
+                              );
+                              const wivesCount = fatherMarriedUnits.reduce((acc: number, u: any) => acc + (u.members || []).filter((m: any) => m?.gender === 'female').length, 0);
+                              if (wivesCount >= 2) hasMulti = true;
+                              if (!mName) mName = mother?.name;
                             }
                           }
                           if (hasMulti && mName) {
