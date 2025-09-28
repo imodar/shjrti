@@ -312,23 +312,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       </Avatar>
                       <h4 className="font-semibold text-sm text-foreground text-center break-words">{wives[0].name}</h4>
                       <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                        {(() => {
-                          // Check if husband has multiple wives by looking at all family units
-                          const husbandId = husband?.id;
-                          const husbandMarriedUnits = Array.from(displayUnits.values()).filter(unit => 
-                            unit.type === 'married' && 
-                            unit.members.some(m => m?.id === husbandId && m?.gender === 'male')
-                          );
-                          
-                          const totalWives = husbandMarriedUnits.reduce((count, unit) => 
-                            count + unit.members.filter(m => m?.gender === 'female').length, 0
-                          );
-                          
-                          if (totalWives > 1) {
-                            return `الزوجة (أم ${wives[0].name})`;
-                          }
-                          return 'الزوجة';
-                        })()}
+                        {wives.length > 1 ? `الزوجة (أم ${wives[0].name})` : 'الزوجة'}
                       </Badge>
                     </div>
 
