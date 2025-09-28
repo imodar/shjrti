@@ -425,9 +425,12 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground min-h-[60px] p-3 border rounded-lg bg-muted/50">
-                  {description || "لم يتم إضافة وصف بعد..."}
-                </p>
+                <div 
+                  className="text-sm text-muted-foreground min-h-[60px] p-3 border rounded-lg bg-muted/50"
+                  dangerouslySetInnerHTML={{ 
+                    __html: description || "لم يتم إضافة وصف بعد..." 
+                  }}
+                />
                 <Button 
                   variant="outline" 
                   onClick={() => setIsEditingDescription(true)}
