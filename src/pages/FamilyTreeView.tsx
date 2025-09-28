@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, TreePine, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -33,6 +34,7 @@ const FamilyTreeView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [user, setUser] = useState<any>(null);
+  const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
 
   // Get family ID from URL parameters
   const familyId = searchParams.get('family');
@@ -388,6 +390,34 @@ const FamilyTreeView = () => {
     // Create family units
     const units = createFamilyUnits();
 
+    // Filter units based on selected root marriage
+    if (selectedRootMarriage !== "all") {
+      const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
+      if (rootMarriage) {
+        const filteredUnits = new Map<string, FamilyUnit>();
+        const rootUnitId = `married_${rootMarriage.id}`;
+        
+        // Function to collect descendants recursively
+        const collectDescendants = (unitId: string, visited = new Set<string>()) => {
+          if (visited.has(unitId)) return;
+          visited.add(unitId);
+          
+          const unit = units.get(unitId);
+          if (unit) {
+            filteredUnits.set(unitId, unit);
+            unit.childUnits.forEach(childId => collectDescendants(childId, visited));
+          }
+        };
+        
+        // Start from root marriage and collect all descendants
+        collectDescendants(rootUnitId);
+        
+        // Update units to only filtered ones
+        units.clear();
+        filteredUnits.forEach((unit, id) => units.set(id, unit));
+      }
+    }
+
     // Assign generations to units
     assignGenerationsToUnits(units);
 
@@ -492,6 +522,40 @@ const FamilyTreeView = () => {
             {hasAIFeatures && <div className="mb-8 max-w-3xl mx-auto">
                 <SmartSearchBar familyId={familyMembers[0]?.family_id || ''} onResultSelect={handleSearchResultSelect} placeholder="ابحث في شجرة العائلة... (مثال: ابن عم أحمد من ناحية الأب)" />
               </div>}
+
+            {/* Marriage Root Filter */}
+            <div className="mb-8 max-w-md mx-auto">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-xl blur-lg"></div>
+                <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl p-4 shadow-lg">
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    اختر جذر الشجرة
+                  </label>
+                  <Select value={selectedRootMarriage} onValueChange={setSelectedRootMarriage}>
+                    <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
+                      <SelectValue placeholder="اختر الزواج كجذر للشجرة" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                      <SelectItem value="all">عرض الشجرة كاملة</SelectItem>
+                      {familyMarriages
+                        .filter(marriage => marriage.is_active)
+                        .map(marriage => {
+                          const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                          const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                          if (husband && wife) {
+                            return (
+                              <SelectItem key={marriage.id} value={marriage.id}>
+                                عائلة {husband.name} و {wife.name}
+                              </SelectItem>
+                            );
+                          }
+                          return null;
+                        })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
 
             {/* الشريط الجانبي والمحتوى الرئيسي */}
             <div className={`grid gap-6 mb-8 ${hasAIFeatures ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'}`}>
