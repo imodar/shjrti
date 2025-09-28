@@ -72,26 +72,28 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     if (!memberHasMother) return null;
     
-    // Build full Arabic lineage chain for mother
-    const buildMotherLineage = (person: any): string => {
-      if (!person) return "";
+    // Build lineage for mother (limited to 3 generations: mother, mother's father, mother's grandfather)
+    const motherName = mother.first_name || (mother as any).name?.split(' ')[0] || (mother as any).name;
+    const motherFather = familyMembers?.find(m => m?.id === (mother.father_id || (mother as any).fatherId));
+    
+    let lineage = motherName;
+    
+    if (motherFather) {
+      const motherFatherName = motherFather.first_name || (motherFather as any).name?.split(' ')[0] || (motherFather as any).name;
+      lineage += ` بنت ${motherFatherName}`;
       
-      const personName = person.first_name || (person as any).name?.split(' ')[0] || (person as any).name;
-      const personFather = familyMembers?.find(m => m?.id === (person.father_id || (person as any).fatherId));
-      
-      if (personFather) {
-        const genderTerm = person.gender === 'female' ? 'بنت' : 'ابن';
-        return `${personName} ${genderTerm} ${buildMotherLineage(personFather)}`;
+      // Add grandfather if exists
+      const motherGrandfather = familyMembers?.find(m => m?.id === (motherFather.father_id || (motherFather as any).fatherId));
+      if (motherGrandfather) {
+        const motherGrandfatherName = motherGrandfather.first_name || (motherGrandfather as any).name?.split(' ')[0] || (motherGrandfather as any).name;
+        lineage += ` ابن ${motherGrandfatherName}`;
       }
-      
-      return personName;
-    };
+    }
     
     const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
-    const motherLineage = buildMotherLineage(mother);
     
     return <p className="text-sm text-muted-foreground truncate font-arabic">
-        {genderTerm} {motherLineage}
+        {genderTerm} {lineage}
       </p>;
   };
   const renderSpouseInfo = () => {
