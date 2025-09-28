@@ -400,7 +400,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                                    style={{ 
                                      fontSize: wives.length <= 4 ? '8px' : wives.length <= 6 ? '7px' : '6px' 
                                    }}>
-                              ز{index + 1}
+                              {wife.marital_status === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                             </Badge>
                             {wife.birth_date && wives.length <= 6 && (
                               <div className="text-xs text-muted-foreground mt-0.5" style={{ fontSize: '7px' }}>
