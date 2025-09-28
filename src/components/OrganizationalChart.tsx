@@ -360,18 +360,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                           )}
                         </Avatar>
                         <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5">{husband.name}</h4>
-                        <Badge variant="outline" className="text-xs border-blue-200 text-blue-700 dark:text-blue-300 px-1 py-0">
-                          الزوج
-                        </Badge>
                       </div>
                     )}
-                    
-                    {/* Separator with heart - minimal */}
-                    <div className="flex items-center justify-center mb-0.5">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-                      <Heart className="h-2.5 w-2.5 text-pink-500 mx-1 animate-pulse" />
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-                    </div>
                     
                     {/* Wives section - moved up with tighter spacing */}
                     <div className="flex-1 flex flex-col justify-start">
