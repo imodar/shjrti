@@ -43,14 +43,14 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       // If full name is available in the name field, use it
       return (member as any).name || member.first_name || "غير معروف";
     } else {
-      // For all family members: show first name with ابن/ابنة if they are descendants
+      // For all family members: show first name + family name for descendants
       const firstName = member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
       const isDescendant = !member.is_founder && memberHasFamilyFather;
+      
       if (isDescendant) {
-        const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
-        return <span>
-            {firstName} <span className="text-xs bg-muted px-1.5 py-0.5 rounded-md font-normal">{genderTerm}</span>
-          </span>;
+        // Show first name with family name (if available)
+        const familyName = member.last_name || "الشهيد"; // Default family name
+        return `${firstName} ${familyName}`;
       }
       return firstName;
     }
@@ -68,20 +68,31 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
   const renderParentage = () => {
     const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-    const grandfather = father ? familyMembers?.find(m => m?.id === (father.father_id || (father as any).fatherId)) : null;
-    if (father && grandfather) {
-      const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-      const grandfatherFirstName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
-      return <p className="text-sm text-muted-foreground truncate font-arabic">
-          {fatherFirstName} ابن {grandfatherFirstName}
-        </p>;
-    } else if (father) {
-      const fatherFirstName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-      return <p className="text-sm text-muted-foreground truncate font-arabic">
-          {fatherFirstName}
-        </p>;
-    }
-    return null;
+    const memberHasFamilyFather = !member.is_founder && father;
+    
+    if (!memberHasFamilyFather) return null;
+    
+    // Build full Arabic lineage chain
+    const buildLineage = (person: any): string => {
+      if (!person) return "";
+      
+      const personName = person.first_name || (person as any).name?.split(' ')[0] || (person as any).name;
+      const personFather = familyMembers?.find(m => m?.id === (person.father_id || (person as any).fatherId));
+      
+      if (personFather) {
+        const genderTerm = person.gender === 'female' ? 'بنت' : 'ابن';
+        return `${personName} ${genderTerm} ${buildLineage(personFather)}`;
+      }
+      
+      return personName;
+    };
+    
+    const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
+    const lineage = buildLineage(father);
+    
+    return <p className="text-sm text-muted-foreground truncate font-arabic">
+        {genderTerm} {lineage}
+      </p>;
   };
   const renderSpouseInfo = () => {
     // Show founder text for founders
