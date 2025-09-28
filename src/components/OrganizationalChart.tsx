@@ -428,18 +428,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <div className="relative">
-            {/* Individual badge on top border */}
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-              <Badge className="bg-gradient-to-r from-primary/80 to-primary text-white shadow-sm text-xs">
-                <UserRound className="h-3 w-3 mr-1" />
-                {member.name}
-              </Badge>
-            </div>
-            
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
-                  style={{ height: `${UNIT_HEIGHT}px` }}>
-              <CardContent className="p-4 h-full flex flex-col justify-between">
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
+                style={{ height: `${UNIT_HEIGHT}px` }}>
+            <CardContent className="p-4 h-full flex flex-col justify-between">
                 {isFounder && (
                   <div className="flex justify-center mb-3">
                     <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
@@ -483,7 +474,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 </div>
               </CardContent>
             </Card>
-          </div>
         </div>
       );
     }
