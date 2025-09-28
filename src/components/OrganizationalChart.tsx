@@ -346,11 +346,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   </div>
                 ) : (
                   // Multiple wives layout - optimized to show more details
-                  <div className="h-full flex flex-col">
+                  <div className="h-full flex flex-col justify-start">
                     {/* Husband section - compact */}
                     {husband && (
-                      <div className="text-center mb-2">
-                        <Avatar className="h-10 w-10 mx-auto mb-1 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
+                      <div className="text-center mb-1">
+                        <Avatar className="h-9 w-9 mx-auto mb-1 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
                           {husband.image_url ? (
                             <AvatarImage src={husband.image_url} alt={husband.name} />
                           ) : (
@@ -359,7 +359,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-1">{husband.name}</h4>
+                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5">{husband.name}</h4>
                         <Badge variant="outline" className="text-xs border-blue-200 text-blue-700 dark:text-blue-300 px-1 py-0">
                           الزوج
                         </Badge>
@@ -367,21 +367,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     )}
                     
                     {/* Separator with heart */}
-                    <div className="flex items-center justify-center mb-2">
+                    <div className="flex items-center justify-center mb-1">
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
                       <Heart className="h-3 w-3 text-pink-500 mx-2 animate-pulse" />
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
                     </div>
                     
-                    {/* Wives section - flexible grid */}
-                    <div className="flex-1 flex flex-col">
-                      <div className="grid gap-1" style={{ 
+                    {/* Wives section - moved up with better spacing */}
+                    <div className="flex-1 flex flex-col justify-start">
+                      <div className="grid gap-0.5" style={{ 
                         gridTemplateColumns: wives.length <= 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
                         gridTemplateRows: wives.length <= 2 ? '1fr' : 'repeat(2, 1fr)'
                       }}>
                         {wives.map((wife, index) => (
-                          <div key={wife.id} className="text-center p-1">
-                            <Avatar className="h-8 w-8 mx-auto mb-1 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
+                          <div key={wife.id} className="text-center p-0.5">
+                            <Avatar className="h-7 w-7 mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
                               {wife.image_url ? (
                                 <AvatarImage src={wife.image_url} alt={wife.name} />
                               ) : (
@@ -390,16 +390,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                                 </AvatarFallback>
                               )}
                             </Avatar>
-                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-1" 
-                                style={{ fontSize: '10px', lineHeight: '1.1' }}>
-                              {wife.name.length > 8 ? wife.name.slice(0, 8) + '...' : wife.name}
+                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5" 
+                                style={{ fontSize: '9px', lineHeight: '1.1' }}>
+                              {wife.name.length > 6 ? wife.name.slice(0, 6) + '...' : wife.name}
                             </h5>
-                            <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-1 py-0" 
-                                   style={{ fontSize: '9px' }}>
+                            <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-0.5 py-0" 
+                                   style={{ fontSize: '8px' }}>
                               ز{index + 1}
                             </Badge>
                             {wife.birth_date && (
-                              <div className="text-xs text-muted-foreground mt-1" style={{ fontSize: '8px' }}>
+                              <div className="text-xs text-muted-foreground mt-0.5" style={{ fontSize: '7px' }}>
                                 {new Date(wife.birth_date).getFullYear()}
                               </div>
                             )}
