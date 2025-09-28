@@ -496,7 +496,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     )}
                     {fatherHasMultipleWives && motherName && (
                       <Badge variant="outline" className="text-xs">
-                        أم {motherName}
+                        والدته {motherName}
                       </Badge>
                     )}
                   </div>
