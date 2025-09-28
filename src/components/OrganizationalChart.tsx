@@ -466,15 +466,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                         {new Date(member.birth_date).getFullYear()}
                       </Badge>
                     )}
+                    {member.marital_status && (
+                      <Badge variant="outline" className="text-xs">
+                        {member.marital_status === 'single' ? 'أعزب' : 
+                         member.marital_status === 'married' ? 'متزوج' :
+                         member.marital_status === 'divorced' ? 'مطلق' : 'أرمل'}
+                      </Badge>
+                    )}
                   </div>
-                  
-                  {member.marital_status && (
-                    <Badge variant="outline" className="mt-2 text-xs">
-                      {member.marital_status === 'single' ? 'أعزب' : 
-                       member.marital_status === 'married' ? 'متزوج' :
-                       member.marital_status === 'divorced' ? 'مطلق' : 'أرمل'}
-                    </Badge>
-                  )}
                 </div>
               </CardContent>
             </Card>
