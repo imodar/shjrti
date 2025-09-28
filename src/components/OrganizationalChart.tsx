@@ -392,7 +392,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                             </Avatar>
                             <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5" 
                                 style={{ fontSize: '9px', lineHeight: '1.1' }}>
-                              {wife.name.length > 6 ? wife.name.slice(0, 6) + '...' : wife.name}
+                              {wife.name}
                             </h5>
                             <Badge variant="outline" className="text-xs border-pink-200 text-pink-700 dark:text-pink-300 px-0.5 py-0" 
                                    style={{ fontSize: '8px' }}>
