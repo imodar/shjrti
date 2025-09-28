@@ -433,6 +433,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
+      // Determine mother when father has 2+ wives
+      const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
+      const wives = parentUnit && (parentUnit as any).type === 'married'
+        ? (parentUnit as any).members.filter((m: any) => m?.gender === 'female')
+        : [];
+      const fatherHasMultipleWives = wives.length >= 2;
+      const motherId = (member as any).motherId || (member as any).mother_id || (member as any).motherID || (member as any)?.mother?.id;
+      const motherInUnit = motherId ? wives.find((w: any) => (w?.id === motherId)) : undefined;
+      const motherName = (motherInUnit?.name as string | undefined) || undefined;
+      
       return (
         <div
           key={unit.id}
@@ -482,6 +492,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                         {member.marital_status === 'single' ? 'أعزب' : 
                          member.marital_status === 'married' ? 'متزوج' :
                          member.marital_status === 'divorced' ? 'مطلق' : 'أرمل'}
+                      </Badge>
+                    )}
+                    {fatherHasMultipleWives && motherName && (
+                      <Badge variant="outline" className="text-xs">
+                        أم {motherName}
                       </Badge>
                     )}
                   </div>
