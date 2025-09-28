@@ -346,11 +346,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   </div>
                 ) : (
                   // Multiple wives layout - optimized to show more details
-                  <div className="h-full flex flex-col justify-start">
-                    {/* Husband section - compact */}
+                  <div className="h-full flex flex-col justify-start pt-1">
+                    {/* Husband section - extra compact */}
                     {husband && (
-                      <div className="text-center mb-1">
-                        <Avatar className="h-9 w-9 mx-auto mb-1 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
+                      <div className="text-center mb-0.5">
+                        <Avatar className="h-8 w-8 mx-auto mb-0.5 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
                           {husband.image_url ? (
                             <AvatarImage src={husband.image_url} alt={husband.name} />
                           ) : (
@@ -366,21 +366,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       </div>
                     )}
                     
-                    {/* Separator with heart */}
-                    <div className="flex items-center justify-center mb-1">
+                    {/* Separator with heart - minimal */}
+                    <div className="flex items-center justify-center mb-0.5">
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-                      <Heart className="h-3 w-3 text-pink-500 mx-2 animate-pulse" />
+                      <Heart className="h-2.5 w-2.5 text-pink-500 mx-1 animate-pulse" />
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
                     </div>
                     
-                    {/* Wives section - moved up with better spacing */}
+                    {/* Wives section - moved up with tighter spacing */}
                     <div className="flex-1 flex flex-col justify-start">
-                      <div className="grid gap-0.5" style={{ 
+                      <div className="grid gap-0.5 pt-1" style={{ 
                         gridTemplateColumns: wives.length <= 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
                         gridTemplateRows: wives.length <= 2 ? '1fr' : 'repeat(2, 1fr)'
                       }}>
                         {wives.map((wife, index) => (
-                          <div key={wife.id} className="text-center p-0.5">
+                          <div key={wife.id} className="text-center py-0.5 px-0.5">
                             <Avatar className="h-7 w-7 mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900">
                               {wife.image_url ? (
                                 <AvatarImage src={wife.image_url} alt={wife.name} />
