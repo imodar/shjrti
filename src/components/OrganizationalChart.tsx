@@ -433,15 +433,36 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Determine mother when father has 2+ wives
+      // Determine mother when father has 2+ wives (with sibling inference)
       const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
       const wives = parentUnit && (parentUnit as any).type === 'married'
         ? (parentUnit as any).members.filter((m: any) => m?.gender === 'female')
         : [];
       const fatherHasMultipleWives = wives.length >= 2;
-      const motherId = (member as any).motherId || (member as any).mother_id || (member as any).motherID || (member as any)?.mother?.id;
+
+      let motherId: string | undefined =
+        (member as any).motherId ||
+        (member as any).mother_id ||
+        (member as any).motherID ||
+        (member as any)?.mother?.id;
+
+      if (!motherId && parentUnit) {
+        const siblingUnits = ((parentUnit as any).childUnits || [])
+          .map((id: string) => displayUnits.get(id))
+          .filter(Boolean) as FamilyUnit[];
+        const inferred = siblingUnits
+          .map((u: FamilyUnit) => (u as any).members?.[0])
+          .find((s: any) => s && s.id !== (member as any).id && (s.motherId || s.mother_id));
+        const inferredMotherId = inferred?.motherId || inferred?.mother_id;
+        if (inferredMotherId) {
+          motherId = inferredMotherId;
+        }
+      }
+
       const motherInUnit = motherId ? wives.find((w: any) => (w?.id === motherId)) : undefined;
       const motherName = (motherInUnit?.name as string | undefined) || undefined;
+
+      const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');
       
       return (
         <div
@@ -496,7 +517,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     )}
                     {fatherHasMultipleWives && motherName && (
                       <Badge variant="outline" className="text-xs">
-                        والدته {motherName}
+                        {motherLabel}{motherName}
                       </Badge>
                     )}
                   </div>
