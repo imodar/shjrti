@@ -286,7 +286,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             
             <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden" 
                   style={{ height: `${UNIT_HEIGHT}px` }}>
-              <CardContent className="p-4 h-full flex flex-col justify-between">
+              <CardContent className="p-4 h-full flex flex-col justify-center">
                 {isFounder && (
                   <div className="flex justify-center mb-3">
                     <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg">
@@ -297,7 +297,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 )}
                 
                 {wives.length === 1 ? (
-                  // Single wife layout (original layout)
+                  // Single wife layout - centered vertically
                   <div className="flex items-center justify-between gap-4">
                     {/* Wife */}
                     <div className="flex-1 text-center">
