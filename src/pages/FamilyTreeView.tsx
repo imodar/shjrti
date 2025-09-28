@@ -36,6 +36,12 @@ const FamilyTreeView = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
 
+  // Reset zoom when filter changes
+  const handleRootMarriageChange = (value: string) => {
+    setSelectedRootMarriage(value);
+    setZoomLevel(1); // Reset zoom to default
+  };
+
   // Get family ID from URL parameters
   const familyId = searchParams.get('family');
 
@@ -537,7 +543,7 @@ const FamilyTreeView = () => {
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                     اختر جذر الشجرة
                   </label>
-                  <Select value={selectedRootMarriage} onValueChange={setSelectedRootMarriage}>
+                  <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
                     <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
                       <SelectValue placeholder="اختر الزواج كجذر للشجرة" />
                     </SelectTrigger>
@@ -633,7 +639,7 @@ const FamilyTreeView = () => {
                       transform: `scale(${zoomLevel})`,
                       transformOrigin: 'top center'
                     }}>
-                    {familyTree.length > 0 ? <div className="relative min-h-[700px] flex flex-col items-center pt-8 space-y-24">
+                     {familyTree.length > 0 ? <div className="relative min-h-[700px] flex flex-col items-center justify-center pt-8 space-y-24">
                         {familyTree.map(([generation, siblingGroups], genIndex) => <div key={generation} className="relative w-full">
                             {/* Generation Header */}
                             <div className="text-center mb-16">
