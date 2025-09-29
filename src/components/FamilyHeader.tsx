@@ -13,13 +13,15 @@ interface FamilyHeaderProps {
   }>;
   generationCount: number;
   onSettingsClick?: () => void;
+  isSettingsOpen?: boolean;
 }
 export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
   familyData,
   familyId,
   familyMembers,
   generationCount,
-  onSettingsClick
+  onSettingsClick,
+  isSettingsOpen = false
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,10 +92,12 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                       {!isStatisticsActive && <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                     </button>
                    
-                   <button onClick={onSettingsClick} className="group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
-                     <Settings className="h-4 w-4 text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 group-hover:rotate-90 transition-all duration-300" />
-                     <span className="hidden sm:inline">الإعدادات</span>
-                     <div className="absolute inset-0 bg-gradient-to-r from-slate-500/10 to-slate-600/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>
+                    <button onClick={onSettingsClick} className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isSettingsOpen ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                     {isSettingsOpen && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
+                     <Settings className={`h-4 w-4 ${isSettingsOpen ? 'relative z-10' : 'text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400'} group-hover:rotate-90 transition-all duration-300`} />
+                     <span className={`hidden sm:inline ${isSettingsOpen ? 'relative z-10' : ''}`}>الإعدادات</span>
+                     {isSettingsOpen && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
+                     {!isSettingsOpen && <div className="absolute inset-0 bg-gradient-to-r from-slate-500/10 to-slate-600/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                    </button>
                  </div>
               </div>
