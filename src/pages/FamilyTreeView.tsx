@@ -624,39 +624,6 @@ const FamilyTreeView = () => {
                 <SmartSearchBar familyId={familyMembers[0]?.family_id || ''} onResultSelect={handleSearchResultSelect} placeholder="ابحث في شجرة العائلة... (مثال: ابن عم أحمد من ناحية الأب)" />
               </div>}
 
-            {/* Marriage Root Filter */}
-            <div className="mb-8 max-w-md mx-auto">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-xl blur-lg"></div>
-                <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl p-4 shadow-lg">
-                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    اختر جذر الشجرة
-                  </label>
-                  <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
-                    <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
-                      <SelectValue placeholder="اختر الزواج كجذر للشجرة" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
-                      <SelectItem value="all">عرض الشجرة كاملة</SelectItem>
-                      {familyMarriages
-                        .filter(marriage => marriage.is_active)
-                        .map(marriage => {
-                          const husband = familyMembers.find(m => m.id === marriage.husband_id);
-                          const wife = familyMembers.find(m => m.id === marriage.wife_id);
-                          if (husband && wife) {
-                            return (
-                              <SelectItem key={marriage.id} value={marriage.id}>
-                                عائلة {husband.name} و {wife.name}
-                              </SelectItem>
-                            );
-                          }
-                          return null;
-                        })}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
 
             {/* الشريط الجانبي والمحتوى الرئيسي */}
             <div className={`grid gap-6 mb-8 ${hasAIFeatures ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'}`}>
@@ -682,9 +649,38 @@ const FamilyTreeView = () => {
               
               {/* Traditional Tree View - Organizational Chart Style */}
               <TabsContent value="traditional">
-                <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl p-4 shadow-lg min-h-[600px] overflow-auto">
-                  {/* Zoom Controls */}
-                  <div className="absolute top-4 right-4 z-10">
+                <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
+                  {/* Filter Bar at Top */}
+                  <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
+                    <div className="flex-1 max-w-md">
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        اختر جذر الشجرة
+                      </label>
+                      <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
+                        <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
+                          <SelectValue placeholder="اختر الزواج كجذر للشجرة" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                          <SelectItem value="all">عرض الشجرة كاملة</SelectItem>
+                          {familyMarriages
+                            .filter(marriage => marriage.is_active)
+                            .map(marriage => {
+                              const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                              const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                              if (husband && wife) {
+                                return (
+                                  <SelectItem key={marriage.id} value={marriage.id}>
+                                    عائلة {husband.name} و {wife.name}
+                                  </SelectItem>
+                                );
+                              }
+                              return null;
+                            })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Zoom Controls */}
                     <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
                       <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                         <ZoomOut className="h-4 w-4" />
@@ -700,7 +696,11 @@ const FamilyTreeView = () => {
                       </Button>
                     </div>
                   </div>
-                  <OrganizationalChart familyUnits={familyUnits} zoomLevel={zoomLevel} />
+                  
+                  {/* Tree Content Area */}
+                  <div className="p-4 min-h-[600px] overflow-auto">
+                    <OrganizationalChart familyUnits={familyUnits} zoomLevel={zoomLevel} />
+                  </div>
                 </div>
               </TabsContent>
 
