@@ -97,7 +97,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         }
       }
       
-      return <p className="text-sm text-muted-foreground truncate font-arabic">
+      return <p className="text-sm text-primary truncate font-arabic">
           {genderTerm} {lineage}
         </p>;
     }
@@ -114,7 +114,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         lineage += ` ابن ${grandfatherName}`;
       }
       
-      return <p className="text-sm text-muted-foreground truncate font-arabic">
+      return <p className="text-sm text-primary truncate font-arabic">
           {genderTerm} {lineage}
         </p>;
     }
