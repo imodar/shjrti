@@ -465,6 +465,30 @@ const FamilyTreeView = () => {
         });
         
         console.log(`Filtered to ${filteredUnits.size} units from original ${originalUnits.size} units`);
+
+        // Clean up parent/child references to only include ids within filtered set
+        units.forEach((unit) => {
+          if (unit.parentUnitId && !units.has(unit.parentUnitId)) {
+            unit.parentUnitId = undefined;
+          }
+          unit.childUnits = unit.childUnits.filter((id) => units.has(id));
+        });
+
+        // Recompute generations starting from selected root so layout algorithms find a root
+        units.forEach((u) => { u.generation = 0; });
+        if (units.has(rootUnitId)) {
+          const q: Array<{ id: string; gen: number }> = [{ id: rootUnitId, gen: 1 }];
+          const seen = new Set<string>();
+          while (q.length) {
+            const { id, gen } = q.shift()!;
+            if (seen.has(id)) continue;
+            seen.add(id);
+            const u = units.get(id);
+            if (!u) continue;
+            u.generation = gen;
+            u.childUnits.forEach((cid) => { if (units.has(cid)) q.push({ id: cid, gen: gen + 1 }); });
+          }
+        }
       }
     }
 
