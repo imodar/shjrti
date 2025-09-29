@@ -668,7 +668,7 @@ const FamilyTreeView = () => {
                       </Button>
                     </div>
                     
-                    <div className="flex-1 max-w-md ml-auto">
+                    <div className="max-w-md ml-auto">
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         اختر جذر الشجرة
                       </label>
