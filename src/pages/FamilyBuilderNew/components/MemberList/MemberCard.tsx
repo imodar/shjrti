@@ -60,7 +60,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
     const isDescendant = !member.is_founder && memberHasFamilyFather;
     if (isDescendant) {
-      return <span className="text-xs text-muted-foreground font-normal">
+      return <span className="text-sm text-muted-foreground font-normal">
           {member.gender === 'female' ? 'ابنة' : 'ابن'}
         </span>;
     }
@@ -125,7 +125,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     // Show founder text for founders
     const isFounder = member.is_founder || (member as any).isFounder;
     if (isFounder) {
-      return <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic whitespace-normal break-words">
+      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">
           الجد الأكبر
         </p>;
     }
@@ -166,7 +166,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
           // Use زوج for husband, زوجة for wife (from member's perspective)
           const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-          return <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic whitespace-normal break-words">
+          return <p className="text-sm text-primary font-arabic whitespace-normal break-words">
               {relationLabel} {spouseInfo}
             </p>;
         }
@@ -214,11 +214,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 <div className="flex items-center gap-2">
                   {(member.birth_date || (member as any).birthDate) && <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
                       <Calendar className="h-3 w-3 text-blue-600" />
-                      <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-xs text-blue-700 font-medium font-arabic" />
+                      <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-sm text-primary font-medium font-arabic" />
                     </div>}
                   {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
                     <Crown className="h-4 w-4 text-yellow-600" />
-                    <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
+                    <span className="text-sm text-primary font-medium font-arabic">المؤسس</span>
                   </div>}
                 </div>
             </div>
