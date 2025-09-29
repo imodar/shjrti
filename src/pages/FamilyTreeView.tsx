@@ -682,7 +682,7 @@ const FamilyTreeView = () => {
               
               {/* Traditional Tree View - Organizational Chart Style */}
               <TabsContent value="traditional">
-                <div ref={traditionalRef} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl relative">
+                <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl p-4 shadow-lg min-h-[600px] overflow-auto">
                   {/* Zoom Controls */}
                   <div className="absolute top-4 right-4 z-10">
                     <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
