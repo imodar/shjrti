@@ -218,7 +218,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     </div>}
                   {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
                     <Crown className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-primary font-medium font-arabic">المؤسس</span>
+                    <span className="text-sm text-yellow-600 font-medium font-arabic">المؤسس</span>
                   </div>}
                 </div>
             </div>
