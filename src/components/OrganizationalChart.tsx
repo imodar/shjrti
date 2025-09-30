@@ -229,33 +229,32 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const positions = calculatePositions();
 
-  // Center content on initial load - prevent infinite loop by using ref
+  // Center root member in visible area
   const [hasInitialized, setHasInitialized] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (displayUnits.size > 0 && !hasInitialized) {
-      const allPositions = Array.from(positions.values());
-      if (allPositions.length > 0) {
-        const chartWidth = Math.max(
-          1000,
-          Math.max(...allPositions.map(pos => pos.x)) + UNIT_WIDTH + 100
-        );
-        const chartHeight = Math.max(
-          600,
-          Math.max(...allPositions.map(pos => pos.y)) + UNIT_HEIGHT + 100
-        );
+    if (displayUnits.size > 0 && rootUnits.length > 0 && !hasInitialized && containerRef.current) {
+      // Get the first root unit position
+      const rootPosition = positions.get(rootUnits[0].id);
+      
+      if (rootPosition) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
         
-        const containerWidth = 1200; // Approximate container width
-        const containerHeight = 600; // Minimum container height
+        // Calculate the center of the root unit
+        const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
+        const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
         
-        const centerX = Math.max(0, (containerWidth - chartWidth) / 2);
-        const centerY = Math.max(0, (containerHeight - chartHeight) / 2);
+        // Calculate offset to center the root in the viewport
+        const offsetX = (containerWidth / 2) - rootCenterX;
+        const offsetY = (containerHeight / 2) - rootCenterY;
         
-        setPanOffset({ x: centerX, y: centerY });
+        setPanOffset({ x: offsetX, y: offsetY });
         setHasInitialized(true);
       }
     }
-  }, [displayUnits.size, hasInitialized]);
+  }, [displayUnits.size, rootUnits.length, hasInitialized, positions]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -780,6 +779,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   return (
     <div className="w-full h-full">
       <div
+        ref={containerRef}
         className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner cursor-grab active:cursor-grabbing select-none"
         style={{ 
           minHeight: '600px',
