@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -94,28 +94,8 @@ export function EnhancedDatePicker({
   const [open, setOpen] = React.useState(false);
   const { datePreference, setDatePreference } = useDatePreference();
   const [hijriDate, setHijriDate] = React.useState(() => value ? toHijri(value) : null);
-  const contentRef = React.useRef<HTMLDivElement>(null);
+  
 
-  // Force center positioning after Radix applies its styles
-  React.useEffect(() => {
-    if (open && contentRef.current) {
-      const applyStyles = () => {
-        if (contentRef.current) {
-          contentRef.current.style.position = 'fixed';
-          contentRef.current.style.left = '50%';
-          contentRef.current.style.top = '50%';
-          contentRef.current.style.transform = 'translate(-50%, -50%)';
-          contentRef.current.style.margin = '0';
-          contentRef.current.style.inset = 'auto';
-        }
-      };
-      
-      // Apply immediately and after a small delay to override Radix
-      applyStyles();
-      setTimeout(applyStyles, 0);
-      setTimeout(applyStyles, 10);
-    }
-  }, [open]);
 
   const handleSelect = (date: Date | undefined) => {
     if (date) {
@@ -143,8 +123,8 @@ export function EnhancedDatePicker({
   const hijriDays = Array.from({ length: 30 }, (_, i) => i + 1);
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal={true}>
-      <PopoverTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button
           variant="outline"
           disabled={disabled}
@@ -159,14 +139,9 @@ export function EnhancedDatePicker({
           </span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent 
-        ref={contentRef}
-        align="center"
-        side="top"
-        sideOffset={0}
-        className="p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in bg-white dark:bg-gray-800 !z-[9999] !fixed !left-[50%] !top-[50%] !-translate-x-1/2 !-translate-y-1/2 !w-auto !max-w-[min(95vw,400px)] !max-h-[90vh] !overflow-auto !m-0 !pointer-events-auto" 
-        avoidCollisions={false}
+      </DialogTrigger>
+      <DialogContent 
+        className="p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 bg-background max-w-[min(95vw,400px)] max-h-[90vh] overflow-auto pointer-events-auto"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {/* Enhanced Header */}
@@ -334,7 +309,7 @@ export function EnhancedDatePicker({
             إغلاق
           </Button>
         </div>
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   );
 }
