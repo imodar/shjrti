@@ -802,22 +802,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               <div className="font-semibold">{member.email || 'غير محدد'}</div>
                             </div>
                           </div>
-
-                          <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                            <Briefcase className="h-5 w-5 text-gray-600" />
-                            <div>
-                              <div className="text-sm text-gray-700">المهنة</div>
-                              <div className="font-semibold">{member.occupation || 'غير محدد'}</div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                            <GraduationCap className="h-5 w-5 text-gray-600" />
-                            <div>
-                              <div className="text-sm text-gray-700">التعليم</div>
-                              <div className="font-semibold">{member.education || 'غير محدد'}</div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     )}
